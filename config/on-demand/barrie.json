@@ -1,0 +1,4178 @@
+{
+  "slug": "barrie",
+  "area": {
+    "serviceName": "Transit ON Demand",
+    "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+    "sourceLabel": "Barrie Transit ON Demand page and the City's zone stop list (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-20",
+    "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+    "bookingInfo": "Book in the free Barrie ToD app, at book.barrietod.rideco.com or call 705-726-4242 (Monday to Friday 7:30 a.m. to 5:30 p.m., weekends 9 a.m. to 5 p.m.). Trips can be booked up to 7 days ahead.",
+    "bookingUrl": "https://book.barrietod.rideco.com/",
+    "pickup": {
+      "method": "fixed-stops"
+    },
+    "zoneMetadata": {
+      "Zone A": {
+        "serviceName": "Transit ON Demand",
+        "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 24
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6.5,
+              "endHour": 24
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8.5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+          "retrievedAt": "2026-11-20"
+        }
+      },
+      "Zone B": {
+        "serviceName": "Transit ON Demand",
+        "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 24
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6.5,
+              "endHour": 24
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8.5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+          "retrievedAt": "2026-11-20"
+        }
+      },
+      "Zone C": {
+        "serviceName": "Transit ON Demand",
+        "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 24
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6.5,
+              "endHour": 24
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8.5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+          "retrievedAt": "2026-11-20"
+        }
+      },
+      "Zone D": {
+        "serviceName": "Transit ON Demand",
+        "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 24
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6.5,
+              "endHour": 24
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8.5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+          "retrievedAt": "2026-11-20"
+        }
+      },
+      "Zone E": {
+        "serviceName": "Transit ON Demand",
+        "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 24
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6.5,
+              "endHour": 24
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8.5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+          "retrievedAt": "2026-11-20"
+        }
+      },
+      "Zone F": {
+        "serviceName": "Transit ON Demand",
+        "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 24
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6.5,
+              "endHour": 24
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8.5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+          "retrievedAt": "2026-11-20"
+        }
+      },
+      "Zone H": {
+        "serviceName": "Transit ON Demand",
+        "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 24
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6.5,
+              "endHour": 24
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8.5,
+              "endHour": 22
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand",
+          "retrievedAt": "2026-11-20"
+        }
+      }
+    }
+  },
+  "features": [],
+  "stopFeatures": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "49 Coulter Street",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.705611,
+          44.399915
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bayfield Mall",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.702723,
+          44.398774
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Sunnidale Dog Park",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.703048,
+          44.398482
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Coulter at Mall",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.7058,
+          44.399856
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "155 Ferris Lane",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689727,
+          44.408829
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Ferris at Collete",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.694458,
+          44.405672
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Ferris at Heath",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.697017,
+          44.404511
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "129 Ferris Lane",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.691398,
+          44.407754
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "155 Ferris Lane",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689604,
+          44.409064
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Collete Crescent",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.694229,
+          44.405907
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Heath Street",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.697117,
+          44.404557
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "55 J.C. Massie",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.673191,
+          44.416881
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Amica Little Lake",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.668496,
+          44.415863
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hanmer at Bayfield",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.712644,
+          44.417199
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hanmer at Bayfield",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.712819,
+          44.416916
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hanmer at St.Vincent",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.698807,
+          44.422536
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hanmer at St.Vincent",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.698578,
+          44.422431
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hanmer at Palmer",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.704888,
+          44.41961
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hanmer at Cassandra",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.703931,
+          44.420079
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hanmer at Stanley",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.707206,
+          44.41866
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Stanley Street",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.708155,
+          44.418408
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Stanley at Arch Brown",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.706408,
+          44.41618
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Stanley Heights",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.706722,
+          44.416382
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "East Bayfield Community Centre",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.7052,
+          44.41434
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Stanley at East Bayfield",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.704871,
+          44.414224
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bayfield Mall",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.700516,
+          44.401138
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Coulter Street",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.699745,
+          44.400652
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bayfield at Cundles",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.703246,
+          44.404227
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bayfield at Cundles",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.703293,
+          44.404674
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Georgian Mall",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.708539,
+          44.411894
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Cundles at J.C. Massie",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.676205,
+          44.416352
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Cundles at J.C. Massie",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.676146,
+          44.416626
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Heather Street",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.708754,
+          44.4068
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Georgian Mall",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.706266,
+          44.410794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Georgian Mall",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.704994,
+          44.411139
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "East Bayfield Community Centre",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.70288,
+          44.414347
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Stanley Street",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.702906,
+          44.412901
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Wal-Mart Plaza",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.710304,
+          44.409039
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Wal-Mart Plaza",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.710107,
+          44.408897
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "St Vincent at Cundles",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689217,
+          44.41207
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Robin Court",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689185,
+          44.41176
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Heather Street",
+        "areaName": "Zone A",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.708746,
+          44.406697
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Amelia at Duckworth",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.676836,
+          44.394736
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hospice Simcoe",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.64764,
+          44.414059
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Berczy Street",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.686314,
+          44.397037
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Berczy Street",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.686758,
+          44.396849
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Wellington at Duckworth",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.675135,
+          44.402842
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Marion Crescent",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.675956,
+          44.402506
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Wellington near Oak",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.683808,
+          44.397997
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Oak Street",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.682495,
+          44.398544
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Owen Street",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.690203,
+          44.395319
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Owen Street",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.690608,
+          44.395288
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Downtown Hub",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.690893,
+          44.388285
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Grove Street",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.696185,
+          44.396638
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Grove Street",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.6963,
+          44.396401
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Johnson at Blake",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.656811,
+          44.397073
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Parkview Center",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.665593,
+          44.395367
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Parkview Center",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.665306,
+          44.395241
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Duckworth at Grove",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.674339,
+          44.40734
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "RVh Main Entrance",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.659586,
+          44.415227
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Penetang at St. Vincent",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.67875,
+          44.398599
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Penetang at St. Vincent",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.678177,
+          44.398772
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "RVH Main Entrance",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.661195,
+          44.415551
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Grove at Duckworth",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.673838,
+          44.406996
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Blake at Johnson",
+        "areaName": "Zone B",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.656799,
+          44.39636
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Kingswood Plaza",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.649865,
+          44.365988
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bloxham Place",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.636126,
+          44.363612
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hurst at Cox Mill",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.65151,
+          44.367157
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hurst at Cox Mill",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.65214,
+          44.367317
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Edwards Drive",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.632563,
+          44.361534
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Golden Meadow Road",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.643245,
+          44.363854
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Golden Meadow Road",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.643632,
+          44.36364
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hurst at Grand Forest",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.636585,
+          44.363378
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hurst at Little",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.655661,
+          44.368192
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hurst at Little",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.655757,
+          44.368432
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Manor Gate",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.648386,
+          44.365117
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Manor Gate",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.647994,
+          44.365062
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Purt Court",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.632804,
+          44.362485
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bay Lane",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.660323,
+          44.370749
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bay Lane",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.660736,
+          44.370659
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Brennan Avenue",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664557,
+          44.372806
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Brennan Avenue",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664559,
+          44.37264
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Tollendal Mill at Minets Point",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.668236,
+          44.373053
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hurst at Minets",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.668305,
+          44.372899
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Tollendal Mill Road",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.65766,
+          44.36943
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Allandale Recreation Centre",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.684627,
+          44.360572
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hurst Drive",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.632447,
+          44.360596
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Pine Drive",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.635384,
+          44.359758
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Big Bay Point",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.646706,
+          44.356628
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Big Bay Point",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.64698,
+          44.356524
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Huronia",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.670633,
+          44.370521
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Huronia",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.669427,
+          44.370026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Little",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.662463,
+          44.366503
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Little",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.662698,
+          44.36633
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine Drive",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.641755,
+          44.354658
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie South GO",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.628137,
+          44.351585
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia Medical Clinic",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.663788,
+          44.347154
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia Medical Clinic",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.663922,
+          44.347506
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Painswick Library",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.648101,
+          44.354244
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Painswick Library",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.647983,
+          44.35407
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Park Place",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.680171,
+          44.340253
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine Drive",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.640768,
+          44.354543
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie Primary Care Campus",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.679121,
+          44.347288
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie Primary Care Campus",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.679645,
+          44.348038
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie Allandale Transit Terminal",
+        "areaName": "Zone C",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689033,
+          44.374019
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia at Little",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.66862,
+          44.364971
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Herrell Avenue",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.66676,
+          44.358939
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Truman Road",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.665646,
+          44.35514
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Webb Street",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.667545,
+          44.360918
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Armstrong Boulevard",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.676499,
+          44.363637
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Allandale Recreation Centre",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.683905,
+          44.361932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Little Ave at Fairview",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.693491,
+          44.359935
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Little Ave at Fairview",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.692561,
+          44.360012
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Garden Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.669984,
+          44.365107
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Highcroft Road",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.677035,
+          44.363385
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Marshall Street",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689687,
+          44.360788
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "McConkey Place",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.671558,
+          44.364593
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Marshall at Little",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.690371,
+          44.360502
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Big Bay at Welham",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.670149,
+          44.351898
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia at Little",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.668523,
+          44.365035
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Webb Street",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.667478,
+          44.361171
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Herrell Avenue",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.666517,
+          44.358588
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Truman Road",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.665494,
+          44.355154
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Goodwin Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.634377,
+          44.350022
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Dean Avenue",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.637774,
+          44.348691
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Esther Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.638785,
+          44.350051
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.642734,
+          44.352308
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "94 Dean Avenue",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.644387,
+          44.352908
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Painswick Library",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.648101,
+          44.354244
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Painswick Library",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.647983,
+          44.35407
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.643412,
+          44.352416
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Esther Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.639141,
+          44.350243
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Country Lane",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.638171,
+          44.348703
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Goodwin Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.634124,
+          44.350084
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Big Bay Point at Welham",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.670258,
+          44.352147
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "100 Welham",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.672919,
+          44.354277
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "103 Welham",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.672793,
+          44.354581
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hamilton at Welham",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.673292,
+          44.356968
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hamilton at Welham",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.673234,
+          44.357111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hamilton at Truman",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.670205,
+          44.357801
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Hamilton at Truman",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.670049,
+          44.357714
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "23 Truman",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.667443,
+          44.355746
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "14 Truman",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.667663,
+          44.355633
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "OnRoute",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.686437,
+          44.351375
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "OnRoute",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.686061,
+          44.351314
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Emergency Campus",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.688868,
+          44.355587
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Big Bay at Fairview",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.684415,
+          44.348986
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Big Bay at Fairview",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.683561,
+          44.348948
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Herrell at Leggott",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664403,
+          44.360586
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Herrell at Leggott",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664226,
+          44.360495
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Bayview Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.683335,
+          44.36219
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Emergency Campus",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689263,
+          44.35544
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Allandale Recreation Centre",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.684627,
+          44.360572
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia Road",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664386,
+          44.353253
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Big Bay Point",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.646706,
+          44.356628
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Big Bay Point",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.64698,
+          44.356524
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Huronia",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.670633,
+          44.370521
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Huronia",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.669427,
+          44.370026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Little",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.662463,
+          44.366503
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Yonge at Little",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.662698,
+          44.36633
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.641755,
+          44.354658
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie South GO",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.628137,
+          44.351585
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia Medical Clinic",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.663788,
+          44.347154
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Big Bay at Huronia",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664555,
+          44.353464
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia Medical Clinic",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.663922,
+          44.347506
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Park Place",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.680171,
+          44.340253
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine Drive",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.640768,
+          44.354543
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie Primary Care Campus",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.679121,
+          44.347288
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie Primary Care Campus",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.679645,
+          44.348038
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie Allandale Transit Terminal",
+        "areaName": "Zone D",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.689033,
+          44.374019
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Terry Fox at Valleybrook",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.598567,
+          44.358621
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Terry Fox at Valleybrook",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.598951,
+          44.358537
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Terry Fox at Mapleview",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.597562,
+          44.355815
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Terry Fox at Mapleview",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.597854,
+          44.355762
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleview at Notingham",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.60349,
+          44.354121
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleview at Notingham",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.603478,
+          44.353789
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Lally at Ranch",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.614728,
+          44.348486
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Lally at Gateway",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.614319,
+          44.348318
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Big Bay at Prince William Way",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.616012,
+          44.364078
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleview at Prince William",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.612443,
+          44.351625
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleview at Prince William Way",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.611361,
+          44.352243
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie South GO",
+        "areaName": "Zone E",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.628137,
+          44.351585
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "317 Saunders",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664738,
+          44.334971
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "68 Rawson",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664325,
+          44.330014
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine at Shepherd",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.642072,
+          44.342238
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine at Shepherd",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.641807,
+          44.341697
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine at Fenchurch",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.637606,
+          44.340083
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine at Fenchurch",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.638065,
+          44.339919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Madelaine at Greer",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.634871,
+          44.340692
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Saunders Road",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.661499,
+          44.335845
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Saunders at Huronia",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.661857,
+          44.335971
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "81 Rawson",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664188,
+          44.329765
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Rawson at Saunders",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.664954,
+          44.335143
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "94 Saunders",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.681201,
+          44.330725
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "81 Saunders",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.680756,
+          44.330441
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "30 Saunders",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.679698,
+          44.324711
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Saunders Rd at Lockhart",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.679169,
+          44.324701
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "60 Lockhart",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.676193,
+          44.325475
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "789 Bayview",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.67558,
+          44.325463
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "710 Bayview",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.676997,
+          44.328442
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "705 Bayview",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.676448,
+          44.328794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "55 Hooper",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.673937,
+          44.335202
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "50 Hooper",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.674485,
+          44.335466
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleview at Huronia",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.661636,
+          44.340859
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleview at Huronia",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.661391,
+          44.340677
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Barrie South GO",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.628137,
+          44.351585
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia Medical Clinic",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.663788,
+          44.347154
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Huronia Medical Clinic",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.663922,
+          44.347506
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Painswick Library",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.648101,
+          44.354244
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Painswick Library",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.647983,
+          44.35407
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Park Place",
+        "areaName": "Zone F",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.680171,
+          44.340253
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mabern at Essa",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.72228,
+          44.317617
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mabern at Essa",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.721908,
+          44.317668
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Brown Bear at Mabern",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.725798,
+          44.317607
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mabern at Brown Bear",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.725727,
+          44.317857
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "264 Salem Road",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.711044,
+          44.317121
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "259 Salem Road",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.71104,
+          44.31699
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Reid at Pearen",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.700057,
+          44.306822
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Reid at McKay",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.700053,
+          44.306486
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Red Oak at Sundew",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.733338,
+          44.327875
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "King at Reid",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.702692,
+          44.326548
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "King at Reid",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.702456,
+          44.32675
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "162 King Street",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.711353,
+          44.326271
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "161 King Street",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.710875,
+          44.326251
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Sundew at Red Oak",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.733268,
+          44.328017
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Essa at Veteran's",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.704585,
+          44.346614
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Peggy Hill Community Centre",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.717153,
+          44.339949
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Peggy Hill Community Centre",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.716688,
+          44.33989
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleton at Essa",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.709985,
+          44.339671
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Mapleton at Essa",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.710038,
+          44.339557
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Maplview at Veteran's",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.698573,
+          44.332444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Maplview at Veteran's",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.699375,
+          44.332025
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "barrie",
+        "serviceType": "on-demand",
+        "stopName": "Ferndale Drive South",
+        "areaName": "Zone H",
+        "sourceUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.704034,
+          44.346693
+        ]
+      }
+    }
+  ],
+  "notes": "Stop-based: only stops are drawn, no zone outline. Stops from 'tod-zone-stops.csv', sent by Mike McConnell (City of Barrie, Transit Project Lead) to Atlas Outreach on 2026-11-17, grouped by zone so each carries its zone name; zone map dates in the file: A 2025-09-21, B 2025-09-21, C 2025-06-08, D 2026-07-29, E 2025-06-08, F 2025-06-08, H 2026-06-29. Zones A to F and H are the zones on the City's Transit ON Demand page; H includes the Reid/Pearen and Reid/McKay pilot stops the page lists. The same email's 'tod-zones-approx.geojson' outlines are marked 'approximate, hand-traced from the public zone maps; not official', so they are not drawn (understate, never overstate). Left out: zone T (Fenchurch Manor, Priscilla's Place), which the City's page doesn't list, and H stop 33, which has no location in the file. Hours from the City's page, the same for every zone; no holiday hours stated. Riders are picked up at the nearest Transit ON Demand stop in their zone; door-to-door is Specialized Transit. Regular Barrie Transit fare; children under 12 ride with an adult."
+}

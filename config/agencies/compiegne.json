@@ -8,7 +8,7 @@
     49.4178,
     2.8261
   ],
-  "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=TIC_INT&dataFormat=GTFS&dataProfil=OPENDATA",
+  "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=TIC_URB&dataFormat=GTFS&dataProfil=OPENDATA",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

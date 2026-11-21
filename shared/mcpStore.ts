@@ -6,9 +6,10 @@
 import type { DayType } from './rules/days';
 import type { PeriodKey } from './config';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
+import type { StudioVehiclesFile } from './studioVehicles';
 
 /** One public agency as the catalog lists it. */
-export interface McpAgency { slug: string; name: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number] }
+export interface McpAgency { slug: string; name: string; /** Its parent agency's slug (config/parent-agencies.json), when it is one feed of a larger agency. */ parentAgency?: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number] }
 
 /** A route line from an agency's published route file (GeoJSON LineString), before the map's own normalisation. */
 export interface McpFeature { geometry: { type: string } | null; properties: Record<string, unknown> }
@@ -17,7 +18,7 @@ export interface McpFeature { geometry: { type: string } | null; properties: Rec
 export interface McpStop { id: string; name: string; lat: number; lon: number; routeIds: string[] }
 
 /** What config/agencies/<slug>.json says that the tools use. */
-export interface McpAgencyMeta { shortName: string; parentAgency: string | null }
+export interface McpAgencyMeta { shortName: string; parentAgency: string | null; /** The agency's own time zone (config/agencies/<slug>.json), for "now" (#1627). */ timezone?: string | null }
 
 /** One agency's routes and each route's waitMinutes per period, on each day type: what ranking reads. */
 export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; /** The larger operator this feed is part of (MTA New York for its borough bus feeds), if any. */ partOf: string | null; /** Weekday routes that are rail (subway, light rail, commuter rail, streetcar, monorail). */ railRoutes: number; days: Partial<Record<DayType, Array<{ route: string; name: string | null; mode?: string; wait: Partial<Record<PeriodKey, number | null>> }>>> }
@@ -65,6 +66,10 @@ export interface AtlasStore {
   historyRoute(slug: string, i: number): Promise<McpHistoryRoute | null>;
   /** Studio's schedule comparison for an agency, or null when none was built. */
   comparison(slug: string): Promise<StudioBeforeAfterFile | null>;
+  /** Studio's buses-needed file for an agency, or null when none was built (CIV-1977: the hosted server reads it from the split release). */
+  vehicles(slug: string): Promise<StudioVehiclesFile | null>;
+  /** Optional, local only: the newest schedule file on this Mac for an agency, to say when a buses-needed file is from an older one. */
+  newestFeedName?(slug: string): Promise<string | null>;
   /**
    * Optional, from here on: ready-made pieces a hosted store reads in small files (the split release). A store without
    * them is read through its route features and index and made on the fly, with the same functions.

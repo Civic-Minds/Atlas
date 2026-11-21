@@ -11,7 +11,7 @@ import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { FOLD_OUTLINE_OPEN, FOLD_OUTLINE_SHUT, ModeCollapse } from '../ModeTransition';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyNames } from '../../utils/agencyName';
-import { parentAgency } from '../../../shared/parentAgencyList';
+import { agencyGroupName, groupAgencies, groupHome } from '../../../shared/agencyGroups';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions, ON_DEMAND_MODE } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
@@ -147,17 +147,20 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
   const allGroups = useMemo(() => {
-    const groups: { name: string; slugs: string[]; region: string; loaded: boolean; cities?: string[]; displayArea?: string }[] = [];
-    for (const a of agencies) {
-      const region = a.region ?? OTHER_REGION_LABEL;
-      const inView = bboxInViewport(a, bounds);
-      // CIV-1277: an agency split across feeds (MTA New York, exo) is one row under its parent's name.
-      const name = parentAgency(a.parentAgency)?.name ?? a.name;
-      const g = groups.find(x => x.name === name && x.region === region);
-      if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
-      else groups.push({ name, slugs: [a.slug], region, loaded: inView, cities: a.cities, displayArea: a.displayArea });
-    }
-    return groups;
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds (MTA New York, exo) are one row under its
+    // name and its home feed's place, wherever its members are.
+    return groupAgencies(agencies).map(group => {
+      const home = groupHome(group);
+      return {
+        name: agencyGroupName(group, a => a.name),
+        slugs: group.members.map(m => m.slug),
+        region: home.region ?? OTHER_REGION_LABEL,
+        loaded: group.members.some(m => bboxInViewport(m, bounds)),
+        cities: home.cities,
+        displayArea: home.displayArea,
+        nameQualifier: group.parent ? undefined : home.nameQualifier,
+      };
+    });
   }, [agencies, bounds]);
 
   const byRegion = useMemo(() => {
@@ -212,10 +215,10 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           <AgencyRegionSection key={region} region={region} compact>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
+              const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea, nameQualifier: g.nameQualifier }).list;
               return (
                 <button
-                  key={g.name}
+                  key={g.slugs[0]}
                   onClick={() => {
                     const next = new Set(selectedAgencies);
                     if (active) g.slugs.forEach(s => next.delete(s));

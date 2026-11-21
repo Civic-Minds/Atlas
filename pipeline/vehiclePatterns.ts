@@ -14,7 +14,7 @@
  *
  * Pattern structure reuses the pipeline's shared-stretch rule (sharedStretch.ts): a pattern whose
  * stops lie in order inside a longer pattern of the same route is a short turn of it; two patterns
- * that share a qualifying stretch (SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM) and
+ * that share a qualifying stretch (PIECE_PARAMS.minStops stops and PIECE_PARAMS.minKm) and
  * each have stops of their own are branches, and the stretch they share is the trunk.
  *
  * Not in GTFS and never estimated: pull-out and pull-in between the garage and the first or last
@@ -22,6 +22,7 @@
  * inside the gap the schedule gives, so it is counted as layover and flagged.
  */
 import { alignedSharedRuns, qualifyingSharedRuns } from './sharedStretch.js';
+import { LEGACY_PIECE_MINIMUM } from './pieceParams.js';
 import { concurrentAt, median, vehiclesForHeadway, type TripRun } from './vehiclesNeeded.js';
 
 /** A gap between a block's trips longer than this is a lay-up or a garage trip, not layover. */
@@ -340,7 +341,7 @@ function classify(patterns: Pattern[], places?: Places): Trunk[] {
         const [a, b] = comparableLegs(full[i], full[j])[0] ?? [];
         if (!a || !b) continue;
         const ka = stationKeys(a.stopIds, places);
-        const shared = qualifyingSharedRuns(ka, stationKeys(b.stopIds, places), coords, a.stopIds);
+        const shared = qualifyingSharedRuns(ka, stationKeys(b.stopIds, places), coords, a.stopIds, LEGACY_PIECE_MINIMUM); // buses_needed keeps 5 stops / 1 km whatever ATLAS_PIECES_BY_TRIPS says (CIV-1959 B4 dependency note)
         if (shared.length === 0) continue;
         full[i].role = 'branch';
         full[j].role = 'branch';

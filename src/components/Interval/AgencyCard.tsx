@@ -545,6 +545,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     // A service with Friday hours but none Monday to Thursday (CyRide Moonlight, #1440): on a weekday the note would
     // read "Hours unavailable" above a Fri–Sat row, so the rows speak alone and Mon–Thu service is never claimed.
     const fridayOnlyWeekday = day === 'Weekday' && !!zone.availability?.Friday && !zone.availability.Weekday;
+    // A whole service whose hours are set zone by zone (Barrie, CIV-1987) has none of its own: the note would read
+    // "Hours unavailable" above its published hours, so the hours text speaks alone.
+    const hoursByZoneOnly = !zoneName && !zone.availability && Object.values(service.zoneMetadata ?? {})
+      .some(z => (!z.serviceName || z.serviceName === service.serviceName) && !!z.availability);
     const zoneRows = zoneName ? [] : onDemandZoneHoursRows(service);
     const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     // An on-demand card's report names the service, the zone and its hours as published (CIV-932), so a report about the
@@ -652,7 +656,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               </div>
             ) : (
               <>
-                {!fridayOnlyWeekday && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
+                {!fridayOnlyWeekday && !hoursByZoneOnly && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
                 <OnDemandHoursRows
                   availability={zone.availability}
                   serviceHours={zone.serviceHours}

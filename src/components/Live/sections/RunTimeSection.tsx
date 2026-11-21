@@ -26,7 +26,7 @@ export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null
 export const runTimeStretchOf = (v3: LiveV3, d: number) => runTimeStretchLabel(v3.runningTime?.stretch?.[String(d)], liveStopName);
 
 const INSET = 6; // px each end, so a dot on the first or last minute is not clipped
-/** Room on the right of the rows for "min" at the end of the scale (and the slow end's number). */
+/** Room on the right of the rows for "min" at the end of the scale. */
 const GUTTER = 'pr-7';
 
 /** The width of a box in px, kept up to date (0 until it is measured, and where there is no ResizeObserver). */
@@ -47,25 +47,24 @@ function useBoxWidth<T extends HTMLElement>() {
 }
 
 /** What the marks mean, in the words the section already uses. */
-export function RowLegend({ dense = false, inline = false, slowEnd = true }: { dense?: boolean; /** No top margin: the legend sits in a header row. */ inline?: boolean; /** False: no slow-end tail (Studio, CIV-1828: no "1 in 10" on screen). */ slowEnd?: boolean }) {
+export function RowLegend({ dense = false, inline = false }: { dense?: boolean; /** No top margin: the legend sits in a header row. */ inline?: boolean }) {
   const label = 'text-xs text-[var(--text-muted)]';
   return (
     <div className={`${inline ? '' : dense ? 'mt-2' : 'mt-3'} flex flex-wrap items-center ${inline ? 'justify-end gap-x-3' : 'gap-x-5'} gap-y-1`} aria-hidden="true">
       <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-2.5 w-2.5 rounded-full bg-[var(--text-primary)]" />{USUALLY_COLUMN}</span>
       <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-3 w-0.5 bg-[var(--text-secondary)]" />{SCHEDULED_COLUMN}</span>
-      {slowEnd && <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-1 w-5 rounded-full bg-[var(--strip-delay-1)] opacity-50" />1 in 10 over</span>}
     </div>
   );
 }
 
-const LANE_STYLE: Record<RowLabel['lane'], string> = { above: 'top-0', below: 'bottom-0', end: 'top-1/2 -translate-y-1/2' };
+const LANE_STYLE: Record<RowLabel['lane'], string> = { above: 'top-0', below: 'bottom-0' };
 
-/** One pattern as a line: the tail from the usual to the slow end, a tick at the timetable and a dot at the usual, on the section's shared scale, each with its number. */
-function PatternRow({ row, scale, width, dense, showLabel, unit, slowEnd }: { row: RunTimeRow; scale: { min: number; max: number }; width: number; dense: boolean; showLabel: boolean; unit: string; slowEnd: boolean }) {
+/** One pattern as a line: a tick at the timetable and a dot at the usual, on the section's shared scale, each with its number. */
+function PatternRow({ row, scale, width, dense, showLabel, unit }: { row: RunTimeRow; scale: { min: number; max: number }; width: number; dense: boolean; showLabel: boolean; unit: string }) {
   const pos = (m: number) => `${rowPercent(m, scale)}%`;
   const few = !row.main && row.trips < MIN_PATTERN_TRIPS;
-  const labels = placeRowLabels(slowEnd ? row : { ...row, p90: undefined }, scale, width, INSET, undefined, unit);
-  const tone: Record<RowLabel['id'], string> = { usual: 'font-bold text-[var(--text-primary)]', scheduled: 'text-[var(--text-secondary)]', slow: 'text-[var(--text-muted)]' };
+  const labels = placeRowLabels(row, scale, width, INSET, undefined, unit);
+  const tone: Record<RowLabel['id'], string> = { usual: 'font-bold text-[var(--text-primary)]', scheduled: 'text-[var(--text-secondary)]' };
   return (
     <li className={`min-w-0 ${few ? 'text-[var(--text-dim)]' : ''}`} title={row.figures || undefined}>
       {showLabel && row.label && <div className={`text-pretty ${dense ? 'text-xs leading-4 text-[var(--text-secondary)]' : 'text-sm leading-5 text-[var(--text-secondary)]'}`}>{row.label}{few ? ' Few trips: treat with care.' : ''}</div>}
@@ -73,9 +72,6 @@ function PatternRow({ row, scale, width, dense, showLabel, unit, slowEnd }: { ro
       <div className={`relative ${dense ? 'h-[36px]' : 'h-[44px]'} ${few ? 'opacity-60' : ''}`} aria-hidden="true">
         <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
           <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--border-primary)]" />
-          {slowEnd && row.typical != null && row.p90 != null && row.p90 > row.typical && (
-            <div className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-[var(--strip-delay-1)] opacity-50" style={{ left: pos(row.typical), width: `${rowPercent(row.p90, scale) - rowPercent(row.typical, scale)}%` }} />
-          )}
           {row.scheduled != null && <div data-mark="scheduled" className={`absolute top-1/2 ${dense ? 'h-2.5' : 'h-3.5'} w-0.5 -translate-x-1/2 -translate-y-1/2 bg-[var(--text-secondary)]`} style={{ left: pos(row.scheduled) }} />}
           {row.typical != null && <div data-mark="usual" className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)]" style={{ left: pos(row.typical) }} />}
         </div>
@@ -109,7 +105,7 @@ function RowAxis({ scale }: { scale: { min: number; max: number } }) {
 }
 
 /** A direction's pattern rows on one shared scale, with a faint line at each number so equal minutes line up across rows. `hideMainLabel` leaves the main row unlabelled (a line above already says what it covers). */
-export function PatternRows({ rows, scale, dense = false, hideMainLabel = false, unitOnNumbers = false, slowEnd = true }: { rows: RunTimeRow[]; scale: { min: number; max: number }; dense?: boolean; hideMainLabel?: boolean; /** No minutes axis: each number carries its own "min" (the planner's card, which is short of height). */ unitOnNumbers?: boolean; /** False: no slow-end tail or number (Studio, CIV-1828). */ slowEnd?: boolean }) {
+export function PatternRows({ rows, scale, dense = false, hideMainLabel = false, unitOnNumbers = false }: { rows: RunTimeRow[]; scale: { min: number; max: number }; dense?: boolean; hideMainLabel?: boolean; /** No minutes axis: each number carries its own "min" (the planner's card, which is short of height). */ unitOnNumbers?: boolean }) {
   const [ref, width] = useBoxWidth<HTMLUListElement>();
   const shown = rows.filter(r => !r.thin || !r.main);
   if (!shown.length) return null;
@@ -121,7 +117,7 @@ export function PatternRows({ rows, scale, dense = false, hideMainLabel = false,
             {scaleTicks(scale).map(t => <div key={t} className="absolute inset-y-0 w-px bg-[var(--border-primary)] opacity-60" style={{ left: `${rowPercent(t, scale)}%` }} />)}
           </div>
         </div>
-        <ul ref={ref} className={`relative m-0 list-none p-0 ${dense ? 'space-y-1' : 'space-y-2'}`}>{shown.map(r => <PatternRow key={r.key} row={r} scale={scale} width={width} dense={dense} showLabel={!(hideMainLabel && r.main)} unit={unitOnNumbers ? ' min' : ''} slowEnd={slowEnd} />)}</ul>
+        <ul ref={ref} className={`relative m-0 list-none p-0 ${dense ? 'space-y-1' : 'space-y-2'}`}>{shown.map(r => <PatternRow key={r.key} row={r} scale={scale} width={width} dense={dense} showLabel={!(hideMainLabel && r.main)} unit={unitOnNumbers ? ' min' : ''} />)}</ul>
       </div>
       {!unitOnNumbers && <RowAxis scale={scale} />}
     </div>

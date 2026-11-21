@@ -1,4 +1,5 @@
 import type { HoveredBranch, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
+import type { PeriodKey } from '../../shared/config';
 import { resolveBranchLabel } from './format';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
@@ -10,7 +11,9 @@ import { dirIdNum, groupTrunkHeadway, oneRowMainStretchHeadway, sharedStopIdsFor
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
 import { branchBase, branchCodeOf } from '../../shared/branchCode';
-import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
+import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, stretchRowFeatures, type RouteContract } from './stretchCard';
+import { branchRowValue, directionPieceTreatments, tailText } from './branchReadings';
+import { BRANCH_READINGS_ENABLED } from '../../shared/rules/flags';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange, headwayRangeShown } from './headwayText';
 import { LIMITED_SERVICE_LABEL, noNumberRowLabel, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
@@ -98,6 +101,8 @@ export interface RouteCardModelInput {
   stretchValues?: boolean;
   /** #1506: the map colours lines section by section (beta, FEATURES.segmentColours); see RouteCardRowContext.sectionColours. */
   sectionColours?: boolean;
+  /** CIV-1959 B3: the trunk line and each branch's own reading or no number, from the pieceReadings data. Behind BRANCH_READINGS_ENABLED. */
+  branchReadings?: boolean;
 }
 
 export interface RouteCardModel {
@@ -178,6 +183,7 @@ export function reportRowValueText(row: CardRow): string {
 export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel {
   const { directions, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors } = input;
   const stretchValues = input.stretchValues !== false;
+  const branchReadings = input.branchReadings ?? BRANCH_READINGS_ENABLED;
   // Frequency focus: rows come from the stretches, and the route-level number is the filter's own value with its range.
   const stretchMode = hasStretchRoles(directions);
   const contract = routeFilterContract(directions, period);
@@ -319,7 +325,64 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       // A main row reading the range from that number to its short end (#1502) repeats it too.
       return !v.isLimited && !v.headwayLabel && (v.trunkHeadway ?? v.headway) === sharedRow.headway;
     });
-    const shared = repeats ? null : sharedRow;
+    let shared = repeats ? null : sharedRow;
+    let finalRows = rows;
+    // CIV-1959 B3 (BRANCH_READINGS_ENABLED, data from ATLAS_BRANCH_READINGS=1): with the headline from the trunk, the branch wait
+    // must be visible. The trunk is one line, always shown (no 0.65 rule), and each branch is its own line from its piece:
+    // a reading, "every N until HH:MM" for a tail, or the no-number words (noNumberRowLabel) for a piece with too few or uneven trips. A branch the card hid for the period (#1115)
+    // gets its line back. The main stretch's own row stays (it names a destination) and the trunk line is left out only when that row already reads the same number.
+    const slotFeatures = branchReadings && stretchMode && !nightView ? stretchRowFeatures(group.directionFeatures ?? [], period).filter(d => d.stretchRole === 'tail') : [];
+    // A branch with no feature of its own has no destination to name: it has no line, as today. With none that can be named, the card keeps today's rows.
+    const treatments = branchReadings && stretchMode && !nightView ? directionPieceTreatments(group.directionFeatures, period) : null;
+    const named = treatments && new Map([...treatments.branches].filter(([index]) => slotFeatures.some(d => (d.stretchIndex ?? 0) === index)));
+    const pieces = treatments && named && named.size > 0 ? { ...treatments, branches: named } : null;
+    if (pieces) {
+      const trunkValue = pieces.trunk.v;
+      // The trunk is one line, always shown, unless a main row already reads exactly that number (Ryan, CIV-995 Q2: not twice).
+      const mainRowIsTrunk = pieces.trunk.t === 'reading' && rows.some(row => {
+        if (row.feature.stretchRole !== 'main' || row.night) return false;
+        const v = row.display(null).value;
+        return !v.isLimited && !v.headwayLabel && (v.trunkHeadway ?? v.headway) === trunkValue;
+      });
+      shared = mainRowIsTrunk ? null : {
+        label: SHARED_STRETCH_LABEL,
+        headway: trunkValue,
+        ...(pieces.trunk.t === 'tail' ? { edgeText: tailText(pieces.trunk) } : {}),
+        hover: sharedRow?.hover ?? { directionId: group.dirId, headsigns: coreHeadsigns, sharedStopIds: groupSharedStopIds, sharedHeadway: trunkValue, isCore: true },
+      };
+      const rowOf = (d: ShapeProperties, i: number): CardRow => {
+        const base = rows.find(r => r.feature === d);
+        return base ?? {
+          id: `${group.dirId}:piece${d.stretchIndex ?? i}:${(d.headsign ?? '').trim().toLowerCase()}`,
+          dirId: group.dirId, feature: d, label: branchLabel(group, d, gi), hover: rowHover(group.dirId, d.headsign, d.routeVariant), display: rowDisplay(d),
+        };
+      };
+      const tailRows = slotFeatures.flatMap((d, i) => {
+        const t = pieces.branches.get(d.stretchIndex ?? 0);
+        if (!t) return rows.filter(r => r.feature === d);
+        const row = rowOf(d, i);
+        // A piece's reading counts every trip on that stretch, so it stands for the row only where all of the row's own trips run it
+        // (stretchRowPeriods, as rowStretchReading has it), and never reads better than the row's own number today: a destination
+        // that shares the stretch with another keeps its own wait, never the pooled one (overstating service is worse). A piece with no number
+        // holds either way: the row's trips are a part of the piece's.
+        const stands = d.stretchRowPeriods?.includes(period as PeriodKey) ?? false;
+        const existed = rows.some(r => r.feature === d);
+        return [{ ...row, display: (hoveredHour: number | null): CardRowDisplay => {
+          const shown = row.display(hoveredHour);
+          const today = shown.value.isLimited || shown.value.rowNoRegular ? null : shown.value.shownHeadway ?? shown.value.headway ?? null;
+          if (t.t !== 'limited') {
+            if (!stands) return shown;
+            if (t.t === 'reading' && (!existed || today == null || t.v < today)) return shown;
+            if (t.t === 'tail' && today != null && t.v < today) return shown;
+          }
+          // A piece with no number reads and sits as any row with no number does (as rowDisplay has it).
+          const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
+          const noNumber = t.t === 'limited';
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
+        } }];
+      });
+      finalRows = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows];
+    }
 
     const realHeadsignKeys = new Set(
       group.realTier.map(d => (d.headsign ?? '').trim().toLowerCase()).filter(Boolean),
@@ -347,9 +410,9 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       boundLabel: group.boundLabel,
       shared,
       onlySharedPasses,
-      rows,
+      rows: finalRows,
       spanRows,
-      hasVisibleRows: groupHasCoreSummary || group.realTier.length > 0 || exclusiveSpans.length > 0,
+      hasVisibleRows: groupHasCoreSummary || pieces != null || group.realTier.length > 0 || exclusiveSpans.length > 0,
     };
   });
 

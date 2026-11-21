@@ -5,6 +5,7 @@ import { buildRouteKey, dedupeRouteKeysByDisplay, splitRouteKey } from './routeK
 import { compareAgencyName, compareRouteNumber } from './sortCompare';
 import { routeLabels } from './format';
 import { agencyNames } from './agencyName';
+import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import { labelShortNameOf, type RouteLabel } from './routeFacts';
 
 export interface MapContextRoute {
@@ -17,6 +18,8 @@ export interface MapContextRoute {
   routeType?: number;
   /** What the list shows (CIV-984): from the feed's names, the route ID only when the route has none. */
   label: RouteLabel;
+  /** The slug of the list entry the route sits under when that entry is a parent agency's (its home feed). */
+  groupSlug?: string;
 }
 
 export interface MapContextAgency {
@@ -26,6 +29,8 @@ export interface MapContextAgency {
   display?: { primary: string; secondary?: string };
   routeCount: number;
   routes: MapContextRoute[];
+  /** A parent agency's entry: the feeds it stands for (`slug` is its home feed, so picking it opens a real agency). */
+  members?: string[];
 }
 
 export function isMapContextOutsideClick(panel: Node | null, target: EventTarget | null): boolean {
@@ -38,16 +43,31 @@ function buildMapContextAgencies(
   agencies: Agency[],
   routesByAgency: Map<string, Map<string, MapContextRoute>>,
 ): MapContextAgency[] {
-  return [...routesByAgency.entries()]
-    .map(([slug, routes]) => {
-      const agency = agencies.find(item => item.slug === slug);
-      const name = agency?.name ?? slug;
+  // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds in view are one row under its name, and a
+  // route in two of its feeds (same name, mode and long name, as parentRoutes counts them) is listed once.
+  const inView = [...routesByAgency.keys()].map(slug => agencies.find(item => item.slug === slug) ?? { slug, name: slug } as Agency);
+  return groupAgencies(inView)
+    .map(group => {
+      const home = groupHome(group);
+      const agency = agencies.find(item => item.slug === home.slug);
+      const name = agencyGroupName(group, a => a.name);
+      const seen = new Set<string>();
+      const routes: MapContextRoute[] = [];
+      for (const member of group.members) for (const route of routesByAgency.get(member.slug)?.values() ?? []) {
+        if (group.parent) {
+          const same = `${route.shortName}\u0000${route.routeType ?? ''}\u0000${route.longName ?? ''}`;
+          if (seen.has(same)) continue;
+          seen.add(same);
+          routes.push({ ...route, agencyName: name, groupSlug: home.slug });
+        } else routes.push(route);
+      }
       return {
-      slug,
+      slug: home.slug,
       name,
-      display: agency ? agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).list : { primary: slug },
-      routeCount: routes.size,
-      routes: [...routes.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName)),
+      ...(group.parent ? { members: group.members.map(m => m.slug) } : {}),
+      display: agency ? agencyNames({ name, cities: agency.cities, displayArea: agency.displayArea, ...(group.parent ? {} : { nameQualifier: agency.nameQualifier }) }).list : { primary: home.slug },
+      routeCount: routes.length,
+      routes: routes.sort((a, b) => compareRouteNumber(a.shortName, b.shortName, a.longName, b.longName)),
       };
     })
     .sort((a, b) => b.routeCount - a.routeCount || compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
@@ -180,4 +200,14 @@ export function dedupeMapContextByDisplay(agencies: MapContextAgency[]): MapCont
     const routes = agency.routes.filter(route => keep.has(route.key));
     return { ...agency, routeCount: routes.length, routes };
   });
+}
+
+/**
+ * CIV-1967: whether the map's count pills can show. Without In view they wait for the agency data. With it they show the
+ * drawn-route count only once it has been measured (null before), and while agencies are still arriving only when it is
+ * above zero, so a dense area loading slowly never reads "0 routes · 0 agencies".
+ */
+export function mapCountsReady(o: { showMapContext: boolean; isLoading: boolean; inViewRouteCount: number | null }): boolean {
+  if (!o.showMapContext) return !o.isLoading;
+  return o.inViewRouteCount != null && (!o.isLoading || o.inViewRouteCount > 0);
 }

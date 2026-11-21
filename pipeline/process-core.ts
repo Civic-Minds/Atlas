@@ -63,7 +63,8 @@ import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEA
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
-import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
+import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
+import { headlineFromTrunkFromEnv, patternPools, pieceReadingFromEnv, pieceReadingOverlay, readFeaturePieces } from './pieces.js';
 import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
 
@@ -2220,7 +2221,7 @@ export async function processGtfsBuffer(
   const stopSharersByPool = new Map<string, ReadonlyMap<string, StopSharers>>();
   const stopSharersFor = (poolKey: string): ReadonlyMap<string, StopSharers> => {
     let hit = stopSharersByPool.get(poolKey);
-    if (!hit) { hit = computeStopSharers(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
+    if (!hit) { hit = patternPools(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
     return hit;
   };
   // CIV-850: each rush-hour-only bus pattern's stop sequence (its longest trip on the day, as
@@ -2899,6 +2900,7 @@ export async function processGtfsBuffer(
     // at the terminal get (the 2 Line toward Downtown Redmond alternates E31-T1 and E31-T2, every 10 together).
     const terminalReadTimes = (stopId: string | undefined | null): number[] | undefined =>
       stopId ? (platformStations.remapped.has(stopId) ? metricStopMap : ownMetricStopMap).get(stopId) : undefined;
+    const pieceReading = pieceReadingFromEnv();
     const departurePooled = pooled && ownMember
       ? buildPooledStopMap(departureMetricMap, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
@@ -3342,6 +3344,17 @@ export async function processGtfsBuffer(
       }
       if (Object.keys(stopPeriodHeadways).length > 0) {
         feature.properties.stopPeriodHeadways = stopPeriodHeadways;
+      }
+      // CIV-1959 B2 (ATLAS_PIECE_READING=1, off by default): each piece's one reading, for the map's stretch colour. A parallel
+      // field: no stop's own published value above changes. Stops that break off, or already read the piece value, have no entry.
+      if (pieceReading && departurePooled && ownMember) {
+        const pieceCells = readFeaturePieces({
+          order: onShape.map(p => p.stopId), station: id => childToParent.get(id) ?? id,
+          sharersAt: stopSharersFor(poolKey).get(ownMember), pooledMap: departurePooled.map, pooledStops: departurePooled.pooledStops,
+          own: departureMetricMap, memberDeps: key => stopDepsBySharedMember.get(`${poolKey}::${key}`),
+        });
+        const overlay = pieceReadingOverlay(pieceCells, stopPeriodHeadways);
+        if (Object.keys(overlay).length > 0) feature.properties.piecePeriodHeadways = overlay;
       }
       if (!isMapless && drawnPatternStops().length > 1) {
         // CIV-152: each drawn stop's every-gap grade, the method the route tier uses, on the
@@ -4026,6 +4039,8 @@ export async function processGtfsBuffer(
       if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
     }
     const stretchesByKey = new Map<string, DirectionStretches>();
+    // CIV-1959 B1: ATLAS_HEADLINE_FROM_TRUNK=1, off by default (pipeline/pieces.ts).
+    const headlineFromTrunk = headlineFromTrunkFromEnv();
     const branchReadRollups = new Map<string, ReturnType<typeof rollupDirection>>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
       const day = gKey.slice(gKey.lastIndexOf('::') + 2);
@@ -4048,6 +4063,7 @@ export async function processGtfsBuffer(
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
       stretches.midday899 = directionMidday899(gKey);
+      if (headlineFromTrunk) stretches.headlineFromTrunk = true;
       // CIV-1332: whether other service picks riders up soon after a night-only route's last bus, at each stretch's stop.
       stretches.handoverAt = stopId => nightHandoverAt(day, stopId, groupRoute);
       stretches.nextDaysAt = stopId => nextDaysAt(groupRoute, groupDir, day, stopId);
@@ -4063,6 +4079,7 @@ export async function processGtfsBuffer(
       if (correctionsFor(options?.branchReadCorrections, gKey).length > 0) {
         const pooled = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop, true);
         pooled.midday899 = stretches.midday899;
+        pooled.headlineFromTrunk = stretches.headlineFromTrunk;
         pooled.handoverAt = stretches.handoverAt;
         pooled.nextDaysAt = stretches.nextDaysAt;
         branchReadRollups.set(gKey, rollupDirection(pooled));

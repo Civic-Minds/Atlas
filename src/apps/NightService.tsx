@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { groupAgencies, groupHome } from '../../shared/agencyGroups';
 import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import { useColorMode } from '../hooks/useColorMode';
@@ -43,6 +44,8 @@ interface NightServiceRouteSummary {
   routeType?: number;
   partOfRoute?: boolean;
   destinations: string[];
+  /** The feed this route was read from: the section's own slug, or one member's under a parent agency (CIV-1963). */
+  agencySlug: string;
 }
 
 /** What a report from the Night list sends (CIV-932): the view, every agency and route it lists with its night value, and the map's bounds. */
@@ -57,6 +60,13 @@ function nightReportDetails(
     '**Listed:**',
     ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),
   ]);
+}
+
+/** Each feed's Night list section (CIV-1963): its parent's, keyed by the home feed and named for the parent, else its own. */
+export function nightSections(catalog: ReadonlyArray<{ slug: string; parentAgency?: string }>): Map<string, { slug: string; name?: string }> {
+  const out = new Map<string, { slug: string; name?: string }>();
+  for (const g of groupAgencies(catalog)) for (const m of g.members) out.set(m.slug, { slug: groupHome(g).slug, ...(g.parent ? { name: g.parent.name } : {}) });
+  return out;
 }
 
 function nightRouteLabel(route: NightServiceRouteSummary, agency: { slug: string; agencyName: string }) {
@@ -82,7 +92,7 @@ interface Props {
   /** A route is selected: its card takes this panel's place, as in Live. */
   selectionActive?: boolean;
   /** The agency registry, for each agency's short name and place (CIV-998). */
-  agencyCatalog?: ReadonlyArray<{ slug: string; name: string; cities?: string[]; displayArea?: string }>;
+  agencyCatalog?: ReadonlyArray<{ slug: string; name: string; cities?: string[]; displayArea?: string; nameQualifier?: string; parentAgency?: string }>;
 }
 
 export default function NightService({ active, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
@@ -134,13 +144,18 @@ export default function NightService({ active, layers, query = '', frequency, on
       nightRouteKey(route.agencySlug, route),
       route,
     ]));
-    const byAgency = new Map<string, { agencyName: string; region: string | null; routes: Map<string, NightServiceRouteSummary> }>();
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one section under its name, with a
+    // route in two of them listed once. A section is keyed by its home feed's slug.
+    const sectionOf = nightSections(agencyCatalog);
+    const byAgency = new Map<string, { agencyName: string; parentName?: string; region: string | null; routes: Map<string, NightServiceRouteSummary> }>();
     for (const visible of visibleRoutes) {
       const properties = visible.properties;
       const routeKey = nightRouteKey(visible.agencySlug, properties);
       const indexed = indexRoutes.get(routeKey);
-      const entry = byAgency.get(visible.agencySlug) ?? {
-        agencyName: properties.agencyName ?? indexed?.agencyName ?? visible.agencySlug,
+      const section = sectionOf.get(visible.agencySlug) ?? { slug: visible.agencySlug };
+      const entry = byAgency.get(section.slug) ?? {
+        agencyName: section.name ?? properties.agencyName ?? indexed?.agencyName ?? visible.agencySlug,
+        ...(section.name ? { parentName: section.name } : {}),
         region: indexed?.region ?? null,
         routes: new Map(),
       };
@@ -151,6 +166,7 @@ export default function NightService({ active, layers, query = '', frequency, on
         routeLongName: properties.routeLongName ?? indexed?.routeLongName ?? null,
         routeType: properties.routeType,
         destinations: [],
+        agencySlug: visible.agencySlug,
       };
       // Part of the route only when every lit row of it is partial.
       const partial = frequency !== 30 && properties.nightServicePartOfRoute === true;
@@ -158,7 +174,7 @@ export default function NightService({ active, layers, query = '', frequency, on
       const headsign = properties.headsign ?? indexed?.headsign;
       if (headsign && !summary.destinations.includes(headsign)) summary.destinations.push(headsign);
       entry.routes.set(summaryKey, summary);
-      byAgency.set(visible.agencySlug, entry);
+      byAgency.set(section.slug, entry);
     }
     const q = query.trim().toLowerCase();
     // Routes in number order within each agency, by the shared route sort (#1155: MiWay read 2, 3, 1, 7, 17).
@@ -179,10 +195,10 @@ export default function NightService({ active, layers, query = '', frequency, on
         ),
       }))
       .filter(agency => agency.agencyName.toLowerCase().includes(q) || agency.routes.length > 0);
-  }, [data, query, visibleRoutes, frequency]);
+  }, [data, query, visibleRoutes, frequency, agencyCatalog]);
 
-  const nightGrade = (route: NightServiceRouteSummary, agencySlug: string) =>
-    nightGrades.get(nightRouteKey(agencySlug, route)) ?? 60;
+  const nightGrade = (route: NightServiceRouteSummary) =>
+    nightGrades.get(nightRouteKey(route.agencySlug, route)) ?? 60;
 
   if (!active) return null;
 
@@ -200,7 +216,7 @@ export default function NightService({ active, layers, query = '', frequency, on
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {
                   const { primary, secondary } = nightRouteLabel(route, agency);
-                  return `${secondary ? `${primary} ${secondary}` : primary} (${headwayEvery(nightGrade(route, agency.slug))}${route.partOfRoute ? ', part of the route' : ''})`;
+                  return `${secondary ? `${primary} ${secondary}` : primary} (${headwayEvery(nightGrade(route))}${route.partOfRoute ? ', part of the route' : ''})`;
                 }),
               })), bounds)}
               excludeReasons={[REPORT_REASON.stop]}
@@ -219,7 +235,7 @@ export default function NightService({ active, layers, query = '', frequency, on
               {/* The shared agency heading of the list panels (CIV-1019), with the route count under it in the card facts line's own spacing. */}
               <AgencyGroupHeader rule={agencyIndex > 0 ? 'above' : 'below'}>
                 {/* The lists' short name and place (Ryan, CIV-998; CIV-1117 row 17). */}
-                <AgencyName {...agencyNames(agencyCatalog.find(a => a.slug === agency.slug) ?? agency.agencyName).list} />
+                <AgencyName {...(agency.parentName ? agencyNames(agency.parentName).list : agencyNames(agencyCatalog.find(a => a.slug === agency.slug) ?? agency.agencyName).list)} />
                 <p className={CARD_SUMMARY}>{countOf(agency.routes.length, 'route')}</p>
               </AgencyGroupHeader>
               {/* The agency card's route list (CIV-931): "**300** Bloor-Danforth" and the night frequency on the right.
@@ -229,15 +245,15 @@ export default function NightService({ active, layers, query = '', frequency, on
                   key: `${route.routeShortName ?? ''}-${route.routeLongName ?? ''}`,
                   route: nightRouteLabel(route, agency),
                   // Ryan's approved row: "● every 30 min". The grade is an upper bound, so this never overstates.
-                  headway: nightGrade(route, agency.slug),
+                  headway: nightGrade(route),
                   // CIV-1329: the dot takes the night shade of its grade, as the map and key draw it.
-                  dotColor: getNightServiceTierColor(nightGrade(route, agency.slug), colorMode),
+                  dotColor: getNightServiceTierColor(nightGrade(route), colorMode),
                   subLabel: route.partOfRoute ? OVERNIGHT_PART_OF_ROUTE : undefined,
                   disabled: !route.routeId || !onRouteSelect,
                 }))}
                 onSelect={key => {
                   const route = agency.routes.find(r => `${r.routeShortName ?? ''}-${r.routeLongName ?? ''}` === key);
-                  if (route?.routeId) onRouteSelect?.(agency.slug, route.routeId);
+                  if (route?.routeId) onRouteSelect?.(route.agencySlug, route.routeId);
                 }}
               />
             </div>

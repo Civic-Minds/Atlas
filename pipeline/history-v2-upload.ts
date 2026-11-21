@@ -31,12 +31,23 @@
  *                                 an immutable backup key (history-v2-replaced/<ticket>/...), read back and
  *                                 compared; the key is re-read just before the write (it must still hold the old
  *                                 body) and the new body is read back after it.
+ *
+ *   --rail-only <ticket>          CIV-437: upload rail-only sidecars and shapes (backfill-history-v2.ts --rail-only)
+ *                                 beside an agency's published bus History. The ticket must approve exactly this slug
+ *                                 (historyV2RailOnly.ts APPROVED_RAIL_ONLY). Every sidecar must hold only routes its
+ *                                 supplementalRoutes attributes to one of the agency's supplemental feeds, keyed by the
+ *                                 rail refDate; every shapes file only routes of its period's sidecar. Nothing is ever
+ *                                 replaced, and a period key that any other archive file of the agency uses (bus change
+ *                                 files, trip-time files, sidecars, shapes) refuses the whole run, so bus values cannot
+ *                                 move. That check lists the archive, so it runs on --write and on a credentialed dry
+ *                                 run; an uncredentialed dry run says it was skipped. Not combinable with --replace-approved.
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseHistoryV2Sidecar } from '../shared/historyV2Reader.js';
 import type { HistoryV2Sink } from './historyV2.js';
 import { assertWriteGate, byteLength, hasR2Credentials, isEntryPoint, parseFlags, type Env } from './historyPublishLib.js';
+import { assertRailOnlyApproved, checkRailOnlySidecar, periodKeyPrefixes, periodKeysInUse } from './historyV2RailOnly.js';
 import { assertReplacementApproved, checkReplacement, countAdded, replacementBackupKey, sha256Hex, type ReplacementCheck, type ReplacementMode } from './historyV2Replace.js';
 
 export type UploadState = 'new' | 'identical' | 'conflict' | 'replace' | 'unknown';
@@ -60,6 +71,8 @@ export interface Remote {
   sink: HistoryV2Sink;
   /** CIV-1430 only: an unconditional put, used for an approved replacement after its checks. */
   overwrite?(key: string, body: string): Promise<void>;
+  /** CIV-437 only: archive keys under a prefix, for the rail-only period-key check. */
+  list?(prefix: string): Promise<string[]>;
 }
 
 export interface UploadRunOptions {
@@ -68,6 +81,8 @@ export interface UploadRunOptions {
   log?: (line: string) => void;
   /** Injected in tests; the real factory only runs on --write or a credentialed dry run. */
   makeRemote?: () => Promise<Remote>;
+  /** CIV-437, injected in tests: the agency's supplemental feed URLs (default: config/agencies/{slug}.json). */
+  railUrls?: readonly string[];
 }
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
@@ -75,7 +90,7 @@ const PERIOD_RE = /^[A-Za-z0-9][A-Za-z0-9_.-]*$/;
 
 export async function realRemote(): Promise<Remote> {
   const [{ r2ArchiveSink }, r2] = await Promise.all([import('./historyV2.js'), import('./r2.js')]);
-  return { peek: key => r2.r2GetArchive(key), sink: await r2ArchiveSink(), overwrite: (key, body) => r2.r2PutArchiveJson(key, body) };
+  return { peek: key => r2.r2GetArchive(key), sink: await r2ArchiveSink(), overwrite: (key, body) => r2.r2PutArchiveJson(key, body), list: prefix => r2.r2ListArchive(prefix) };
 }
 
 function isCoord(c: unknown): boolean {
@@ -152,6 +167,33 @@ export function scanLocal(dir: string, slug: string, period?: string): Scan {
   return out;
 }
 
+/** CIV-437: the agency's supplemental feed URLs, from its registry config. */
+export function railUrlsFor(slug: string): string[] {
+  const path = resolve('config/agencies', `${slug}.json`);
+  const cfg = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) as { supplementalFeedUrls?: string[] } : {};
+  return cfg.supplementalFeedUrls ?? [];
+}
+
+/** CIV-437: every sidecar must be rail-only, and every shapes file only hold its period's sidecar routes. */
+export function railOnlyErrors(items: UploadItem[], railUrls: readonly string[]): string[] {
+  const errors: string[] = [];
+  if (railUrls.length === 0) return ['--rail-only: the agency has no supplemental feeds'];
+  const routesByPeriod = new Map<string, Set<string>>();
+  for (const i of items.filter(x => x.kind === 'sidecar')) {
+    const json = JSON.parse(i.body) as { routes?: Record<string, unknown> };
+    const err = checkRailOnlySidecar(json, railUrls);
+    if (err) errors.push(`${i.key}: ${err}`);
+    else routesByPeriod.set(i.periodKey, new Set(Object.keys(json.routes ?? {})));
+  }
+  for (const i of items.filter(x => x.kind === 'shapes')) {
+    const own = routesByPeriod.get(i.periodKey);
+    if (!own) { errors.push(`${i.key}: no rail-only sidecar for this period in the run`); continue; }
+    const extra = Object.keys((JSON.parse(i.body) as { routes: Record<string, unknown> }).routes).filter(k => !own.has(k));
+    if (extra.length) errors.push(`${i.key}: ${extra.length} route(s) not in the period's rail-only sidecar (first: ${extra[0]})`);
+  }
+  return errors;
+}
+
 function totals(items: UploadItem[]) {
   const t = { objects: items.length, bytes: 0, newObjects: 0, newBytes: 0, identicalObjects: 0, identicalBytes: 0, conflictObjects: 0, conflictBytes: 0, replaceObjects: 0 };
   for (const i of items) {
@@ -166,7 +208,7 @@ function totals(items: UploadItem[]) {
 
 export async function runUpload(opts: UploadRunOptions): Promise<number> {
   const log = opts.log ?? (l => console.log(l));
-  const { values, bools } = parseFlags(opts.argv, ['--slug', '--dir', '--period', '--replace-approved'], ['--write']);
+  const { values, bools } = parseFlags(opts.argv, ['--slug', '--dir', '--period', '--replace-approved', '--rail-only'], ['--write']);
   const write = bools.has('--write');
   assertWriteGate(write, opts.env);
   const slug = values['--slug'];
@@ -177,8 +219,12 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
   if (period && !PERIOD_RE.test(period)) throw new Error(`bad --period "${period}"`);
   const ticket = values['--replace-approved'];
   const mode: ReplacementMode | null = ticket ? assertReplacementApproved(ticket, slug) : null;
+  const railTicket = values['--rail-only'];
+  if (railTicket && ticket) throw new Error('--rail-only and --replace-approved cannot be combined (a rail-only upload never replaces)');
+  if (railTicket) assertRailOnlyApproved(railTicket, slug);
 
   const scan = scanLocal(dir, slug, period);
+  if (railTicket) scan.errors.push(...railOnlyErrors(scan.items, opts.railUrls ?? railUrlsFor(slug)));
   if (scan.errors.length > 0) {
     log(`REFUSED: ${scan.errors.length} invalid local file(s); nothing was read from or written to R2:`);
     for (const e of scan.errors) log(`  ${e}`);
@@ -205,12 +251,25 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
       }
     }
   }
+  if (railTicket && remote) {
+    if (!remote.list) throw new Error('--rail-only needs a remote that can list the archive');
+    const inUse = periodKeysInUse((await Promise.all(periodKeyPrefixes(slug).map(p => remote!.list!(p)))).flat(), slug);
+    // A file this run would write unchanged (a re-run) does not count; anything else using the key does.
+    const ownIdentical = new Set(scan.items.filter(i => i.state === 'identical').map(i => i.key));
+    const clashes = [...new Set(scan.items.map(i => i.periodKey))].flatMap(pk => (inUse.get(pk) ?? []).filter(k => !ownIdentical.has(k)).map(k => ({ pk, k })));
+    if (clashes.length > 0) {
+      log(`REFUSED (${railTicket}): ${clashes.length} archive file(s) already use a rail-only period key; nothing was written:`);
+      for (const c of clashes.slice(0, 20)) log(`  ${c.pk}: ${c.k}`);
+      return 1;
+    }
+  }
 
   log(write ? `WRITE: about to upload ${slug} to the PRIVATE archive bucket` : 'DRY RUN (nothing will be written)');
   if (!remote) log('remote state unknown (no credentials; dry-run listing skipped)');
+  if (railTicket) log(remote ? `rail-only (${railTicket}): no other ${slug} archive file uses these period keys` : `rail-only (${railTicket}): period-key check skipped (no credentials); --write runs it`);
   for (const i of scan.items) {
     const verb = i.state === 'new' ? 'put (new)' : i.state === 'identical' ? 'no-op (identical)'
-      : i.state === 'replace' ? `REPLACE (${ticket}: ${mode === 'full' ? `full, ${i.check!.changes.length} route field(s) differ` : mode === 'add-noTripPeriods' ? 'adds the no-trips flag only' : `adds weekend fields only ${JSON.stringify(countAdded(i.check!.added))}`}; backup ${replacementBackupKey(ticket!, i.key, i.existing!)})`
+      : i.state === 'replace' ? `REPLACE (${ticket}: ${mode === 'full' ? `full, ${i.check!.changes.length} route field(s) differ` : mode === 'repick' ? `re-pick, ${i.check!.changes.filter(c => c.path === 'refDate').map(c => `refDate ${c.before} -> ${c.after}, `).join('')}${i.check!.changes.filter(c => c.path.startsWith('routes.')).length} route field(s) differ` : mode === 'add-noTripPeriods' ? 'adds the no-trips flag only' : `adds weekend fields only ${JSON.stringify(countAdded(i.check!.added))}`}; backup ${replacementBackupKey(ticket!, i.key, i.existing!)})`
       : i.state === 'conflict' ? (i.check ? `CONFLICT (${ticket} refused: ${i.check.reason})` : 'CONFLICT (differs, never overwritten)') : 'put or no-op (state unknown)';
     log(`  ${i.key}  ${i.bytes} bytes  ${verb}`);
     if (i.state === 'conflict' && i.check) for (const c of i.check.changes.slice(0, 20)) log(`      ${c.path}: ${c.before ?? '(absent)'} -> ${c.after ?? '(absent)'}`);

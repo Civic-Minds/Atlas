@@ -1,7 +1,9 @@
-import { FOCUS_AGENCY_SLUGS, PRODUCT_FOCUS, isFocusAgency } from './rules/focus.js';
+import { FOCUS_AGENCY_SLUGS, isFocusAgency } from './rules/focus.js';
 import { earliestFiguresDay, type LiveCoverage } from './liveCoverage.js';
 import { LIVE_MIN_DAYS_TO_SHOW } from './rules/live.js';
 import { shortDate } from './dateText.js';
+import { liveFeedStatus } from './liveArchiveFeeds.js';
+import { agencyGroupName, groupAgencies } from './agencyGroups.js';
 
 /**
  * The local coverage page's rows (CIV-1871): one per agency that has more than the map, focus agencies first, each column read from
@@ -15,7 +17,7 @@ export const MCP_COVERAGE_PREFIX = 'live';
 
 export interface CoverageSources {
   /** The agencies on the map (the public catalog). */
-  agencies: ReadonlyArray<{ slug: string; name: string; /** The place beside the name when the name alone isn't unique ("MTA NYCT Bus", Manhattan), as the agencies page shows it. */ place?: string }>;
+  agencies: ReadonlyArray<{ slug: string; name: string; /** The place beside the name when the name alone isn't unique ("MTA NYCT Bus", Manhattan), as the agencies page shows it. */ place?: string; parentAgency?: string }>;
   /** History's agencies (shared/data/history-agencies.json). */
   historySlugs: readonly string[];
   /** Distinct History years of every archived agency, public or not (the dev server reads the local history-config copy); empty where unknown. */
@@ -55,9 +57,9 @@ export interface CoverageRow {
   mcpLiveFrom: string | null;
 }
 
-/** Recorded now: an archived agency on the focus list's Live set (the others' recorders are paused and their data has expired). */
+/** Recorded now: an archived agency whose recorder runs, by the one recording state (shared/liveArchiveFeeds.ts) the MCP and Live read. */
 function recordedNow(slug: string, s: CoverageSources): boolean {
-  return s.liveArchiveSlugs.includes(slug) && (PRODUCT_FOCUS.live as readonly string[]).includes(slug);
+  return s.liveArchiveSlugs.includes(slug) && liveFeedStatus(slug).status === 'recording';
 }
 
 /** The MCP's Live answers: where recordings are kept and how far along they are, from the coverage files. */
@@ -77,7 +79,7 @@ export const hasMoreThanMap = (r: CoverageRow): boolean =>
 
 /** One row for each agency that has more than the map (CIV-1871, Ryan: every agency is on the map, so the rest is noise). */
 export function coverageRows(s: CoverageSources): CoverageRow[] {
-  const rows = s.agencies.map(a => {
+  const rowOf = (a: CoverageSources['agencies'][number]): CoverageRow => {
     const mcp = mcpLiveState(a.slug, s);
     return {
       slug: a.slug,
@@ -94,7 +96,34 @@ export function coverageRows(s: CoverageSources): CoverageRow[] {
       mcpLive: mcp.state,
       mcpLiveFrom: mcp.from,
     };
+  };
+  // One entry per agency or region (shared/agencyGroups.ts, CIV-1963): a parent's feeds are one row under its name. A
+  // column is yes when any feed has it; History's years and the MCP's Live answer read the feed that has the most.
+  const groups = groupAgencies(s.agencies);
+  const rows = groups.map(g => {
+    const parts = g.members.map(rowOf);
+    if (!g.parent) return parts[0];
+    const any = (k: 'focus' | 'history' | 'liveRecorded' | 'liveRealtime' | 'liveReport' | 'studioSchedule' | 'studioVehicles') => parts.some(r => r[k]);
+    const mcp = parts.find(r => r.mcpLive === 'ready') ?? parts.find(r => r.mcpLive === 'from');
+    return {
+      slug: g.slug,
+      name: agencyGroupName(g, a => a.name),
+      place: null,
+      focus: any('focus'),
+      history: any('history'),
+      historyYears: Math.max(...parts.map(r => r.historyYears)),
+      liveRecorded: any('liveRecorded'),
+      liveRealtime: any('liveRealtime'),
+      liveReport: any('liveReport'),
+      studioSchedule: any('studioSchedule'),
+      studioVehicles: any('studioVehicles'),
+      mcpLive: mcp?.mcpLive ?? null,
+      mcpLiveFrom: mcp?.mcpLiveFrom ?? null,
+    };
   });
-  const order = (slug: string) => { const i = FOCUS_AGENCY_SLUGS.indexOf(slug); return i < 0 ? Infinity : i; };
-  return rows.filter(hasMoreThanMap).sort((a, b) => order(a.slug) - order(b.slug) || a.name.localeCompare(b.name));
+  // A parent row sits where its earliest focus feed would.
+  const focusAt = (slug: string) => { const i = FOCUS_AGENCY_SLUGS.indexOf(slug); return i < 0 ? Infinity : i; };
+  const orderBySlug = new Map(groups.map(g => [g.slug, Math.min(...g.members.map(m => focusAt(m.slug)))]));
+  const order = (r: CoverageRow) => orderBySlug.get(r.slug) ?? Infinity;
+  return rows.filter(hasMoreThanMap).sort((a, b) => order(a) - order(b) || a.name.localeCompare(b.name));
 }

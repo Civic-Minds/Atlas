@@ -4,6 +4,7 @@ import { LESS_EXACT_LABEL, fadedNoteText } from '../../../shared/liveWording';
 import { pickAxisLabels } from '../../utils/stopLabel';
 import { countText } from '../../../shared/numberText';
 import { LIVE_MIN_SAMPLE } from '../../../shared/rules/live';
+import { RANGE_COLUMN } from '../../content/noticeCopy';
 
 export interface ProfilePoint {
   /** Stop or stretch name: shown in the tooltip and the table. */
@@ -66,7 +67,7 @@ interface ProfileBarsProps {
   zeroLabel?: string;
   /** Use this scale instead of the bars' own, so two charts side by side can be compared. */
   scale?: { min: number; max: number };
-  /** Draw the thin 1-in-10 line through each bar (default yes). The range is still in the table either way. */
+  /** Draw the thin range line through each bar (default yes). The range is still in the table either way. */
   whiskers?: boolean;
   /** Most names to print under the chart (default 6). */
   maxLabels?: number;
@@ -240,7 +241,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = L
               { key: 'stop', header: rowHeader, rowHeader: true, className: 'font-normal', cell: r => r.p.label },
               { key: 'value', header: valueHeader, cell: r => formatY(r.p.y + (r.p.y2 ?? 0)) },
               ...(points.some(p => p.ref != null) ? [{ key: 'ref', header: refHeader ?? 'Reference', cell: (r: { p: ProfilePoint }) => (r.p.ref != null ? formatY(r.p.ref) : '') }] : []),
-              ...(points.some(p => p.lo != null) ? [{ key: 'range', header: points.some(p => p.ref != null) ? '1 in 10 over' : 'Most trips between', cell: (r: { p: ProfilePoint }) => (r.p.lo != null && r.p.hi != null ? (r.p.ref != null ? formatY(r.p.hi) : `${formatY(r.p.lo)} and ${formatY(r.p.hi)}`) : '') }] : []),
+              ...(points.some(p => p.lo != null) ? [{ key: 'range', header: RANGE_COLUMN, cell: (r: { p: ProfilePoint }) => (r.p.lo != null && r.p.hi != null ? `${formatY(r.p.lo)} and ${formatY(r.p.hi)}` : '') }] : []),
               { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: r => (r.p.n != null ? countText(r.p.n) : '') },
             ]}
           />

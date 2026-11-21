@@ -1,4 +1,6 @@
+import { mapCountsReady } from '../utils/mapContext';
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { agencyEntryCount } from '../../shared/agencyGroups';
 import { useOnDemandServiceSlugs, useOnDemandStatus } from '../hooks/useOnDemandData';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
@@ -249,7 +251,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [contextYear, setContextYear] = useState<number | null>(null);
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
-  const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
+  const [mapContextAgencyCount, setMapContextAgencyCount] = useState<number | null>(null);
   const [mapContextRouteCount, setMapContextRouteCount] = useState<number | null>(null);
 
   const initialMapCenter = useMemo(() => {
@@ -678,6 +680,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     urgentViewport: searchFocused || nightServiceView || frequentServiceView || userLocation !== null || compareActive,
     viewportLoadOpen,
   });
+  const countsReady = mapCountsReady({ showMapContext, isLoading, inViewRouteCount: mapContextRouteCount });
 
 
   useEffect(() => {
@@ -927,20 +930,23 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const researchCounts = useMemo(() => {
     if (!nightServiceView && !frequentServiceView) return null;
     if (nightServiceView) {
-      const night = countNightRoutesInView(layers, nightServiceFrequency, viewBounds);
+      const night = countNightRoutesInView(layers, nightServiceFrequency, viewBounds, slug => agencies.find(a => a.slug === slug)?.parentAgency);
       return night.routes === 0 ? null : night;
     }
     const features = selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes });
     if (features.length === 0) return null;
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds count once, and so does a route in two of them.
+    const parentOf = new Map(agencies.map(a => [a.slug, a.parentAgency]));
     const routes = new Set<string>();
     const agencySlugs = new Set<string>();
     for (const feature of features) {
       const p = feature.properties as Record<string, unknown>;
-      routes.add(`${p.agencySlug}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`);
-      agencySlugs.add(String(p.agencySlug ?? ''));
+      const slug = String(p.agencySlug ?? '');
+      routes.add(`${parentOf.get(slug) ?? slug}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`);
+      agencySlugs.add(slug);
     }
-    return { routes: routes.size, agencies: agencySlugs.size };
-  }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
+    return { routes: routes.size, agencies: agencyEntryCount([...agencySlugs].map(slug => ({ slug, parentAgency: parentOf.get(slug) }))) };
+  }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes, agencies]);
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || nightServiceView || bustangView || (maxHeadway === Infinity && period === 'all')) return false;
@@ -1593,12 +1599,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           {/* CIV-1329: the night grades' three shades. */}
           {nightServiceView && <ResearchLegend view="night" frequentFrequency={frequentServiceFrequency} nightFrequency={nightServiceFrequency} />}
           {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
-          {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
+          {!compareActive && !nightServiceView && !frequentServiceView && stats && countsReady
             && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (
             <div className={`sm:hidden ${MAP_BADGE} h-8 max-sm:h-[32px]`}><span className={MAP_BADGE_LABEL}>{noRoutesMatchText()}</span></div>
           )}
           {/* Counts come from the loaded agency data, so they wait for it (the in-view counts come from the tiles). */}
-          {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading) && (
+          {!compareActive && !nightServiceView && !frequentServiceView && stats && countsReady && (
               <div className="hidden sm:flex gap-2">
                 <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
                   {showMapContext ? (
@@ -1624,13 +1630,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                   <button
                     type="button"
                     onClick={() => { setMapContextView('agencies'); setMapContextOpen(true); }}
-                    aria-label={`${countOf(mapContextAgencyCount, 'agency', 'agencies')} in view`}
+                    aria-label={`${countOf(mapContextAgencyCount ?? 0, 'agency', 'agencies')} in view`}
                     aria-expanded={mapContextOpen && mapContextView === 'agencies'}
                     title={AGENCIES_IN_VIEW_LABEL}
                     className={`${MAP_BADGE} h-8 max-sm:h-[32px] cursor-pointer hover:text-[var(--accent)] transition-colors`}
                   >
-                    <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>
-                    <span className={MAP_BADGE_LABEL}>{plural(mapContextAgencyCount, 'agency', 'agencies')}</span>
+                    <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount ?? 0}</span>
+                    <span className={MAP_BADGE_LABEL}>{plural(mapContextAgencyCount ?? 0, 'agency', 'agencies')}</span>
                   </button>
                 )}
                 {showMatchPercentage && !isLoading && (

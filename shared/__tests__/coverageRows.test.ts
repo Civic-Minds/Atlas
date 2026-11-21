@@ -42,3 +42,11 @@ describe('coverage rows (CIV-1871)', () => {
     expect(row('ttc')).toMatchObject({ mcpLive: null, mcpLiveFrom: null });
   });
 });
+
+describe('a parent agency is one row (CIV-1963)', () => {
+  it("lists MTA New York's feeds as one row with any feed's columns", () => {
+    const rows = coverageRows({ ...base, agencies: [...base.agencies, { slug: 'nyct-subway', name: 'NYCT Subway', parentAgency: 'mta-new-york' }, { slug: 'lirr', name: 'LIRR', parentAgency: 'mta-new-york' }, { slug: 'mnr', name: 'Metro-North', parentAgency: 'mta-new-york' }], historySlugs: ['ttc', 'nyct-subway'] });
+    const mta = rows.filter(r => ['mta-new-york', 'nyct-subway', 'lirr', 'mnr'].includes(r.slug));
+    expect(mta.map(r => [r.slug, r.name, r.history])).toEqual([['mta-new-york', 'MTA New York', true]]);
+  });
+});

@@ -3,7 +3,7 @@ import * as maplibregl from 'maplibre-gl';
 import { getNightServiceColor, buildFocusedRouteLineOpacityExpression, buildDefaultRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../../utils/colors';
 import type { Agency } from '../../../App';
 import type { TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
-import type { HistoryMapOverlay } from '../../../context/HistoryMapOverlay';
+import { historyOverlaySlugs, type HistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { LIVE_ANALYSIS_ROUTES } from '../../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, buildFocusedRoutePaint, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
@@ -195,7 +195,7 @@ export function useRouteStyling(
     // History's year view (#1028 batch A): the open agency shows exactly that year's routes that have
     // no shape of their own (those draw on history-routes-layer), whatever today's filters say;
     // other agencies keep the regular filter.
-    const historyYearAgencyMatch: any = historyOverlay?.slug && historyOverlay.yearRoutes ? ['==', ['get', 'agencySlug'], historyOverlay.slug] : null;
+    const historyYearAgencyMatch: any = historyOverlay?.slug && historyOverlay.yearRoutes ? ['in', ['get', 'agencySlug'], ['literal', historyOverlaySlugs(historyOverlay)]] : null;
     if (historyYearAgencyMatch) {
       const names = onTodaysLines(historyOverlay!.yearRoutes!).map(r => r.routeShortName);
       // That day's line only, by the map's own day clause (buildRouteTileFilter); without it every day's copy drew.
@@ -314,7 +314,7 @@ export function useRouteStyling(
       if (historyOverlay?.routeShortName) {
         // History uses its own route selection state; its route gets the Frequency map's fade.
         const historyRouteMatch: any = ['all',
-          ['==', ['get', 'agencySlug'], historyOverlay.slug],
+          ['in', ['get', 'agencySlug'], ['literal', historyOverlaySlugs(historyOverlay)]],
           ['==', ['get', 'routeShortName'], historyOverlay.routeShortName],
         ];
         setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(historyRouteMatch, headwayExpr, colorMode) as any);
@@ -328,7 +328,7 @@ export function useRouteStyling(
       } else if (historyOverlay?.slug) {
         // History agency selection keeps the whole agency visible while dimming
         // the surrounding network, matching route-level focus without hiding context.
-        const historyAgencyMatch: any = ['==', ['get', 'agencySlug'], historyOverlay.slug];
+        const historyAgencyMatch: any = ['in', ['get', 'agencySlug'], ['literal', historyOverlaySlugs(historyOverlay)]];
         setRouteLayerPaint(map, 'line-opacity', buildFocusCase(historyAgencyMatch, 1.0, DIM_OPACITY) as any);
         // The agency's lines at the regular route widths (ROUTE_LINE_WIDTH_STOPS), the rest dimmed.
         const widthStops: unknown[] = [];

@@ -7,7 +7,7 @@
     49.8466,
     3.2875
   ],
-  "feedUrl": "https://static.data.gouv.fr/resources/donnees-gtfs-reseau-tuc-communaute-dagglomeration-de-cambrai/20260324-131607/rhdf-gtfs-cac-tuc-24-03-26.zip",
+  "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/42e3ea9d-251e-47c1-988d-f7227f0e2d0f",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

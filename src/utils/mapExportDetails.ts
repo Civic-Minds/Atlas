@@ -1,4 +1,5 @@
 import type { Agency } from '../App';
+import { agencyGroupName, groupAgencies } from '../../shared/agencyGroups';
 import { shortDate } from '../../shared/dateText';
 import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE, MAP_KEY_NIGHT } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
@@ -278,9 +279,11 @@ export function buildExportSourceLine(samples: RenderedRouteSample[], agencies: 
   if (inView.some(agency => !agency)) unknownAgency = true;
   const known = inView.filter((agency): agency is Agency => !!agency);
 
+  // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds count as one agency.
+  const entries = groupAgencies(known);
   let source = 'Transit schedules';
-  if (!unknownAgency && known.length === 1) source = `Schedules from ${agencyInSentence(known[0].name)}`;
-  else if (!unknownAgency && known.length > 1) source = `Schedules from ${known.length} agencies`;
+  if (!unknownAgency && entries.length === 1) source = `Schedules from ${agencyInSentence(agencyGroupName(entries[0], a => a.name))}`;
+  else if (!unknownAgency && entries.length > 1) source = `Schedules from ${entries.length} agencies`;
 
   const day = isoDay(releaseGeneratedAt);
 

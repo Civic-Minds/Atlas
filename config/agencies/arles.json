@@ -7,7 +7,7 @@
     43.6766,
     4.6278
   ],
-  "feedUrl": "https://static.data.gouv.fr/resources/donnees-statiques-et-temps-reels-reseau-envia/20260713-080242/gtfs-envia-20260711.zip",
+  "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/52216d2f-072e-4b7d-af0c-15d8d4e98b09",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

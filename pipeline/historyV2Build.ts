@@ -222,8 +222,8 @@ export interface BuildOptions {
 
 /**
  * Candidates -> published snapshots, ascending by real date, one per year. Winner of a
- * year is the latest refDate (when both have one), else the latest period key, then
- * processedAt.
+ * year is a sidecar snapshot over an old change file (CIV-1962), then the latest refDate
+ * (when both have one), else the latest period key, then processedAt.
  */
 export function buildRouteSnapshots(
   slug: string,
@@ -277,6 +277,10 @@ export function buildRouteSnapshots(
 
   const rank = (s: BuiltSnapshot) => effectiveDate({ v2: s.v2, periodKey: s.periodKey });
   const later = (a: BuiltSnapshot, b: BuiltSnapshot): boolean => {
+    // CIV-1962: within a year a sidecar snapshot beats an old change file. A change file is keyed by its feed's end date,
+    // so its period key says nothing about when it ran: MBTA's 20260905 and 20261212 files (read in June and September)
+    // outranked the 20260902 sidecar, so 2026 published old-method values and no route lines.
+    if (!!a.v2 !== !!b.v2) return !!a.v2;
     // refDate only when both have one; otherwise both fall back to the period key
     const bothRef = a.v2 && b.v2;
     const ka = bothRef ? Number(a.v2!.refDate) : getPeriodKeySortValue(a.periodKey);

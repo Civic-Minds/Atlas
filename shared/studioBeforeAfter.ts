@@ -170,7 +170,9 @@ export function studioBeforeAfterFile(cmp: StudioComparisonInput, sides?: { befo
       changes.push({ route: c.route, name: c.longName, before, after, size: changeSize(before, after) });
     }
   }
-  changes.sort(byRoute);
+  // A route renamed only in case, spacing or punctuation is one changed route, not one removed and one added (CIV-1864, #1631).
+  const paired = pairChanges<StudioRouteDay, StudioRouteChange>(changes).map(c => (c.before && c.after ? { ...c, size: changeSize(c.before, c.after) } : c));
+  paired.sort(byRoute);
   const leftOut = (Object.entries(cmp.notRead) as Array<[DayType, string[]]>).map(([d, why]) => ({
     day: d,
     sides: (['before', 'after'] as const).filter(side => why.some(w => w.startsWith(`${side}:`))),
@@ -181,7 +183,7 @@ export function studioBeforeAfterFile(cmp: StudioComparisonInput, sides?: { befo
     after: { file: cmp.after.file, date: cmp.after.date },
     day,
     leftOut,
-    changes,
+    changes: paired,
     unchanged: cmp.unchanged,
     ...(sides && day ? { lines: { before: sideLines(sides.before, day), after: sideLines(sides.after, day) } } : {}),
   };

@@ -26,4 +26,25 @@ describe('schedule change pairing (CIV-1864)', () => {
     expect(out.changes[0].size).toBe('small');
     expect(Object.keys(out.lines!.before)).toEqual(['King']);
   });
+
+  // #1631: HSR's Industrial express was "X-IND" in the summer file and "X IND" in the fall one.
+  it('merges a route whose name changed only in spacing or punctuation when its long name matches', () => {
+    const out = pairChanges([
+      { route: 'X-IND', name: 'INDUSTRIAL EXTRA', before: { trips: 6 }, after: null },
+      { route: 'X IND', name: 'INDUSTRIAL EXTRA', before: null, after: { trips: 6 } },
+    ]);
+    expect(out).toEqual([{ route: 'X IND', name: 'INDUSTRIAL EXTRA', before: { trips: 6 }, after: { trips: 6 } }]);
+  });
+
+  it('keeps them apart when the long names differ, or when the loose name is not unique on a side', () => {
+    expect(pairChanges([
+      { route: '10-A', name: 'Airport', before: { trips: 1 }, after: null },
+      { route: '10A', name: 'Downtown', before: null, after: { trips: 1 } },
+    ])).toHaveLength(2);
+    expect(pairChanges([
+      { route: '1-A', name: 'Main', before: { trips: 1 }, after: null },
+      { route: '1 A', name: 'Main', before: null, after: { trips: 1 } },
+      { route: '1A', name: 'Main', before: null, after: { trips: 2 } },
+    ])).toHaveLength(3);
+  });
 });

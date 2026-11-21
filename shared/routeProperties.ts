@@ -8,6 +8,7 @@ import type {
 } from './config.js';
 import type { RouteDataQualityWarning } from './routeDataQuality.js';
 import type { SharedStop, SharedStretch } from './sharedStops.js';
+import type { PieceReadings } from './pieceReadings.js';
 
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
@@ -80,6 +81,17 @@ export interface RouteProperties {
   /** #879: drawn stops with no boardable stop time (pickup_type 1 on every visit); never graded, coloured from their neighbours. */
   dropOffOnlyStops?: string[];
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
+  /**
+   * CIV-1959 B2 (pipeline ATLAS_PIECE_READING=1, agency JSON only): per stop and period, the reading of the piece the stop
+   * belongs to, only where the stop takes the piece's reading and its own value in stopPeriodHeadways differs. The map's
+   * stretch colour reads this first; the stop card and stopPeriodHeadways keep the stop's own value.
+   */
+  piecePeriodHeadways?: Record<string, HeadwayByPeriod>;
+  /**
+   * CIV-1959 B3 (ATLAS_BRANCH_READINGS=1, agency JSON only): the direction's trunk and each branch with its treatment per
+   * period (a reading, a part-period tail, or too few or uneven trips for a number). Only the cards read it, behind BRANCH_READINGS_ENABLED.
+   */
+  pieceReadings?: PieceReadings;
   stopOrder?: string[];
   stopPositions?: number[];
   /**

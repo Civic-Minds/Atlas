@@ -7,7 +7,8 @@
     47.2735,
     -2.2137
   ],
-  "feedUrl": null,
+  "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/a1867718-7921-42a6-b672-c53b8c583aa3",
+  "agencyId": "STRAN",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

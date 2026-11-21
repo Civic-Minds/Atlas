@@ -6,7 +6,7 @@
     44.5186,
     3.4989
   ],
-  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tum",
+  "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=MAX",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,

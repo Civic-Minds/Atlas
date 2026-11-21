@@ -1,0 +1,18 @@
+T0 routes 38 shown (green) pieces 18
+pieces that are the whole same-bus block: 3 | partial (a neighbour in the block fails): 15
+900 d0 p0 b13 28/46st endstop(m0.4) | refused(m1.6)
+900 d0 p0 b13 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p0 b13 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p0 b13 2/46st refused(m1.6) | refused(m1.6)
+900 d0 p0 b13 1/46st refused(m1.6) | blockend
+900 d0 p1 b2 28/46st endstop(m0.4) | refused(m1.6)
+900 d0 p1 b2 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p1 b2 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p1 b2 2/46st refused(m1.6) | refused(m1.6)
+900 d0 p1 b2 1/46st refused(m1.6) | blockend
+900 d1 p0 b0 9/43st refused(m0.4) | blockend
+900 d1 p1 b0 9/43st refused(m0.4) | blockend
+901 d1 p0 b0 14/18st refused(m1.4) | blockend
+901 d1 p1 b0 14/18st refused(m1.4) | blockend
+901 d1 p3 b5 14/18st refused(m1.4) | blockend
+green pieces per route {"900":12,"901":6}

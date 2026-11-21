@@ -31,7 +31,7 @@ import { delayStatus, EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN } from '../shared/li
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
 import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCounts, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
-import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
+import { PIECE_PARAMS } from '../pipeline/pieceParams.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 import { loadLiveAgencyConfig } from './live-agency-config.js';
 import { fillMissingDirections } from './live-trip-directions.js';
@@ -1114,7 +1114,7 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   // stops whatever its shape, so the shared line already counts all their trips, once.
   const branchLines: BranchRunTime[] = [];
   const seenSpans = new Set<string>();
-  for (const p of branchPatterns(dirPatterns.map(p => ({ p, stops: p.stops.map(s => s.stopId), along: p.stops.map(s => s.along), trips: tripsPerShape.get(p.id) ?? 0 })), main, SHARED_STRETCH_MIN_STOPS, SHARED_STRETCH_MIN_KM * 1000)) {
+  for (const p of branchPatterns(dirPatterns.map(p => ({ p, stops: p.stops.map(s => s.stopId), along: p.stops.map(s => s.along), trips: tripsPerShape.get(p.id) ?? 0 })), main, PIECE_PARAMS.minStops, PIECE_PARAMS.minKm * 1000)) {
     const span = reliableStretch(p.stops, coverage);
     if (!span || (span[0] === a && span[span.length - 1] === b)) continue;
     const key = `${span[0]}|${span[span.length - 1]}`;

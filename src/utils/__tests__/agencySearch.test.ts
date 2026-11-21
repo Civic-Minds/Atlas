@@ -31,3 +31,14 @@ describe('agencySearch', () => {
     expect(groups.map(g => g.slug)).toEqual(['octranspo']);
   });
 });
+
+describe('a parent agency is one search result (CIV-1963)', () => {
+  const feed = (slug: string, name: string, extra: Record<string, unknown> = {}) => ({ slug, name, region: 'New York', center: [40.7, -74] as [number, number], url: '', parentAgency: 'mta-new-york', ...extra });
+  const agencies = [feed('nyct-subway', 'MTA New York City Transit'), feed('nyct-bus-queens', 'MTA NYCT Bus (Queens)', { cities: ['Queens Village, New York'], nameQualifier: 'Queens' }), feed('lirr', 'Long Island Rail Road')] as any;
+
+  it('finds the parent by its own name or any feed, as one row', () => {
+    expect(searchAgencyGroups(agencies, 'mta new york', null).map(g => g.name)).toEqual(['MTA New York']);
+    expect(searchAgencyGroups(agencies, 'queens', null).map(g => g.name)).toEqual(['MTA New York']);
+    expect(searchAgencyGroups(agencies, 'long island', null).map(g => g.name)).toEqual(['MTA New York']);
+  });
+});

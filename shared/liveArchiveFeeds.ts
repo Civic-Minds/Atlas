@@ -33,22 +33,33 @@ export interface LiveArchivePositionFeed {
 }
 
 /**
+ * The one source for whether each Live feed is recording (Ryan, 2026-11-19: "This is why we need to centralize all the
+ * information"). A shard is `recording: true` (its Worker has a cron) or carries `paused` with the date and reason;
+ * shared/__tests__/liveArchiveFeeds.test.ts checks both against the Workers' wrangler files. Studio, Live, the MCP and
+ * docs/operations/LIVE_POLLING.md read it from here.
+ *
  * Free-plan Workers have a 10 ms CPU limit per invocation and five Cron
  * Triggers per account. These shards keep each invocation small while
  * preserving one-minute positions and five-minute trip-update archives.
  */
+/** The 2026-10-14 pause: crons removed to stay within the free Workers plan’s five cron triggers (CIV-1856; the shard split is 1c08c18cd). */
+const FIVE_CRON_PAUSE = { since: '2026-10-14', reason: "Cron removed to stay within the free Workers plan’s five cron triggers (CIV-1856)." } as const;
+
 export const LIVE_ARCHIVE_SHARDS = [
   { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], recording: true },
-  { id: 'ttc-trips', positionSlugs: [], tripSlugs: ['ttc'] },
+  { id: 'ttc-trips', positionSlugs: [], tripSlugs: ['ttc'], paused: FIVE_CRON_PAUSE },
   { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'], recording: true },
-  { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'] },
+  { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'], paused: FIVE_CRON_PAUSE },
   {
     id: 'burlington-halifax',
     positionSlugs: ['burlington', 'halifax'],
     tripSlugs: ['burlington', 'halifax'],
+    paused: FIVE_CRON_PAUSE,
   },
   // Atlas Studio demo agency (CIV-1682). Its own worker writes to atlas-live like the rest (CIV-1906).
   { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
+  // Boston's MBTA (CIV-1930, Ryan): positions only, recorded for analysis (not a Live agency yet). Green Line, Silver Line, Mattapan Line and buses 23, 57, 66 and 111.
+  { id: 'mbta', positionSlugs: ['mbta'], tripSlugs: [], recording: true },
 ] as const;
 
 /**
@@ -58,6 +69,16 @@ export const LIVE_ARCHIVE_SHARDS = [
 export const RECORDING_SLUGS: readonly string[] = [...new Set(
   LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).flatMap(s => [...s.positionSlugs, ...s.tripSlugs]),
 )];
+
+/** A feed's recording state, from its shards: recording when any shard carrying it records, else paused with the latest pause. */
+export type LiveFeedStatus = { status: 'recording' } | { status: 'paused'; since: string; reason: string } | { status: 'not archived' };
+export function liveFeedStatus(slug: string): LiveFeedStatus {
+  const shards = LIVE_ARCHIVE_SHARDS.filter(s => (s.positionSlugs as readonly string[]).includes(slug) || (s.tripSlugs as readonly string[]).includes(slug));
+  if (shards.length === 0) return { status: 'not archived' };
+  if (RECORDING_SLUGS.includes(slug)) return { status: 'recording' };
+  const pauses = shards.flatMap(s => ('paused' in s ? [s.paused] : [])).sort((a, b) => b.since.localeCompare(a.since));
+  return { status: 'paused', ...pauses[0] };
+}
 
 /** Agencies whose snapshots live in their own bucket instead of atlas-live (none since CIV-1906): shared/rules/live.ts. */
 export { LIVE_ARCHIVE_BUCKET_BY_SLUG } from './rules/live.js';
@@ -109,6 +130,15 @@ export const LIVE_ARCHIVE_POSITION_FEEDS: readonly LiveArchivePositionFeed[] = [
     slug: 'kingston',
     url: 'https://api.cityofkingston.ca/gtfs-realtime/vehicleupdates.pb',
     routeFilterSource: '.+',
+    archiveOnly: true,
+  },
+  // Green Line (B, C, D, E), Mattapan Line, Silver Line (SL1 741, SL2 742, SL3 743, SL5 749, SLW 746, SL4 751) and buses
+  // 23, 57, 66 and 111: route_ids from MBTA GTFS routes.txt, 2026-11-19, anchored so 57A, 230 and the like stay out. The
+  // full feed also carries the rest of the subway, buses and commuter rail. Data is MassDOT's, used under its Developers License Agreement (credit MassDOT as the provider).
+  {
+    slug: 'mbta',
+    url: 'https://cdn.mbta.com/realtime/VehiclePositions.pb',
+    routeFilterSource: '^(Green-[BCDE]|Mattapan|741|742|743|746|749|751|111|57|66|23)$',
     archiveOnly: true,
   },
 ] as const;

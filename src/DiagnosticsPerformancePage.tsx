@@ -1,3 +1,4 @@
+import { agencyEntryCount } from '../shared/agencyGroups';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useAgencies } from './hooks/useAgencies';
 import { ATLAS_MODE } from '../shared/config';
@@ -82,7 +83,7 @@ export default function DiagnosticsPerformancePage() {
   useEffect(() => { document.title = `${page.title} | Atlas`; }, [page.title]);
   const facts: Array<{ label: string; value: ReactNode }> = [
     { label: 'Mode', value: ATLAS_MODE },
-    { label: 'Visible agencies', value: agenciesLoadState === 'ready' ? agencies.length : 'Loading…' },
+    { label: 'Visible agencies', value: agenciesLoadState === 'ready' ? agencyEntryCount(agencies) : 'Loading…' },
     // A long path has no spaces to wrap at: it shortens with "…", full path on hover (#1101).
     { label: 'URL', value: <span className="block max-w-[24rem] truncate" title={window.location.pathname}>{window.location.pathname}</span> },
     { label: 'Captured', value: new Date().toLocaleTimeString() },

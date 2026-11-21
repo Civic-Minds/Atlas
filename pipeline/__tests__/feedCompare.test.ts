@@ -13,7 +13,8 @@ const clock = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${S
 
 type RouteSpec = { id: string; every: number; minutes: number };
 
-async function feed(routes: RouteSpec[]): Promise<Buffer> {
+/** `dates`: calendar_dates rows (service_id,date,exception_type); `extra`: a service with one more trip on the first route. */
+async function feed(routes: RouteSpec[], opts: { dates?: string[]; extra?: string } = {}): Promise<Buffer> {
   const zip = new JSZip();
   zip.file('agency.txt', 'agency_id,agency_name,agency_url,agency_timezone\na,Test,https://example.test,America/Toronto\n');
   zip.file('routes.txt', ['route_id,route_short_name,route_long_name,route_type', ...routes.map(r => `${r.id},${r.id},Route ${r.id},3`)].join('\n') + '\n');
@@ -36,6 +37,12 @@ async function feed(routes: RouteSpec[]): Promise<Buffer> {
       }
     }
   });
+  if (opts.extra) {
+    const r = routes[0];
+    trips.push(`${r.id},${opts.extra},${r.id}-extra,${r.id} end,0,sh${r.id}`);
+    for (let s = 1; s <= 4; s++) times.push(`${r.id}-extra,${clock(725 + s)},${clock(725 + s)},${r.id}${s},${s}`);
+  }
+  if (opts.dates) zip.file('calendar_dates.txt', ['service_id,date,exception_type', ...opts.dates].join('\n') + '\n');
   zip.file('stops.txt', stops.join('\n') + '\n');
   zip.file('shapes.txt', shapes.join('\n') + '\n');
   zip.file('calendar.txt', [HEADER, 'wk,1,1,1,1,1,0,0,20260801,20261231'].join('\n') + '\n');
@@ -83,6 +90,20 @@ describe('compare two schedule versions (CIV-1684)', () => {
     expect(md).toContain('| 20 → 30 |');
     // Weekday-only feeds have no weekend rows to compare.
     expect(cmp.changed.every(c => Object.keys(c.days).every(k => k === 'Weekday'))).toBe(true);
+  });
+
+  // #1630: YRT's Nov 16 week had a Friday without its school trips, so the picker read Nov 9-15, and Nov 18 (the same
+  // services as Nov 11) was refused as "the calendar it rebuilds drops those services".
+  it('reads a date whose own week is irregular from the week the pipeline picks when that day runs the same services', async () => {
+    const side = await readFeedSide(await feed(BEFORE, { dates: ['wk,20261120,2'] }), '2026-11-18', { slug: 'test' });
+    expect(side.listedTrips).toBeGreaterThan(0);
+    expect(side.readListedTrips).toBe(side.listedTrips);
+    expect(side.routes.A.days.Weekday?.trips).toBeGreaterThan(0);
+  });
+
+  it('still refuses a date in an irregular week whose own services differ from the picked week', async () => {
+    const buf = await feed(BEFORE, { dates: ['wk,20261120,2', 'x,20261118,1'], extra: 'x' });
+    await expect(readFeedSide(buf, '2026-11-18', { slug: 'test' })).rejects.toThrow(/runs other services than 2026-11-18/);
   });
 
   it('refuses a date with no listed service instead of reporting zeros', async () => {

@@ -30,7 +30,7 @@ Paths are from the repo root. "Main" means `origin/main` as of 2026-10-14 (741ee
   - `irregular`: split-peak service (3+ AM or PM peak trips and fewer than 3 midday and evening), or limited service with no sustained cadence. Its tier is always `span`.
 
   `span` and `infrequent` are tier values, not classes. "limited" is not a serviceClass: it is `isLimitedService` (`shared/irregularRoutes.ts`), meaning `time-limited` or `routeHasLimitedDirection`, plus the null-headline cases above. `routeHasIrregularDirection` and `routeHasLimitedDirection` are set per route and day by `pipeline/worst-direction.ts`.
-- **shared stretch** (CIV-82): `pipeline/sharedStretch.ts`. Two patterns of one route direction and day pool at a stop only inside an aligned run of at least 5 stops (`SHARED_STRETCH_MIN_STOPS`) and 1 km (`SHARED_STRETCH_MIN_KM`). Same-headsign variants that cover two-thirds of the pattern's stops pool at every common stop (`SAME_HEADSIGN_COVERAGE`, `pipeline/stopPools.ts`). The result is published as `sharedStretches`, which is stripped from tiles. The rule: a route may show the stretches that themselves pass, but a pooled stretch never makes the whole route pass.
+- **shared stretch** (CIV-82): `pipeline/sharedStretch.ts`. Two patterns of one route direction and day pool at a stop only inside an aligned run of at least 5 stops (`PIECE_PARAMS.minStops`) and 1 km (`PIECE_PARAMS.minKm`). Same-headsign variants that cover two-thirds of the pattern's stops pool at every common stop (`SAME_HEADSIGN_COVERAGE`, `pipeline/stopPools.ts`). The result is published as `sharedStretches`, which is stripped from tiles. The rule: a route may show the stretches that themselves pass, but a pooled stretch never makes the whole route pass.
 - **periods**: `TIME_PERIODS` (`shared/config.ts`), in GTFS hours: `amPeak` 6-9, `midday` 9-15, `pmPeak` 15-19, `evening` 19-23, `late` 23-26, `overnight` 26-30. The labels are "AM peak", "Midday", "PM peak", "Evening", "Late" and "Overnight" (CIV-1065). The analysis window used for tiers is separate (`DEFAULT_CRITERIA`): Weekday and Saturday 7:00-22:00, Sunday 9:00-21:00.
 
 ### Lines, patterns and dedupe
@@ -98,11 +98,6 @@ Every entry in this section is **on feature/live-local-poc, not main yet**, unle
   - Rounding: nearest ½ min (`halfMinutes`). Colour and flags test the raw seconds: amber from 30 s, red from 60 s. A stop pair is listed only from 30 s.
   - Minimum sample: 30 passes and 5 days (`MIN_SEGMENT_TRIPS`, `MIN_DAYS`).
   - Excludes: stop pairs touching main pattern ends.
-- **the 1-in-10 (p90)**: `gainedP90Sec`, the nearest-rank 90th percentile of (actual minus scheduled).
-  - Not shown on any card or list (Ryan, 2026-11-17: "idk that stat in general is fckn confusing"). The figure stays in the report data only.
-  - Rounding: down toward zero (`halfMinutesDown`). That is why "+" is honest here and only here.
-  - Never use "at least" or "+" on any value rounded to nearest.
-  - Minimum sample and exclusions: the same as the typical value.
 - **"looser than needed"**: `isPadded`. The typical pass is at least 30 s under schedule (`gainedMedianSec ≤ −30`) and `gainedP90Sec ≤ 0`, so 9 in 10 passes are at or under the timetable.
   - Card heading: "Where the schedule is looser than needed".
   - Card row: "The schedule allows {X} more than vehicles need". The map colour is the "early" blue.
@@ -174,7 +169,6 @@ These measures are different things. Never combine them, convert one into anothe
 | midday variant | `middayVariant` | "limited service", headline blank | not a serviceClass |
 | pooled stop value | `stopHeadways` on a shared stretch | the card says the value is pooled | |
 | `gainedMedianSec` (Live) | `segmentDelayView.ts` | "Time lost: X" | branch only |
-| `gainedP90Sec` (Live) | | not shown (dropped, 2026-11-17) | branch only |
 | `isPadded` (Live) | | "looser than needed", "The schedule allows X more than vehicles need" | branch only |
 | `excessWaitSec` / EWT (Live) | | "Extra wait" (footer), "riders waited X longer than the schedule implies" (row) | branch only |
 | `detectHolds` / `HoldEvent` (Live) | | "Stood still", "Standing still" | branch only; never "hold" |

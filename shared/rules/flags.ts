@@ -9,7 +9,7 @@ import { INTERNAL_PATH, MCP_DOCS_PATH, RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDI
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED' | 'VITE_BRANCH_READINGS_ENABLED'): boolean {
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
 
@@ -26,6 +26,10 @@ export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABL
 // is worth surfacing to a rider needed more real-feed tuning than a single main push should
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
 export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
+// CIV-1959 B3 (#1620): the cards show each branch's own reading beside the trunk's, and the existing no-number words ("Runs irregularly in this
+// period") for a branch with too few trips to read. Off everywhere until the dry run is reviewed (docs/FEATURE_FLAGS.md); reads only data the pipeline switch
+// ATLAS_BRANCH_READINGS=1 wrote, so it does nothing on any published file today.
+export const BRANCH_READINGS_ENABLED = envFlag('VITE_BRANCH_READINGS_ENABLED');
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {
@@ -179,6 +183,7 @@ export const FEATURES = {
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
   studio: STUDIO_ENABLED,
+  branchReadings: BRANCH_READINGS_ENABLED,
   /** CIV-1872: the /internal home page and the header's internal links: the dev server only. */
   internal: STUDIO_ENABLED,
 } as const;
@@ -216,5 +221,44 @@ export const FEATURE_ROUTES = {
 
 /** The one switch for every History v2 behaviour in the pipeline: ATLAS_HISTORY_V2=1, exactly (pipeline/historyV2Flag.ts reads the env). */
 export function historyV2Enabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}
+
+/**
+ * CIV-1959 B1 (#1620, #1086): the pipeline switch for "a direction's headline comes from its trunk, never a branch or tail":
+ * ATLAS_HEADLINE_FROM_TRUNK=1, exactly (pipeline/pieces.ts reads the env). Unset (every normal build, the weekly refresh and
+ * rebuild-release) the published output is byte-identical to what it was before the switch existed.
+ */
+export function headlineFromTrunkEnabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}
+
+/**
+ * CIV-1959 B2 (#1620, #1086): the pipeline switch for "one reading per piece, with Arm A": ATLAS_PIECE_READING=1, exactly
+ * (pipeline/pieces.ts reads the env). It publishes the piece reading as a parallel field (piecePeriodHeadways) for the map's
+ * stretch colour and never changes a stop's own published value. Unset (every normal build, the weekly refresh and
+ * rebuild-release) the published output is byte-identical to what it was before the switch existed.
+ */
+export function pieceReadingEnabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}
+
+/**
+ * CIV-1959 B3 (#1620, #1086): the pipeline switch for "each branch gets its own reading on the cards, and a piece with too few
+ * trips is limited": ATLAS_BRANCH_READINGS=1, exactly (pipeline/pieces.ts reads the env). It publishes one new field
+ * (pieceReadings) and changes nothing else. Unset (every normal build, the weekly refresh and rebuild-release) the published
+ * output is byte-identical to what it was before the switch existed. The client switch is BRANCH_READINGS_ENABLED.
+ */
+export function branchReadingsEnabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}
+
+/**
+ * CIV-1959 B4 (#1620, #1086): the pipeline switch for "pieces come from which trips serve them, with no 5-stop / 1 km minimum":
+ * ATLAS_PIECES_BY_TRIPS=1, exactly (pipeline/pieceParams.ts reads the env). A change in the trip set is a new piece, and a
+ * one-stop branch is still a piece. Unset (every normal build, the weekly refresh and rebuild-release) the published output
+ * is byte-identical to what it was before the switch existed.
+ */
+export function piecesByTripsEnabled(envValue: string | undefined): boolean {
   return envValue === '1';
 }

@@ -1,0 +1,27 @@
+SET base12: stops 759; baseline stops published from a pooled pass: 312; baseline over-states (longest >= 1.5x shown): 134
+
+== main+MR: changed published values 47 = pass->refused 47 + other 0; refused->pass 0; crossing filter (<=F to >F) 9 [RULER longest>=1.5x shown: over-draws removed 8, real frequent dropped 1]; fail->pass 0; stops still overstating (>=1.5x) 89
+
+== exact15c: changed published values 55 = pass->refused 55 + other 0; refused->pass 0; crossing filter (<=F to >F) 47 [RULER longest>=1.5x shown: over-draws removed 41, real frequent dropped 6]; fail->pass 0; stops still overstating (>=1.5x) 85
+
+== exact15c+MR: changed published values 93 = pass->refused 93 + other 0; refused->pass 0; crossing filter (<=F to >F) 47 [RULER longest>=1.5x shown: over-draws removed 41, real frequent dropped 6]; fail->pass 0; stops still overstating (>=1.5x) 48
+
+== exact155c: changed published values 39 = pass->refused 39 + other 0; refused->pass 0; crossing filter (<=F to >F) 31 [RULER longest>=1.5x shown: over-draws removed 30, real frequent dropped 1]; fail->pass 0; stops still overstating (>=1.5x) 96
+
+== exact155c+MR: changed published values 88 = pass->refused 88 + other 0; refused->pass 0; crossing filter (<=F to >F) 42 [RULER longest>=1.5x shown: over-draws removed 41, real frequent dropped 1]; fail->pass 0; stops still overstating (>=1.5x) 48
+
+--- 900 EB eve
+main         24 24 24 24 24 24 24 24 24 24 24 24 24 24r 16 16 16 16 16 16 16 16 16 16 16 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 24r 24r 15 24r 24r 24r 24r 24r 24r 24r 24r 15 24r 16 15 24r 16
+main+MR      24 24 24 24 24 24 24 24 24 24 24 24 24 24r 16 16 16 16 16 16 16 16 16 16 16 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 24r 24r 15 24r 24r 24r 24r 24r 24r 24r 24r 15 24r 16 15 24r 16
+exact15c     24 24 24 24 24 24 24 24 24 24 24 24 24 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r
+exact15c+MR  24 24 24 24 24 24 24 24 24 24 24 24 24 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r
+exact155c    24 24 24 24 24 24 24 24 24 24 24 24 24 24r 24r 24r 16 16 16 16 16 16 16 16 16 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 16 24r 24r 16
+exact155c+MR 24 24 24 24 24 24 24 24 24 24 24 24 24 24r 24r 24r 24m 24m 24m 24m 24m 24m 24m 24m 24m 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24m 24r 24r 24m
+
+--- 900 WB eve
+main         24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 16 16 16 16 16 16 16 16 17 24 24 24 24 24 24 24 24 24 24 24 24
+main+MR      24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24m 24m 24m 24m 24m 24m 24m 24m 24m 24 24 24 24 24 24 24 24 24 24 24 24
+exact15c     24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24 24 24 24 24 24 24 24 24 24 24 24
+exact15c+MR  24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24 24 24 24 24 24 24 24 24 24 24 24
+exact155c    24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24 24 24 24 24 24 24 24 24 24 24 24
+exact155c+MR 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24r 24 24 24 24 24 24 24 24 24 24 24 24

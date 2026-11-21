@@ -1,0 +1,84 @@
+stretches 126 base one-colour 109 stops 759
+R1 one-colour 120 pass->fail 23 fail->pass 12 tier-changed 102 value-changed 115 worse-than-own 6 worse-than-base 68 (delta n68 min 1.0 med 5.0 p90 15.0 max 15.0) outsideTrips 3362 maxMinOutside 41 
+   fp margin(longest-limit at today gate): n12 min 1.6 med 1.6 p90 1.6 max 1.6 
+   pf: 900 WB eve:1596 16->24 | 900 WB eve:1598 16->24 | 900 WB eve:1599 16->24 | 900 WB eve:1600 16->24 | 900 WB eve:1601 16->24 | 900 WB eve:1602 16->24 | 900 WB eve:1603 16->24 | 900 WB eve:1604 16->24 | 900 WB eve:1607 17->24 | 901 S eve:710 15->30 | 901 S eve:711 15->30 | 901 S eve:713 15->30 | 901 S eve:714 15->30 | 901 S eve:716 15->30 | 901 S eve:650 15->30 | 901 S eve:652 15->30 | 901 S eve:654 15->30 | 901 S eve:655 15->30 | 901 S eve:657 15->30 | 901 S eve:659 15->30 | 901 S eve:661 15->30 | 901 S eve:663 15->30 | 901 S eve:3227 15->30 
+   fp: 900 EB eve:431 24->16 | 900 EB eve:432 24->16 | 900 EB eve:450 24->16 | 900 EB eve:451 24->16 | 900 EB eve:452 24->16 | 900 EB eve:453 24->16 | 900 EB eve:1175 24->16 | 900 EB eve:1176 24->16 | 900 EB eve:1177 24->16 | 900 EB eve:1178 24->16 | 900 EB eve:1183 24->16 | 900 EB eve:1185 24->16
+R3 one-colour 117 pass->fail 0 fail->pass 17 tier-changed 60 value-changed 70 worse-than-own 0 worse-than-base 27 (delta n27 min 1.0 med 5.0 p90 6.0 max 6.0) outsideTrips 1581 maxMinOutside 24 
+   fp margin(longest-limit at today gate): n17 min 0.4 med 1.6 p90 1.6 max 2.4 
+   pf:  
+   fp: 900 EB eve:93542 24->15 | 900 EB eve:431 24->15 | 900 EB eve:432 24->15 | 900 EB eve:450 24->15 | 900 EB eve:451 24->15 | 900 EB eve:452 24->15 | 900 EB eve:453 24->15 | 900 EB eve:1175 24->15 | 900 EB eve:1176 24->15 | 900 EB eve:1177 24->15 | 900 EB eve:1178 24->15 | 900 EB eve:1183 24->15 | 900 EB eve:1185 24->15 | 901 S eve:698 30->15 | 901 S eve:94189 30->15 | 901 S eve:706 30->15 | 901 S eve:707 30->15
+R4 one-colour 117 pass->fail 29 fail->pass 4 tier-changed 85 value-changed 110 worse-than-own 12 worse-than-base 60 (delta n60 min 1.0 med 6.0 p90 9.0 max 9.0) outsideTrips 3568 maxMinOutside 48 
+   fp margin(longest-limit at today gate): n4 min 1.4 med 1.9 p90 2.4 max 2.4 
+   pf: 900 EB eve:1786 16->24 | 900 EB eve:1787 16->24 | 900 EB eve:1789 16->24 | 900 EB eve:1790 16->24 | 900 EB eve:93048 16->24 | 900 EB eve:2233 16->24 | 900 EB eve:2234 16->24 | 900 EB eve:2235 16->24 | 900 EB eve:2236 16->24 | 900 EB eve:2238 16->24 | 900 EB eve:2240 16->24 | 900 EB eve:2241 15->24 | 900 EB eve:2242 15->24 | 900 EB eve:93254 15->24 | 900 EB eve:92072 15->24 | 900 EB eve:2218 15->24 | 900 EB eve:2220 15->24 | 900 EB eve:2221 15->24 | 900 EB eve:412 15->24 | 900 EB eve:413 15->24 | 900 EB eve:93747 15->24 | 900 EB eve:417 15->24 | 900 EB eve:418 15->24 | 900 EB eve:419 15->24 | 900 EB eve:422 15->24 | 900 EB eve:424 15->24 | 900 EB eve:425 15->24 | 900 EB eve:427 15->24 | 900 EB eve:434 15->24 
+   fp: 901 S eve:698 30->15 | 901 S eve:94189 30->15 | 901 S eve:706 30->15 | 901 S eve:707 30->15
+R2 one-colour 123 pass->fail 64 fail->pass 20 tier-changed 185 value-changed 220 worse-than-own 41 worse-than-base 159 (delta n159 min 1.0 med 7.0 p90 15.0 max 31.0) outsideTrips 6754 maxMinOutside 97 
+   fp margin(longest-limit at today gate): n20 min 1.6 med 3.3 p90 6.4 max 6.4 
+   pf: 900 EB eve:1786 16->24 | 900 EB eve:1787 16->24 | 900 EB eve:1789 16->24 | 900 EB eve:1790 16->24 | 900 EB eve:93048 16->24 | 900 EB eve:2233 16->24 | 900 EB eve:2234 16->24 | 900 EB eve:2235 16->24 | 900 EB eve:2236 16->24 | 900 EB eve:2238 16->24 | 900 EB eve:2221 15->24 | 900 EB eve:93747 15->24 | 900 EB eve:417 15->24 | 900 EB eve:418 15->24 | 900 EB eve:419 15->24 | 900 EB eve:422 15->24 | 900 EB eve:424 15->24 | 900 EB eve:425 15->24 | 900 WB eve:1596 16->24 | 900 WB eve:1598 16->24 | 900 WB eve:1599 16->24 | 900 WB eve:1600 16->24 | 900 WB eve:1601 16->24 | 900 WB eve:1602 16->24 | 900 WB eve:1603 16->24 | 900 WB eve:1604 16->24 | 900 WB eve:1607 17->24 | 901 N eve:3228 15->27 | 901 N eve:94151 14->27 | 901 N eve:672 14->27 | 901 N eve:674 14->27 | 901 N eve:93178 14->27 | 901 N eve:677 14->27 | 901 N eve:678 14->27 | 901 N eve:679 14->27 | 901 N eve:680 14->27 | 901 N eve:682 14->27 | 901 N eve:605 14->27 | 901 N eve:685 14->27 | 901 N eve:687 14->27 
+   fp: 900 EB eve:450 24->17 | 900 EB eve:451 24->17 | 900 EB eve:452 24->17 | 900 EB eve:453 24->17 | 900 EB eve:1175 24->17 | 900 EB eve:1176 24->17 | 900 EB eve:1177 24->17 | 900 EB eve:1178 24->17 | 900 EB eve:1183 24->17 | 900 EB eve:1185 24->17 | 102 N mid:12603 16->14 | 102 N mid:13629 16->14 | 102 N mid:13630 16->14 | 102 N mid:13631 16->14 | 102 N am:4471 18->8 | 102 N am:5588 18->8 | 102 N am:5573 18->8 | 102 N am:15855 18->8 | 102 N am:13700 18->8 | 102 N am:9333 18->8
+F one-colour 116 pass->fail 0 fail->pass 17 tier-changed 26 value-changed 37 worse-than-own 0 worse-than-base 0 (delta n0) outsideTrips 0 maxMinOutside 0 
+   fp margin(longest-limit at today gate): n17 min 0.4 med 1.6 p90 1.6 max 2.4 
+   pf:  
+   fp: 900 EB eve:93542 24->16 | 900 EB eve:431 24->16 | 900 EB eve:432 24->16 | 900 EB eve:450 24->16 | 900 EB eve:451 24->16 | 900 EB eve:452 24->16 | 900 EB eve:453 24->16 | 900 EB eve:1175 24->16 | 900 EB eve:1176 24->16 | 900 EB eve:1177 24->16 | 900 EB eve:1178 24->16 | 900 EB eve:1183 24->16 | 900 EB eve:1185 24->16 | 901 S eve:698 30->15 | 901 S eve:94189 30->15 | 901 S eve:706 30->15 | 901 S eve:707 30->15
+E one-colour 114 pass->fail 0 fail->pass 0 tier-changed 34 value-changed 50 worse-than-own 0 worse-than-base 0 (delta n0) outsideTrips 0 maxMinOutside 0 
+   fp margin(longest-limit at today gate): n0 
+   pf:  
+   fp: 
+passing-stop margin (longest-limit, negative=slack): n1013 min -18.0 med -1.6 p90 0.0 max 0.0
+FLIPS adjacent-pooled pairs 1727 flips 51 a 24 b 23 c 4 d 0 e 0 | DRT-only {"a":7,"b":15,"c":4,"d":0,"tot":26} | flips within 1min of limit 40 | pooled stops within 1min of limit 755 / 1874
+900 EB eve P0 13->14 93542->1786 cause b margin 0.4/-0.6 longest 26/25 limit 25.6/25.6 n 15/15
+900 EB eve P0 41->42 427->431 cause a margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 16/17
+900 EB eve P0 43->44 432->434 cause b margin 1.6/0.0 longest 24/24 limit 22.4/24.0 n 17/17
+900 EB eve P0 44->45 434->450 cause b margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 17/17
+900 EB eve P0 52->53 1178->1181 cause a margin 1.6/0.0 longest 24/24 limit 22.4/24.0 n 16/17
+900 EB eve P0 53->54 1181->1183 cause b margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 17/17
+900 EB eve P0 54->55 1183->2603 cause c margin 1.6/-1.6 longest 24/24 limit 22.4/25.6 n 17/15
+900 EB eve P0 56->57 1242->1185 cause b margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 17/17
+900 EB eve P0 57->58 1185->1186 cause c margin 1.6/-1.6 longest 24/24 limit 22.4/25.6 n 17/15
+900 EB eve P1 2->3 93542->1786 cause b margin 0.4/-0.6 longest 26/25 limit 25.6/25.6 n 15/15
+900 EB eve P1 30->31 427->431 cause a margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 16/17
+900 EB eve P1 32->33 432->434 cause b margin 1.6/0.0 longest 24/24 limit 22.4/24.0 n 17/17
+900 EB eve P1 33->34 434->450 cause b margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 17/17
+900 EB eve P1 41->42 1178->1181 cause a margin 1.6/0.0 longest 24/24 limit 22.4/24.0 n 16/17
+900 EB eve P1 42->43 1181->1183 cause b margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 17/17
+900 EB eve P1 43->44 1183->2603 cause c margin 1.6/-1.6 longest 24/24 limit 22.4/25.6 n 17/15
+900 EB eve P1 45->46 1242->1185 cause b margin 0.0/1.6 longest 24/24 limit 24.0/22.4 n 17/17
+900 EB eve P1 46->47 1185->1186 cause c margin 1.6/-1.6 longest 24/24 limit 22.4/25.6 n 17/15
+900 WB eve P0 33->34 1595->1596 cause b margin 0.4/-0.6 longest 26/25 limit 25.6/25.6 n 15/15
+900 WB eve P1 33->34 1595->1596 cause b margin 0.4/-0.6 longest 26/25 limit 25.6/25.6 n 15/15
+901 N AM P0 18->19 94151->672 cause b margin -0.6/0.4 longest 17/18 limit 17.6/17.6 n 15/15
+901 N AM P1 5->6 94151->672 cause b margin -0.6/0.4 longest 17/18 limit 17.6/17.6 n 15/15
+901 N AM P3 18->19 94151->672 cause b margin -0.6/0.4 longest 17/18 limit 17.6/17.6 n 15/15
+901 S eve P0 3->4 707->710 cause a margin 1.4/-9.0 longest 27/15 limit 25.6/24.0 n 16/15
+901 S eve P1 3->4 707->710 cause a margin 1.4/-9.0 longest 27/15 limit 25.6/24.0 n 16/15
+901 S eve P3 8->9 707->710 cause a margin 1.4/-9.0 longest 27/15 limit 25.6/24.0 n 16/15
+102 S eve P0 11->12 5574->5587 cause a margin -3.0/2.0 longest 10/15 limit 13.0/13.0 n 30/31
+102 S eve P0 49->50 1571->1554 cause b margin 1.0/0.0 longest 12/11 limit 11.0/11.0 n 39/39
+102 S eve P1 36->37 1571->1554 cause b margin 1.0/0.0 longest 12/11 limit 11.0/11.0 n 39/39
+102 S eve P2 29->30 5574->5587 cause a margin -3.0/2.0 longest 10/15 limit 13.0/13.0 n 30/31
+102 S eve P2 67->68 1571->1554 cause b margin 1.0/0.0 longest 12/11 limit 11.0/11.0 n 39/39
+102 S eve P4 14->15 5574->5587 cause a margin -3.0/2.0 longest 10/15 limit 13.0/13.0 n 30/31
+102 S eve P4 52->53 1571->1554 cause b margin 1.0/0.0 longest 12/11 limit 11.0/11.0 n 39/39
+102 S eve P5 11->12 5574->5587 cause a margin -3.0/2.0 longest 10/15 limit 13.0/13.0 n 30/31
+102 S mid P0 35->36 4242->4224 cause b margin 1.0/0.0 longest 13/12 limit 12.0/12.0 n 54/54
+102 S mid P1 22->23 4242->4224 cause b margin 1.0/0.0 longest 13/12 limit 12.0/12.0 n 54/54
+102 S mid P2 53->54 4242->4224 cause b margin 1.0/0.0 longest 13/12 limit 12.0/12.0 n 54/54
+102 S mid P4 38->39 4242->4224 cause b margin 1.0/0.0 longest 13/12 limit 12.0/12.0 n 54/54
+102 N am P1 12->13 4622->4624 cause a margin -5.0/1.0 longest 6/12 limit 11.0/11.0 n 29/30
+102 N am P2 12->13 4622->4624 cause a margin -5.0/1.0 longest 6/12 limit 11.0/11.0 n 29/30
+102 N am P3 12->13 4622->4624 cause a margin -5.0/1.0 longest 6/12 limit 11.0/11.0 n 29/30
+102 N am P4 12->13 4622->4624 cause a margin -5.0/1.0 longest 6/12 limit 11.0/11.0 n 29/30
+102 N am P5 12->13 4622->4624 cause a margin -5.0/1.0 longest 6/12 limit 11.0/11.0 n 29/30
+102 S am P0 10->11 14143->5574 cause a margin 0.0/1.0 longest 13/14 limit 13.0/13.0 n 22/21
+102 S am P0 36->37 4224->4240 cause a margin 1.0/0.0 longest 12/12 limit 11.0/12.0 n 27/28
+102 S am P1 23->24 4224->4240 cause a margin 1.0/0.0 longest 12/12 limit 11.0/12.0 n 27/28
+102 S am P2 28->29 14143->5574 cause a margin 0.0/1.0 longest 13/14 limit 13.0/13.0 n 22/21
+102 S am P2 54->55 4224->4240 cause a margin 1.0/0.0 longest 12/12 limit 11.0/12.0 n 27/28
+102 S am P4 13->14 14143->5574 cause a margin 0.0/1.0 longest 13/14 limit 13.0/13.0 n 22/21
+102 S am P4 39->40 4224->4240 cause a margin 1.0/0.0 longest 12/12 limit 11.0/12.0 n 27/28
+102 S am P5 10->11 14143->5574 cause a margin 0.0/1.0 longest 13/14 limit 13.0/13.0 n 22/21
+PREMISE stretches 126 identical all-day trip set at every stop 122
+901 N AM P0 0-6 distinctSets 2 maxAdjDiff 6
+901 N AM P3 0-6 distinctSets 2 maxAdjDiff 6
+901 N eve P0 0-6 distinctSets 2 maxAdjDiff 6
+901 N eve P3 0-6 distinctSets 2 maxAdjDiff 6
+done

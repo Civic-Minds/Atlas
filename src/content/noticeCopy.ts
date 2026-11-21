@@ -1001,6 +1001,8 @@ export const STARTS_AT_COLUMN = 'Starts at';
 export const SCHEDULED_COLUMN = 'Scheduled';
 export const USUALLY_COLUMN = 'Usually';
 export const TRIPS_COLUMN = 'Trips';
+/** A chart table's range column (the profile bars' thin line), unchanged wording moved out of ProfileBars (CIV-1986). */
+export const RANGE_COLUMN = 'Most trips between';
 /** A Live route page's three views (CIV-1795: "Full report", as the page calls itself; Ryan, question 3, option b: "Overview"). */
 export const LIVE_SUMMARY_VIEW = 'Summary';
 export const LIVE_OVERVIEW_VIEW = 'Overview';

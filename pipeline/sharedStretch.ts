@@ -17,16 +17,14 @@
  * Which trips pool: only departures of trips whose headsign an eligible feature draws (regular or
  * time-limited LineString features of the same route_id, direction and day; not span, irregular,
  * partial-weekday, previous-night-tail or drop-off-only), and no stop time with pickup_type 1.
- * Two patterns share a stop only inside an aligned run of at least SHARED_STRETCH_MIN_STOPS stops
- * and SHARED_STRETCH_MIN_KM (a hub stop or a 2-3 stop overlap never pools), or at every common
+ * Two patterns share a stop only inside an aligned run of at least PIECE_PARAMS.minStops stops
+ * and PIECE_PARAMS.minKm (a hub stop or a 2-3 stop overlap never pools), or at every common
  * stop when they are same-destination variants (stopPools.ts). Opposite-direction stops are
  * paired on read (shared/sharedStops.ts pairOppositeStop).
  */import type { GeoJsonFeature } from './geojson-types.js';
 import { sharedStopGroupKey, type SharedStretch } from '../shared/sharedStops.js';
-import { computeStopSharers } from './stopPools.js';
-
-export const SHARED_STRETCH_MIN_STOPS = 5;
-export const SHARED_STRETCH_MIN_KM = 1;
+import { patternPools } from './pieces.js';
+import { LEGACY_PIECE_MINIMUM, type PieceMinimum } from './pieceParams.js';
 
 const DROP_OFF_ONLY = /drop[- ]?offs?\s+only/i;
 
@@ -77,10 +75,12 @@ export function qualifyingSharedRuns(
   b: readonly string[],
   stopsById: ReadonlyMap<string, { lat: number; lon: number }>,
   aStops: readonly string[] = a,
+  /** The size minimum for pooling: 5 stops / 1 km. ATLAS_PIECES_BY_TRIPS does not move it (it decides piece boundaries, not whose departures a stop merges). */
+  minimum: PieceMinimum = LEGACY_PIECE_MINIMUM,
 ): Array<[number, number]> {
   return alignedSharedRuns(a, b).filter(([from, to]) =>
-    new Set(a.slice(from, to + 1)).size >= SHARED_STRETCH_MIN_STOPS
-    && runLengthKm(aStops, from, to, stopsById) >= SHARED_STRETCH_MIN_KM);
+    new Set(a.slice(from, to + 1)).size >= minimum.minStops
+    && runLengthKm(aStops, from, to, stopsById) >= minimum.minKm);
 }
 
 /**
@@ -88,13 +88,15 @@ export function qualifyingSharedRuns(
  * next stop of `a` is the next stop of `b` (a station listed twice continues the run). A skip-stop
  * express aligns with its local over its whole length under alignedSharedRuns, since that only
  * needs the order; here it breaks at every skipped stop, so a rush-hour express never reads the
- * local's frequency (only runs of SHARED_STRETCH_MIN_STOPS consecutive common stops remain).
+ * local's frequency (only runs of PIECE_PARAMS.minStops consecutive common stops remain).
  */
 export function contiguousSharedRuns(
   a: readonly string[],
   b: readonly string[],
   stopsById: ReadonlyMap<string, { lat: number; lon: number }>,
   aStops: readonly string[] = a,
+  /** CIV-850's express guard keeps 5 stops / 1 km under B4: it is a guard, not a piece boundary. */
+  minimum: PieceMinimum = LEGACY_PIECE_MINIMUM,
 ): Array<[number, number]> {
   const bIndex = new Map<string, number>();
   b.forEach((stopId, index) => { if (!bIndex.has(stopId)) bIndex.set(stopId, index); });
@@ -110,8 +112,8 @@ export function contiguousSharedRuns(
     prevB = bi ?? -1;
   }
   return runs.filter(([from, to]) =>
-    new Set(a.slice(from, to + 1)).size >= SHARED_STRETCH_MIN_STOPS
-    && runLengthKm(aStops, from, to, stopsById) >= SHARED_STRETCH_MIN_KM);
+    new Set(a.slice(from, to + 1)).size >= minimum.minStops
+    && runLengthKm(aStops, from, to, stopsById) >= minimum.minKm);
 }
 
 /** One pattern of a route direction: its own departure list and its stop sequence. */
@@ -168,7 +170,7 @@ function eligible(feature: GeoJsonFeature, ctx: SharedStretchContext): boolean {
  * Per route_id, direction and day: every pattern whose trips carry an eligible feature's
  * headsign takes part, including shapes with no feature of their own (TTC 29 northbound shows
  * one "Wilson" feature, but its trips run on the 29A and 29C shapes). Each member feature gets
- * the ranges of its own stopOrder where its pattern pools with another (computeStopSharers, the
+ * the ranges of its own stopOrder where its pattern pools with another (patternPools, the
  * same decision its stop values were built with).
  */
 export function annotateSharedStretches(features: GeoJsonFeature[], ctx: SharedStretchContext): number {
@@ -197,7 +199,7 @@ export function annotateSharedStretches(features: GeoJsonFeature[], ctx: SharedS
       && pattern.headsigns.some(h => headsigns.has(h))
       && ctx.departures.has(`${poolKey}::${pattern.memberKey}`));
     if (new Set(patterns.map(pattern => pattern.memberKey)).size < 2) continue;
-    const sharers = computeStopSharers(patterns, ctx.stopsById, ctx.parentOf);
+    const sharers = patternPools(patterns, ctx.stopsById, ctx.parentOf);
     const headsignsOf = new Map(patterns.map(pattern => [pattern.memberKey, pattern.headsigns.filter(h => headsigns.has(h))]));
     // A member's route variant: two origins of one destination (TTC 29 "from Dufferin Gate
     // Loop" and "from Princes' Gates Loop", #879 class) are branches of each other under one

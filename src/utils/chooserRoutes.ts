@@ -6,6 +6,7 @@ import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { routeLabels } from './format';
 import { agencyNames, placeAlreadyInName } from './agencyName';
 import { buildRouteFacts } from './routeFacts';
+import { agencyEntryName } from '../../shared/agencyGroups';
 import { buildRouteKey, splitRouteKey } from './routeKey';
 
 /**
@@ -27,9 +28,11 @@ export function chooserRouteRow(key: string, layers: AgencyLayers, agencies: Age
       const p = f.properties as any;
       const facts = buildRouteFacts(p, slug);
       const agency = agencies.find(a => a.slug === slug);
-      const agencyName = agencyNames(facts.agencyName).name;
+      // A parent's feed is listed under the parent (one entry per agency or region, shared/agencyGroups.ts).
+      const agencyName = agency ? agencyEntryName(agency, agencyNames(facts.agencyName).name) : agencyNames(facts.agencyName).name;
+      const grouped = agency != null && agencyName !== agencyNames(facts.agencyName).name;
       // The place beside the agency's name in the chooser's heading, unless the name already says it (CIV-971).
-      const place = agency ? agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).list.secondary : undefined;
+      const place = agency ? agencyNames({ name: grouped ? agencyName : agency.name, cities: agency.cities, displayArea: agency.displayArea, nameQualifier: grouped ? undefined : agency.nameQualifier }).list.secondary : undefined;
       const agencyPlace = place && !placeAlreadyInName(agencyName, place) ? place : undefined;
       // The chooser's own key (with its branch), so picking a row opens the route it listed.
       // The route's features on the day shown; a route passes on any of them, so its best value is the colour drawn.

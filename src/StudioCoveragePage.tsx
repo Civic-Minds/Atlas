@@ -87,7 +87,7 @@ export default function StudioCoveragePage() {
   useEffect(() => { document.title = `${PAGE_NAMES.studioCoverage} | Atlas`; }, []);
 
   const rows = useMemo(() => coverageRows({
-    agencies: agencies.map(a => { const n = agencyNames(a).list; return { slug: a.slug, name: n.primary, place: n.secondary }; }),
+    agencies: agencies.map(a => { const n = agencyNames(a).list; return { slug: a.slug, name: n.primary, place: n.secondary, parentAgency: a.parentAgency }; }),
     historySlugs: (historyAgencyList as { slugs: string[] }).slugs,
     historyYears: facts?.historyYears,
     liveArchiveSlugs: LIVE_ARCHIVE_SLUGS,

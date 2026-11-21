@@ -27,6 +27,8 @@ export async function agencyFiles(a: McpAgency): Promise<Files> {
   files.push([splitPaths.stops(a.slug), stops.map((s): SplitStop => [s.id, s.name, s.lon, s.lat, s.routeIds])]);
   const cmp = await store.comparison(a.slug);
   if (cmp) files.push([splitPaths.comparison(a.slug), cmp]);
+  const veh = await store.vehicles(a.slug);
+  if (veh) files.push([splitPaths.vehicles(a.slug), veh]);
   return files;
 }
 

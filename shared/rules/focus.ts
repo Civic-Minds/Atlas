@@ -19,6 +19,7 @@ export const FOCUS_AREAS: readonly FocusArea[] = [
   { slug: 'kingston', name: 'Kingston', agencies: ['kingston'] },
   { slug: 'denver', name: 'Denver', agencies: ['rtd-denver'] },
   { slug: 'guelph', name: 'A small Ontario city (Guelph)', agencies: ['guelph'] },
+  { slug: 'boston', name: 'Boston', agencies: ['mbta'] },
 ];
 
 /** Every focus agency, in the areas' order. */
@@ -35,7 +36,7 @@ export const STUDIO_DEFAULT_AGENCY = 'kingston';
  * from here, or when an agency or consultant asks for it; the main map and History have no such limit.
  */
 export const PRODUCT_FOCUS = {
-  /** Recorded every minute (TTC and Hamilton, plus Kingston for Studio only): the archive shards marked `recording`. */
+  /** Recorded every minute (TTC, Hamilton and the MBTA, plus Kingston for Studio only): the archive shards marked `recording`. */
   live: RECORDING_SLUGS,
   /** Agencies with a Schedules file. */
   studio: ['kingston', 'hamilton', 'rtd-denver', 'guelph'],

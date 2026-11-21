@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import { useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
+import { historyOverlaySlugs, useHistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { isDrawableLineCoordinates, lineCoordinates, type LonLat } from '../../../../shared/routeGeometry';
 import { fitTargetForPoints } from '../../../utils/routeFitTarget';
 import { selectionFramePadding } from './routeFraming';
@@ -18,11 +18,11 @@ function fitHistoryLines(map: maplibregl.Map, points: ReadonlyArray<LonLat>, max
 const TODAY_LINE_LAYERS = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'];
 
 /** Points of today's drawn lines for one agency, optionally one route (History's key is the line's routeShortName). */
-function todaysLinePoints(map: maplibregl.Map, slug: string, routeShortName?: string): LonLat[] {
+function todaysLinePoints(map: maplibregl.Map, slugs: readonly string[], routeShortName?: string): LonLat[] {
   const layers = TODAY_LINE_LAYERS.filter(id => map.getLayer(id));
   if (layers.length === 0) return [];
   return map.queryRenderedFeatures(undefined, { layers })
-    .filter(f => String(f.properties?.agencySlug ?? '') === slug
+    .filter(f => slugs.includes(String(f.properties?.agencySlug ?? ''))
       && (routeShortName === undefined || String(f.properties?.routeShortName ?? '') === routeShortName))
     .flatMap(f => lineCoordinates(f.geometry));
 }
@@ -95,7 +95,7 @@ export function useHistoryLayer(
     // It waits for `idle`, not `moveend`: at moveend the new view's tiles have not loaded, so Caltrain's line still
     // ended at the old edge and ran off the top at San Francisco.
     const fitTodaysLine = (refine: boolean): boolean => {
-      const points = todaysLinePoints(map, historyOverlay.slug, rsn);
+      const points = todaysLinePoints(map, historyOverlaySlugs(historyOverlay), rsn);
       if (points.length === 0) return false;
       if (refine) {
         const refit = () => { map.off('idle', refit); tryZoomHandlerRef.current = null; fitTodaysLine(false); };
@@ -129,7 +129,7 @@ export function useHistoryLayer(
       } else if (!hasHistoricalRouteGeometry) {
         const fitAgencyRoutes = () => {
           tryZoomHandlerRef.current = null;
-          fitHistoryLines(map, todaysLinePoints(map, historyOverlay.slug), 11);
+          fitHistoryLines(map, todaysLinePoints(map, historyOverlaySlugs(historyOverlay)), 11);
         };
         tryZoomHandlerRef.current = fitAgencyRoutes;
         map.once('moveend', fitAgencyRoutes);

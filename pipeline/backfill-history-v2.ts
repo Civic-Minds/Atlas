@@ -27,6 +27,10 @@
  *                and shape ids for this run only (or <url>=<prefix>), when an archived period reuses a main-feed id
  *                (SEPTA 2017: two shape ids). The agency config, and so its live artifacts, is not changed.
  *   --bus-only   run on the main feed only; the report is stamped busOnly + supplementalExcluded
+ *   --rail-only  (CIV-437, with exactly one --supplemental-zip-dir) build each period as above, then write only the
+ *                supplemental feed's part: its routes (the build's values, untouched), keyed and dated by that feed's
+ *                own reference date, with its own lines for --shapes. Bus routes are never written, so the output can
+ *                sit beside published bus History; upload it with history-v2-upload.ts --rail-only <ticket>.
  *
  * CIV-1101 Part B: each zip is read with the one service-day model (pickRiderWeek), anchored at the
  * zip's own first full week in force, so a holiday is a day that loses the vote (no holiday list,
@@ -63,6 +67,7 @@ import { historyNoTripPeriods } from './noTripPeriods.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { pinnedReadFor, readPinnedBodies, readPinnedSidecars } from './historyV2Pin.js';
 import { countAdded, mergeWeekendFields, type MergeSkip } from './historyV2Replace.js';
+import { railOnlyPart } from './historyV2RailOnly.js';
 import { buildMergedV2Routes, historyV2InputFor } from './historyRefreshSidecar.js';
 import type { HistoryV2SidecarRoute } from '../shared/historyV2.js';
 
@@ -93,6 +98,9 @@ async function main(): Promise<void> {
   const supplementalIdPrefixes = backfillSupplementalIdPrefixes(slug, agency.supplementalFeedUrls, agency.supplementalIdPrefixes, prefixArgs);
   if (prefixArgs.length) console.log(`${slug}: supplemental id prefixes for this run ${JSON.stringify(supplementalIdPrefixes)}`);
   for (const [url, dir] of supplementalDirs) console.log(`${slug}: supplemental feed ${url} from ${resolve(dir)}`);
+  const railOnly = process.argv.includes('--rail-only');
+  if (railOnly && supplementalDirs.length !== 1) throw new Error('--rail-only needs exactly one --supplemental-zip-dir');
+  if (railOnly && (arg('--pin-from') || process.argv.includes('--bus-only'))) throw new Error('--rail-only cannot be combined with --pin-from or --bus-only');
 
   const zips = readdirSync(resolve(zipDir)).filter(f => f.endsWith('.zip')).sort();
   if (zips.length === 0 && !arg('--pin-from')) throw new Error(`no .zip files in ${zipDir}`);
@@ -134,7 +142,7 @@ async function main(): Promise<void> {
       const buf = split.buf;
       if (Object.keys(split.report.moved).length || Object.keys(split.report.unsplit).length) console.log(`${zip}: split lumped routes ${JSON.stringify(split.report)}`);
       const dates = await peekFeedDates(buf);
-      const periodKey = published ? stem : periodKeyForZip(stem, dates);
+      let periodKey = published ? stem : periodKeyForZip(stem, dates);
       // The zip's own anchor: its first full week in force (CIV-1101 Part B), never the run date.
       // CIV-536: --anchor-month <1-12> reads the first full week of that month in the year of the zip's name
       // (YYYYMMDD), so every period compares the same season; a zip whose dates miss that week fails.
@@ -170,6 +178,21 @@ async function main(): Promise<void> {
         evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate, routeDesc: nameFromDesc });
         built = buildV2Routes(features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug), ...(nameFromDesc ? { nameFromDesc } : {}) });
       }
+      // CIV-437: only the supplemental feed's routes, keyed and dated by that feed's own reference date.
+      let railBuf: Buffer | null = null;
+      let weekStart = processed.serviceWeekStart;
+      if (railOnly) {
+        const [railUrl] = supplementalDirs[0];
+        const feed = processed.supplementalFeatureCounts.find(f => f.url === railUrl);
+        if (!feed) throw new Error(`no ${railUrl} feed in the build`);
+        const part = railOnlyPart(built.routes, supplementalRoutes, railUrl, feed.referenceDate);
+        periodKey = part.periodKey;
+        evidence = { ...evidence, refDate: part.refDate };
+        built = { ...built, routes: part.routes };
+        supplementalRoutes = part.supplementalRoutes;
+        railBuf = supplemental[0].buf;
+        weekStart = feed.serviceWeekStart;
+      }
       let sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, supplementalRoutes);
       let result: Awaited<ReturnType<typeof writeSidecar>>;
       let mergeNote = '';
@@ -196,7 +219,7 @@ async function main(): Promise<void> {
         mergeNotes.push({ periodKey, added: countAdded(merged.added), skipped: merged.skipped });
         mergeNote = `, merged ${merged.added.length} weekend field(s) into the published file (${merged.skipped.length} day(s) skipped)`;
       } else {
-        sidecar.refDateQuality = await readPickedWeekQuality(buf, evidence.refDate, processed.serviceWeekStart);
+        sidecar.refDateQuality = await readPickedWeekQuality(railBuf ?? buf, evidence.refDate, weekStart);
         // CIV-1929: another zip this run already took this period key; the newest refDate wins, whatever the file names sort to.
         const winner = periodWinner(periodRefDates, periodKey, evidence.refDate);
         if (winner === 'skip') {
@@ -210,11 +233,13 @@ async function main(): Promise<void> {
       }
       let shapesNote = '';
       if (withShapes) {
-        const gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer);
+        // CIV-437: a rail-only period draws only the rail feed's lines, for its own routes.
+        const gtfs = await parseGtfsZip((railBuf ?? buf).buffer.slice((railBuf ?? buf).byteOffset, (railBuf ?? buf).byteOffset + (railBuf ?? buf).byteLength) as ArrayBuffer);
         const extracted = extractRouteShapes(gtfs as never);
         const trips = shapeTripStats(gtfs as never);
+        if (railBuf) for (const key of [...extracted.keys()]) if (!built.routes[key]) extracted.delete(key);
         // CIV-1484: a supplemental feed's lines are added for keys the main feed does not have (the main route wins, as in the sidecar).
-        for (const { buf: sbuf } of supplemental) {
+        if (!railBuf) for (const { buf: sbuf } of supplemental) {
           const sg = await parseGtfsZip(sbuf.buffer.slice(sbuf.byteOffset, sbuf.byteOffset + sbuf.byteLength) as ArrayBuffer);
           for (const [key, shape] of extractRouteShapes(sg as never)) if (!extracted.has(key)) extracted.set(key, shape);
           const st = shapeTripStats(sg as never);
@@ -225,7 +250,7 @@ async function main(): Promise<void> {
         if (shapesResult === 'conflict') process.exitCode = 1;
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
       }
-      rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: processed.serviceWeekStart ?? undefined, result, report: built.report, ...(supplemental.length ? { supplemental: processed.supplementalFeatureCounts.map(f => ({ url: f.url, refDate: f.referenceDate, routes: supplementalRoutes?.[f.url]?.length ?? 0 })), collisions } : {}), ...(pin ? { pin: { refDate: pin.refDate, how: pin.how } } : {}) });
+      rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: weekStart ?? undefined, result, report: built.report, ...(supplemental.length ? { supplemental: processed.supplementalFeatureCounts.map(f => ({ url: f.url, refDate: f.referenceDate, routes: supplementalRoutes?.[f.url]?.length ?? 0 })), collisions } : {}), ...(pin ? { pin: { refDate: pin.refDate, how: pin.how } } : {}) });
       console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}, ${pin ? `PINNED to the published ${pin.refDate} (${pin.how})${mergeNote}` : `${sidecar.refDateQuality?.reason} (anchor ${anchor ?? 'none'})`}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

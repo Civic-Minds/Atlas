@@ -4,6 +4,7 @@
  * the per-route headways already published in the data release (see
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
+import { groupAgencies } from './agencyGroups';
 import { agencyTodayYmd, isExpiredFeedExpiry } from './feedAvailability';
 import { shortDate } from './dateText';
 import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
@@ -151,7 +152,7 @@ export interface AgencyPageData {
   title: string;
   /** The search title without the beta prefix (agencyPageTitle), told apart from every other agency page's (#1291). */
   pageTitle: string;
-  nearby: Array<{ slug: string; name: string }>;
+  nearby: Array<{ slug: string; name: string; /** Its page: a parent agency's own path for a parent (one entry per agency or region). */ path: string }>;
   /** generatedAt of the data release the numbers come from. */
   releaseDate: string | null;
   /** The metro area this agency belongs to, when it has one; `page` is false when the area has too few agencies for a page. */
@@ -367,7 +368,7 @@ export function agencyPageData(
     ? areaMembers.filter(o => !inGroup.has(o.slug))
         .sort((x, y) => (a.center && x.center ? distanceKm(a.center, x.center) : 0) - (a.center && y.center ? distanceKm(a.center, y.center) : 0))
         .slice(0, MAX_AREA_LIST)
-    : nearbyAgencies(a, all.filter(o => !inGroup.has(o.slug) || o.slug === a.slug));
+    : nearbyAgencies(a, withParents(all.filter(o => !inGroup.has(o.slug) || o.slug === a.slug), all).filter(o => o.slug === a.slug || o.slug !== a.parentAgency));
   // Every agency in the list has a page (CIV-965), so a connection links whenever its agency is in it.
   const hasPage = new Set(all.map(o => o.slug));
   const titleOf = titlesOf(all);
@@ -388,7 +389,7 @@ export function agencyPageData(
   const mapHref = agencyMapHref(a, group ? group.members.map(m => m.slug) : [a.slug]);
   // A parent keeps its own name in search; its members say what tells them apart (#1291).
   const pageTitle = agencyPageTitle(a, group ? NO_SHARED_NAMES : sharedShortLabels(all));
-  return { agency, path, mapHref, ...(parent ? { parent: { name: parent.name, path: parentAgencyPagePath(parent.slug) } } : {}), title, pageTitle, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: titleOf.get(o.slug) ?? agencyTitle(o) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title, parent?.name), connections };
+  return { agency, path, mapHref, ...(parent ? { parent: { name: parent.name, path: parentAgencyPagePath(parent.slug) } } : {}), title, pageTitle, releaseDate, ...(areaRef ? { area: areaRef } : {}), ...(regionPage ? { regionPage } : {}), nearby: others.map(o => ({ slug: o.slug, name: o.members ? o.name : titleOf.get(o.slug) ?? agencyTitle(o), path: o.members ? parentAgencyPagePath(o.slug) : agencyPagePath(o.slug) })), intro, description: agencyPageDescription(a, intro, sizedBy, { full: place, short: introPlace.short }), place, places: { named: introPlace.named, others: introPlace.others }, introLead: introLead(a, place, modes, title, parent?.name), connections };
 }
 
 const MAX_AREA_LIST = 12;
@@ -520,20 +521,15 @@ export function regionMembers<T extends Pick<AgencyPageSummary, 'region' | 'rout
  * Members come first in the order given; the parent takes the place of its first member.
  */
 export function withParents(members: readonly AgencyPageSummary[], all: Iterable<AgencyPageSummary>): AgencyPageSummary[] {
-  if (!members.some(m => parentAgency(m.parentAgency))) return [...members];
+  const groups = groupAgencies(members);
+  if (!groups.some(g => g.parent)) return [...members];
   const everyone = [...all];
-  const out: AgencyPageSummary[] = [];
-  const done = new Set<string>();
-  for (const m of members) {
-    const parent = parentAgency(m.parentAgency);
-    if (!parent) { out.push(m); continue; }
-    if (done.has(parent.slug)) continue;
-    done.add(parent.slug);
-    const here = parentMembers(parent, members);
+  return groups.map(g => {
+    if (!g.parent) return g.members[0];
+    const here = parentMembers(g.parent, members);
     const routes = parentRoutes(here);
-    out.push({ ...parentSummary(parent, parentMembers(parent, everyone)), routes, routeCount: routes.length, members: here.map(x => x.slug) });
-  }
-  return out;
+    return { ...parentSummary(g.parent, parentMembers(g.parent, everyone)), routes, routeCount: routes.length, members: here.map(x => x.slug) };
+  });
 }
 
 /** The agency's state or province page, or undefined when it has no country and region or the place has no page. */

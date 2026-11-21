@@ -13,7 +13,7 @@
     41.4222,
     -73.6597
   ],
-  "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
+  "feedUrl": "https://westchester-win.gmv.com:8443/repository/gtfs-public/GTFS_GMV_WCDOT.zip",
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
   "lastFeedExpiry": "20270209",
   "lastFeedVersion": null,
@@ -61,7 +61,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-18"
+    "checkedAt": "2026-11-20"
   },
   "lastServiceWeek": "96e3029320158a8e",
   "feedObtainedAt": "20261013",

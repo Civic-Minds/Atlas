@@ -1,0 +1,11 @@
+import { loadPatterns, readAll } from './real.ts';
+import { buildPooledStopMap, collapseBunched } from '/Users/ryan/Developer/Code/Platforms/Atlas/pipeline/stopPools.ts';
+import { medianHeadwayInWindow, departuresInWindow } from '/Users/ryan/Developer/Code/Platforms/Atlas/pipeline/headway-utils.ts';
+const S='/private/tmp/claude-501/-Users-ryan/c8d09263-8b14-4eb3-a210-0831beabea38/scratchpad';
+const L=loadPatterns(S+'/drt',S+'/drt','900','0','2026-11-18'); const {out,sharers}=readAll(L,1140,1380);
+const depsOf=new Map(L.pats.map(p=>[p.key,p.deps])); const p=L.pats[0]; const rs=out.get(p.key)!;
+const pooled=buildPooledStopMap(p.deps,sharers.get(p.key),k=>depsOf.get(k),L.parent,p.deps);
+rs.forEach((r,j)=>{ const own=[...(p.deps.get(r.stop)??[])].sort((a,b)=>a-b); const times=[...(pooled.map.get(r.stop)??own)].sort((a,b)=>a-b);
+ const w=collapseBunched(departuresInWindow(times,1140,1380,true)); let lg=0; for(let i=1;i<w.length;i++) lg=Math.max(lg,w[i]-w[i-1]); const mean=w.length>1?(w[w.length-1]-w[0])/(w.length-1):0;
+ const ow=departuresInWindow(own,1140,1380,true); let ol=0; for(let i=1;i<ow.length;i++) ol=Math.max(ol,ow[i]-ow[i-1]);
+ console.log(j,r.stop,'pooled',r.pooled,'pub',r.pub,'n',r.n,'pooledLongest',lg,'mean',mean.toFixed(1),'ownLongest',ol,'sig',r.sharers.length); });
