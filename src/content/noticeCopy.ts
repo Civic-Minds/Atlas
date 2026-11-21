@@ -987,6 +987,8 @@ export const DETAILS_LABEL = 'Details';
 export const SEE_ALL_CHANGES_LABEL = 'See all changes';
 /** What's new: the link after an item that opens the feature (CIV-1999, Ryan: "a 'Try it' with an arrow text button next to things like Compare mode"). */
 export const TRY_IT_LABEL = 'Try it';
+/** What's new: the Agency and area pages item's link to the agencies index (CIV-1999, Ryan chose "Explore"). */
+export const EXPLORE_LABEL = 'Explore';
 /** About's link to the research (CIV-1780, Ryan: title case, as its heading). */
 export const EXPLORE_RESEARCH_LABEL = 'Explore Research';
 export const WHAT_ATLAS_SHOWS_LABEL = 'What Atlas shows';

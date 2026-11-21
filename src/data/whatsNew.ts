@@ -18,7 +18,7 @@
  * Keep past releases: the panel shows only the latest, /changelog shows them all. Add each new release to RELEASES.
  */
 
-import { SEE_ALL_AGENCIES, TRY_IT_LABEL } from '../content/noticeCopy';
+import { EXPLORE_LABEL, TRY_IT_LABEL } from '../content/noticeCopy';
 import { AGENCY_INDEX_PATH, COMPARE_PATH } from '../../shared/pagePaths';
 
 /** Where and how one site lists a feature. */
@@ -79,7 +79,7 @@ export const WHATS_NEW: WhatsNewFeature[] = [
   {
     lead: 'Agency and area pages', isNew: true,
     public: { version: '3.4.0', text: 'agencies, metro areas, states and provinces have their own frequency pages' },
-    link: { label: SEE_ALL_AGENCIES, to: AGENCY_INDEX_PATH },
+    link: { label: EXPLORE_LABEL, to: AGENCY_INDEX_PATH },
   },
   { lead: 'Simpler route filters', public: { version: '3.4.0', text: 'two switches hide occasional and part-time routes' } },
   { lead: 'Save the map as an image', isNew: true, public: { version: '3.3.0', text: 'it names the place, explains what is shown and links back to the map' } },

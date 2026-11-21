@@ -74,10 +74,10 @@ describe('Try it links (CIV-1999)', () => {
     expect(closed).toBe(1);
   });
 
-  it('shows Try it on Compare mode and See all agencies on Agency and area pages in the real list', () => {
+  it('shows Try it on Compare mode and Explore on Agency and area pages in the real list', () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta={false} />);
     expect(screen.getByRole('link', { name: 'Try it' })).toHaveAttribute('href', '/apps/compare');
-    expect(screen.getByRole('link', { name: 'See all agencies' })).toHaveAttribute('href', '/agencies');
+    expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/agencies');
   });
 });
 
