@@ -55,6 +55,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: never summarize an agency or area by a fixed threshold such as "every 15 min or better"; show the real waits per period.
   - Why: many agencies have no routes that frequent, so a cut-off hides them.
   - Source: [TEXT.md](../style/TEXT.md) (Frequencies), Linear CIV-296, comment of 2026-10-17 ("no fixed frequency cut-off")
+- **Two trips of one name leaving together count once, where that repeats**
+  - What: two trips of one route, direction, service and headsign that leave the same first stop in the same minute, one serving a strict subset of the other's stops, count as one departure (the subset trip is left out), only when, within that route, direction and service, more than 50% of departure slots are paired and at least 3 slots are paired.
+  - Why: an express and a local leaving together read as a busy branch (Metro-North buses, CyRide 812 Saturday); a one-off pair must not change a route's reading (the first version failed at rtc, port-authority-pa, pvpta, petaluma and mtd-champaign).
+  - Source: Ryan, 2026-11-21 (Atlas Questions chat), "CIV-1098 1", answering "1. Ship it as built (Recommended). You'd be approving the rule as written: more than half paired, at least 3 pairs."; Linear CIV-1098, comment of 2026-11-21
 
 ### What the map shows and never shows
 
@@ -275,6 +279,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-21 — Two trips of one name leaving together count once, where that repeats (CIV-1098)
+Ryan, 2026-11-21 (Atlas Questions chat): "CIV-1098 1". He was answering: "1. Ship it as built (Recommended). You'd be approving the rule as written: more than half paired, at least 3 pairs."
+- The rule: within one route, direction and service, a trip that leaves the same first stop in the same minute as a trip of the same headsign, serving a strict subset of its stops, is left out, only when more than 50% of the group's departure slots hold such a pair and at least 3 slots do (`PAIRED_SLOT_SHARE_MIN`, `PAIRED_SLOTS_MIN` in pipeline/transforms/same-slot-subset-trips.ts).
+- Evidence: cloud dry runs 44557735080 (rule) and 44570667434 (baseline), 528 agencies: only cyride changed (812 Saturday toward Mall via Hospital, AM peak 87 to 76, still above the real 20); rtc 1-93, port-authority-pa 51, pvpta 746, petaluma 311, mtd-champaign, MNR and eight others unchanged.
+- MNR keeps its mnr-bus-pairs stopgap: its weekday pairs (CIV-1307) leave 28 minutes apart, so they are not same-minute pairs.
 
 ### 2026-11-21 — A branch piece with no feature of its own gets a card line, named from where it ends or starts (CIV-1959, #1636)
 Not a new decision: #1636's option 1 (name the piece by its terminus, "to <place>", no change to the features), with the existing words only. Behind `ATLAS_BRANCH_READINGS` (pipeline) and `VITE_BRANCH_READINGS_ENABLED` (card); with both off nothing changes.
