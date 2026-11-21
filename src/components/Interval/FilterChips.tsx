@@ -31,7 +31,7 @@ import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGEN
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
 import { topBarChipClass } from '../ui/topBarChip';
-import { CHIP_PANEL, ChipDot, ChipMenu, chipRowClass, useChipRow } from './ChipMenu';
+import { CHIP_PANEL, ChipDot, ChipMenu, ChipOptions, chipRowClass, useChipRow } from './ChipMenu';
 
 
 interface FilterChipsProps {
@@ -379,50 +379,20 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const frequencyOptions = useFrequencyOptions();
   const frequencyChip = (className: string) => (
     <ChipMenu className={className} label={FREQUENCY_LABEL} active={maxHeadway !== Infinity} open={openChip === 'frequency'} onToggle={() => toggle('frequency')} panelClassName="w-36">
-          {frequencyOptions.map(o => {
-            const isSelected = maxHeadway === o.max;
-            return (
-              <button
-                key={o.key}
-                onClick={() => { setMaxHeadway(o.max); setOpenChip(null); }}
-                className={rowBtn(isSelected)}
-                aria-pressed={isSelected}
-                aria-label={o.max === Infinity ? 'Show all routes' : capitalizeFirst(headwayOrBetter(o.max))}
-              >
-                <LegendItem color={o.color}>{o.label}</LegendItem>
-              </button>
-            );
-          })}
+          <ChipOptions value={String(maxHeadway)} onPick={k => { setMaxHeadway(Number(k)); setOpenChip(null); }}
+            options={frequencyOptions.map(o => ({ key: String(o.max), label: <LegendItem color={o.color}>{o.label}</LegendItem>, ariaLabel: o.max === Infinity ? 'Show all routes' : capitalizeFirst(headwayOrBetter(o.max)) }))} />
     </ChipMenu>
   );
 
   const dayChip = (className: string) => (
     <ChipMenu className={className} label={DAY_LABEL} active open={openChip === 'day'} onToggle={() => toggle('day')} panelClassName="w-36">
-          {DAY_TYPES.map((d) => (
-            <button
-              key={d}
-              onClick={() => { setDay(d); setOpenChip(null); }}
-              className={rowBtn(day === d)}
-              aria-pressed={day === d}
-            >
-              {d}
-            </button>
-          ))}
+          <ChipOptions value={day} onPick={d => { setDay(d as DayType); setOpenChip(null); }} options={DAY_TYPES.map(d => ({ key: d, label: d }))} />
     </ChipMenu>
   );
 
   const periodChip = (className: string) => (
     <ChipMenu className={className} label={TIME_LABEL} active open={openChip === 'period'} onToggle={() => toggle('period')} panelClassName="w-56">
-          {PERIOD_KEYS.map((p) => (
-            <button
-              key={p}
-              onClick={() => { setPeriod(p); setOpenChip(null); }}
-              className={rowBtn(period === p)}
-              aria-pressed={period === p}
-            >
-              <PeriodChoice period={p} />
-            </button>
-          ))}
+          <ChipOptions value={period} onPick={p => { setPeriod(p as TimePeriod); setOpenChip(null); }} options={PERIOD_KEYS.map(p => ({ key: p, label: <PeriodChoice period={p} /> }))} />
     </ChipMenu>
   );
 
