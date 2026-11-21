@@ -103,6 +103,15 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
 // Empty: every mapped agency's source covers all the zones it runs today (Ryan, 2026-10-11).
 export const ON_DEMAND_PARTLY_MAPPED: Readonly<Record<string, string>> = {};
 
+/**
+ * On-demand services whose stops come only from the agency's official data, with no other source to check them against
+ * (CIV-1978): their on-demand card ends with the N131 notice. Keys are Atlas agency slugs.
+ */
+export const ON_DEMAND_OFFICIAL_DATA_ONLY: ReadonlySet<string> = new Set([
+  // The stop list the City of Barrie sent on 2026-11-17 (config/on-demand/barrie.json).
+  'barrie',
+]);
+
 export type OnDemandCoverageNote =
   | { kind: 'not-mapped'; serviceName: string; url?: string }
   | { kind: 'partly-mapped'; missing: string };

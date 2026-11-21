@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle, frequentNoRoutesNotice, NO_SEARCH_MATCHES_NEAR_MAP, LIVE_STOP_ARRIVALS_UNAVAILABLE } from './noticeCopy';
+import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle, frequentNoRoutesNotice, NO_SEARCH_MATCHES_NEAR_MAP, LIVE_STOP_ARRIVALS_UNAVAILABLE, officialDataOnlyNotice } from './noticeCopy';
 import { timeLostLine } from '../../shared/liveWording';
 
 describe('expiredFeedNotice', () => {
@@ -155,5 +155,11 @@ describe('CIV-1795 plain words', () => {
   });
   it('writes the time-lost figure', () => {
     expect(timeLostLine(2)).toBe('Time lost: 2 min');
+  });
+});
+
+describe('N131 official data only (CIV-1978)', () => {
+  it('reads as Ryan approved it, word for word, with the agency named', () => {
+    expect(officialDataOnlyNotice('Barrie Transit')).toBe('This on-demand service’s stops are from Barrie Transit’s official data, and their accuracy can’t be confirmed.');
   });
 });
