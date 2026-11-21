@@ -44,7 +44,7 @@ describe('timeLossReport', () => {
   });
   it('writes the card wording, with the sample on every figure and none of the banned words', () => {
     const md = timeLossMarkdown(timeLossReport(data([seg('a', 'b', stat(74, 119)), seg('b', 'c', stat(-60, -5))]), ['midday']));
-    expect(md).toContain('Takes 1 min longer than scheduled; 1 in 10 take 1.5+ min longer | 40 trips, 6 days');
+    expect(md).toContain('Time lost: 1 min | 40 trips, 6 days');
     expect(md).toContain('The schedule allows 1 min more than vehicles need (40 trips, 6 days)');
     expect(md).not.toMatch(/\blate\b|delay of|at least|\bearly\b/i);
   });

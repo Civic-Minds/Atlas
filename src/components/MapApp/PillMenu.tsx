@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { topBarChipClass } from '../ui/topBarChip';
-import Pill from '../ui/Pill';
 import { PHONE_TAP_AREA } from '../../styles';
 
 /** A menu choice: its key, what the row shows, and its plain-text name when what it shows is not plain text. */
@@ -35,15 +34,6 @@ export function PillMenu({ label, value, options, onPick, alignRight = false, ac
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-/** A row of pills in the top bar, one selected (Live's measures; Studio's views), beside the other switchers. */
-export function MapPillGroup<K extends string>({ label, options, value, onChange }: { label: string; options: ReadonlyArray<readonly [K, ReactNode]>; value: K; onChange: (k: K) => void }) {
-  return (
-    <div role="group" aria-label={label} className="flex flex-wrap items-center gap-1.5">
-      {options.map(([k, text]) => <Pill key={k} size="segment" selected={value === k} onClick={() => onChange(k)}>{text}</Pill>)}
     </div>
   );
 }

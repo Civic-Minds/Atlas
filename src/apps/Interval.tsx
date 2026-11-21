@@ -9,7 +9,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import { distinctAgencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
-import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
+import { centreAgencySlugs, useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
@@ -27,7 +27,7 @@ import { AgencyCard } from '../components/Interval/AgencyCard';
 import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_COUNTS_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
-import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
+import { mapDrawsOnDemand, mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
 import { FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
@@ -57,6 +57,7 @@ import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
 import { countNightRoutesInView } from '../utils/nightRoutesInView';
 import { useViewport } from '../context/ViewportContext';
+import { usePageMapOverlay } from '../context/PageMapOverlay';
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
@@ -110,7 +111,7 @@ interface Props {
   setSelectedAgencySlug?: (slug: string | null) => void;
   onAgencyCardClose?: () => void;
   /** History mode: the top bar shows History's own Frequency and Time chips, held by App, not the map's (CIV-389, CIV-392). */
-  historyView?: { view: HistoryView; setView: (view: HistoryView) => void };
+  historyView?: { view: HistoryView; setView: (view: HistoryView) => void; dayShown?: boolean };
   /** The map's selection was cleared by the user (empty-map click or Escape); another view's panel (History) closes with it (#1031). */
   onMapDismiss?: () => void;
   /** Another view's panel is open over the map (History), so Escape has something to close. */
@@ -134,6 +135,8 @@ interface Props {
   searchFocused?: boolean;
   setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
+  /** A page draws on the map (Studio, CIV-1828, through PageMapOverlay): the map's own routes, clicks, key and route link are off. */
+  pageView?: boolean;
   filterToAgencies?: boolean;
   /** With filterToAgencies: the agencies to draw (History), so the agencies prop can stay the same list. */
   agencyFilterSlugs?: string[] | null;
@@ -144,6 +147,8 @@ interface Props {
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
   /** Agencies in view, known before their data loads (drives the Live/History controls). */
   onViewportAgencySlugsChange?: (slugs: string[]) => void;
+  /** Agencies whose area holds the map's centre (drives which of the Live/History tabs are lit). */
+  onCentreAgencySlugsChange?: (slugs: string[]) => void;
   /** The user panned or zoomed the main map themselves (History opens on the city in view only after that, #1012). */
   onUserMoveMap?: () => void;
   onSelectedMapAgencyChange?: (slug: string | null) => void;
@@ -187,6 +192,8 @@ interface Props {
   showMapLegend: boolean;
   setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
   dataSaver: boolean;
+  /** CIV-98: a slow connection was detected and the visitor has not answered the prompt; loads like Data saver without changing the setting. */
+  slowConnectionActive?: boolean;
   setDataSaver: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
@@ -234,7 +241,7 @@ function CompareSideSlot({ side, className = '', children }: { side: 'A' | 'B'; 
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, slowConnectionActive = false, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
   const [searchParams] = useSearchParams();
   // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
   const { pathname } = useLocation();
@@ -269,8 +276,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return DEFAULT_MAX_HEADWAY;
   });
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.route) ?? null);
-  const [selectedStop, setSelectedStop] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.stop) ?? null);
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.route) ?? null));
+  const [selectedStop, setSelectedStop] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.stop) ?? null));
   // Research views never show on-demand, so a shared link's on-demand mode (or ?ondemand=) is dropped there.
   const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
   const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? readUrlParam(searchParams, MAP_URL.onDemand) ?? null : null);
@@ -502,8 +509,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // load, so 640-767 keeps the centred spot above the row and phones show it in the map's "Error" pill.
   const footerHasNoticeRoom = useMediaQuery(FOOTER_NOTICE_MEDIA_QUERY);
   const onDemandStatus = useOnDemandStatus();
+  // #1635: only where the map draws on-demand areas (the same test as MapCanvas's); Studio draws none, so no notice.
   const onDemandFailedInFooter = footerHasNoticeRoom && onDemandStatus === 'error' && FEATURES.onDemand
-    && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
+    && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers);
   const compareAvailable = phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   // Side B from a link's own settings; at /apps/compare without them, B starts from A's settings as the tab does.
@@ -666,7 +674,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
     zoom: mapZoom,
-    dataSaver,
+    dataSaver: dataSaver || slowConnectionActive,
     selectedAgencySlug,
     priorityAgencySlugs,
     urgentViewport: searchFocused || nightServiceView || frequentServiceView || userLocation !== null || compareActive,
@@ -683,6 +691,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
   }, [viewportSlugKey, onViewportAgencySlugsChange]);
+  const centreSlugKey = useMemo(() => centreAgencySlugs(agencies, bounds).sort().join('|'), [agencies, bounds]);
+  useEffect(() => {
+    onCentreAgencySlugsChange?.(centreSlugKey ? centreSlugKey.split('|') : []);
+  }, [centreSlugKey, onCentreAgencySlugsChange]);
 
   // Near You sits in the left card slot (CIV-930), so it shows only while no other card is there. A route
   // opened from it gets "← Near You", which closes the route and shows Near You again.
@@ -697,6 +709,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const phoneErrorsInRow = isPhoneScreen && phoneMapErrors.length > 0;
   /** The bottom-right counts row is on (Live hides it); Live's "Unable to load" badge shows in it regardless (CIV-1768). */
   const countsRowShown = showUi || nightServiceView || phoneErrorsInRow;
+  // A page's pill (Studio's "Data up to") takes the loading pill's spot once nothing is loading.
+  const pagePill = usePageMapOverlay().overlay?.statusPill ?? null;
   const mapErrorsPanelRef = useRef<HTMLDivElement>(null);
   useEffect(() => { if (!isPhoneScreen) setListedMapErrors(null); }, [isPhoneScreen]);
   useEffect(() => {
@@ -1233,10 +1247,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // concurrent writers (day, map center, filters) don't clobber each other.
   useEffect(() => {
     if (!selectedRoute && handedToLiveRef.current) { handedToLiveRef.current = false; return; }
+    // A page on the map keeps ?route= for its own route (Studio's).
+    if (pageView && !selectedRoute) return;
     syncUrlParams(urlParamUpdate(MAP_URL.route, selectedRoute));
   }, [selectedRoute]);
 
   useEffect(() => {
+    if (pageView && !selectedStop) return;
     syncUrlParams(urlParamUpdate(MAP_URL.stop, selectedStop));
   }, [selectedStop]);
 
@@ -1411,6 +1428,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onMapReady={setMapA}
+            pageView={pageView}
             onPhoneErrorsChange={setPhoneMapErrors}
             showMapControls={!compareActive}
         onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
@@ -1507,7 +1525,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         )}
       </div>
 
-      {showMapLegend && !nightServiceView && <PersistentMapLegend contextMetric={contextLayerAvailable() ? contextMetric : null} />}
+      {showMapLegend && !nightServiceView && !pageView && <PersistentMapLegend contextMetric={contextLayerAvailable() ? contextMetric : null} />}
 
       {/* On sm and up the bottom-left pills and the bottom-right counts share one row, so the pills
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).
@@ -1519,6 +1537,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
           It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}
       <div className={MAP_FOOTER_RIGHT_SLOT}>
+      {/* A page's pill (Studio's "Data up to") in the loading pill's own slot; the counts row beside it stays hidden in a page,
+          and takes no room there, so the pill ends where the loading pill does (CIV-1961, Ryan: "Look at this too it's not aligned"). */}
+      {pagePill && !(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
+        // CIV-1961 (Ryan: "Why does it show the hand cursor when i hover over this"): the pill takes the pointer, as the counts row
+        // does, so the map under it no longer shows its hand cursor through it.
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 pointer-events-auto`}>{pagePill}</div>
+      )}
       {onDemandFailedInFooter && (
         <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`}>
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
@@ -1526,7 +1551,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow || liveRetrySeconds != null) && (
         // An error never fades (CIV-50): with the phone's "Error" pill in the row, or Live's "Unable to load", the row stays.
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRetrySeconds != null ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRetrySeconds != null ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${pagePill && !(countsRowShown || liveRetrySeconds != null) ? 'hidden' : ''}`}>
           {/* CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): while every Live feed in view
               is down, the loading badge reads "Unable to load · Retrying in 12s", counting down to Live's next try. */}
           {(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
@@ -1780,6 +1805,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 setSelectedAgencies={setSelectedAgenciesByUser}
                 bounds={bounds}
                 variant="history"
+                historyDayPicker={historyView.dayShown}
               />
             ) : (
             <FilterChips

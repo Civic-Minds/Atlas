@@ -42,5 +42,9 @@ describe('named flags that stand in for FEATURES.beta', () => {
       expect(features.beta).toBe(build.beta);
       for (const flag of STAND_IN_FLAGS) expect([flag, features[flag]]).toEqual([flag, build.beta]);
     });
+    // CIV-98: held off everywhere until Ryan picks the prompt's placement.
+    it(`${build.name}: the slow-connection prompt is off`, async () => {
+      expect((await configFor(build.env, build.dev)).slowConnectionPrompt).toBe(false);
+    });
   }
 });

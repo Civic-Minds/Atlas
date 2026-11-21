@@ -93,7 +93,7 @@ Every entry in this section is **on feature/live-local-poc, not main yet**, unle
 ### Metrics on the card
 
 - **typical extra running time**: `gainedMedianSec`, the median of (actual minus scheduled) per pass.
-  - Card wording: "Takes {X} longer than scheduled", plus the pass count and day count.
+  - Card wording: "Time lost: {X}" (the Delays start cards' own line), plus the pass count and day count.
   - Never use: "late", "delay of", "at least".
   - Rounding: nearest ½ min (`halfMinutes`). Colour and flags test the raw seconds: amber from 30 s, red from 60 s. A stop pair is listed only from 30 s.
   - Minimum sample: 30 passes and 5 days (`MIN_SEGMENT_TRIPS`, `MIN_DAYS`).
@@ -168,7 +168,7 @@ These measures are different things. Never combine them, convert one into anothe
 | `noRegular` / the filter's null where the route runs | `routeListNoRegularService`, `IRREGULAR_PERIOD_LABEL` | "Runs irregularly in this period" (cards), "Irregular" (table cells, list values) | CIV-1238; never "no regular service" |
 | midday variant | `middayVariant` | "limited service", headline blank | not a serviceClass |
 | pooled stop value | `stopHeadways` on a shared stretch | the card says the value is pooled | |
-| `gainedMedianSec` (Live) | `segmentDelayView.ts` | "Takes X longer than scheduled" | branch only |
+| `gainedMedianSec` (Live) | `segmentDelayView.ts` | "Time lost: X" | branch only |
 | `isPadded` (Live) | | "looser than needed", "The schedule allows X more than vehicles need" | branch only |
 | `excessWaitSec` / EWT (Live) | | "Extra wait" (footer), "riders waited X longer than the schedule implies" (row) | branch only |
 | `detectHolds` / `HoldEvent` (Live) | | "Stood still", "Standing still" | branch only; never "hold" |

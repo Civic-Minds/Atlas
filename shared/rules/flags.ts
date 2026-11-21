@@ -4,7 +4,7 @@
  * The VITE_* reads stay literal import.meta.env reads so Vite can drop off features from each build. Flag docs:
  * docs/FEATURE_FLAGS.md.
  */
-import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
+import { INTERNAL_PATH, MCP_DOCS_PATH, RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
@@ -19,9 +19,6 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 // delay stay behind VITE_LIVE_ENABLED and the local-only endpoints (#867).
 export const LIVE_REPORTS_ENABLED = envFlag('VITE_LIVE_REPORTS_ENABLED');
 export const HISTORY_ENABLED = envFlag('VITE_HISTORY_ENABLED');
-// CIV-1425: History's Weekday/Saturday/Sunday picker. Off everywhere (beta included) until it is set;
-// only meaningful where History itself is on.
-export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && envFlag('VITE_HISTORY_DAY_PICKER_ENABLED');
 // Click-to-flag a specific value on a card (frequency, route name, etc.) to report it directly,
 // no typing required. New/unproven interaction -- beta only until it's been used for real.
 export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABLED');
@@ -51,6 +48,9 @@ export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// CIV-1425 / CIV-1646: History's Weekday/Saturday/Sunday picker. On in beta and dev (Boston's weekend values are
+// built); public stays off until Ryan turns it on, which the env var still does anywhere. Needs History on too.
+export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && (ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev' || envFlag('VITE_HISTORY_DAY_PICKER_ENABLED'));
 // Shared links and shared map images carry utm tags so analytics can count shared visits.
 // Beta-only until it's been seen working end to end.
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
@@ -100,6 +100,9 @@ export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
 export const PERSISTED_SETTINGS_ENABLED = BETA_BUILD;
 // The "a new version is available" banner.
 export const UPDATE_BANNER_ENABLED = BETA_BUILD;
+// CIV-98: on a slow connection the map loads fewer networks and offers to turn on Data saver for good.
+// Off in every build until Ryan picks where the prompt goes.
+export const SLOW_CONNECTION_PROMPT_ENABLED = false;
 // The map-context readout and the match percentage in the map's status badge.
 export const MAP_CONTEXT_ENABLED = BETA_BUILD;
 export const MATCH_PERCENTAGE_ENABLED = BETA_BUILD;
@@ -149,7 +152,9 @@ export const FEATURES = {
   preview: PREVIEW_BUILD,
   researchApps: RESEARCH_APPS_ENABLED,
   live: LIVE_ENABLED,
-  liveReports: LIVE_ENABLED || LIVE_REPORTS_ENABLED,
+  // CIV-1872: one rule for the report pages and their routes. The dev server always has them (it used to register the
+  // routes but show "Live is off" unless an env switch was also set).
+  liveReports: LIVE_ENABLED || LIVE_REPORTS_ENABLED || STUDIO_ENABLED,
   history: HISTORY_ENABLED,
   historyDayPicker: HISTORY_DAY_PICKER_ENABLED,
   frequentService: RESEARCH_APPS_ENABLED,
@@ -164,6 +169,7 @@ export const FEATURES = {
   contextLayer: CONTEXT_LAYER_ENABLED,
   persistedSettings: PERSISTED_SETTINGS_ENABLED,
   updateBanner: UPDATE_BANNER_ENABLED,
+  slowConnectionPrompt: SLOW_CONNECTION_PROMPT_ENABLED,
   mapContext: MAP_CONTEXT_ENABLED,
   matchPercentage: MATCH_PERCENTAGE_ENABLED,
   feedQuality: FEED_QUALITY_ENABLED,
@@ -179,6 +185,8 @@ export const FEATURES = {
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
   studio: STUDIO_ENABLED,
   branchReadings: BRANCH_READINGS_ENABLED,
+  /** CIV-1872: the /internal home page and the header's internal links: the dev server only. */
+  internal: STUDIO_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
@@ -199,6 +207,9 @@ export const FEATURE_ROUTES = {
   studioVehicles: STUDIO_VEHICLES_PATH,
   studioChanges: STUDIO_CHANGES_PATH,
   studioCoverage: STUDIO_COVERAGE_PATH,
+  internal: INTERNAL_PATH,
+  /** CIV-1900: the MCP's internal docs page, local only like /internal. */
+  mcpDocs: MCP_DOCS_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */

@@ -3,7 +3,7 @@
  * stats (scripts/live-segment-delay.ts) for a live route. Data lives on
  * local disk only (LIVE_SEGMENTS_DIR, default ../_live-data/out).
  */
-import { readFile } from 'fs/promises';
+import { readFile, readdir } from 'fs/promises';
 import { resolve } from 'path';
 import { getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
 
@@ -19,12 +19,21 @@ async function handler(req: Request): Promise<Response> {
   const agency = params.get('agency')?.trim();
   const route = params.get('route')?.trim();
   if (!agency || !route) return json({ error: 'agency and route are required' }, 400);
-  // Whitelist: only configured live routes map to a file name (no path input reaches the filesystem).
-  const cfg = getPolledRoute(agency, route);
-  if (!cfg || !hasLiveAnalysis(cfg.slug, cfg.displayRouteShortName)) return json({ noData: true });
+  // Whitelist: a configured live route, or a route whose analysis file is in the folder listing (CIV-1828: Studio's
+  // agencies). Only a name found in the listing reaches the filesystem, never the request's text.
   const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
+  const cfg = getPolledRoute(agency, route);
+  const configured = cfg && hasLiveAnalysis(cfg.slug, cfg.displayRouteShortName) ? `${cfg.slug}-${cfg.displayRouteShortName}-segments.json` : null;
+  const listed = (await readdir(dir).catch(() => [] as string[])).find(f => f === `${agency.toLowerCase()}-${route}-segments.json`);
+  const file = configured ?? listed;
+  if (!file) return json({ noData: true });
   try {
-    const raw = await readFile(resolve(dir, `${cfg.slug}-${cfg.displayRouteShortName}-segments.json`), 'utf8');
+    const raw = await readFile(resolve(dir, file), 'utf8');
+    // ?fields=segments: only what the time-loss views read (Studio's Live page loads every route of an agency at once).
+    if (params.get('fields') === 'segments') {
+      const d = JSON.parse(raw) as Record<string, unknown>;
+      return json({ agency: d.agency, route: d.route, generatedAt: d.generatedAt, dates: d.dates, directionLabels: d.directionLabels, observations: d.observations, segments: d.segments, recent: d.recent });
+    }
     return new Response(raw, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   } catch {
     return json({ noData: true });

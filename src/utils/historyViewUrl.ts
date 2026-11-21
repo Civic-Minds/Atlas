@@ -19,6 +19,19 @@ export function historyDefaultView(now: Date = new Date(), dayPicker: boolean = 
 }
 
 /**
+ * CIV-1646: the day picker shows (and `hday` applies) only when the flag is on and the open agency's History data has
+ * weekend values. Nothing open yet (null) counts as yes: the choice is made per agency once one opens.
+ */
+export function historyDayPickerShown(agencyHasWeekend: boolean | null, flag: boolean = FEATURES.historyDayPicker): boolean {
+  return flag && agencyHasWeekend !== false;
+}
+
+/** The view History and its chips use: the picked day only while the picker is shown, else Weekday (the pick is kept for the next agency). */
+export function historyEffectiveView(view: HistoryView, dayPickerShown: boolean): HistoryView {
+  return dayPickerShown || view.day === 'Weekday' ? view : { ...view, day: 'Weekday' };
+}
+
+/**
  * History's Frequency and Time in the link, in the map's own params and format (h, p), so a map link
  * and a History link read the same (CIV-392, CIV-389). h is "all" or minutes; p is a period key. Both are
  * always written: the map reads a missing h as its 60 default while History's default is All, and a

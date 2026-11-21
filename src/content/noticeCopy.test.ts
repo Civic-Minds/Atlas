@@ -117,8 +117,8 @@ describe('route labels and setting definitions (CIV-957)', () => {
 
 describe('Live feed notices (CIV-941 #55, #57)', () => {
   it('reads as approved', () => {
-    expect(liveUnreachableText(['TTC', 'YRT'])).toBe("Live buses from TTC and YRT can’t be shown right now.");
-    expect(liveUnreachableText(['TTC', 'YRT', 'MiWay'])).toBe("Live buses from TTC, YRT and MiWay can’t be shown right now.");
+    expect(liveUnreachableText(['TTC', 'YRT'])).toBe("Live vehicles from TTC and YRT can’t be shown right now.");
+    expect(liveUnreachableText(['TTC', 'YRT', 'MiWay'])).toBe("Live vehicles from TTC, YRT and MiWay can’t be shown right now.");
   });
 });
 

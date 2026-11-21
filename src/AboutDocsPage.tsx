@@ -13,6 +13,7 @@ import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { PageTitle, SectionTitle, SubsectionTitle } from './components/ui/PageTitle';
+import { SCROLL_BELOW_HEADER } from './styles';
 import {
   BETA_ROLLOUT_NOTICE,
   BOOKING_REQUIRED_NOTICE,
@@ -74,7 +75,7 @@ const DOCS_SECTION_LABELS = Object.fromEntries(DOCS_CONTENTS) as Record<DocsSect
 function Section({ id, children }: { id: DocsSectionId; children: ReactNode }) {
   const title = DOCS_SECTION_LABELS[id];
   return (
-    <section id={id} className="scroll-mt-24">
+    <section id={id} className={SCROLL_BELOW_HEADER}>
       <SectionTitle className="mb-2">{title}</SectionTitle>
       <div className="space-y-2 text-sm leading-relaxed text-[var(--text-dim)]">{children}</div>
     </section>

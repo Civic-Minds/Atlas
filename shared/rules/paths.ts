@@ -55,15 +55,25 @@ export const RESEARCHERS_PATH = '/researchers';
 export const TERMS_PATH = '/terms';
 export const PRIVACY_PATH = '/privacy';
 export const CHANGELOG_PATH = '/changelog';
+/** The map apps' own addresses (CIV-1925): the frequency map, History and Compare (a view on the frequency map, split in two). */
+export const FREQUENCY_PATH = '/apps/frequency';
+export const HISTORY_PATH = '/apps/history';
+export const COMPARE_PATH = '/apps/compare';
 export const LIVE_PATH = '/apps/live';
 export const RESEARCH_PATH = '/research';
 /** Atlas Studio (CIV-1693), local only: the section opens its first page, the buses-needed calculator. */
 export const STUDIO_PATH = '/studio';
 export const STUDIO_VEHICLES_PATH = '/studio/vehicles';
-/** CIV-1715: Studio's before/after schedule comparison. */
+/** CIV-1715: Studio's before/after schedule comparison, now the Schedules page (CIV-1922); the old address redirects there. */
 export const STUDIO_CHANGES_PATH = '/studio/changes';
+export const STUDIO_SCHEDULES_PATH = '/studio/schedules';
 /** CIV-1871: what each agency has across the products. Local only; a plain address until the Internal menu is chosen. */
 export const STUDIO_COVERAGE_PATH = '/studio/coverage';
+
+/** CIV-1872: the local-only home page listing every local-only page; the "Internal" tag beside the Atlas name opens it. Dev server only. */
+export const INTERNAL_PATH = '/internal';
+/** CIV-1900: the Atlas Studio MCP's internal docs page (dev server only). */
+export const MCP_DOCS_PATH = '/internal/mcp';
 
 /** The map's address parameter that opens an agency card (`/?operator=<slug>`); shareUrlState.ts re-exports it (CIV-1783). */
 export const AGENCY_CARD_PARAM = 'operator';

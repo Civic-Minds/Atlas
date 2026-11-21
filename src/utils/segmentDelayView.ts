@@ -65,6 +65,8 @@ export interface SegmentDelayData {
   directionLabels?: Record<string, string>;
   observations: number;
   segments: SegmentDelaySegment[];
+  /** CIV-1828: the stop pairs over the last LIVE_WINDOW_DAYS service dates, good days only; `dates` is the window, `goodDates` the days counted. Absent in older files. */
+  recent?: { dates: string[]; goodDates: string[]; segments: SegmentDelaySegment[] };
   headways?: HeadwayStop[];
   v2?: { standingStill?: StandingStillStop[] };
 }
@@ -132,4 +134,14 @@ export function stopNameParts(name: string): { street: string; cross: string; sh
   const clean = (x: string) => x.replace(/\s+-\s.*$/, '').replace(/-[A-Z].*$/, '').trim().replace(SIDE, '').replace(SUFFIX, '').trim();
   const cross = clean(rawCross ?? rawStreet);
   return { street, cross, short: rawCross ? `${clean(rawStreet)} & ${cross}` : cross };
+}
+
+/**
+ * CIV-1828: the figures Studio's Live page reads: the last LIVE_WINDOW_DAYS service dates ("Rolling 7 days only"), good
+ * days only, with the left-out days named; an older file without them keeps every archived day and leaves none out.
+ */
+export function recentSegmentData(data: SegmentDelayData): SegmentDelayData & { leftOut: string[] } {
+  if (!data.recent) return { ...data, leftOut: [] };
+  const good = new Set(data.recent.goodDates);
+  return { ...data, dates: data.recent.goodDates, segments: data.recent.segments, leftOut: data.recent.dates.filter(d => !good.has(d)) };
 }

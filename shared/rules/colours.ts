@@ -15,6 +15,8 @@ export const COLOR_VISION_TIER_COLOURS = ['#0072b2', '#009e73', '#56b4e9', '#e69
 
 /** The plain page colour (src/styles/index.css --bg-app, light theme; a test keeps them equal): the background of a drawn link-preview image (CIV-1393). */
 export const PAGE_BACKGROUND = '#f0f0f0';
+/** The warm paper behind the frequent-service story's pile of printed maps (CIV-1875). */
+export const MAP_PILE_PAPER = '#e9e6df';
 
 /** A colour for a value no palette covers (an unknown tier, a missing CSS variable). */
 export const FALLBACK_GREY = '#9ca3af';

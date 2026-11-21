@@ -41,8 +41,8 @@ export const PAGE_NAMES = {
   studio: 'Studio',
   /** CIV-1693: Studio's buses-needed calculator. Proposed, waiting on Ryan's OK. */
   studioVehicles: 'Buses Needed',
-  /** CIV-1715: Studio's before/after schedule comparison. Proposed, waiting on Ryan's OK. */
-  studioChanges: 'Schedule Changes',
+  /** CIV-1715: Studio's before/after schedule comparison. Ryan, 2026-11-19 (CIV-1922): "I said to make a page called Schedules". */
+  studioSchedules: 'Schedules',
   /** CIV-1871: the local coverage table. Proposed, waiting on Ryan's OK. */
   studioCoverage: 'Coverage',
 } as const;

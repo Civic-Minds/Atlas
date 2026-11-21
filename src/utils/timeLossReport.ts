@@ -114,3 +114,37 @@ export function timeLossReport(data: SegmentDelayData, bands: readonly SegmentBa
     bands: out,
   };
 }
+
+/**
+ * CIV-1828: each measured stop pair's typical extra running time (raw seconds) in one band and direction, keyed
+ * "from>to": what the "Falls behind" map colours by. The report's own rules: enough passes and days, pattern ends left out.
+ */
+export function timeLossBySegment(data: SegmentDelayData, band: SegmentBand, directionId: number): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const seg of data.segments) {
+    if (seg.directionId !== directionId || seg.terminal) continue;
+    const b = seg.bands[band];
+    if (!b || b.trips < MIN_SEGMENT_TRIPS || b.days < MIN_DAYS) continue;
+    out.set(`${seg.fromStopId}>${seg.toStopId}`, b.gainedMedianSec);
+  }
+  return out;
+}
+
+/** One row of the "falls behind" list, with the route and direction it belongs to. */
+export interface TimeLossListRow { route: string; directionId: number; row: TimeLossRow }
+
+/**
+ * CIV-1828: the rows of several routes' reports in one band, ranked as the report ranks them (largest typical extra
+ * running time first), and the "looser than needed" rows (most room first), each cut to `max`.
+ */
+export function rankedTimeLoss(reports: ReadonlyMap<string, TimeLossReport>, band: SegmentBand, max: number): { slower: TimeLossListRow[]; looser: TimeLossListRow[] } {
+  const slower: TimeLossListRow[] = [];
+  const looser: TimeLossListRow[] = [];
+  for (const [route, r] of reports) for (const d of r.bands[band] ?? []) {
+    for (const row of d.slower) slower.push({ route, directionId: d.directionId, row });
+    for (const row of d.looser) looser.push({ route, directionId: d.directionId, row });
+  }
+  slower.sort((x, y) => y.row.typicalSec - x.row.typicalSec || y.row.p90Sec - x.row.p90Sec || x.route.localeCompare(y.route, undefined, { numeric: true }));
+  looser.sort((x, y) => x.row.typicalSec - y.row.typicalSec || x.route.localeCompare(y.route, undefined, { numeric: true }));
+  return { slower: slower.slice(0, max), looser: looser.slice(0, max) };
+}

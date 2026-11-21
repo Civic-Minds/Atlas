@@ -8,6 +8,7 @@ import { RELIABILITY_BANDS } from '../../shared/liveReliability';
 import { CUTOFF_LIMITS, DEFAULT_CUTOFFS } from '../../shared/liveCutoffs';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
+import { joinList } from '../../shared/overflowText';
 
 export const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
@@ -65,6 +66,28 @@ const TITLES: Record<string, string> = {
   route_history: 'Route history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
   trip_time: 'Trip time between stops', combined_frequency: 'Combined frequency between stops', schedule_changes: 'Schedule changes',
   route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced', route_now: 'How a route is running right now',
+};
+/**
+ * CIV-1900: one plain line per tool for people (the internal MCP docs page): "min", no field names. Kept beside the
+ * titles rather than on each tool, so what the server sends Claude stays as it is. A test checks every tool has one.
+ */
+export const TOOL_SUMMARIES: Record<string, string> = {
+  list_agencies: 'Find the agencies Atlas covers, by name, city, region or country, or near a place.',
+  rank_agencies: 'Rank agencies by how many of their routes run every N min or better in a part of the day.',
+  route_frequency: 'How often a route runs in each part of the day, with its first and last trips and its branches.',
+  routes_at_frequency: 'An agency\'s routes that run every N min or better in a part of the day.',
+  compare_agencies: 'For several agencies, how many routes run every N min or better in a part of the day.',
+  routes_near: 'Routes that stop near a corner, station or stop, with their first and last trips.',
+  route_history: 'How a route\'s frequency has changed over the years, from History.',
+  buses_needed: `Buses needed to run a route in a part of the day, now and at every ${joinList(PUBLIC_TIER_MAXES.map(String), { conjunction: 'or' })} min, from Studio.`,
+  routes_by_hours: 'Routes whose service ends early or starts late on a given day.',
+  trip_time: 'Scheduled trip time between two stops, by the hour the trip leaves, for each route between them.',
+  combined_frequency: 'How often a trip leaves one stop for another on any route between them, combined.',
+  route_reliability: 'How a route ran against its schedule in past weeks, from Live\'s recordings.',
+  route_bunching: 'How evenly a route\'s vehicles were spaced in past weeks, from Live\'s recordings.',
+  // Pending Ryan's word-for-word OK (CIV-1870).
+  route_now: 'Where a route\'s vehicles are bunched and where riders have waited longest right now, from Live\'s last half hour.',
+  schedule_changes: 'What changed between an agency\'s two most recent schedules: routes added and removed, and frequency changes.',
 };
 /** Every tool only reads Atlas's own published data: nothing is changed, and nothing outside Atlas is reached. */
 const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });

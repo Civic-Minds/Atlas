@@ -1,9 +1,12 @@
-export type AppId = 'frequency' | 'history' | 'live' | 'night' | 'bustang';
+import { COMPARE_PATH, FREQUENCY_PATH } from '../../shared/rules/paths';
+/** The map's views. 'studio' is Atlas Studio (CIV-1828), a view of the map as History is, local only. */
+export type AppId = 'frequency' | 'history' | 'live' | 'night' | 'bustang' | 'studio';
 
 interface GateFlags {
   live: boolean;
   history: boolean;
   researchApps: boolean;
+  studio?: boolean;
 }
 
 /** Old app URLs that no longer exist; they redirect to the frequency map. */
@@ -13,17 +16,18 @@ export const RETIRED_APP_PATHS: readonly string[] = ['/apps/corridors', '/apps/f
 export function isAppGated(app: AppId, flags: GateFlags): boolean {
   return (app === 'live' && !flags.live)
     || (app === 'history' && !flags.history)
-    || ((app === 'night' || app === 'bustang') && !flags.researchApps);
+    || ((app === 'night' || app === 'bustang') && !flags.researchApps)
+    || (app === 'studio' && !flags.studio);
 }
 
 /**
  * Compare's own address, like History's /apps/history. Compare is a view on the frequency map (the same
  * map, split in two), so this path renders the map with Compare on.
  */
-export const COMPARE_PATH = '/apps/compare';
+export { COMPARE_PATH };
 
 /** The addresses that show the plain frequency map. */
-export const MAP_PATHS: readonly string[] = ['/', '/apps/frequency'];
+export const MAP_PATHS: readonly string[] = ['/', FREQUENCY_PATH];
 
 /** True when /apps/compare must fall back to the map: Compare is off in this build, or this is a phone. */
 export function isCompareGated(pathname: string, compareOn: boolean): boolean {

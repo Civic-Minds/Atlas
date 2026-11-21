@@ -6,6 +6,29 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Live Measure menu sits with the other filters (local only)**: it was a separate button beside the Live tab; it now sits next to Agency, Route and Time of day
+- **Studio's Live side panel is shorter (local only)**: the two lines explaining Bunching's figures and the grey colour moved to Studio's About panel, with a Learn more link under the week table
+- **Studio's Live shows the data date in the map's loading-pill spot (local only)**: "Data up to Nov 16" sat inside the sidebar card; it now appears bottom of the map once loading finishes
+- **Studio Live shows routes and days on one line (local only)**: "9 routes recorded · 15 days, Nov 2–16" instead of two lines
+- **Studio's Fleet opens on the fleet, and Schedule Changes is its own page (local only)**: Fleet led with a changes list and said nothing about buses; it now shows the buses the whole agency needs, and the changes table reads both dates in the same wording ("every 15 min" beside "every 10 min until 7:32 PM", not "15 min")
+- **Studio's Coverage page shows how much History each agency has (local only)**: it said only "Yes"; agencies in public History now show "10+ years", and those with fewer archived years show their count
+- **Studio's Fleet opens on the fleet, and Schedules is its own page (local only)**: Fleet led with a changes list and said nothing about buses; it now shows the buses the whole agency needs, and the changes table reads both dates in the same wording ("every 15 min" beside "every 10 min until 7:32 PM", not "15 min")
+- **Studio Live shows routes and days on one line (local only)**: "9 routes recorded · 15 days of data, Nov 2–16" instead of two lines
+- **Studio says it's loading, in the map's own loading panel (local only)**: opening Studio or its Fleet page showed an empty map until the data arrived
+- **Studio's menus look like the main map's (local only)**: its Time menus list each period's hours as the map's Time chip does, and its cut-off settings use the map's own settings rows
+- **Studio's pages have their own addresses (local only)**: /studio/live/ttc/504 and /studio/fleet/kingston, so a link opens the page, agency and route it names; the old ?page= links still open the same place
+- **Studio's Live and Fleet fade in and out like the main map's modes (local only)**: closing a page or leaving Studio cut it off in one frame; it now eases out the way it eased in
+- **Switching between Studio's Live and Fleet keeps the map and the open route (local only)**: each page refitted the map on its own and dropped the route, so a switch jumped the view; Live on the 504 now opens Fleet on the 504 where the map already was
+- **The For Transit Planners page counts the agencies Atlas really covers**: it said about 700, a hand-typed number; the count and countries now follow the published data, with a link to the Docs on where the data comes from
+- **History on beta can switch between Weekday, Saturday and Sunday (beta)**: Boston shows weekend ranges, including past years; other cities wait for their own approval
+- **History says "No midday buses" where a route ran no trip in that period (beta)**: it was a blank row, which also looks like a missing number; the same wording covers every time of day and every kind of vehicle
+- **History on beta can switch between Weekday, Saturday and Sunday (beta)**: Boston shows weekend ranges, including past years; cities without weekend data hide the Day chip and stay on Weekday
+- **Opening Research no longer reloads the page**: the Research links on About, the header and the footer, and its story cards, switch pages inside the app, so entering Research is as smooth as the other views
+- **Moving between Atlas pages no longer reloads the page**: links to Research, Docs, About, agencies, areas and the rest, and clicking a table row, switch pages inside the app, so each opens as smoothly as the other views
+- **The Filters count badge and the report-a-problem button no longer use solid dark fills**: they use the pale selected tint like the rest of the app, and the badge was hard to read in dark mode
+- **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
+- **On beta, a slow connection loads fewer networks and offers to turn on Data saver (pending sign-off)**: pages stayed slow to fill on 2G/3G and in browsers set to save data; the offer is a choice, never switched on silently ([#539](https://github.com/Civic-Minds/Atlas/issues/539))
+- **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **An on-demand service with hours set zone by zone no longer says "Hours unavailable" above its published hours**: the whole-service card read as if the hours were missing (Barrie, Guelph, Chatham-Kent, Spruce Grove)
 - **Live's trip-time card no longer shows a "1 in 10 over" figure or band (local only)**: the same riddle-like stat dropped from the late-stops table; the card keeps scheduled and usual trip times
 - **Live's late-stops table and Explore cards no longer show a "1 in 10 leave" figure (local only)**: it read as a riddle; the typical delay and share late already say how late a stop runs, as Studio does
@@ -31,6 +54,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio can say how Boston's recorded routes are running right now**: asking about an MBTA route returned an error, because Live's Boston recordings had no time zone set ([#1612](https://github.com/Civic-Minds/Atlas/issues/1612))
 - **[Boston's 2026](https://github.com/Civic-Minds/Atlas/issues/1609) in History draws its route lines and reads like every other year**: an older kind of schedule file outranked the 2026 one, so 2026 showed no lines and some odd values (route 19 every 167 min, not 28); Seattle, Philadelphia, Burlington and Volusia County's 2026 gain the same way
 - **History reads Boston's older years at a typical week, as every newer year already does**: some of MBTA's older periods were read on a holiday-adjacent or odd week, so their frequencies could look off
+- **Live's notice for feeds that can't load says "Live vehicles", not "Live buses" (local only)**: Live also tracks streetcars
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name
 - **Tillamook no longer repeats [Sunset Empire's](https://github.com/Civic-Minds/Atlas/issues/1604) routes**: its feed bundles three agencies, so Sunset Empire's 5 routes were drawn a second time under Tillamook's name
 - **Broward County Transit shows its own bus network, not a Fort Lauderdale shuttle**: Atlas was reading the city's 5-route LauderGO shuttle feed under Broward's name; it now reads the county's 44 bus routes ([#1500](https://github.com/Civic-Minds/Atlas/issues/1500))
@@ -50,6 +74,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio's nearby-routes answers cover 500 m around a place, the same as the map's nearby routes**: they used 250 m, so a corner like Bathurst and Bloor left out routes a short walk away
 - **Atlas Studio finds a route typed without its leading zero**: "1" finds Hamilton's route 01, by the same match the map's route search uses
 - **A shared map link with a location previews that exact spot on X, LinkedIn and Facebook**: the preview picture shows Atlas's frequency lines around the shared spot (it used to show the nearest of about 60 city pictures, so a spot 30 km out showed downtown); links with no location keep today's picture
+- **The Live and History tabs always show, dimmed over a city that has no data for them (pending sign-off)**: they used to vanish and reappear as the map moved; tapping a dimmed one lists the cities that have it, each a tap away
 - **On beta, a route with a frequent shared middle passes the frequency filter at that middle (pending sign-off)**: TTC 110 reads every 15 at weekday midday, where its slower branches every 30 used to decide for the whole route; section colours still show each branch's own frequency
 - **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
 - **History says "No midday buses" where a route ran no trip in that period (beta)**: it was a blank row, which also looks like a missing number; the same wording covers every time of day and every kind of vehicle
@@ -78,6 +103,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Routes keep a day whose trips run a different pattern from the rest of the week**: Medicine Hat 30 on weekdays, DRT 407 to Raleigh on weekends, GRT 203 to Cambridge Centre on weekdays, Kingston 6 and Space Coast 29 on weekends had no row for that day, because the shapes were chosen from the whole week's trips and that day's own pattern lost ([#1543](https://github.com/Civic-Minds/Atlas/issues/1543))
 - **Loop routes in feeds without directions get their frequency back**: Kingston 2 and 19, Cornwall 1 and 4 and Medicine Hat 30 on weekends had no figure on the map, because a loop the feed also runs in two halves was split into two fake directions ([#1542](https://github.com/Civic-Minds/Atlas/issues/1542), [#1539](https://github.com/Civic-Minds/Atlas/issues/1539))
 - **Links to the map on pages now read "Try Atlas"**: the For Transit Planners and not-found pages had said "Open the map" or "Open the Atlas map"
+- **The For Transit Planners page ends with one Request a demo button** that emails us, in place of the Get in Touch section, so planners have one clear next step
+- **The site header stays at the top while scrolling on every page**: the About, For Transit Planners and not-found pages had let it scroll away, unlike Docs and the research pages
+- **The footer has a Product column for For Planners (beta)**: the planners page no longer sits among Learn's reading links, and Studio will join it later
+- **The header says Beta on the beta site and Internal on a local copy**: so a screenshot or tab shows at a glance which Atlas it came from; the public site is unchanged
 - **The For Transit Planners page ends with a Request a demo card** that emails us, in place of the Get in Touch section, so planners have one clear next step
 - **The site header stays at the top while scrolling on every page**: the About, For Transit Planners and not-found pages had let it scroll away, unlike Docs and the research pages
 - **The footer has a Product column for For Planners (beta)**: the planners page no longer sits among Learn's reading links, and Studio will join it later

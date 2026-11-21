@@ -67,6 +67,10 @@ export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 /** Width constant for panels and cards; matches the responsive search bar on desktop. */
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
+/** The wide sidebar card, for a card whose tables need more room than the search bar's width (Studio's route card,
+ *  CIV-1828): the width Studio's old frame gave its sidebar, never past the window. */
+export const SIDEBAR_PANEL_WIDE_WIDTH = 'w-[calc(100vw-3rem)] sm:w-[24.5rem] max-w-[calc(100vw-3rem)]';
+
 /** Shared glass pill geometry; surfaces and borders are supplied by each state. */
 export const GLASS_PILL = 'backdrop-blur-md rounded-full';
 
@@ -88,6 +92,9 @@ export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 bord
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
 
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
+/** Below PageShell's pinned header (its height is --page-header-h, set by PageShell), plus the gap a page leaves under it (CIV-1897): where a sticky side menu sits and where a jumped-to heading lands. */
+export const STICK_BELOW_HEADER = 'lg:top-[calc(var(--page-header-h,3.25rem)+1.25rem)]';
+export const SCROLL_BELOW_HEADER = 'scroll-mt-[calc(var(--page-header-h,3.25rem)+1.25rem)]';
 export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
 /**

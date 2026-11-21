@@ -8,15 +8,17 @@ let mapMounts = 0;
 // The agency list the map loads from: a new list object makes the real map reload its data.
 const agencyLists = new Set<unknown>();
 vi.mock('../apps/Interval', () => ({
-  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCompareActiveChange, compareTabElsewhere }: {
+  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onCompareActiveChange, compareTabElsewhere }: {
     agencies?: unknown;
     onViewportAgencySlugsChange?: (slugs: string[]) => void;
+    /** CIV-1861: the Live and History tabs follow the city at the map's centre. */
+    onCentreAgencySlugsChange?: (slugs: string[]) => void;
     onCompareActiveChange?: (active: boolean) => void;
     compareTabElsewhere?: () => void;
   }) {
     // The real map turns Compare on at Compare's own address.
     const { pathname } = useLocation();
-    useEffect(() => { mapMounts++; onViewportAgencySlugsChange?.(['ttc']); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => { mapMounts++; onViewportAgencySlugsChange?.(['ttc']); onCentreAgencySlugsChange?.(['ttc']); }, []); // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => { onCompareActiveChange?.(pathname === '/apps/compare'); }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
     agencyLists.add(agencies);
     // With mode transitions on (CIV-1567), the map keeps drawing the Compare tab in Live and History too.

@@ -23,8 +23,9 @@ const ALLOWED_LABEL_CALLS: Record<string, { count: number; why: string }> = {
   'src/apps/History.tsx': { count: 2, why: 'History route names, and the chart window title (CIV-1128)' },
   'src/pageParts.tsx': { count: 3, why: 'agency pages (RouteNameCell), from the page data; one more for summaries that store the feed short name (CIV-984 3B)' },
   'src/components/Live/tool/OverviewList.tsx': { count: 1, why: 'Live route list' },
-  'src/LiveToolPage.tsx': { count: 1, why: 'Live route menu, named as the list rows (CIV-1117 row 5)' },
-  'src/StudioChangesPage.tsx': { count: 1, why: 'Studio Schedule Changes route titles and Small Changes rows (CIV-1715)' },
+  'src/components/Live/tool/useLiveBody.tsx': { count: 1, why: 'Live route menu, named as the list rows (CIV-1117 row 5); moved from LiveToolPage with CIV-1828 step 2' },
+  'src/apps/studio/Live.tsx': { count: 1, why: 'Studio Live route card title, from the summary route row (CIV-1828)' },
+  'src/apps/studio/StudioRouteTable.tsx': { count: 1, why: 'Studio Schedules route titles and Small Changes rows (CIV-1715)' },
   'src/utils/format.ts': { count: 1, why: 'routeShortLabel: "Route " + the number as routeLabels shows it, from a short name only (CIV-1569)' },
 };
 const SRC = resolve(__dirname, '../..');
