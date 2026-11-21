@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The Docs page explains state and province pages, release checks and part-period routes**: it described area pages only, said nothing about what holds an update back, and didn't say how a route that runs for part of a period reads; beta builds also explain section colours and how History treats unchanged years
+- **Beta suggests Data saver on slow connections, in the analytics prompt’s spot**: the prompt now reads “Data saver loads better on slow connections.” with a “Turn on?” button, and sits where the analytics consent prompt does
 - **Three more Colorado agencies are on the map**: Steamboat Springs Transit, Gunnison Valley RTA and Prairie Express, once the next data release publishes
 - **Studio's Live Measure menu sits with the other filters (local only)**: it was a separate button beside the Live tab; it now sits next to Agency, Route and Time of day
 - **Studio's Live side panel is shorter (local only)**: the two lines explaining Bunching's figures and the grey colour moved to Studio's About panel, with a Learn more link under the week table

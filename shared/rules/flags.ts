@@ -100,9 +100,9 @@ export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
 export const PERSISTED_SETTINGS_ENABLED = BETA_BUILD;
 // The "a new version is available" banner.
 export const UPDATE_BANNER_ENABLED = BETA_BUILD;
-// CIV-98: on a slow connection the map loads fewer networks and offers to turn on Data saver for good.
-// Off in every build until Ryan picks where the prompt goes.
-export const SLOW_CONNECTION_PROMPT_ENABLED = false;
+// CIV-98: on a slow connection the map loads fewer networks and offers to turn on Data saver for good, in the analytics
+// prompt's place (Ryan, 2026-11-20: "The same lace the analytics one goes right"). Beta, preview and dev; off on public.
+export const SLOW_CONNECTION_PROMPT_ENABLED = BETA_BUILD;
 // The map-context readout and the match percentage in the map's status badge.
 export const MAP_CONTEXT_ENABLED = BETA_BUILD;
 export const MATCH_PERCENTAGE_ENABLED = BETA_BUILD;

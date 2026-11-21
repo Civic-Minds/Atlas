@@ -7,6 +7,7 @@ import { shortVersion } from '../../data/whatsNew';
 import { WhatsNewPanel } from '../WhatsNewPanel';
 import { trackEvent, withoutMapPosition } from '../../lib/analytics';
 import { ConsentPill } from '../AnalyticsConsent';
+import { SlowConnectionPill } from '../SlowConnectionPrompt';
 import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
 import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
@@ -136,6 +137,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
         />
       </div>
       {consent.open && <ConsentPill className="max-sm:hidden" choose={consent.choose} />}
+      {consent.slow.open && <SlowConnectionPill className="max-sm:hidden" onAccept={consent.slow.accept} onDecline={consent.slow.decline} />}
     </div>
     {whatsNewOpen && (
       // The map's bottom row turns pointer events off; the panel's backdrop needs them back.

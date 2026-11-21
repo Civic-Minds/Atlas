@@ -1,5 +1,7 @@
-import { MAP_BADGE, Z_HEADER } from '../styles';
-import { MAP_BANNER_SLOT } from '../mapOverlayLayout';
+import { useEffect } from 'react';
+import { Z_HEADER, MAP_CONSENT_SLOT } from '../styles';
+import { setSlowPrompt, useConsentPrompt } from '../lib/consentPrompt';
+import { MapPromptPill } from './AnalyticsConsent';
 import { SLOW_CONNECTION_ACCEPT, SLOW_CONNECTION_DECLINE, SLOW_CONNECTION_PROMPT } from '../content/noticeCopy';
 
 const ANSWERED_KEY = 'atlas_slow_connection_answered';
@@ -12,20 +14,30 @@ export function rememberSlowPromptAnswered(): void {
   try { sessionStorage.setItem(ANSWERED_KEY, 'true'); } catch { /* the answer lasts only for this page then */ }
 }
 
-const BUTTON = 'shrink-0 transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
-
-/** CIV-98: offered, never applied silently. While it shows, the map already loads like Data saver. Same slot and look as the update banner. */
-export default function SlowConnectionPrompt({ onAccept, onDecline }: { onAccept: () => void; onDecline: () => void }) {
+/** The prompt's pill: the fixed copy below, and a last pill of the map's bottom-left row (MapAttribution). */
+export function SlowConnectionPill({ className = '', onAccept, onDecline }: { className?: string; onAccept: () => void; onDecline: () => void }) {
   return (
-    <div
+    <MapPromptPill
       role="status"
-      aria-live="polite"
-      data-map-overlay="slow-connection-prompt"
-      className={`${MAP_BANNER_SLOT} min-h-8 max-w-[calc(100vw-2rem)] ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}
-    >
-      <span>{SLOW_CONNECTION_PROMPT}</span>
-      <button type="button" onClick={onAccept} className={`${BUTTON} text-[var(--text-primary)]`}>{SLOW_CONNECTION_ACCEPT}</button>
-      <button type="button" onClick={onDecline} className={BUTTON}>{SLOW_CONNECTION_DECLINE}</button>
-    </div>
+      wrapOnPhones
+      className={className}
+      label={SLOW_CONNECTION_PROMPT}
+      message={SLOW_CONNECTION_PROMPT}
+      actions={[{ label: SLOW_CONNECTION_ACCEPT, onClick: onAccept }, { label: SLOW_CONNECTION_DECLINE, onClick: onDecline }]}
+    />
   );
+}
+
+/**
+ * CIV-98: offered, never applied silently. While it shows, the map already loads like Data saver. It sits where the
+ * analytics prompt does (Ryan, 2026-11-20: "The same lace the analytics one goes right"): on sm and up the map's
+ * bottom-left pill row draws it as a last pill; this fixed copy shows only on phones and on pages without that row.
+ */
+export default function SlowConnectionPrompt({ onAccept, onDecline }: { onAccept: () => void; onDecline: () => void }) {
+  const { rows } = useConsentPrompt();
+  useEffect(() => {
+    setSlowPrompt(true, onAccept, onDecline);
+    return () => setSlowPrompt(false, () => {}, () => {});
+  }, [onAccept, onDecline]);
+  return <SlowConnectionPill className={`${MAP_CONSENT_SLOT} ${rows > 0 ? 'sm:hidden' : ''} max-w-[calc(100vw-2rem)] ${Z_HEADER}`} onAccept={onAccept} onDecline={onDecline} />;
 }
