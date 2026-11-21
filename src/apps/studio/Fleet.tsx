@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { MAP_COLOURS_LABEL, TIME_LABEL } from '../../content/noticeCopy';
+import { MAP_COLOURS_LABEL, TIME_LABEL, loadingText } from '../../content/noticeCopy';
+import { vehiclesWord } from '../../../shared/modeVehicles';
 import { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
@@ -196,7 +197,9 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                 <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date), routeModes) || vehiclesNeededTitle(routeModes)}>
                   {/* CIV-2003: a line inside the card is the card's body text. */}
                   {vehicles === 'missing' ? <CardBodyText className="!mt-0">{C.noData}</CardBodyText>
-                    : routeGroup ? <StudioGroupFigures group={routeGroup} /> : vehicles ? <StudioGroupFigures group={null} modes={routeModes} /> : null}
+                    : routeGroup ? <StudioGroupFigures group={routeGroup} /> : vehicles ? <StudioGroupFigures group={null} modes={routeModes} />
+                    // CIV-2003: while the vehicles load, the shared loading line in the mode word, as the no-service line.
+                    : <PanelEmpty kind="loading" inline>{loadingText(vehiclesWord(routeModes))}</PanelEmpty>}
                 </SidebarCardSection>
               )}
             </SidebarCardShell>
@@ -207,7 +210,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
         // "This panel looks different than any other panel in Atlas"): Live's agency panel, a plain body and one Widget card.
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={vehiclesNeededTitle(agencyModes)}>
           {/* CIV-2003: PanelBody is the shared scroll area; an empty panel says so in the shared line, a lead line is card body text. */}
-          <PanelBody className={vehicles === 'missing' ? undefined : 'px-4 pt-3 pb-3'}>
+          <PanelBody className={vehicles ? (vehicles === 'missing' ? undefined : 'px-4 pt-3 pb-3') : undefined}>
             {vehicles === 'missing' ? <PanelEmpty>{C.noData}</PanelEmpty>
               : vehicles ? (
                 <>
@@ -216,7 +219,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                     <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} />
                   </Widget>
                 </>
-              ) : null}
+              ) : <PanelEmpty kind="loading">{loadingText(vehiclesWord(agencyModes))}</PanelEmpty>}
           </PanelBody>
         </StudioPanel>
       ) : (
