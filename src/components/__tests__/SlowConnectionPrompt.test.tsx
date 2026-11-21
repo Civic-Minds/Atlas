@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import SlowConnectionPrompt, { readSlowPromptAnswered, rememberSlowPromptAnswered } from '../SlowConnectionPrompt';
 import { isSlowConnection, useSlowConnection } from '../../utils/slowConnection';
+import { MAP_PROMPT_SLOT } from '../../styles';
 import { SLOW_CONNECTION_ACCEPT, SLOW_CONNECTION_DECLINE, SLOW_CONNECTION_PROMPT } from '../../content/noticeCopy';
 
 describe('isSlowConnection', () => {
@@ -39,16 +40,14 @@ describe('useSlowConnection', () => {
 describe('SlowConnectionPrompt', () => {
   it('offers the choice with the agreed words and answers each way', () => {
     const accept = vi.fn(); const decline = vi.fn();
-    const { container } = render(<SlowConnectionPrompt onAccept={accept} onDecline={decline} />);
-    // CIV-2004: centred in the update banner's slot on sm and up; under the header on phones (CSS shows one of the two).
-    const [wide, phone] = screen.getAllByRole('status');
-    expect(wide).toHaveTextContent(SLOW_CONNECTION_PROMPT);
-    expect(wide.className).toContain('left-1/2');
-    expect(wide.className).toContain('max-sm:hidden');
-    expect(phone.className).toContain('sm:hidden');
-    expect(container.querySelectorAll('[role="status"]').length).toBe(2);
-    fireEvent.click(screen.getAllByRole('button', { name: SLOW_CONNECTION_ACCEPT })[0]);
-    fireEvent.click(screen.getAllByRole('button', { name: SLOW_CONNECTION_DECLINE })[0]);
+    render(<SlowConnectionPrompt onAccept={accept} onDecline={decline} />);
+    // CIV-2004: one pill in the prompts' centred slot, as the analytics prompt and the update notice.
+    const pill = screen.getByRole('status');
+    expect(pill).toHaveTextContent(SLOW_CONNECTION_PROMPT);
+    expect(pill.className).toContain(MAP_PROMPT_SLOT);
+    expect(document.documentElement.dataset.consentPrompt).toBe('');
+    fireEvent.click(screen.getByRole('button', { name: SLOW_CONNECTION_ACCEPT }));
+    fireEvent.click(screen.getByRole('button', { name: SLOW_CONNECTION_DECLINE }));
     expect(accept).toHaveBeenCalledTimes(1);
     expect(decline).toHaveBeenCalledTimes(1);
   });
