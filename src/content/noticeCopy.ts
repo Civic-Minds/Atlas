@@ -714,7 +714,7 @@ export const EXPLAINERS = {
   'edge-gap-allowance': { code: 'E7', title: 'First and last trips' },
   'weekday-variation': { code: 'E8', title: 'Weekday variation' },
   'route-rating': { code: 'E9', title: 'Route rating' },
-  /** E10 (CIV-1978): title and paragraph 2 pending Ryan's word-for-word OK. */
+  /** E10 (CIV-1978): title and paragraph 2 approved by Ryan (2026-11-20). */
   'official-data': { code: 'E10', title: 'Official data' },
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
@@ -773,8 +773,8 @@ export const EXPLAINER_PIECES = {
   REPORT_WITH_FLAG: { code: 'X14', text: "If something looks wrong, report it with the flag on this card." },
   // Paragraph 2 of E9 (CIV-1199), after X9.
   STRETCH_AND_BRANCHES_SEPARATE: { code: 'X15', text: "We check the shared stretch and each branch separately, which means one busier part can’t make the whole route look more frequent than it is." },
-  // Paragraph 2 of E10 (CIV-1978), pending Ryan's word-for-word OK.
-  OFFICIAL_DATA_AS_PUBLISHED: { code: 'X16', text: "This data is shown as the agency published it." },
+  // Paragraph 2 of E10 (CIV-1978), approved word for word by Ryan (2026-11-20).
+  OFFICIAL_DATA_AS_PUBLISHED: { code: 'X16', text: "We show this data as the agency published it." },
 } as const satisfies Record<string, ExplainerPieceDef>;
 export type ExplainerPiece = keyof typeof EXPLAINER_PIECES;
 export const pieceText = (piece: ExplainerPiece): string => EXPLAINER_PIECES[piece].text;

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Barrie’s on-demand card says its stops come from official data**: a notice at the foot of the card says the stops are from the agency’s official data and their accuracy can’t be confirmed, with a Learn more explainer
 - **Live's trip-time card no longer shows a "1 in 10 over" figure or band (local only)**: the same riddle-like stat dropped from the late-stops table; the card keeps scheduled and usual trip times
 - **Live's late-stops table and Explore cards no longer show a "1 in 10 leave" figure (local only)**: it read as a riddle; the typical delay and share late already say how late a stop runs, as Studio does
 - **The Atlas Studio pilot server can say how many buses a route needs**: bus counts only worked on Atlas's own computer, so pilot testers couldn't ask ([#1634](https://github.com/Civic-Minds/Atlas/issues/1634))
