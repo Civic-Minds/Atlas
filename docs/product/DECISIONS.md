@@ -222,6 +222,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a share before and after reads "10% → 41%" (was "10% to 41%"); where a summary lacks both shares, nothing shows (the "+31 pt" points fallback is gone). "Figures updated Oct 16, 6:12 PM" (was "Built …" in each Live page's method section) sits in the About panel beside the schedule refresh line, and in Studio's About under its Live part.
   - Why: Ryan, 2026-11-21: "Should the "built XYZ" be reworded then put into the about area similar to how the last date GTFS was updated is?", "Why would we not put +31%", "10% arrow 31%?", then "1" to "Use the arrow, "10% → 41%"; move the "Figures updated" line to About; drop "+31 pt" (Recommended)."
   - Source: Linear CIV-1814 (item 41), CIV-2038
+- **Studio's cities, and the same Live cities in Studio and the main app**
+  - What: Studio's Schedules and vehicles-needed agencies are Kingston, Hamilton, RTD Denver, Guelph, TTC, YRT and the MBTA (TransLink and OC Transpo out). Studio's Live and the main app's Live list the same cities from one shared list; a city without recordings shows the no-data note.
+  - Why: Ryan, 2026-11-21: "I think Live in Studio and Live in main app should have the same cities available", and "1" to the four focus agencies plus TTC, YRT and the MBTA.
+  - Source: Linear CIV-2046
 
 ### How we talk to riders and planners
 

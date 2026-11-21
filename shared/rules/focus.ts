@@ -38,9 +38,9 @@ export const STUDIO_DEFAULT_AGENCY = 'kingston';
 export const PRODUCT_FOCUS = {
   /** Recorded every minute (TTC, Hamilton and the MBTA, plus Kingston for Studio only): the archive shards marked `recording`. */
   live: RECORDING_SLUGS,
-  /** Agencies with a Schedules file. */
-  studio: ['kingston', 'hamilton', 'rtd-denver', 'guelph'],
-  /** Agencies with a buses-needed file. Local and regional bus only. */
-  vehiclesNeeded: ['kingston', 'hamilton', 'rtd-denver', 'guelph'],
+  /** Agencies with a Schedules file: the four focus agencies plus TTC, YRT and the MBTA (Ryan, 2026-11-21, option 1, CIV-2046). */
+  studio: ['kingston', 'hamilton', 'rtd-denver', 'guelph', 'ttc', 'yrt', 'mbta'],
+  /** Agencies with a buses-needed file: the same seven (CIV-2046). Local and regional bus only. */
+  vehiclesNeeded: ['kingston', 'hamilton', 'rtd-denver', 'guelph', 'ttc', 'yrt', 'mbta'],
 } as const satisfies Record<string, readonly string[]>;
 
