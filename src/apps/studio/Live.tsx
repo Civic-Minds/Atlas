@@ -3,6 +3,7 @@ import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACE
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
 import { PanelBody } from '../../components/ui/Panel';
+import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
 import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
@@ -112,13 +113,18 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const byKey = (keys: readonly string[]): PanelWidget[] => keys.flatMap(k => m.routeBody?.filter(w => w.key === k) ?? []);
   const routeWidgets = byKey(['loading', 'falls-behind', 'week', 'late-hours', 'problems']);
 
+  // CIV-2001: the top bar's search finds this page's routes; its results take the panel's place while it's open.
+  const searchOpen = useStudioSearchOpen();
+  const searchRoutes = useMemo(() => s.routes.map(r => ({ route: r.route, longName: r.longName ?? null, routeType: r.mode ?? null })), [s.routes]);
   const routeRow = route ? s.routes.find(r => r.route === route) : null;
   const label = route ? routeLabels({ shortName: route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
 
   return (
     <>
       <StudioChips container={headerPortal} menus={menus} settings={route ? cutoffsSection(cutoffs, setCutoffs) : undefined} />
-      {route && label ? (
+      {searchOpen ? (
+        <StudioRouteSearch agencySlug={slug} agencyName={agencyName} routes={searchRoutes} onPick={r => m.openRoute(r)} frameStyle={frameStyle} />
+      ) : route && label ? (
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={label.text}>
           <PanelBody className="px-4 pt-4 pb-2">
             <SidebarCardShell>
