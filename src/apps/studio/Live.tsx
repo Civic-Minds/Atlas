@@ -30,6 +30,7 @@ import RouteNow from './RouteNow';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { CutoffFigures, cutoffsSection, type SetCutoffs } from './StudioCutoffs';
+import { liveRouteNumber } from '../../../shared/liveAgency';
 
 /**
  * Live, the first page of Atlas Studio on the main map (CIV-1828 step 2): where vehicles lose time, stop to stop, from the
@@ -115,15 +116,15 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
 
   // CIV-2001: the top bar's search finds this page's routes; its results take the panel's place while it's open.
   const searchOpen = useStudioSearchOpen();
-  const searchRoutes = useMemo(() => s.routes.map(r => ({ route: r.route, longName: r.longName ?? null, routeType: r.mode ?? null })), [s.routes]);
+  const searchRoutes = useMemo(() => s.routes.map(r => ({ route: liveRouteNumber(r), longName: r.longName ?? null, routeType: r.mode ?? null })), [s.routes]);
   const routeRow = route ? s.routes.find(r => r.route === route) : null;
-  const label = route ? routeLabels({ shortName: route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
+  const label = route ? routeLabels({ shortName: routeRow ? liveRouteNumber(routeRow) : route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
 
   return (
     <>
       <StudioChips container={headerPortal} menus={menus} settings={route ? cutoffsSection(cutoffs, setCutoffs) : undefined} />
       {searchOpen ? (
-        <StudioRouteSearch agencySlug={slug} agencyName={agencyName} routes={searchRoutes} onPick={r => m.openRoute(r)} frameStyle={frameStyle} />
+        <StudioRouteSearch agencySlug={slug} agencyName={agencyName} routes={searchRoutes} onPick={n => m.openRoute(s.routes.find(r => liveRouteNumber(r) === n)?.route ?? n)} frameStyle={frameStyle} />
       ) : route && label ? (
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={label.text}>
           <PanelBody className="px-4 pt-4 pb-2">

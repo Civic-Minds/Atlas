@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { MISSING_VALUE } from '../../../../shared/missingValue';
-import type { AgencySummary } from '../../../../shared/liveAgency';
+import { liveRouteNumber, type AgencySummary } from '../../../../shared/liveAgency';
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
 import { routeLabels } from '../../../utils/format';
 import { measureLabel, type MapMeasure } from '../routeMapModel';
@@ -28,7 +28,7 @@ export default function OverviewList({ s, measure: chosen, band = 'all', route, 
       </div>
       <ul className="m-0 mt-1 min-h-0 flex-1 overflow-hidden p-0">
         {shown.map(({ r, f }, i) => {
-          const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
+          const l = routeLabels({ shortName: liveRouteNumber(r), longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
           return (
             <li key={r.route} className="list-none">
               <button type="button" onClick={() => onPick(r.route)} aria-current={r.route === route ? 'true' : undefined}

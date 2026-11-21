@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Hamilton is in Studio’s Live (local only)**: its routes show their own numbers (1 King, not the feed’s 5828), alongside TTC and Kingston
 - **The analytics, Data saver and update notices sit in one place**: each is centred, under the header on phones and just above the map’s bottom row on desktop; the analytics notice was at the end of the bottom-left pills
 - **Studio has the main map’s search box (local only)**: it finds the open page’s routes by number or name and opens the one you pick, with results in the map’s own list
 - **Beta’s Data saver prompt is centred above the map’s bottom row on desktop**: it sits where the update notice does, instead of at the end of the bottom-left pills; phones still show it under the header
