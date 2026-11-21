@@ -169,7 +169,12 @@ export async function buildIndex(onProgress?: (done: number, total: number) => v
     const days: IndexedAgency['days'] = {};
     for (const d of DAY_TYPES) {
       const routes = await routesOn(a, d);
-      if (routes.length) days[d] = routes.map(r => ({ route: r.name, name: r.longName, mode: r.mode, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k).waitMinutes])) }));
+      if (routes.length) days[d] = routes.map(r => {
+        // CIV-2014: ranking counts by the map filter's reading, as routes_at_frequency does.
+        const readings = PERIOD_KEYS.map(k => [k, periodFigure(r, k).filter!] as const);
+        const breaks = Object.fromEntries(readings.filter(([, f]) => f.breaks).map(([k, f]) => [k, f.breaks]));
+        return { route: r.name, name: r.longName, mode: r.mode, wait: Object.fromEntries(readings.map(([k, f]) => [k, f.wait])), ...(Object.keys(breaks).length ? { breaks } : {}) };
+      });
     }
     const railRoutes = (await routesOn(a, 'Weekday')).filter(r => RAIL_MODE_LABELS.has(r.mode)).length;
     out.push({ slug: a.slug, name: a.name, region: a.region ?? null, country: countryForRegion(a.region), partOf: meta.get(a.slug)?.parentAgency ?? null, railRoutes, days });

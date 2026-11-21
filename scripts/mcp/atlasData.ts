@@ -10,11 +10,11 @@
  * Public agencies only (public/data/catalog-public.json): a beta-only or unlaunched agency is never answered.
  */
 import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
-import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RouteLabel, RouteSummary } from '../../shared/mcpStore';
+import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RankWait, RouteLabel, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { routeGroupKey } from '../../shared/routeGroupKey';
-import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
+import { normalizeRouteFilterFeatures, readingPassesHeadwayFilter, routeFilterReading, type RouteFilterReading } from '../../shared/routeHeadwayFilter';
 import { frequencyChange } from '../../shared/frequencyChange';
 import { clockTime, hourRange } from '../../shared/timeText';
 import { compareRouteNumber } from '../../shared/sortCompare';
@@ -201,6 +201,7 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
     shown: shown ?? (trips > 0 ? `some trips (${trips}), but no regular frequency` : 'no service'),
     ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
     ...(edgeWait(shown, waitMinutes) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
+    filter: routeFilterReading(r.rows, period),
   };
 }
 
@@ -261,12 +262,30 @@ export async function routesByHours(agency: CatalogAgency, day: DayType, endsBef
   return out.sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name));
 }
 
+/**
+ * Whether a route's period figure passes "every N min or less" as the map's filter decides (routePassesHeadwayFilter, by its
+ * reading: CIV-2014, so the MCP never lists a route the map hides, such as one whose last wait breaks the grade, CIV-238).
+ * A summary built before the reading counts by waitMinutes.
+ */
+export function figurePasses(f: Pick<PeriodFigure, 'waitMinutes' | 'filter'>, every: number): boolean {
+  return readingPassesHeadwayFilter(f.filter ?? { wait: f.waitMinutes, breaks: 0 }, every);
+}
+
+/** A ranking file's wait as a filter reading (RankWait). */
+export function rankWaitReading(w: RankWait | undefined): RouteFilterReading {
+  return Array.isArray(w) ? { wait: w[0], breaks: w[1] } : { wait: w ?? null, breaks: 0 };
+}
+/** Whether a ranking wait passes "every N or better" as the map's filter decides (figurePasses for the ranking files). */
+export const rankWaitPasses = (w: RankWait | undefined, every: number): boolean => readingPassesHeadwayFilter(rankWaitReading(w), every);
+/** A ranking wait's number, for sorting and showing. */
+export const rankWaitValue = (w: RankWait | undefined): number | null => rankWaitReading(w).wait;
+
 /** The routes at or under `every` minutes in a period on a day, best first. */
 export async function routesMeeting(agency: CatalogAgency, day: DayType, period: PeriodKey, every: number) {
   const all = await routeList(agency, day);
   const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
   const running = figures.filter(f => f.waitMinutes != null);
-  const meeting = running.filter(f => f.waitMinutes! <= every).sort((a, b) => a.waitMinutes! - b.waitMinutes!);
+  const meeting = figures.filter(f => figurePasses(f, every)).sort((a, b) => (a.waitMinutes ?? a.filter?.wait ?? 0) - (b.waitMinutes ?? b.filter?.wait ?? 0));
   return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
 }
 
@@ -301,7 +320,7 @@ export async function entryRoutesMeeting(entry: AgencyEntry, day: DayType, perio
   }
   const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
   const running = figures.filter(f => f.waitMinutes != null);
-  const meeting = running.filter(f => f.waitMinutes! <= every).sort((a, b) => a.waitMinutes! - b.waitMinutes!);
+  const meeting = figures.filter(f => figurePasses(f, every)).sort((a, b) => (a.waitMinutes ?? a.filter?.wait ?? 0) - (b.waitMinutes ?? b.filter?.wait ?? 0));
   return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
 }
 
@@ -408,7 +427,7 @@ export function kindOfAgency(a: Pick<IndexedAgency, 'railRoutes' | 'days'>): 'bu
 /** The ranking list's row for an indexed agency. */
 export const rankAgencyOf = (a: IndexedAgency): RankAgency => ({ slug: a.slug, name: a.name, region: a.region, country: a.country, partOf: a.partOf, railRoutes: a.railRoutes, weekdayRoutes: a.days.Weekday?.length ?? 0, kind: kindOfAgency(a) });
 /** Each route's wait in each part of the day, in the shared PERIOD_KEYS order. */
-export const waitsOf = (routes: NonNullable<IndexedAgency['days'][DayType]>): Array<Array<number | null>> => routes.map(r => PERIOD_KEYS.map(k => r.wait[k] ?? null));
+export const waitsOf = (routes: NonNullable<IndexedAgency['days'][DayType]>): Array<Array<RankWait>> => routes.map(r => PERIOD_KEYS.map(k => { const w = r.wait[k] ?? null; const b = r.breaks?.[k]; return w != null && b ? [w, b] : w; }));
 export const labelsOf = (routes: NonNullable<IndexedAgency['days'][DayType]>): RouteLabel[] => routes.map(r => [r.route, r.name]);
 
 /** The agencies ranking reads, or null when the index hasn't been built. A hosted store gives them ready-made, without any agency's routes. */
@@ -417,7 +436,7 @@ export async function rankAgencies(): Promise<RankAgency[] | null> {
   return (await agencyIndex())?.map(rankAgencyOf) ?? null;
 }
 /** Each agency's route waits on a day. */
-export async function rankWaits(day: DayType): Promise<Record<string, Array<Array<number | null>>>> {
+export async function rankWaits(day: DayType): Promise<Record<string, Array<Array<RankWait>>>> {
   if (store.rankWaits) return (await store.rankWaits(day)) ?? {};
   return Object.fromEntries(((await agencyIndex()) ?? []).map(a => [a.slug, waitsOf(a.days[day] ?? [])]));
 }

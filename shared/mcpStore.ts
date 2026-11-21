@@ -3,6 +3,7 @@
  * Mac (scripts/mcp/diskStore.ts), the hosted one reads the published release on R2, and tests use memory. The tools
  * never touch a file or a URL themselves, so every store must give them the same answers from the same data.
  */
+import type { RouteFilterReading } from './routeHeadwayFilter';
 import type { DayType } from './rules/days';
 import type { PeriodKey } from './config';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
@@ -21,10 +22,17 @@ export interface McpStop { id: string; name: string; lat: number; lon: number; r
 export interface McpAgencyMeta { shortName: string; parentAgency: string | null; /** The agency's own time zone (config/agencies/<slug>.json), for "now" (#1627). */ timezone?: string | null }
 
 /** One agency's routes and each route's waitMinutes per period, on each day type: what ranking reads. */
-export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; /** The larger operator this feed is part of (MTA New York for its borough bus feeds), if any. */ partOf: string | null; /** Weekday routes that are rail (subway, light rail, commuter rail, streetcar, monorail). */ railRoutes: number; days: Partial<Record<DayType, Array<{ route: string; name: string | null; mode?: string; wait: Partial<Record<PeriodKey, number | null>> }>>> }
+export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; /** The larger operator this feed is part of (MTA New York for its borough bus feeds), if any. */ partOf: string | null; /** Weekday routes that are rail (subway, light rail, commuter rail, streetcar, monorail). */ railRoutes: number; days: Partial<Record<DayType, Array<{ route: string; name: string | null; mode?: string; wait: Partial<Record<PeriodKey, number | null>>; /** CIV-2014: the filter reading's breaks per period, where not 0. */ breaks?: Partial<Record<PeriodKey, number>> }>>> }
 
-/** One part of the day's figure for a route, as the map shows it (periodFigure in scripts/mcp/atlasData.ts). */
-export interface PeriodFigure { period: string; hours: string; waitMinutes: number | null; shown: string; meaning?: string }
+/** One route's wait in one period in the ranking files: the filter reading's wait, or [wait, breaks] where its edge waits break a grade (CIV-2014). */
+export type RankWait = number | null | [number, number];
+
+/**
+ * One part of the day's figure for a route, as the map shows it (periodFigure in scripts/mcp/atlasData.ts). `filter` is the
+ * map filter's reading (shared/routeHeadwayFilter.ts routeFilterReading): what "every N or better" counts by (CIV-2014).
+ * Summaries built before it have none; they count by waitMinutes.
+ */
+export interface PeriodFigure { period: string; hours: string; waitMinutes: number | null; shown: string; meaning?: string; filter?: RouteFilterReading }
 
 /**
  * Everything the list-style tools need about one route on one day, so they never read its rows: its names and mode,
@@ -85,7 +93,7 @@ export interface AtlasStore {
   /** The agencies ranking reads. */
   rankAgencies?(): Promise<RankAgency[] | null>;
   /** Each agency's route waits on a day: per route, the wait in each part of the day (shared PERIOD_KEYS order). */
-  rankWaits?(day: DayType): Promise<Record<string, Array<Array<number | null>>> | null>;
+  rankWaits?(day: DayType): Promise<Record<string, Array<Array<RankWait>>> | null>;
   /** An agency's route names by day, in the order of its waits. */
   rankLabels?(slug: string): Promise<Partial<Record<DayType, RouteLabel[]>> | null>;
   /** Each agency's weekday route names as one text, a line per route, for finding a service brand in route names. */

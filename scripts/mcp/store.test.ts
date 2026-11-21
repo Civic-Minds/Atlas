@@ -99,3 +99,48 @@ describe('a parent agency is one entry in the tools (CIV-1963)', () => {
     expect(withParts.parts['MTA New York'].map(p => p.split(' | ')[0])).toEqual(['NYCT-BUS-MANHATTAN', 'MTA-BUS-COMPANY']);
   });
 });
+
+describe('routes_at_frequency counts as the map filter does (CIV-2014, #1643)', () => {
+  // Route 29 as recorded, and a copy (929) whose last midday wait breaks the 20 and 30 grades (CIV-238 bits 4 + 8).
+  const broken = lineFeatures.map(f => ({ ...f, properties: { ...f.properties, routeId: '929', routeShortName: '929', routeEdgeWaitFailByPeriod: { midday: 12 } } }));
+  const files = { fixture: JSON.parse(JSON.stringify([...lineFeatures, ...broken, ...stopFeatures])) };
+
+  it('lists exactly the routes routePassesHeadwayFilter passes, for every period and threshold', async () => {
+    const data = await import('./atlasData');
+    const { routePassesHeadwayFilter } = await import('../../shared/routeHeadwayFilter');
+    data.useStore(memoryStore({ catalog: [AGENCY], meta: { fixture: { shortName: 'FX', parentAgency: null } }, files }));
+    const a = (await data.findAgency('FX'))!;
+    const routes = await data.routesOn(a, 'Weekday');
+    expect(routes.map(r => r.name).sort()).toEqual(['29', '929']);
+    for (const period of PERIOD_KEYS) {
+      for (const every of [5, 10, 12, 15, 17, 20, 25, 30, 45, 60]) {
+        const map = routes.filter(r => routePassesHeadwayFilter(r.rows, period, undefined, every)).map(r => r.name).sort();
+        const mcp = (await data.routesMeeting(a, 'Weekday', period, every)).meeting.map(m => m.route).sort();
+        expect(mcp, `${period} every ${every}`).toEqual(map);
+      }
+    }
+    // The broken copy keeps its number but is left out where its last wait breaks the grade, as the map hides it.
+    expect((await data.routesMeeting(a, 'Weekday', 'midday', 20)).meeting.map(m => m.route)).toEqual(['29']);
+    expect((await data.routesMeeting(a, 'Weekday', 'midday', 60)).meeting.map(m => m.route).sort()).toEqual(['29', '929']);
+  });
+
+  it('ranking reads the same decision from its wait files', async () => {
+    const data = await import('./atlasData');
+    data.useStore(memoryStore({ catalog: [AGENCY], meta: { fixture: { shortName: 'FX', parentAgency: null } }, files }));
+    const a = (await data.findAgency('FX'))!;
+    const summaries = await data.routeList(a, 'Weekday');
+    const index = summaries.map(r => {
+      const breaks = Object.fromEntries(PERIOD_KEYS.flatMap(k => r.figures[k].filter!.breaks ? [[k, r.figures[k].filter!.breaks]] : []));
+      return { route: r.name, name: r.longName, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, r.figures[k].filter!.wait])), ...(Object.keys(breaks).length ? { breaks } : {}) };
+    });
+    const waits = data.waitsOf(index);
+    const midday = PERIOD_KEYS.indexOf('midday');
+    for (const every of [10, 15, 17, 20, 30, 60]) {
+      const ranked = summaries.filter((_, i) => data.rankWaitPasses(waits[i][midday], every)).map(r => r.name);
+      expect(ranked, `every ${every}`).toEqual(summaries.filter(r => data.figurePasses(r.figures.midday, every)).map(r => r.name));
+    }
+    // A wait file written before the readings (plain numbers) still counts by its number.
+    expect(data.rankWaitPasses(16, 20)).toBe(true);
+    expect(data.rankWaitPasses([16, 12], 20)).toBe(false);
+  });
+});
