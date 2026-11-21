@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Eugene's EmX card names both eastbound routes round the Gateway loop**: the feed gives both one destination, so the card read “to Eugene Station” beside a garbled “to RB)”; they now read “via RiverBend Station” and “via Pheasant Station”
 - **Route cards list branches that had no row of their own**: RTD 15's Saturday trips to Tower Rd were missing from its card, so it read as if every bus went to Picadilly; such a branch now reads where it goes, or where it starts
 - **The reload and Data saver notices are shorter and ask a plain question**: "This page was updated. Reload?" and "Data saver helps on slow connections. Enable?", so all three notices read about the same length
 - **The Studio assistant's "routes every N minutes" counts match the map's frequency filter**: it still read the old whole-route value, so TTC weekday AM every 10 listed 84 routes where the map showed 72; it now reads the same shared-stretch value and leaves out routes the map hides
