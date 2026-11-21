@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio Live's route lines are as thin as Live's**: they were drawn about twice as thick as the same route on the regular Live map
 - **Studio opens on the city the map is showing**: opening Live with the map on Toronto jumped to the agency Studio was last on, such as Hamilton
 - **A picked vehicle on Live keeps its normal dot, just darker**: the bigger dot with a white halo stood out from the rest of the map
 - **Live's list of overlapping vehicles leads with each vehicle**: rows read "Streetcar 4632 · 501", not "501 Streetcar 4632", since each row is one vehicle

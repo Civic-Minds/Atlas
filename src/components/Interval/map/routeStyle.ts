@@ -11,6 +11,10 @@ import { CONTEXT_LINE_COLOUR } from '../../../../shared/rules/colours';
 export const ROUTE_LINE_WIDTH_STOPS = [8, 1.5, 11, 2, 14, 2.5, 17, 3.5] as const;
 export const ROUTE_LINE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], ...ROUTE_LINE_WIDTH_STOPS] as const;
 
+/** The selected route's width, px, at every zoom: the main map's and Live's picked route, and Studio Live's segments (#1661). */
+export const SELECTED_ROUTE_WIDTH_PX = 3.5;
+export const SELECTED_ROUTE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, SELECTED_ROUTE_WIDTH_PX, 17, SELECTED_ROUTE_WIDTH_PX] as const;
+
 /** The Live map's grey context lines (CIV-326), shared with the Live report maps (CIV-1405). */
 export const contextLinePaint = (opacity: number) => ({
   'line-color': CONTEXT_LINE_COLOUR,
