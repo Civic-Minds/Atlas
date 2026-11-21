@@ -16,6 +16,7 @@ import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops
 import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
 import { dropSameSlotSubsetTrips } from '../transforms/same-slot-subset-trips.js';
 import { relabelCtaSameWayLoops } from '../transforms/cta-loop-directions.js';
+import { nameEugeneEmxPatterns } from '../transforms/eugene-emx-patterns.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { mergeIdenticalShapes } from './merge-identical-shapes.js';
 import { splitRoutes, type RouteSplit } from './split-routes.js';
@@ -25,7 +26,7 @@ import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'st-george-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs' | 'cta-loop-directions';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'st-george-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs' | 'cta-loop-directions' | 'eugene-emx-patterns';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -196,6 +197,14 @@ export function normalizeGtfs(
     gtfs = result.gtfs;
     const moved = Object.entries(result.relabelled);
     if (moved.length) onStatus?.(`CTA loops: ${moved.map(([r, n]) => `${r} ${n}`).join(', ')} trip(s) marked the other direction run the same way round as that direction's loops (#1525)`);
+  }
+  if (options?.preprocess === 'eugene-emx-patterns') {
+    const result = nameEugeneEmxPatterns(gtfs);
+    gtfs = result.gtfs;
+    const named = Object.entries(result.renamed);
+    onStatus?.(named.length
+      ? `EmX: two patterns of one headsign that end at different stops each have their own, ${named.map(([h, n]) => `"${h}" (${n} trips)`).join(', ')} (CIV-2012)`
+      : `EmX: feed left as published (${result.reason})`);
   }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);

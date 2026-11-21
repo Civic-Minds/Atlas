@@ -45,6 +45,20 @@ describe('liveArchiveFeeds', () => {
     expect(LIVE_ARCHIVE_BUCKET_BY_SLUG.kingston).toBeUndefined();
   });
 
+  it('records the MBTA Green, Silver and Mattapan lines and buses 23, 57, 66 and 111: positions, archive-only (CIV-1930)', () => {
+    const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === 'mbta');
+    expect(pos?.archiveOnly).toBe(true);
+    expect(pos?.url).toBe('https://cdn.mbta.com/realtime/VehiclePositions.pb');
+    expect(pos?.apiKeyHeader).toBeUndefined();
+    const filter = new RegExp(pos!.routeFilterSource);
+    // Green B-E, Mattapan, Silver Line SL1 741, SL2 742, SL3 743, SL5 749, SLW 746, SL4 751, then buses 111, 57, 66, 23.
+    for (const id of ['Green-B', 'Green-C', 'Green-D', 'Green-E', 'Mattapan', '741', '742', '743', '746', '749', '751', '111', '57', '66', '23']) expect(filter.test(id), id).toBe(true);
+    for (const id of ['Red', 'Orange', 'Blue', 'Green', 'Green-A', 'Green-BX', '1', 'CR-Providence', '57A', '66A', '111A', '570', '2', '230', '231', '28', '74', '7410', '1111', 'Shuttle-AshmontMattapan', 'Mattapan Line', ' 57']) expect(filter.test(id), id).toBe(false);
+    expect(LIVE_ARCHIVE_TRIP_FEEDS.some(f => f.slug === 'mbta')).toBe(false);
+    expect(LIVE_VEHICLE_POSITIONS_FEEDS.mbta).toBeUndefined();
+    expect(LIVE_ARCHIVE_SHARDS.find(s => s.id === 'mbta')).toMatchObject({ positionSlugs: ['mbta'], tripSlugs: [] });
+  });
+
   it('archives Halifax trip + vehicle feeds (no API key)', () => {
     const trip = LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === 'halifax');
     const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === 'halifax');
@@ -68,7 +82,14 @@ describe('recording shards match the archiver Workers', () => {
   it('marks exactly the shards whose Worker has a cron trigger', () => {
     for (const s of LIVE_ARCHIVE_SHARDS) expect(crons.get(s.id), s.id).toBe('recording' in s && s.recording === true);
   });
-  it('records TTC, Hamilton and Kingston', () => {
-    expect([...RECORDING_SLUGS].sort()).toEqual(['hamilton', 'kingston', 'ttc']);
+  it('gives every shard without a cron a pause date and reason, and none to a recording shard', () => {
+    for (const s of LIVE_ARCHIVE_SHARDS) {
+      const recording = 'recording' in s && s.recording === true;
+      expect('paused' in s, s.id).toBe(!recording);
+      if ('paused' in s) expect(s.paused.since, s.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+  it('records TTC, Hamilton, Kingston and the MBTA Green Line', () => {
+    expect([...RECORDING_SLUGS].sort()).toEqual(['hamilton', 'kingston', 'mbta', 'ttc']);
   });
 });

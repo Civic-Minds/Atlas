@@ -82,7 +82,7 @@
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 10,
-      "routeHeadwayMismatches": 20,
+      "routeHeadwayMismatches": 19,
       "featureCount": 2048,
       "feedExpiry": "20270417",
       "routeCount": 261,
@@ -91,7 +91,7 @@
       "mismatchRoutes": 11,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-18"
+    "checkedAt": "2026-11-21"
   },
   "lastFeedExpiry": "20270417",
   "lastPeekedExpiry": "20270417",

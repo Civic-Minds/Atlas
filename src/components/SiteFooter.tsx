@@ -69,7 +69,7 @@ export default function SiteFooter() {
   const columns = GRID_COLS[groups.length] ? groups.length : 3;
   const [legal1, legal2, legal3] = LEGAL_START[columns];
   return (
-    <footer className="mt-8 pt-5 sm:[html[data-consent-prompt]_&]:pb-16 text-sm text-[var(--text-dim)]" aria-label={SITE_FOOTER_LABEL}>
+    <footer className="mt-8 pt-5 sm:[html[data-consent-prompt]_&]:pb-28 text-sm text-[var(--text-dim)]" aria-label={SITE_FOOTER_LABEL}>
       <div className={`grid grid-cols-3 gap-x-4 gap-y-6 ${GRID_COLS[columns]}`}>
         <div className="col-span-3 sm:col-span-1">
           <AtlasLogo href={ABOUT_HOME_PATH} ariaLabel={ATLAS_BYLINE} showMark={false} size="page" />

@@ -1,5 +1,5 @@
 /**
- * CIV-1814 item 38: the one rule for "did this route's frequency change?", for Studio's Schedule Changes and History's
+ * CIV-1814 item 38: the one rule for "did this route's frequency change?", for Studio's Schedules and History's
  * change box. Ryan, 2026-11-17 ("1", the full grade list): a change counts when a route moves to a different grade on
  * the one grading scale (TIER_MAXES: internal 5 and 8, public 10, 15, 20, 30, 60, then Infrequent), and bigger grade
  * jumps rank higher. So 30 → 29 min is no change (both grade 30), while 31 → 29 is one step. The grades come from

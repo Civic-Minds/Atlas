@@ -11,15 +11,28 @@ import * as data from './atlasData';
 import { headwayEvery } from '../../shared/headwayText';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { LIVE_TOOLS, liveHandlers } from './liveTools';
-import { needAgency, needPeriod, window, mapLink, validThrough, SOURCE, windowNote, type Args } from './toolHelpers';
+import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
+import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
+import { needAgency, needPeriod, mapLink, validThrough, SOURCE, windowNote, nowAt, nowBlock, periodOrNow, windowOrNow, type Args } from './toolHelpers';
+import { isNow } from './nowClock';
+import { STUDIO_TARGETS, groupAtTarget } from '../../shared/studioVehicles';
 
 export * from './toolDefs';
 export * from './toolHelpers';
 export { LIVE_TOOLS };
 
+/** Days after which a schedule comparison may no longer be the agency's latest change (#1624: Hamilton's compared two spring 2026 schedules in November). */
+export const COMPARISON_STALE_DAYS = 45;
+/** A note when a comparison's later schedule is from well before today, so an answer doesn't call a route gone that runs now. */
+export function staleComparisonNote(afterYmd: string, nowMs: number): { staleNote?: string } {
+  const after = Date.parse(`${afterYmd.slice(0, 4)}-${afterYmd.slice(4, 6)}-${afterYmd.slice(6, 8)}T12:00:00Z`);
+  if (Number.isNaN(after) || (nowMs - after) / 86_400_000 <= COMPARISON_STALE_DAYS) return {};
+  return { staleNote: 'This comparison is between schedules as of those dates. The agency may have changed its schedule since, so before saying a route was removed or cut, check route_frequency for today\'s schedule.' };
+}
+
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   ...liveHandlers,
-  list_agencies: async ({ query, region, country, near, km }) => {
+  list_agencies: async ({ query, region, country, near, km, include_parts }) => {
     if (near != null) {
       const res = await data.agenciesNear(String(near), km != null ? Number(km) : 60);
       if (!res) throw new Error(`No agency or city matching "${near}".`);
@@ -27,65 +40,108 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     }
     const q = String(query ?? '').trim().toLowerCase(), reg = String(region ?? '').trim().toLowerCase(), ctry = String(country ?? '').trim();
     const all = await data.availableAgencies();
-    if (!q && !reg && !ctry) return { agencies: all.length, note: 'Filter by name or city, region or country to list them.' };
-    const hits = all.filter(a => (!q || [a.slug, a.name, ...(a.cities ?? [])].some(x => x.toLowerCase().includes(q)))
-      && (!reg || (a.region ?? '').toLowerCase() === reg)
-      && (!ctry || data.sameCountry(countryForRegion(a.region), ctry)));
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one row under its name.
+    const entries = groupAgencies(all);
+    if (!q && !reg && !ctry) return { agencies: entries.length, note: 'Filter by name or city, region or country to list them.' };
+    const hitGroups = entries.filter(g => {
+      const home = groupHome(g);
+      return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => x.toLowerCase().includes(q))) || g.members.some(a => [a.slug, a.name, ...(a.cities ?? [])].some(x => x.toLowerCase().includes(q))))
+        && (!reg || g.members.some(a => (a.region ?? '').toLowerCase() === reg))
+        && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
+    });
+    const earliest = (xs: Array<string | null>) => xs.filter((x): x is string => !!x).sort()[0] ?? null;
+    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, end: earliest(g.members.map(m => validThrough(m))), parts: g.parent ? g.members : null }));
+    // include_parts (#1625): a parent agency's feeds too, each with its own schedule end, as rank_agencies lists them.
+    const parts = include_parts === true ? Object.fromEntries(hits.slice(0, 40).filter(h => h.parts).map(h => [h.name, h.parts!.map(m => `${m.name} | ${validThrough(m) ?? ''}`)])) : null;
     if (!hits.length && q && !reg && !ctry) {
       // A service brand is not an agency name (Viva is part of York Region Transit): look for it in route names.
       const inRoutes = await data.agenciesWithRouteName(q);
       if (inRoutes.length) return { matches: 0, note: `No agency is named "${query}". It appears in route names at these agencies, so it may be a service run by one of them: ${inRoutes.slice(0, 8).map(x => x.agency).join(', ')}.`, inRouteNames: inRoutes.slice(0, 8) };
     }
-    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', validThrough(a) ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule valid through' } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
   },
   rank_agencies: async (args) => {
-    const agencies = await data.rankAgencies();
-    if (!agencies) throw new Error('The agency index has not been built for the current data. Run: nice -n 15 npx tsx scripts/mcp/buildIndex.ts');
+    const feeds = await data.rankAgencies();
+    if (!feeds) throw new Error('The agency index has not been built for the current data. Run: nice -n 15 npx tsx scripts/mcp/buildIndex.ts');
+    if (isNow(args.period)) throw new Error('A ranking spans agencies with their own clocks, so it takes a part of the day, not "now". Use routes_at_frequency with period "now" for one agency.');
     const dayType = data.parseDay(args.day), key = needPeriod(args.period), minutes = Number(args.every);
     let lo = args.min_routes != null ? Number(args.min_routes) : 0, hi = args.max_routes != null ? Number(args.max_routes) : Infinity;
     let like: string | null = null;
     let kind: 'bus' | 'rail' | 'ferry' | null = args.kind === 'bus' || args.kind === 'rail' || args.kind === 'ferry' ? args.kind : null;
     const KIND_TEXT = { bus: 'buses only', rail: 'with rail', ferry: 'ferries only' };
     const ends = new Map((await data.publicAgencies()).map(x => [x.slug, validThrough(x)]));
-    let skipParts = false;
+    const waits = await data.rankWaits(dayType);
+    const at = PERIOD_KEYS.indexOf(key);
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds rank as one agency, a route in two of
+    // them counted once. include_parts lists the feeds on their own instead.
+    const parts = args.include_parts === true;
+    const parentSlug = (name: string | null) => (name ? PARENT_AGENCIES.find(p => p.name === name)?.slug : undefined);
+    const groups = groupAgencies(feeds.map(a => ({ ...a, parentAgency: parts ? undefined : parentSlug(a.partOf) })));
+    const labelKey = ([route, name]: [string, string | null]) => `${route}\u0000${name ?? ''}`;
+    const entries = await Promise.all(groups.map(async g => {
+      const home = groupHome(g);
+      if (!g.parent) return { slug: home.slug, name: home.name, region: home.region, country: home.country, partOf: home.partOf, kind: home.kind, weekdayRoutes: home.weekdayRoutes, members: [home] };
+      const weekday = new Set<string>();
+      for (const m of g.members) for (const l of await data.rankLabels(m.slug, 'Weekday')) weekday.add(labelKey(l));
+      const kinds = g.members.map(m => m.kind);
+      return { slug: g.slug, name: g.parent.name, region: home.region, country: home.country, partOf: null, kind: kinds.includes('rail') ? 'rail' as const : kinds.every(k => k === 'ferry') ? 'ferry' as const : 'bus' as const, weekdayRoutes: weekday.size, members: g.members };
+    }));
     if (args.similar_to != null) {
       const a = await needAgency(args.similar_to);
-      const self = agencies.find(x => x.slug === a.slug);
+      const self = entries.find(x => x.members.some(m => m.slug === a.slug));
       if (!self) throw new Error(`${a.name} is not in the index.`);
       kind ??= self.kind;
-      skipParts = args.include_parts !== true;
-      like = `${a.name}: ${self.weekdayRoutes} weekday routes, ${KIND_TEXT[self.kind]}`;
+      like = `${self.name}: ${self.weekdayRoutes} weekday routes, ${KIND_TEXT[self.kind]}`;
       lo = Math.ceil(self.weekdayRoutes / 2); hi = self.weekdayRoutes * 2;
     }
     const reg = String(args.region ?? '').trim().toLowerCase(), ctry = String(args.country ?? '').trim();
-    const pool = agencies.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && a.weekdayRoutes >= lo && a.weekdayRoutes <= hi
-      && (!kind || a.kind === kind) && !(skipParts && a.partOf));
-    // Count from the waits alone, then read route names only for the agencies shown.
-    const waits = await data.rankWaits(dayType);
-    const at = PERIOD_KEYS.indexOf(key);
-    const counted = pool.map(a => {
-      const routes = waits[a.slug] ?? [];
-      const meeting = routes.map((w, i) => ({ i, wait: w[at] })).filter(r => r.wait != null && r.wait <= minutes).sort((x, y) => x.wait! - y.wait!);
-      return { a, routesOnDay: routes.length, meeting };
-    }).sort((x, y) => y.meeting.length - x.meeting.length || x.a.name.localeCompare(y.a.name));
+    const pool = entries.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && a.weekdayRoutes >= lo && a.weekdayRoutes <= hi
+      && (!kind || a.kind === kind));
+    // Count from the waits alone (a parent's routes once each by name), then read route names only for the agencies shown.
+    const counted = await Promise.all(pool.map(async a => {
+      if (a.members.length === 1) {
+        const routes = waits[a.slug] ?? [];
+        const meeting = routes.map((w, i) => ({ slug: a.slug, i, w: w[at], wait: data.rankWaitValue(w[at]) })).filter(r => data.rankWaitPasses(r.w, minutes)).map(({ slug, i, wait }) => ({ slug, i, wait })).sort((x, y) => x.wait! - y.wait!);
+        return { a, routesOnDay: routes.length, meeting };
+      }
+      const seen = new Set<string>();
+      let routesOnDay = 0;
+      const meeting: Array<{ slug: string; i: number; wait: number | null }> = [];
+      for (const m of a.members) {
+        const labels = await data.rankLabels(m.slug, dayType);
+        (waits[m.slug] ?? []).forEach((w, i) => {
+          const k = labels[i] ? labelKey(labels[i]) : `${m.slug}\u0000${i}`;
+          if (seen.has(k)) return;
+          seen.add(k);
+          routesOnDay++;
+          if (data.rankWaitPasses(w[at], minutes)) meeting.push({ slug: m.slug, i, wait: data.rankWaitValue(w[at]) });
+        });
+      }
+      return { a, routesOnDay, meeting: meeting.sort((x, y) => x.wait! - y.wait!) };
+    }));
+    counted.sort((x, y) => y.meeting.length - x.meeting.length || x.a.name.localeCompare(y.a.name));
     const limit = args.limit != null ? Number(args.limit) : 15;
     const shown = await Promise.all(counted.slice(0, limit).map(async ({ a, routesOnDay, meeting }) => {
-      const labels = await data.rankLabels(a.slug, dayType);
-      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: KIND_TEXT[a.kind], scheduleValidThrough: ends.get(a.slug) ?? null, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => `${labels[r.i][0]}${labels[r.i][1] ? ` ${labels[r.i][1]}` : ''} (every ${r.wait})`) };
+      const labels = new Map(await Promise.all(a.members.map(async m => [m.slug, await data.rankLabels(m.slug, dayType)] as const)));
+      const end = a.members.map(m => ends.get(m.slug)).filter((x): x is string => !!x).sort()[0] ?? null;
+      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: KIND_TEXT[a.kind], scheduleValidThrough: end, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => { const l = labels.get(r.slug)![r.i]; return `${l[0]}${l[1] ? ` ${l[1]}` : ''} (every ${r.wait})`; }) };
     }));
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
-      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(skipParts ? { leftOut: 'agencies that are part of a larger operator' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
+      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
       agenciesCompared: counted.length, ranking: shown, source: SOURCE,
     };
   },
   route_frequency: async (args) => {
     const a = await needAgency(args.agency);
-    const dayType = data.parseDay(args.day);
-    const found = data.findRoute(await data.routeList(a, dayType), String(args.route ?? ''));
+    // from_time "now" (#1627): the hour from the agency's current time, on today's day type.
+    const { w, now } = await windowOrNow(a, args);
+    const dayType = now && args.day == null ? now.day : data.parseDay(args.day);
+    const list = await data.routeList(a, dayType);
+    const found = data.findRoute(list, String(args.route ?? ''));
     if (!found) throw new Error(`${a.name} has no route matching "${args.route}" on ${dayType}.`);
+    const also = data.otherExactMatches(list, String(args.route ?? ''), found);
     const r = await data.routeWithRows(a, dayType, found);
-    const w = window(args);
     const sameRoutes = await data.sameNameRoutes(a, dayType, r);
     return {
       agency: a.name, route: r.name, name: r.longName, mode: r.mode, day: dayType,
@@ -94,6 +150,8 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       service: found.span,
       branches: await data.branchesOf(a, dayType, r),
       branchesNote: 'Branches that end at the same stop are one row, with their trips counted once; startsAt names where its trips begin.',
+      ...(now ? nowBlock(now, found.figures[now.period]?.shown === 'no service') : {}),
+      ...(also.length ? { alsoNamed: also.map(o => ({ route: o.name, name: o.longName, mode: o.mode })), alsoNamedNote: `"${args.route}" also names ${also.map(o => `${o.name} (${o.mode.toLowerCase()})`).join(', ')}. This answer is ${found.name} (${found.mode.toLowerCase()}); say so, name the other, and offer it.` } : {}),
       ...(() => { const same = sameRoutes; return same.length ? { sameNameRoutes: same, sameNameNote: `Other ${a.name} routes with the same name, often a night or express version on the same street. A rider on this street can use them too; combined_frequency between two stops counts them together.` } : {}; })(),
       ...(w ? { window: w.label, hourly: data.hourlyFrequency(r, w.start, w.end, await data.endOfRows(a, dayType, r)), windowNote: windowNote(w), hourlyNote: "Each column is one branch's own frequency by hour. Branches that end at the same stop share their trips, so the direction as a whole runs more often than any one column says." } : {}),
       mapLink: mapLink({ route: found.routeIds[0] != null ? { agency: a.slug, routeId: found.routeIds[0] } : undefined, day: dayType }),
@@ -102,24 +160,77 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
   },
   routes_at_frequency: async ({ agency: q, period: p, every: n, day: d }) => {
     const a = await needAgency(q);
-    const dayType = data.parseDay(d), key = needPeriod(p), minutes = Number(n);
+    const { key, dayType, now } = await periodOrNow(a, p, d);
+    const minutes = Number(n);
     const res = await data.routesMeeting(a, dayType, key, minutes);
-    return { agency: a.name, day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
+    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
-    const dayType = data.parseDay(d), key = needPeriod(p), minutes = Number(n);
+    // "now" reads the first agency's clock (#1627); the answer says so when the others keep another time zone.
+    const first = Array.isArray(agencies) && agencies.length ? await data.findAgencyEntry(String(agencies[0] ?? '')) : null;
+    if (isNow(p) && !first) throw new Error('Name the agencies to compare.');
+    const { key, dayType, now } = first ? await periodOrNow(first.members[0], p, d) : { key: needPeriod(p), dayType: data.parseDay(d), now: null };
+    const minutes = Number(n);
+    // One entry per agency or region (shared/agencyGroups.ts): "MTA New York" is its feeds together, a route in two of
+    // them counted once.
     const rows = await Promise.all((Array.isArray(agencies) ? agencies : []).map(async q => {
-      const a = await needAgency(q);
-      const res = await data.routesMeeting(a, dayType, key, minutes);
-      return { slug: a.slug, agency: a.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: validThrough(a) };
+      const e = await data.findAgencyEntry(String(q ?? ''));
+      if (!e) throw new Error(`No agency matching "${q}" has data here. Use list_agencies to search.`);
+      const res = await data.entryRoutesMeeting(e, dayType, key, minutes);
+      const ends = e.members.map(m => validThrough(m)).filter((x): x is string => !!x).sort();
+      return { slugs: e.members.map(m => m.slug), agency: e.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: ends[0] ?? null };
     }));
-    return { day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slug: _slug, ...row }) => row), mapLink: mapLink({ agencies: rows.map(r => r.slug), day: dayType, period: key, every: minutes }), source: SOURCE };
+    const zones = now ? [...new Set(await Promise.all(rows.map(async r => (await data.timeZoneOf(r.slugs[0])) ?? now.timeZone)))] : [];
+    return { ...(now ? { ...nowBlock(now), ...(zones.length > 1 ? { nowZones: `These agencies keep different time zones (${zones.join(', ')}); "now" is ${rows[0].agency}'s.` } : {}) } : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
   },
-  routes_near: async ({ agency: q, place, metres }) => {
+  buses_needed: async (args) => {
+    const a = await needAgency(args.agency);
+    // period "now" (#1627): the agency's current part of the day. The figures are for a representative weekday.
+    const { key, now } = await periodOrNow(a, args.period, null);
+    const nowInfo = now ? { ...nowBlock(now), ...(now.day !== 'Weekday' ? { nowDayNote: `It's ${now.day} there now, but buses-needed figures are for a weekday.` } : {}) } : {};
+    const route = String(args.route ?? '');
+    const every = args.every != null ? Number(args.every) : null;
+    // The file names routes by short name ("blue" for Viva Blue, #1632): resolve the name as the other tools do, then fall back to it as typed.
+    const named = data.findRoute(await data.routeList(a, 'Weekday'), route);
+    const tried = named ? await data.busesNeeded(a.slug, named.shortName, key) : null;
+    const res = tried?.cached && tried.groups.length ? tried : await data.busesNeeded(a.slug, route, key);
+    const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
+    if (!res.cached) return { agency: a.name, route, period, ...nowInfo, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
+    if (!res.groups.length) return { agency: a.name, route, period, ...nowInfo, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
+    const missing = every != null && !STUDIO_TARGETS.includes(every);
+    const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
+    const neededAt = (at: Partial<Record<number, number>>) => Object.fromEntries(targets.filter(t => at[t] != null).map(t => [headwayEvery(t), at[t]]));
+    return {
+      agency: a.name, route, period, ...nowInfo,
+      ...(res.olderSchedule ? { note: `These figures come from an older schedule file (${res.feed}) than the newest one on this Mac.` } : {}),
+      day: `A representative weekday in the week of ${res.referenceDate}.`,
+      groups: res.groups.map(g => ({
+        routesSharingBuses: g.routes,
+        scheduledNow: g.scheduled,
+        neededAtCurrentFrequency: g.implied,
+        // Summed over every direction and branch of the group (#1618), not one round trip.
+        runningMinutesAllPatterns: g.runningMin,
+        layoverMinutesAllPatterns: g.layoverMin,
+        // The same figures Studio's buses-needed page shows for each branch split (groupAtTarget).
+        neededAt: neededAt(groupAtTarget(g, 'current')),
+        ...(g.atTargetEven ? { neededAtWithBranchesEven: neededAt(groupAtTarget(g, 'even')) } : {}),
+      })),
+      targetsNote: `Atlas Studio works buses out only for every ${STUDIO_TARGETS.join(', ')} minutes. For any other frequency, say Atlas has no figure; don't work one out yourself.`,
+      ...(missing ? { warning: `Atlas Studio works these out only for every ${STUDIO_TARGETS.join(', ')} minutes, not every ${every}. Give the nearest of those; don't work out ${every} yourself.` } : {}),
+      howToRead: "'scheduledNow' is buses on these routes at the middle of the period; 'neededAtCurrentFrequency' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once for the group). Where branches share a middle section, a target is for that middle, and its trips go to the branches in their current shares ('WithBranchesEven' splits them evenly). Trips to and from the garage are not in schedules and not counted. 'runningMinutesAllPatterns' and 'layoverMinutesAllPatterns' add up every direction and branch of the group, so they are not one round trip: never divide them by a frequency to check or replace a count.",
+      source: "Atlas Studio's buses-needed file, worked out from the agency's own schedule.",
+    };
+  },
+  routes_near: async ({ agency: q, place, metres, when }) => {
     const a = await needAgency(q);
     const res = await data.routesNear(a, String(place ?? ''), metres != null ? Number(metres) : NEARBY_ROUTES_RADIUS_M);
     if (!res.matchedStops.length) return { agency: a.name, place, routes: [], note: 'No stop name matches every part of that place. Try a station or a street name as the stops are named.', scheduleValidThrough: validThrough(a) };
-    return { agency: a.name, place, ...res, scheduleValidThrough: validThrough(a), source: SOURCE };
+    if (!isNow(when)) return { agency: a.name, place, ...res, scheduleValidThrough: validThrough(a), source: SOURCE };
+    // when "now" (#1627): each route's service in the current part of the day, on today's day type.
+    const now = await nowAt(a);
+    const today = new Map((await data.routeList(a, now.day)).map(r => [r.name, r.figures[now.period]?.shown ?? 'no service']));
+    const routes = res.routes.map(r => ({ ...r, now: today.get(r.route) ?? 'no service' }));
+    return { agency: a.name, place, ...nowBlock(now, routes.every(r => r.now === 'no service')), ...res, routes, scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   route_history: async ({ agency: q, route, day: d }) => {
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
@@ -152,8 +263,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       compares: `${file.day ?? 'one day'} service on ${date(file.before.date)} (before) with ${date(file.after.date)} (after)`,
       agency: a.name, scheduleValidThrough: validThrough(a),
       routesAdded: paired.filter(c => !c.before).map(c => c.route), routesRemoved: paired.filter(c => !c.after).map(c => c.route),
-      frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
+      frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.tripsBefore != null && c.tripsAfter != null ? { tripsPerDay: `${c.tripsBefore} → ${c.tripsAfter}` } : {}), ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
       frequencyChangeCount: changes.length, shown: `${from + 1}–${Math.min(from + size, changes.length)}`,
+      ...staleComparisonNote(file.after.date, Date.now()),
+      howToRead: "before and after are Atlas's frequency grades: the route's slower direction and quietest part, as the map colours it. tripsPerDay is the route's trips that day. A big grade change with about the same trips usually means one long gap or a branch end, not a cut: check route_frequency's 'shown' before calling it one.",
       ...(from + size < changes.length ? { more: `Call again with offset ${from + size} for the next ${Math.min(size, changes.length - from - size)}.` } : {}),
     };
   },

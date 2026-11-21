@@ -218,7 +218,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
         <span id={liveId} className="sr-only" aria-live="polite">{announce}</span>
         {vertical ? (
           allStops
-            ? <VerticalList stops={stops} tracks={tracks} active={active ?? selected} setActive={pickStop} />
+            ? <VerticalList stops={stops} tracks={tracks} phone={phone} active={active ?? selected} setActive={pickStop} />
             : <CompactList stops={stops} tracks={tracks} active={active ?? selected} setActive={pickStop} showDetail={!onSelect} />
         ) : width > 0 && count > 0 ? (
           <div
@@ -372,9 +372,11 @@ function TrackHeads({ tracks }: { tracks: readonly Track[] }) {
 /** Where a track's marked stretch starts, as text beside that row. */
 const stretchNote = (tracks: readonly Track[], i: number) => tracks.filter(t => t.stretch && i === t.stretch.from).map(t => t.stretch!.label).join(', ');
 
-function VerticalList({ stops, tracks, active, setActive }: {
+function VerticalList({ stops, tracks, phone, active, setActive }: {
   stops: readonly RouteStripStop[];
   tracks: readonly Track[];
+  /** On a phone each row is a full-size tap (#1151). */
+  phone: boolean;
   active: number | null;
   setActive: (i: number | null) => void;
 }) {
@@ -395,7 +397,7 @@ function VerticalList({ stops, tracks, active, setActive }: {
                 tabIndex={-1}
                 onClick={() => setActive(isActive ? null : i)}
                 className={`relative flex w-full items-start gap-2 rounded-md py-1 pr-1 text-left ${isActive ? 'bg-[var(--bg-hover)]' : ''}`}
-                style={{ paddingLeft: NAME_LEFT }}
+                style={{ paddingLeft: NAME_LEFT, minHeight: phone ? PHONE_TAP_ROW : undefined }}
               >
                 <span className="min-w-0 flex-1">
                   {note && <span className="block text-xs font-bold leading-5 text-[var(--text-primary)]">{note}</span>}
@@ -422,6 +424,8 @@ export const DOT_NAMED = 10;
 /** A "less exact" stop keeps the full dot even unnamed: its hatching does not show at the small size. */
 export const phoneDotSize = (named: boolean, uncertain: boolean) => (named || uncertain ? DOT_NAMED : DOT_SMALL);
 export const phoneRowHeight = (named: boolean, uncertain: boolean) => (named ? ROW_NAMED : uncertain ? DOT_NAMED + 2 : ROW_DOT);
+/** A phone row you tap to pick one stop ("Show all stops"): 44px, the size of Live's other stop rows on phones (#1151). */
+export const PHONE_TAP_ROW = 44;
 
 /**
  * Phones: a vertical line per track, side by side, with only the key stops named (both ends, the marked stretches, a

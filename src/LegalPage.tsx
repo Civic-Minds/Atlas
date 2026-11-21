@@ -7,6 +7,7 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { parseLegalMarkdown, type LegalDoc, type LegalParagraph } from './lib/legalMarkdown';
 import privacySource from '../docs/legal/PRIVACY.md?raw';
 import termsSource from '../docs/legal/TERMS.md?raw';
+import { SCROLL_BELOW_HEADER } from './styles';
 
 type LegalDocument = 'terms' | 'privacy';
 
@@ -19,7 +20,7 @@ export const LEGAL_DOCS: Record<LegalDocument, LegalDoc> = {
 const CONTACT_PREFIX = mailto('');
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  return <section id={id} className="scroll-mt-24"><SectionTitle level="item" className="mb-2">{title}</SectionTitle><div className="space-y-2">{children}</div></section>;
+  return <section id={id} className={SCROLL_BELOW_HEADER}><SectionTitle level="item" className="mb-2">{title}</SectionTitle><div className="space-y-2">{children}</div></section>;
 }
 
 function Inline({ paragraph }: { paragraph: LegalParagraph }) {

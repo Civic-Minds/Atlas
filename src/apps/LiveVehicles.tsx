@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef } from 'react';
+import { useSidebarFrame } from '../context/SidebarFrame';
 import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
@@ -9,7 +10,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
-import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FIT_CONTENT, BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import Tag from '../components/ui/Tag';
@@ -58,14 +59,11 @@ interface Props {
   onInfoOpen?: OpenInfoFn;
   query: string;
   layers?: Record<string, GeoJSON.FeatureCollection>;
-  sidebarLeft?: number;
   selectionActive?: boolean;
   /** A route picked on the map or in a link, handed over from the main map. */
   routeRequest?: { slug: string; routeShortName: string; ts: number } | null;
   /** Opens the agency's page (the route card's agency name links there, like the regular card). */
   onAgencyClick?: (slug: string) => void;
-  /** The search bar's width on desktop: the panel matches it, like the map's cards. */
-  searchBarWidth?: number;
 }
 
 interface RouteGroup {
@@ -109,7 +107,7 @@ const MIN_LIVE_ZOOM = 9;
 const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
 const NO_VEHICLES: LiveVehicle[] = [];
 
-export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, sidebarLeft, selectionActive = false, routeRequest = null, onAgencyClick, searchBarWidth }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, selectionActive = false, routeRequest = null, onAgencyClick }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { setOverlay } = useLiveVehiclesMapOverlay();
@@ -650,6 +648,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const cardOpen = !!selectedGroup && pickVehicles.length <= 1;
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const sheetMode = isPhone && cardOpen;
+  const { style: frameStyle } = useSidebarFrame();
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(cardOpen ? `${selectedRoute}|${cardVehicle?.id ?? ''}|${selectedDirection ?? ''}` : null);
 
   // CIV-1125 option D: how many vehicle rows fit in the card without it scrolling.
@@ -854,10 +853,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         className={sheetMode
           ? `${BOTTOM_SHEET_FRAME} ${fade}`
           : `${PANEL_SIDEBAR} ${SIDEBAR_PANEL_WIDTH} max-h-[calc(100dvh-170px)] sm:max-h-[calc(100vh-132px)] flex flex-col gap-3 transition-opacity ${TRANSITION_SLOW} ${fade}`}
-        style={sheetMode ? undefined : {
-          '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
-          ...(searchBarWidth && !isPhone ? { width: `${searchBarWidth}px`, maxWidth: 'none' } : {}),
-        } as React.CSSProperties}
+        style={sheetMode ? undefined : frameStyle}
       >
         {cardOpen ? (
           // The report form takes the card's width (CIV-932), as History's card does (CIV-1117).

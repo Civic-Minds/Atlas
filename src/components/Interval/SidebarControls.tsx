@@ -652,7 +652,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     [matchedAgencyGroups, showAllSearchResults],
   );
   const areaSearchResults = useMemo(
-    () => (!searchFocused || !query.trim() || !onSelectArea ? [] : searchAreas(query, new Set(agencies.map(a => a.slug)))),
+    () => (!searchFocused || !query.trim() || !onSelectArea ? [] : searchAreas(query, new Set(agencies.map(a => a.slug)), undefined, undefined, undefined, slug => agencies.find(a => a.slug === slug)?.parentAgency)),
     [agencies, query, searchFocused, onSelectArea],
   );
   const displayAgencyGroups = agencySearchDisplay.groups;

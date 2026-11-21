@@ -6,7 +6,9 @@
  *   sum of needVehicles over its regular patterns, rounded up once (the CLI's route totals).
  * Running time and layover are one trip on each regular pattern of the group (partial trips left out),
  * summed. At a target headway each regular pattern runs at the headway targetVehicles gives it (trunk
- * split by current share, short turns kept), and the group's cycle / headway is summed and rounded up once.
+ * split by current share), and the group's cycle / headway is summed and rounded up once. Short turns are left out at a
+ * target (CIV-2005): "if every route ran every N" is the whole route every N, which the full pattern already gives, and
+ * keeping them at today's headway counted most of a frequent line's fleet at every 60 (TTC Line 1: 15 where ~5 run it).
  */
 import type { PeriodPatterns, Pattern } from './vehiclePatterns.js';
 import { cycleMin, needVehicles, targetVehicles } from './vehiclePatterns.js';
@@ -22,6 +24,8 @@ const up = (v: number) => Math.ceil(v - 1e-9);
 export function vehicleGroupRows(
   routes: ReadonlyArray<{ routeId: string; analysis: PeriodPatterns }>,
   nameOf: (routeId: string) => string,
+  /** A route_id's mode (effectiveMode), for the group's `modes` (CIV-2002). */
+  modeOf?: (routeId: string) => number | undefined,
 ): StudioVehicleGroup[] {
   const rows: StudioVehicleGroup[] = [];
   const seen = new Set<string>();
@@ -37,6 +41,7 @@ export function vehicleGroupRows(
     const layovers = regular.map(p => p.layoverMin).filter((v): v is number => v != null);
     rows.push({
       routes: memberIds.map(nameOf).sort((x, y) => x.localeCompare(y, undefined, { numeric: true })),
+      ...(modeOf ? { modes: [...new Set(memberIds.map(modeOf).filter((m): m is number => m != null))].sort((x, y) => x - y) } : {}),
       scheduled: group ? group.scheduledVehicles : patterns.reduce((s, p) => s + p.scheduledVehicles, 0),
       implied: group ? group.impliedVehicles : up(regular.reduce((s, p) => s + needVehicles(p, SCHEDULE), 0)),
       runningMin: Math.round(regular.reduce((s, p) => s + p.runningMin, 0)),
@@ -58,6 +63,7 @@ function atTarget(memberIds: readonly string[], patterns: readonly Pattern[], a:
     const targets = targetVehicles(own, a.trunks, { headwayMin, appliesTo: 'trunk', branchSplit, shortTurnHeadwayMin: null, recovery: SCHEDULE });
     for (const t of targets) {
       if (t.headwayMin == null || t.vehicles == null) continue;
+      if (own.find(p => p.id === t.id)!.role === 'short turn') continue;
       buses += cycleMin(own.find(p => p.id === t.id)!, SCHEDULE) / t.headwayMin;
     }
   }

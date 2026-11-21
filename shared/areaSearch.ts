@@ -1,4 +1,5 @@
 /** Search for metro areas by name, city or region name, for the map search's "Areas" group. */
+import { agencyEntryCount } from './agencyGroups';
 import { AREA_INDEX, type AreaIndex } from './areaIndex';
 import { areaRegionTitle, areaShortName } from './areaRegions';
 import agencyPageSlugs from './data/agency-page-slugs.json';
@@ -30,6 +31,8 @@ export function searchAreas(
   limit = 3,
   index: AreaIndex = AREA_INDEX,
   pageSlugs: ReadonlySet<string> = PAGE_SLUGS,
+  /** Each catalog agency's parent agency, so a parent's feeds count once (one entry per agency or region). */
+  parentOf: (slug: string) => string | undefined = () => undefined,
 ): AreaSearchResult[] {
   const q = searchFold(query);
   if (q.length < 2) return [];
@@ -50,7 +53,7 @@ export function searchAreas(
       : aliases.some(c => c.includes(q)) ? 4
       : -1;
     if (rank < 0) continue;
-    ranked.push({ rank, result: { slug, name: area.name, agencyCount: visible.length, bbox: area.bbox } });
+    ranked.push({ rank, result: { slug, name: area.name, agencyCount: agencyEntryCount(visible.map(a => ({ slug: a, parentAgency: parentOf(a) }))), bbox: area.bbox } });
   }
   return ranked
     .sort((a, b) => a.rank - b.rank || b.result.agencyCount - a.result.agencyCount || a.result.name.localeCompare(b.result.name, 'en'))

@@ -3,7 +3,7 @@
  *
  * One answer to "which trips speak for a route direction": the direction's main stretch (the stops
  * every regular pattern serves) and its tails (a regular pattern's own run of at least
- * SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM off the main stretch). Every other
+ * PIECE_PARAMS.minStops stops and PIECE_PARAMS.minKm off the main stretch). Every other
  * pattern is a variant: it forms no stretch, and its trips count wherever they serve. A stretch is
  * measured at its middle stop (decision D2) with every trip that serves it, at that trip's own
  * time there.
@@ -46,7 +46,8 @@ import {
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
-import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
+import { LEGACY_PIECE_MINIMUM } from './pieceParams.js';
+import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadingsFromEnv, directionPieceReadings, headlineTrunk, pieceReadingsForFeature, trunkLongEnough, nameUnnamedPiece, piecePeriodTreatments, busiestStop } from './pieces.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
@@ -85,6 +86,12 @@ export interface DirectionTrip {
 
 export interface Stretch {
   kind: 'main' | 'tail';
+  /** CIV-1959 B4: a tail under the legacy 5 stops / 1 km that exists only because of ATLAS_PIECES_BY_TRIPS. It speaks in a period only where it is regular (rule D), and night verdicts leave it out. */
+  byTrips?: true;
+  /** B4: the daytime periods where this by-trips tail is a boundary: some regular pattern serves it and another regular pattern of the same period does not, and its own trips pass rule D. */
+  activeIn?: readonly PeriodKey[];
+  /** CIV-1959 #1636: where a tail sits against the main stretch in its pattern's travel order (a tail that follows it, comes before it, or neither). Read only to name a piece; nothing published changes with it. */
+  position?: 'after' | 'before' | 'between';
   /** Travel order. */
   stops: readonly string[];
   /** D2: the middle of the stops most of the stretch's trips serve. */
@@ -142,6 +149,11 @@ export interface DirectionStretches {
    * only the pieces that run at night must pass.
    */
   disconnected?: boolean;
+  /**
+   * CIV-1959 B1 (ATLAS_HEADLINE_FROM_TRUNK=1, set by the caller; off = today): the direction's value, coverage and filter
+   * value are read from the trunk alone, never a branch or tail, where headlineTrunk finds a real shared core.
+   */
+  headlineFromTrunk?: boolean;
   /**
    * #899's midday input as main's rule reads it: the direction's longest midday wait at its
    * best-served stop over every trip, and whether that stop has a typical midday gap. Set by the
@@ -304,17 +316,18 @@ export function directionStretches(
   // (MBTA Providence, PM: the shared trunk every 25 while Providence trains run every 66). Here a
   // pattern that is not regular takes in the trips that serve a subset of its stops, in order,
   // between the same two end stops, when together they run steadily by day, and only when the
-  // pattern reaches a branch: a run of stops long enough to be a tail (SHARED_STRETCH_MIN_STOPS and
-  // _KM) that no regular pattern serves. Off by default: process-core asks for it only for the
+  // pattern reaches a branch: a run of stops long enough to be a tail (PIECE_PARAMS.minStops and
+  // minKm) that no regular pattern serves. Off by default: process-core asks for it only for the
   // route-direction-days in an agency's branchReadCorrections, and uses the result only for the
   // periods named there.
   if (steadyByDay && poolBranchSkippers) {
     const regularStops = new Set(regular.flatMap(p => p.stops));
+    const min = pieceMinimum();
     const reachesBranch = (p: (typeof all)[number]) => {
       let run: string[] = [];
       for (const stop of [...p.stops, null]) {
         if (stop != null && !regularStops.has(stop)) { run.push(stop); continue; }
-        if (run.length >= SHARED_STRETCH_MIN_STOPS && (runKm(run, stopCoord) ?? 0) >= SHARED_STRETCH_MIN_KM) return true;
+        if (run.length >= min.minStops && (runKm(run, stopCoord) ?? 0) >= min.minKm) return true;
         run = [];
       }
       return false;
@@ -418,6 +431,8 @@ export function directionStretches(
   // "On" a longer pattern: off it, the short turn has no run that would pass the tail test (a
   // turning loop of a stop or two at its end is not a branch: CTA 152's 8-trip Harlem turn).
   const regularSets = new Map(regular.map(p => [p, new Set(p.stops)]));
+  // The short-turn share rule (SHORT_TURN_MIN_SHARE) is its own rule and keeps the 5 stop / 1 km test under B4 (Ryan decides whether 3+ steady trips replace it).
+  const shortTurnMin = LEGACY_PIECE_MINIMUM;
   const liesOn = (p: (typeof regular)[number], other: (typeof regular)[number]) => {
     const on = regularSets.get(other)!;
     let run: string[] = [];
@@ -427,7 +442,7 @@ export function directionStretches(
       if (run.length > 0) runs.push(run);
       run = [];
     }
-    return runs.every(r => r.length < SHARED_STRETCH_MIN_STOPS || (runKm(r, stopCoord) ?? 0) < SHARED_STRETCH_MIN_KM);
+    return runs.every(r => r.length < shortTurnMin.minStops || (runKm(r, stopCoord) ?? 0) < shortTurnMin.minKm);
   };
   const minorShortTurn = (p: (typeof regular)[number]) => p.trips.length < SHORT_TURN_MIN_SHARE * withVisits.length
     && regular.some(other => other !== p && other.stops.length > p.stops.length && liesOn(p, other));
@@ -513,34 +528,68 @@ export function directionStretches(
   // a road beyond the main stretch and then part (TTC 102B and 102D on Markham Rd, 102D alone to
   // Major Mackenzie) give a shared tail and a 102D-only tail, so the slower part is not read at a
   // stop both serve. The same segment from several patterns is one tail.
+  const min = pieceMinimum();
   const servingSet = (stop: string) => regular.filter(p => p.stops.includes(stop)).map(p => regular.indexOf(p)).join(',');
-  const segments = new Map<string, { stops: string[]; km: number }>();
+  const segments = new Map<string, { stops: string[]; km: number; whole: boolean; position: 'after' | 'before' | 'between' }>();
   for (const pattern of regular) {
     let run: string[] = [];
     let runSet: string | null = null;
+    let runStart = 0;
     const close = () => {
       // A disconnected piece is not a branch off the main stretch, so it is a stretch of its
       // own whatever its length (NYC subway S's 4-stop Franklin Av shuttle).
       const wholePiece = disconnected && run.length === pattern.stops.length;
-      if (wholePiece || run.length >= SHARED_STRETCH_MIN_STOPS) {
+      if (wholePiece || run.length >= min.minStops) {
         const length = runKm(run, stopCoord);
         const key = [...run].sort().join('>');
-        if (length != null && (wholePiece || length >= SHARED_STRETCH_MIN_KM) && !segments.has(key)) segments.set(key, { stops: run, km: length });
+        if (length != null && (wholePiece || length >= min.minKm) && !segments.has(key)) {
+          const runEnd = runStart + run.length;
+          const mainBefore = pattern.stops.slice(0, runStart).some(stop => common.has(stop));
+          const mainAfter = pattern.stops.slice(runEnd).some(stop => common.has(stop));
+          segments.set(key, { stops: run, km: length, whole: wholePiece, position: mainBefore && !mainAfter ? 'after' : !mainBefore && mainAfter ? 'before' : 'between' });
+        }
       }
       run = [];
       runSet = null;
     };
-    for (const stop of pattern.stops) {
+    for (const [stopIndex, stop] of pattern.stops.entries()) {
       if (common.has(stop)) { close(); continue; }
       const set = servingSet(stop);
       if (runSet !== null && set !== runSet) close();
+      if (run.length === 0) runStart = stopIndex;
       run.push(stop);
       runSet = set;
     }
     close();
   }
   const merged = [...segments.values()];
-  const tails = main ? merged.map(t => stretch('tail', t.stops, t.km)) : [];
+  // CIV-1959 B4: a tail under the legacy minimum exists only with ATLAS_PIECES_BY_TRIPS, and only a regular one may be a piece
+  // (3+ evenly spaced trips that run a whole daytime period, with no half-period floor: a short burst is no boundary). One-off and irregular runs (garage,
+  // school, a single trip, uneven bursts) never split a piece.
+  const regularInCache = new Map<(typeof regular)[number], Map<string, boolean>>();
+  const regularIn = (q: (typeof regular)[number], start: number, end: number): boolean => {
+    let byWindow = regularInCache.get(q);
+    if (!byWindow) { byWindow = new Map(); regularInCache.set(q, byWindow); }
+    const k = `${start}-${end}`;
+    let hit = byWindow.get(k);
+    if (hit === undefined) { hit = isRegularPieceInPeriod(departuresAt(q.trips, q.stops[Math.floor(q.stops.length / 2)]), start, end); byWindow.set(k, hit); }
+    return hit;
+  };
+  const stretched = main ? merged.flatMap(t => {
+    const s = { ...stretch('tail', t.stops, t.km), position: t.position };
+    // Off, or a disconnected whole piece, or already legacy-sized: exactly as before.
+    if (!piecesByTripsFromEnv() || t.whole || (t.stops.length >= LEGACY_PIECE_MINIMUM.minStops && t.km >= LEGACY_PIECE_MINIMUM.minKm)) return [s];
+    // Per period: the patterns regular in it decide. A stop every regular trip of the period serves is no boundary in it (M101: the
+    // limited pattern is gone at night, so the stops only the local served by day are part of the one piece then).
+    const servers = regular.filter(q => q.stops.includes(t.stops[0]));
+    const activeIn = PERIOD_WINDOWS.filter(({ key, start, end }) => DAYTIME_PERIODS.includes(key)
+      && isRegularPieceInPeriod(s.times, start, end)
+      && servers.some(q => regularIn(q, start, end))
+      && regular.some(q => !servers.includes(q) && regularIn(q, start, end))).map(w => w.key);
+    return activeIn.length > 0 ? [{ ...s, byTrips: true as const, activeIn }] : [];
+  }) : [];
+  // Legacy-sized tails first, by-trips ones after, so a tail's index among the headline voters is its index in the list.
+  const tails = [...stretched.filter(t => !t.byTrips), ...stretched.filter(t => t.byTrips)];
 
   const timesAtStopCache = new Map<string, ReturnType<typeof timesAt>>();
   const timesAtStop = (stop: string) => {
@@ -997,7 +1046,9 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
     const inWindow = ordered.filter(t => t >= start && t <= end);
     const windowGaps = inWindow.slice(1).map((t, i) => t - inWindow[i]);
     const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headways[key] ?? 0));
-    const countsSettled = runs && (s.kind === 'main' || (steady && sustainedWithMidpoint(ordered, sustained[key], start, end) === true));
+    // B4: a byTrips tail speaks only in the periods where it is regular (rule D).
+    const regularHere = !s.byTrips || (s.activeIn?.includes(key) ?? false);
+    const countsSettled = runs && regularHere && (s.kind === 'main' || (steady && sustainedWithMidpoint(ordered, sustained[key], start, end) === true));
     out[key] = {
       // A tail speaks for the direction only where it runs steadily through the period.
       counts: countsSettled && (s.kind === 'main' || tailSteady),
@@ -1177,10 +1228,10 @@ function fullNightVerdict(d: DirectionStretches, gap: number): boolean {
   if (d.disconnected) {
     // The main stretch is only one piece, so it drops out like a tail when it does not run at
     // night (NYC subway S's 42 St shuttle).
-    const running = [d.main, ...d.tails].filter(runsAtNight);
+    const running = [d.main, ...d.tails.filter(t => !t.byTrips)].filter(runsAtNight);
     return running.length > 0 && running.every(passes);
   }
-  return passes(d.main) && d.tails.filter(runsAtNight).every(passes);
+  return passes(d.main) && d.tails.filter(t => !t.byTrips).filter(runsAtNight).every(passes);
 }
 export function directionNightVerdict(d: DirectionStretches, gap: number): NightVerdict {
   if (fullNightVerdict(d, gap)) return 'pass';
@@ -1212,7 +1263,7 @@ export function directionNightVerdict(d: DirectionStretches, gap: number): Night
 export const NIGHT_OVERNIGHT_MAX_VALUE = 60;
 
 export function directionNightValue(d: DirectionStretches, wholeDirection = false): number | null {
-  const stretches = [d.main, ...d.tails, ...(wholeDirection ? [] : [d.night?.main, ...(d.night?.tails ?? [])])];
+  const stretches = [d.main, ...d.tails.filter(t => !t.byTrips), ...(wholeDirection ? [] : [d.night?.main, ...(d.night?.tails ?? [])])];
   if (!stretches.some(st => st != null && stretchRunsAtNight(st))) return null;
   const max = NIGHT_OVERNIGHT_MAX_VALUE;
   const passes = (gap: number) => (wholeDirection ? directionNightVerdict(d, gap) === 'pass' : directionNightVerdict(d, gap) !== 'fail');
@@ -1235,7 +1286,7 @@ export function directionNightValue(d: DirectionStretches, wholeDirection = fals
  * period reading stands as before.
  */
 export function stopNightWait(d: DirectionStretches): number | null | undefined {
-  if (![d.main, ...d.tails].some(st => st != null && stretchRunsAtNight(st))) return undefined;
+  if (![d.main, ...d.tails.filter(t => !t.byTrips)].some(st => st != null && stretchRunsAtNight(st))) return undefined;
   const day = 24 * 60;
   const passes = (gap: number) => directionNightVerdict(d, gap) === 'pass';
   if (!passes(day)) return null;
@@ -1277,7 +1328,7 @@ export interface DirectionRollup {
     /**
      * CIV-1579 shadow: the main stretch's own filter value (stretchFilterValue), gated as filterValue
      * is (the main stretch counts, runs through the period, not a sparse overnight), and only when the
-     * main stretch is at least SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM long, the
+     * main stretch is at least PIECE_PARAMS.minStops stops and PIECE_PARAMS.minKm long, the
      * branch minimum (Ryan, 2026-11-15). Nothing reads it yet.
      */
     trunkFilterValue: number | null;
@@ -1471,10 +1522,16 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
 }
 
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
-export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
-  if (!d.main) return null;
-  // The guard's narrowing does not reach the closures below.
-  const mainStretch = d.main;
+export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null {
+  if (!dIn.main) return null;
+  // CIV-1959 B4: pieces that exist only because of ATLAS_PIECES_BY_TRIPS (byTrips tails, listed after the others) are boundaries and
+  // reading rows, not headline voters: the headline, all-day, Frequent Service and night verdicts are read as they were. B1 decides the headline.
+  const d: DirectionStretches & { main: Stretch } = { ...dIn, main: dIn.main, tails: dIn.tails.some(t => t.byTrips) ? dIn.tails.filter(t => !t.byTrips) : dIn.tails };
+  // CIV-1959 B1: with the switch on and a real shared core, only the trunk is read for the headline (D1's "the slower
+  // branch decides" no longer applies to it). Branches keep their own rows, and the night, all-day and Frequent Service
+  // verdicts still read them. No trunk (a hub): the slowest piece sets it, as before.
+  const trunkOnly = d.headlineFromTrunk === true && headlineTrunk(d) != null;
+  const headlinePieces: readonly Stretch[] = trunkOnly ? [d.main] : [d.main, ...d.tails];
   const main = stretchPeriods(d.main);
   const tails = d.tails.map(stretchPeriods);
   // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
@@ -1509,7 +1566,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const handover = Object.fromEntries(PERIOD_WINDOWS.map(({ key, start, end }) => [key, d.tails.map((_, i) => handsOver(i, key, start, end))])) as Record<PeriodKey, boolean[]>;
   const period = {} as DirectionRollup['period'];
   for (const { key } of PERIOD_WINDOWS) {
-    const counting = [main[key], ...tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))].filter(p => p.counts && p.value != null);
+    const counting = [main[key], ...(trunkOnly ? [] : tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key])))].filter(p => p.counts && p.value != null);
     period[key] = {
       value: counting.length > 0 ? Math.max(...counting.map(p => p.value!)) : null,
       coverage: counting.length > 0 ? Math.max(...counting.map(p => p.coverage ?? 0)) : null,
@@ -1530,7 +1587,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     };
   }
   // CIV-1579: a trunk shorter than a branch may be (5 stops, 1 km) has no trunk value.
-  const trunkLongEnough = d.main.stops.length >= SHARED_STRETCH_MIN_STOPS && d.main.lengthKm >= SHARED_STRETCH_MIN_KM;
+  const trunkReadable = trunkLongEnough(d.main);
   // Step 5a: the filter value and whether the direction runs, per period.
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const runs = runsThroughPeriod(d.main.times, start, end, main[key].sustained);
@@ -1540,7 +1597,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
-    const countingStretches = [d.main, ...d.tails]
+    const countingStretches = headlinePieces
       .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
       .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
     const counting = countingStretches.map(c => c.p);
@@ -1548,7 +1605,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].runs = runs;
     period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
-    period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkLongEnough ? filterOf(main[key]) : null;
+    period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkReadable ? filterOf(main[key]) : null;
     period[key].edgeWaitFail = key === 'overnight' ? 0 : edgeWaitFailMask([...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b), start, end);
     const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
     const setter = setterAt?.p;
@@ -1563,7 +1620,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // edge of every stretch that starts or ends in it, and the slowest decides (D1), as the filter
     // value's setter does: TTC 110 Sunday AM's trunk runs every 15 from 7:52, its branches every 30.
     // The filter value stays null there (D8).
-    const partial = () => [mainStretch, ...d.tails]
+    const partial = () => headlinePieces
       .map((st, i) => ({ edge: periodPartialEdge(st.times, start, end), stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
       .filter((c): c is { edge: StretchPeriodEdge; stretch: 'main' | number } => c.edge != null)
       .reduce<{ edge: StretchPeriodEdge; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.edge.every > worst.edge.every ? c : worst), null);
@@ -1578,7 +1635,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       // the direction never reads a faster spacing than one of its branches (TTC 110 Sunday AM
       // southbound: the trunk every 15 from 8:07, Kipling every 30 through the period). The branch's
       // own late start or early end is read as its row's is (CIV-1251); with none, there is no edge.
-      const slowerThrough = slowest && [mainStretch, ...d.tails]
+      const slowerThrough = slowest && headlinePieces
         .map((st, i) => ({ st, own: i === 0 ? main[key] : tails[i - 1][key], stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
         .filter(c => c.own.counts && c.own.headway != null && c.own.headway > slowest.edge.every && runsThroughPeriod(c.st.times, start, end, c.own.sustained))
         .reduce<{ own: StretchPeriod; st: Stretch; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.own.headway! > worst.own.headway! ? c : worst), null);
@@ -1791,6 +1848,9 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchRole',
   'stretchIndex',
   'stretchCovers',
+  'pieceReadings',
+  'rowPeriodEdge',
+  'rowPeriodGap',
   'headwayByPeriodSustainedMid',
 ] as const;
 
@@ -1809,6 +1869,10 @@ export function stampStretchShadow(
   stopsOf: (feature: ShadowFeature) => readonly string[] = () => [],
   /** CIV-995 (b): the row's own trips (its headsign's trip ids) and each trip's first departure; null when unknown. */
   rowTripsOf: (feature: ShadowFeature) => { ids: readonly string[]; span: (id: string) => [number, number] | undefined; frequencyTrip: (id: string) => boolean } | null = () => null,
+  /** CIV-1959 #1636 (ATLAS_BRANCH_READINGS=1 only): a stop's name, for a branch no headsign names. */
+  stopNameOf?: (stopId: string) => string | undefined,
+  /** CIV-1959 #1636: told about every branch piece no feature stands for, with its name or why it has none (the log of what was named). */
+  onUnnamedPiece?: (info: { key: string; index: number; stops: number; first: string; last: string; tailStops: readonly string[]; refTrips?: number; busiest?: string; busiestTrips?: number; ref: string; to?: string; from?: string; why?: string }) => void,
 ): void {
   // CIV-995: each stretch's row values once, for the features whose own slot it is.
   const rowValues = new Map<Stretch, StretchRowValues>();
@@ -1847,6 +1911,16 @@ export function stampStretchShadow(
   };
   const byPeriod = <T>(pick: (key: PeriodKey) => T) =>
     Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, pick(key)])) as Record<PeriodKey, T>;
+  const branchReadings = branchReadingsFromEnv();
+  const pieceReadingsByKey = new Map<string, ReturnType<typeof directionPieceReadings>>();
+  const periodsByStretch = new Map<Stretch, Record<PeriodKey, StretchPeriod>>();
+  const stretchPeriodsOf = (st: Stretch) => {
+    let v = periodsByStretch.get(st);
+    if (!v) { v = stretchPeriods(st); periodsByStretch.set(st, v); }
+    return v;
+  };
+  const namedTails = new Map<string, Set<number>>();
+  const readingFeatures = new Map<string, ShadowFeature[]>();
   for (const feature of features) {
     const slot = slotOf(feature);
     if (!slot) continue;
@@ -1945,6 +2019,17 @@ export function stampStretchShadow(
       else delete p.stretchCovers;
     }
     p.stretchMeta = featureStretchMeta(stretches, p.stretchRole as 'main' | 'tail' | 'variant' | undefined, p.stretchIndex as number | undefined, rowsOf);
+    // CIV-1959 B3 (ATLAS_BRANCH_READINGS=1, off by default): the direction's pieces and what each shows per period. A new field
+    // only; nothing above or below changes with it set.
+    if (branchReadings) {
+      if (!pieceReadingsByKey.has(key)) pieceReadingsByKey.set(key, directionPieceReadings(stretches, (st, k) => stretchFilterValue(stretchPeriodsOf(st)[k])));
+      const readings = pieceReadingsByKey.get(key);
+      if (readings) {
+        p.pieceReadings = pieceReadingsForFeature(readings, stretches, p.stretchRole as 'main' | 'tail' | 'variant' | undefined, p.stretchIndex as number | undefined);
+        (readingFeatures.get(key) ?? readingFeatures.set(key, []).get(key)!).push(feature);
+        if (p.stretchRole === 'tail' && p.stretchIndex != null) (namedTails.get(key) ?? namedTails.set(key, new Set()).get(key)!).add(p.stretchIndex as number);
+      }
+    }
     // CIV-995 (b): the periods in which every one of the row's own trips is counted at its stretch's reference stop, from
     // the trip ids (not counts). Only there may the card read the stretch's values for the row; elsewhere, its own trips.
     const ownSlot = p.stretchRole === 'main' ? stretches.main : p.stretchRole === 'tail' ? stretches.tails[p.stretchIndex as number] : null;
@@ -1958,6 +2043,35 @@ export function stampStretchShadow(
       const consistent = rowsOf(stretches.main!).consistent;
       p.stretchMainConsistent = Object.fromEntries(mainPeriods.map(k => [k, consistent.includes(k)]));
     } else delete p.stretchMainConsistent;
+  }
+  // CIV-1959 #1636 (ATLAS_BRANCH_READINGS=1): each branch piece no feature stands for gets its name (nameUnnamedPiece) on its entry, on every
+  // feature of the direction, where the card finds it. Nothing runs, and nothing is written, with the switch off.
+  if (branchReadings) {
+    for (const [key, fs] of readingFeatures) {
+      const stretches = byKey.get(key);
+      if (!stretches) continue;
+      const named = namedTails.get(key) ?? new Set<number>();
+      const own = fs.map(f => ({ headsign: String(f.properties.headsign ?? ''), stopOrder: ((f.properties.stopOrder as string[] | undefined) ?? []) }));
+      stretches.tails.forEach((tail, index) => {
+        if (named.has(index)) return;
+        const result = nameUnnamedPiece(tail.stops, tail.position, stretches.main?.stops ?? null, own, stopNameOf);
+        // Read where most of its trips pass, not at the middle of a stretch only some of them run (see busiestStop); only where that stop has more trips than the reference stop.
+        const tripsAt = (stop: string) => stretches.timesAtStop?.(stop).tripCount ?? 0;
+        const busiest = stretches.timesAtStop ? busiestStop(tail.stops, tripsAt, tail.refStop) : tail.refStop;
+        const best = tripsAt(busiest) > tripsAt(tail.refStop) ? busiest : tail.refStop;
+        onUnnamedPiece?.({ key, index, stops: tail.stops.length, first: tail.stops[0], last: tail.stops[tail.stops.length - 1], tailStops: tail.stops, refTrips: tripsAt(tail.refStop), busiest: best, busiestTrips: tripsAt(best), ref: tail.refStop, ...result });
+        if (!('to' in result || 'from' in result)) return;
+        const alt = best !== tail.refStop ? { ...tail, refStop: best, ...stretches.timesAtStop!(best) } : null;
+        const altPeriods = alt ? piecePeriodTreatments(alt, (st, k) => stretchFilterValue(stretchPeriodsOf(st)[k])) : null;
+        for (const f of fs) {
+          const readings = f.properties.pieceReadings as { pieces: Array<{ kind: string; index: number; to?: string; from?: string; refStop?: string; periods?: object }> } | undefined;
+          const entry = readings?.pieces.find(piece => piece.kind === 'branch' && piece.index === index);
+          if (!entry) continue;
+          Object.assign(entry, 'to' in result ? { to: result.to } : { from: result.from });
+          if (altPeriods && Object.keys(altPeriods).length > 0) Object.assign(entry, { refStop: best, periods: altPeriods });
+        }
+      });
+    }
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).
   const complete = new Map<string, boolean>();

@@ -30,6 +30,10 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.12.0 | 2026-11-18 | Planners' own cut-offs (CIV-1869): route_reliability takes late_after_min and early_before_min, route_bunching takes bunched_within_min and gapped_factor; each figure at a custom cut-off comes in atYourCutoffs with the cut-off in words beside it, the standard figures stay, rankings stay on the standard cut-offs |
 | 0.13.0 | 2026-11-18 | route_now (CIV-1870, local server only): bunching and gaps on a route right now, from Live's last half hour of vehicle readings, measured at stops against each stop's scheduled gap, with the time of the reading; stops no vehicle passed are named apart, never called a gap |
 | 0.13.1 | 2026-11-18 | Route lookup: a name holding the words typed beats one that only contains the letters ("E Line" is Metro Transit's E Line, not the Blue Line). Figure check 34 of 34, golden calls unchanged |
+| 0.13.2 | 2026-11-19 | CIV-1910 round fixes: route_now for the MBTA (#1612); buses_needed finds Studio's built files, matches "1" to "01", drops the build command and names its summed times as sums (#1613, #1616-#1618); routes_near finds corners where no stop is named for both streets (#1614); route_history judges doubtful old figures against today's schedule (#1619) |
+| 0.14.0 | 2026-11-19 | Schedule tools take "now" (#1627): the agency's local time, day type and part of the day, stated in the answer. Also route lookup names other routes of the same name (#1623), list_agencies include_parts (#1625), stale comparison note (#1624) |
+| 0.15.0 | 2026-11-20 | "What changed" and bus counts for YRT, HSR, TransLink, MBTA and OC Transpo (CIV-1969); buses_needed finds routes by name (#1632); schedule_changes gives trips beside grades (#1633) |
+| 0.15.1 | 2026-11-20 | buses_needed on the hosted server: Studio's file rides the split release (CIV-1977, #1634) |
 
 ## Questions
 
@@ -403,3 +407,53 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
 - RN6, now on live B-Line readings: no stop over twice the scheduled 12 minutes; the closest was 22.7 minutes, described as just short of a gap.
 - RN8: the Queen St West and Spadina stretch given as "none ran, or a detour", never as a gap.
 
+
+## 2026-11-19: CC1 to CC6, planners' own cut-offs on live files (CIV-1910, 0.13.1), Claude both ways
+
+- Setup: one headless chat per question, locked down and normal, against the local server on main (6af657cb6). The public TTC Live files carried `cutoffCounts` from the Nov 19 cloud run (504, 505 and 510 generated 18:21 to 18:23 UTC). Plus one route_now question on the TTC 29. Gemini not run: agy's quota is used up (resets in about five days). Chats: `_reports/mcp-tests/2026-11-19-cc-claude-*`.
+- 14 of 14 answered from the tools, each custom figure with its cut-off named and the standard figure beside it.
+- CC1: 504 late 8.1% at more than 3 minutes (standard 5.5: 3.5%). Locked noted the stop list is only at 5.5.
+- CC2: 510 bunched 39.1% under 4 minutes (standard 16.3%), with a note that 4 minutes sits near the 510's normal spacing. No combined bunched-or-gapped share at 4 minutes.
+- CC3: both said the ranking uses the standard, then fetched each streetcar at 3 minutes and ordered them by hand, each labelled (510 27.6% to 507 2.2%, 512 no data). Acceptable, though the good answer only needed per-route figures named.
+- CC4: 505 early 12.7%; both said the tool counts "1 minute or more", against the planner's "more than 1".
+- CC5: 504 gapped 0.1% at more than 3 times (standard twice: 2.1%).
+- CC6: both said cut-offs go in half-minute steps and gave the 5 and 5.5 figures as a range (3.5 to 4.3%), never one rounded number.
+- TTC 29 now: both said Atlas Live doesn't record the 29, so there's no current reading, and offered the schedule.
+
+## 2026-11-19: planner-style rounds across agencies (CIV-1910, 0.13.1 to 0.13.2), Claude
+
+- Setup: two sets of planner questions (12, then 13), with follow-ups and loose phrasing, across Ottawa, Kingston, Toronto, Vancouver, Hamilton, York Region, Calgary and Edmonton, Boston, Denver, Ohio, Montréal, Halifax, Guelph, Winnipeg and New York. Set 1 locked and normal on main; set 2 locked on main, normal on the branch. Failing cases re-run on the branch server in fresh chats. Chats: `_reports/mcp-tests/2026-11-19-planner*`, `-retest*`.
+- Right: frequency at a time and hour by hour, routes ending early or starting late, comparisons and rankings, trip time, combined frequency, Live cut-offs, the "not recorded" notes, Winnipeg coverage. Every answer gave the schedule's end date.
+- Wrong or weak, each a GitHub issue, fixed unless noted:
+  - #1612: route_now errored for the MBTA (no time zone). Re-run: MBTA 57 gives a live reading.
+  - #1614: routes_near found nothing at Yonge and Finch on YRT. Re-run: 17 routes, matched as a corner 278 m apart.
+  - #1613, #1616, #1617, #1618: buses_needed returned a maintainer's build command, missed Studio's built HSR file, didn't match "1" to "01", and labelled summed times as a round trip, so both runs called Atlas's 12 buses wrong. Re-run: 12 buses against 19 now, explained, from the spring schedule.
+  - #1619: route_history left Kingston 501's "every 3 min" unflagged. Data side is #1580.
+  - #1621: route_now read paused STM, Halifax and Burlington recording as a quiet half hour.
+  - Not fixed here: #1615, RTD 15 Saturday midday graded every 164 min (Data chat). The MTA comes back as seven agencies (logged on #1610, the shared grouping). schedule_changes and buses_needed cover only 5 agencies, so TransLink's changes get "not built".
+- Gemini: not run, quota resets Nov 25.
+
+## 2026-11-19: round 3, harder question types (CIV-1910, 0.13.2), Claude both ways
+
+- Setup: 13 questions covering city against city, "better than last year", late-night and weekend service, vague places ("the hospital", "downtown", Jackson Square), a follow-up that switches agency, and questions Atlas can't answer (ridership, causes, future plans, busiest stop). Then 5 more on the parent-agency grouping (CIV-1963) and the lookup fix, on the branch server. Chats: `_reports/mcp-tests/2026-11-19-planner3*`.
+- Right: Montréal against Vancouver, 505 against last year (with the late-night edge rule explained), Ottawa after midnight, Calgary Sunday evenings, Kingston's hospital and downtown, the switch to Hamilton, Edmonton against Winnipeg. Every can't-answer question said plainly that Atlas doesn't hold it and pointed to the agency. MTA New York now ranks and compares as one agency (89 of 392 routes at midday every 10, against CTA's 31).
+- Wrong or weak:
+  - #1623: "Lakeshore West" found GO's 18 bus, not the train, and "King" found the overnight 304, not the 504. Fixed (exact matches: short name, then rail, then daytime). route_frequency also names the other route of that name (alsoNamed: GO's 18 bus runs when the trains don't; the 304 is the King night streetcar), so the assistant can offer it. Re-run: both right.
+  - #1624: schedule_changes gave Hamilton's spring comparison as the latest and called route 51 removed, though it runs every 10 today. Fixed with a note for comparisons over 45 days old; the rebuild is CIV-1969.
+  - Weak, not filed: "Jackson Square" isn't a stop name, so both runs fell back to King and James. Locked, "which feeds make up MTA New York" was answered from a map link instead of include_parts.
+
+## 2026-11-19: schedule "now" (#1627), Claude both ways
+
+- SN1-SN3 in fresh chats on the branch server at 5:44 PM Thu Toronto time. All six passed "now" (none guessed a period) and stated what it used: "Thursday 5:44 PM Toronto time, weekday PM peak". SN1: 64 of 189 TTC routes every 10 or better. SN3: routes near Yonge and Finch with each one's service now. SN2: locked used route_frequency now plus route_now; normal used route_now alone (live bunching). Both are fine for "how often is it coming".
+- Checked by direct calls with ATLAS_MCP_NOW_AT at 3 AM Monday: Sunday's overnight service, "no scheduled service now", next part of the day Weekday AM peak. rank_agencies refuses "now". compare_agencies notes when the agencies keep different time zones (TTC and TransLink).
+- Hosted: the split meta.json needs a rebuild to carry each agency's time zone. Until then the hosted server falls back to Live's table, and says it has no time zone for other agencies.
+
+## 2026-11-20: CIV-1969 pilot, "what changed" and buses needed for five more agencies, Claude both ways
+
+- Built on this Mac (tmp/studio, no R2), one agency at a time with nice: before/after and buses-needed files for YRT, Hamilton (rebuilt), TransLink, MBTA and OC Transpo. "Before" schedules come from the Mobility Database: YRT Oct 7 against Nov 11, HSR Aug 19 against Nov 18, TransLink Jul 8 against Nov 18, MBTA Aug 19 against Nov 4, OC Transpo Aug 19 against Dec 9. The dates are inside the week the pipeline reads; other dates were refused until #1630's fix. The MDB files are named by their service end date, like the rest of `_feeds`, so the local tools treat the newest as current.
+- 20 answers (10 questions, locked and normal): every "what changed" and bus count came from the tools, with the dates compared. Right: YRT (360 removed, 320 evenings every 81 to 11), HSR (51 back for the fall, 56 and 99 gone), TransLink (222 Willingdon Express gone, 116 changes), MBTA (465 new, 222 every 30), the 99 B-Line at every 15 needs 8 against 19 now, MBTA 1 needs 13, HSR 1 needs 12.
+- Wrong or weak:
+  - #1632: buses_needed didn't find "Viva Blue" (the file says "blue"). Fixed. Re-run: 29 buses on the first try.
+  - #1633: OC Transpo's route 6 read as cut from every 15 to 38 though its trips went from 154 to 148. The assistant then called the bus count contradictory. Fixed: trips per day beside each change, plus a note that the figures are grades. Re-run: the gain on route 5 (123 to 139 trips) reads as real, and route 6's change as "probably one long gap".
+  - #1631: HSR's X-IND renamed to "X IND" counts as one route removed and one added (comparison, for Data/Studio).
+  - #1630: compare-feed-dates refused dates outside the pipeline's chosen week (fixed by Atlas Fixes, 56bf9f57e).

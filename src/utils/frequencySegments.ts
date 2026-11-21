@@ -87,7 +87,8 @@ function stopHeadwayAt(p: ShapeProperties, period: TimePeriod, stopId: string): 
     // trip of a period (for example DART 25/57 are scheduled every 20 minutes at
     // every stop but have large period-coverage gaps). Use the same scheduled
     // per-stop metric that the internal 'all' path uses for segment highlighting.
-    const v = p.stopPeriodHeadways?.[stopId]?.[period as PeriodKey];
+    // CIV-1959 B2: the piece's reading where the stop takes it (absent = the stop's own value, as before).
+    const v = p.piecePeriodHeadways?.[stopId]?.[period as PeriodKey] ?? p.stopPeriodHeadways?.[stopId]?.[period as PeriodKey];
     return v ?? null;
   }
   return p.stopHeadways?.[stopId] ?? null;

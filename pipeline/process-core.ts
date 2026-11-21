@@ -47,6 +47,7 @@ import { effectiveFeedExpiry } from './feedFreshness.js';
 import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
+import { headsignBranchCode } from '../shared/branchCode.js';
 import { isRailRoute } from './routeMode.js';
 import { computePeriodCoverageHeadways, departuresInWindow, periodMedianHeadway } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
@@ -61,8 +62,10 @@ import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js'
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, pooledDaytimeWindow, pooledMiddayWorstWait, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
-import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
-import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
+import { periodEdge, periodOneGap, directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { branchReadingsFromEnv, headlineFromTrunkFromEnv, patternPools, pieceReadingFromEnv, pieceReadingOverlay, readFeaturePieces } from './pieces.js';
 import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
 
@@ -1347,6 +1350,8 @@ export async function processGtfsBuffer(
   // emit two overlapping features per line. When duplicates exist, keep the lower headway
   // (more frequent / more trips active in the analysis window).
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
+  // CIV-1456: the branch IDs the raw headsigns of each slot lead with (TTC 52A), before cleaning drops them.
+  const slotBranchCodes = new Map<string, Set<string | null>>();
   // What dedupe knows about the pattern holding each slot (featureDedupe.ts).
   const dedupedPattern = new Map<string, DedupePattern>();
   // Feature → the shapeId it was actually built from, so the per-stop headway
@@ -1470,6 +1475,8 @@ export async function processGtfsBuffer(
     const dedupeKey = cleanedForDedup
       ? `${groupName}::${result.dir}::${result.day}::${cleanedForDedup}::${branchKey}`
       : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
+    if (!slotBranchCodes.has(dedupeKey)) slotBranchCodes.set(dedupeKey, new Set());
+    slotBranchCodes.get(dedupeKey)!.add(headsignBranchCode(result.headsign, shortName));
     const existing = dedupedFeatures.get(dedupeKey);
     const incumbent = dedupedPattern.get(dedupeKey);
     const initialPeriodHeadways = computePeriodHeadways(result.times);
@@ -1605,6 +1612,13 @@ export async function processGtfsBuffer(
     if (result.partialWeekday || result.previousNightTailOnly) partialWeekdayFeatures.add(newFeature);
     else partialWeekdayFeatures.delete(newFeature);
     if (result.rushHourOnly) rushHourOnlyFeatures.add(newFeature);
+  }
+  // CIV-1456: a row carries a branch ID only when every pattern in its slot names the same one (display only: no key,
+  // grouping or value reads it). A slot mixing a coded and an uncoded headsign, or two codes, gets none.
+  for (const [dedupeKey, feature] of dedupedFeatures) {
+    const codes = slotBranchCodes.get(dedupeKey);
+    const only = codes && codes.size === 1 ? [...codes][0] : null;
+    if (only) feature.properties.branchCode = only;
   }
   // CIV-321 S4: a kept row whose slot has a rated pattern serving every stop it draws and more (GO KI
   // Union-bound: the Kitchener trains past the Mount Pleasant short turns) carries that longer shape as
@@ -2208,7 +2222,7 @@ export async function processGtfsBuffer(
   const stopSharersByPool = new Map<string, ReadonlyMap<string, StopSharers>>();
   const stopSharersFor = (poolKey: string): ReadonlyMap<string, StopSharers> => {
     let hit = stopSharersByPool.get(poolKey);
-    if (!hit) { hit = computeStopSharers(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
+    if (!hit) { hit = patternPools(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
     return hit;
   };
   // CIV-850: each rush-hour-only bus pattern's stop sequence (its longest trip on the day, as
@@ -2887,6 +2901,7 @@ export async function processGtfsBuffer(
     // at the terminal get (the 2 Line toward Downtown Redmond alternates E31-T1 and E31-T2, every 10 together).
     const terminalReadTimes = (stopId: string | undefined | null): number[] | undefined =>
       stopId ? (platformStations.remapped.has(stopId) ? metricStopMap : ownMetricStopMap).get(stopId) : undefined;
+    const pieceReading = pieceReadingFromEnv();
     const departurePooled = pooled && ownMember
       ? buildPooledStopMap(departureMetricMap, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
@@ -3331,6 +3346,17 @@ export async function processGtfsBuffer(
       if (Object.keys(stopPeriodHeadways).length > 0) {
         feature.properties.stopPeriodHeadways = stopPeriodHeadways;
       }
+      // CIV-1959 B2 (ATLAS_PIECE_READING=1, off by default): each piece's one reading, for the map's stretch colour. A parallel
+      // field: no stop's own published value above changes. Stops that break off, or already read the piece value, have no entry.
+      if (pieceReading && departurePooled && ownMember) {
+        const pieceCells = readFeaturePieces({
+          order: onShape.map(p => p.stopId), station: id => childToParent.get(id) ?? id,
+          sharersAt: stopSharersFor(poolKey).get(ownMember), pooledMap: departurePooled.map, pooledStops: departurePooled.pooledStops,
+          own: departureMetricMap, memberDeps: key => stopDepsBySharedMember.get(`${poolKey}::${key}`),
+        });
+        const overlay = pieceReadingOverlay(pieceCells, stopPeriodHeadways);
+        if (Object.keys(overlay).length > 0) feature.properties.piecePeriodHeadways = overlay;
+      }
       if (!isMapless && drawnPatternStops().length > 1) {
         // CIV-152: each drawn stop's every-gap grade, the method the route tier uses, on the
         // stop's own (pooled) list, never better than its headway's tier. The client colours the
@@ -3769,6 +3795,11 @@ export async function processGtfsBuffer(
       terminalScopedTimes ?? terminalReadTimes(terminalStopId) ?? [],
     );
     const branchCoverage = feature.properties.periodCoverageHeadway as HeadwayByPeriod;
+    // CIV-1959 follow-up (ATLAS_BRANCH_READINGS=1): the row's own late start or early end, read like a stretch's (periodEdge: CIV-1241,
+    // CIV-1411, #934) on the same list its coverage wait reads, so a row that starts or stops inside a period can say when.
+    const rowEdgeTimes = terminalScopedTimes ?? terminalReadTimes(terminalStopId) ?? [];
+    const rowEdges: Partial<Record<PeriodKey, ReturnType<typeof periodEdge>>> = {};
+    const rowGaps: Partial<Record<PeriodKey, ReturnType<typeof periodOneGap>>> = {};
     const periodCoverage: HeadwayByPeriod = {};
     const periodMedians: HeadwayByPeriod = {};
     const periodMaxGaps: HeadwayByPeriodMaxGap = {};
@@ -3842,6 +3873,18 @@ export async function processGtfsBuffer(
       if (pk === 'overnight' && period.withheld != null && period.headway == null) withheldOvernightFeatures.add(feature);
       periodMedians[pk] = period.headway;
       periodCoverage[pk] = period.coverage;
+      if (branchReadingsFromEnv() && pk !== 'overnight' && period.headway != null && period.coverage != null) {
+        // The filter's own value for the row (stretchFilterValue): a steady period within PERIOD_COVERAGE_MAX_HEADWAY reads its spacing, never its wait,
+        // so it has no edge; any other period reads its full-window wait, and an edge that sets it is worded.
+        const edgeValue = period.sustained === true && period.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? period.headway : period.coverage;
+        const edge = periodEdge(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end, edgeValue);
+        if (edge) rowEdges[pk] = edge;
+        else {
+          // D6 (settled): steady service with one gap in it reads "every N min, with one M min gap", the row's own wait being that gap.
+          const gap = periodOneGap(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end);
+          if (gap && Math.ceil(gap.gap) === edgeValue) rowGaps[pk] = gap;
+        }
+      }
       periodMaxGaps[pk] = period.maxGap;
       if (period.headway != null || period.withheld != null) periodSustained[pk] = period.sustained;
       const allVals = onShape
@@ -3850,6 +3893,8 @@ export async function processGtfsBuffer(
       if (allVals.length > 0) periodMins[pk] = Math.min(...allVals);
     }
     feature.properties.headwayByPeriod = periodMedians;
+    if (Object.keys(rowEdges).length > 0) feature.properties.rowPeriodEdge = rowEdges;
+    if (Object.keys(rowGaps).length > 0) feature.properties.rowPeriodGap = rowGaps;
     feature.properties.periodCoverageHeadway = periodCoverage;
     feature.properties.maxGapByPeriod = periodMaxGaps;
     feature.properties.headwayByPeriodSustained = periodSustained;
@@ -4014,6 +4059,8 @@ export async function processGtfsBuffer(
       if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
     }
     const stretchesByKey = new Map<string, DirectionStretches>();
+    // CIV-1959 B1: ATLAS_HEADLINE_FROM_TRUNK=1, off by default (pipeline/pieces.ts).
+    const headlineFromTrunk = headlineFromTrunkFromEnv();
     const branchReadRollups = new Map<string, ReturnType<typeof rollupDirection>>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
       const day = gKey.slice(gKey.lastIndexOf('::') + 2);
@@ -4036,6 +4083,7 @@ export async function processGtfsBuffer(
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
       stretches.midday899 = directionMidday899(gKey);
+      if (headlineFromTrunk) stretches.headlineFromTrunk = true;
       // CIV-1332: whether other service picks riders up soon after a night-only route's last bus, at each stretch's stop.
       stretches.handoverAt = stopId => nightHandoverAt(day, stopId, groupRoute);
       stretches.nextDaysAt = stopId => nextDaysAt(groupRoute, groupDir, day, stopId);
@@ -4051,6 +4099,7 @@ export async function processGtfsBuffer(
       if (correctionsFor(options?.branchReadCorrections, gKey).length > 0) {
         const pooled = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop, true);
         pooled.midday899 = stretches.midday899;
+        pooled.headlineFromTrunk = stretches.headlineFromTrunk;
         pooled.handoverAt = stretches.handoverAt;
         pooled.nextDaysAt = stretches.nextDaysAt;
         branchReadRollups.set(gKey, rollupDirection(pooled));
@@ -4076,7 +4125,9 @@ export async function processGtfsBuffer(
         return a == null || b == null ? undefined : [a, b];
       };
       return ids ? { ids, span, frequencyTrip: id => frequencyTemplateTripIds.has(id) } : null;
-    });
+    }, stopId => (gtfs.stops ?? []).find(s => s.stop_id === stopId)?.stop_name, process.env.ATLAS_PIECE_NAMING_LOG === '1'
+      ? info => console.log('PIECENAME\t' + JSON.stringify({ agency: options?.slug, ...info }))
+      : undefined);
     // #1514: the named route-periods take the branch-read value, only ever longer (applyBranchReadCorrections' guard).
     for (const change of applyBranchReadCorrections(features, options?.branchReadCorrections, feature => {
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);

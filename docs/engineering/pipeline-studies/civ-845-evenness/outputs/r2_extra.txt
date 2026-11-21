@@ -1,0 +1,71 @@
+52 dir0 mid pooled stops 411 base refused 0 | per mode (stops: changed/worse than base/pf/fp): R1 0/0/0/0  R3 0/0/0/0  R4 0/0/0/0  R2 36/36/36/0  F 0/0/0/0  E 0/0/0/0
+52 dir1 mid pooled stops 497 base refused 0 | per mode (stops: changed/worse than base/pf/fp): R1 1/1/0/0  R3 0/0/0/0  R4 3/0/0/0  R2 26/26/25/0  F 0/0/0/0  E 0/0/0/0
+41 dir0 satmid pooled stops 190 base refused 0 | per mode (stops: changed/worse than base/pf/fp): R1 0/0/0/0  R3 0/0/0/0  R4 0/0/0/0  R2 0/0/0/0  F 0/0/0/0  E 0/0/0/0
+41 dir1 satmid pooled stops 145 base refused 42 | per mode (stops: changed/worse than base/pf/fp): R1 0/0/0/0  R3 0/0/0/0  R4 0/0/0/0  R2 0/0/0/0  F 0/0/0/0  E 0/0/0/0
+52 dir0 satmid pooled stops 322 base refused 60 | per mode (stops: changed/worse than base/pf/fp): R1 13/0/0/10  R3 13/0/0/10  R4 19/19/13/0  R2 60/26/13/10  F 14/0/0/10  E 17/0/0/10
+52 dir1 satmid pooled stops 398 base refused 41 | per mode (stops: changed/worse than base/pf/fp): R1 20/18/18/0  R3 4/4/0/0  R4 6/1/0/5  R2 57/18/18/0  F 6/0/0/6  E 0/0/0/0
+stretches 129 base one-colour 120 stops 489
+R1 one-colour 128 pass->fail 18 fail->pass 10 tier-changed 28 value-changed 34 worse-than-own 0 worse-than-base 19 (delta n19 min 1.0 med 15.0 p90 15.0 max 15.0) outsideTrips 3365 maxMinOutside 37 
+   fp margin(longest-limit at today gate): n10 min 1.0 med 1.0 p90 1.0 max 1.0 
+   pf: 52 dir1 satmid:5334 6->21 | 52 dir1 satmid:5364 6->21 | 52 dir1 satmid:5351 6->21 | 52 dir1 satmid:5341 6->21 | 52 dir1 satmid:5367 6->21 | 52 dir1 satmid:5382 6->21 | 52 dir1 satmid:5393 6->21 | 52 dir1 satmid:5357 6->21 | 52 dir1 satmid:5358 6->21 | 52 dir1 satmid:5345 6->21 | 52 dir1 satmid:5342 6->21 | 52 dir1 satmid:5379 6->21 | 52 dir1 satmid:5396 6->21 | 52 dir1 satmid:5398 6->21 | 52 dir1 satmid:5415 6->21 | 52 dir1 satmid:5413 6->21 | 52 dir1 satmid:5387 6->21 | 52 dir1 satmid:5406 6->21 
+   fp: 52 dir0 satmid:5340 22->5 | 52 dir0 satmid:5350 22->5 | 52 dir0 satmid:5403 22->5 | 52 dir0 satmid:5363 22->5 | 52 dir0 satmid:5373 22->5 | 52 dir0 satmid:5360 22->5 | 52 dir0 satmid:15198 22->5 | 52 dir0 satmid:5343 22->5 | 52 dir0 satmid:5389 22->5 | 52 dir0 satmid:12202 22->5
+R3 one-colour 124 pass->fail 0 fail->pass 10 tier-changed 10 value-changed 17 worse-than-own 3 worse-than-base 4 (delta n4 min 1.0 med 1.0 p90 1.0 max 1.0) outsideTrips 1389 maxMinOutside 21 
+   fp margin(longest-limit at today gate): n10 min 1.0 med 1.0 p90 1.0 max 1.0 
+   pf:  
+   fp: 52 dir0 satmid:5340 22->5 | 52 dir0 satmid:5350 22->5 | 52 dir0 satmid:5403 22->5 | 52 dir0 satmid:5363 22->5 | 52 dir0 satmid:5373 22->5 | 52 dir0 satmid:5360 22->5 | 52 dir0 satmid:15198 22->5 | 52 dir0 satmid:5343 22->5 | 52 dir0 satmid:5389 22->5 | 52 dir0 satmid:12202 22->5
+R4 one-colour 127 pass->fail 13 fail->pass 5 tier-changed 20 value-changed 28 worse-than-own 4 worse-than-base 20 (delta n20 min 1.0 med 17.0 p90 17.0 max 17.0) outsideTrips 2226 maxMinOutside 33 
+   fp margin(longest-limit at today gate): n5 min 1.0 med 1.0 p90 1.0 max 1.0 
+   pf: 52 dir0 satmid:6046 5->22 | 52 dir0 satmid:5377 5->22 | 52 dir0 satmid:5414 5->22 | 52 dir0 satmid:5397 5->22 | 52 dir0 satmid:5395 5->22 | 52 dir0 satmid:2824 5->22 | 52 dir0 satmid:5359 5->22 | 52 dir0 satmid:5346 5->22 | 52 dir0 satmid:5391 5->22 | 52 dir0 satmid:5356 5->22 | 52 dir0 satmid:5394 5->22 | 52 dir0 satmid:5381 5->22 | 52 dir0 satmid:5366 5->22 
+   fp: 52 dir1 satmid:5390 21->6 | 52 dir1 satmid:5344 21->6 | 52 dir1 satmid:5354 21->6 | 52 dir1 satmid:5361 22->6 | 52 dir1 satmid:5404 22->6
+R2 one-colour 128 pass->fail 92 fail->pass 10 tier-changed 145 value-changed 179 worse-than-own 0 worse-than-base 106 (delta n106 min 1.0 med 14.0 p90 15.0 max 15.0) outsideTrips 9897 maxMinOutside 78 
+   fp margin(longest-limit at today gate): n10 min 1.0 med 1.0 p90 1.0 max 1.0 
+   pf: 52 dir0 mid:6046 5->20 | 52 dir0 mid:5377 5->20 | 52 dir0 mid:5414 5->20 | 52 dir0 mid:5397 5->20 | 52 dir0 mid:5395 5->20 | 52 dir0 mid:2824 5->20 | 52 dir0 mid:5359 5->20 | 52 dir0 mid:5346 5->20 | 52 dir0 mid:5391 5->20 | 52 dir0 mid:5356 5->20 | 52 dir0 mid:5394 5->20 | 52 dir0 mid:5381 5->20 | 52 dir0 mid:5366 5->20 | 52 dir0 mid:5340 5->20 | 52 dir0 mid:5350 5->20 | 52 dir0 mid:5403 5->20 | 52 dir0 mid:5363 5->20 | 52 dir0 mid:5373 5->20 | 52 dir0 mid:5360 5->20 | 52 dir0 mid:15198 5->20 | 52 dir0 mid:5343 5->20 | 52 dir0 mid:5389 5->20 | 52 dir0 mid:12202 5->20 | 52 dir0 mid:5369 7->20 | 52 dir0 mid:5347 7->20 | 52 dir0 mid:5371 7->20 | 52 dir0 mid:5337 7->20 | 52 dir0 mid:5370 7->20 | 52 dir0 mid:5385 7->20 | 52 dir0 mid:5384 7->20 | 52 dir0 mid:5335 7->20 | 52 dir0 mid:5392 7->20 | 52 dir0 mid:5352 7->20 | 52 dir0 mid:5374 7->20 | 52 dir0 mid:5365 7->20 | 52 dir0 mid:5355 7->20 | 52 dir1 mid:5361 5->20 | 52 dir1 mid:5334 5->20 | 52 dir1 mid:5364 5->20 | 52 dir1 mid:5404 5->20 
+   fp: 52 dir0 satmid:5340 22->6 | 52 dir0 satmid:5350 22->6 | 52 dir0 satmid:5403 22->6 | 52 dir0 satmid:5363 22->6 | 52 dir0 satmid:5373 22->6 | 52 dir0 satmid:5360 22->6 | 52 dir0 satmid:15198 22->6 | 52 dir0 satmid:5343 22->6 | 52 dir0 satmid:5389 22->6 | 52 dir0 satmid:12202 22->6
+F one-colour 129 pass->fail 0 fail->pass 16 tier-changed 17 value-changed 20 worse-than-own 0 worse-than-base 0 (delta n0) outsideTrips 0 maxMinOutside 0 
+   fp margin(longest-limit at today gate): n16 min -9.6 med 1.0 p90 1.0 max 1.0 
+   pf:  
+   fp: 52 dir0 satmid:5340 22->5 | 52 dir0 satmid:5350 22->5 | 52 dir0 satmid:5403 22->5 | 52 dir0 satmid:5363 22->5 | 52 dir0 satmid:5373 22->5 | 52 dir0 satmid:5360 22->5 | 52 dir0 satmid:15198 22->5 | 52 dir0 satmid:5343 22->5 | 52 dir0 satmid:5389 22->5 | 52 dir0 satmid:12202 22->5 | 52 dir1 satmid:5390 21->6 | 52 dir1 satmid:5344 21->6 | 52 dir1 satmid:5354 21->6 | 52 dir1 satmid:5361 22->6 | 52 dir1 satmid:5404 22->6 | 52 dir1 satmid:14735 21->6
+E one-colour 124 pass->fail 0 fail->pass 10 tier-changed 14 value-changed 17 worse-than-own 0 worse-than-base 0 (delta n0) outsideTrips 0 maxMinOutside 0 
+   fp margin(longest-limit at today gate): n10 min 1.0 med 1.0 p90 1.0 max 1.0 
+   pf:  
+   fp: 52 dir0 satmid:5340 22->5 | 52 dir0 satmid:5350 22->5 | 52 dir0 satmid:5403 22->5 | 52 dir0 satmid:5363 22->5 | 52 dir0 satmid:5373 22->5 | 52 dir0 satmid:5360 22->5 | 52 dir0 satmid:15198 22->5 | 52 dir0 satmid:5343 22->5 | 52 dir0 satmid:5389 22->5 | 52 dir0 satmid:12202 22->5
+passing-stop margin (longest-limit, negative=slack): n1820 min -13.2 med -3.0 p90 0.0 max 0.0
+FLIPS adjacent-pooled pairs 1814 flips 32 a 22 b 10 c 0 d 0 e 0 | DRT-only {"a":0,"b":0,"c":0,"d":0,"tot":0} | flips within 1min of limit 32 | pooled stops within 1min of limit 743 / 1963
+41 dir1 satmid P1 11->12 4506->4505 cause b margin 0.0/1.0 longest 13/14 limit 13.0/13.0 n 39/39
+41 dir1 satmid P1 12->13 4505->4567 cause b margin 1.0/0.0 longest 14/13 limit 13.0/13.0 n 39/39
+41 dir1 satmid P1 13->14 4567->4024 cause b margin 0.0/1.0 longest 13/14 limit 13.0/13.0 n 39/39
+52 dir0 satmid P0 33->34 5366->5340 cause a margin -3.0/1.0 longest 7/11 limit 10.0/10.0 n 66/67
+52 dir0 satmid P1 30->31 5366->5340 cause a margin -3.0/1.0 longest 7/11 limit 10.0/10.0 n 66/67
+52 dir0 satmid P2 39->40 5366->5340 cause a margin -3.0/1.0 longest 7/11 limit 10.0/10.0 n 66/67
+52 dir0 satmid P3 30->31 5366->5340 cause a margin -3.0/1.0 longest 7/11 limit 10.0/10.0 n 66/67
+52 dir0 satmid P4 17->18 5366->5340 cause a margin -3.0/1.0 longest 7/11 limit 10.0/10.0 n 66/67
+52 dir0 satmid P5 39->40 5366->5340 cause a margin -3.0/1.0 longest 7/11 limit 10.0/10.0 n 66/67
+52 dir1 satmid P0 18->19 5361->5334 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 65/66
+52 dir1 satmid P0 20->21 5364->5404 cause b margin 0.0/1.0 longest 11/11 limit 11.0/10.0 n 66/66
+52 dir1 satmid P0 21->22 5404->5351 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 66/65
+52 dir1 satmid P3 18->19 5361->5334 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 65/66
+52 dir1 satmid P3 20->21 5364->5404 cause b margin 0.0/1.0 longest 11/11 limit 11.0/10.0 n 66/66
+52 dir1 satmid P3 21->22 5404->5351 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 66/65
+52 dir1 satmid P4 20->21 5361->5334 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 65/66
+52 dir1 satmid P4 22->23 5364->5404 cause b margin 0.0/1.0 longest 11/11 limit 11.0/10.0 n 66/66
+52 dir1 satmid P4 23->24 5404->5351 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 66/65
+52 dir1 satmid P5 0->1 14735->5390 cause a margin -9.6/1.0 longest 24/11 limit 33.6/10.0 n 17/66
+52 dir1 satmid P5 4->5 5361->5334 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 65/66
+52 dir1 satmid P5 6->7 5364->5404 cause b margin 0.0/1.0 longest 11/11 limit 11.0/10.0 n 66/66
+52 dir1 satmid P5 7->8 5404->5351 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 66/65
+52 dir1 satmid P6 20->21 5361->5334 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 65/66
+52 dir1 satmid P6 22->23 5364->5404 cause b margin 0.0/1.0 longest 11/11 limit 11.0/10.0 n 66/66
+52 dir1 satmid P6 23->24 5404->5351 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 66/65
+52 dir1 satmid P7 19->20 5361->5334 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 65/66
+52 dir1 satmid P7 21->22 5364->5404 cause b margin 0.0/1.0 longest 11/11 limit 11.0/10.0 n 66/66
+52 dir1 satmid P7 22->23 5404->5351 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 66/65
+52 dir1 satmid P8 14->15 14735->5390 cause a margin -9.6/1.0 longest 24/11 limit 33.6/10.0 n 17/66
+52 dir1 satmid P8 18->19 5361->5334 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 65/66
+52 dir1 satmid P8 20->21 5364->5404 cause b margin 0.0/1.0 longest 11/11 limit 11.0/10.0 n 66/66
+52 dir1 satmid P8 21->22 5404->5351 cause a margin 1.0/0.0 longest 11/11 limit 10.0/11.0 n 66/65
+PREMISE stretches 129 identical all-day trip set at every stop 124
+41 dir0 satmid P0 35-54 distinctSets 2 maxAdjDiff 2
+41 dir0 satmid P1 38-57 distinctSets 2 maxAdjDiff 2
+41 dir0 satmid P2 0-19 distinctSets 2 maxAdjDiff 2
+52 dir1 satmid P5 0-23 distinctSets 2 maxAdjDiff 143
+52 dir1 satmid P8 14-37 distinctSets 2 maxAdjDiff 143

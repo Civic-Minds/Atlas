@@ -5,9 +5,10 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { PERIOD_KEYS } from '../../shared/config';
-import { memoryStore } from '../../shared/mcpMemoryStore';
+import { memoryStore, type MemoryData } from '../../shared/mcpMemoryStore';
+import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
 import { splitPaths, splitStore } from '../../shared/mcpSplitStore';
 
 const FIXTURE = JSON.parse(readFileSync(join(import.meta.dirname, '../../src/utils/__tests__/fixtures/ttc-29-weekday.json'), 'utf8')) as { features: Array<{ geometry: unknown; properties: Record<string, unknown> }> };
@@ -65,6 +66,43 @@ describe('Atlas Studio MCP stores (CIV-1840)', () => {
     expect(await results(data)).toEqual(fromDisk);
     expect(fromDisk.routes).toEqual(['29']);
     expect(fromDisk.near.routes.length).toBeGreaterThan(0);
+
+    // CIV-2014: the local server's cloud-first store. An agency in the release reads the release; one only on this Mac
+    // (dry-run output) reads its route file, the tools making its summaries from the rows. Same answers either way.
+    const { cloudFirstStore } = await import('./cloudStore');
+    const mac = (files: MemoryData['files'], extra: Partial<MemoryData> = {}) => memoryStore({ catalog: [AGENCY], meta: {}, files, ...extra });
+    const release = (agencies: string[], extra: Record<string, unknown> = {}) => {
+      const f = new Map(files);
+      f.set(splitPaths.manifest, { releaseId: 'test', builtAt: '', agencies });
+      for (const [k, v] of Object.entries(extra)) f.set(k, v);
+      return splitStore(async path => (f.has(path) ? JSON.parse(JSON.stringify(f.get(path))) : null));
+    };
+    data.useStore(cloudFirstStore(release(['fixture']), mac({})));
+    expect(await results(data)).toEqual(fromDisk);
+    data.useStore(cloudFirstStore(release([]), mac({ fixture: JSON.parse(JSON.stringify(features)) })));
+    expect(await results(data)).toEqual(fromDisk);
+    // Studio's own files on this Mac come first (what Studio shows), then the release's.
+    const onMac = { agency: 'mac' } as unknown as StudioBeforeAfterFile, published = { agency: 'release' } as unknown as StudioBeforeAfterFile;
+    const both = cloudFirstStore(release(['fixture'], { [splitPaths.comparison('fixture')]: published }), mac({}, { comparisons: { fixture: onMac } }));
+    expect(await both.comparison('fixture')).toEqual(onMac);
+    const cloudOnly = cloudFirstStore(release(['fixture'], { [splitPaths.comparison('fixture')]: published }), mac({}));
+    expect(await cloudOnly.comparison('fixture')).toEqual(published);
+  });
+});
+
+describe('the older-copy note (CIV-2014)', () => {
+  it('names both releases in Ryan\'s words when the copy on this Mac is older, and is absent when it is the latest', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'atlas-mcp-note-'));
+    mkdirSync(join(root, 'shared/data'), { recursive: true });
+    mkdirSync(join(root, 'tmp/agency-pages-cache/release-old'), { recursive: true });
+    process.env.ATLAS_ROOT = root;
+    delete process.env.ATLAS_MCP_DATA_DIR;
+    vi.resetModules();
+    const { staleCacheNote } = await import('./diskStore');
+    writeFileSync(join(root, 'shared/data/agency-pages.json'), JSON.stringify({ releaseId: 'release-new', generatedAt: new Date(Date.now() + 60_000).toISOString() }));
+    expect(staleCacheNote()).toBe("These figures come from an older copy of Atlas's data (release-old) than the latest release (release-new) and may not match the map.");
+    writeFileSync(join(root, 'shared/data/agency-pages.json'), JSON.stringify({ releaseId: 'release-old', generatedAt: new Date(Date.now() + 60_000).toISOString() }));
+    expect(staleCacheNote()).toBeNull();
   });
 });
 
@@ -73,5 +111,74 @@ describe('the pure tool code (CIV-1840)', () => {
     const src = readFileSync(join(import.meta.dirname, 'atlasData.ts'), 'utf8');
     const imports = [...src.matchAll(/^(?:import|export)[^'\n]*from '([^']+)'/gm)].map(m => m[1]);
     expect(imports.filter(i => i.startsWith('node:') || /pipeline\/|diskStore|localData/.test(i))).toEqual([]);
+  });
+});
+
+describe('a parent agency is one entry in the tools (CIV-1963)', () => {
+  it('finds MTA New York by name and counts a route in two of its feeds once', async () => {
+    const data = await import('./atlasData');
+    const feed = (slug: string) => ({ ...AGENCY, slug, name: slug.toUpperCase(), parentAgency: 'mta-new-york' });
+    const copy = () => JSON.parse(JSON.stringify(features));
+    data.useStore(memoryStore({
+      catalog: [feed('nyct-bus-manhattan'), feed('mta-bus-company'), AGENCY],
+      meta: { 'nyct-bus-manhattan': { shortName: '', parentAgency: 'MTA New York' }, 'mta-bus-company': { shortName: '', parentAgency: 'MTA New York' }, fixture: { shortName: 'FX', parentAgency: null } },
+      files: { 'nyct-bus-manhattan': copy(), 'mta-bus-company': copy(), fixture: copy() },
+    }));
+    const entry = (await data.findAgencyEntry('MTA New York'))!;
+    expect([entry.name, entry.members.map(m => m.slug)]).toEqual(['MTA New York', ['nyct-bus-manhattan', 'mta-bus-company']]);
+    const one = await data.routesMeeting((await data.findAgency('FX'))!, 'Weekday', 'midday', 20);
+    expect(await data.entryRoutesMeeting(entry, 'Weekday', 'midday', 20)).toEqual(one);
+    expect((await data.agenciesNear('Toronto', 60))!.agencies.map(a => a.name)).toEqual(['MTA New York', 'Fixture Transit']);
+    // list_agencies: one row for the parent; include_parts also lists its feeds (#1625).
+    const { handlers } = await import('./tools');
+    const plain = await handlers.list_agencies({ query: 'MTA' }) as { agencies: string[]; parts?: unknown };
+    expect([plain.agencies.length, plain.agencies[0].startsWith('MTA New York |'), plain.parts]).toEqual([1, true, undefined]);
+    const withParts = await handlers.list_agencies({ query: 'MTA', include_parts: true }) as { parts: Record<string, string[]> };
+    expect(withParts.parts['MTA New York'].map(p => p.split(' | ')[0])).toEqual(['NYCT-BUS-MANHATTAN', 'MTA-BUS-COMPANY']);
+  });
+});
+
+describe('routes_at_frequency counts as the map filter does (CIV-2014, #1643)', () => {
+  // Route 29 as recorded, and a copy (929) whose last midday wait breaks the 20 and 30 grades (CIV-238 bits 4 + 8).
+  const broken = lineFeatures.map(f => ({ ...f, properties: { ...f.properties, routeId: '929', routeShortName: '929', routeEdgeWaitFailByPeriod: { midday: 12 } } }));
+  const files = { fixture: JSON.parse(JSON.stringify([...lineFeatures, ...broken, ...stopFeatures])) };
+
+  it('lists exactly the routes routePassesHeadwayFilter passes, for every period and threshold', async () => {
+    const data = await import('./atlasData');
+    const { routePassesHeadwayFilter } = await import('../../shared/routeHeadwayFilter');
+    data.useStore(memoryStore({ catalog: [AGENCY], meta: { fixture: { shortName: 'FX', parentAgency: null } }, files }));
+    const a = (await data.findAgency('FX'))!;
+    const routes = await data.routesOn(a, 'Weekday');
+    expect(routes.map(r => r.name).sort()).toEqual(['29', '929']);
+    for (const period of PERIOD_KEYS) {
+      for (const every of [5, 10, 12, 15, 17, 20, 25, 30, 45, 60]) {
+        const map = routes.filter(r => routePassesHeadwayFilter(r.rows, period, undefined, every)).map(r => r.name).sort();
+        const mcp = (await data.routesMeeting(a, 'Weekday', period, every)).meeting.map(m => m.route).sort();
+        expect(mcp, `${period} every ${every}`).toEqual(map);
+      }
+    }
+    // The broken copy keeps its number but is left out where its last wait breaks the grade, as the map hides it.
+    expect((await data.routesMeeting(a, 'Weekday', 'midday', 20)).meeting.map(m => m.route)).toEqual(['29']);
+    expect((await data.routesMeeting(a, 'Weekday', 'midday', 60)).meeting.map(m => m.route).sort()).toEqual(['29', '929']);
+  });
+
+  it('ranking reads the same decision from its wait files', async () => {
+    const data = await import('./atlasData');
+    data.useStore(memoryStore({ catalog: [AGENCY], meta: { fixture: { shortName: 'FX', parentAgency: null } }, files }));
+    const a = (await data.findAgency('FX'))!;
+    const summaries = await data.routeList(a, 'Weekday');
+    const index = summaries.map(r => {
+      const breaks = Object.fromEntries(PERIOD_KEYS.flatMap(k => r.figures[k].filter!.breaks ? [[k, r.figures[k].filter!.breaks]] : []));
+      return { route: r.name, name: r.longName, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, r.figures[k].filter!.wait])), ...(Object.keys(breaks).length ? { breaks } : {}) };
+    });
+    const waits = data.waitsOf(index);
+    const midday = PERIOD_KEYS.indexOf('midday');
+    for (const every of [10, 15, 17, 20, 30, 60]) {
+      const ranked = summaries.filter((_, i) => data.rankWaitPasses(waits[i][midday], every)).map(r => r.name);
+      expect(ranked, `every ${every}`).toEqual(summaries.filter(r => data.figurePasses(r.figures.midday, every)).map(r => r.name));
+    }
+    // A wait file written before the readings (plain numbers) still counts by its number.
+    expect(data.rankWaitPasses(16, 20)).toBe(true);
+    expect(data.rankWaitPasses([16, 12], 20)).toBe(false);
   });
 });

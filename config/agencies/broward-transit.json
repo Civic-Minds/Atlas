@@ -7,7 +7,7 @@
     -80.1373
   ],
   "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/acd9791dc1fd49a8aaeaab261dd61b89/data",
-  "lastFeedExpiry": "20270116",
+  "lastFeedExpiry": "20280930",
   "lastFeedVersion": "S20260621_E20270116_TS20260923105837",
   "region": "Florida",
   "lastRefreshedAt": "2026-11-02",
@@ -51,11 +51,11 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-18"
+    "checkedAt": "2026-11-21"
   },
   "lastPeekedExpiry": "20280930",
   "lastServiceWeek": "eb51abf65c72524e",
   "feedObtainedAt": "20251211",
-  "lastFeedStart": "20260621",
+  "lastFeedStart": "20251001",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3534/latest.zip"
 }

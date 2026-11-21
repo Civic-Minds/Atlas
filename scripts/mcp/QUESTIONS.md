@@ -188,3 +188,12 @@ Atlas has no ridership, crowding, causes, live positions, holiday plans, fares o
 | T3 | Just estimate how crowded Seattle's RapidRide E Line is. | planner | Atlas has no crowding data. Because it was asked for an estimate, any estimate is labelled as its own with its basis (published boardings, scheduled trips). |
 | T4 | Chicago's Blue Line is closed between Clark/Lake and Jefferson Park this weekend. How many shuttle buses do we need to match the train's frequency? | planner | Atlas has no road travel times, so no shuttle tool. A bus count is allowed only as a labelled estimate with its working (about 19 at every 6 last time). Better still: says what Atlas can give (the train's frequency and trip time). |
 | T5 | How many TransLink stops are within walking distance of a route running every 10 minutes or better? | planner | Atlas cannot count stops by walking distance. Lists the frequent routes it can (11 at the time) instead of a stop count. |
+
+## Schedule "right now" (#1627)
+
+| ID | Question | Audience | A good answer must include |
+|---|---|---|---|
+| SN1 | Which TTC routes are running every 10 minutes or better right now? | planner | Uses "now"; names the day, part of the day and local time it used; the routes from routes_at_frequency. |
+| SN2 | How often is the 504 coming right now? | planner | The hour from now, with what "now" was; never a guessed period. |
+| SN3 | What's running near Yonge and Finch on YRT right now? | planner | Each route's service in the current part of the day; routes with no service now named as such. |
+| SN4 | Is anything running on Kingston Transit right now? (asked overnight) | planner | Says nothing is scheduled now and names the next part of the day; notes Atlas doesn't model holidays only if relevant. |

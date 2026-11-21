@@ -13,6 +13,7 @@
     -122.12
   ],
   "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
+  "preprocess": "eugene-emx-patterns",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-131/latest.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "2609a",
@@ -48,7 +49,7 @@
       "mismatchRoutes": 7,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-18"
+    "checkedAt": "2026-11-21"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

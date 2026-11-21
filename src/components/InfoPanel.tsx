@@ -1,4 +1,5 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
+import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import AppLink from './ui/AppLink';
 import { shortDate } from '../../shared/dateText';
 import { mailto } from '../../shared/contact';
@@ -22,7 +23,8 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
+import { bunchingSplitNote, OPEN_ABOUT_LIVE_EVENT } from '../../shared/liveWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -34,7 +36,7 @@ import { PAGE_NAMES } from '../../shared/pageNames';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
@@ -95,6 +97,8 @@ interface Props {
   onAgencySelect?: (slug: string) => void;
   onLiveRouteClick?: (slug: string, routeShortName: string) => void;
   layers?: Record<string, GeoJSON.FeatureCollection>;
+  /** Inside Studio the menu is the same component with Studio's own text (CIV-1890). */
+  inStudio?: boolean;
 }
 
 function tabToView(tab: Tab): View {
@@ -127,7 +131,7 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
   );
 }
 
-export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers }: Props) {
+export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers, inStudio = false }: Props) {
   // History is not offered on phones, so its filter, badges and wording step aside there.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const FEATURES = { ...BASE_FEATURES, history: BASE_FEATURES.history && phoneModeFlags(isPhone).history };
@@ -189,6 +193,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'edge-gap-allowance' ? 'edge-gap-allowance'
         : helpContext?.topic === 'weekday-variation' ? 'weekday-variation'
         : helpContext?.topic === 'route-rating' ? 'route-rating'
+        : helpContext?.topic === 'official-data' ? 'official-data'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
@@ -197,6 +202,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       setQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
     }
   }, [open, defaultTab, featureFilter, helpContext]);
+
+  // A Learn more link in Studio's Live view opens this panel at its Live part (App opens the panel; this scrolls to it).
+  const liveRef = useRef<HTMLDivElement>(null);
+  const [wantLive, setWantLive] = useState(0);
+  useEffect(() => {
+    const on = () => setWantLive(n => n + 1);
+    window.addEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+    return () => window.removeEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+  }, []);
+  useEffect(() => {
+    if (wantLive && open && view === 'home') liveRef.current?.scrollIntoView?.({ block: 'start' });
+  }, [wantLive, open, view]);
 
   useEffect(() => {
     if (view === 'agencies') {
@@ -257,8 +274,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [agencies, query, regionFilter, agencyFeatureFilters, liveBySlug, historyBySlug]);
 
   const byRegion = useMemo(() => {
-    const map = new Map<string, Agency[]>();
-    for (const a of filtered) {
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one row under its name, opening its
+    // home feed.
+    const map = new Map<string, Array<Agency & { memberSlugs: string[] }>>();
+    for (const g of groupAgencies(filtered)) {
+      const home = groupHome(g);
+      const a = { ...home, name: agencyGroupName(g, x => x.name), ...(g.parent ? { nameQualifier: undefined } : {}), memberSlugs: g.members.map(m => m.slug) };
       const r = a.region ?? 'Other';
       if (!map.has(r)) map.set(r, []);
       map.get(r)!.push(a);
@@ -352,21 +373,33 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'home' && (
             <div className="h-full flex flex-col min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-5">
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+              {inStudio ? (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{STUDIO_ABOUT_LEAD}</p>
+              ) : (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A transit atlas covering agencies across {coverageCountriesText()}.
-              </p>
+                </p>
+              )}
+
+              {inStudio && (
+                <div ref={liveRef}>
+                  <p className="text-xs font-bold text-[var(--text-muted)] mb-2">{STUDIO_ABOUT_LIVE_HEADING}</p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-1">{bunchingSplitNote()}</p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{LIVE_NOISE_CAPTION}</p>
+                </div>
+              )}
 
               <div>
                 <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Data</p>
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
+                {!inStudio && <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {coverageAgenciesText()} transit agencies.
                   {FEATURES.live && FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
                   {FEATURES.live && !FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}.`}
                   {!FEATURES.live && FEATURES.history && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
-                </p>
+                </p>}
                 <div className="space-y-2">
-                  <LinkCard as="button"
-                    onClick={() => setView('agencies')} icon="chevron">Browse agencies</LinkCard>
+                  {!inStudio && <LinkCard as="button"
+                    onClick={() => setView('agencies')} icon="chevron">Browse agencies</LinkCard>}
                   <LinkCard as="button"
                     onClick={() => setView('sources')} icon="chevron">Schedule sources</LinkCard>
                 </div>
@@ -443,13 +476,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     {[...byRegion.entries()].map(([region, list]) => (
                       <AgencyRegionSection key={region} region={region}>
                         {list.map(a => {
-                          const hasLive = liveBySlug.has(a.slug);
-                          const hasHistory = historyBySlug.has(a.slug);
+                          const hasLive = a.memberSlugs.some(slug => liveBySlug.has(slug));
+                          const hasHistory = a.memberSlugs.some(slug => historyBySlug.has(slug));
                           // The active status filter already explains why these rows are present.
                           // Repeating that same status on every row makes the filter feel inactive.
                           const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
                           const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
-                          const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list;
+                          const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea, nameQualifier: a.nameQualifier }).list;
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
                             <AgencyListRow
@@ -529,6 +562,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           )}
           {view === 'beta-rollout' && (
             <ExplainerBody layout="beta-rollout" helpContext={helpContext} lead={helpContext?.agencyName ? betaRolloutLead(helpContext.agencyName) : ''} />
+          )}
+          {view === 'official-data' && (
+            <ExplainerBody layout="official-data" helpContext={helpContext} lead={helpContext?.agencyName ? officialDataOnlyNotice(helpContext.agencyName) : ''} />
           )}
           {view === 'route-data-quality' && <ExplainerBody layout="route-data-quality" lead={ROUTE_DATA_QUALITY_LEAD} helpContext={helpContext} />}
           {view === 'no-route-shape' && <ExplainerBody layout="no-route-shape" lead={NO_ROUTE_SHAPE_NOTICE} helpContext={helpContext} />}

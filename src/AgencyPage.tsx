@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppLink from './components/ui/AppLink';
 import { MISSING_VALUE } from '../shared/missingValue';
+import { countText } from '../shared/numberText';
 import { useParams } from 'react-router';
 import {
   bandCounts,
@@ -224,10 +225,10 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4">
-                <SubsectionTitle className="pb-2" ariaHidden>{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></SubsectionTitle>
+                <SubsectionTitle className="pb-2" ariaHidden>{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{countText(group.routes.length)}</span></SubsectionTitle>
                 <ScrollX>
                   <DataTable
-                    caption={`${group.label} ${group.routes.length}`}
+                    caption={`${group.label} ${countText(group.routes.length)}`}
                     layout="page"
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
@@ -271,7 +272,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
-                  <li key={o.slug}><AppLink className={UNDERLINED_LINK} to={agencyPagePath(o.slug)}>{o.name}</AppLink></li>
+                  <li key={o.slug}><AppLink className={UNDERLINED_LINK} to={o.path}>{o.name}</AppLink></li>
                 ))}
               </ul>
             </section>

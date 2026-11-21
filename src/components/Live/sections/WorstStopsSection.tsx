@@ -1,6 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, P90_LATER_LABEL, STOPS_RANKED_LATE_TEXT, lateStopsIntro, p90LateText } from '../../../../shared/liveWording';
+import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, STOPS_RANKED_LATE_TEXT, lateStopsIntro } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
@@ -37,19 +37,17 @@ export function worstStopRows(v3: LiveV3, data: DashboardBandData, dir: number |
 
 /**
  * The stops most often late. `columns` 'compact' is the dashboard's three columns; 'full' adds the late-share bar, the
- * typical delay, the 1-in-10 figure and the departure count. With `id` the list is a titled Section (`shrink`,
+ * typical delay and the departure count. With `id` the list is a titled Section (`shrink`,
  * `boundary` as on Section); without it, it is the dashboard's own card, a section of its own with `footerLink`.
  * `intro` adds the thresholds line; `notRanked` the note about stops whose delay is less exact; `onPick`/`canPick`
  * turn stop names into buttons that choose the stop.
  */
-export default function WorstStopsSection({ v3, data, dir, uncertain, limit, columns, title, id, shrink, boundary, intro = false, notRanked = false, onPick, canPick, footerLink, p90Width, map }: {
+export default function WorstStopsSection({ v3, data, dir, uncertain, limit, columns, title, id, shrink, boundary, intro = false, notRanked = false, onPick, canPick, footerLink, map }: {
   v3: LiveV3; data: DashboardBandData; dir: number | null; uncertain: readonly UncertainStart[]; limit: number;
   columns: 'compact' | 'full'; title: string; id?: string; shrink?: boolean; boundary?: string;
   intro?: boolean; notRanked?: boolean;
   onPick?: (directionId: number, stopId: string) => void; canPick?: (directionId: number, stopId: string) => boolean;
   footerLink?: { text: string; href: string; onClick: () => void };
-  /** The 1-in-10 column's set width (Full analysis sets one; Explore does not). */
-  p90Width?: number;
   /** CIV-1405: the list shown as a map of the route instead of a table; each stop's card holds its figures. */
   map?: { agency: string; route: string };
 }): ReactNode {
@@ -77,7 +75,6 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
             : { key: 'late', header: LATE_LABEL, width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${countText(s.n)} departures`}>{percentText(s.lateShare)}</span> },
           ...(full ? [
             { key: 'median', header: DELAY_LEGEND_TITLE, width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
-            { key: 'p90', header: P90_LATER_LABEL, narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => p90LateText(s.p90Min) },
             { key: 'n', header: DEPARTURES_COLUMN, narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => countText(s.n) },
           ] : []),
         ]}

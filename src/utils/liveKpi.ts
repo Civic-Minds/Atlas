@@ -34,6 +34,7 @@ const round1 = (x: number) => Math.round(x * 10) / 10;
 /** The Bunching tile shows its two parts when the file has them (CIV-302): "7% · 21%" over "too close · too far apart". */
 const bunchSplit = (b: { bunched?: number; gapped?: number }) => b.bunched != null && b.gapped != null;
 const BUNCHING_SPLIT_CAPTION = 'too close · too far apart';
+export const bunchingIsSplit = (k: Pick<Kpi, 'key' | 'sub'>): boolean => k.key === 'bunching' && k.sub === BUNCHING_SPLIT_CAPTION;
 
 /** The first number a tile writes ("30 min" → 30, "99.9%" → 99.9, "7% · 21%" → 7), or null. */
 const leadingNumber = (text: string | null): number | null => {

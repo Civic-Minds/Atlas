@@ -1,16 +1,19 @@
-import { BACK_PLACES, backLinkLabel } from './content/backLinks';
 import { MISSING_VALUE } from '../shared/missingValue';
+import { countText } from '../shared/numberText';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpDown } from 'lucide-react';
-import AtlasLogo from './components/AtlasLogo';
 import { useAgencies } from './hooks/useAgencies';
 import type { ShapeProperties } from './hooks/useAgencyData';
 import { isRiderMeaningfulGap } from './utils/routeCardUneven';
-import { TIME_PERIODS, type PeriodKey } from '../shared/config';
+import { PERIOD_LABELS, TIME_PERIODS, type PeriodKey } from '../shared/config';
+import { agencyNames } from './utils/agencyName';
 import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
-import { FLOATING_CARD } from './styles';
 import Pill from './components/ui/Pill';
-import DataTable, { type DataTableColumn } from './components/ui/DataTable';
+import DataTable, { type DataTableColumn, type DataTableSort } from './components/ui/DataTable';
+import DocsPageLayout from './components/ui/DocsPageLayout';
+import PageSection, { PageTable, PAGE_SECTION_NOTE } from './components/ui/PageSection';
+import { PageTitle } from './components/ui/PageTitle';
+import PageLoadState from './components/ui/PageLoadState';
+import { DIAGNOSTICS_UNEVEN_PATH, INTERNAL_GROUPS } from '../shared/internalPages';
 import type { Agency } from './App';
 import { delayAmount, headwayAbout } from './utils/headwayText';
 
@@ -143,95 +146,46 @@ export default function DiagnosticsUnevenPage() {
     });
   }, [rows, sortKey, sortDir]);
 
-  function toggleSort(key: SortKey) {
-    if (key === sortKey) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('desc');
-    }
+  // The shared table's sort: a header click sorts that column, most first; a second click turns it round (as before).
+  const sort: DataTableSort = { key: sortKey, reversed: sortDir === 'asc' };
+  function toggleSort(key: string) {
+    const k = key as SortKey;
+    if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(k); setSortDir('desc'); }
   }
 
-  const columns: { key: SortKey; label: string }[] = [
-    { key: 'agency', label: 'Agency' },
-    { key: 'route', label: 'Route' },
-    { key: 'period', label: 'Period' },
-    { key: 'excess', label: 'Gap vs. normal' },
-  ];
-
-  const sortHeader = (col: (typeof columns)[number]) => (
-    <button
-      type="button"
-      onClick={() => toggleSort(col.key)}
-      className="flex items-center gap-1 hover:text-[var(--text-primary)] transition-colors"
-    >
-      {col.label}
-      <ArrowUpDown className={`w-3 h-3 ${sortKey === col.key ? 'opacity-100' : 'opacity-30'}`} />
-    </button>
-  );
   const tableColumns: DataTableColumn<(typeof sorted)[number]>[] = [
-    { key: 'agency', header: sortHeader(columns[0]), cell: row => row.agencyName, className: 'whitespace-nowrap' },
-    { key: 'route', header: sortHeader(columns[1]), cell: row => row.route, className: 'whitespace-nowrap font-medium' },
-    { key: 'period', header: sortHeader(columns[2]), cell: row => row.period, className: 'whitespace-nowrap text-[var(--text-dim)]' },
-    {
-      key: 'excess',
-      header: sortHeader(columns[3]),
-      cell: row => <>{delayAmount(row.maxGap)} <span className="text-[var(--text-dim)]">({headwayAbout(row.headway)})</span></>,
-      className: 'whitespace-nowrap',
-    },
-    { key: 'headsign', header: 'Headsign', cell: row => row.headsign, className: 'text-[var(--text-dim)]' },
+    { key: 'agency', header: 'Agency', sortable: true, rowHeader: true, width: 16, className: 'font-normal', cell: row => agencyNames(row.agencyName).name },
+    { key: 'route', header: 'Route', sortable: true, align: 'left', cell: row => row.route },
+    { key: 'period', header: 'Period', sortable: true, align: 'left', className: 'whitespace-nowrap', cell: row => PERIOD_LABELS[row.period as PeriodKey] ?? row.period },
+    { key: 'headsign', header: 'Headsign', align: 'left', grow: true, cell: row => row.headsign },
+    { key: 'excess', header: 'Gap vs. normal', sortable: true, className: 'whitespace-nowrap', cell: row => <>{delayAmount(row.maxGap)} <span className="text-[var(--text-dim)]">({headwayAbout(row.headway)})</span></> },
   ];
+  const page = INTERNAL_GROUPS.flatMap(g => g.pages).find(x => x.path === DIAGNOSTICS_UNEVEN_PATH)!;
+  useEffect(() => { document.title = `${page.title} | Atlas`; }, [page.title]);
 
   return (
-    <div className="min-h-screen w-full bg-[var(--bg-app)] text-[var(--text-primary)] font-sans">
-      <div className="sticky top-0 z-10 bg-[var(--bg-app)]/95 backdrop-blur-md border-b border-[var(--border-primary)] px-6 py-4 flex items-center gap-2">
-        <AtlasLogo href="/" ariaLabel={backLinkLabel(BACK_PLACES.frequencyMap)} />
-        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
-        <span className="text-xl sm:text-2xl font-black text-[var(--text-primary)] leading-none">Uneven Headway</span>
-        {!isLoading && (
-          <div className="ml-auto flex items-center gap-3">
-            <div className="flex gap-1.5">
-              {DAY_TYPES.map(d => (
-                <Pill
-                  key={d}
-                  onClick={() => setDay(d)}
-                  size="segment"
-                  selected={day === d}
-                >
-                  {d}
-                </Pill>
-              ))}
-            </div>
-            <span className="text-sm text-[var(--text-dim)]">{sorted.length} flagged</span>
+    <DocsPageLayout width="wide">
+      <PageTitle>{page.title}</PageTitle>
+      <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{page.description}</p>
+      {agenciesLoadState === 'loading' || agenciesLoadState === 'error' || isLoading ? (
+        <PageLoadState state={agenciesLoadState === 'error' && !isLoading ? 'error' : 'loading'} what="the agencies" onRetry={retry} />
+      ) : (
+        <PageSection id="uneven-flagged" title="Flagged Directions" intro={`${countText(sorted.length)} on a ${day.toLowerCase()}.`}>
+          <div className="mt-4 flex gap-1.5">
+            {DAY_TYPES.map(d => (
+              <Pill key={d} onClick={() => setDay(d)} size="segment" selected={day === d}>{d}</Pill>
+            ))}
           </div>
-        )}
-      </div>
-
-      <div className="p-6">
-        {agenciesLoadState === 'loading' || isLoading ? (
-          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">Loading…</div>
-        ) : agenciesLoadState === 'error' ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-3 text-sm text-[var(--text-dim)]">
-            <p>Could not load agency data.</p>
-            <Pill tone="outline" size="segment" onClick={retry}>Retry</Pill>
-          </div>
-        ) : sorted.length === 0 ? (
-          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">
-            Nothing flagged — no direction has a gap materially bigger than its own normal spacing.
-          </div>
-        ) : (
-          <div className={`${FLOATING_CARD} overflow-hidden`}>
-            <div className="overflow-x-auto">
-              <DataTable
-                variant="card"
-                columns={tableColumns}
-                rows={sorted}
-                rowKey={row => row.key}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+          {sorted.length === 0 ? (
+            <p className={`mt-6 ${PAGE_SECTION_NOTE}`}>Nothing flagged — no direction has a gap materially bigger than its own normal spacing.</p>
+          ) : (
+            <PageTable>
+              <DataTable layout="page" caption={page.title} columns={tableColumns} rows={sorted} rowKey={row => row.key} sort={sort} onSort={toggleSort} />
+            </PageTable>
+          )}
+        </PageSection>
+      )}
+    </DocsPageLayout>
   );
 }

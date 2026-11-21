@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ON_DEMAND_MODE } from '../modes';
-import { FREQUENCY_RESEARCH_VIEWS, mapViewKind, modesForView, viewAllowsOnDemand, viewShowsOnDemand } from '../viewLayers';
+import { FREQUENCY_RESEARCH_VIEWS, mapDrawsOnDemand, mapViewKind, modesForView, viewAllowsOnDemand, viewShowsOnDemand } from '../viewLayers';
 
 describe('viewLayers', () => {
   it('maps view flags to a view kind', () => {
@@ -27,5 +27,11 @@ describe('viewLayers', () => {
     expect(viewShowsOnDemand('map', new Set([ON_DEMAND_MODE]))).toBe(true);
     expect(viewShowsOnDemand('map', new Set([3]))).toBe(false);
     expect(viewShowsOnDemand('night', new Set())).toBe(false);
+  });
+
+  it('draws (and so loads and reports) on-demand areas only with route layers on: never in Studio (#1635)', () => {
+    expect(mapDrawsOnDemand('map', new Set(), true)).toBe(true);
+    expect(mapDrawsOnDemand('map', new Set(), false)).toBe(false);
+    expect(mapDrawsOnDemand('night', new Set(), true)).toBe(false);
   });
 });

@@ -31,14 +31,14 @@ import { delayStatus, EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN } from '../shared/li
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
 import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCounts, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
-import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
+import { PIECE_PARAMS } from '../pipeline/pieceParams.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 import { loadLiveAgencyConfig } from './live-agency-config.js';
 import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
 import { DAYTIME_PERIOD_KEYS } from '../shared/rules/periods.js';
-import { LIVE_MIN_SAMPLE } from '../shared/rules/live.js';
+import { LIVE_MIN_SAMPLE, LIVE_WINDOW_DAYS } from '../shared/rules/live.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -50,7 +50,7 @@ const OUT = args.out;
 const AGENCY = args.agency ?? 'ttc';
 const LIVE = loadLiveAgencyConfig(AGENCY);
 const TZ = LIVE.timeZone;
-const DAYS = Number(args.days ?? 7);
+const DAYS = Number(args.days ?? LIVE_WINDOW_DAYS);
 const OBS_OUT = args['obs-out'];
 /** Optional: a folder to write the string-line data into, one file per service day (the last 3), <route>-<date>.json. */
 const STRINGS_DIR = args['strings-dir'];
@@ -1011,6 +1011,11 @@ const buildupV3 = bandsV3.all.buildup;
 const windowHolds = holds.filter(h => inGoodDays.has(serviceDateOf(h.start)) && !feedDown(h.start) && !feedDown(h.end) && !feedDown((h.start + h.end) / 2));
 const windowShortTurns = keepGoodDays(shortTurnEvents, inGoodDays);
 const windowSegments = aggregateSegments(keepGoodDays(observations, inGoodDays), scheduled, scheduleKeyForDate, hourOf);
+// CIV-1828: Studio's stop pairs over the last LIVE_WINDOW_DAYS service dates ("Rolling 7 days only"), good days only; the
+// window's other dates are the left-out days the page names.
+const recentDates = windowDates.slice(-LIVE_WINDOW_DAYS);
+const recentGood = new Set(goodWindowDates.filter(d => recentDates.includes(d)));
+const recentSegments = aggregateSegments(keepGoodDays(observations, recentGood), scheduled, scheduleKeyForDate, hourOf);
 const perDay = (n: number) => (goodWindowDates.length ? n / goodWindowDates.length : 0);
 // Stops only a regular branch serves (CIV-311): gap figures only, no forms/gradual for them.
 const branchOnlyOf = (dir: number, order: string[]) => branchOnlyStops(
@@ -1109,7 +1114,7 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   // stops whatever its shape, so the shared line already counts all their trips, once.
   const branchLines: BranchRunTime[] = [];
   const seenSpans = new Set<string>();
-  for (const p of branchPatterns(dirPatterns.map(p => ({ p, stops: p.stops.map(s => s.stopId), along: p.stops.map(s => s.along), trips: tripsPerShape.get(p.id) ?? 0 })), main, SHARED_STRETCH_MIN_STOPS, SHARED_STRETCH_MIN_KM * 1000)) {
+  for (const p of branchPatterns(dirPatterns.map(p => ({ p, stops: p.stops.map(s => s.stopId), along: p.stops.map(s => s.along), trips: tripsPerShape.get(p.id) ?? 0 })), main, PIECE_PARAMS.minStops, PIECE_PARAMS.minKm * 1000)) {
     const span = reliableStretch(p.stops, coverage);
     if (!span || (span[0] === a && span[span.length - 1] === b)) continue;
     const key = `${span[0]}|${span[span.length - 1]}`;
@@ -1399,6 +1404,14 @@ if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns.map(r => ({ ...r, 
 if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes.map(r => { const x = r as typeof r & { tripId: string; patternId: string }; return { ...r, tripId: rawTripId_(x.tripId), patternId: rawShapeIdOf(x.patternId) }; })));
 console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);
 
+/** A stop pair as the output writes it: its figures, whether it touches a pattern end, its stop names and its line. */
+const segmentOut = (s: (typeof stats)[number]) => ({
+  ...s,
+  terminal: terminalStops.has(s.fromStopId) || terminalStops.has(s.toStopId),
+  fromName: stopsById.get(s.fromStopId)?.stop_name ?? s.fromStopId,
+  toName: stopsById.get(s.toStopId)?.stop_name ?? s.toStopId,
+  coordinates: segGeom.get(segmentKey(s.fromStopId, s.toStopId)) ?? [],
+});
 const usedDates = dates;
 const result = {
   agency: AGENCY,
@@ -1418,13 +1431,9 @@ const result = {
   runsUnmatched,
   observations: observations.length,
   headwayWindows: { total: windowsTotal, kept: windowsKept },
-  segments: stats.map(s => ({
-    ...s,
-    terminal: terminalStops.has(s.fromStopId) || terminalStops.has(s.toStopId),
-    fromName: stopsById.get(s.fromStopId)?.stop_name ?? s.fromStopId,
-    toName: stopsById.get(s.toStopId)?.stop_name ?? s.toStopId,
-    coordinates: segGeom.get(segmentKey(s.fromStopId, s.toStopId)) ?? [],
-  })),
+  segments: stats.map(segmentOut),
+  // CIV-1828: the same stop pairs over the last LIVE_WINDOW_DAYS service dates, good days only (Studio's Live page).
+  recent: { dates: recentDates, goodDates: [...recentGood].sort(), segments: recentSegments.map(segmentOut) },
   v2: {
     tripInstances, tripsNotSeen, tripsUnlistedCover, tripsFeedGap, tripsShortExcluded, tripsShortTurned,
     notSeenLabel: 'No vehicle reported under this trip\'s number: N of M scheduled trips. Not a count of cancellations; trips cut short aren\'t included.',

@@ -12,7 +12,7 @@
  *
  * - The shared-stretch rule (CIV-82, pipeline/sharedStretch.ts): two patterns share a stop only
  *   inside an aligned run of consecutive stops served in the same order, at least
- *   SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM long. A hub stop or a 2-3 stop
+ *   PIECE_PARAMS.minStops stops and PIECE_PARAMS.minKm long. A hub stop or a 2-3 stop
  *   overlap never pools, so Niagara 301/401 style corridors that meet at one stop stay apart.
  * - Same-destination variants (#690): a pattern under the same headsign whose stops cover at
  *   least SAME_HEADSIGN_COVERAGE of this pattern's stops is the same line on another shape id

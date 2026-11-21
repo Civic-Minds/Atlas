@@ -26,7 +26,7 @@ export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null
 export const runTimeStretchOf = (v3: LiveV3, d: number) => runTimeStretchLabel(v3.runningTime?.stretch?.[String(d)], liveStopName);
 
 const INSET = 6; // px each end, so a dot on the first or last minute is not clipped
-/** Room on the right of the rows for "min" at the end of the scale (and the slow end's number). */
+/** Room on the right of the rows for "min" at the end of the scale. */
 const GUTTER = 'pr-7';
 
 /** The width of a box in px, kept up to date (0 until it is measured, and where there is no ResizeObserver). */
@@ -53,19 +53,18 @@ export function RowLegend({ dense = false, inline = false }: { dense?: boolean; 
     <div className={`${inline ? '' : dense ? 'mt-2' : 'mt-3'} flex flex-wrap items-center ${inline ? 'justify-end gap-x-3' : 'gap-x-5'} gap-y-1`} aria-hidden="true">
       <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-2.5 w-2.5 rounded-full bg-[var(--text-primary)]" />{USUALLY_COLUMN}</span>
       <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-3 w-0.5 bg-[var(--text-secondary)]" />{SCHEDULED_COLUMN}</span>
-      <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-1 w-5 rounded-full bg-[var(--strip-delay-1)] opacity-50" />1 in 10 over</span>
     </div>
   );
 }
 
-const LANE_STYLE: Record<RowLabel['lane'], string> = { above: 'top-0', below: 'bottom-0', end: 'top-1/2 -translate-y-1/2' };
+const LANE_STYLE: Record<RowLabel['lane'], string> = { above: 'top-0', below: 'bottom-0' };
 
-/** One pattern as a line: the tail from the usual to the slow end, a tick at the timetable and a dot at the usual, on the section's shared scale, each with its number. */
+/** One pattern as a line: a tick at the timetable and a dot at the usual, on the section's shared scale, each with its number. */
 function PatternRow({ row, scale, width, dense, showLabel, unit }: { row: RunTimeRow; scale: { min: number; max: number }; width: number; dense: boolean; showLabel: boolean; unit: string }) {
   const pos = (m: number) => `${rowPercent(m, scale)}%`;
   const few = !row.main && row.trips < MIN_PATTERN_TRIPS;
   const labels = placeRowLabels(row, scale, width, INSET, undefined, unit);
-  const tone: Record<RowLabel['id'], string> = { usual: 'font-bold text-[var(--text-primary)]', scheduled: 'text-[var(--text-secondary)]', slow: 'text-[var(--text-muted)]' };
+  const tone: Record<RowLabel['id'], string> = { usual: 'font-bold text-[var(--text-primary)]', scheduled: 'text-[var(--text-secondary)]' };
   return (
     <li className={`min-w-0 ${few ? 'text-[var(--text-dim)]' : ''}`} title={row.figures || undefined}>
       {showLabel && row.label && <div className={`text-pretty ${dense ? 'text-xs leading-4 text-[var(--text-secondary)]' : 'text-sm leading-5 text-[var(--text-secondary)]'}`}>{row.label}{few ? ' Few trips: treat with care.' : ''}</div>}
@@ -73,9 +72,6 @@ function PatternRow({ row, scale, width, dense, showLabel, unit }: { row: RunTim
       <div className={`relative ${dense ? 'h-[36px]' : 'h-[44px]'} ${few ? 'opacity-60' : ''}`} aria-hidden="true">
         <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
           <div className="absolute inset-x-0 top-1/2 h-px bg-[var(--border-primary)]" />
-          {row.typical != null && row.p90 != null && row.p90 > row.typical && (
-            <div className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-[var(--strip-delay-1)] opacity-50" style={{ left: pos(row.typical), width: `${rowPercent(row.p90, scale) - rowPercent(row.typical, scale)}%` }} />
-          )}
           {row.scheduled != null && <div data-mark="scheduled" className={`absolute top-1/2 ${dense ? 'h-2.5' : 'h-3.5'} w-0.5 -translate-x-1/2 -translate-y-1/2 bg-[var(--text-secondary)]`} style={{ left: pos(row.scheduled) }} />}
           {row.typical != null && <div data-mark="usual" className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)]" style={{ left: pos(row.typical) }} />}
         </div>

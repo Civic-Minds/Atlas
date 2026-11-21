@@ -44,14 +44,14 @@ const CONTEXT_OPTIONS = [
 interface FilterPanelProps {
   lightMode: boolean;
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
-  hideSpan: boolean;
-  setHideSpan: (v: boolean | ((prev: boolean) => boolean)) => void;
-  hideLimitedService: boolean;
-  setHideLimitedService: (v: boolean | ((prev: boolean) => boolean)) => void;
+  hideSpan?: boolean;
+  setHideSpan?: (v: boolean | ((prev: boolean) => boolean)) => void;
+  hideLimitedService?: boolean;
+  setHideLimitedService?: (v: boolean | ((prev: boolean) => boolean)) => void;
   limitedServiceRouteCount?: number | null;
   limitedServiceRoutes?: HiddenRoute[];
-  livePollingOnly: boolean;
-  setLivePollingOnly: (v: boolean | ((prev: boolean) => boolean)) => void;
+  livePollingOnly?: boolean;
+  setLivePollingOnly?: (v: boolean | ((prev: boolean) => boolean)) => void;
   onInfoOpen?: (tab?: 'about' | 'agencies' | 'live') => void;
   inFrequency?: boolean;
   /** 'filters' renders the phone-only Filters sheet; 'settings' (default) renders the Settings sheet. */
@@ -71,8 +71,8 @@ interface FilterPanelProps {
   selectedAgencies?: Set<string>;
   setSelectedAgencies?: (agencies: Set<string>) => void;
   bounds?: any;
-  hideLowQuality: boolean;
-  setHideLowQuality: (v: boolean | ((prev: boolean) => boolean)) => void;
+  hideLowQuality?: boolean;
+  setHideLowQuality?: (v: boolean | ((prev: boolean) => boolean)) => void;
   feedQualityEnabled?: boolean;
   showMapLegend: boolean;
   setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
@@ -81,6 +81,9 @@ interface FilterPanelProps {
   /** Population / income shading under the routes (beta only; null is off). */
   contextMetric?: ContextMetric | null;
   setContextMetric?: (metric: ContextMetric | null) => void;
+  /** CIV-2006: a section of the page's own after the general settings (Studio's planner cut-offs), and whether it has
+   *  anything set (the gear's dot). Without the routes-shown setters the Routes shown section is left out (Studio). */
+  extraSection?: { title: string; content: React.ReactNode; active?: boolean };
   /** Compare mode controls (phones reach them here); undefined when compare is unavailable. */
   compare?: {
     side: CompareSide | null;
@@ -120,15 +123,16 @@ const SETTINGS = [
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
   compare,
+  extraSection,
   lightMode,
   setLightMode,
-  hideSpan,
+  hideSpan = false,
   setHideSpan,
-  hideLimitedService,
+  hideLimitedService = false,
   setHideLimitedService,
   limitedServiceRouteCount,
   limitedServiceRoutes,
-  livePollingOnly,
+  livePollingOnly = false,
   setLivePollingOnly,
   onInfoOpen,
   inFrequency = true,
@@ -146,7 +150,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   selectedAgencies,
   setSelectedAgencies,
   bounds,
-  hideLowQuality,
+  hideLowQuality = false,
   setHideLowQuality,
   feedQualityEnabled = false,
   showMapLegend,
@@ -188,7 +192,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (!open || hiddenRoutesLoaded || isFilters) return;
+    if (!open || hiddenRoutesLoaded || isFilters || !routesShown) return;
     let cancelled = false;
     setHiddenRoutesLoading(true);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
@@ -314,7 +318,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     + (period !== undefined && period !== 'all' ? 1 : 0)
     + (selectedModes && selectedModes.size > 0 ? 1 : 0)
     + (compare?.side ? 1 : 0);
-  const hasActiveFilters = hideSpan || hideLimitedService || livePollingOnly || hasActiveCoreFilter || hideLowQuality;
+  const hasActiveFilters = hideSpan || hideLimitedService || livePollingOnly || hasActiveCoreFilter || hideLowQuality || !!extraSection?.active;
+  // Studio (CIV-2006) passes no routes-shown setters: its map has no Routes shown filters.
+  const routesShown = !!setHideSpan;
 
   const values: Record<string, boolean> = {
     live: livePollingOnly,
@@ -324,10 +330,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   const toggles: Record<string, () => void> = {
-    live: () => setLivePollingOnly(v => !v),
-    span: () => setHideSpan(v => !v),
-    limited: () => setHideLimitedService(v => !v),
-    quality: () => setHideLowQuality(v => !v),
+    live: () => setLivePollingOnly?.(v => !v),
+    span: () => setHideSpan?.(v => !v),
+    limited: () => setHideLimitedService?.(v => !v),
+    quality: () => setHideLowQuality?.(v => !v),
   };
 
   const settings = [
@@ -478,7 +484,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <div className="divide-y divide-[var(--border-primary)]">
                       {filteredDegradedFeeds.map(agency => {
                         const quality = agency.feedQuality!;
-                        const { primary, secondary } = agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).list;
+                        const { primary, secondary } = agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea, nameQualifier: agency.nameQualifier }).list;
                         const checkedDate = shortDate(quality.checkedAt) ?? quality.checkedAt;
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
@@ -590,6 +596,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               )}
 
               {/* Filters */}
+              {routesShown && (<>
               <div className="px-5 pt-4 pb-1">
                 <p className={CARD_NOTE}>Routes shown</p>
                 {!inFrequency && (
@@ -628,6 +635,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   </div>
                 ))}
               </div>
+              </>)}
+
+              {extraSection && (
+                <>
+                  <div className="px-5 pt-4 pb-1">
+                    <p className={CARD_NOTE}>{extraSection.title}</p>
+                  </div>
+                  <div className="px-5 pb-4">{extraSection.content}</div>
+                </>
+              )}
 
               </>
               )}

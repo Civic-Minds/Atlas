@@ -1,0 +1,28 @@
+### blip (blip.ts)
+stretches 126 baseline one-colour 109 EB base runs per pattern 10,10 end blips (stretches w/ >=2 runs) by N {"1":5,"2":11} stops {"1":5,"2":17}
+cfg | oneColour/126 | filled blips | pass->fail (<20) | fail->pass (ownLongest>20) maxOver | tierChg | chg | EB runs/pattern | WB34-42
+up-N1-M5 | 109 | 0 | 0 (0) | 0 (0) 0 | 0 | 0 | 10/10 | 16,16,16,16,16,16,16,16,17
+up-N1-M10 | 109 | 0 | 0 (0) | 0 (0) 0 | 0 | 0 | 10/10 | 16,16,16,16,16,16,16,16,17
+up-N1-M15 | 109 | 0 | 0 (0) | 0 (0) 0 | 0 | 0 | 10/10 | 16,16,16,16,16,16,16,16,17
+up-N2-M5 | 109 | 0 | 0 (0) | 0 (0) 0 | 0 | 0 | 10/10 | 16,16,16,16,16,16,16,16,17
+up-N2-M10 | 109 | 2 | 0 (0) | 2 (2) 6 | 2 | 2 | 8/8 | 16,16,16,16,16,16,16,16,17
+up-N2-M15 | 109 | 2 | 0 (0) | 2 (2) 6 | 2 | 2 | 8/8 | 16,16,16,16,16,16,16,16,17
+up-N3-M5 | 109 | 0 | 0 (0) | 0 (0) 0 | 0 | 0 | 10/10 | 16,16,16,16,16,16,16,16,17
+up-N3-M10 | 109 | 2 | 0 (0) | 2 (2) 6 | 2 | 2 | 8/8 | 16,16,16,16,16,16,16,16,17
+up-N3-M15 | 109 | 2 | 0 (0) | 2 (2) 6 | 2 | 2 | 8/8 | 16,16,16,16,16,16,16,16,17
+both-N1-M5 | 109 | 4 | 2 (2) | 0 (0) 0 | 2 | 2 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N1-M10 | 109 | 4 | 2 (2) | 0 (0) 0 | 2 | 2 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N1-M15 | 109 | 4 | 2 (2) | 0 (0) 0 | 2 | 2 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N2-M5 | 109 | 4 | 2 (2) | 0 (0) 0 | 2 | 2 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N2-M10 | 109 | 6 | 2 (2) | 2 (2) 6 | 4 | 4 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N2-M15 | 109 | 6 | 2 (2) | 2 (2) 6 | 4 | 4 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N3-M5 | 109 | 4 | 2 (2) | 0 (0) 0 | 2 | 2 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N3-M10 | 109 | 6 | 2 (2) | 2 (2) 6 | 4 | 4 | 6/6 | 16,16,16,16,16,16,16,16,17
+both-N3-M15 | 109 | 6 | 2 (2) | 2 (2) 6 | 4 | 4 | 6/6 | 16,16,16,16,16,16,16,16,17
+up-N3-M15 reasons {"filled":2,"neighbours worse (up-only)":4,"blip longer than N":2}
+ left 900 EB eveP0[F1,P11,P17,F2,P1,F8,P1,F1,P1,P1,F1,P1] 900 EB eveP1[F1,P11,P17,F2,P1,F8,P1,F1,P1,P1,F1,P1] 900 WB eveP0[F34,P9] 900 WB eveP1[F34,P9] 901 N AMP0[P2,F16] 901 S eveP0[F4,P14] 901 S eveP1[F4,P14] 901 S eveP3[F4,P14] 102 S eveP2[P5,F2] 102 S eveP2[F35,P3] 102 S midP1[F21,P17] 102 S midP2[F21,P17] 102 N amP2[P13,F25] 102 N amP4[P13,F25] 102 S amP1[F22,P16] 102 S amP2[P4,F3] 102 S amP2[F22,P16]
+up-N2-M10 reasons {"filled":2,"neighbours worse (up-only)":4,"blip longer than N":2}
+ left 900 EB eveP0[F1,P11,P17,F2,P1,F8,P1,F1,P1,P1,F1,P1] 900 EB eveP1[F1,P11,P17,F2,P1,F8,P1,F1,P1,P1,F1,P1] 900 WB eveP0[F34,P9] 900 WB eveP1[F34,P9] 901 N AMP0[P2,F16] 901 S eveP0[F4,P14] 901 S eveP1[F4,P14] 901 S eveP3[F4,P14] 102 S eveP2[P5,F2] 102 S eveP2[F35,P3] 102 S midP1[F21,P17] 102 S midP2[F21,P17] 102 N amP2[P13,F25] 102 N amP4[P13,F25] 102 S amP1[F22,P16] 102 S amP2[P4,F3] 102 S amP2[F22,P16]
+both-N3-M15 reasons {"filled":6,"blip longer than N":2}
+ left 900 EB eveP0[F1,P11,P17,F2,P1,F8,P1,F1,P1,P1,F1,P1] 900 EB eveP1[F1,P11,P17,F2,P1,F8,P1,F1,P1,P1,F1,P1] 900 WB eveP0[F34,P9] 900 WB eveP1[F34,P9] 901 N AMP0[P2,F16] 901 S eveP0[F4,P14] 901 S eveP1[F4,P14] 901 S eveP3[F4,P14] 102 S eveP2[P5,F2] 102 S eveP2[F35,P3] 102 S midP1[F21,P17] 102 S midP2[F21,P17] 102 N amP2[P13,F25] 102 N amP4[P13,F25] 102 S amP1[F22,P16] 102 S amP2[P4,F3] 102 S amP2[F22,P16]
+exit 0

@@ -60,8 +60,9 @@ const RULES: Rule[] = [
   // CIV-1610 (Ryan): Canadian spelling. Only words that are never code names are checked ("color" is a CSS word).
   { name: 'US spelling (write analysed, coloured, labelled, cancelled, neighbour, favourite, catalogue)', doc: 'TEXT.md', pattern: /\b(analyz(ed|es|ing)|[Cc]olored|[Cc]oloring|[Ll]abeled|[Ll]abeling|[Cc]anceled|[Nn]eighbors?|[Nn]eighborhoods?|[Ff]avorites?)\b|(?<=[a-z] )catalogs?(?= [a-z]|[.,])/, slip: "'Routes are analyzed by period'" },
   // CIV-1610 (Ryan): no comma before the "and" or "or" that ends a list. "stop by stop" is an aside, not a list, and in
-  // CIV-1733's intro (Ryan's exact text) ", and see" starts a second verb, not the end of a list.
-  { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and|and modes, and see the patterns/ },
+  // CIV-1733's intro (Ryan's exact text) ", and see" starts a second verb, not the end of a list. CIV-1440 pick 3 (Ryan's
+  // exact text) ", and each branch gets its own" joins two clauses after an aside.
+  { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and|and modes, and see the patterns|gets its own colour, and each branch/ },
   // CIV-1697 (Ryan): "Docs" on links, heading and tab, from one constant.
   { name: 'the Docs page named by hand (use DOCS_PAGE_TITLE, from PAGE_NAMES)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Docs</a>' },
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing, and so is the code name 'all-day-summary'.
@@ -178,7 +179,7 @@ const RULES: Rule[] = [
     allowed: ['src/components/ui/PanelHeader.tsx', 'src/components/ui/SearchClearButton.tsx'] },
   // CIV-1596, CIV-1601: Live's measure and section names, and its words used in more than one place, are written once, in shared/liveWording.ts.
   { name: 'a Live measure or section name typed by hand (use its constant in shared/liveWording.ts)', doc: 'TEXT.md',
-    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Usually adds|Time lost|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|Bunching forms|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|1 in 10 leave|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
+    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Usually adds|Time lost|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|Bunching forms|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
     slip: '<Section title="Stops most often late">', only: /(^|\/)[Ll]ive[^/]*$|\/Live\//, allowed: ['shared/liveWording.ts'] },
   // CIV-1602: Ryan's picks, "Delays start" (never "Delay starts") and the Live map's name "Live" (never "Live vehicles" or "Live transit", Ryan 2026-11-17), written once in shared/liveWording.ts.
   { name: 'the Live delay-start or Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_MAP_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
@@ -222,6 +223,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
     'a 10-minute walk', 'The stricter 15-minute threshold', 'the broader 30-minute threshold', '30-minute service reaches', 'as 15-minute service',
     // Ryan's CIV-1495 #6 wording, word for word (2026-11-15): the TTC's name for its network.
     'The TTC’s own 10-minute network',
+    // CIV-1603 section 3 intro and method line, approved word for word by Ryan (2026-11-21).
+    'routes run every 15 minutes or better at weekday midday', 'at every 15 or every 30 minutes or better at midday', 'shared stretch runs every 15 minutes counts',
   ],
   // The frequent-service story's cited sentences (shared/researchStories.ts, CIV-1626).
   'shared/researchStories.ts': [

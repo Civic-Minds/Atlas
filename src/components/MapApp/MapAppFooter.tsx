@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { MapAttribution } from '../Interval/MapAttribution';
-import { MAP_BADGE, MAP_FOOTER_ROW_SLOT, MAP_NOTICE_SLOT, Z_PANEL } from '../../styles';
+import { MapNote } from '../ui/MapNote';
+import { MAP_FOOTER_ROW_SLOT } from '../../styles';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../../mapOverlayLayout';
 
 /** The gap kept between the footer and what the map frames above it: the overlay's inset plus a gap. */
@@ -37,11 +38,7 @@ export function MapAppFooter({ note, onHeight }: { note?: ReactNode; onHeight?: 
   }, [el]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
-      {note && (
-        <div data-map-overlay="notice" className={`${MAP_NOTICE_SLOT} ${Z_PANEL} pointer-events-none`}>
-          <p className={`${MAP_BADGE} m-0 min-h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{note}</p>
-        </div>
-      )}
+      {note && <MapNote>{note}</MapNote>}
       <div ref={setEl} className={MAP_FOOTER_ROW_SLOT}><MapAttribution /></div>
     </>
   );

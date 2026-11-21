@@ -1,0 +1,37 @@
+### s6run (s6run.ts)
+
+== V1: stops changed 7; reading flips 18/1874; Oshawa 44:refused 53:refused 55:pass 56:pass
+   900 EB eve|2220 15->24 (filter 20)
+   900 EB eve|2221 15->24 (filter 20)
+   900 EB eve|412 15->24 (filter 20)
+   900 EB eve|413 15->24 (filter 20)
+   900 EB eve|93747 15->24 (filter 20)
+   900 EB eve|434 15->24 (filter 20)
+   900 EB eve|1181 15->24 (filter 20)
+
+== Va: stops changed 1; reading flips 6/1874; Oshawa 44:refused 53:pass 55:pass 56:pass
+   900 EB eve|434 15->24 (filter 20)
+
+== Va2: stops changed 1; reading flips 6/1874; Oshawa 44:refused 53:pass 55:pass 56:pass
+   900 EB eve|434 15->24 (filter 20)
+
+== Vc: stops changed 7; reading flips 16/1874; Oshawa 44:refused 53:refused 55:pass 56:pass
+   900 EB eve|2220 15->24 (filter 20)
+   900 EB eve|2221 15->24 (filter 20)
+   900 EB eve|412 15->24 (filter 20)
+   900 EB eve|413 15->24 (filter 20)
+   900 EB eve|93747 15->24 (filter 20)
+   900 EB eve|434 15->24 (filter 20)
+   900 EB eve|1181 15->24 (filter 20)
+
+== Vb: stops changed 7; reading flips 18/1874; Oshawa 44:refused 53:refused 55:pass 56:pass
+   900 EB eve|2220 15->24 (filter 20)
+   900 EB eve|2221 15->24 (filter 20)
+   900 EB eve|412 15->24 (filter 20)
+   900 EB eve|413 15->24 (filter 20)
+   900 EB eve|93747 15->24 (filter 20)
+   900 EB eve|434 15->24 (filter 20)
+   900 EB eve|1181 15->24 (filter 20)
+
+T0 readings 1874 frac0.4-0.6 450 l2 differs 362 differs & frac in band 69 newly refused readings (T0 pass -> unrounded fail) 18 max l2 shift 0.80
+exit 0

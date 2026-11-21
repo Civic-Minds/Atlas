@@ -429,12 +429,14 @@ export interface AgencyNames {
 }
 
 export function agencyNames(agency: AgencyNameInput): AgencyNames {
-  const { cities, displayArea } = typeof agency === 'string' ? { cities: undefined, displayArea: undefined } : agency;
+  // The place: the set display area, else the qualifier that tells the agency's feeds apart ("Queens" for MTA's Queens
+  // buses, CIV-1963), else the first city its stops are in.
+  const { cities, displayArea } = typeof agency === 'string' ? { cities: undefined, displayArea: undefined } : { cities: agency.cities, displayArea: agency.displayArea ?? agency.nameQualifier ?? undefined };
   // The name fields when the agency has them (#1245); the forms below read the registry form they build.
   const name = typeof agency === 'string' ? agency : agency.officialName ? registryAgencyName(agency as AgencyNameFields) : agency.name;
   const { primary: full, secondary: place } = displayParts(name, cities, displayArea);
   const row = agencyRowName(name);
-  const fallback = typeof agency === 'string' ? undefined : agency.displayArea ?? agency.cities?.[0]?.split(',')[0]?.trim();
+  const fallback = typeof agency === 'string' ? undefined : displayArea ?? agency.cities?.[0]?.split(',')[0]?.trim();
   const where = place ?? (row !== full ? fallback : undefined);
   return {
     name: row,
@@ -453,8 +455,8 @@ export function agencyNames(agency: AgencyNameInput): AgencyNames {
  * agency card (CIV-1428, #1027): neither view builds its own, so they can never name a different place.
  * A bare name (History's fallback for an agency missing from the catalog) is read the same way.
  */
-export function agencyCardTitle(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
-  return agencyNames(typeof agency === 'string' ? agency : { name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card;
+export function agencyCardTitle(agency: string | { name: string; cities?: string[]; displayArea?: string; nameQualifier?: string }): { primary: string; secondary?: string } {
+  return agencyNames(typeof agency === 'string' ? agency : { name: agency.name, cities: agency.cities, displayArea: agency.displayArea, nameQualifier: agency.nameQualifier }).card;
 }
 
 /**

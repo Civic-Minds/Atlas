@@ -13,12 +13,14 @@ const PINNED = {
     MAP_FOOTER_PILLS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]",
     MAP_COUNTS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-16 max-sm:left-6",
     MAP_COUNTS_COMPARE_SLOT: "sm:fixed sm:bottom-6 sm:right-14",
-    MAP_LEGEND_SLOT: "absolute max-sm:bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h,2rem))] left-6",
+    // CIV-1922: on sm and up the key lines up with the sidebar cards' left edge.
+    MAP_LEGEND_SLOT: "absolute max-sm:bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h,2rem))] left-6 sm:left-[var(--sidebar-left,1.5rem)]",
     MAP_CONTROLS_SLOT: "absolute bottom-6 right-3 max-sm:right-6",
     MAP_NOTICE_SLOT: "absolute bottom-[calc(6.5rem+var(--map-key-h,0px))] sm:bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))] left-6 right-24 sm:right-56 flex justify-center",
     MAP_NOTICE_SLOT_RAISED: "absolute bottom-[calc(9rem+var(--map-key-h,0px))] sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))] left-6 right-24 sm:right-56 flex justify-center",
     MAP_FOOTER_HEIGHT_FALLBACK: "2rem",
-    MAP_CONSENT_SLOT: "fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6",
+    // CIV-2004: the analytics prompt, Data saver and the update notice, centred in one place.
+    MAP_PROMPT_SLOT: "fixed inset-x-0 mx-auto w-fit max-w-[calc(100vw-2rem)] top-[4.25rem] sm:top-auto sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]",
     MAP_STATUS_SLOT: "absolute left-1/2 bottom-5 -translate-x-1/2",
 } as const;
 

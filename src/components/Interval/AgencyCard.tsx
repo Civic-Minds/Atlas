@@ -28,9 +28,9 @@ import CardRouteList from './CardRouteList';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails, REPORT_DETAIL_LABELS } from '../../utils/reportIssue';
 import { isoDate } from '../../../shared/dateText';
-import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA, ON_DEMAND_SERVICE_LABEL, DETAILS_LABEL } from '../../content/noticeCopy';
+import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, officialDataOnlyNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA, ON_DEMAND_SERVICE_LABEL, DETAILS_LABEL } from '../../content/noticeCopy';
 import { namedOnDemandService, onDemandCardName, resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
-import { onDemandCoverageNote } from '../../data/onDemandCoverage';
+import { ON_DEMAND_OFFICIAL_DATA_ONLY, onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
   formatOnDemandHoursRange,
@@ -545,6 +545,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     // A service with Friday hours but none Monday to Thursday (CyRide Moonlight, #1440): on a weekday the note would
     // read "Hours unavailable" above a Fri–Sat row, so the rows speak alone and Mon–Thu service is never claimed.
     const fridayOnlyWeekday = day === 'Weekday' && !!zone.availability?.Friday && !zone.availability.Weekday;
+    // A whole service whose hours are set zone by zone (Barrie, CIV-1987) has none of its own: the note would read
+    // "Hours unavailable" above its published hours, so the hours text speaks alone.
+    const hoursByZoneOnly = !zoneName && !zone.availability && Object.values(service.zoneMetadata ?? {})
+      .some(z => (!z.serviceName || z.serviceName === service.serviceName) && !!z.availability);
     const zoneRows = zoneName ? [] : onDemandZoneHoursRows(service);
     const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     // An on-demand card's report names the service, the zone and its hours as published (CIV-932), so a report about the
@@ -652,7 +656,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               </div>
             ) : (
               <>
-                {!fridayOnlyWeekday && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
+                {!fridayOnlyWeekday && !hoursByZoneOnly && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
                 <OnDemandHoursRows
                   availability={zone.availability}
                   serviceHours={zone.serviceHours}
@@ -669,6 +673,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             <div>
               <CardSectionLabel>Booking</CardSectionLabel>
               <CardBodyText>{zone.bookingInfo}</CardBodyText>
+            </div>
+          )}
+          {/* N131 (CIV-1978): stops from the agency's official data only, at the card's foot like the other card notices. */}
+          {ON_DEMAND_OFFICIAL_DATA_ONLY.has(agency.slug) && (
+            <div className={CARD_NOTICE_FOOTER}>
+              <CardHelpNotice
+                message={officialDataOnlyNotice(agency.name)}
+                onLearnMore={onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N131'), agencyName: agency.name, websiteUrl: agency.websiteUrl ?? undefined }) : undefined}
+              />
             </div>
           )}
         </PanelBody>

@@ -1,11 +1,12 @@
 /**
- * CIV-1715: the Studio "Schedule Changes" page's data, one file per agency. Built from CIV-1684's comparison
+ * CIV-1715: the Studio "Schedules" page's data, one file per agency. Built from CIV-1684's comparison
  * (pipeline/feedCompare.ts) by `scripts/compare-feed-dates.ts --json tmp/studio/<slug>-before-after.json` and served
  * only by the Vite dev server at studioBeforeAfterDevUrl (vite.config.ts); never uploaded to R2 or built into a
  * deployment. The input type is structural (a FeedComparison fits it) so nothing here pulls the pipeline into the app.
  */
 import { PERIOD_KEYS, type PeriodKey } from './config';
 import { frequencyChange } from './frequencyChange';
+import { pairChanges, routePairKey } from './scheduleChangePairing';
 import type { DayType } from './dayTypes';
 
 /** One route on the compared day, on one side. Minutes after midnight for first/last (past 1440 runs into the night). */
@@ -17,6 +18,9 @@ export interface StudioRouteDay {
   last: number | null;
   /** Midday median run time per direction, whole minutes, lowest first. */
   runMinutes: number[];
+  /** The fewest and most stops on the route's patterns, and its end stops' names (CIV-1827); missing in older files. */
+  stops?: [number, number];
+  ends?: [string, string];
   /** A period's late start or early end, as the route card reads it (CIV-1806); missing in older files. */
   edge?: Partial<Record<PeriodKey, StudioPeriodEdge>>;
 }
@@ -71,7 +75,7 @@ export const studioBeforeAfterDevUrl = (slug: string) => `/dev-studio/${slug}-be
 
 // ---- Building the file from a comparison ----
 
-interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number>; edge?: Partial<Record<PeriodKey, StudioPeriodEdge>> }
+interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number>; edge?: Partial<Record<PeriodKey, StudioPeriodEdge>>; stops?: [number, number]; ends?: [string, string] }
 interface InputRoute { route: string; longName: string | null; days: Partial<Record<DayType, InputDay>> }
 /** The parts of pipeline/feedCompare.ts's FeedComparison this file reads. */
 export interface StudioComparisonInput {
@@ -96,6 +100,8 @@ const slim = (d: InputDay | null | undefined): StudioRouteDay | null => d ? {
   last: d.last,
   runMinutes: Object.values(d.runMinutes).map(Math.round).sort((a, b) => a - b),
   ...(d.edge && Object.keys(d.edge).length ? { edge: d.edge } : {}),
+  ...(d.stops ? { stops: d.stops } : {}),
+  ...(d.ends ? { ends: d.ends } : {}),
 } : null;
 
 const movedBy = (a: number | null | undefined, b: number | null | undefined, step: number) =>
@@ -164,7 +170,9 @@ export function studioBeforeAfterFile(cmp: StudioComparisonInput, sides?: { befo
       changes.push({ route: c.route, name: c.longName, before, after, size: changeSize(before, after) });
     }
   }
-  changes.sort(byRoute);
+  // A route renamed only in case, spacing or punctuation is one changed route, not one removed and one added (CIV-1864, #1631).
+  const paired = pairChanges<StudioRouteDay, StudioRouteChange>(changes).map(c => (c.before && c.after ? { ...c, size: changeSize(c.before, c.after) } : c));
+  paired.sort(byRoute);
   const leftOut = (Object.entries(cmp.notRead) as Array<[DayType, string[]]>).map(([d, why]) => ({
     day: d,
     sides: (['before', 'after'] as const).filter(side => why.some(w => w.startsWith(`${side}:`))),
@@ -175,8 +183,23 @@ export function studioBeforeAfterFile(cmp: StudioComparisonInput, sides?: { befo
     after: { file: cmp.after.file, date: cmp.after.date },
     day,
     leftOut,
-    changes,
+    changes: paired,
     unchanged: cmp.unchanged,
     ...(sides && day ? { lines: { before: sideLines(sides.before, day), after: sideLines(sides.after, day) } } : {}),
   };
+}
+
+/**
+ * Studio's page reads the file through this (CIV-1868): a route written differently in the two schedules ("KING", "King")
+ * is one changed route, not one removed and one added, the same pairing the MCP's schedule_changes uses
+ * (shared/scheduleChangePairing.ts). The paired route's older lines move under its newer name so the map still draws both.
+ */
+export function pairedStudioFile(file: StudioBeforeAfterFile): StudioBeforeAfterFile {
+  const addedByKey = new Map(file.changes.filter(c => !c.before && c.after).map(c => [routePairKey(c.route), c.route] as const));
+  const renamed = file.changes.filter(c => c.before && !c.after).map(c => [c.route, addedByKey.get(routePairKey(c.route))] as const).filter((p): p is readonly [string, string] => !!p[1] && p[1] !== p[0]);
+  const changes = pairChanges(file.changes).map(c => (c.before && c.after ? { ...c, size: changeSize(c.before, c.after) } : c)).sort(byRoute);
+  if (!file.lines || !renamed.length) return { ...file, changes };
+  const before = { ...file.lines.before };
+  for (const [oldName, newName] of renamed) if (before[oldName]) { before[newName] = before[oldName]; delete before[oldName]; }
+  return { ...file, changes, lines: { ...file.lines, before } };
 }

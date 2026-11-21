@@ -50,7 +50,7 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { routeLabels } from '../../utils/format';
 import { canCountRenderedRoutes } from '../../utils/compareSides';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
-import { mapViewKind, viewShowsOnDemand } from '../../../shared/viewLayers';
+import { mapDrawsOnDemand, mapViewKind } from '../../../shared/viewLayers';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
 import { trackEvent, withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
@@ -67,6 +67,10 @@ import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 // Read directly, not through FEATURES.live: the bundler only drops the import when it sees the literal env read
 // (with FEATURES.live the public build gains the deck and LiveVehiclesLayer chunks; checked in CIV-1402).
+// A page's drawing (Studio, CIV-1828): local only, so the DEV check keeps it out of deployed bundles.
+const PageMapOverlayLayer = import.meta.env.DEV
+  ? React.lazy(() => import('./map/PageMapLayer').then(m => ({ default: m.PageMapOverlayLayer })))
+  : null;
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
@@ -179,8 +183,9 @@ interface MapCanvasProps {
   mapContextOpen?: boolean;
   mapContextView?: 'agencies' | 'routes';
   onMapContextOpenChange?: (open: boolean) => void;
-  onMapContextAgencyCountChange?: (count: number) => void;
-  onMapContextRouteCountChange?: (count: number) => void;
+  /** Null until the map's drawn routes have been measured once (CIV-1967), so no pill shows a count that was never taken. */
+  onMapContextAgencyCountChange?: (count: number | null) => void;
+  onMapContextRouteCountChange?: (count: number | null) => void;
   /** Route keys drawn in view, counted the same way as the route-count badge (compare mode labels). */
   onRenderedRouteKeysChange?: (keys: Set<string>) => void;
   /** Phones (CIV-1057): the map's error notices, for the footer row's "Error" pill. */
@@ -233,6 +238,8 @@ interface MapCanvasProps {
   showMapControls?: boolean;
   /** Receives the MapLibre map once it has loaded (and null when it is removed), for camera sync. */
   onMapReady?: (map: maplibregl.Map | null) => void;
+  /** A page draws on this map (Studio, CIV-1828): the page overlay's layers show here, and the map's own clicks are off. */
+  pageView?: boolean;
   /** On-demand agency named in the opening URL (`?ondemand=`); frames its zones when the URL has no lat/lon. */
   initialOnDemandSlug?: string | null;
   onTileLoadingChange?: (loading: boolean) => void;
@@ -316,6 +323,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   secondary = false,
   showMapControls = !secondary,
   onMapReady,
+  pageView = false,
   initialOnDemandSlug = null,
   onTileLoadingChange,
   onBasemapLoadingChange,
@@ -498,6 +506,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   }, [liveOverlay]);
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
+  const [mapContextMeasured, setMapContextMeasured] = useState(false);
   const mapContextRegionBySlug = useMemo(
     () => new Map(agencies.map(agency => [agency.slug, agency.region ?? 'Other'])),
     [agencies],
@@ -506,7 +515,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
-  const onDemandShown = FEATURES.onDemand && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
+  // #1635: on-demand areas are part of the route map; a view without route layers (Studio) neither loads nor reports them.
+  const onDemandShown = FEATURES.onDemand && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers);
   // Phones: the error notices go to Interval's footer row as one "Error" pill (CIV-1057).
   const phoneErrorsKey = isPhone ? JSON.stringify([
     ...(onDemandStatus === 'error' && onDemandShown ? [ON_DEMAND_AREAS_FAILED] : []),
@@ -591,7 +601,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const features = queryDrawnRouteFeatures(map);
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
-    if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
+    if (showMapContext) { setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies)); setMapContextMeasured(true); }
     // Compare's route counts wait for the map to finish loading rather than report a partial count (#1075).
     if (!canCountRenderedRoutes(map, layers.length)) return;
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
@@ -755,9 +765,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode]);
 
   useEffect(() => {
-    onMapContextAgencyCountChange?.(mapContextAgencies.length);
-    onMapContextRouteCountChange?.(mapContextAgencies.reduce((total, agency) => total + agency.routeCount, 0));
-  }, [mapContextAgencies, onMapContextAgencyCountChange, onMapContextRouteCountChange]);
+    // CIV-1967: nothing to report before the first measurement (the empty starting list is not a count of zero).
+    onMapContextAgencyCountChange?.(mapContextMeasured ? mapContextAgencies.length : null);
+    onMapContextRouteCountChange?.(mapContextMeasured ? mapContextAgencies.reduce((total, agency) => total + agency.routeCount, 0) : null);
+  }, [mapContextAgencies, mapContextMeasured, onMapContextAgencyCountChange, onMapContextRouteCountChange]);
 
   useEffect(() => {
     if (!showMapContext || !mapContextOpen) return;
@@ -824,10 +835,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     highlightRoutesRef.current = highlightRoutes;
   }, [highlightRoutes]);
 
+  const pageViewRef = useRef(pageView);
+  pageViewRef.current = pageView;
+
   useLayoutEffect(() => {
     handleMapClickRef.current = (e: maplibregl.MapMouseEvent) => {
       const map = mapRef.current;
       if (!map) return;
+      // A page on the map (Studio) handles its own clicks (PageMapLayer).
+      if (pageViewRef.current) return;
 
       // A Live vehicle dot belongs to Live's own click handler (vehicle card), not the route picker.
       if (pickLiveVehicles(deckOverlayRef.current, e.point).length > 0) return;
@@ -1096,6 +1112,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const onMouseMove = (e: maplibregl.MapMouseEvent) => {
+      if (pageViewRef.current) return;
       map.getCanvas().style.cursor = topMapHit(map, e.point) ? 'pointer' : '';
     };
     map.on('mousemove', onMouseMove);
@@ -1301,6 +1318,12 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
       {FEATURES.modeTransitions && (
         <canvas ref={mapHoldRef} aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" style={{ visibility: 'hidden' }} />
+      )}
+
+      {PageMapOverlayLayer && pageView && (
+        <React.Suspense fallback={null}>
+          <PageMapOverlayLayer map={mapLoaded ? mapRef.current : null} light={lightMode} />
+        </React.Suspense>
       )}
 
       {LiveVehiclesLayer && liveLayerRequested && (

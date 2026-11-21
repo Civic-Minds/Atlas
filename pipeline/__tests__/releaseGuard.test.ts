@@ -157,7 +157,7 @@ describe('tile rules fingerprint', () => {
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '6117762a4cce4a274dd90ffd0fa23892fbb213dc38750b71de2a0f82ff7e5f57',
+      fingerprint: '1993b8a9a2479ea09d9519bb508fa2de54e46cbc81ca13a77237a80936cd94e4',
     });
   });
 });

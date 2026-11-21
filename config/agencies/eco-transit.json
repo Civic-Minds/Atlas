@@ -11,10 +11,10 @@
   "lastFeedExpiry": "20261121",
   "lastFeedVersion": "S1000093",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261121",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261121",
+  "expiredFeedCheckExpiry": "20270410",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://evta.org/gtfs.zip",
@@ -36,7 +36,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-18"
+    "checkedAt": "2026-11-21",
+    "scoredAt": "2026-11-21"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -44,5 +45,6 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "f84c82af76e2c786",
   "feedObtainedAt": "20260416",
-  "lastFeedStart": "20260412"
+  "lastFeedStart": "20260412",
+  "heldFeedStart": "20261122"
 }

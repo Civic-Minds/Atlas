@@ -86,9 +86,11 @@ export const frequentServiceStoryStats = {
 /**
  * CIV-1603: the weekday-versus-Sunday chart. Routes the main map draws at every 15 (and 30) min or better at midday on
  * weekdays and on Sundays (Ryan picked midday only, 2026-11-14: Sunday has no rush hour; shared/frequentDayCounts.ts). Source:
- * data release release-mwh4jh9x, fetched 2026-11-14; regenerate with scripts/build-frequent-weekend-counts.ts (the file
- * carries its release ID, fetch date and rule).
+ * the data release named in the file (release ID, fetch date and rule); regenerate with scripts/build-frequent-weekend-counts.ts.
  */
+/** The date the weekend counts were read from Atlas's published schedules (the method line names it). */
+export const frequentWeekendFetched = weekendCounts.source.fetched;
+
 export const frequentWeekendCities = weekendCounts.cities.map(({ city, counts }) => ({
   city,
   weekday15: counts.Weekday['15'].midday,

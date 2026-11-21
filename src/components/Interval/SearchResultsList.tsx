@@ -12,7 +12,7 @@ import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
 import { plural } from '../../../shared/overflowText';
-import { NO_SEARCH_MATCHES, SHOW_MORE_RESULTS_LABEL } from '../../content/noticeCopy';
+import { NO_SEARCH_MATCHES_NEAR_MAP, SHOW_MORE_RESULTS_LABEL } from '../../content/noticeCopy';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -68,8 +68,10 @@ interface SearchResultsListProps {
   onRouteHover?: (key: string | null) => void;
   hasMoreResults?: boolean;
   onShowMoreResults?: () => void;
-  /** Index results for agencies not loaded are still coming: hold "No matches found." until they are in. */
+  /** Index results for agencies not loaded are still coming: hold the no-matches line until they are in. */
   searchPending?: boolean;
+  /** The line when nothing matches; the map's says the search covers the networks near it (CIV-2001: Studio's doesn't). */
+  emptyText?: string;
 }
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
@@ -100,6 +102,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   hasMoreResults = false,
   onShowMoreResults,
   searchPending = false,
+  emptyText = NO_SEARCH_MATCHES_NEAR_MAP,
 }) => {
   const areaBlock = areaResults.length > 0 && onSelectArea ? (
     <SearchSplitList
@@ -134,7 +137,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={agencySections.elsewhere}
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => {
-        const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
+        const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea, nameQualifier: g.nameQualifier }).list;
         // "Agency · place", as every agency list writes it (CIV-971).
         return (
           <ListRow
@@ -241,7 +244,9 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   return (
     <div className="-mx-4 mb-4 flex flex-col gap-5">
       {noResults ? (
-        searchPending ? null : <PanelEmpty>{NO_SEARCH_MATCHES}</PanelEmpty>
+        // Stops and agencies are searched everywhere, so with nothing found the only miss can be a route outside the
+        // loaded map area (CIV-959 gap 6).
+        searchPending ? null : <PanelEmpty>{emptyText}</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

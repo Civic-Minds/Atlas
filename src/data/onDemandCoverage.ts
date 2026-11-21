@@ -28,8 +28,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'sct': { serviceName: 'Suffolk On-Demand', url: 'https://sctbus.org/On-Demand' },
   // Confirmed 2026-10-27 (CIV-1063): https://info.winnipegtransit.com/en/service/on-request
   'winnipeg': { serviceName: 'On-Request', url: 'https://info.winnipegtransit.com/en/service/on-request' },
-  // Confirmed 2026-10-27 (CIV-1063): https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand
-  'barrie': { serviceName: 'Barrie On-Demand', url: 'https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.fredericton.ca/node/457593
   'fredericton': { serviceName: 'On-demand service', url: 'https://www.fredericton.ca/node/457593' },
   // Confirmed 2026-10-27 (CIV-1063): https://stlaval.ca/horaire/taxi/info
@@ -70,8 +68,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'theride': { serviceName: 'FlexRide East', url: 'https://www.theride.org/services/flexride' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.metrolinkok.org/getting-around/other-services-programs/microlink/
   'tulsa-transit': { serviceName: 'Broken Arrow On-Demand', url: 'https://www.metrolinkok.org/getting-around/other-services-programs/microlink/' },
-  // Confirmed 2026-10-27 (CIV-1063): https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/
-  'valley-regional-transit': { serviceName: 'Route 150 On-Demand', url: 'https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/' },
   'fast-ca': { serviceName: 'FAST Connect' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.metro.net/riding/micro/
   'lacmta': { serviceName: 'Metro Micro', url: 'https://www.metro.net/riding/micro/' },
@@ -106,6 +102,15 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
 /** Mapped agencies whose drawn zones leave out part of the service, and what's missing. */
 // Empty: every mapped agency's source covers all the zones it runs today (Ryan, 2026-10-11).
 export const ON_DEMAND_PARTLY_MAPPED: Readonly<Record<string, string>> = {};
+
+/**
+ * On-demand services whose stops come only from the agency's official data, with no other source to check them against
+ * (CIV-1978): their on-demand card ends with the N131 notice. Keys are Atlas agency slugs.
+ */
+export const ON_DEMAND_OFFICIAL_DATA_ONLY: ReadonlySet<string> = new Set([
+  // The stop list the City of Barrie sent on 2026-11-17 (config/on-demand/barrie.json).
+  'barrie',
+]);
 
 export type OnDemandCoverageNote =
   | { kind: 'not-mapped'; serviceName: string; url?: string }

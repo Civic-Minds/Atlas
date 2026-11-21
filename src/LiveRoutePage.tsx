@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
 import { dateRange } from '../shared/dateText';
 import { useParams } from 'react-router';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
@@ -102,17 +103,22 @@ export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: strin
 }
 
 /**
- * "data up to Oct 14" alone, for a header with no subtitle line (the tool). The same segment as the subtitle's: caution
- * colour, role=status and the age as its hover text when the analysis is stale.
+ * "data up to Oct 14" alone, for a header with no subtitle line (the tool). The date alone, always plain grey (Ryan,
+ * CIV-2007); when the analysis is stale it keeps role=status and the age as its hover text.
  */
-export function DataUpTo({ dates, route = '' }: { dates: readonly string[]; route?: string }) {
+export function DataUpTo({ dates, route = '', pill = false }: { dates: readonly string[]; route?: string; /** In the map's pill (MAP_BADGE), as the loading pill. */ pill?: boolean }) {
   const last = dates[dates.length - 1];
   if (!last) return null;
   const f = freshness({ window: { dates } } as LiveV3, route, Date.now());
-  const text = `data up to ${dateRange(last, last)}`;
-  return f.stale
-    ? <span role="status" title={f.text} className="text-sm font-bold text-[var(--status-caution-text)]">{text}</span>
-    : <span className="text-sm text-[var(--text-muted)]">{text}</span>;
+  const text = `Data up to ${dateRange(last, last)}`;
+  if (pill) {
+    return (
+      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} {...(f.stale ? { role: 'status', title: f.text } : {})}>
+        <span className={MAP_BADGE_LABEL}>{text}</span>
+      </div>
+    );
+  }
+  return <span className="text-sm text-[var(--text-muted)]" {...(f.stale ? { role: 'status', title: f.text } : {})}>{text}</span>;
 }
 
 /** The rebuild command for a stale analysis: developer hints only (?dev=1), under the header. */

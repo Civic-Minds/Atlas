@@ -3,6 +3,7 @@ import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { AGENCY_CHIP_PAD } from '../../shared/config';
 import { compareAgencyName, compareSearchRelevance } from './sortCompare';
 import { metresBetween } from '../../shared/geoDistance';
+import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 
 export function bboxInViewport(
   agency: { bbox?: [number, number, number, number]; center?: [number, number] },
@@ -34,6 +35,7 @@ export interface AgencySearchGroup {
   distanceM: number;
   cities?: string[];
   displayArea?: string;
+  nameQualifier?: string;
 }
 
 /** Match + dedupe agencies by display name, sort nearest/in-viewport first. */
@@ -47,60 +49,36 @@ export function searchAgencyGroups(
   if (!q) return [];
 
   const [vLat, vLon] = bounds ? viewportCenter(bounds) : [null, null] as const;
-  const raw = agencies.filter(a =>
-    a.name.toLowerCase().includes(q)
+  const matches = (a: Agency) => a.name.toLowerCase().includes(q)
     || a.slug.startsWith(q)
     || (a.region || '').toLowerCase().includes(q)
     || (a.searchAliases ?? []).some(alias => alias.toLowerCase().includes(q))
-    || (a.cities ?? []).some(city => city.toLowerCase().includes(q)),
-  );
+    || (a.cities ?? []).some(city => city.toLowerCase().includes(q));
 
-  const byKey = new Map<string, {
-    name: string;
-    region: string;
-    slugs: string[];
-    inView: boolean;
-    distanceM: number;
-    cities?: string[];
-    displayArea?: string;
-  }>();
-
-  for (const a of raw) {
-    const region = a.region ?? 'Other';
-    const key = `${a.name}::${region}`;
-    const inView = bboxInViewport(a, bounds);
-    const [lat, lon] = a.center;
-    const distanceM = vLat != null && vLon != null
-      ? metresBetween({ lat, lon }, { lat: vLat, lon: vLon })
-      : Infinity;
-
-    const g = byKey.get(key);
-    if (g) {
-      g.slugs.push(a.slug);
-      if (inView) g.inView = true;
-      g.distanceM = Math.min(g.distanceM, distanceM);
-    } else {
-      byKey.set(key, { name: a.name, region, slugs: [a.slug], inView, distanceM, cities: a.cities, displayArea: a.displayArea });
-    }
-  }
-
+  // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one result under its name, found by its
+  // own name or any member's.
   const loaded = loadedSlugs ?? new Set<string>();
-  return [...byKey.values()]
+  return groupAgencies(agencies)
+    .filter(g => (g.parent && (g.parent.name.toLowerCase().includes(q) || g.parent.slug.startsWith(q))) || g.members.some(matches))
     .map(g => {
-      const inViewSlug = g.slugs.find(s => {
-        const a = agencies.find(x => x.slug === s);
-        return a && bboxInViewport(a, bounds);
-      });
-      const slug = g.slugs.find(s => loaded.has(s)) ?? inViewSlug ?? g.slugs[0];
+      const home = groupHome(g);
+      const name = agencyGroupName(g, a => a.name);
+      const region = home.region ?? 'Other';
+      const distanceM = vLat != null && vLon != null
+        ? Math.min(...g.members.map(a => metresBetween({ lat: a.center[0], lon: a.center[1] }, { lat: vLat, lon: vLon })))
+        : Infinity;
+      const inViewSlug = g.members.find(a => bboxInViewport(a, bounds))?.slug;
+      const slug = g.members.find(a => loaded.has(a.slug))?.slug ?? inViewSlug ?? home.slug;
       return {
-        key: `${g.name}::${g.region}`,
-        name: g.name,
-        region: g.region,
+        key: `${name}::${region}`,
+        name,
+        region,
         slug,
-        inView: g.inView,
-        distanceM: g.distanceM,
-        cities: g.cities,
-        displayArea: g.displayArea,
+        inView: inViewSlug !== undefined,
+        distanceM,
+        cities: home.cities,
+        displayArea: home.displayArea,
+        ...(g.parent ? {} : { nameQualifier: home.nameQualifier }),
       };
     })
     .sort((a, b) => compareSearchRelevance(a, b, (x, y) => compareAgencyName(x.name, y.name) || x.region.localeCompare(y.region)));

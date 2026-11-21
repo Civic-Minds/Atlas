@@ -79,7 +79,7 @@ export function stationOrLoop(stopName: string): string | null {
 
 /**
  * Branches: regular patterns with a tail, a contiguous run of stops off the main stretch at least `minStops` long and
- * `minM` metres long (the spec's tail test; the caller passes SHARED_STRETCH_MIN_STOPS and SHARED_STRETCH_MIN_KM).
+ * `minM` metres long (the spec's tail test; the caller passes PIECE_PARAMS.minStops and PIECE_PARAMS.minKm).
  * Each gets its own run-time line, measured over the whole pattern. `along[i]` is stop i's metres along the pattern.
  */
 export function branchPatterns<P extends PatternTrips & { along: readonly number[] }>(patterns: readonly P[], main: readonly string[], minStops: number, minM: number): P[] {

@@ -1,18 +1,17 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { FLOATING_CARD, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_INACTIVE, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_TOP, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
 import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
-import ActiveDot from '../ui/ActiveDot';
 import type { Agency } from '../../App';
-import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
+import { PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
-import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { FEATURES, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { FOLD_OUTLINE_OPEN, FOLD_OUTLINE_SHUT, ModeCollapse } from '../ModeTransition';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyNames } from '../../utils/agencyName';
-import { parentAgency } from '../../../shared/parentAgencyList';
+import { agencyGroupName, groupAgencies, groupHome } from '../../../shared/agencyGroups';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions, ON_DEMAND_MODE } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
@@ -23,16 +22,16 @@ import { NIGHT_GRADES, type NightServiceFrequency } from '../../../shared/nightS
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import LegendItem from '../ui/LegendItem';
-import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
+import { DayPicker, FrequencyPicker, PeriodChoice, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
 import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayOrBetter } from '../../utils/headwayText';
-import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL, AGENCIES_FILTER_LABEL, FILTERS_BOTH_MAPS_LABEL, OVERNIGHT_FREQUENCY_LABEL, SELECT_ALL_LABEL, SELECT_NONE_LABEL, SIDE_LABEL, TIME_WINDOW_LABEL, WAIT_LABEL, WALK_LABEL } from '../../content/noticeCopy';
+import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL, AGENCIES_FILTER_LABEL, FILTERS_BOTH_MAPS_LABEL, OVERNIGHT_FREQUENCY_LABEL, SELECT_ALL_LABEL, SELECT_NONE_LABEL, SIDE_LABEL, CONNECTION_ARRIVING_LABEL, CONNECTION_LEAVING_LABEL, TIME_WINDOW_LABEL, WAIT_LABEL, WALK_LABEL } from '../../content/noticeCopy';
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
 import { topBarChipClass } from '../ui/topBarChip';
-import { devPlaceholder } from '../../content/devPlaceholder';
+import { CHIP_PANEL, ChipDot, ChipMenu, ChipOptions, chipRowClass, useChipRow } from './ChipMenu';
 
 
 interface FilterChipsProps {
@@ -66,6 +65,8 @@ interface FilterChipsProps {
    * without it History is weekday only.
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
+  /** History's Day chip (CIV-1646): the flag, and the open agency having weekend values; defaults to the flag. */
+  historyDayPicker?: boolean;
   /** The connections top bar (CIV-1353, local only): replaces the filters while set. */
   connectionsBar?: ConnectionsBarControls | null;
 
@@ -87,16 +88,11 @@ export interface ConnectionsBarControls {
   setTripId: (id: string) => void;
 }
 
-/** The bar's two sides. Placeholders until Ryan OKs the words (CIV-1353); the bar is dev-only (FEATURES.connectionsBar). */
-const CONNECTION_SIDE_LABELS = [['after', devPlaceholder('arriving')], ['before', devPlaceholder('leaving')]] as const;
+/** The bar's two sides (CIV-1766); the bar is dev-only (FEATURES.connectionsBar). */
+const CONNECTION_SIDE_LABELS = [['after', CONNECTION_ARRIVING_LABEL], ['before', CONNECTION_LEAVING_LABEL]] as const;
 
-/**
- * A chip's "filter is on" dot. Declared out here, not inside FilterChips, so it is the same component on every render
- * and (CIV-1567, beta) can fade instead of being remounted.
- */
-function Dot({ show }: { show: boolean }) {
-  return FEATURES.modeTransitions ? <ActiveDot className={`transition-opacity duration-300 ease-out ${show ? 'opacity-100' : 'opacity-0'}`} /> : show ? <ActiveDot /> : null;
-}
+/** A chip's "filter is on" dot, the chips' own (ChipMenu). */
+const Dot = ChipDot;
 
 const MODES = filterModeOptions(FEATURES.onDemand);
 
@@ -125,10 +121,8 @@ export function getNowPeriodForTimezone(timezone?: string | null, now: Date = ne
 
 type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact' | 'trip';
 
-const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
-
-const rowBtn = (active: boolean) =>
-  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
+const PANEL = CHIP_PANEL;
+const rowBtn = chipRowClass;
 
 interface AgenciesPanelProps {
   agencies: Agency[];
@@ -152,17 +146,20 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   // Build deduplicated groups, tagging each with whether it overlaps the current viewport
   const allGroups = useMemo(() => {
-    const groups: { name: string; slugs: string[]; region: string; loaded: boolean; cities?: string[]; displayArea?: string }[] = [];
-    for (const a of agencies) {
-      const region = a.region ?? OTHER_REGION_LABEL;
-      const inView = bboxInViewport(a, bounds);
-      // CIV-1277: an agency split across feeds (MTA New York, exo) is one row under its parent's name.
-      const name = parentAgency(a.parentAgency)?.name ?? a.name;
-      const g = groups.find(x => x.name === name && x.region === region);
-      if (g) { g.slugs.push(a.slug); if (inView) g.loaded = true; }
-      else groups.push({ name, slugs: [a.slug], region, loaded: inView, cities: a.cities, displayArea: a.displayArea });
-    }
-    return groups;
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds (MTA New York, exo) are one row under its
+    // name and its home feed's place, wherever its members are.
+    return groupAgencies(agencies).map(group => {
+      const home = groupHome(group);
+      return {
+        name: agencyGroupName(group, a => a.name),
+        slugs: group.members.map(m => m.slug),
+        region: home.region ?? OTHER_REGION_LABEL,
+        loaded: group.members.some(m => bboxInViewport(m, bounds)),
+        cities: home.cities,
+        displayArea: home.displayArea,
+        nameQualifier: group.parent ? undefined : home.nameQualifier,
+      };
+    });
   }, [agencies, bounds]);
 
   const byRegion = useMemo(() => {
@@ -217,10 +214,10 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           <AgencyRegionSection key={region} region={region} compact>
             {groups.map(g => {
               const active = g.slugs.every(s => selectedAgencies.has(s));
-              const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
+              const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea, nameQualifier: g.nameQualifier }).list;
               return (
                 <button
-                  key={g.name}
+                  key={g.slugs[0]}
                   onClick={() => {
                     const next = new Set(selectedAgencies);
                     if (active) g.slugs.forEach(s => next.delete(s));
@@ -274,22 +271,17 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   nightServiceFrequency = 60,
   setNightServiceFrequency,
   variant = 'full',
+  historyDayPicker: historyDayPickerOn = FEATURES.historyDayPicker,
   connectionsBar = null,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
   useColorMode();
-  const [openChip, setOpenChip] = useState<ChipId | null>(null);
+  const { openChip, setOpenChip, toggle, rowRef } = useChipRow<ChipId>();
   const [agencyQuery, setAgencyQuery] = useState('');
   const agencySearchRef = useRef<HTMLInputElement>(null);
-  const rowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!openChip) { setAgencyQuery(''); return; }
-    const onClick = (e: MouseEvent) => {
-      if (rowRef.current && !rowRef.current.contains(e.target as Node)) setOpenChip(null);
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
+    if (!openChip) setAgencyQuery('');
   }, [openChip]);
 
   useEffect(() => {
@@ -308,7 +300,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   // The top bar's chip, shared with the map apps' menus (topBarChipClass, CIV-1821).
   const chipClass = topBarChipClass;
 
-  const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
   const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
 
@@ -387,77 +378,22 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   const frequencyOptions = useFrequencyOptions();
   const frequencyChip = (className: string) => (
-    <div className={`relative ${className}`}>
-      <button onClick={() => toggle('frequency')} className={chipClass(maxHeadway !== Infinity)}>
-        {FREQUENCY_LABEL}
-        <Dot show={maxHeadway !== Infinity} />
-      </button>
-      {openChip === 'frequency' && (
-        <div className={`${PANEL} w-36`}>
-          {frequencyOptions.map(o => {
-            const isSelected = maxHeadway === o.max;
-            return (
-              <button
-                key={o.key}
-                onClick={() => { setMaxHeadway(o.max); setOpenChip(null); }}
-                className={rowBtn(isSelected)}
-                aria-pressed={isSelected}
-                aria-label={o.max === Infinity ? 'Show all routes' : capitalizeFirst(headwayOrBetter(o.max))}
-              >
-                <LegendItem color={o.color}>{o.label}</LegendItem>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    <ChipMenu className={className} label={FREQUENCY_LABEL} active={maxHeadway !== Infinity} open={openChip === 'frequency'} onToggle={() => toggle('frequency')} panelClassName="w-36">
+          <ChipOptions value={String(maxHeadway)} onPick={k => { setMaxHeadway(Number(k)); setOpenChip(null); }}
+            options={frequencyOptions.map(o => ({ key: String(o.max), label: <LegendItem color={o.color}>{o.label}</LegendItem>, ariaLabel: o.max === Infinity ? 'Show all routes' : capitalizeFirst(headwayOrBetter(o.max)) }))} />
+    </ChipMenu>
   );
 
   const dayChip = (className: string) => (
-    <div className={`relative ${className}`}>
-      <button onClick={() => toggle('day')} className={chipClass(true)}>
-        {DAY_LABEL}
-        <Dot show={true} />
-      </button>
-      {openChip === 'day' && (
-        <div className={`${PANEL} w-36`}>
-          {DAY_TYPES.map((d) => (
-            <button
-              key={d}
-              onClick={() => { setDay(d); setOpenChip(null); }}
-              className={rowBtn(day === d)}
-              aria-pressed={day === d}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <ChipMenu className={className} label={DAY_LABEL} active open={openChip === 'day'} onToggle={() => toggle('day')} panelClassName="w-36">
+          <ChipOptions value={day} onPick={d => { setDay(d as DayType); setOpenChip(null); }} options={DAY_TYPES.map(d => ({ key: d, label: d }))} />
+    </ChipMenu>
   );
 
   const periodChip = (className: string) => (
-    <div className={`relative ${className}`}>
-      <button onClick={() => toggle('period')} className={chipClass(true)}>
-        {TIME_LABEL}
-        <Dot show={true} />
-      </button>
-      {openChip === 'period' && (
-        <div className={`${PANEL} w-56`}>
-          {PERIOD_KEYS.map((p) => (
-            <button
-              key={p}
-              onClick={() => { setPeriod(p); setOpenChip(null); }}
-              className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
-              aria-pressed={period === p}
-            >
-              <span className="whitespace-nowrap">{PERIOD_LABELS[p]}</span>
-              <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <ChipMenu className={className} label={TIME_LABEL} active open={openChip === 'period'} onToggle={() => toggle('period')} panelClassName="w-56">
+          <ChipOptions value={period} onPick={p => { setPeriod(p as TimePeriod); setOpenChip(null); }} options={PERIOD_KEYS.map(p => ({ key: p, label: <PeriodChoice period={p} /> }))} />
+    </ChipMenu>
   );
 
   const agenciesChip = (
@@ -486,13 +422,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   );
 
   const modeChip = (className: string) => (
-    <div className={`relative ${className}`}>
-      <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
-        {MODE_LABEL}
-        <Dot show={selectedModes.size > 0} />
-      </button>
-      {openChip === 'mode' && (
-        <div className={`${PANEL} w-48`}>
+    <ChipMenu className={className} label={MODE_LABEL} active={selectedModes.size > 0} open={openChip === 'mode'} onToggle={() => toggle('mode')} panelClassName="w-48">
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -506,9 +436,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           {MODES.some(m => m.id === ON_DEMAND_MODE) && (
             <p className="px-2 pt-1 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
           )}
-        </div>
-      )}
-    </div>
+    </ChipMenu>
   );
 
   const compactFiltersPanel = (
@@ -540,7 +468,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
-        {FEATURES.historyDayPicker && dayChip('')}
+        {historyDayPickerOn && dayChip('')}
         {periodChip('')}
       </div>
     );
@@ -578,7 +506,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>
         </ModeCollapse>
         <ModeCollapse open={!shared}><div className="pr-2">{frequencyChip(coreClass)}</div></ModeCollapse>
-        <ModeCollapse open={full || (history && FEATURES.historyDayPicker)}><div className="pr-2">{dayChip(coreClass)}</div></ModeCollapse>
+        <ModeCollapse open={full || (history && historyDayPickerOn)}><div className="pr-2">{dayChip(coreClass)}</div></ModeCollapse>
         <ModeCollapse open={!shared}><div className="pr-2">{periodChip(coreClass)}</div></ModeCollapse>
         {/* The shared group's outline and padding are there in both, transparent and pulled back on the full row; the outline fades with "Both maps". */}
         <div

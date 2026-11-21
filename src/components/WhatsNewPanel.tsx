@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import AppLink from './ui/AppLink';
+import ArrowLink from './ui/ArrowLink';
+import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { shortDate } from '../../shared/dateText';
 import { Z_MODAL_TOP } from '../styles';
 import Panel from './ui/Panel';
 import PanelHeader from './ui/PanelHeader';
 import { WhatsNewItemText } from './WhatsNewItemText';
 import { CLOSE_PLACES, closeLabel, WHATS_NEW_TITLE, SEE_ALL_CHANGES_LABEL } from '../content/noticeCopy';
-import { shortVersion, visibleWhatsNew, type WhatsNewRelease } from '../data/whatsNew';
+import { shortVersion, visibleWhatsNew, type WhatsNewFeature, type WhatsNewRelease } from '../data/whatsNew';
 import { CHANGELOG_PATH } from '../../shared/pagePaths';
 
 /** "Released Nov 9, 2026" from the release's own date; nothing when the date is unusable. */
@@ -18,12 +20,14 @@ function releasedLabel(release: WhatsNewRelease): string | null {
 interface Props {
   onClose: () => void;
   includeBeta: boolean;
-  releases?: WhatsNewRelease[];
+  features?: WhatsNewFeature[];
+  releases?: { version: string; date: string }[];
 }
 
-export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
+export function WhatsNewPanel({ onClose, includeBeta, features, releases }: Props) {
   // Only the latest version here; older ones live on /changelog.
-  const visible = visibleWhatsNew(includeBeta, releases).slice(0, 1);
+  const visible = visibleWhatsNew(includeBeta, features, releases).slice(0, 1);
+  const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
@@ -53,7 +57,11 @@ export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
                 {release.items.map(item => (
                   <li key={item.text} className="flex items-start gap-2 leading-relaxed text-[var(--text-dim)]">
                     <span aria-hidden="true" className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--text-muted)]" />
-                    <span><WhatsNewItemText item={item} tagClass="text-xs" leadClass="font-normal" hideNew /></span>
+                    <span>
+                      <WhatsNewItemText item={item} tagClass="text-xs" leadClass="font-normal" hideNew />
+                      {/* CIV-1999: runs on after the sentence, as "Learn more →" does in card notices. */}
+                      {item.link && !(item.link.desktopOnly && isPhone) && <>{' '}<ArrowLink href={item.link.to} tone="inline" size="xs" wrap onClick={onClose}>{item.link.label}</ArrowLink></>}
+                    </span>
                   </li>
                 ))}
               </ul>

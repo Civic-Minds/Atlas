@@ -10,7 +10,8 @@ import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { plural } from './overflowText';
 import { compareAgencyName, compareText } from './sortCompare';
 import { AGENCY_INDEX_PATH, agencyIndexHeadingHref, agencyIndexHeadingId, parentAgencyPagePath } from './pagePaths';
-import { parentMembers, parentRoutes, parentsWithMembers } from './parentAgencies';
+import { parentMembers, parentRoutes } from './parentAgencies';
+import { groupAgencies } from './agencyGroups';
 import { countText } from './numberText';
 import { PAGE_NAMES, tabTitle } from './pageNames';
 
@@ -79,10 +80,9 @@ export function buildAgencyIndexData(
     else for (const a of places) put(a.country ?? OTHER, a.country && a.region ? a.region : OTHER, row);
   };
   // CIV-1277: a parent agency is one row in place of its members, under every state or province one of them serves.
-  const parents = parentsWithMembers(agencies);
-  const grouped = new Set(parents.map(p => p.slug));
-  for (const a of agencies) if (!a.parentAgency || !grouped.has(a.parentAgency)) add([a], { slug: a.slug, name: agencyTitle(a, shared), shortName: agencyMention(a), routes: a.routeCount });
-  for (const p of parents) {
+  for (const g of groupAgencies(agencies)) {
+    const p = g.parent;
+    if (!p) { const a = g.members[0]; add([a], { slug: a.slug, name: agencyTitle(a, shared), shortName: agencyMention(a), routes: a.routeCount }); continue; }
     const members = parentMembers(p, agencies);
     add(members, { slug: p.slug, name: p.name, shortName: p.name, routes: parentRoutes(members).length, parent: { href: parentAgencyPagePath(p.slug) } });
   }

@@ -3,7 +3,7 @@ import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop, shortStopName, stripStopName } from '../../utils/stopLabel';
 import { MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, bunchParts, delayText, labelWidth, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption, type RouteStripMode, type RouteStripStop, stripLegendFlags } from './routeStripModel';
-import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
+import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, PHONE_TAP_ROW, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
 import { countOf } from '../../../shared/overflowText';
 import { percentText, countText } from '../../../shared/numberText';
@@ -302,7 +302,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         className="relative rounded-md outline-offset-4 focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
       >
         <span id={liveId} className="sr-only" aria-live="polite">{announce}</span>
-        {vertical ? <VerticalBranches model={model} modes={modes} minN={minN} allStops={allStops} active={active ?? selected} setActive={id => { setActive(id); onSelect?.(id); }} /> : width > 0 ? horizontal : null}
+        {vertical ? <VerticalBranches model={model} modes={modes} minN={minN} allStops={allStops} phone={phone} active={active ?? selected} setActive={id => { setActive(id); onSelect?.(id); }} /> : width > 0 ? horizontal : null}
       </div>
       {vertical && stops.length > 2 && (
         <button type="button" onClick={() => setAllStops(v => !v)} aria-expanded={allStops} className="mt-2 text-xs font-bold text-[var(--accent)]">
@@ -321,8 +321,11 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
  * The marked stretch (Delays start, Bunching forms) is bracketed beside its track's dots with its name, as on the
  * straight strip. Only the key stops are named (each part's ends, stations, the stretch's ends); "Show all stops" names them all.
  */
-function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
-  model: BranchModel; modes: readonly RouteStripMode[]; minN: number; allStops: boolean; active: string | null; setActive: (id: string) => void;
+function VerticalBranches({ model, modes, minN, allStops, phone, active, setActive }: {
+  model: BranchModel; modes: readonly RouteStripMode[]; minN: number; allStops: boolean;
+  /** On a phone, "Show all stops" rows are full-size taps; the key-stops view keeps its compact rows (#1151). */
+  phone: boolean;
+  active: string | null; setActive: (id: string) => void;
 }) {
   // `terminal`: the row of the branch's end stop (a lead-in's first stop, a lead-out's last), which names the branch.
   const sections = useMemo(() => phoneSections(model), [model]);
@@ -367,7 +370,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
             const note = stretches.filter(st => st && st.firstId === s.stopId).map(st => st!.label).join(', ');
             const on = active === s.stopId;
             return (
-              <button key={s.stopId} type="button" tabIndex={-1} onClick={() => setActive(s.stopId)} className={`relative flex w-full items-center rounded-md text-left ${on ? 'bg-[var(--accent-selected-bg)]' : ''}`} style={{ minHeight: phoneRowHeight(named, !!s.uncertain), paddingLeft: NAME_LEFT }}>
+              <button key={s.stopId} type="button" tabIndex={-1} onClick={() => setActive(s.stopId)} className={`relative flex w-full items-center rounded-md text-left ${on ? 'bg-[var(--accent-selected-bg)]' : ''}`} style={{ minHeight: allStops && phone ? PHONE_TAP_ROW : phoneRowHeight(named, !!s.uncertain), paddingLeft: NAME_LEFT }}>
                 {modes.map((m, k) => <span key={m} className="pointer-events-none absolute bottom-0 top-0 w-0.5 bg-[var(--text-dim)] opacity-40" style={{ left: COL_X[k] - 1 }} />)}
                 {modes.map((m, k) => {
                   const st = stretches[k], row = rowOf.get(s.stopId)!;

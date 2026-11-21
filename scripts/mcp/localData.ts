@@ -7,12 +7,11 @@ import { agencyNames } from '../../src/utils/agencyName';
 import { stopMatchText } from '../../shared/stopNameText';
 import { headwayAmount, headwayEvery } from '../../shared/headwayText';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { basename, join } from 'node:path';
-import { PERIOD_KEYS, type PeriodKey } from '../../shared/config';
+import { join } from 'node:path';
+import { PERIOD_KEYS } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { countryForRegion } from '../../shared/regionCountry';
 import { metresBetween } from '../../shared/geoDistance';
-import { studioVehiclesFileName, type StudioVehicleGroup, type StudioVehiclesFile } from '../../shared/studioVehicles';
 import type { IndexedAgency } from '../../shared/mcpStore';
 import type { GtfsData } from '../../types/gtfs';
 import { parseGtfsZip } from '../../pipeline/parseGtfs';
@@ -20,7 +19,8 @@ import { placeOf, stopToStopRuns } from '../../pipeline/stopToStop';
 import { runningTimeSummary } from '../../pipeline/runningTime';
 import { pooledReadingInWindow } from '../../pipeline/stopPools';
 import { BUNCHED_DEPARTURE_MINUTES } from '../../pipeline/headway-utils';
-import { ATLAS_ROOT, writeIndexFile } from './diskStore';
+import { ATLAS_ROOT, feedFile, writeIndexFile } from './diskStore';
+export { feedFile };
 import { RAIL_MODE_LABELS, availableAgencies, currentStore, forget, periodFigure, routesOn } from './atlasData';
 
 /** The feed file Atlas processed for an agency, newest first: Atlas-worktrees/_feeds/<slug>/*.zip, or ATLAS_MCP_FEEDS_DIR. */
@@ -30,17 +30,6 @@ export function scheduleEnds(gtfs: GtfsData): string | null {
   return dates[dates.length - 1] ?? null;
 }
 
-export function feedFile(slug: string): string | null {
-  const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
-  const dir = join(root, slug);
-  if (!existsSync(dir)) return null;
-  // Files are named by the date their service runs to (20271008-fresh.zip): the latest date is the newest schedule.
-  // A copy made later can have a newer modified time than a newer schedule (Kingston), so the name decides, then the time.
-  const dateOf = (n: string) => /^(\d{8})/.exec(n)?.[1] ?? '';
-  const zips = readdirSync(dir).filter(n => n.endsWith('.zip'))
-    .sort((a, b) => dateOf(a).localeCompare(dateOf(b)) || statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs);
-  return zips.length ? join(dir, zips[zips.length - 1]) : null;
-}
 
 /**
  * The agency's schedule files: its own feed, then any supplemental feeds processing adds to it (LA Metro's rail lines
@@ -180,7 +169,12 @@ export async function buildIndex(onProgress?: (done: number, total: number) => v
     const days: IndexedAgency['days'] = {};
     for (const d of DAY_TYPES) {
       const routes = await routesOn(a, d);
-      if (routes.length) days[d] = routes.map(r => ({ route: r.name, name: r.longName, mode: r.mode, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k).waitMinutes])) }));
+      if (routes.length) days[d] = routes.map(r => {
+        // CIV-2014: ranking counts by the map filter's reading, as routes_at_frequency does.
+        const readings = PERIOD_KEYS.map(k => [k, periodFigure(r, k).filter!] as const);
+        const breaks = Object.fromEntries(readings.filter(([, f]) => f.breaks).map(([k, f]) => [k, f.breaks]));
+        return { route: r.name, name: r.longName, mode: r.mode, wait: Object.fromEntries(readings.map(([k, f]) => [k, f.wait])), ...(Object.keys(breaks).length ? { breaks } : {}) };
+      });
     }
     const railRoutes = (await routesOn(a, 'Weekday')).filter(r => RAIL_MODE_LABELS.has(r.mode)).length;
     out.push({ slug: a.slug, name: a.name, region: a.region ?? null, country: countryForRegion(a.region), partOf: meta.get(a.slug)?.parentAgency ?? null, railRoutes, days });
@@ -191,32 +185,6 @@ export async function buildIndex(onProgress?: (done: number, total: number) => v
   return out;
 }
 
-/** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json). */
-export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', studioVehiclesFileName(slug)); }
-
-/** The command that builds Studio's buses-needed file for an agency, run once by hand (it takes minutes on a large agency). */
-export function studioVehiclesCommand(slug: string, file: string): string {
-  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${studioVehiclesFileName(slug)}`;
-}
-
-export type BusesNeeded =
-  | { cached: false; command: string | null }
-  | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
-
-/**
- * Buses needed to run a route in a period, from Studio's own buses-needed file (CIV-1693), the same figures Studio's page
- * shows. It never runs the calculation itself: on a large agency that takes minutes and loads the Mac (manager,
- * 2026-11-17: "buses_needed must not spawn an 8-minute calculation per question"). Where no file exists it says so.
- */
-export function busesNeeded(slug: string, route: string, period: PeriodKey): BusesNeeded {
-  const path = studioVehiclesPath(slug);
-  const file = feedFile(slug);
-  if (!existsSync(path)) return { cached: false, command: file ? studioVehiclesCommand(slug, file) : null };
-  const v = JSON.parse(readFileSync(path, 'utf8')) as StudioVehiclesFile;
-  const want = route.trim().toLowerCase();
-  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => r.toLowerCase() === want));
-  return { cached: true, feed: v.feed, olderSchedule: !!file && basename(file) !== v.feed, referenceDate: v.referenceDate, groups };
-}
 
 export const BUNCHED_MINUTES = BUNCHED_DEPARTURE_MINUTES;
 /** How many departures in a window leave within the bunched minutes of the one before (another route's), and so count as one. */

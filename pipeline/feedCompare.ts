@@ -43,6 +43,12 @@ export interface RouteDay {
    * 15 min from 10:12 AM" (CIV-1806). Labels only; not compared.
    */
   edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>;
+  /**
+   * The route's length that day (CIV-1827, display only, not compared): the fewest and most stops on its patterns
+   * (short turns left out), and the end stops' names of its longest pattern in the first direction.
+   */
+  stops?: [min: number, max: number];
+  ends?: [first: string, last: string];
   /** Headsigns drawn, by direction id (labels only). */
   headsigns: Record<string, string[]>;
   /** The route's drawn lines that day, one per distinct pattern shape (for the Studio map; not compared). */
@@ -114,6 +120,11 @@ export function dayCoverage(listed: ReadonlySet<string>, read: ReadonlySet<strin
   }
   for (const id of read) if (!listed.has(id)) unlistedTrips += tripsByService.get(id) ?? 0;
   return { listedTrips, readListedTrips, unlistedTrips };
+}
+
+/** Whether two days run the same service ids. */
+export function sameServices(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
+  return a.size === b.size && [...a].every(id => b.has(id));
 }
 
 export function dayNameOf(ymd: string): DayName {
@@ -207,14 +218,18 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
   });
   if (!seen) throw new Error('processGtfsBuffer did not report its service days');
   const { gtfs, active, ref, listed } = seen as Seen;
-  if (dateInWeek(ref, 'Monday') !== dateInWeek(ymd, 'Monday')) {
-    // The week riders face around the date is another week: the feed has no service that week, or the date is outside it.
+  const dayName = dayNameOf(ymd);
+  if (dateInWeek(ref, 'Monday') !== dateInWeek(ymd, 'Monday') && !sameServices(servicesListedOn(listed, ymd), active.get(dayName) ?? new Set<string>())) {
+    // The week riders face around the date is another week (#1630: YRT's Nov 16 week has a Friday without school trips,
+    // so the picker reads Nov 9-15). That week reads the date only when its day runs exactly the date's services;
+    // otherwise the feed has no service that week, or the date runs a schedule of its own.
     const tripsOn = (ids: ReadonlySet<string>) => (gtfs.trips ?? []).filter(t => ids.has(t.service_id)).length;
     const listedHere = tripsOn(servicesListedOn(listed, ymd));
-    throw new DateNotReadError(dateReadProblem(listedHere, 0, ymd) ?? `Asked for the week of ${fmtDate(ymd)}, but the pipeline read the week of ${fmtDate(ref)}.`);
+    throw new DateNotReadError(listedHere === 0
+      ? dateReadProblem(0, 0, ymd)!
+      : `The pipeline reads the week of ${fmtDate(ref)} for this schedule, and its ${dayName} runs other services than ${fmtDate(ymd)}. Pick a date in that week, or another date in the same schedule.`);
   }
 
-  const dayName = dayNameOf(ymd);
   const tripsByService = new Map<string, number>();
   for (const t of gtfs.trips ?? []) tripsByService.set(t.service_id, (tripsByService.get(t.service_id) ?? 0) + 1);
   const { listedTrips, readListedTrips } = dayCoverage(servicesListedOn(listed, ymd), active.get(dayName) ?? new Set<string>(), tripsByService);
@@ -250,6 +265,9 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     tripsOn.set(dayType, counts);
   }
 
+  const stopName = new Map((gtfs.stops ?? []).map(s => [String(s.stop_id), String(s.stop_name ?? '')]));
+  /** Each route day's patterns, for its length (CIV-1827): stop count, direction, card role and end stops. */
+  const patterns = new Map<RouteDay, Array<{ n: number; dir: string; tail: boolean; ends: [string, string] }>>();
   // Each trip's departure from its first stop, for a route's first trip where the hours bar has none (#1582).
   const firstDeparture = new Map<string, number>();
   const seqOf = new Map<string, number>();
@@ -302,6 +320,11 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
         (day.edge ??= {})[k] = { ...(e.from != null ? { from: e.from } : {}), ...(e.until != null ? { until: e.until } : {}), every: e.every };
       }
     }
+    const order = Array.isArray(p.stopOrder) ? (p.stopOrder as unknown[]).map(String) : [];
+    if (order.length >= 2 && p.stretchRole !== 'variant') {
+      const name = (id: string) => stopName.get(id) ?? id;
+      (patterns.get(day) ?? patterns.set(day, []).get(day)!).push({ n: order.length, dir: String(p.directionId ?? '0'), tail: p.stretchRole === 'tail', ends: [name(order[0]), name(order[order.length - 1])] });
+    }
     const dir = String(p.directionId ?? '0');
     const span = p.departureSpan as { first?: number; last?: number } | undefined;
     // The map's hours bar leaves "first" out when a trip leaves before 5 AM (no same-day 4 AM hour, by design for the
@@ -312,6 +335,16 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     if (p.headsign && !(day.headsigns[dir] ??= []).includes(p.headsign)) day.headsigns[dir].push(p.headsign);
     const run = runMinutesOf(parsed.runningTimes?.[`${routeId}::${dir}::${dayType}`]);
     if (run != null && day.runMinutes[dir] == null) day.runMinutes[dir] = run;
+  }
+  // The route's length (CIV-1827): where it has branches, their full patterns (the tails; the main row is the shared
+  // stretch alone), else its patterns; short turns left out. The fewest and most stops, and the ends of the longest
+  // pattern in the lowest direction id, so both sides of a comparison read the same way round.
+  for (const [day, list] of patterns) {
+    const use = list.some(x => x.tail) ? list.filter(x => x.tail) : list;
+    const ns = use.map(x => x.n);
+    day.stops = [Math.min(...ns), Math.max(...ns)];
+    const dir = use.map(x => x.dir).sort()[0];
+    day.ends = use.filter(x => x.dir === dir).reduce((a, b) => (b.n > a.n ? b : a)).ends;
   }
   for (const side of Object.values(routes)) {
     for (const dayType of DAY_TYPES) {

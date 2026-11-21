@@ -67,6 +67,10 @@ export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 /** Width constant for panels and cards; matches the responsive search bar on desktop. */
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
+/** The wide sidebar card, for a card whose tables need more room than the search bar's width (Studio's route card,
+ *  CIV-1828): the width Studio's old frame gave its sidebar, never past the window. */
+export const SIDEBAR_PANEL_WIDE_WIDTH = 'w-[calc(100vw-3rem)] sm:w-[24.5rem] max-w-[calc(100vw-3rem)]';
+
 /** Shared glass pill geometry; surfaces and borders are supplied by each state. */
 export const GLASS_PILL = 'backdrop-blur-md rounded-full';
 
@@ -88,6 +92,9 @@ export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 bord
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
 
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
+/** Below PageShell's pinned header (its height is --page-header-h, set by PageShell), plus the gap a page leaves under it (CIV-1897): where a sticky side menu sits and where a jumped-to heading lands. */
+export const STICK_BELOW_HEADER = 'lg:top-[calc(var(--page-header-h,3.25rem)+1.25rem)]';
+export const SCROLL_BELOW_HEADER = 'scroll-mt-[calc(var(--page-header-h,3.25rem)+1.25rem)]';
 export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
 /**
@@ -139,7 +146,9 @@ export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black text-[var(--text
 export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';
 
 /** Empty / loading copy inside a panel row */
-export const PANEL_EMPTY = 'px-4 py-3 text-xs text-[var(--text-muted)] font-bold';
+/** Its text alone, for the same line inside a card that already has its own padding (PanelEmpty inline). */
+export const PANEL_EMPTY_TEXT = 'text-xs text-[var(--text-muted)] font-bold';
+export const PANEL_EMPTY = `px-4 py-3 ${PANEL_EMPTY_TEXT}`;
 
 /**
  * Inline notice / warning (outdated schedule, corrected data, outside filters).
@@ -186,7 +195,7 @@ export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare'
 // Map overlay slots: one layout table for every fixed overlay over the map (CIV-1136), kept in mapOverlayLayout.ts.
 export {
   MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_COUNTS_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT, MAP_APP_SIDEBAR_SLOT,
-  MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, MAP_FOOTER_HEIGHT_FALLBACK, mapFooterStyle, MAP_CONSENT_SLOT, MAP_STATUS_SLOT,
+  MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, MAP_FOOTER_HEIGHT_FALLBACK, mapFooterStyle, MAP_PROMPT_SLOT, MAP_STATUS_SLOT,
 } from './mapOverlayLayout';
 import { SIDEBAR_CARD_BOTTOM_LIMIT, SIDEBAR_CARD_TOP_BELOW_CONSENT, SIDEBAR_CARD_MAX_H_BELOW_CONSENT } from './mapOverlayLayout';
 

@@ -95,6 +95,19 @@ export function historyDayHasPeriods(snapshot: Snapshot, day: 'Saturday' | 'Sund
 }
 
 /**
+ * Whether any route of an agency stores a weekend day's values by time of day (CIV-1425). The History config the
+ * app already loads carries them (v2 sat/sun `p`) only for agencies built with weekend values; for every other agency
+ * the Day chip would show blanks, so History hides it and stays on Weekday (CIV-1646). A day with no trips ({none})
+ * is not a value.
+ */
+export function agencyHasWeekendValues(agency: { routes: readonly { snapshots: readonly Snapshot[] }[] }): boolean {
+  return agency.routes.some(r => r.snapshots.some(s => (['sat', 'sun'] as const).some(day => {
+    const dayValue = s.v2?.[day];
+    return !!dayValue && !('none' in dayValue) && Object.values(dayValue.p ?? {}).some(min => typeof min === 'number' && Number.isFinite(min) && min > 0);
+  })));
+}
+
+/**
  * Whether a value passes the frequency limit (CIV-392), by the map filter's comparison (frequency at
  * or under the limit). A limited, no-trips or unknown value fails any limit. Under "All", a route with
  * no trips that day is dropped wherever the map's filter applies (headwayFilterApplies: a period is
@@ -111,8 +124,11 @@ export function historyYearRoutes(
   year: number,
   colorMode: ColorVisionMode,
   view: HistoryView = HISTORY_VIEW_ALL,
-  /** The agency's per-year shapes file (CIV-456), or null when there is none. */
-  shapes: HistoryShapesFile | null = null,
+  /**
+   * The agency's per-year shapes file (CIV-456), or null when there is none. A parent agency's (CIV-1963) is a lookup by
+   * feed: each snapshot's line comes from the shapes file of the feed it was read from (its memberSlug).
+   */
+  shapes: HistoryShapesFile | null | ((memberSlug: string | undefined) => HistoryShapesFile | null) = null,
   /** The latest year: it uses today's map lines, as the map does, so no year shape is read for it. */
   latestYear?: number,
 ): HistoryYearRoute[] {
@@ -128,7 +144,7 @@ export function historyYearRoutes(
       // The year's own line when it has one (not for the latest year); otherwise today's map line.
       // Snapshots' old v1 `geometry` is not used (reader contract).
       // A route carried into an unchanged year (#1591) is drawn on the line of the year its number comes from.
-      ...yearShape(shapes, route.routeShortName, carriedFrom ?? year, latestYear),
+      ...yearShape(typeof shapes === 'function' ? shapes((snapshot as { memberSlug?: string }).memberSlug) : shapes, route.routeShortName, carriedFrom ?? year, latestYear),
     });
   }
   return out;

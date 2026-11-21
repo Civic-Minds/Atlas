@@ -213,7 +213,8 @@ function titleCase(s: string): string {
       if (word.length === 1 && str[offset + word.length] === '.') {
         return word.toUpperCase();
       }
-      if (offset > 0 && KEEP_LOWER.test(word)) {
+      // A single letter joined by a hyphen is a code ("20 A-LINE EXPRESS" -> "20 A-Line Express"), not the article "a" (#1647).
+      if (offset > 0 && KEEP_LOWER.test(word) && !(word.length === 1 && str[offset + 1] === '-')) {
         return word;
       }
       return camelCaseWords.get(word) ?? word.replace(/^\p{L}/u, (c: string) => c.toUpperCase());

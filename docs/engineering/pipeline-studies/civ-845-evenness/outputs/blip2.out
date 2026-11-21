@@ -1,0 +1,10 @@
+### blip2 (blip2.ts)
+stretches 126 base one-colour 109
+C one 126 pf 0 (0<20) fp 51 (ol>20: 51) tier 141 chg 206 EBruns 2/2 WB 16,16,16,16,16,16,16,16,16 | newPasser excess n51 med 4.4 max 6.4 | their already-passing neighbours excess n791 med 2.0 max 6.4 | Etouched 0 Gtouched 0 twoLayers 0 
+F one 116 pf 0 (0<20) fp 17 (ol>20: 17) tier 26 chg 37 EBruns 2/2 WB 16,16,16,16,16,16,16,16,17 | newPasser excess n17 med 1.9 max 6.0 | their already-passing neighbours excess n485 med 2.0 max 6.0 | Etouched 0 Gtouched 0 twoLayers 0 
+D10 one 119 pf 0 (0<20) fp 27 (ol>20: 27) tier 82 chg 97 EBruns 2/2 WB 16,16,16,16,16,16,16,16,17 | newPasser excess n27 med 3.6 max 6.4 | their already-passing neighbours excess n575 med 2.0 max 6.4 | Etouched 0 Gtouched 0 twoLayers 0 
+E one 114 pf 0 (0<20) fp 0 (ol>20: 0) tier 34 chg 46 EBruns 10/10 WB 16,16,16,16,16,16,16,16,17 | newPasser excess n0 | their already-passing neighbours excess n0 | Etouched 46 Gtouched 0 twoLayers 0 
+Gup one 109 pf 0 (0<20) fp 2 (ol>20: 2) tier 2 chg 2 EBruns 8/8 WB 16,16,16,16,16,16,16,16,17 | newPasser excess n2 med 2.0 max 2.0 | their already-passing neighbours excess n66 med 2.0 max 2.0 | Etouched 0 Gtouched 2 twoLayers 0 
+Gboth one 109 pf 2 (2<20) fp 2 (ol>20: 2) tier 4 chg 4 EBruns 6/6 WB 16,16,16,16,16,16,16,16,17 | newPasser excess n2 med 2.0 max 2.0 | their already-passing neighbours excess n66 med 2.0 max 2.0 | Etouched 0 Gtouched 4 twoLayers 0 
+L one 109 pf 0 (0<20) fp 2 (ol>20: 2) tier 32 chg 44 EBruns 8/8 WB 16,16,16,16,16,16,16,16,17 | newPasser excess n2 med 2.0 max 2.0 | their already-passing neighbours excess n66 med 2.0 max 2.0 | Etouched 46 Gtouched 2 twoLayers 4 V0reverts 16
+exit 0

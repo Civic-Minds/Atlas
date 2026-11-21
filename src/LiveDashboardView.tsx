@@ -2,7 +2,7 @@ import DataTable from './components/ui/DataTable';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { useMemo, useState, type ReactNode } from 'react';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
+import { bunchingIsSplit, kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import DevHint from './components/Live/DevHint';
@@ -19,11 +19,13 @@ import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL } from '../shared/liveWording';
-import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE } from './content/noticeCopy';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL, bunchingShortNote, bunchingSplitNote, OPEN_ABOUT_LIVE_EVENT } from '../shared/liveWording';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE, LEARN_MORE_LABEL } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
+import { CardHelpNotice } from './components/Interval/cardUi';
 import { LIVE_MIN_SAMPLE } from '../shared/rules/live';
+import { FIGURE_HEAD, FIGURE_MAIN, FIGURE_OTHER, FIGURE_ROW_LABEL, FIGURE_SCOPE_HEAD, FigureFootnote, FigureNotes, FiguresCard } from './components/Live/FiguresCard';
 
 const MIN_N = LIVE_MIN_SAMPLE;
 
@@ -70,7 +72,7 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
  * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
  * the table. One component for any surface that wants it; the planner's left panel uses it today.
  */
-export function WeekTable({ tiles, notes, caption, captionTitle, scope, excluding, excludingTitle }: {
+export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle, aboutLive }: {
   tiles: Kpi[];
   /** The lines that explain how the figures are worked out, in order, under the table. */
   notes?: readonly string[];
@@ -82,34 +84,40 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
   /** The days left out, as one note directly under the table ("Excluding Oct 11 this week, Oct 4 last week"), with its hover reason. */
   excluding?: string | null;
   excludingTitle?: string;
+  /** Studio: a Bunching row with two figures gets its short definition and a Learn more link to the About panel's Live part. */
+  aboutLive?: boolean;
 }) {
+  // A Bunching row with two figures says what each is, under the table (Ryan: numbers are explained, never decoded).
+  const split = tiles.some(bunchingIsSplit);
+  const notes = split && !aboutLive ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
-    <Card as="section" tone="surface" aria-label={WEEK_COMPARE_TITLE} className="min-w-0 px-2.5 py-1.5">
+    <FiguresCard label={WEEK_COMPARE_TITLE}>
       <DataTable
         caption={WEEK_COMPARE_TITLE}
         rows={tiles}
         rowKey={k => k.key}
         rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}
         columns={[
-          { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">{MEASURE_LABEL} </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
-          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">{THIS_WEEK_COLUMN}</span>, className: 'text-right text-sm font-black tracking-tight', cell: k => (
+          { key: 'measure', header: <span className={FIGURE_SCOPE_HEAD}><span className="sr-only">{MEASURE_LABEL} </span>{scope}</span>, rowHeader: true, className: FIGURE_ROW_LABEL, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
+          { key: 'now', header: <span className={FIGURE_HEAD}>{THIS_WEEK_COLUMN}</span>, className: FIGURE_MAIN, cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
               {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">{LAST_WEEK_COLUMN}</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
+          { key: 'last', header: <span className={FIGURE_HEAD}>{LAST_WEEK_COLUMN}</span>, className: FIGURE_OTHER, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}
-      {excluding && <p className="m-0 mt-1 border-t border-[var(--border-primary)] pt-1 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={excludingTitle}>{excluding}</p>}
-      {notes && notes.length > 0 && (
-        <ul className={`m-0 list-none p-0 text-pretty ${excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`}>
-          {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)] opacity-75">{n}</li>)}
-        </ul>
+      {excluding && <FigureFootnote ruled title={excludingTitle}>{excluding}</FigureFootnote>}
+      {notes && notes.length > 0 && <FigureNotes lines={notes} ruled={!excluding} />}
+      {caption && <FigureFootnote title={captionTitle}>{caption}</FigureFootnote>}
+      {aboutLive && split && (
+        // The main map's notice and Learn more link (CardHelpNotice: its text size and its arrow), not a look of Studio's own.
+        <CardHelpNotice message={bunchingShortNote()} actionLabel={LEARN_MORE_LABEL} onLearnMore={() => window.dispatchEvent(new Event(OPEN_ABOUT_LIVE_EVENT))}
+          className={`m-0 ${notes?.length || excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
       )}
-      {caption && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={captionTitle}>{caption}</p>}
-    </Card>
+    </FiguresCard>
   );
 }
 

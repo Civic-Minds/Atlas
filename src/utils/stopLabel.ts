@@ -111,9 +111,23 @@ export function stretchEnds(fromName: string, toName: string): [string, string] 
   return [withCross(fromName, a), withCross(toName, b)];
 }
 
-/** The one name for a stretch on every Live surface: "Church St to Dundas Station" (CIV-910). */
+/**
+ * The one name for a stretch on every Live surface: "Church St to Dundas Station" (CIV-910). When both ends read the
+ * same, one stop or two at the same corner (TTC 504's "Cherry St at Front St East North Side" and "South Side"), the
+ * stretch is that one place, never "Front St East (Cherry St) to Front St East (Cherry St)".
+ */
 export function stretchLabel(fromName: string, toName: string): string {
-  return stretchEnds(fromName, toName).join(' to ');
+  const [a, b] = stretchEnds(fromName, toName);
+  return a.toLowerCase() === b.toLowerCase() ? a : `${a} to ${b}`;
+}
+
+/**
+ * A stretch as a place in a sentence, its kind said in the words (CIV-1828, Ryan: "Is this destinations or parts of the
+ * route or what?"): "between Church St and Dundas Station", or "at Church St" when both ends are the one place.
+ */
+export function betweenLabel(fromName: string, toName: string): string {
+  const [a, b] = stretchEnds(fromName, toName);
+  return a.toLowerCase() === b.toLowerCase() ? `at ${a}` : `between ${a} and ${b}`;
 }
 
 /** Words that make a side of " and " a place rather than a street ("Jane and Finch Station", "Guild Park and Gardens"). */

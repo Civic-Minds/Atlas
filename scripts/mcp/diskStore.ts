@@ -4,25 +4,54 @@
  * (tmp/process-preview/<slug>/); ATLAS_MCP_DATA_DIR points at another folder.
  */
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { parentAgency } from '../../shared/parentAgencyList';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+import { studioVehiclesFileName, type StudioVehiclesFile } from '../../shared/studioVehicles';
 import type { AtlasStore, IndexedAgency, McpAgency, McpAgencyMeta, McpFeature, McpHistoryAgency, McpStop } from '../../shared/mcpStore';
 
 /** The Atlas checkout the server reads (this file's repo by default). */
 export const ATLAS_ROOT = resolve(process.env.ATLAS_ROOT ?? join(import.meta.dirname, '..', '..'));
 
+/** The newest schedule file on this Mac for an agency (Atlas-worktrees/_feeds/<slug>/), or null. */
+export function feedFile(slug: string): string | null {
+  const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
+  const dir = join(root, slug);
+  if (!existsSync(dir)) return null;
+  // Files are named by the date their service runs to (20271008-fresh.zip): the latest date is the newest schedule.
+  // A copy made later can have a newer modified time than a newer schedule (Kingston), so the name decides, then the time.
+  const dateOf = (n: string) => /^(\d{8})/.exec(n)?.[1] ?? '';
+  const zips = readdirSync(dir).filter(n => n.endsWith('.zip'))
+    .sort((a, b) => dateOf(a).localeCompare(dateOf(b)) || statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs);
+  return zips.length ? join(dir, zips[zips.length - 1]) : null;
+}
+
+/**
+ * A file Studio built for an agency (tmp/studio/<name>): in this checkout, else in the bundle worktree where Studio's dev
+ * server builds them. One lookup for every tool, so schedule_changes and buses_needed agree on what exists (#1616).
+ */
+export function studioFile(name: string): string | null {
+  for (const dir of [join(ATLAS_ROOT, 'tmp', 'studio'), join(ATLAS_ROOT, '..', 'Atlas-worktrees', 'bundle', 'tmp', 'studio')]) {
+    const file = join(dir, name);
+    if (existsSync(file)) return file;
+  }
+  return null;
+}
+
 type RouteFile = { features: Array<{ geometry: { type: string; coordinates?: [number, number] } | null; properties: Record<string, unknown> }> };
 
-/** Each agency with a route file on disk, and where it is. */
-export function routeFiles(): Map<string, string> {
+/**
+ * Each agency with a route file on disk, and where it is. `releaseCache: false` leaves out the release cache
+ * (tmp/agency-pages-cache), for the local server's cloud-first store: published data comes from the cloud (CIV-2014).
+ */
+export function routeFiles({ releaseCache = true }: { releaseCache?: boolean } = {}): Map<string, string> {
   const out = new Map<string, string>();
   const add = (slug: string, file: string) => { if (!out.has(slug) && existsSync(file)) out.set(slug, file); };
   const override = process.env.ATLAS_MCP_DATA_DIR;
   const dirs: Array<{ dir: string; nested: boolean }> = [];
   if (override) dirs.push({ dir: resolve(override), nested: false }, { dir: resolve(override), nested: true });
   const cache = join(ATLAS_ROOT, 'tmp/agency-pages-cache');
-  if (existsSync(cache)) {
+  if (releaseCache && existsSync(cache)) {
     const newest = readdirSync(cache).map(d => join(cache, d)).filter(d => statSync(d).isDirectory()).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
     if (newest) dirs.push({ dir: newest, nested: false });
   }
@@ -45,6 +74,24 @@ export function cachedReleaseId(): string | null {
   return newest ? newest.split('/').pop()! : null;
 }
 
+/**
+ * CIV-2014: the local server reads published data from the cloud; it falls back to the release cache on this Mac only
+ * when the cloud can't be reached. Then this note says when that cache is older than the newest release the checkout
+ * knows (shared/data/agency-pages.json, which the release bot commits per release). Null when the cache is current,
+ * newer, absent, or ATLAS_MCP_DATA_DIR points elsewhere. Read from disk only.
+ */
+export function staleCacheNote(): string | null {
+  if (process.env.ATLAS_MCP_DATA_DIR) return null;
+  const cached = cachedReleaseId();
+  if (!cached) return null;
+  let known: { releaseId?: string; generatedAt?: string };
+  try { known = JSON.parse(readFileSync(join(ATLAS_ROOT, 'shared/data/agency-pages.json'), 'utf8')); } catch { return null; }
+  if (!known.releaseId || known.releaseId === cached || !known.generatedAt) return null;
+  if (Date.parse(known.generatedAt) <= statSync(join(ATLAS_ROOT, 'tmp/agency-pages-cache', cached)).mtimeMs) return null;
+  // Ryan's wording, 2026-11-21 (CIV-2014: "1"; no "so").
+  return `These figures come from an older copy of Atlas's data (${cached}) than the latest release (${known.releaseId}) and may not match the map.`;
+}
+
 /** Where the ranking index sits: next to the route files it was built from, so a new release gets a new index. */
 export function indexFile(): string | null {
   const any = [...routeFiles().values()][0];
@@ -58,7 +105,7 @@ export function writeIndexFile(index: IndexedAgency[]): string | null {
   return file;
 }
 
-export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgency[] | null> } {
+export function diskStore({ releaseCache = true }: { releaseCache?: boolean } = {}): AtlasStore & { allHistory(): Promise<McpHistoryAgency[] | null> } {
   let catalog: McpAgency[] | null = null;
   let meta: Map<string, McpAgencyMeta> | null = null;
   let index: IndexedAgency[] | null = null;
@@ -75,7 +122,7 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
   /** A route file read once. Features and stops come from one read, as before. */
   const read = (slug: string): RouteFile['features'] | null => {
     if (!features.has(slug)) {
-      const file = routeFiles().get(slug);
+      const file = routeFiles({ releaseCache }).get(slug);
       if (!file) return null;
       features.set(slug, (JSON.parse(readFileSync(file, 'utf8')) as RouteFile).features);
     }
@@ -86,14 +133,14 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
       catalog ??= (JSON.parse(readFileSync(join(ATLAS_ROOT, 'public/data/catalog-public.json'), 'utf8')) as { agencies: McpAgency[] }).agencies.filter(a => !a.betaOnly);
       return catalog;
     },
-    async available() { return new Set(routeFiles().keys()); },
+    async available() { return new Set(routeFiles({ releaseCache }).keys()); },
     async meta() {
       if (!meta) {
         meta = new Map();
         for (const a of await this.catalog()) {
-          let cfg: { shortName?: string; parentAgency?: string } = {};
+          let cfg: { shortName?: string; parentAgency?: string; timezone?: string } = {};
           try { cfg = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${a.slug}.json`), 'utf8')); } catch { /* no config */ }
-          meta.set(a.slug, { shortName: String(cfg.shortName ?? ''), parentAgency: cfg.parentAgency ? parentAgency(cfg.parentAgency)?.name ?? cfg.parentAgency : null });
+          meta.set(a.slug, { shortName: String(cfg.shortName ?? ''), parentAgency: cfg.parentAgency ? parentAgency(cfg.parentAgency)?.name ?? cfg.parentAgency : null, timezone: cfg.timezone ?? null });
         }
       }
       return meta;
@@ -119,12 +166,14 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
     },
     async historyRoute(slug, i) { return (await allHistory())?.find(a => a.slug === slug)?.routes[i] ?? null; },
     async comparison(slug) {
-      for (const dir of [join(ATLAS_ROOT, 'tmp/studio'), join(ATLAS_ROOT, '..', 'Atlas-worktrees/bundle/tmp/studio')]) {
-        const file = join(dir, `${slug}-before-after.json`);
-        if (existsSync(file)) return JSON.parse(readFileSync(file, 'utf8')) as StudioBeforeAfterFile;
-      }
-      return null;
+      const file = studioFile(`${slug}-before-after.json`);
+      return file ? JSON.parse(readFileSync(file, 'utf8')) as StudioBeforeAfterFile : null;
     },
+    async vehicles(slug) {
+      const file = studioFile(studioVehiclesFileName(slug));
+      return file ? JSON.parse(readFileSync(file, 'utf8')) as StudioVehiclesFile : null;
+    },
+    async newestFeedName(slug) { const f = feedFile(slug); return f ? basename(f) : null; },
     allHistory,
     evict(slug) { features.delete(slug); },
   };
