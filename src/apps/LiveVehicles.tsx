@@ -23,7 +23,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { effectiveMode, type EffectiveModeInput } from '../../shared/modes';
+import { effectiveMode, knownModeLabel, type EffectiveModeInput } from '../../shared/modes';
 import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { liveScheduledHeadway } from '../utils/liveScheduledHeadway';
@@ -39,7 +39,7 @@ import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRou
 import type { MapFocus } from '../utils/routeFocus';
 import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
-import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
+import { cardTripEnd, delayLabel, placedRows, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
@@ -459,6 +459,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const cardVehicle = vehicleCard && vehicleCard.routeKey === selectedRoute
     ? selectedGroup?.vehicles.find(v => v.id === vehicleCard.id) ?? null
     : null;
+  // CIV-2024: the card's Updated row counts up each second while a vehicle card is open.
+  const [cardNowSec, setCardNowSec] = useState(() => Date.now() / 1000);
+  const cardClockOn = cardVehicle != null;
+  useEffect(() => {
+    if (!cardClockOn) return;
+    setCardNowSec(Date.now() / 1000);
+    const t = setInterval(() => setCardNowSec(Date.now() / 1000), 1000);
+    return () => clearInterval(t);
+  }, [cardClockOn]);
   // The picked route's trip directions, kept on the route card and the vehicle card alike (a card opened from a link
   // has never shown the route card) (CIV-1068).
   const routeTrips = useLiveTripDirections(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, selectedGroup?.vehicles ?? NO_VEHICLES);
@@ -478,6 +487,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [selectedGroup, routeFeature]);
   const selectedRouteLongName = selectedRouteProps?.routeLongName ?? null;
   const selectedRouteType = selectedRouteProps?.routeType ?? null;
+  // CIV-2024: the vehicle card's heading, the route's mode as the map reads it (CIV-1812), e.g. "Streetcar".
+  const selectedRouteModeLabel = selectedRouteProps?.routeType == null || !selectedGroup ? null
+    : knownModeLabel(effectiveMode({ ...(selectedRouteProps as EffectiveModeInput), agencySlug: selectedGroup.agencySlug }));
 
   // Vehicle word for the selected route's mode ("Streetcar 4508", not "Bus 4508")
   const modeWordFor = useCallback(
@@ -730,8 +742,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           />
         </div>
       </SidebarCardHeaderBlock>
-      <SidebarCardSection label={vehicleCardName(cardVehicle, selectedRouteModeWord) ?? selectedRouteModeWord}>
-        {placedRows(vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis)), cardDirectionsReady && cardAnalysisSettled).map(row => (
+      {/* CIV-2024: the heading names the mode ("Streetcar", where the vehicle word alone would be "Vehicle"); the
+          vehicle's number is the card's first row. */}
+      <SidebarCardSection label={selectedRouteModeLabel ?? selectedRouteModeWord}>
+        {placedRows(vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis), cardNowSec), cardDirectionsReady && cardAnalysisSettled).map(row => (
           <div key={row.label} className="flex items-start justify-between gap-3">
             <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
             <span

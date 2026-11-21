@@ -126,7 +126,7 @@ export function withRouteWord(label: string): string {
 }
 
 /** The word for a vehicle whose type isn't known: its fleet number then stands alone ("4508", not "Vehicle 4508"). */
-const GENERIC_VEHICLE = 'Vehicle';
+export const GENERIC_VEHICLE = 'Vehicle';
 
 /**
  * Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry, 12 monorail) or Atlas's LRT mode. A
