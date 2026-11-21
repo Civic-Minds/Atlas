@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Live shows Kingston and Boston, and Studio's Live lists the same cities as the main app's**: the two lists had drifted apart, so a city could be in one Live but not the other
+- **Boston's live vehicles credit MassDOT**: the map names MassDOT while MBTA vehicles are on screen, and About's schedule sources say MBTA vehicle locations come from MassDOT, as its data licence asks
 - **Studio Live's route lines are as thin as Live's**: they were drawn about twice as thick as the same route on the regular Live map
 - **Studio opens on the city the map is showing**: opening Live with the map on Toronto jumped to the agency Studio was last on, such as Hamilton
 - **A picked vehicle on Live keeps its normal dot, just darker**: the bigger dot with a white halo stood out from the rest of the map

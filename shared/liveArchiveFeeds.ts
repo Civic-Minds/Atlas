@@ -35,6 +35,9 @@ export interface LiveArchivePositionFeed {
    * filter, and the trip feed of the same slug when there is one (Ryan: Live in Studio and the main app list the same cities).
    */
   liveMap?: true;
+  /** CIV-2046: the feed's data is MassDOT's, used under its Developers License Agreement: the map credits MassDOT while
+   *  these vehicles are on screen, and About's schedule sources say so (Ryan picked both). */
+  creditMassDot?: true;
 }
 
 /**
@@ -147,8 +150,12 @@ export const LIVE_ARCHIVE_POSITION_FEEDS: readonly LiveArchivePositionFeed[] = [
     routeFilterSource: '^(Green-[BCDE]|Mattapan|741|742|743|746|749|751|111|57|66|23)$',
     archiveOnly: true,
     liveMap: true,
+    creditMassDot: true,
   },
 ] as const;
 
 /** CIV-2046: the recorded feeds the main Live map also shows (whole feed, by its route filter). */
 export const LIVE_MAP_ARCHIVE_FEEDS: readonly LiveArchivePositionFeed[] = LIVE_ARCHIVE_POSITION_FEEDS.filter(f => f.liveMap);
+
+/** The Live agencies whose vehicle locations the map credits to MassDOT while they are on screen. */
+export const MASSDOT_CREDITED_SLUGS: ReadonlySet<string> = new Set(LIVE_MAP_ARCHIVE_FEEDS.filter(f => f.creditMassDot).map(f => f.slug));
