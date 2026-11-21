@@ -39,9 +39,8 @@ const liveTags = (r: CoverageRow) => [
 ];
 const studioTags = (r: CoverageRow) => [...(r.studioSchedule ? [S.schedule] : []), ...(r.studioVehicles ? [S.vehicles] : [])];
 // Schedule answers are universal, like the map, so they aren't listed; real-time answers are none today (CIV-1870).
-const mcpTags = (r: CoverageRow) => [
-  ...(r.mcpLive === 'ready' ? [M.live] : r.mcpLive === 'from' ? [M.liveFrom(r.mcpLiveFrom)] : []),
-];
+// CIV-1993: "Live" only once the MCP answers Live questions; before that the cell is the table's dash, no "Live from" date.
+const mcpTags = (r: CoverageRow) => (r.mcpLive === 'ready' ? [M.live] : []);
 
 const COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
