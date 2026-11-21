@@ -3,6 +3,7 @@ import { MAP_COLOURS_LABEL, TIME_LABEL } from '../../content/noticeCopy';
 import RouteRowName, { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
+import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
 import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
@@ -133,15 +134,19 @@ export default function Fleet({ view = 'fleet', slug, agency, route, setRoute, a
       {/* The shared loading panel while the file comes in, then the shared empty line if there is none (CIV-1925 phase 4). */}
       {file == null && <ViewLoadingPanel what={agency} />}
       {file === 'missing' && <StudioPanel style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></StudioPanel>}
-      {ready && <Body view={view} file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
+      {ready && <Body view={view} slug={slug} file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
     </>
   );
 }
 
-function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyle }: {
-  view: FleetView; file: StudioBeforeAfterFile; vehicles: StudioVehiclesFile | null | 'missing'; agency: string; period: PeriodKey; route: string | null; setRoute: (r: string | null) => void; frameStyle: React.CSSProperties;
+function Body({ view, slug, file, vehicles, agency, period, route, setRoute, frameStyle }: {
+  view: FleetView; slug: string; file: StudioBeforeAfterFile; vehicles: StudioVehiclesFile | null | 'missing'; agency: string; period: PeriodKey; route: string | null; setRoute: (r: string | null) => void; frameStyle: React.CSSProperties;
 }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
+  // CIV-2001: the top bar's search finds the routes this page draws (the Route chip's list); results take the panel's place.
+  const searchOpen = useStudioSearchOpen();
+  const searchRoutes = useMemo(() => [...new Set([...Object.keys(file.lines?.after ?? {}), ...Object.keys(file.lines?.before ?? {}), ...file.changes.map(c => c.route)])]
+    .map(r => ({ route: r, longName: file.changes.find(c => c.route === r)?.name ?? null })), [file]);
   const fleet = useMemo(() => (vehicles && vehicles !== 'missing' ? agencyFleet(vehicles, period) : null), [vehicles, period]);
   const routeGroup = route && vehicles && vehicles !== 'missing' ? groupFor(vehicles, route, period) : null;
   // The words follow the modes even at a time of day with no service (CIV-2002).
@@ -174,7 +179,9 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
 
   return (
     <>
-      {route && routeLabel ? (
+      {searchOpen ? (
+        <StudioRouteSearch agencySlug={slug} agencyName={agency} routes={searchRoutes} onPick={setRoute} frameStyle={frameStyle} />
+      ) : route && routeLabel ? (
         // CIV-1827: one card for the open route, as the main map's route card: the way back, the route's name, what
         // changed between the two dates, then what running it at other frequencies takes.
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={routeLabel.text}>
