@@ -19,10 +19,15 @@ describe('live-dashboard API: always a status and a reason, never a bare 404 or 
     expect((await get('agency=ttc&route=../../etc/passwd')).body.status).toBe('unknown_route');
     expect((await get('agency=nowhere&route=1')).body.status).toBe('unknown_route');
   });
-  it('holds the 512 with the reason', async () => {
-    const r = await get('agency=ttc&route=512');
-    expect(r.body.status).toBe('held');
-    expect(String(r.body.reason)).toMatch(/512/);
+  // CIV-2000: the 512 has no hand-set hold; the quality check decides on its own file, as for every route.
+  it('judges the 512 by the quality check, held only while its file fails it', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'live-dash-'));
+    process.env.LIVE_SEGMENTS_DIR = dir;
+    const v3 = (swap: number) => ({ schema: 3, window: { days: 7, dates: [] }, swaps: { rate: swap, reassigned: 0, dropped: 0 }, adherence: { timepoints: { all: { overall: { n: 900 } } } } });
+    writeFileSync(join(dir, 'ttc-512-segments.json'), JSON.stringify({ generatedAt: 'x', v3: v3(0.15) }));
+    expect((await get('agency=ttc&route=512')).body.status).toBe('held');
+    writeFileSync(join(dir, 'ttc-512-segments.json'), JSON.stringify({ generatedAt: 'x', v3: v3(0.03) }));
+    expect((await get('agency=ttc&route=512')).body).toMatchObject({ status: 'ready', route: '512' });
   });
   it('says how to build a missing analysis, and that an old one needs a rebuild', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'live-dash-'));
@@ -53,6 +58,11 @@ describe('live-dashboard API: always a status and a reason, never a bare 404 or 
     const held = await get('agency=ttc&route=35');
     expect(held.body.status).toBe('held');
     expect(String(held.body.reason)).toMatch(/TTC 35 is held back: about 20% of its trips/);
+    // CIV-2000: with its gaps-only figures for Studio, never its delays.
+    expect(held.body).toMatchObject({ route: '35', v3: { schema: 3, stops: [], buildup: [] } });
+    expect((held.body.v3 as { adherence: { timepoints: { all: { overall: { n: number } } } } }).adherence.timepoints.all.overall.n).toBe(0);
+    // Its line is judged on the full file, not on the gaps-only copy (which would read as having no stop times).
+    expect(String(held.body.line)).toMatch(/^Gaps and bunching only: its delays are hidden because about 20% of its trips/);
     expect((await get('agency=ttc&route=36')).body.status).toBe('unknown_route');
   });
 });

@@ -8,7 +8,6 @@ describe('reader-facing Live text', () => {
   const noon = (d: string) => Date.parse(`${d}T12:00:00Z`);
   const texts: string[] = [
     dashboardUnavailable('burlington', '1')!.reason,
-    dashboardUnavailable('ttc', '512')!.reason,
     freshness(v3(['2026-10-14']), '505', noon('2026-10-15')).text,
     freshness(v3(['2026-10-01']), '505', noon('2026-10-15')).text,
     freshness(v3([]), '505', noon('2026-10-15')).text,

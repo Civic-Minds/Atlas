@@ -193,14 +193,16 @@ export interface LiveV3 {
 
 /** What /api/live-dashboard answers. `reason` is always a plain sentence that says what to do or when it will exist. */
 export type LiveDashboardResponse =
-  | { status: 'ready'; agency: string; route: string; /** "504 King", for the page title (from the agency summary). */ routeTitle?: string | null; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null; /** Directions whose first stops are measured poorly (see `note`), and how many stops are affected. */ uncertainStart: UncertainStart[] }
-  | { status: 'held' | 'no_analysis' | 'unknown_route'; reason: string };
+  | { status: 'ready'; agency: string; route: string; /** "504 King", for the page title (from the agency summary). */ routeTitle?: string | null; generatedAt: string; replacementBuses: boolean; v3: LiveV3; note: string | null; /** Directions whose first stops are measured poorly (see `note`), and how many stops are affected. */ uncertainStart: UncertainStart[]; /** CIV-2000: Studio's view of a held route (gapsOnlyV3), with why its delays are hidden. */ held?: string }
+  /** CIV-2000: a route the quality check holds back also carries what can still be trusted (gapsOnlyV3), for Studio. */
+  | { status: 'held'; reason: string; agency?: string; route?: string; generatedAt?: string; v3?: LiveV3; /** Studio's line (heldRouteLine), read from the full file: the gaps-only v3 no longer carries the delay counts it judges by. */ line?: string }
+  | { status: 'no_analysis' | 'unknown_route'; reason: string };
 
-/** Routes whose analysis is built but not shown until a known problem is fixed. */
-export const LIVE_DASHBOARD_HOLD: Readonly<Record<string, string>> = {
-  // Pages say only that the route isn't included, never why (Ryan, 2026-10-16).
-  'ttc::512': "The 512 isn’t included yet.",
-};
+/**
+ * Routes whose analysis is built but not shown until a known problem is fixed, by hand. Pages say only that the route
+ * isn't included, never why (Ryan, 2026-10-16). Empty since CIV-2000: the 512's hold became the quality check below.
+ */
+export const LIVE_DASHBOARD_HOLD: Readonly<Record<string, string>> = {};
 
 /** Things to know when reading one route's numbers. */
 export const LIVE_DASHBOARD_NOTES: Readonly<Record<string, string>> = {
@@ -225,18 +227,90 @@ export function dashboardHold(agency: string, route: string): string | null {
 export const QUALITY_MAX_SWAP_RATE = 0.1;
 export const QUALITY_MIN_TIMEPOINT_DEPARTURES = 300;
 export const QUALITY_MAX_UNLISTED_SHARE = 0.5;
-export function qualityHold(v3: LiveV3): string | null {
+/** Which quality check a route fails (CIV-2000), with the fact behind it: the one sentence qualityHold and Studio's line share. */
+export type QualityFail = { kind: 'swaps' | 'fewDepartures' | 'noStopTimes' | 'unlisted'; fact: string };
+export function qualityFail(v3: LiveV3): QualityFail | null {
   // A file without these blocks cannot be judged here; the page says what is missing section by section.
   if (!v3.swaps || !v3.adherence?.timepoints?.all?.overall) return null;
-  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${percentText(v3.swaps.rate)} of its trips ran under a trip number that does not match the schedule. Its delays cannot be trusted yet.`;
+  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return { kind: 'swaps', fact: `about ${percentText(v3.swaps.rate)} of its trips ran under a trip number that does not match the schedule` };
   const n = v3.adherence.timepoints.all.overall.n;
-  if (n < QUALITY_MIN_TIMEPOINT_DEPARTURES) return n === 0
-    ? 'Its schedule gives no stop times to compare with. How late it runs cannot be measured.'
-    : `Only ${countText(n)} departures at stops with a scheduled time were measured this week, too few to say how late it runs.`;
+  if (n === 0) return { kind: 'noStopTimes', fact: 'its schedule gives no stop times to compare with' };
+  if (n < QUALITY_MIN_TIMEPOINT_DEPARTURES) return { kind: 'fewDepartures', fact: `only ${countText(n)} departures at stops with a scheduled time were measured this week` };
   const lo = v3.leftOut;
   const seen = lo ? lo.kept + lo.noTimetableTrip + lo.excluded : 0;
-  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${percentText(lo.noTimetableTrip / seen)} of its vehicles ran under trip numbers that are not on the schedule. The figures would describe only a minority of its service.`;
+  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return { kind: 'unlisted', fact: `${percentText(lo.noTimetableTrip / seen)} of its vehicles ran under trip numbers that are not on the schedule` };
   return null;
+}
+export function qualityHold(v3: LiveV3): string | null {
+  const f = qualityFail(v3);
+  if (!f) return null;
+  const fact = f.fact.charAt(0).toUpperCase() + f.fact.slice(1);
+  switch (f.kind) {
+    case 'swaps': return `${fact}. Its delays cannot be trusted yet.`;
+    case 'noStopTimes': return `${fact}. How late it runs cannot be measured.`;
+    case 'fewDepartures': return `${fact}, too few to say how late it runs.`;
+    case 'unlisted': return `${fact}. The figures would describe only a minority of its service.`;
+  }
+}
+/**
+ * Whether a held route's gaps and bunching can still be shown (CIV-2000). Gaps count every pass by a vehicle under one of
+ * the stop's scheduled trip numbers: a swapped trip number still counts, and a thin week only means fewer gaps. A route
+ * with no stop times has no scheduled gaps, and one run mostly under unlisted trip numbers would leave most vehicles out.
+ */
+export const gapsTrusted = (f: QualityFail): boolean => f.kind === 'swaps' || f.kind === 'fewDepartures';
+
+/** Studio's one line on a held route (CIV-2000): what is shown and why. PENDING RYAN'S OK. */
+export function heldRouteLine(v3: LiveV3): string | null {
+  const f = qualityFail(v3);
+  if (!f) return null;
+  return gapsTrusted(f) ? `Gaps and bunching only: its delays are hidden because ${f.fact}.` : `No figures: ${f.fact}.`;
+}
+
+const emptyCounts = (): AdherenceCounts => ({ n: 0, early: 0, onTime: 0, late: 0, earlyShare: 0, onTimeShare: 0, lateShare: 0, notLateShare: 0 });
+const emptyBlock = (): AdherenceBlock => ({ overall: emptyCounts(), byHour: [], byDate: [], byDirection: {} });
+const emptyAdherence = (): LiveV3['adherence'] => {
+  const set = () => ({ all: emptyBlock(), weekday: emptyBlock(), weekend: emptyBlock() });
+  return { timepoints: set(), allStops: set() };
+};
+const gapsOnlyWeek = (m: WeekMetrics): WeekMetrics => ({
+  ...m, late: null, tripTime: null, mainPatternTrip: null, delivered: null,
+  ...(m.cutoffCounts ? { cutoffCounts: { ...m.cutoffCounts, lateness: { start: 0, counts: [] } } } : {}),
+});
+
+/** CIV-2000: the map measures a held route still has, the ones read from gaps between vehicles. */
+export const GAP_MEASURES: ReadonlySet<string> = new Set(['extraWait', 'bunching']);
+
+/**
+ * CIV-2000 (Ryan: a held route shows what can be trusted and explains what can't): the route's file with only the
+ * figures that do not depend on matching vehicles to their trips. Gaps and bunching count every vehicle passing a stop,
+ * whatever trip number it carries, so they stay; every delay figure (lateness, run time, build-up, late stops) and
+ * service delivered (which counts trip numbers) is emptied at build time, so no published file carries them.
+ */
+export function gapsOnlyV3(v3: LiveV3): LiveV3 {
+  const f = qualityFail(v3);
+  const g = gapsOnlyFigures(v3);
+  if (!f || gapsTrusted(f)) return g;
+  // Gaps can't be trusted either: no figures at all, only the route's shape for the map.
+  const noGaps = (m: WeekMetrics): WeekMetrics => ({ ...m, extraWait: null, bunching: null, cutoffCounts: undefined });
+  return {
+    ...g, bunching: [], extraWait: undefined, stopHours: undefined,
+    daily: g.daily && Object.fromEntries(Object.entries(g.daily).map(([d, x]) => [d, { ...x, extraWait: null, bunching: null }])),
+    weekly: g.weekly && { ...g.weekly, thisWeek: noGaps(g.weekly.thisWeek), lastWeek: noGaps(g.weekly.lastWeek), bands: g.weekly.bands && Object.fromEntries(Object.entries(g.weekly.bands).map(([b, w]) => [b, w && { thisWeek: noGaps(w.thisWeek), lastWeek: noGaps(w.lastWeek) }])) },
+  };
+}
+function gapsOnlyFigures(v3: LiveV3): LiveV3 {
+  const bands = Object.fromEntries(Object.keys(v3.bands ?? {}).map(b => [b, { stops: [], buildup: [], adherence: emptyAdherence() }])) as unknown as LiveV3['bands'];
+  return {
+    ...v3,
+    adherence: emptyAdherence(), stops: [], buildup: [], bands,
+    runningTime: undefined, serviceDelivered: undefined,
+    stopHours: v3.stopHours && Object.fromEntries(Object.entries(v3.stopHours).map(([d, byStop]) => [d, Object.fromEntries(Object.entries(byStop).map(([id, hours]) => [id, hours.map(h => (h ? [h[0], null, h[2], h[3], h[4], h[5]] as typeof h : null))]))])),
+    daily: v3.daily && Object.fromEntries(Object.entries(v3.daily).map(([d, x]) => [d, { ...x, late: null, tripTime: null, mainPatternTrip: null, delivered: null, lateByHour: undefined }])),
+    weekly: v3.weekly && {
+      ...v3.weekly, thisWeek: gapsOnlyWeek(v3.weekly.thisWeek), lastWeek: gapsOnlyWeek(v3.weekly.lastWeek),
+      bands: v3.weekly.bands && Object.fromEntries(Object.entries(v3.weekly.bands).map(([b, w]) => [b, w && { thisWeek: gapsOnlyWeek(w.thisWeek), lastWeek: gapsOnlyWeek(w.lastWeek) }])),
+    },
+  };
 }
 
 /** Why the dashboard has nothing for this route, or null when it should. `analysed`: an analysis file exists for it. */

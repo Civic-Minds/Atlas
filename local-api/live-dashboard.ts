@@ -7,7 +7,7 @@ import { readFile, readdir } from 'fs/promises';
 import { resolve } from 'path';
 import { getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
 import { liveAgencyName } from './agencyName.js';
-import { LIVE_DASHBOARD_NOTES, LIVE_DASHBOARD_UNCERTAIN_START, dashboardUnavailable, qualityHold, type LiveDashboardResponse, type LiveV3 } from '../shared/liveDashboard.js';
+import { LIVE_DASHBOARD_NOTES, LIVE_DASHBOARD_UNCERTAIN_START, dashboardUnavailable, gapsOnlyV3, heldRouteLine, qualityHold, type LiveDashboardResponse, type LiveV3 } from '../shared/liveDashboard.js';
 
 function json(body: LiveDashboardResponse, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
@@ -35,7 +35,8 @@ async function handler(req: Request): Promise<Response> {
       return json({ status: 'no_analysis', reason: `The analysis file for ${name} is from an older version. Rebuild it with "npm run live:analyze -- ${name}".` });
     }
     const quality = qualityHold(data.v3);
-    if (quality) return json({ status: 'held', reason: `${await liveAgencyName(slug)} ${name} is held back: ${quality.charAt(0).toLowerCase()}${quality.slice(1)}` });
+    // CIV-2000: held with what can be trusted (gaps and bunching), which Studio shows; the delay figures never leave this file.
+    if (quality) return json({ status: 'held', reason: `${await liveAgencyName(slug)} ${name} is held back: ${quality.charAt(0).toLowerCase()}${quality.slice(1)}`, agency: slug, route: name, generatedAt: data.generatedAt, v3: gapsOnlyV3(data.v3), line: heldRouteLine(data.v3) ?? undefined });
     const routeTitle = await readFile(resolve(dir, `${slug}-agency.json`), 'utf8')
       .then(t => (JSON.parse(t) as { routes?: Array<{ route: string; titleLabel?: string }> }).routes?.find(r => r.route === name)?.titleLabel ?? null)
       .catch(() => null);
