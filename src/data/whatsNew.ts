@@ -76,7 +76,6 @@ export const WHATS_NEW: WhatsNewFeature[] = [
   { lead: 'Frequent filter', public: { version: '3.5.0', text: 'a route whose first bus comes late or whose last bus leaves early no longer passes for that time of day' } },
   { lead: 'Page changes', public: { version: '3.5.0', text: 'moving between Atlas pages no longer reloads the page' } },
   { lead: 'Data saver', beta: { version: '3.5.0', text: 'a prompt offers it on slow connections' } },
-  { lead: 'Broward County Transit', public: { version: '3.5.0', text: 'shows its own 44 bus routes, not a Fort Lauderdale shuttle' } },
   {
     lead: 'Compare mode', isNew: true,
     beta: { version: '3.3.0', text: 'put any two days, times or frequencies side by side' },
