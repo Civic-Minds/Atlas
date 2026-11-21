@@ -284,8 +284,8 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
 export const STUDIO_LIVE_PENDING = {
   /** The measure pill. */
   fallsBehindPill: 'Falls behind',
-  /** A stop pair's lines: its time lost (timeLostLine, the Delays start cards' own), then the sample. */
-  sample: (trips: number, days: number): string => `${countText(trips)} trips, ${countText(days)} days`,
+  /** A stop pair's lines in a route's view: its time lost (timeLostLine), then the sample (CIV-1878: the manager's suggested wording, PENDING RYAN'S OK). */
+  sample: (trips: number, days: number): string => `Based on ${countOf(trips, 'trip')} over ${countOf(days, 'day')}`,
   /** The collapsed list of stop pairs whose schedule allows more than vehicles need. */
   looserTitle: 'Where the schedule is looser than needed',
   looserLine: (min: number): string => `The schedule allows ${minutesText(min)} more than vehicles need`,
@@ -346,6 +346,25 @@ export const STUDIO_ROUTE_NOW_PENDING = {
   /** "Long gap between Mountstephen St and Wolfrey Ave: 24 min wait, scheduled every 7 min". */
   gappedAt: (place: string, waitMin: number, scheduledMin: number | null): string =>
     `Long gap ${place}: ${minutesText(waitMin)} wait${scheduledMin != null ? `, scheduled every ${minutesText(scheduledMin)}` : ''}`,
+} as const;
+
+/**
+ * CIV-2021, Studio's Live route panel as one set of sections (Ryan: "a spot in this card for service right this second,
+ * then a section for gapping right now"). PENDING RYAN'S WORD-FOR-WORD OK.
+ */
+export const STUDIO_ROUTE_PANEL_PENDING = {
+  serviceTitle: 'Service now',
+  gapsTitle: 'Gaps and bunching now',
+  /** A direction's vehicles on the road now: "2 vehicles". */
+  vehicles: (n: number): string => countOf(n, 'vehicle'),
+  /** A direction's gaps now: "1 bunched, 0 long gaps". */
+  gaps: (bunched: number, gapped: number): string => `${countText(bunched)} bunched, ${countOf(gapped, 'long gap')}`,
+  noReading: 'No live reading for this route right now.',
+  /** A reading with no vehicle of the route on the road. */
+  noVehicles: 'No vehicles on this route right now.',
+  /** About, Live part: bunching in plain words (replaces the two-figure note now that Studio shows one figure). */
+  bunchingAbout: (): string =>
+    `Bunching is the share of gaps between vehicles at a stop that were under ${minutesText(BUNCHED_GAP_SEC / 60)} (vehicles running together) or more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap (a long wait).`,
 } as const;
 
 /** "Last 17 service days, Sep 30 – Oct 16": the days a route's figures cover (the method note's own words, CIV-910). */

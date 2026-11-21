@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Card from '../ui/Card';
+import { PanelSection, usePanelSections } from './panelSections';
 
 /**
  * CIV-2003: the week table's card, one source for every small figures table on Live's panels: the week comparison
@@ -24,6 +25,8 @@ const RULED = 'mt-1 border-t border-[var(--border-primary)] pt-1';
 
 /** The card. `title` is a heading above the table, for a table whose first column is not its subject (Right now). */
 export function FiguresCard({ label, title, children }: { label: string; title?: ReactNode; children: ReactNode }) {
+  // CIV-2021: in Studio's route panel, a section of the panel headed by its label, with no box.
+  if (usePanelSections()) return <PanelSection label={typeof title === 'string' ? title : label}>{children}</PanelSection>;
   return (
     <Card as="section" tone="surface" aria-label={label} className="min-w-0 px-2.5 py-1.5">
       {title && <h3 className="m-0 pt-0.5 text-sm font-bold text-[var(--text-primary)]">{title}</h3>}

@@ -28,6 +28,7 @@ import { DIRECTION_LABEL } from '../../../shared/liveWording';
 import { GAP_MEASURES } from '../../../shared/liveDashboard';
 import LiveGlance from './LiveGlance';
 import RouteNow from './RouteNow';
+import { PanelSectionsProvider } from '../../components/Live/panelSections';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { CutoffFigures, cutoffsSection, type SetCutoffs } from './StudioCutoffs';
@@ -114,7 +115,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   // CIV-1828 (Ryan picked option A with B's chart: "in A the chart is bad in B the chart is good"): Right now first with
   // its places named, then the week, late departures by hour and the late stops. No trip time card.
   const byKey = (keys: readonly string[]): PanelWidget[] => keys.flatMap(k => m.routeBody?.filter(w => w.key === k) ?? []);
-  const routeWidgets = byKey(['loading', 'held', 'falls-behind', 'week', 'late-hours', 'problems']);
+  // CIV-2021 (Ryan): service now, gaps and bunching now, then the week's figures, then the rest, each a section headed alike.
+  const routeWidgets = byKey(['loading', 'held', 'week', 'falls-behind', 'late-hours', 'problems']);
 
   // CIV-2001: the top bar's search finds this page's routes; its results take the panel's place while it's open.
   const searchOpen = useStudioSearchOpen();
@@ -134,11 +136,12 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
               <SidebarCardHeaderBlock>
                 <SidebarCardHeader back={{ to: agencyName, onClick: m.backToNetwork }} title={<RouteTitleName label={label} />} />
               </SidebarCardHeaderBlock>
-              <div className="flex flex-col gap-3">
+              {/* CIV-2021: one panel of sections (no boxes inside it), each with the shared route card's section heading. */}
+              <PanelSectionsProvider>
                 <RouteNow agency={slug} route={route} />
-                <WidgetPanel widgets={routeWidgets} />
-              </div>
-              {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
+                <WidgetPanel widgets={routeWidgets} className="!grid-cols-1 !gap-0" />
+                {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
+              </PanelSectionsProvider>
             </SidebarCardShell>
           </PanelBody>
         </StudioPanel>

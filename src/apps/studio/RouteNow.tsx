@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import { FIGURE_HEAD, FIGURE_ROW_HEAD, FIGURE_MAIN, FIGURE_ROW_LABEL, FigureFootnote, FigureNotes, FiguresCard } from '../../components/Live/FiguresCard';
-import DataTable from '../../components/ui/DataTable';
-import { STUDIO_NOW_PENDING as W, STUDIO_ROUTE_NOW_PENDING as T } from '../../../shared/liveWording';
-import { countText } from '../../../shared/numberText';
+import { useEffect, useState, type ReactNode } from 'react';
+import { FigureFootnote } from '../../components/Live/FiguresCard';
+import { PanelSection } from '../../components/Live/panelSections';
+import { STUDIO_NOW_PENDING as W, STUDIO_ROUTE_NOW_PENDING as T, STUDIO_ROUTE_PANEL_PENDING as P } from '../../../shared/liveWording';
 import { betweenLabel } from '../../utils/stopLabel';
 
 /**
@@ -18,8 +17,8 @@ const REFRESH_MS = 60_000;
 
 export const ROUTE_NOW_URL = '/api/route-now';
 
-/** The route's right-now answer, refreshed every minute; null while loading or where there is none. */
-function useRouteNow(agency: string, route: string): Ready | null {
+/** The route's right-now answer, refreshed every minute: 'loading', 'none' where there is no live reading, or the answer. */
+function useRouteNow(agency: string, route: string): Ready | 'loading' | 'none' {
   const [answer, setAnswer] = useState<Answer | null | 'none'>(null);
   useEffect(() => {
     let cancelled = false;
@@ -32,40 +31,55 @@ function useRouteNow(agency: string, route: string): Ready | null {
     const t = window.setInterval(load, REFRESH_MS);
     return () => { cancelled = true; window.clearInterval(t); };
   }, [agency, route]);
-  // No reader here, or the agency isn't recorded every minute: leave the view out (the route's other figures stay).
-  return answer == null || answer === 'none' || answer.live === null || !answer.directions ? null : answer as Ready;
+  if (answer == null) return 'loading';
+  return answer === 'none' || answer.live === null || !answer.directions ? 'none' : answer as Ready;
+}
+
+/** One direction's row: its name, which wraps to the panel's width, and its figure at the end (CIV-2021: no sideways scroll). */
+function Row({ name, value }: { name: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 text-sm">
+      <span className="min-w-0 font-bold text-[var(--text-muted)]">{name}</span>
+      <span className="shrink-0 text-right font-black tracking-tight text-[var(--text-primary)]">{value}</span>
+    </div>
+  );
 }
 
 /**
- * CIV-1828 (Ryan's pick, option A): Right now in the week table's look, one row per direction (the column says it's a
- * direction), moving and standing vehicles together, and how many stretches are bunched or have a long gap; under it the
- * closest pair and the longest wait, each "between X and Y". The definitions are in About (the week table's Learn more).
+ * CIV-2021 (Ryan: "a spot in this card for service right this second, then a section for gapping right now"): two
+ * sections of the route panel, each headed like every other section. Service now: the vehicles on the road in each
+ * direction and the reading's time. Gaps and bunching now: each direction's bunched pairs and long gaps, then the closest
+ * pair and the longest wait, each "between X and Y". With no live reading the first section says so plainly.
  */
 export default function RouteNow({ agency, route }: { agency: string; route: string }) {
   const answer = useRouteNow(agency, route);
-  if (!answer) return null;
+  if (answer === 'loading') return null;
+  // No reading, or no vehicle on the road: both sections stay, each saying so (CIV-2021: never a section that vanishes).
+  const plain = (text: string, foot?: ReactNode) => (
+    <>
+      <PanelSection label={P.serviceTitle}><p className="m-0 text-sm text-[var(--text-secondary)]">{text}</p>{foot}</PanelSection>
+      <PanelSection label={P.gapsTitle}><p className="m-0 text-sm text-[var(--text-secondary)]">{text}</p></PanelSection>
+    </>
+  );
+  if (answer === 'none') return plain(P.noReading);
+  const reading = answer.asOf != null && answer.dataAgeMin != null ? <FigureFootnote>{W.reading(answer.asOf, answer.dataAgeMin)}</FigureFootnote> : null;
+  if (answer.directions.length === 0) return plain(P.noVehicles, reading);
   const closest = answer.directions.flatMap(d => d.bunchedNow).sort((a, b) => a.minutes - b.minutes)[0];
   const longest = answer.directions.flatMap(d => d.gappedNow).sort((a, b) => b.minutes - a.minutes)[0];
   const lines = [
     ...(closest ? [T.bunchedAt(betweenLabel(closest.fromStop, closest.toStop), closest.minutes)] : []),
     ...(longest ? [T.gappedAt(betweenLabel(longest.fromStop, longest.toStop), longest.minutes, longest.scheduledGapMin)] : []),
   ];
-  // CIV-2003: the week table's card and classes (FiguresCard), titled since its first column is the direction.
   return (
-    <FiguresCard label={W.title} title={W.title}>
-      <DataTable
-        caption={W.title}
-        rows={answer.directions}
-        rowKey={d => d.direction}
-        columns={[
-          { key: 'direction', header: <span className={FIGURE_ROW_HEAD}>{T.columns.direction}</span>, rowHeader: true, className: `whitespace-nowrap ${FIGURE_ROW_LABEL}`, cell: d => d.direction },
-          { key: 'vehicles', header: <span className={FIGURE_HEAD}>{T.columns.vehicles}</span>, className: FIGURE_MAIN, cell: d => countText(d.vehiclesNow + d.standingNow) },
-          { key: 'bunched', header: <span className={FIGURE_HEAD}>{T.columns.bunched}</span>, className: FIGURE_MAIN, cell: d => countText(d.bunchedNow.length) },
-          { key: 'gapped', header: <span className={FIGURE_HEAD}>{T.columns.gapped}</span>, className: FIGURE_MAIN, cell: d => countText(d.gappedNow.length) },
-        ]}
-      />
-      {lines.length > 0 && <FigureNotes lines={lines} tone="secondary" />}
-      {answer.asOf != null && answer.dataAgeMin != null && <FigureFootnote>{W.reading(answer.asOf, answer.dataAgeMin)}</FigureFootnote>}
-    </FiguresCard>
+    <>
+      <PanelSection label={P.serviceTitle}>
+        {answer.directions.map(d => <Row key={d.direction} name={d.direction} value={P.vehicles(d.vehiclesNow + d.standingNow)} />)}
+        {reading}
+      </PanelSection>
+      <PanelSection label={P.gapsTitle}>
+        {answer.directions.map(d => <Row key={d.direction} name={d.direction} value={P.gaps(d.bunchedNow.length, d.gappedNow.length)} />)}
+        {lines.length > 0 && <ul className="m-0 mt-1 list-none space-y-1 p-0">{lines.map(l => <li key={l} className="text-xs leading-4 text-[var(--text-secondary)] text-pretty">{l}</li>)}</ul>}
+      </PanelSection>
+    </>
   );
 }

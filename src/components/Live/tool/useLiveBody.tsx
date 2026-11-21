@@ -85,7 +85,7 @@ const BOTH_DIRECTIONS = 'both directions';
  */
 // Run time is already the main pattern's (fetchLiveDashboard, #1149).
 // CIV-1459: the picked time of day's two weeks; none when the file has no figures for it (never the whole day's in their place).
-const weekly = (v3: LiveV3, band: DashboardBand) => { const w = weekForBand(v3.weekly, band); return w ? kpiTiles(w, band === 'all' ? weekDailyValues(v3) : {}) : []; };
+const weekly = (v3: LiveV3, band: DashboardBand, inStudio = false) => { const w = weekForBand(v3.weekly, band); return w ? kpiTiles(w, band === 'all' ? weekDailyValues(v3) : {}, undefined, { oneBunchingFigure: inStudio }) : []; };
 
 /** The network's summary, on the left with no route picked: the week's figures as one-line rows, (late departures by hour show for a picked route only). */
 /** The week table's grey-colour line and the bunching note: the Live tool page shows both under the table; Studio has them in About. */
@@ -101,21 +101,24 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand, inStudio: boolean
 
 
 /** The figures for a route, in the one left panel: the week's figures in the same table as the network's, then the run time strip, late by hour and the worst stops. A picked stop or segment shows in the map popover only. */
-function routeWidgets({ data, v3, dir, band, setPick, route, inStudio }: {
+function routeWidgets({ data, v3, dir, band, setPick, route, inStudio, held }: {
   data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void; route: string; inStudio: boolean;
+  /** CIV-2021: a held route's line, read at the top of the week's figures (it says which of them are hidden). */
+  held?: string | null;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
   const hours = routeLateHours(v3);
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
-  const tiles = weekly(v3, band);
+  const tiles = weekly(v3, band, inStudio);
   const weekLeft = excludingDays(v3.weekly);
   // #1490: the panel names the left-out days once; late by hour adds its own note only when its days differ from the week table's.
   const hourLeft = routeLeftOut(v3);
   const hourLeftShown = excludingText(hourLeft) === weekLeft.text ? undefined : hourLeft;
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={inStudio ? BOTH_DIRECTIONS : `${route} · ${BOTH_DIRECTIONS}`} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lead={held} /> }] : []),
+    ...(!tiles.length && held ? [{ key: 'held', size: 'medium' as const, node: <CardHelpNotice message={held} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title={LATE_STOPS_TITLE} rows={worst} /> }] : []),
@@ -257,7 +260,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
   const back: PanelWidget = { key: 'back', size: 'medium', node: <CardBackLink onClick={backToNetwork}>{agencyName}</CardBackLink> };
   const routeBody: PanelWidget[] | null = !route ? null
-    : v3 && ready ? [...(ready.held ? [{ key: 'held', size: 'medium' as const, node: <CardHelpNotice message={ready.held} /> }] : []), ...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route, inStudio })]
+    : v3 && ready ? [...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route, inStudio, held: ready.held })]
     : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   const routePanel = routeBody && [back, ...routeBody];
 
