@@ -1,10 +1,10 @@
 import { delayAmount } from '../../utils/headwayText';
-import { liveVehicleRowLabel } from '../../utils/format';
+import { GENERIC_VEHICLE, liveVehicleRowLabel } from '../../utils/format';
 import { getVehicleStatus } from '../../utils/colors';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import type { RouteAnalysisPatterns } from '../../hooks/useRouteAnalysisPatterns';
 import { destinationKind } from '../../utils/liveGrouping';
-import { DIRECTION_LABEL, ON_TIME_LABEL, SHORT_TURN_LABEL } from '../../../shared/liveWording';
+import { DIRECTION_LABEL, NEXT_STOP_LABEL, ON_TIME_LABEL, SHORT_TURN_LABEL, UPDATED_LABEL, VEHICLE_LABEL, updatedAgoText } from '../../../shared/liveWording';
 import { speedText } from '../../../shared/unitText';
 import { LIVE_STATUS_LABEL } from '../../content/noticeCopy';
 
@@ -29,15 +29,20 @@ export interface VehicleCardRow {
 
 /**
  * What the vehicle card shows, from the Live feed's own fields only. A row appears only when the
- * feed gave its value. The feed has no next-stop field, so the card never shows one.
+ * feed gave its value. CIV-2024: the vehicle's number first, its next stop (only while it is on its way to or arriving
+ * at a stop the agency's stops file names), and how long ago the feed placed it last (`nowSec` given).
  */
 export function vehicleCardRows(
-  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status'>,
+  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status'> & Partial<Pick<LiveVehicle, 'id' | 'vehicleLabel' | 'nextStop' | 'tsEpoch'>>,
   directionLabel: string | null | undefined,
   /** Whether this trip is a short turn or a branch (destinationKind); unknown: no tag. */
   tripEnd?: 'shortTurn' | 'branch',
+  /** The clock for the Updated row, in seconds; left out, no Updated row. */
+  nowSec?: number,
 ): VehicleCardRow[] {
   const rows: VehicleCardRow[] = [];
+  const number = v.id != null ? vehicleCardName({ id: v.id, vehicleLabel: v.vehicleLabel ?? null }, GENERIC_VEHICLE) : null;
+  if (number) rows.push({ label: VEHICLE_LABEL, value: number });
   const direction = directionLabel?.trim();
   const destination = v.headsign?.trim();
   // Every car reads "Direction: to Distillery", the line's end for its direction; a short turn adds
@@ -48,9 +53,12 @@ export function vehicleCardRows(
   if (branch) rows.push({ label: DIRECTION_LABEL, value: `to ${destination}` });
   else if (direction) rows.push({ label: DIRECTION_LABEL, value: `to ${direction}` });
   if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && tripEnd === 'shortTurn' ? { tag: SHORT_TURN_LABEL } : {}) });
+  const nextStop = v.nextStop?.trim();
+  if (nextStop) rows.push({ label: NEXT_STOP_LABEL, value: nextStop });
   if (v.speedKmh != null) rows.push({ label: 'Speed', value: speedText(v.speedKmh) });
   const schedule = delayLabel(v);
   if (schedule) rows.push({ label: LIVE_STATUS_LABEL, value: schedule, status: v.status });
+  if (nowSec != null && v.tsEpoch != null) rows.push({ label: UPDATED_LABEL, value: updatedAgoText(nowSec - v.tsEpoch) });
   return rows;
 }
 

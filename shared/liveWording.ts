@@ -64,6 +64,15 @@ export const VIEW_ON_LIVE_MAP = 'View on Live map';
 export const BOTH_DIRECTIONS_LABEL = 'Both directions';
 /** The direction pills, table column and vehicle card row. */
 export const DIRECTION_LABEL = 'Direction';
+/** The vehicle card's rows (CIV-2024, Ryan: "label the number 'Vehicle', add 'Next stop' ... and 'Updated N sec ago'"). */
+export const VEHICLE_LABEL = 'Vehicle';
+export const NEXT_STOP_LABEL = 'Next stop';
+export const UPDATED_LABEL = 'Updated';
+/** How long ago the feed placed the vehicle: "25 sec ago" under a minute, then whole minutes, "2 min ago" (CIV-2024). */
+export const updatedAgoText = (ageSec: number): string => {
+  const sec = Math.max(0, Math.round(ageSec));
+  return sec < 60 ? `${sec} sec ago` : `${minutesText(Math.floor(sec / 60))} ago`;
+};
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */

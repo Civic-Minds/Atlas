@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's vehicle card says which vehicle it is, its next stop and how fresh the reading is**: it showed only a bare number and a direction, so it wasn't clear what the number meant or how current the position was
 - **Route cards tell apart two branches to the same place**: a branch that only appears for part of the day could sit beside another row with the same words and a different number (GO 15: “to Aldershot GO” twice); each row now leads with its branch or where it starts
 - **Eugene's EmX card names both eastbound routes round the Gateway loop**: the feed gives both one destination, so the card read “to Eugene Station” beside a garbled “to RB)”; they now read “via RiverBend Station” and “via Pheasant Station”
 - **Route cards list branches that had no row of their own**: RTD 15's Saturday trips to Tower Rd were missing from its card, so it read as if every bus went to Picadilly; such a branch now reads where it goes, or where it starts

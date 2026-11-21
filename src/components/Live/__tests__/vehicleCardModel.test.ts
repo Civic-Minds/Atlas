@@ -55,3 +55,22 @@ describe('placedRows (CIV-1068)', () => {
     expect(placedRows(rows, true)).toEqual(rows);
   });
 });
+
+describe('vehicle card: Vehicle, Next stop and Updated (CIV-2024)', () => {
+  const v = { ...base, id: '4477', vehicleLabel: null, nextStop: 'Dundas St West at Bathurst St', tsEpoch: 1000 };
+  it('leads with the vehicle number, adds the next stop and how long ago the feed placed it', () => {
+    const rows = vehicleCardRows(v, 'Dundas West', undefined, 1025);
+    expect(rows[0]).toEqual({ label: 'Vehicle', value: '4477' });
+    expect(rows).toContainEqual({ label: 'Next stop', value: 'Dundas St West at Bathurst St' });
+    expect(rows.at(-1)).toEqual({ label: 'Updated', value: '25 sec ago' });
+  });
+  it('counts whole minutes from a minute on', () => {
+    expect(vehicleCardRows(v, 'Dundas West', undefined, 1000 + 130).at(-1)?.value).toBe('2 min ago');
+  });
+  it('leaves out a row the feed gave nothing for', () => {
+    const rows = vehicleCardRows({ ...v, id: 'a1b2c3d4-0000-0000-0000-000000000000', nextStop: null, tsEpoch: null }, 'Dundas West', undefined, 1025);
+    expect(rows.map(r => r.label)).not.toContain('Vehicle');
+    expect(rows.map(r => r.label)).not.toContain('Next stop');
+    expect(rows.map(r => r.label)).not.toContain('Updated');
+  });
+});

@@ -7,6 +7,7 @@ import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicl
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
 import { LIVE_POLL_SEC } from '../shared/rules/live.js';
+import { stopNames } from './stopNames.js';
 
 const FEED_TIMEOUT_MS = 15_000;
 /** CIV-1770: speeds from movement between polls, across requests. */
@@ -104,6 +105,31 @@ function statusForDelay(delayMin: number | null): 'no_data' | 'early' | 'late' |
   return delayStatus(delayMin);
 }
 
+const STOPPED_AT = GtfsRealtimeBindings.transit_realtime.VehiclePosition.VehicleStopStatus.STOPPED_AT;
+type StopUpdate = { stopId?: string | null; arrival?: { time?: unknown } | null; departure?: { time?: unknown } | null };
+/**
+ * The vehicle's next stop by name (CIV-2024, #1653): the first stop in its trip update still ahead of `nowSec` that the
+ * agency's stops file names. Never the position's own stop_id: TTC's are not GTFS stops (the ones that "match" a stop
+ * number lie a median 11.6 km away), so they named the wrong stop. None while the vehicle stands at a stop (Ryan hasn't
+ * worded "At stop" yet) or without a trip update. The one place the card's stop is chosen: a fallback (the nearest
+ * stop ahead along the route) would go here.
+ */
+export function nextStopName(
+  vehicle: { currentStatus?: number | null },
+  stops: readonly StopUpdate[] | null | undefined,
+  names: ReadonlyMap<string, string>,
+  nowSec: number,
+): string | null {
+  if (vehicle.currentStatus === STOPPED_AT || !stops?.length) return null;
+  for (const s of stops) {
+    const t = Number(s.arrival?.time ?? s.departure?.time);
+    if (!Number.isFinite(t) || t < nowSec || !s.stopId) continue;
+    const name = names.get(String(s.stopId));
+    if (name) return name;
+  }
+  return null;
+}
+
 async function fetchHandler(request: Request): Promise<Response> {
   const agency = requestAgency(request);
   if (!agency) return json({ error: 'A single valid agency slug is required' }, 400);
@@ -120,9 +146,10 @@ async function fetchHandler(request: Request): Promise<Response> {
     apiKeyHeader: config.apiKeyHeaderEnvVar ? process.env[config.apiKeyHeaderEnvVar] : undefined,
   };
 
-  const [positions, updates] = await Promise.all([
+  const [positions, updates, names] = await Promise.all([
     fetchFeed(config.vehiclePositionsUrl, fetchOptions),
     fetchFeed(config.tripUpdatesUrl, fetchOptions),
+    stopNames(agency),
   ]);
 
   if (!positions.ok) {
@@ -140,6 +167,8 @@ async function fetchHandler(request: Request): Promise<Response> {
   }
 
   const updatesByTrip = new Map<string, any>();
+  /** CIV-2024 (#1653): a trip update by its vehicle, for a position whose trip id the updates don't use. */
+  const updatesByVehicle = new Map<string, any>();
   const headwaysByRoute = new Map<string, number[]>();
   if (updates.ok) {
     for (const entity of updates.data.entity ?? []) {
@@ -148,6 +177,7 @@ async function fetchHandler(request: Request): Promise<Response> {
       const route = tripUpdate?.trip?.routeId ? routeById.get(tripUpdate.trip.routeId) : undefined;
       if (!tripId || !route) continue;
       updatesByTrip.set(tripId, tripUpdate);
+      if (tripUpdate.vehicle?.id) updatesByVehicle.set(String(tripUpdate.vehicle.id), tripUpdate);
 
       const arrivalsByStop = new Map<string, number[]>();
       for (const stop of tripUpdate.stopTimeUpdate ?? []) {
@@ -211,6 +241,10 @@ async function fetchHandler(request: Request): Promise<Response> {
       headsign,
       directionId: vehicle.trip?.directionId == null ? null : Number(vehicle.trip.directionId),
       vehicleLabel: vehicle.vehicle?.label ?? null,
+      // CIV-2024: the stop the feed says it is heading to or arriving at, by name; none while it stands at a stop.
+      nextStop: tripId
+        ? nextStopName(vehicle, (update ?? (vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined))?.stopTimeUpdate, names, Date.now() / 1000)
+        : null,
       status: statusForDelay(delayMin),
       statusLabel: null,
       headwayGapMin: null,
