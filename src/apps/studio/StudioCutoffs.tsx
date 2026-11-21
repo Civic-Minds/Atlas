@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import Card from '../../components/ui/Card';
+import { FIGURE_HEAD, FIGURE_MAIN, FIGURE_OTHER, FIGURE_ROW_LABEL, FIGURE_SCOPE_HEAD, FigureNotes, FiguresCard } from '../../components/Live/FiguresCard';
 import DataTable from '../../components/ui/DataTable';
 import Pill from '../../components/ui/Pill';
 import { PickerSection } from '../../components/Interval/pickers';
@@ -97,20 +97,18 @@ export function CutoffFigures({ v3, band, set }: { v3: LiveV3; band: DashboardBa
   const noCounts = rows.some(r => r.now?.note);
   const notes = [W.standardNote, ...(set.bunchedWithinMin != null || set.gappedFactor != null ? [W.bothNote] : []), ...(noCounts ? [W.noCounts] : [])];
   return (
-    <Card as="section" tone="surface" aria-label={W.title} className="min-w-0 px-2.5 py-1.5">
+    <FiguresCard label={W.title}>
       <DataTable
         caption={W.title}
         rows={rows}
         rowKey={r => r.key}
         columns={[
-          { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]">{W.title}</span>, rowHeader: true, className: 'font-bold text-[var(--text-muted)]', cell: r => r.label },
-          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">{THIS_WEEK_COLUMN}</span>, className: 'text-right text-sm font-black tracking-tight', cell: r => value(r.now) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">{LAST_WEEK_COLUMN}</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: r => value(r.last) },
+          { key: 'measure', header: <span className={FIGURE_SCOPE_HEAD}>{W.title}</span>, rowHeader: true, className: FIGURE_ROW_LABEL, cell: r => r.label },
+          { key: 'now', header: <span className={FIGURE_HEAD}>{THIS_WEEK_COLUMN}</span>, className: FIGURE_MAIN, cell: r => value(r.now) },
+          { key: 'last', header: <span className={FIGURE_HEAD}>{LAST_WEEK_COLUMN}</span>, className: FIGURE_OTHER, cell: r => value(r.last) },
         ]}
       />
-      <ul className="m-0 mt-1 list-none border-t border-[var(--border-primary)] p-0 pt-1 text-pretty">
-        {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)] opacity-75">{n}</li>)}
-      </ul>
-    </Card>
+      <FigureNotes lines={notes} />
+    </FiguresCard>
   );
 }

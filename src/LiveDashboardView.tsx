@@ -25,6 +25,7 @@ import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
 import { CardHelpNotice } from './components/Interval/cardUi';
 import { LIVE_MIN_SAMPLE } from '../shared/rules/live';
+import { FIGURE_HEAD, FIGURE_MAIN, FIGURE_OTHER, FIGURE_ROW_LABEL, FIGURE_SCOPE_HEAD, FigureFootnote, FigureNotes, FiguresCard } from './components/Live/FiguresCard';
 
 const MIN_N = LIVE_MIN_SAMPLE;
 
@@ -90,37 +91,33 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   const split = tiles.some(bunchingIsSplit);
   const notes = split && !aboutLive ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
-    <Card as="section" tone="surface" aria-label={WEEK_COMPARE_TITLE} className="min-w-0 px-2.5 py-1.5">
+    <FiguresCard label={WEEK_COMPARE_TITLE}>
       <DataTable
         caption={WEEK_COMPARE_TITLE}
         rows={tiles}
         rowKey={k => k.key}
         rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}
         columns={[
-          { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">{MEASURE_LABEL} </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
-          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">{THIS_WEEK_COLUMN}</span>, className: 'text-right text-sm font-black tracking-tight', cell: k => (
+          { key: 'measure', header: <span className={FIGURE_SCOPE_HEAD}><span className="sr-only">{MEASURE_LABEL} </span>{scope}</span>, rowHeader: true, className: FIGURE_ROW_LABEL, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
+          { key: 'now', header: <span className={FIGURE_HEAD}>{THIS_WEEK_COLUMN}</span>, className: FIGURE_MAIN, cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
               {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">{LAST_WEEK_COLUMN}</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
+          { key: 'last', header: <span className={FIGURE_HEAD}>{LAST_WEEK_COLUMN}</span>, className: FIGURE_OTHER, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}
-      {excluding && <p className="m-0 mt-1 border-t border-[var(--border-primary)] pt-1 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={excludingTitle}>{excluding}</p>}
-      {notes && notes.length > 0 && (
-        <ul className={`m-0 list-none p-0 text-pretty ${excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`}>
-          {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)] opacity-75">{n}</li>)}
-        </ul>
-      )}
-      {caption && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={captionTitle}>{caption}</p>}
+      {excluding && <FigureFootnote ruled title={excludingTitle}>{excluding}</FigureFootnote>}
+      {notes && notes.length > 0 && <FigureNotes lines={notes} ruled={!excluding} />}
+      {caption && <FigureFootnote title={captionTitle}>{caption}</FigureFootnote>}
       {aboutLive && split && (
         // The main map's notice and Learn more link (CardHelpNotice: its text size and its arrow), not a look of Studio's own.
         <CardHelpNotice message={bunchingShortNote()} actionLabel={LEARN_MORE_LABEL} onLearnMore={() => window.dispatchEvent(new Event(OPEN_ABOUT_LIVE_EVENT))}
           className={`m-0 ${notes?.length || excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
       )}
-    </Card>
+    </FiguresCard>
   );
 }
 
