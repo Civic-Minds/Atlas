@@ -7,7 +7,7 @@ import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
 import { agencyNames } from '../../utils/agencyName';
-import { getSavedStudioAgency, saveStudioAgency } from '../../utils/studioAgency';
+import { getSavedStudioAgency, saveStudioAgency, studioAgencyInView } from '../../utils/studioAgency';
 import { useSidebarFrame } from '../../context/SidebarFrame';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
 import { STUDIO_LEGACY_PARAMS, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, parseStudioPath, studioAgencyFrom, studioAgencyListFrom, studioLegacyLocation, studioPageFor, studioPath, type StudioLocation, type StudioPageKey } from '../../../shared/studioAgencies';
@@ -75,7 +75,11 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const listOf = studioAgencyListFrom;
   // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
   // CIV-1883 (Ryan: "The city should be persistent"): the address's agency, else the one Studio was last on in this browser.
-  const wantedAgency = legacy?.agency ?? loc.agency ?? getSavedStudioAgency();
+  // Opening a page with no agency in the address: the agency the map is on, when a Studio page has it, before the
+  // remembered one (Ryan: "when I open Live in Studio and my screen is on Toronto does it force me over to Hamilton").
+  const listedAnywhere = useMemo(() => new Set([...(listOf(liveList) ?? []), ...(listOf(fleetList) ?? [])]), [liveList, fleetList]); // eslint-disable-line react-hooks/exhaustive-deps
+  const inView = legacy?.agency ?? loc.agency ? null : studioAgencyInView(search, agencyCatalog, listedAnywhere);
+  const wantedAgency = legacy?.agency ?? loc.agency ?? inView ?? getSavedStudioAgency();
   const page = studioPageFor(loc.page, wantedAgency, { live: listOf(liveList), fleet: listOf(fleetList), schedules: listOf(fleetList) });
   const pageAgencies = page ? listOf(page === 'live' ? liveList : fleetList) : null;
   // CIV-1883: a page without data for the chosen agency keeps the agency and says so (no silent swap to another one).
