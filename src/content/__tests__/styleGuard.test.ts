@@ -223,6 +223,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
     'a 10-minute walk', 'The stricter 15-minute threshold', 'the broader 30-minute threshold', '30-minute service reaches', 'as 15-minute service',
     // Ryan's CIV-1495 #6 wording, word for word (2026-11-15): the TTC's name for its network.
     'The TTC’s own 10-minute network',
+    // CIV-1603 section 3 intro and method line, approved word for word by Ryan (2026-11-21).
+    'routes run every 15 minutes or better at weekday midday', 'at every 15 or every 30 minutes or better at midday', 'shared stretch runs every 15 minutes counts',
   ],
   // The frequent-service story's cited sentences (shared/researchStories.ts, CIV-1626).
   'shared/researchStories.ts': [

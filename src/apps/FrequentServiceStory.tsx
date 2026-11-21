@@ -10,7 +10,7 @@ import DotPairs, { DotPairKey } from '../components/charts/DotPairs';
 import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
-import { frequentCoverageCountries, frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../data/frequentServiceStory';
+import { frequentCoverageCountries, frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities, frequentWeekendFetched } from '../data/frequentServiceStory';
 import FrequentServiceMapPile from '../components/FrequentServiceMapPile';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
@@ -90,6 +90,15 @@ const DEFINITION_COLUMNS: DataTableColumn<DefinitionStep>[] = [
   { key: 'agencies', header: 'Agencies', cell: step => step.agencies, width: 6 },
 ];
 
+/** CIV-1603 section 3 heading (Ryan's word-for-word OK, 2026-11-21); also the table's caption. */
+const WEEKEND_HEADING = 'Sunday has fewer frequent routes.';
+/** The story's own city, named in section 3's intro. */
+const torontoWeekend = (() => {
+  const city = frequentWeekendCities.find(row => row.city === 'Toronto');
+  if (!city) throw new Error('frequent-weekend-counts.json has no Toronto');
+  return city;
+})();
+
 /** CIV-1603 section 3: weekday and Sunday routes at a threshold (frequent-weekend-counts.json). */
 const WEEKEND_THRESHOLDS = [15, 30] as const;
 type WeekendThreshold = (typeof WEEKEND_THRESHOLDS)[number];
@@ -149,7 +158,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
       dateUpdated: <>{longDate(FREQUENT_SERVICE_DEFINITIONS_UPDATED)}.</>,
       sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again between October 30 and November 3.</>,
       sources: <>The agency’s own current system map, rider guide, frequent network page, service standards or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
-      whatCounted: <>When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
+      whatCounted: <>When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service. For the weekday and Sunday charts, we counted the routes the map draws at every 15 or every 30 minutes or better at midday on each day, from Atlas’s published schedules on {longDate(frequentWeekendFetched)}. A route with branches counts by the stretch its branches share, so a route whose shared stretch runs every 15 minutes counts even if its branch ends run less often.</>,
       numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
       rechecked: <>Between October 30 and November 3, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and {frequentServiceStoryStats.chartedAgencies} stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage’s and VIA’s maps are gone, DART’s site returned an error, Foothill’s and Sun Tran’s sites block automated visits, and STM’s page doesn’t show the times to one.</>,
       limitations: <>This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample.</>,
@@ -322,13 +331,13 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           {/* CIV-1603 section 3 (Ryan's pick, 2026-11-14): how much of a city's frequent network still counts on Sunday. Each
               bar is a count of routes the main map draws at the threshold at midday (Ryan picked midday only: Sunday has no rush
               hour), from frequent-weekend-counts.json. Each city's bars share its weekday count as the full width, so the
-              Sunday bar reads as the share that is left. Heading, intro and caption are placeholders until Ryan approves wording. */}
+              Sunday bar reads as the share that is left. Wording: Ryan's word-for-word OK, 2026-11-21. */}
           <section aria-labelledby="weekend-heading" className={`${STORY_CHART_PANEL} p-6 sm:p-10`}>
             <div className="max-w-2xl">
-              <DevPlaceholder as="h2" id="weekend-heading" className={STORY_HEADING} what="section 3 heading" />
-              <DevPlaceholder as="p" className={STORY_PARAGRAPH} what="section 3 intro" />
+              <h2 id="weekend-heading" className={STORY_HEADING}>{WEEKEND_HEADING}</h2>
+              <p className={STORY_PARAGRAPH}>The map above tests weekday daytime. On Sundays there is no rush hour, so these charts compare midday. In Toronto, {torontoWeekend.weekday15} routes run every 15 minutes or better at weekday midday, and {torontoWeekend.sunday15} on Sunday.</p>
             </div>
-            <div className="mt-8 flex gap-1.5" role="group" aria-label={devPlaceholder('threshold picker name for screen readers') || undefined}>
+            <div className="mt-8 flex gap-1.5" role="group" aria-label="How often the bus comes">
               {WEEKEND_THRESHOLDS.map(minutes => (
                 <Pill key={minutes} size="segment" tone="outline" selected={weekendMinutes === minutes} onClick={() => setWeekendMinutes(minutes)}>
                   {headwayFilterLabel(minutes)}
@@ -356,8 +365,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 );
               })}
             </div>
-            <DevPlaceholder as="p" className="mt-6 text-xs leading-5 text-[var(--text-dim)]" what="section 3 caption" />
-            <ChartTableDetails id={weekendTableId} caption={devPlaceholder('section 3 heading')} columns={WEEKEND_COLUMNS} rows={frequentWeekendCities} rowKey={city => city.city} />
+            <p className="mt-6 text-xs leading-5 text-[var(--text-dim)]">Routes the main map draws at each setting at midday, {hourTime(9)} to {hourTime(15)}, on a weekday and on a Sunday. Each city is its main local transit agency. New York counts its subway and buses together.</p>
+            <ChartTableDetails id={weekendTableId} caption={WEEKEND_HEADING} columns={WEEKEND_COLUMNS} rows={frequentWeekendCities} rowKey={city => city.city} />
           </section>
 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
