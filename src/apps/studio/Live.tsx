@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACEHOLDER, TIME_LABEL } from '../../content/noticeCopy';
+import { MAP_COLOURS_LABEL, MEASURE_LABEL, TIME_LABEL } from '../../content/noticeCopy';
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
 import { PanelBody } from '../../components/ui/Panel';
@@ -103,7 +103,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     // CIV-1960 (Ryan: "Measure should be on the left side of the filters"; "And no need for the drop down arrow beside the word Measure").
     measureMenu,
     agencyMenu,
-    { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
+    // CIV-2001 (Ryan chose 1): no Route chip; the top bar's search box finds a route (StudioSearch.tsx). Supersedes CIV-1878's pick.
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: periodMenuOptions(PERIOD_BANDS_ONLY.map(([k]) => k)), onPick: k => setBand(k as DashboardBand), panelClassName: 'w-56' },
   ];
