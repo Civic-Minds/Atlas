@@ -154,6 +154,17 @@ describe('route card branch lines (CIV-1959 B3)', () => {
     // Switch off, or no `to` (an origin leg the pipeline left unnamed): no new line.
     expect(lines(card([withReadings(named({ t: 'reading', v: 30 }), 'main')], 'midday', false))).toEqual(['to Lawrence West Station: every 5 min']);
   });
+  it('CIV-2018: a nameless branch\'s line is left out when the card already has its words, whatever it reads', () => {
+    // RTD 31: the far end of the Front Range CC branch got its own "to Front Range CC" beside the branch row of that name, at another number.
+    const dup: PieceReadings = { pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), piece('branch', 0, { midday: { t: 'reading', v: 20 } }), { ...piece('branch', 1, { midday: { t: 'reading', v: 67 } }), to: 'Pearson Airport' }] };
+    expect(lines(card([withReadings(dup, 'main'), withReadings(dup, 'tail')], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: every 20 min']);
+    // The main row's words too.
+    const toMain: PieceReadings = { pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), { ...piece('branch', 0, { midday: { t: 'reading', v: 30 } }), to: 'Lawrence West Station' }] };
+    expect(lines(card([withReadings(toMain, 'main')], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min']);
+    // Two nameless pieces with one name (Hamilton 05 "to King at Greenhill" every 15 and every 14): the first stands.
+    const twin: PieceReadings = { pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), { ...piece('branch', 0, { midday: { t: 'reading', v: 15 } }), to: 'King at Greenhill' }, { ...piece('branch', 1, { midday: { t: 'reading', v: 14 } }), to: 'King at Greenhill' }] };
+    expect(lines(card([withReadings(twin, 'main')], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to King at Greenhill: every 15 min']);
+  });
   void trunkStops; void branchStops;
 });
 

@@ -411,11 +411,11 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
           return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
         } }];
       }) : [];
-      // A line that reads exactly as one the card already has (same words, same reading) adds nothing and is left out.
+      // CIV-2018: a line whose words the card already has is left out, whatever it reads. Two rows "to X" with different numbers contradict each
+      // other (RTD 31's "to Front Range Community College" read 61 and 67), so the row already there, or the first of two pieces, stands.
       const kept = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows];
-      const readsAs = (r: CardRow) => `${r.label}\u0000${reportRowValueText(r)}`;
-      const seen = new Set(kept.map(readsAs));
-      finalRows = [...kept, ...unnamedRows.filter(r => { const k = readsAs(r); if (seen.has(k)) return false; seen.add(k); return true; })];
+      const seen = new Set(kept.map(r => r.label));
+      finalRows = [...kept, ...unnamedRows.filter(r => { if (seen.has(r.label)) return false; seen.add(r.label); return true; })];
     }
 
     const realHeadsignKeys = new Set(
