@@ -8,12 +8,20 @@ import { joinList, plural } from './overflowText';
 import { devPlaceholder } from './devPlaceholder';
 import { PAGE_NAMES } from './pageNames';
 import { vehiclesWord } from './modeVehicles';
+import { agencyInSentence } from './agencyArticle';
 
 /** "Routes": the route list's heading on the map page and the group's routes row under Buses Needed. */
 const ROUTES = 'Routes';
 
 /** The page menu's entries (CIV-1828): Live (Ryan and Strategy, 2026-11-17), and Fleet, a placeholder name (Ryan, 2026-11-17). */
 export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Fleet', schedules: PAGE_NAMES.studioSchedules } as const;
+
+/**
+ * A Studio page with no data for the chosen agency (CIV-2054, Ryan's wording for Live): "No Live data for Guelph Transit yet.",
+ * then "Live has:" over the agencies it does have. Fleet and Schedules read the same way with their own page name.
+ */
+export const studioNoPageDataText = (page: string, agency: string) => `No ${page} data for ${agencyInSentence(agency)} yet.`;
+export const studioPageHasText = (page: string) => `${page} has:`;
 
 export const STUDIO_MAP_TEXT = {
   route: 'Route',

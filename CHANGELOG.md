@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches
 - **Live's route card shows the same schedule as the map's route card**: it gave its own range across all stops (TTC 510 "every 5–10 min"), hiding branches and short turns; it now lists the shared stretch and each branch
+- **Studio's "No Live data" note lists the other cities like every other list**: it used big boxed buttons and mixed short and full agency names; a Live city without figures yet now gets the same note
 - **Live shows Kingston and Boston, and Studio's Live lists the same cities as the main app's**: the two lists had drifted apart, so a city could be in one Live but not the other
 - **Boston's live vehicles credit MassDOT**: the map names MassDOT while MBTA vehicles are on screen, and About's schedule sources say MBTA vehicle locations come from MassDOT, as its data licence asks
 - **Studio Live's route lines are as thin as Live's**: they were drawn about twice as thick as the same route on the regular Live map

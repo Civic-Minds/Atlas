@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import Studio from '../apps/studio/Studio';
 import { MODE_EASE_MS } from '../components/ModeTransition';
 
+import { PageMapOverlayProvider } from '../context/PageMapOverlay';
 vi.mock('../apps/studio/useDevFile', () => ({ useDevFile: (url: string) => ({ agencies: url.includes('live') ? ['ttc', 'kingston'] : ['kingston', 'hamilton'] }) }));
 // Each page shows the frame key Studio hands it and the key the map last framed (CIV-1925).
 vi.mock('../apps/studio/Live', async () => {
@@ -21,7 +22,7 @@ function Where() { const l = useLocation(); return <span data-testid="where">{l.
 function setup(url: string) {
   const tabs = document.createElement('div');
   document.body.appendChild(tabs);
-  render(<MemoryRouter initialEntries={[url]}><Studio agencyCatalog={[]} tabsPortal={tabs} headerPortal={null} /><Where /></MemoryRouter>);
+  render(<MemoryRouter initialEntries={[url]}><PageMapOverlayProvider><Studio agencyCatalog={[]} tabsPortal={tabs} headerPortal={null} /></PageMapOverlayProvider><Where /></MemoryRouter>);
   return tabs;
 }
 
@@ -81,13 +82,23 @@ describe('Studio opens with no panel (Ryan, 2026-11-18)', () => {
 });
 
 describe('A page with no data for the agency keeps it (CIV-1883)', () => {
-  it('says so and lists the page\'s agencies instead of switching', () => {
+  it('says so and lists the page\'s agencies instead of switching (CIV-2054: "No Fleet data for … yet.", "Fleet has:")', () => {
     localStorage.clear();
     setup('/studio/fleet/ttc');
-    expect(screen.getByText('No data for ttc yet.')).toBeTruthy();
+    expect(screen.getByText('No Fleet data for ttc yet.')).toBeTruthy();
+    expect(screen.getByText('Fleet has:')).toBeTruthy();
     expect(screen.queryByText('fleet panel')).toBeNull();
     expect(screen.getByRole('button', { name: /hamilton/i })).toBeTruthy();
     expect(screen.getByTestId('where').textContent).toBe('/studio/fleet/ttc');
+  });
+
+  it('gives a Live city with no recorded figures the same note, offering only cities with figures (CIV-2054)', () => {
+    localStorage.clear();
+    setup('/studio/live/mbta');
+    expect(screen.getByText('No Live data for mbta yet.')).toBeTruthy();
+    expect(screen.getByText('Live has:')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /kingston/i })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^hamilton$/i })).toBeNull();
   });
 });
 

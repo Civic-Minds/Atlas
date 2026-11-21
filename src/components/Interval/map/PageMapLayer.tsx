@@ -50,12 +50,13 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
   const measure: MapMeasure = layer.kind === 'segments' ? layer.measure : 'late';
   const heat = layer.kind === 'segments' ? layer.heat ?? null : null;
   const lines = layer.kind === 'lines' ? layer.lines : null;
+  const frameTo = layer.kind === 'lines' ? layer.frameTo ?? null : null;
   const [ready, setReady] = useState(false);
   // Handlers in refs: a new callback each render would otherwise re-register the map's listeners every time.
   const pick = useRef(onPick);
   pick.current = onPick;
-  const latest = useRef({ model, measure, selected, frameKey, padding, heat, lines, holdFrame });
-  latest.current = { model, measure, selected, frameKey, padding, heat, lines, holdFrame };
+  const latest = useRef({ model, measure, selected, frameKey, padding, heat, lines, holdFrame, frameTo });
+  latest.current = { model, measure, selected, frameKey, padding, heat, lines, holdFrame, frameTo };
   const ownFramed = useRef<string | null>(null);
   const framed = framedMemory ?? ownFramed;
   const [at, setAt] = useState<MapCardAt | null>(null);
@@ -76,7 +77,7 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
   const draw = () => {
     if (!map || !ready) return;
     // Everything it frames with is read from the latest props.
-    const { model: m, measure: me, selected: sel, frameKey: key, padding: pad, heat: hp, lines: ln, holdFrame: hold } = latest.current;
+    const { model: m, measure: me, selected: sel, frameKey: key, padding: pad, heat: hp, lines: ln, holdFrame: hold, frameTo: ft } = latest.current;
     const seg = map.getSource(id('segments')) as maplibregl.GeoJSONSource | undefined;
     const stp = map.getSource(id('stops')) as maplibregl.GeoJSONSource | undefined;
     const hs = map.getSource(id('heat')) as maplibregl.GeoJSONSource | undefined;
@@ -116,12 +117,13 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
         geometry: { type: 'Point' as const, coordinates: s.lonLat },
       })),
     });
-    if (!hold && framed.current !== key && (m.stops.length || m.segments.length || ln?.length)) {
+    if (!hold && framed.current !== key && (m.stops.length || m.segments.length || ln?.length || ft?.length)) {
       framed.current = key;
       // A lines map with a highlighted route (Studio's picked route, CIV-1731) frames that route's lines alone.
       const hl = latestHl.current;
       const framedLines = ln && hl && ln.some(l => l.route === hl) ? ln.filter(l => l.route === hl) : ln;
-      const points = [...m.stops.map(s => s.lonLat), ...m.segments.flatMap(s => s.coordinates), ...(framedLines ?? []).flatMap(l => l.coordinates)];
+      const drawn = [...m.stops.map(s => s.lonLat), ...m.segments.flatMap(s => s.coordinates), ...(framedLines ?? []).flatMap(l => l.coordinates)];
+      const points = drawn.length ? drawn : [...(ft ?? [])];
       // The map can sit in a layout whose size changes after the first paint: measure it again before framing.
       map.resize();
       // No padding: the main map's own route framing, clear of the page's sidebar card where it really is.
@@ -216,7 +218,7 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
     for (const [k, v] of Object.entries(stopDotPaint(light))) map.setPaintProperty(id('stp'), k as Parameters<maplibregl.Map['setPaintProperty']>[1], v as unknown as maplibregl.ExpressionSpecification);
   }, [map, ready, light]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(draw, [map, ready, model, measure, selected, frameKey, heat, lines, holdFrame]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [map, ready, model, measure, selected, frameKey, heat, lines, holdFrame, frameTo]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(place, [map, anchor]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(draw, [highlightRoute]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (centerOn && map) map.easeTo({ center: centerOn.lonLat, duration: 300 }); }, [centerOn?.k]); // eslint-disable-line react-hooks/exhaustive-deps
