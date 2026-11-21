@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A picked vehicle on Live keeps its normal dot, just darker**: the bigger dot with a white halo stood out from the rest of the map
 - **Live's list of overlapping vehicles leads with each vehicle**: rows read "Streetcar 4632 · 501", not "501 Streetcar 4632", since each row is one vehicle
 - **Live's route list names its agency**: "Live · TTC" with one agency in view, and a short heading over each agency's routes when several are on screen, so the list says whose routes these are
 - **Live's route and vehicle cards go "← Back to Live"**: the link named the route's agency but led to the Live list, which shows whatever agencies are on screen
