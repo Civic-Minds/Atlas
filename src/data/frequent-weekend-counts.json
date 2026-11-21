@@ -1,7 +1,7 @@
 {
   "source": {
-    "releaseId": "release-mwh4jh9x",
-    "fetched": "2026-11-15",
+    "releaseId": "release-mwpxhroh",
+    "fetched": "2026-11-21",
     "rule": "Routes the main map draws at every N min or better (routeFeaturePassesMapFilter, worst direction deciding) on that day. \"daytime\" counts a route only when it passes in AM peak, midday and PM peak, the story map's daytime (CIV-1410); each period key counts that period alone.",
     "script": "scripts/build-frequent-weekend-counts.ts"
   },
@@ -14,41 +14,41 @@
       "counts": {
         "Weekday": {
           "15": {
-            "daytime": 65,
-            "amPeak": 94,
-            "midday": 73,
-            "pmPeak": 96,
-            "evening": 64,
-            "late": 40,
+            "daytime": 81,
+            "amPeak": 100,
+            "midday": 96,
+            "pmPeak": 112,
+            "evening": 77,
+            "late": 41,
             "overnight": 1
           },
           "30": {
             "daytime": 164,
-            "amPeak": 180,
-            "midday": 168,
-            "pmPeak": 183,
-            "evening": 157,
-            "late": 130,
+            "amPeak": 172,
+            "midday": 171,
+            "pmPeak": 181,
+            "evening": 156,
+            "late": 82,
             "overnight": 32
           }
         },
         "Sunday": {
           "15": {
             "daytime": 9,
-            "amPeak": 11,
-            "midday": 64,
-            "pmPeak": 72,
-            "evening": 55,
-            "late": 39,
+            "amPeak": 9,
+            "midday": 85,
+            "pmPeak": 87,
+            "evening": 69,
+            "late": 35,
             "overnight": 2
           },
           "30": {
-            "daytime": 25,
-            "amPeak": 28,
-            "midday": 159,
-            "pmPeak": 161,
-            "evening": 149,
-            "late": 127,
+            "daytime": 24,
+            "amPeak": 24,
+            "midday": 166,
+            "pmPeak": 166,
+            "evening": 152,
+            "late": 73,
             "overnight": 33
           }
         }
@@ -62,21 +62,21 @@
       "counts": {
         "Weekday": {
           "15": {
-            "daytime": 12,
-            "amPeak": 20,
-            "midday": 19,
+            "daytime": 10,
+            "amPeak": 15,
+            "midday": 20,
             "pmPeak": 20,
-            "evening": 5,
-            "late": 1,
+            "evening": 6,
+            "late": 0,
             "overnight": 0
           },
           "30": {
-            "daytime": 65,
-            "amPeak": 93,
-            "midday": 121,
+            "daytime": 64,
+            "amPeak": 91,
+            "midday": 120,
             "pmPeak": 115,
-            "evening": 97,
-            "late": 25,
+            "evening": 93,
+            "late": 7,
             "overnight": 0
           }
         },
@@ -84,19 +84,19 @@
           "15": {
             "daytime": 4,
             "amPeak": 4,
-            "midday": 8,
-            "pmPeak": 13,
+            "midday": 9,
+            "pmPeak": 15,
             "evening": 4,
-            "late": 1,
+            "late": 0,
             "overnight": 0
           },
           "30": {
-            "daytime": 30,
-            "amPeak": 45,
-            "midday": 88,
-            "pmPeak": 97,
-            "evening": 81,
-            "late": 29,
+            "daytime": 28,
+            "amPeak": 44,
+            "midday": 87,
+            "pmPeak": 98,
+            "evening": 80,
+            "late": 6,
             "overnight": 1
           }
         }
@@ -110,41 +110,41 @@
       "counts": {
         "Weekday": {
           "15": {
-            "daytime": 43,
+            "daytime": 45,
             "amPeak": 68,
-            "midday": 58,
+            "midday": 60,
             "pmPeak": 83,
-            "evening": 32,
-            "late": 7,
+            "evening": 33,
+            "late": 2,
             "overnight": 0
           },
           "30": {
             "daytime": 117,
-            "amPeak": 146,
-            "midday": 153,
-            "pmPeak": 159,
-            "evening": 102,
-            "late": 39,
+            "amPeak": 143,
+            "midday": 152,
+            "pmPeak": 157,
+            "evening": 98,
+            "late": 27,
             "overnight": 3
           }
         },
         "Sunday": {
           "15": {
-            "daytime": 12,
-            "amPeak": 12,
-            "midday": 47,
-            "pmPeak": 54,
-            "evening": 27,
-            "late": 3,
+            "daytime": 10,
+            "amPeak": 10,
+            "midday": 50,
+            "pmPeak": 57,
+            "evening": 28,
+            "late": 0,
             "overnight": 0
           },
           "30": {
-            "daytime": 43,
-            "amPeak": 45,
-            "midday": 127,
-            "pmPeak": 141,
-            "evening": 82,
-            "late": 24,
+            "daytime": 38,
+            "amPeak": 40,
+            "midday": 130,
+            "pmPeak": 142,
+            "evening": 79,
+            "late": 10,
             "overnight": 0
           }
         }
@@ -164,41 +164,41 @@
       "counts": {
         "Weekday": {
           "15": {
-            "daytime": 131,
-            "amPeak": 218,
-            "midday": 181,
-            "pmPeak": 233,
-            "evening": 99,
-            "late": 12,
+            "daytime": 137,
+            "amPeak": 204,
+            "midday": 194,
+            "pmPeak": 236,
+            "evening": 95,
+            "late": 11,
             "overnight": 0
           },
           "30": {
-            "daytime": 238,
-            "amPeak": 306,
-            "midday": 283,
-            "pmPeak": 288,
-            "evening": 254,
-            "late": 108,
+            "daytime": 231,
+            "amPeak": 292,
+            "midday": 285,
+            "pmPeak": 286,
+            "evening": 248,
+            "late": 79,
             "overnight": 31
           }
         },
         "Sunday": {
           "15": {
-            "daytime": 44,
-            "amPeak": 48,
-            "midday": 130,
-            "pmPeak": 153,
+            "daytime": 50,
+            "amPeak": 50,
+            "midday": 139,
+            "pmPeak": 162,
             "evening": 76,
-            "late": 7,
+            "late": 6,
             "overnight": 0
           },
           "30": {
-            "daytime": 177,
-            "amPeak": 181,
-            "midday": 261,
+            "daytime": 169,
+            "amPeak": 172,
+            "midday": 260,
             "pmPeak": 270,
-            "evening": 248,
-            "late": 88,
+            "evening": 240,
+            "late": 68,
             "overnight": 34
           }
         }
@@ -212,40 +212,40 @@
       "counts": {
         "Weekday": {
           "15": {
-            "daytime": 29,
-            "amPeak": 33,
-            "midday": 35,
-            "pmPeak": 37,
+            "daytime": 49,
+            "amPeak": 49,
+            "midday": 58,
+            "pmPeak": 54,
             "evening": 2,
             "late": 0,
             "overnight": 0
           },
           "30": {
-            "daytime": 64,
-            "amPeak": 69,
-            "midday": 77,
-            "pmPeak": 75,
-            "evening": 22,
-            "late": 3,
+            "daytime": 72,
+            "amPeak": 74,
+            "midday": 83,
+            "pmPeak": 82,
+            "evening": 26,
+            "late": 4,
             "overnight": 3
           }
         },
         "Sunday": {
           "15": {
-            "daytime": 10,
-            "amPeak": 11,
-            "midday": 22,
-            "pmPeak": 21,
+            "daytime": 17,
+            "amPeak": 18,
+            "midday": 36,
+            "pmPeak": 36,
             "evening": 1,
             "late": 0,
             "overnight": 0
           },
           "30": {
-            "daytime": 42,
-            "amPeak": 43,
-            "midday": 62,
-            "pmPeak": 58,
-            "evening": 25,
+            "daytime": 53,
+            "amPeak": 54,
+            "midday": 71,
+            "pmPeak": 66,
+            "evening": 29,
             "late": 3,
             "overnight": 3
           }
@@ -260,41 +260,41 @@
       "counts": {
         "Weekday": {
           "15": {
-            "daytime": 53,
-            "amPeak": 80,
-            "midday": 62,
-            "pmPeak": 81,
-            "evening": 34,
-            "late": 8,
+            "daytime": 56,
+            "amPeak": 78,
+            "midday": 64,
+            "pmPeak": 78,
+            "evening": 35,
+            "late": 4,
             "overnight": 1
           },
           "30": {
-            "daytime": 100,
-            "amPeak": 120,
+            "daytime": 99,
+            "amPeak": 115,
             "midday": 106,
-            "pmPeak": 120,
-            "evening": 81,
-            "late": 24,
+            "pmPeak": 117,
+            "evening": 74,
+            "late": 20,
             "overnight": 3
           }
         },
         "Sunday": {
           "15": {
-            "daytime": 11,
-            "amPeak": 11,
-            "midday": 42,
-            "pmPeak": 45,
-            "evening": 20,
-            "late": 8,
+            "daytime": 10,
+            "amPeak": 10,
+            "midday": 43,
+            "pmPeak": 48,
+            "evening": 19,
+            "late": 4,
             "overnight": 1
           },
           "30": {
-            "daytime": 64,
-            "amPeak": 64,
-            "midday": 91,
-            "pmPeak": 91,
-            "evening": 69,
-            "late": 22,
+            "daytime": 62,
+            "amPeak": 62,
+            "midday": 92,
+            "pmPeak": 89,
+            "evening": 68,
+            "late": 20,
             "overnight": 4
           }
         }
@@ -309,40 +309,40 @@
         "Weekday": {
           "15": {
             "daytime": 26,
-            "amPeak": 36,
-            "midday": 30,
-            "pmPeak": 41,
-            "evening": 20,
+            "amPeak": 32,
+            "midday": 36,
+            "pmPeak": 42,
+            "evening": 21,
             "late": 2,
             "overnight": 0
           },
           "30": {
-            "daytime": 89,
-            "amPeak": 106,
+            "daytime": 88,
+            "amPeak": 105,
             "midday": 102,
-            "pmPeak": 113,
-            "evening": 76,
-            "late": 30,
+            "pmPeak": 110,
+            "evening": 73,
+            "late": 27,
             "overnight": 14
           }
         },
         "Sunday": {
           "15": {
-            "daytime": 16,
-            "amPeak": 16,
-            "midday": 23,
-            "pmPeak": 23,
-            "evening": 14,
+            "daytime": 12,
+            "amPeak": 12,
+            "midday": 30,
+            "pmPeak": 30,
+            "evening": 19,
             "late": 1,
             "overnight": 0
           },
           "30": {
-            "daytime": 50,
-            "amPeak": 50,
-            "midday": 85,
-            "pmPeak": 84,
-            "evening": 60,
-            "late": 25,
+            "daytime": 43,
+            "amPeak": 43,
+            "midday": 87,
+            "pmPeak": 86,
+            "evening": 57,
+            "late": 22,
             "overnight": 14
           }
         }
