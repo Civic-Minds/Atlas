@@ -81,13 +81,23 @@ describe('Studio opens with no panel (Ryan, 2026-11-18)', () => {
 });
 
 describe('A page with no data for the agency keeps it (CIV-1883)', () => {
-  it('says so and lists the page\'s agencies instead of switching', () => {
+  it('says so and lists the page\'s agencies instead of switching (CIV-2054: "No Fleet data for … yet.", "Fleet has:")', () => {
     localStorage.clear();
     setup('/studio/fleet/ttc');
-    expect(screen.getByText('No data for ttc yet.')).toBeTruthy();
+    expect(screen.getByText('No Fleet data for ttc yet.')).toBeTruthy();
+    expect(screen.getByText('Fleet has:')).toBeTruthy();
     expect(screen.queryByText('fleet panel')).toBeNull();
     expect(screen.getByRole('button', { name: /hamilton/i })).toBeTruthy();
     expect(screen.getByTestId('where').textContent).toBe('/studio/fleet/ttc');
+  });
+
+  it('gives a Live city with no recorded figures the same note, offering only cities with figures (CIV-2054)', () => {
+    localStorage.clear();
+    setup('/studio/live/mbta');
+    expect(screen.getByText('No Live data for mbta yet.')).toBeTruthy();
+    expect(screen.getByText('Live has:')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /kingston/i })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^hamilton$/i })).toBeNull();
   });
 });
 

@@ -12,6 +12,7 @@ import { useSidebarFrame } from '../../context/SidebarFrame';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
 import { STUDIO_LEGACY_PARAMS, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, parseStudioPath, studioAgencyFrom, studioAgencyListFrom, studioLegacyLocation, studioPageFor, studioPath, type StudioLocation, type StudioPageKey } from '../../../shared/studioAgencies';
 import { LIVE_AGENCY_SLUGS } from '../../../shared/livePollingConfig';
+import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
 import Live from './Live';
@@ -73,6 +74,8 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   // own list; a city without recordings opens with the no-data note (CIV-1883).
   const liveList = useMemo(() => ({ agencies: [...LIVE_AGENCY_SLUGS] }), []);
   const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
+  // The Live cities that have recorded figures (the recordings' own list), for the no-data note's "Live has:" rows (CIV-2054).
+  const liveData = useDevFile<{ agencies: string[] }>(LIVE_STUDIO_AGENCIES_URL);
   // One reading and one default for both pages (CIV-1898): the same list rule, the same default agency.
   const listOf = studioAgencyListFrom;
   // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
@@ -85,13 +88,23 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const page = studioPageFor(loc.page, wantedAgency, { live: listOf(liveList), fleet: listOf(fleetList), schedules: listOf(fleetList) });
   const pageAgencies = page ? listOf(page === 'live' ? liveList : fleetList) : null;
   // CIV-1883: a page without data for the chosen agency keeps the agency and says so (no silent swap to another one).
-  const noData = !!(page && wantedAgency && pageAgencies && pageAgencies.length > 0 && !pageAgencies.includes(wantedAgency) && loc.page);
+  // CIV-2054: on Live, a listed city with no recorded figures yet (the MBTA) gets the same note.
+  const liveWithData = listOf(liveData);
+  const lacksLiveData = page === 'live' && !!loc.page && !!wantedAgency && !!liveWithData && liveWithData.length > 0
+    && !liveWithData.includes(wantedAgency) && !!pageAgencies?.includes(wantedAgency);
+  const noData = !!(page && wantedAgency && pageAgencies && pageAgencies.length > 0 && !pageAgencies.includes(wantedAgency) && loc.page) || lacksLiveData;
+  // The cities the note offers: the page's own, and on Live only those with figures.
+  const withData = page === 'live' ? liveWithData : pageAgencies;
   const slug = noData ? wantedAgency! : studioAgencyFrom(wantedAgency, pageAgencies);
   const route = loc.route;
   const setRoute = (r: string | null) => go({ route: r });
   const nameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).name : s; };
+  // CIV-2054 (Ryan: names used consistently): the chip and the no-data note give each agency's full name (agencyNames().full).
+  const fullNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).full : s; };
+  const cardNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).card : { primary: s }; };
   const agency = nameOf(slug);
-  const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, nameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
+  const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, fullNameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
+  const noDataRows = useMemo(() => (withData ?? []).map(s => ({ slug: s, ...cardNameOf(s) })), [agencyCatalog, withData]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new page or agency starts with no route open.
   const selected = useMemo(() => agencyCatalog.find(a => a.slug === slug) ?? null, [agencyCatalog, slug]);
   // The selected agency's own source sits beside the agency chip, the agency card's Source link (CIV-1890).
@@ -106,7 +119,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   // CIV-1921): for that ease the page keeps showing what it showed, with no chips, while the address has already moved on.
   const open = active && !closed;
   const leaving = useModeLeaving(open, FEATURES.modeTransitions);
-  const now = { page, slug, route, noData, agency };
+  const now = { page, slug, route, noData, agency, fullAgency: fullNameOf(slug), noDataRows };
   const held = useRef(now);
   if (open) held.current = now;
   const v = open ? now : held.current;
@@ -145,7 +158,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
       {(open || leaving) && (
         <div className={open ? '' : `opacity-0 transition-opacity ${MODE_EASE} pointer-events-none`}>
           {v.noData && (
-            <StudioNoData agencyName={v.agency} options={agencyOptions} onPick={s => go({ agency: s, route: null })} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+            <StudioNoData pageName={v.page ? STUDIO_PAGE_NAMES[v.page] : STUDIO_PAGE_NAMES.live} agencyName={v.fullAgency} rows={v.noDataRows} onPick={s => go({ agency: s, route: null })} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
           {!v.noData && v.page === 'fleet' && v.slug && (
             <Fleet key={v.slug} slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
