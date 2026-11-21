@@ -197,8 +197,8 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
 export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number } | null {
   if (period === 'all' || period === 'overnight' || d.noOwnServiceByPeriod?.includes(period) || !rowOwnTripsEven(d, period)) return null;
   const hw = d.headwayByPeriod?.[period] as number, cov = d.periodCoverageHeadway?.[period];
-  const steady = d.headwayByPeriodSustained?.[period] === true && typeof cov === 'number' && cov <= PERIOD_COVERAGE_MAX_HEADWAY;
-  const v = steady || typeof cov !== 'number' ? hw : cov;
+  const consistent = d.headwayByPeriodSustained?.[period] === true && typeof cov === 'number' && cov <= PERIOD_COVERAGE_MAX_HEADWAY;
+  const v = consistent || typeof cov !== 'number' ? hw : cov;
   const edge = d.rowPeriodEdge?.[period];
   if (edge && (edge.from != null || edge.until != null)) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}) };
   return { t: 'reading', v };
