@@ -1,5 +1,6 @@
 import { Fragment, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { StudioSettingsGear } from './StudioSettings';
 import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/ChipMenu';
 import SearchBox from '../../components/ui/SearchBox';
 
@@ -32,7 +33,7 @@ export interface StudioMenu {
  * Studio's menus (agency, route, time of day) in App's top bar, where the main map's chips sit (CIV-1828): the main map's
  * chip and dropdown (ChipMenu), one open at a time.
  */
-export default function StudioChips({ container, menus }: { container: Element | null; menus: ReadonlyArray<StudioMenu | null> }) {
+export default function StudioChips({ container, menus, settings }: { container: Element | null; menus: ReadonlyArray<StudioMenu | null>; /** The page's own Settings section (CIV-2006). */ settings?: { title: string; content: ReactNode; active?: boolean } }) {
   const { openChip, setOpenChip, toggle, rowRef } = useChipRow<string>();
   if (!container) return null;
   return createPortal(
@@ -48,6 +49,8 @@ export default function StudioChips({ container, menus }: { container: Element |
         {m.after}
         </Fragment>
       ))}
+      {/* CIV-2006: the main app's Settings gear, last in the row as on the main map. */}
+      <StudioSettingsGear section={settings} />
     </div>,
     container,
   );

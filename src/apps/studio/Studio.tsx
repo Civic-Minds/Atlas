@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { StudioSettingsProvider, type StudioGeneralSettings } from './StudioSettings';
 import { useLocation, useNavigate } from 'react-router';
 import { Activity, Bus, GitCompare } from 'lucide-react';
 import type { Agency } from '../../App';
@@ -38,11 +39,13 @@ export interface StudioProps {
   headerPortal: Element | null;
   /** App's view-tab row slot, where Studio's pages show as tabs. */
   tabsPortal: Element | null;
+  /** App's general settings, for the Settings menu in Studio's top bar (CIV-2006). */
+  settings?: StudioGeneralSettings;
   /** False while App is leaving Studio: the open page fades out, as the main map's modes do (CIV-1921). */
   active?: boolean;
 }
 
-export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active = true }: StudioProps) {
+export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settings, active = true }: StudioProps) {
   // The address is the frame's (CIV-1924): /studio, /studio/<page>/<agency>/<route>. Pages never read or write it.
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
@@ -116,6 +119,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
   const chips = open ? headerPortal : null;
 
   return (
+    <StudioSettingsProvider value={settings ?? null}>
     <StudioMapFrameProvider value={mapFrame}>
       {active && tabsPortal && page && createPortal(
         STUDIO_PAGES.map(k => {
@@ -145,5 +149,6 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
         </div>
       )}
     </StudioMapFrameProvider>
+    </StudioSettingsProvider>
   );
 }
