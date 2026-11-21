@@ -47,7 +47,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL } from '../content/noticeCopy';
+import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL, liveListTitle } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -389,6 +389,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
     return slugs.size > 1;
   }, [sidebarRouteGroups]);
+  // CIV-2042: with one agency's routes in the list, the title names it ("Live · TTC"); with several, each gets a heading.
+  const listAgencySlug = useMemo(() => {
+    const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
+    return slugs.size === 1 ? [...slugs][0] : null;
+  }, [sidebarRouteGroups]);
 
   const renderRouteGroupList = (groups: RouteGroup[]) => {
     let lastSlug = '';
@@ -405,15 +410,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
       const showAgencyHeader = multipleAgencies && g.agencySlug !== lastSlug;
       lastSlug = g.agencySlug;
-      const agency = agencies.find(a => a.slug === g.agencySlug);
-      const rawAgencyName = agency?.name ?? g.agencySlug;
-      const { primary: agencyName, secondary: agencyPlace } = agencyNames({ name: rawAgencyName, cities: agency?.cities, displayArea: agency?.displayArea }).card;
+      // CIV-2042 (Ryan: a small "TTC" heading above the TTC routes and "MBTA" above Boston's): the short name.
+      const agencyName = agencyShortNameBySlug(agencies, g.agencySlug);
 
       return (
         <React.Fragment key={key}>
           {showAgencyHeader && (
             <AgencyGroupHeader rule={agencyHeaderIndex++ > 0 ? 'above' : 'below'}>
-              <AgencyName primary={agencyName} secondary={agencyPlace} />
+              <AgencyName primary={agencyName} />
             </AgencyGroupHeader>
           )}
           <RouteListRow
@@ -701,6 +705,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const totalVehicles = allVehicles.length;
   const hasAnyError = errors.length > 0 && totalVehicles === 0;
+  // CIV-2042: the panel is showing the route list (the last branch of its body below), so its title can name the one agency.
+  const routeListShown = pickVehicles.length <= 1 && isZoomedIn && !(visibleSlugs.length === 0 && !isLoading)
+    && !(isLoading && totalVehicles === 0) && !hasAnyError && !(displayedRouteGroups.length === 0 && routeGroups.length === 0);
   // CIV-1768: every feed in view down: the map's loading pill reads "Unable to load · Retrying in 12s".
   const { setRetryAt } = useLiveFeedsDown();
   const feedsDownRetryAt = hasAnyError ? nextPollAt : null;
@@ -902,7 +909,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               ) : (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
-              <span className={PANEL_TITLE}>{LIVE_TAB_LABEL}</span>
+              <span className={PANEL_TITLE}>{liveListTitle(routeListShown && listAgencySlug ? agencyShortNameBySlug(agencies, listAgencySlug) : null)}</span>
             </PanelTitleBar>
           )}
 
