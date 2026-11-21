@@ -141,6 +141,11 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - One sentence is preferred for short notices; a longer notice may use two.
 - "Learn more →" runs on at the end of the last sentence, not on its own line (CIV-920).
 - "Learn more" appears only in the notice at the bottom of a card; rows never carry a Learn more link (Ryan, 2026-11-19, CIV-1142: "learn more is only in the notice at the bottom").
+- A "Learn more" link opens an explainer: a title, then three short paragraphs (Ryan, 2026-10-27, CIV-1045; voice confirmed 2026-11-20, CIV-1978):
+  1. The issue in plain English. This can be the notice itself.
+  2. What we are doing about it, in the "We…" voice ("We show this data as the agency published it.").
+  3. What the reader can do.
+  - Notices themselves stay without first person.
 - No "so" joining two clauses in a notice or error (Ryan, 2026-10-26).
   - State what happened, then what it means, as two short sentences if needed.
 - One kind of notice, one place (Ryan, CIV-1202). A route card has three:
