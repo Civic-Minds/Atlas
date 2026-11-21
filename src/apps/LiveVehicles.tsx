@@ -26,7 +26,7 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { effectiveMode, knownModeLabel, type EffectiveModeInput } from '../../shared/modes';
 import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel, GENERIC_VEHICLE } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
-import { liveScheduledHeadway } from '../utils/liveScheduledHeadway';
+import { liveScheduledHeadway, liveScheduledRows } from '../utils/liveScheduledHeadway';
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
@@ -661,6 +661,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       : capitalizeFirst(headwayAbout(gap));
   }, [selectedGroup, headwaysBySlug, routeLayer, counted?.directionId, agencies]);
 
+  // CIV-2045: the card's own Scheduled lines for the picked direction, shown in Live's Right now (no range of its own).
+  const selectedScheduledRows = useMemo(() => {
+    if (!selectedGroup) return null;
+    const fc = routeLayer(selectedGroup.agencySlug);
+    const routeKey = fc ? routeKeyForShortName(selectedGroup.agencySlug, fc.features, selectedGroup.routeShortName, getNowDay()) : null;
+    if (!fc || !routeKey) return null;
+    const period = periodKeyForHour(new Date().getHours());
+    if (!period) return null;
+    return liveScheduledRows(fc, routeKey, getNowDay(), period, counted?.directionId ?? null,
+      routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName));
+  }, [selectedGroup, routeLayer, counted?.directionId, agencies]);
+
   // A route picked (from a link or the address) that has no card: say why, never show nothing.
   const requestedRouteNote = useMemo((): string | null => {
     if (!selectedRoute || selectedGroup || isLoading) return null;
@@ -825,6 +837,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         onCounted={setCounted}
+        scheduledRows={selectedScheduledRows}
       />
       <SidebarCardSection label={destination ?? selectedRouteHeadwayLine ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}

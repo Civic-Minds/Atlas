@@ -166,6 +166,26 @@ function rowHover(dirId: number, headsign: string | null | undefined, routeVaria
 }
 
 /**
+ * One direction's card lines, label and value, row by row: the shared stretch (with each branch's spread), each branch
+ * row and each span-only row. The one reading of what the card shows, for the issue report (#1230) and Live's Scheduled
+ * rows (CIV-2045: Live reads the card's rows, never its own range across stops).
+ */
+export function cardGroupLines(group: CardGroup, gi: number, limitedWord: string, /** The shared line adds each branch's spread (the report); off where the branch rows follow on screen (Live). */ branchSpread = true): { label: string; value: string; shared?: true }[] {
+  const shown = group.rows.map(row => ({ row, value: row.night ? null : row.display(null).value }));
+  const branchHeadways = [...new Set(shown
+    .map(({ value }) => (value && !value.isLimited ? value.headway : undefined))
+    .filter((h): h is number => h != null))].sort((a, b) => a - b);
+  const sharedLines = group.shared
+    ? [{ label: group.shared.label, value: `${group.shared.edgeText ?? headwayAbout(group.shared.headway)}${!branchSpread || branchHeadways.length === 0 ? ''
+      : `; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`}`, shared: true as const }]
+    : [];
+  // The report's whole job is completeness: a row whose label is empty (redundant with its section) still gets one (#300).
+  const branchLines = shown.map(({ row }) => ({ label: row.label || row.feature.headsign?.trim() || directionBranchFallback(row.feature.directionId ?? gi), value: reportRowValueText(row) }));
+  const spanLines = group.spanRows.filter(span => span.label).map(span => ({ label: span.label, value: limitedWord }));
+  return [...sharedLines, ...branchLines, ...spanLines];
+}
+
+/**
  * The words a row's value shows on the card (RouteDirectionRow): its limited words, the trunk-to-branch range, its own
  * words or its number. Null data reads "no data for this period", never a claim that nothing runs (#297).
  */
@@ -460,22 +480,9 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   // recompute its own values: TTC 100 AM read "every 32" beside the card's "Shared stretch every 5").
   const reportServiceLines = groups.flatMap((group, gi) => {
     const section = showDirectionSections && group.boundLabel ? [`${group.boundLabel}:`] : [];
-    const shown = group.rows.map(row => ({ row, value: row.night ? null : row.display(null).value }));
-    const branchHeadways = [...new Set(shown
-      .map(({ value }) => (value && !value.isLimited ? value.headway : undefined))
-      .filter((h): h is number => h != null))].sort((a, b) => a - b);
-    const sharedLines = group.shared
-      ? [`- ${group.shared.label} ${group.shared.edgeText ?? headwayAbout(group.shared.headway)}${branchHeadways.length === 0 ? ''
-        : `; each branch ${branchHeadways.length === 1 ? headwayAbout(branchHeadways[0]) : headwayAboutRange(branchHeadways[0], branchHeadways[branchHeadways.length - 1])}`}`]
-      : [];
-    const branchLines = shown.map(({ row }) => {
-      // The report's whole job is completeness: a row whose label is empty (redundant with its section) still gets
-      // one (#300).
-      const reportLabel = row.label || row.feature.headsign?.trim() || directionBranchFallback(row.feature.directionId ?? gi);
-      return `- ${reportLabel}: ${reportRowValueText(row)}`;
-    });
-    const spanLines = group.spanRows.filter(span => span.label).map(span => `- ${span.label}: ${limitedWord}`);
-    return [...section, ...sharedLines, ...branchLines, ...spanLines];
+    const lines = cardGroupLines(group, gi, limitedWord);
+    const shared = lines.filter(l => l.shared).map(l => `- ${l.label} ${l.value}`);
+    return [...section, ...shared, ...lines.filter(l => !l.shared).map(l => `- ${l.label}: ${l.value}`)];
   });
 
   // CIV-1199 (one calculation per fact): the numbers the rows show, read from the shown rows like the issue report above,

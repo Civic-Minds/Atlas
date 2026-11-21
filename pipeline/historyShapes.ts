@@ -310,20 +310,14 @@ export interface ShapeGap {
  * The years about to be published whose routes would lose their real line (CIV-843; MBTA 2010-2012, STM 2013-2014):
  * any route-year drawn from the stop order or not drawn, or any trip without a usable shape_id. Same lookups as
  * compileAgencyShapes, so it reports exactly what the published file will hold.
- *
- * `latestYear` (#1659): the agency's newest History year. History never reads the shapes file for that year; it draws
- * every route on today's map line (src/utils/historyYearMap.ts, yearShape). A missing shape there is not a gap, so
- * that year is left out. Without it every year is checked, as before.
  */
 export function shapeGaps(
   slug: string,
   periods: ReadonlyMap<string, HistoryPeriodShapes>,
   routeYears: ReadonlyArray<ShapeRouteYear>,
-  opts: { latestYear?: number } = {},
 ): ShapeGap[] {
   const byYear = new Map<number, ShapeGap>();
   for (const ry of routeYears) {
-    if (opts.latestYear != null && ry.year === opts.latestYear) continue;
     let gap = byYear.get(ry.year);
     if (!gap) { gap = { slug, year: ry.year, periodKeys: [], routes: 0, shaped: 0, approximate: 0, none: 0, trips: null }; byYear.set(ry.year, gap); }
     gap.routes++;
