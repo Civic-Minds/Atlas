@@ -28,7 +28,7 @@ import LiveGlance from './LiveGlance';
 import RouteNow from './RouteNow';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
 import StudioChips, { type StudioMenu } from './StudioChips';
-import { CutoffFigures, cutoffsMenu, type SetCutoffs } from './StudioCutoffs';
+import { CutoffFigures, cutoffsSection, type SetCutoffs } from './StudioCutoffs';
 
 /**
  * Live, the first page of Atlas Studio on the main map (CIV-1828 step 2): where vehicles lose time, stop to stop, from the
@@ -105,7 +105,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: periodMenuOptions(PERIOD_BANDS_ONLY.map(([k]) => k)), onPick: k => setBand(k as DashboardBand), panelClassName: 'w-56' },
-    route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 
   // CIV-1828 (Ryan picked option A with B's chart: "in A the chart is bad in B the chart is good"): Right now first with
@@ -118,7 +117,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
 
   return (
     <>
-      <StudioChips container={headerPortal} menus={menus} />
+      <StudioChips container={headerPortal} menus={menus} settings={route ? cutoffsSection(cutoffs, setCutoffs) : undefined} />
       {route && label ? (
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={label.text}>
           <PanelBody className="px-4 pt-4 pb-2">

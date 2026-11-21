@@ -344,6 +344,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       return localStorage.getItem('atlas_pref_data_saver') === 'true';
     })()
   ));
+  // CIV-2006: the same general settings in Studio's Settings menu.
+  const studioSettings = useMemo(() => ({ lightMode, setLightMode, showMapLegend, setShowMapLegend, dataSaver, setDataSaver }), [lightMode, showMapLegend, dataSaver]);
 
   useEffect(() => {
     if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
@@ -964,7 +966,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             )}
             {studioOn && (inStudio || studioLeaving) && (
               <React.Suspense fallback={inStudio ? <ViewLoadingPanel what={PAGE_NAMES.studio} /> : null}>
-                <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
+                <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} settings={studioSettings} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
