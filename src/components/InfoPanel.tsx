@@ -24,7 +24,8 @@ import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
 import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
-import { bunchingSplitNote, OPEN_ABOUT_LIVE_EVENT } from '../../shared/liveWording';
+import { bunchingSplitNote, figuresUpdatedText, OPEN_ABOUT_LIVE_EVENT } from '../../shared/liveWording';
+import { useLiveFiguresUpdated } from '../hooks/useLiveFiguresUpdated';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -136,6 +137,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const FEATURES = { ...BASE_FEATURES, history: BASE_FEATURES.history && phoneModeFlags(isPhone).history };
   const [view, setView] = useState<View>('home');
+  const liveFiguresUpdated = useLiveFiguresUpdated(open);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
@@ -386,6 +388,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   <p className="text-xs font-bold text-[var(--text-muted)] mb-2">{STUDIO_ABOUT_LIVE_HEADING}</p>
                   <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-1">{bunchingSplitNote()}</p>
                   <p className="text-xs text-[var(--text-dim)] leading-relaxed">{LIVE_NOISE_CAPTION}</p>
+                  {/* CIV-1814 item 41: when Live's figures were built, as in Sources beside the schedule refresh line. */}
+                  {liveFiguresUpdated && <p className="text-xs text-[var(--text-dim)] leading-relaxed mt-1">{figuresUpdatedText(liveFiguresUpdated)}</p>}
                 </div>
               )}
 
@@ -528,6 +532,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>
+              {/* CIV-1814 item 41 (Ryan: "put into the about area similar to how the last date GTFS was updated is"). */}
+              {liveFiguresUpdated && (
+                <p className="text-xs text-[var(--text-dim)] leading-relaxed">{figuresUpdatedText(liveFiguresUpdated)}</p>
+              )}
             </div>
           )}
 

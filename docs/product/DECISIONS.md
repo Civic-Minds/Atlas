@@ -218,6 +218,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: stops as dots on a line, a 3-step colour scale, the marked stretch as a bracket, "less exact" stops hatched.
   - Why: Ryan liked it; reach for it before bar charts or prose.
   - Source: [VISUAL.md](../style/VISUAL.md) (Live)
+- **Share changes read with an arrow; the build time sits in About**
+  - What: a share before and after reads "10% → 41%" (was "10% to 41%"); where a summary lacks both shares, nothing shows (the "+31 pt" points fallback is gone). "Figures updated Oct 16, 6:12 PM" (was "Built …" in each Live page's method section) sits in the About panel beside the schedule refresh line, and in Studio's About under its Live part.
+  - Why: Ryan, 2026-11-21: "Should the "built XYZ" be reworded then put into the about area similar to how the last date GTFS was updated is?", "Why would we not put +31%", "10% arrow 31%?", then "1" to "Use the arrow, "10% → 41%"; move the "Figures updated" line to About; drop "+31 pt" (Recommended)."
+  - Source: Linear CIV-1814 (item 41), CIV-2038
 
 ### How we talk to riders and planners
 

@@ -177,11 +177,15 @@ export function coveredRoutesText(/** The agency's short name (useLiveAgencyName
   return `${routes.length} ${agency} ${plural(routes.length, 'route')}`;
 }
 
-/** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp (shared/timeText.ts). */
-export function builtText(iso: string): string {
+/**
+ * "Figures updated Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp: when Live's figures
+ * were last built. It sits in the About panel beside the schedule refresh line (CIV-1814 item 41, Ryan: "put into the about
+ * area similar to how the last date GTFS was updated is"; was "Built Oct 16, 6:12 PM" in each page's method section).
+ */
+export function figuresUpdatedText(iso: string): string {
   const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date(iso));
   const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
-  return `Built ${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
+  return `Figures updated ${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
 }
 
 /** The heading at the foot of every Live page (MethodFootnote), and the name its draw error uses. */
@@ -214,12 +218,14 @@ export function runTimeShareText(over: number): string {
   return p === 0 ? 'on time' : `${p}% ${over < 0 ? 'faster' : 'slower'}`;
 }
 
-/** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
-export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;
-
-/** A share before and after a stretch: "10% to 41%" (Ryan, CIV-1795 7b; CIV-1805). Without both shares (older summaries), the rise in points. */
+/** The arrow between a share before and after (CIV-1814 item 41, Ryan: "Use the arrow, "10% → 41%""). */
+export const CHANGE_ARROW = '→';
+/**
+ * A share before and after a stretch: "10% → 41%" (Ryan, CIV-1814 item 41; was "10% to 41%", CIV-1795 7b). Without both
+ * shares (older summaries), nothing: the "+31 pt" points fallback was dropped (same pick).
+ */
 export const shareRiseText = (r: { value: number; fromShare?: number; toShare?: number }): string =>
-  r.fromShare != null && r.toShare != null ? `${percentText(r.fromShare)} to ${percentText(r.toShare)}` : risePointsText(r.value);
+  r.fromShare != null && r.toShare != null ? `${percentText(r.fromShare)} ${CHANGE_ARROW} ${percentText(r.toShare)}` : '';
 
 /**
  * Bunching as whole percents that add up wherever a total and its two parts sit side by side (tile, route list, agency

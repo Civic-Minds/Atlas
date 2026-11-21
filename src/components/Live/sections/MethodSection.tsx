@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { goodDayCounts, goodDayLimits } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { joinList } from '../../../../shared/overflowText';
-import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, builtText, coveredRoutesText, serviceDaysText } from '../../../../shared/liveWording';
+import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, coveredRoutesText, serviceDaysText } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
@@ -60,7 +60,6 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         positionsLine,
         tripMatchLine(true),
         data.replacementBuses && <Term t="Replacement buses">run this route in this schedule, so every figure describes the buses.</Term>,
-        `${builtText(data.generatedAt)}.`,
       ] },
       { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
       { label: METHOD_GROUPS.limits, items: [
@@ -96,7 +95,6 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
             <Term t="Routes covered" colon>{coverage}{s.held.length ? `, not including ${joinList(s.held.map(h => h.route))}` : ''}.</Term>,
             networkFiguresLine,
             stopsLine,
-            builtText(s.generatedAt) + '.',
           ] },
           { label: METHOD_GROUPS.colours, items: [w && colourLine] },
           { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
