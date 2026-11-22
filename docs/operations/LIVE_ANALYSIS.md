@@ -36,7 +36,8 @@ Atlas Studio agencies (Kingston, CIV-1686) are refreshed on Ryan's Mac only, nev
 with the local keys and writes nothing to R2. It fetches the agency's positions (`live-fetch-archive.ts --agency`), takes each
 service date's timetable from the agency's own archived static GTFS (`live-gtfs-for-window.ts --agency`, `gtfs/archive/<slug>/`),
 analyses every route in its archive (`live-analyze.sh all --agency <slug>`) and writes a time-loss report per route to
-`$LIVE_DATA/studio/time-loss/`. Kingston has enough recorded days from about 2026-12-28.
+`$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to the one shared folder, `Atlas-worktrees/_live-data`, whichever checkout runs
+it. Kingston has enough recorded days from about 2026-12-28.
 
 One exception, for the hosted Atlas Studio MCP only (CIV-1860, Ryan approved 2026-11-18): the `mcp-live` job in
 `live-report-refresh.yml` analyses every recorded agency, Studio agencies included, and writes the MCP's small figure files
