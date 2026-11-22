@@ -64,6 +64,11 @@ describe('vehicle card: Vehicle, Next stop and Updated (CIV-2024)', () => {
     expect(rows).toContainEqual({ label: 'Next stop', value: 'Dundas St West at Bathurst St' });
     expect(rows.at(-1)).toEqual({ label: 'Updated', value: '25 sec ago' });
   });
+  it('says "At <stop>" while the vehicle stands at a stop (CIV-2034)', () => {
+    const rows = vehicleCardRows({ ...v, atStop: true }, 'Dundas West', undefined, 1025);
+    expect(rows).toContainEqual({ label: 'At', value: 'Dundas St West at Bathurst St' });
+    expect(rows.map(r => r.label)).not.toContain('Next stop');
+  });
   it('counts whole minutes from a minute on', () => {
     expect(vehicleCardRows(v, 'Dundas West', undefined, 1000 + 130).at(-1)?.value).toBe('2 min ago');
   });
