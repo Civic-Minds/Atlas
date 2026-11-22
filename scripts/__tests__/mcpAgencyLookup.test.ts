@@ -49,4 +49,12 @@ describe('agency lookup', () => {
     expect(data.hasWordsAt('UP Express (Toronto)', 'toronto')).toBe(true);
     expect((await data.findAgency('GO Transit'))?.slug).toBe('go');
   });
+
+  it('finds a service brand in route names only as whole words (#1682)', async () => {
+    data.useStore({ ...store, rankAgencies: async () => [{ slug: 'psta', name: 'PSTA' }, { slug: 'yrt', name: 'York Region Transit' }], routeNameText: async () => ({ psta: '19 LARGO TRANSIT / TARPON SPRINGS', yrt: 'blue Viva Blue' }) } as unknown as AtlasStore);
+    expect(await data.agenciesWithRouteName('go transit')).toEqual([]);
+    expect((await data.agenciesWithRouteName('viva')).map(a => a.agency)).toEqual(['York Region Transit']);
+    expect(data.hasWholeWords('Largo Transit', 'transit')).toBe(true);
+    expect(data.hasWholeWords('Viva Blue', 'viv')).toBe(false);
+  });
 });

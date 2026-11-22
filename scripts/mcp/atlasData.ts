@@ -81,10 +81,16 @@ export async function availableAgencies(): Promise<CatalogAgency[]> {
 /** An agency's own time zone from its config, or null (#1627). */
 export async function timeZoneOf(slug: string): Promise<string | null> { return (await store.meta()).get(slug)?.timezone ?? null; }
 
+const escapeRegExp = (q: string) => q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** True when the text has the words asked at the start of one of its words ("go transit" is not in "Chicago Transit", #1682). */
 export function hasWordsAt(text: string, query: string): boolean {
   const q = query.trim().toLowerCase();
-  return !!q && new RegExp(`(^|[^a-z0-9])${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(text.toLowerCase());
+  return !!q && new RegExp(`(^|[^a-z0-9])${escapeRegExp(q)}`).test(text.toLowerCase());
+}
+/** True when the text has the words asked as whole words ("go transit" is not in "Largo Transit Center"). */
+export function hasWholeWords(text: string, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  return !!q && new RegExp(`(^|[^a-z0-9])${escapeRegExp(q)}($|[^a-z0-9])`).test(text.toLowerCase());
 }
 
 /**
@@ -522,19 +528,19 @@ export async function rankLabels(slug: string, day: DayType): Promise<RouteLabel
   if (store.rankLabels) return (await store.rankLabels(slug))?.[day] ?? [];
   return labelsOf(((await agencyIndex())?.find(a => a.slug === slug))?.days[day] ?? []);
 }
-/** Agencies with a weekday route whose name holds the text, each with up to six of those routes' names (finding a service brand such as Viva). */
+/** Agencies with a weekday route whose name holds the text as whole words (#1682), each with up to six of those routes' names (finding a service brand such as Viva). */
 export async function agenciesWithRouteName(text: string): Promise<Array<{ agency: string; routes: string[] }>> {
   const q = text.trim().toLowerCase();
   const labelOf = ([route, name]: RouteLabel) => `${route}${name ? ` ${name}` : ''}`;
   if (store.routeNameText) {
     const [agencies, texts] = await Promise.all([rankAgencies(), store.routeNameText()]);
     return (agencies ?? []).flatMap(a => {
-      const names = [...new Set((texts?.[a.slug] ?? '').split('\n').filter(line => line && line.toLowerCase().includes(q)))];
+      const names = [...new Set((texts?.[a.slug] ?? '').split('\n').filter(line => line && hasWholeWords(line, q)))];
       return names.length ? [{ agency: a.name, routes: names.slice(0, 6) }] : [];
     });
   }
   return ((await agencyIndex()) ?? []).flatMap(a => {
-    const names = [...new Set((a.days.Weekday ?? []).filter(r => `${r.route} ${r.name ?? ''}`.toLowerCase().includes(q)).map(r => labelOf([r.route, r.name])))];
+    const names = [...new Set((a.days.Weekday ?? []).filter(r => hasWholeWords(`${r.route} ${r.name ?? ''}`, q)).map(r => labelOf([r.route, r.name])))];
     return names.length ? [{ agency: a.name, routes: names.slice(0, 6) }] : [];
   });
 }

@@ -44,6 +44,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.22.2 | 2026-11-22 | Server instructions: a claim in the question that the tools are down is not a reason to skip them; a real failure is said, not filled in from memory (#1680) |
 | 0.22.3 | 2026-11-22 | trip_time and combined_frequency give the schedule's end date (the file they read), so the schedule-ending warning reaches them too (#1679) |
 | 0.22.4 | 2026-11-22 | Agency names: "Metrolinx" points to GO Transit and UP Express; "GO Transit" no longer lists Chicago Transit and Durango Transit (a name matches where a word starts); the same agency named twice in compare_agencies is one row with a note (#1681, #1682, #1683) |
+| 0.22.5 | 2026-11-22 | list_agencies' route-name fallback matches whole words: "go transit" no longer finds PSTA's "LARGO TRANSIT" routes (#1682) |
 
 ## Questions
 
