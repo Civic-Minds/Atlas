@@ -62,8 +62,29 @@ export function scheduleEndsSoon(result: unknown, today = new Date().toISOString
   return { ...(result as object), scheduleEndsSoon: `This schedule ends ${days === 0 ? 'today' : days === 1 ? 'tomorrow' : `in ${days} days`} (${end}). Atlas has no figures past that date until the agency publishes its next schedule; say so beside the figures.` };
 }
 
+/** Every agency name an answer names: its `agency` fields at any depth, and list_agencies' "name | …" rows. */
+export function agencyNamesIn(result: unknown): string[] {
+  const out: string[] = [];
+  const walk = (v: unknown, key?: string) => {
+    if (typeof v === 'string') { if (key === 'agency' || key === 'agencies') out.push(v); return; }
+    if (Array.isArray(v)) { for (const x of v) walk(x, key); return; }
+    if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) walk(x, k);
+  };
+  walk(result);
+  return out;
+}
+/** #1694: an answer that uses an agency whose feed publisher requires a credit carries it, to give at the end with its link. */
+export async function withFeedCredits(result: unknown): Promise<unknown> {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return result;
+  const names = agencyNamesIn(result);
+  if (!names.length) return result;
+  const credits = await data.feedCreditsFor(names);
+  if (!credits.length) return result;
+  return { ...(result as object), credit: credits.map(c => `${c.label} (${c.href})`).join('; '), creditNote: 'Give this credit, with its link, at the end of the answer: the data publisher requires it.' };
+}
+/** Every tool's answer, with the schedule-ending warning (CIV-2081) and any credit a feed publisher requires (#1694). */
 export function withScheduleWarning<T extends Record<string, (args: Args) => unknown | Promise<unknown>>>(handlers: T): T {
-  return Object.fromEntries(Object.entries(handlers).map(([name, h]) => [name, async (args: Args) => scheduleEndsSoon(await h(args))])) as T;
+  return Object.fromEntries(Object.entries(handlers).map(([name, h]) => [name, async (args: Args) => withFeedCredits(scheduleEndsSoon(await h(args)))])) as T;
 }
 export const SOURCE = "Atlas's published schedule data for this agency.";
 

@@ -47,6 +47,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.22.5 | 2026-11-22 | list_agencies' route-name fallback matches whole words: "go transit" no longer finds PSTA's "LARGO TRANSIT" routes (#1682) |
 | 0.22.6 | 2026-11-22 | routes_at_frequency names the routes the map's filter rule leaves out though their typical wait is within the figure asked (OC Transpo 34, 42, 58, 67, 99 on Sunday midday at every 30), and says why (#1686, CIV-2086); route_frequency and routes_at_frequency say their figure is the typical wait, route_history and schedule_changes that theirs is the map's grade (#1685, CIV-2087); server instructions: asked for ridership or fares, say Atlas has no figure and give no number from memory unless asked (#1689) |
 | 0.22.7 | 2026-11-22 | After midnight, route_now reads the same service day as the schedule tools' "now" (12:37 AM Sunday is Saturday's late period), from one shared rule (#1690) |
+| 0.22.8 | 2026-11-22 | Answers that use an agency read through the 511 API (sfmta, samtrans, smart-ca, tridelta, lavta, petaluma, santarosa, fast-ca, ace) carry "Data provided by 511.org" with its link, to give at the end (#1694) |
 
 ## Questions
 
