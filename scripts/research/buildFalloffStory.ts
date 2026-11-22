@@ -47,6 +47,10 @@ const agencies = rows
   .filter(r => num(r.route_km) >= MIN_KM && mayRedistribute(r.slug))
   .map(r => ({ slug: r.slug, name: r.name, region: r.region, routeKm: one(num(r.route_km)), weekdayMorning: num(r.am_pct), sundayEvening: num(r.sun_eve_pct), hasSunday: r.has_sunday === 'true' }));
 const sized = rows.filter(r => num(r.route_km) >= MIN_KM);
+/** The Greater Toronto and Hamilton Area's agencies, in the outline's order (a place, not a list of live agencies: kept in
+ * the data file so the page types no slugs, as the one-live-agency-list guard asks). */
+const GTHA = ['ttc', 'miway', 'brampton', 'hamilton', 'yrt', 'burlington', 'oakville', 'go', 'drt'];
+for (const slug of GTHA) if (!agencies.some(a => a.slug === slug)) throw new Error(`No ${slug} of at least ${MIN_KM} route-km`);
 const out = {
   release, date, minKm: MIN_KM, frequentMorningMin: FREQUENT_MORNING_MIN,
   all: shares(rows),
@@ -59,6 +63,7 @@ const out = {
     noneOnSundayEvening: sized.filter(r => num(r.am_pct) >= FREQUENT_MORNING_MIN && num(r.sun_eve_pct) === 0).length,
   },
   agencies,
+  gtha: GTHA,
 };
 writeFileSync('src/data/falloff-story.json', `${JSON.stringify(out, null, 1)}\n`);
 console.log(`${agencies.length} agencies kept; all ${out.all.weekdayMorning}% to ${out.all.sundayEvening}%`);

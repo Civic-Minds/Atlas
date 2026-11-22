@@ -4342,5 +4342,16 @@
    "sundayEvening": 0,
    "hasSunday": true
   }
+ ],
+ "gtha": [
+  "ttc",
+  "miway",
+  "brampton",
+  "hamilton",
+  "yrt",
+  "burlington",
+  "oakville",
+  "go",
+  "drt"
  ]
 }
