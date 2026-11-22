@@ -249,7 +249,7 @@ describe('Live route dashboard', () => {
     expect(excluding.closest('div')?.querySelector('h3')?.textContent).toBe('Where the data comes from');
     expect([...document.querySelectorAll('#method-analysis h3')].map(h => h.textContent)).toEqual(['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']);
     expect(document.querySelector('details')).toBeNull();
-    expect(fa().getAllByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
+    expect(fa().getAllByText((_: string, el: Element | null) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
     // Layout A (CIV-1075): each group's heading on its own line, no trailing period, then one paragraph.
     for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(fa().getByText(g, { selector: 'h3' }).nextElementSibling?.tagName).toBe('P');
     // One name for it (CIV-1160 question 6): "Trip time", never "Run time".
