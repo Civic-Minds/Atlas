@@ -131,6 +131,17 @@ describe('hourly figures by branch (CIV-1840)', () => {
   it('keeps every column when the ends are not known', () => {
     expect(hourlyFrequency(r, 480, 600).length).toBe(4);
   });
+  it('keeps a branch that runs mostly in the window, after the day\'s columns (#1714: TTC 501 Sunday to Long Branch)', () => {
+    const day = Object.fromEntries(Array.from({ length: 17 }, (_, i) => [String(i + 6), 14]));
+    const late = { '22': 4, '23': 6, '24': 6, '25': 6, '26': 1 };
+    const rows = [
+      { directionId: 1, headsign: 'Humber', departuresByHour: day, headwayByHour: { '23': null, '24': null } },
+      { directionId: 1, headsign: 'Long Branch', departuresByHour: late, headwayByHour: { '23': 10, '24': 10 } },
+    ];
+    const r501 = { key: '501', name: '501', shortName: '501', longName: 'Queen', mode: 'Streetcar', rows } as unknown as Parameters<typeof hourlyFrequency>[0];
+    expect(hourlyFrequency(r501, 23 * 60, 25 * 60).map(c => c.towards)).toEqual(['Humber', 'Long Branch']);
+    expect(hourlyFrequency(r501, 8 * 60, 10 * 60).map(c => c.towards)).toEqual(['Humber']);
+  });
 });
 
 describe('Live tools (CIV-1860)', () => {

@@ -555,13 +555,24 @@ export function periodsIn(start: number, end: number): string[] {
  */
 export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?: (row: ShapeProperties) => string | null) {
   const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
+  const inWindow = (h: number) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end;
+  // #1714: a row that carries a tenth of its direction's trips inside the asked window keeps its column too, after the
+  // day's columns, so a branch that runs mostly late (TTC 501 Sunday westbound "towards Long Branch": 23 of 253 trips a
+  // day, nearly all after 10 PM) is not left out. The day's columns and their order stay as they were.
+  const windowTrips = (row: ShapeProperties) => Object.entries(hoursOf(row)).reduce((a, [h, n]) => a + (inWindow(+h) ? n : 0), 0);
   const trips = (row: ShapeProperties) => Object.values(hoursOf(row)).reduce((a, b) => a + b, 0);
+  const dirOf = (row: ShapeProperties) => String(row.directionId ?? '0');
   const towardsOf = (row: ShapeProperties) => [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
-  const dirTrips = new Map<string, number>();
-  for (const row of r.rows) dirTrips.set(String(row.directionId ?? '0'), (dirTrips.get(String(row.directionId ?? '0')) ?? 0) + trips(row));
-  const kept = r.rows
-    .filter(row => trips(row) >= 0.1 * (dirTrips.get(String(row.directionId ?? '0')) ?? 0))
-    .sort((a, b) => String(a.directionId).localeCompare(String(b.directionId)) || trips(b) - trips(a));
+  const dirTrips = new Map<string, number>(), dirWindow = new Map<string, number>();
+  for (const row of r.rows) {
+    dirTrips.set(dirOf(row), (dirTrips.get(dirOf(row)) ?? 0) + trips(row));
+    dirWindow.set(dirOf(row), (dirWindow.get(dirOf(row)) ?? 0) + windowTrips(row));
+  }
+  const byDay = (row: ShapeProperties) => trips(row) >= 0.1 * (dirTrips.get(dirOf(row)) ?? 0);
+  const byWindow = (row: ShapeProperties) => (dirWindow.get(dirOf(row)) ?? 0) > 0 && windowTrips(row) >= 0.1 * dirWindow.get(dirOf(row))!;
+  const order = (a: ShapeProperties, b: ShapeProperties) => String(a.directionId).localeCompare(String(b.directionId)) || trips(b) - trips(a);
+  const dayKept = r.rows.filter(byDay).sort(order);
+  const kept = [...dayKept, ...r.rows.filter(row => !byDay(row) && byWindow(row)).sort(order)];
   // Rows that end at the same stop and read the same each hour are one way to the end (TTC 29 northbound, from either
   // loop to Wilson), as route_frequency's branches show it: one column, not one per starting loop.
   const columns: Array<{ row: ShapeProperties; towards: string | null }> = [];
@@ -582,7 +593,7 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
   return columns.map(({ row, towards }) => ({
     towards,
     byHour: Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
-      .map(([h, v]) => [+h, v] as const).filter(([h]) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end).sort((a, b) => a[0] - b[0])
+      .map(([h, v]) => [+h, v] as const).filter(([h]) => inWindow(h)).sort((a, b) => a[0] - b[0])
       .map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : headwayEvery(v) })),
   }));
 }
