@@ -294,6 +294,12 @@ Ryan, 2026-11-21 (relayed by Atlas Questions): "1". He was answering: "1. (Recom
 - Why: TARC 1, TTC 102 and rtcsnv 4743 passed "every 15 or better" on a trunk every 15 while their branches ran every 30-60.
 - Counts he saw (8 agencies, all four CIV-1959 flags on, weekday routes passing): midday ≤15 151 → 117, AM ≤15 170 → 133, PM ≤15 172 → 135; TTC midday 97 → 73, TARC 3 → 1. No route starts passing.
 
+### 2026-11-21 — Studio's Live files rebuild daily in the cloud, privately (CIV-2077)
+Ryan, 2026-11-21 (relayed by the manager): picked option 1, "Add those two checks and switch on a daily automatic run for every Studio city, matching TTC", and wants it in the cloud, not on the Mac.
+- The rule: every city Live records except the TTC gets its Studio Live files rebuilt daily by `studio-live-refresh.yml` into the private archive bucket (`studio-live/`), with counts-only logs and no artifact or cache, since the repository is public. This replaces the Mac-only refresh of CIV-1716 (2026-11-16) for Live; nothing goes public.
+- The two checks: a run uploads to its own prefix and switches one pointer file, so a failed upload changes nothing; an agency whose either week has fewer than `LIVE_MIN_HEALTHY_DAYS_PER_WEEK` good days keeps its last files.
+- The daily schedule stays off (repository variable `STUDIO_LIVE_DAILY`) until the first scheduled publish gets a go.
+
 ### 2026-11-21 — Vehicles needed counts every route except intercity coach (CIV-2053)
 Ryan, 2026-11-21 (relayed by Atlas Questions): "1". He was answering CIV-2053: keep the "local and regional bus only" wording and hide non-bus routes, or reword the rule to "no intercity coach" so rail and streetcars count. He picked the second; the bus-only option is rejected.
 - The rule: Studio's vehicles-needed figures count every route of the seven Studio agencies except intercity coach (Bustang stays out, CIV-1806). Buses and streetcars count as vehicles; subway and light rail are shown in trains.

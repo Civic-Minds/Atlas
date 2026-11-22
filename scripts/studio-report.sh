@@ -1,6 +1,7 @@
 #!/bin/bash
-# Atlas Studio's report refresh for one agency (Kingston today), on this Mac only (CIV-1716; Ryan, 2026-11-16: Studio
-# is local only, and the Atlas repository is public, so no GitHub job builds it).
+# Atlas Studio's report refresh for one agency (Kingston today), on this Mac. The daily cloud build of Studio's Live
+# files is studio-live-refresh.yml (CIV-2077, private bucket; `npm run studio:sync` copies it here); this script also
+# writes the time-loss reports.
 #   npm run studio:report                     Kingston, last 15 service dates
 #   npm run studio:report -- kingston --days 15
 # Reads with whatever R2 keys the environment has (read only: nothing is written to R2). Fetches the agency's archived

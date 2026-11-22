@@ -12,8 +12,8 @@ name: Live report refresh
 # To undo a publish: download that run's live-report-backup artifact and upload it back with
 #   npx tsx scripts/live-publish-upload.ts ttc --from <backup dir> --backup <another dir> --allow-older --upload
 #
-# Atlas Studio agencies (Kingston) get no report pages here: Studio is local only and this repository is public, so their
-# report refresh runs on Ryan's Mac with `npm run studio:report` (CIV-1716). The mcp-live job below builds the hosted
+# Atlas Studio agencies (Kingston) get no report pages here: this repository is public, so their Live files rebuild in
+# studio-live-refresh.yml into the private archive bucket (CIV-2077). The mcp-live job below builds the hosted
 # Atlas Studio MCP's Live files for every recorded agency into a PRIVATE bucket only the hosted MCP reads (Ryan approved
 # this route 2026-11-18, CIV-1860); its log shows counts only and it uploads no artifact.
 on:
