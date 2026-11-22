@@ -50,7 +50,7 @@ export const MCP_DOCS = {
     unavailable: 'Usage can’t be read: the admin token isn’t on this Mac, or the hosted server didn’t answer.',
     loading: 'Loading…',
     none: 'No testers yet.',
-    name: 'Name', since: 'Since', calls: 'Calls', lastWeek: 'Last 7 days', status: 'Status',
+    name: 'Name', since: 'Since', calls: 'Calls', lastWeek: 'Calls, last 7 days', questions: 'Questions', questionsLastWeek: 'Questions, last 7 days', status: 'Status',
     active: 'Active', revoked: 'Link stopped',
     question: 'Question', tool: 'Tool', when: 'When',
     noQuestion: 'No question given',

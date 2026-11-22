@@ -292,6 +292,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — MCP asks for a question ID; privacy line (CIV-2145)
+Ryan (2026-11-22, relayed by Atlas Manager New), on the privacy line as drafted: "1".
+- The rule: every Atlas Studio MCP tool asks for the question and a question ID the assistant makes up, both required in the schema; the hosted log keeps the ID so calls for one question group together.
+- The privacy policy says: "Every tool also asks for your question, which is the assistant’s summary of what you asked, and a label the assistant makes up to group the calls made for one question. The assistant writes both, so the question may not match your words, and an assistant can still leave them out."
+
 ### 2026-11-22 — MTA and NJ Transit readings are reads, not changes (CIV-460 Q2, CIV-2123)
 Ryan (2026-11-22, relayed by Atlas Questions), to keep Atlas's readings of MTA and NJ Transit data: "1".
 - The rule: these readings stay. They are how Atlas reads the data, not changes to it, so they sit within MTA's "will not modify" and NJ Transit's "as-is" terms.

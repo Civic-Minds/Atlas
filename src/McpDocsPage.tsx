@@ -91,6 +91,8 @@ function Testers() {
     { key: 'since', header: T.since, cell: t => when(t.created_at) },
     { key: 'calls', header: T.calls, cell: t => t.calls },
     { key: 'lastWeek', header: T.lastWeek, cell: t => t.calls_7d ?? MISSING_VALUE },
+    { key: 'questions', header: T.questions, cell: t => t.questions ?? MISSING_VALUE },
+    { key: 'questionsLastWeek', header: T.questionsLastWeek, cell: t => t.questions_7d ?? MISSING_VALUE },
     { key: 'status', header: T.status, cell: t => (t.revoked_at ? T.revoked : T.active) },
   ];
   const callColumns: DataTableColumn<McpTesterCall>[] = [

@@ -1,7 +1,7 @@
 /**
  * Atlas Studio MCP, hosted pilot (CIV-1840). A stateless Streamable HTTP MCP endpoint at /t/<token>/mcp serving the
  * published-data tools in scripts/mcp/tools.ts, read-only from the live release, with one private link per tester, a
- * fair-use limit and a log of every call (arguments, the optional question, the answer) that the tester can have deleted.
+ * fair-use limit and a log of every call (arguments, the question and its ID, the answer) that the tester can have deleted.
  *
  * It reads the same split files the local check reads (shared/mcpSplitStore.ts) from `<DATA_ORIGIN>/atlas/releases/<id>/mcp/`,
  * found through the release pointer the map reads, so it is never staler than the map.
@@ -151,15 +151,15 @@ async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env
   if (!success) return limited('Too many requests in a short time. Wait a minute and try again.', '60');
   if (tester.used >= dailyCapFor(tester.name, env)) return limited("You've reached the daily fair-use limit for Atlas Studio (it counts the last 24 hours). Try again later.", '3600');
 
-  const { question, ...args } = params.arguments ?? {};
+  const { question, question_id: questionId, ...args } = params.arguments ?? {};
   const started = Date.now();
   let releaseId: string | null = null;
   const outcome = await runTool(async a => { releaseId = await useCurrentRelease(env); return handler(a); }, args);
   const { ok, text } = outcome;
   const ms = Date.now() - started;
   const logged = text.length > MAX_LOGGED_RESULT ? `${text.slice(0, MAX_LOGGED_RESULT)}\n[cut: the answer was ${text.length} characters]` : text;
-  ctx.waitUntil(env.DB.prepare('INSERT INTO calls (at, tester, tool, args, question, ok, result, ms, release_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    .bind(new Date().toISOString(), tester.name, name, JSON.stringify(args), typeof question === 'string' ? question.slice(0, 2000) : null, ok ? 1 : 0, logged, ms, releaseId).run());
+  ctx.waitUntil(env.DB.prepare('INSERT INTO calls (at, tester, tool, args, question, question_id, ok, result, ms, release_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    .bind(new Date().toISOString(), tester.name, name, JSON.stringify(args), typeof question === 'string' ? question.slice(0, 2000) : null, typeof questionId === 'string' ? questionId.slice(0, 100) : null, ok ? 1 : 0, logged, ms, releaseId).run());
   return rpcResult(id, toolCallResult(outcome));
 }
 
@@ -180,9 +180,10 @@ async function handleAdmin(request: Request, env: Env, url: URL): Promise<Respon
   if (area !== 'testers') return json({ error: 'Not found' }, 404);
 
   if (!name && request.method === 'GET') {
-    // CIV-2063: calls in the last 7 days too, for the internal MCP page.
+    // CIV-2063: calls in the last 7 days too, for the internal MCP page. Questions count the distinct question IDs the
+    // assistant sent (Ryan, 2026-11-22); calls with no ID aren't counted as questions.
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS calls_7d FROM testers t ORDER BY t.created_at').bind(weekAgo).all();
+    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS calls_7d, (SELECT COUNT(DISTINCT c.question_id) FROM calls c WHERE c.tester = t.name) AS questions, (SELECT COUNT(DISTINCT c.question_id) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS questions_7d FROM testers t ORDER BY t.created_at').bind(weekAgo, weekAgo).all();
     return json({ testers: rows.results });
   }
   if (!name && request.method === 'POST') {
@@ -202,7 +203,7 @@ async function handleAdmin(request: Request, env: Env, url: URL): Promise<Respon
   }
   if (name && what === 'log' && request.method === 'GET') {
     const limit = Math.min(500, Math.max(1, Number(url.searchParams.get('limit') ?? 100)));
-    const rows = await env.DB.prepare('SELECT id, at, tool, args, question, ok, result, ms, release_id FROM calls WHERE tester = ? ORDER BY id DESC LIMIT ?').bind(name, limit).all();
+    const rows = await env.DB.prepare('SELECT id, at, tool, args, question, question_id, ok, result, ms, release_id FROM calls WHERE tester = ? ORDER BY id DESC LIMIT ?').bind(name, limit).all();
     return json({ tester: name, calls: rows.results });
   }
   if (name && what === 'log' && request.method === 'DELETE') {

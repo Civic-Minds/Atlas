@@ -57,10 +57,14 @@ const TOOL_LIST = [
 ];
 
 /**
- * Every tool takes an optional `question` (Ryan, 2026-11-18): the person's question as the assistant understood it. The
- * assistant fills it, it isn't guaranteed, and the tools ignore it; the hosted server logs it to improve Atlas.
+ * Every tool asks for `question` and `question_id` (Ryan, 2026-11-18 for the question; 2026-11-22 "1": make it required
+ * and add a shared ID). The question is the person's question as the assistant understood it; the ID groups every call
+ * made for one question, so the usage page can count questions as well as calls. The tools ignore both; the hosted
+ * server logs them to improve Atlas. Required in the schema, but an assistant can still leave them out, so the server
+ * answers either way.
  */
-const QUESTION = { type: 'string', description: "Optional: the person's question, as you understood it. Used only to improve Atlas; leave it out if unsure." };
+const QUESTION = { type: 'string', description: "The person's question, as you understood it. Used only to improve Atlas." };
+const QUESTION_ID = { type: 'string', description: 'A short ID you make up for the person\'s question, such as "q1". Send the same ID on every call you make to answer that question, and a new one for their next question.' };
 /**
  * Each tool's human-readable title, for the annotations directories ask for (CIV-1854: Claude's and ChatGPT's directories
  * and Microsoft's connector gallery want a title and readOnlyHint on every tool).
@@ -100,10 +104,10 @@ export const TOOL_SUMMARIES: Record<string, string> = {
 };
 /** Every tool only reads Atlas's own published data: nothing is changed, and nothing outside Atlas is reached. */
 const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
-export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
+export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION, question_id: QUESTION_ID }, required: [...(t.inputSchema.required ?? []), 'question', 'question_id'] } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.22.14';
+export const SERVER_VERSION = '0.23.0';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of
