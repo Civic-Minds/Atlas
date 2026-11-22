@@ -55,5 +55,6 @@ export const INTERNAL_HEADER_LINKS: readonly { label: string; path: string; /** 
   { label: 'Studio', path: STUDIO_PATH },
   { label: 'Live', path: LIVE_PATH },
   { label: 'Coverage', path: STUDIO_COVERAGE_PATH },
+  { label: 'MCP', path: MCP_DOCS_PATH },
   { label: 'More', path: INTERNAL_PATH, arrow: true },
 ];

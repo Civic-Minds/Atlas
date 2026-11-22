@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { MCP_TESTERS_API_URL, type McpTester, type McpTesterCall } from '../shared/mcpTesters';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
@@ -24,6 +25,7 @@ const SECTIONS = [
   { id: 'mcp-tools', label: C.tools.heading },
   { id: 'mcp-freshness', label: C.freshness.heading },
   { id: 'mcp-connect', label: C.connect.heading },
+  { id: 'mcp-testers', label: C.testers.heading },
 ] as const;
 
 const PARAGRAPH = 'mt-4 text-sm leading-6 text-[var(--text-muted)]';
@@ -36,6 +38,62 @@ function Section({ id, children }: { id: (typeof SECTIONS)[number]['id']; childr
       <SectionTitle id={id}>{SECTIONS.find(s => s.id === id)!.label}</SectionTitle>
       {children}
     </section>
+  );
+}
+
+const T = C.testers;
+const TABLE = 'mt-4 w-full text-left text-sm';
+const TH = 'py-2 pr-4 font-semibold text-[var(--text-primary)]';
+const TD = 'py-2 pr-4 align-top text-[var(--text-muted)]';
+const when = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+
+/** The hosted pilot's testers and each one's latest calls, read through the local API (local-api/mcp-testers.ts). */
+function Testers() {
+  const [testers, setTesters] = useState<McpTester[] | null | 'unavailable'>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  const [calls, setCalls] = useState<McpTesterCall[] | null>(null);
+  useEffect(() => {
+    fetch(MCP_TESTERS_API_URL).then(r => r.json()).then(d => setTesters(d.available ? d.testers : 'unavailable')).catch(() => setTesters('unavailable'));
+  }, []);
+  useEffect(() => {
+    if (!open) return;
+    setCalls(null);
+    fetch(`${MCP_TESTERS_API_URL}?name=${encodeURIComponent(open)}`).then(r => r.json()).then(d => setCalls(d.available ? d.calls : [])).catch(() => setCalls([]));
+  }, [open]);
+  if (testers === 'unavailable') return <p className={PARAGRAPH}>{T.unavailable}</p>;
+  if (testers === null) return <p className={PARAGRAPH}>{T.loading}</p>;
+  if (!testers.length) return <p className={PARAGRAPH}>{T.none}</p>;
+  return (
+    <>
+      <p className={PARAGRAPH}>{T.intro}</p>
+      <table className={TABLE}>
+        <thead><tr><th className={TH}>{T.name}</th><th className={TH}>{T.since}</th><th className={TH}>{T.calls}</th><th className={TH}>{T.status}</th></tr></thead>
+        <tbody>
+          {testers.map(t => (
+            <tr key={t.name}>
+              <td className={TD}><button type="button" className="font-semibold text-[var(--text-primary)] underline" aria-expanded={open === t.name} onClick={() => setOpen(open === t.name ? null : t.name)}>{t.name}</button></td>
+              <td className={TD}>{when(t.created_at)}</td>
+              <td className={TD}>{t.calls}</td>
+              <td className={TD}>{t.revoked_at ? T.revoked : T.active}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {open && (calls === null ? <p className={PARAGRAPH}>{T.loading}</p> : !calls.length ? <p className={PARAGRAPH}>{T.noCalls}</p> : (
+        <table className={TABLE}>
+          <thead><tr><th className={TH}>{T.when}</th><th className={TH}>{T.question}</th><th className={TH}>{T.tool}</th></tr></thead>
+          <tbody>
+            {calls.map(c => (
+              <tr key={c.id}>
+                <td className={TD}>{when(c.at)}</td>
+                <td className={TD}>{c.question ?? T.noQuestion}</td>
+                <td className={TD}><code className="text-xs">{c.tool}</code>{Number(c.ok) ? '' : ` (${T.failed})`}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ))}
+    </>
   );
 }
 
@@ -79,6 +137,10 @@ export default function McpDocsPage() {
         <p className={PARAGRAPH}>{C.connect.desktop}</p>
         <pre className={CODE}><code>{CLAUDE_DESKTOP}</code></pre>
         <p className={PARAGRAPH}>{C.connect.hosted}</p>
+      </Section>
+
+      <Section id="mcp-testers">
+        <Testers />
       </Section>
     </DocsPageLayout>
   );
