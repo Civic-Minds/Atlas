@@ -13,6 +13,7 @@ import { jsonOrNull, splitStore, urlReader } from '../../../shared/mcpSplitStore
 import { checkMcpRelease } from '../../../shared/mcpRelease';
 import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
 import { splitLiveReader, useLiveReader } from '../../../scripts/mcp/liveData';
+import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_LOGGED_RESULT = 1_500_000; // D1 rows top out at 2 MB
@@ -35,7 +36,7 @@ async function sameSecret(a: string, b: string): Promise<boolean> {
 let activeRelease: { id: string; checkedAt: number } | null = null;
 
 /** Test deployments only (wrangler.pilot-test.jsonc): the split files ship inside the Worker as static assets, for a first test with nothing uploaded to R2. */
-type TestEnv = Env & { ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R2Bucket };
+type TestEnv = Env & { ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
 
 /**
  * The Live tools read the private bucket (CIV-1860; scripts/mcp/releaseLivePrivate.ts writes it daily), with a short
@@ -45,7 +46,10 @@ type TestEnv = Env & { ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R
 const LIVE_TTL_MS = 5 * 60_000;
 let liveBucket: R2Bucket | undefined;
 const liveCache = new Map<string, { at: number; value: unknown }>();
+let archiveBucket: R2Bucket | undefined;
 function useLiveBucket(env: TestEnv): void {
+  // route_now (CIV-1870): the recorder's last half hour, from the Live archive bucket, read only.
+  if (env.MCP_LIVE_ARCHIVE && env.MCP_LIVE_ARCHIVE !== archiveBucket) { archiveBucket = env.MCP_LIVE_ARCHIVE; useNowSource(bucketNowSource(archiveBucket)); }
   if (!env.MCP_LIVE || env.MCP_LIVE === liveBucket) return;
   liveBucket = env.MCP_LIVE;
   liveCache.clear();
@@ -124,7 +128,7 @@ async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, 
   }
 }
 
-/** Live tools stay hidden on the hosted server unless the LIVE_TOOLS var is "on" (CIV-1860: waiting on Ryan's call on showing Live figures to pilot testers). */
+/** Live tools show on the hosted server where the LIVE_TOOLS var is "on" (CIV-1860; Ryan, 2026-11-21: "turn on live vehicles for cloud too"). */
 const served = (name: string, env: object) => !LIVE_TOOLS.includes(name) || (env as { LIVE_TOOLS?: string }).LIVE_TOOLS === 'on';
 
 async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: TestEnv, ctx: ExecutionContext, tester: Tester): Promise<Response> {

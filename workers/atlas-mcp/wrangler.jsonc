@@ -15,14 +15,18 @@
     // Where the published data lives (the release pointer is DATA_ORIGIN/atlas/release.json).
     "DATA_ORIGIN": "https://data.transitatlas.fyi",
     // Fair use per tester (placeholders for the manager to confirm): calls a day, and the burst limit below.
-    "DAILY_CALL_CAP": "300"
+    "DAILY_CALL_CAP": "300",
+    // Ryan, 2026-11-21: "turn on live vehicles for cloud too".
+    "LIVE_TOOLS": "on"
   },
   "d1_databases": [
     { "binding": "DB", "database_name": "atlas-studio-mcp", "database_id": "19dabe73-5f54-4f50-8135-adb62d3a2154", "migrations_dir": "migrations" }
   ],
   // Live figures for the Live tools (CIV-1860): a private bucket nothing else serves (no r2.dev URL, no custom domain).
   "r2_buckets": [
-    { "binding": "MCP_LIVE", "bucket_name": "atlas-mcp-live" }
+    { "binding": "MCP_LIVE", "bucket_name": "atlas-mcp-live" },
+    // route_now's last half hour (CIV-1870), read only from the recorder's bucket.
+    { "binding": "MCP_LIVE_ARCHIVE", "bucket_name": "atlas-live" }
   ],
   "ratelimits": [
     // 30 calls a minute per tester, per Cloudflare location (approximate). The namespace id is a placeholder.
