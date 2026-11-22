@@ -111,9 +111,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ### How Atlas is built
 
 - **The MCP leaves out agencies whose terms bar an API**
-  - What: an agency on the exclusion list (`shared/rules/redistribution.ts`: WMATA; DART, NYC Ferry and Bee-Line, whose terms bar sharing; and 12 agencies that need written permission first) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
+  - What: an agency on the exclusion list (`shared/rules/redistribution.ts`: WMATA; DART, NYC Ferry and Bee-Line, whose terms bar sharing; and 13 agencies that need written permission first) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
   - Why: WMATA's Transit Data Terms of Use bar "creating an application programming interface that enables access to Transit Data". Ryan: "Then remove it from MCP and note this somewhere internally".
-  - Source: [decision log](#decision-log) (2026-11-22, twice), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693), CIV-2124
+  - Source: [decision log](#decision-log) (2026-11-22, twice), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693), CIV-2124, CIV-2125
 - **Modes come from GTFS route_type**
   - What: a route's mode is the feed's route_type; known mistakes are listed per-route overrides in the agency config, never guessed from names.
   - Why: one shared definition keeps the map menu, pages and counters agreeing.
@@ -295,13 +295,14 @@ Dated, newest first. The rules above are the short form; this is the reasoning.
 ### 2026-11-22 — MTA and NJ Transit readings are reads, not changes (CIV-460 Q2, CIV-2123)
 Ryan (2026-11-22, relayed by Atlas Questions), to keep Atlas's readings of MTA and NJ Transit data: "1".
 - The rule: these readings stay. They are how Atlas reads the data, not changes to it, so they sit within MTA's "will not modify" and NJ Transit's "as-is" terms.
+- The same holds for Foothill Transit (added by CIV-2125): its Developer License Agreement says "Licensee may not modify Data or create any derivative works based on Data", so Atlas's readings of its data stay and it stays in the MCP.
 - The readings kept: NJ Transit light-rail classification, merging identical shapes, the alternate reading points, the NYC subway reference stop, and History's rename joins.
 - Why: the terms bar altering the published data, and each reading leaves the feed as published while changing only how Atlas interprets it.
 
 ### 2026-11-22 — 15 more agencies left out of the MCP: terms that bar sharing or need written permission (CIV-2124)
 Ryan (2026-11-22, on CIV-2124): "2 and update Coverage as "Removed" then have the reason when you hover over the Removed pill".
 - Group A, terms that don't allow sharing the data with other tools: Des Moines DART, NYC Ferry, Bee-Line.
-- Group C, terms that need the agency's consent, so each is left out until the agency gives written permission: NORTA, CATA Lansing, Spokane, TriMet, VRE, RTC Washoe, MTA Flint, MAX Birmingham, CityBus Lafayette, Topeka, Cherriots, C-TRAN.
+- Group C, terms that need the agency's consent, so each is left out until the agency gives written permission: NORTA, CATA Lansing, Spokane, TriMet, VRE, RTC Washoe, MTA Flint, MAX Birmingham, CityBus Lafayette, Topeka, Cherriots, C-TRAN, and Whitehorse Transit (added by CIV-2125: the City of Whitehorse's open data terms allow internal and personal use only, with no publishing for commercial purposes without its written consent).
 - Each has its own reason in `shared/rules/redistribution.ts`, shown on hover over its "Removed" tag on the Status page. The clauses are in `_reports/civ-462/agencies-v2.tsv` (CIV-462 v2, from CIV-468).
 - The map and History keep them, as with WMATA.
 

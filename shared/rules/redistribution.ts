@@ -26,6 +26,8 @@ export const NO_REDISTRIBUTION: readonly RedistributionExclusion[] = [
   { slug: 'topeka', reason: 'Topeka Metro’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
   { slug: 'cherriots', reason: 'Cherriots’ data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
   { slug: 'ctran', reason: 'C-TRAN’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
+  // CIV-2125, group C: the City of Whitehorse's open data terms limit use to internal and personal purposes without its written consent.
+  { slug: 'whitehorse', reason: 'Whitehorse Transit’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
 ];
 
 /** The exclusion for an agency, or undefined when Atlas may serve its data to other tools. */

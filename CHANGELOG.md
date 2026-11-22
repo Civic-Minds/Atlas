@@ -9,7 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live shows Hamilton's and Burlington's buses again**: their feeds renumbered the routes Live follows, so Live now finds each route by its number in the agency's current route list
 - **Atlas Studio MCP says when the test server doesn't carry an agency**: it pointed to agencies like STM and then said it had no data for them; it now names the agencies it has. Buses-needed answers also give the schedule's end date
 - **Route lists show the number their route card shows**: a card row reading "every 16 min from 6:39 AM" was listed by the period's typical gap instead (MBTA 65 weekday AM peak read "every 8–14" beside it)
-- **Atlas Studio MCP no longer answers for WMATA and 15 other agencies**: their data terms don't allow sharing their data with other tools, or need written permission first; they stay on the map and in History
+- **Atlas Studio MCP no longer answers for WMATA and 16 other agencies**: their data terms don't allow sharing their data with other tools, or need written permission first; they stay on the map and in History
 - **A Live route's Full report has everything in one page**: the Overview and the old full analysis now open the Full report, which keeps all their figures and charts below its own
 - **Live route pages are named Live Reports in the browser tab**: "Live Reports: 504 King", so a route's report reads apart from the Live map
 - **Bay Area agencies credit 511.org**: while an agency whose schedules come through 511 is in view, the map's credit line reads "Data provided by 511.org", linked to 511.org, as 511's data terms require; Schedule sources says the same
