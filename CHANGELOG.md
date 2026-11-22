@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Atlas Studio MCP warns when a route's two frequency figures disagree**: SEPTA 63 read "every 10 min" beside its own "every 60 min" with no explanation; the answer now flags it and goes by the route's list
+- **Atlas Studio MCP testers can ask how a route is running right now**: the online version only knew the schedule, so "how many vehicles are on the 504 now" got the planned count
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches
 - **Studio's Schedules list looks like the map's route lists**: it had its own taller rows with the time of day on a second line; it now uses the agency card's rows, with both dates' figures at the right
 - **Studio's Schedules map lines are as thin as the regular map's**: every route was drawn about twice as thick, so the picked route didn't stand out
