@@ -21,9 +21,10 @@ export const MCP_DOCS = {
   tools: {
     heading: 'Tools',
     intro: 'Every tool, as the MCP describes it to Claude.',
-    name: 'Tool', title: 'What it does',
-    liveTag: 'Local only',
-    liveNote: 'Tools marked Local only answer from Live’s recordings. The hosted server leaves them out until they are switched on.',
+    // Ryan, 2026-11-22: "In the MCP page should the Tools section be a table instead", picked 1: Tool | What it answers | Live.
+    name: 'Tool', answers: 'What it answers', live: 'Live',
+    liveTag: 'Live',
+    liveNote: 'Tools marked Live answer from Live’s recordings, on this Mac and on the hosted server.',
   },
   freshness: {
     heading: 'How fresh the data is',

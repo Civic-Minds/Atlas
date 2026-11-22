@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MISSING_VALUE } from '../shared/missingValue';
+import { dateTimeText } from '../shared/dateText';
 import { MCP_TESTERS_API_URL, type McpTester, type McpTesterCall } from '../shared/mcpTesters';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
@@ -43,8 +44,16 @@ function Section({ id, children }: { id: (typeof SECTIONS)[number]['id']; childr
   );
 }
 
+type ToolRow = (typeof TOOLS)[number];
+/** The Tools table (Ryan, 2026-11-22: "In the MCP page should the Tools section be a table instead", picked 1). */
+const toolColumns: DataTableColumn<ToolRow>[] = [
+  { key: 'tool', header: C.tools.name, rowHeader: true, cell: t => <span className="font-semibold text-[var(--text-primary)]">{t.title} <code className="text-xs font-normal text-[var(--text-muted)]">{t.name}</code></span> },
+  { key: 'answers', header: C.tools.answers, cell: t => TOOL_SUMMARIES[t.name] },
+  { key: 'live', header: C.tools.live, cell: t => (LIVE_TOOLS.includes(t.name) ? <Tag size="inline">{C.tools.liveTag}</Tag> : null) },
+];
+
 const T = C.testers;
-const when = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+const when = (iso: string) => dateTimeText(iso) ?? MISSING_VALUE;
 
 /** The hosted pilot's testers and each one's latest calls, read through the local API (local-api/mcp-testers.ts). */
 function Testers() {
@@ -99,18 +108,7 @@ export default function McpDocsPage() {
 
       <Section id="mcp-tools">
         <p className={PARAGRAPH}>{C.tools.intro}</p>
-        <dl className="mt-4 space-y-4 text-sm leading-6">
-          {TOOLS.map(tool => (
-            <div key={tool.name}>
-              <dt className="flex flex-wrap items-center gap-2 font-semibold text-[var(--text-primary)]">
-                {tool.title}
-                <code className="text-xs font-normal text-[var(--text-muted)]">{tool.name}</code>
-                {LIVE_TOOLS.includes(tool.name) && <Tag size="inline">{C.tools.liveTag}</Tag>}
-              </dt>
-              <dd className="text-[var(--text-muted)]">{TOOL_SUMMARIES[tool.name]}</dd>
-            </div>
-          ))}
-        </dl>
+        <div className="mt-4"><DataTable variant="ruled" columns={toolColumns} rows={TOOLS} rowKey={t => t.name} caption={C.tools.heading} /></div>
         <p className={PARAGRAPH}>{C.tools.liveNote}</p>
       </Section>
 

@@ -8,9 +8,12 @@
  * - dateRange: "Oct 8–14", or "Sep 30–Oct 14" across months, with an en dash and no year; one day reads "Oct 8".
  *   Live's weeks, days and "data up to" lines.
  * - isoDate: "2026-10-12". A machine value, for report emails only (TEXT.md, Numbers).
+ * - dateTimeText: "Nov 22, 2026, 1:20 AM". A moment in this computer's time zone (internal pages' logs).
  * Each takes an ISO date ("2026-10-12", a timestamp's date part counts) or a feed's yyyymmdd ("20261012"), and
  * shortDate / longDate give null for anything else. Never type a date by hand or build one with toLocaleDateString.
  */
+
+import { clockTime } from './timeText';
 
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const LONG_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -49,4 +52,12 @@ export function dateRange(first: string, last: string): string {
   const start = `${SHORT_MONTHS[a.month - 1]} ${a.day}`;
   if (first === last) return start;
   return a.month === b.month ? `${start}–${b.day}` : `${start}–${SHORT_MONTHS[b.month - 1]} ${b.day}`;
+}
+
+/** "Nov 22, 2026, 1:20 AM": a timestamp in this computer's time zone, from shortDate and clockTime; null when it isn't one. */
+export function dateTimeText(value: string | null | undefined): string | null {
+  const d = value ? new Date(value) : null;
+  if (!d || Number.isNaN(d.getTime())) return null;
+  const day = shortDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+  return day ? `${day}, ${clockTime(d.getHours() * 60 + d.getMinutes())}` : null;
 }
