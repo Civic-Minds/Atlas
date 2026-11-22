@@ -133,3 +133,19 @@ describe('card piece rules catch hand-built copies', () => {
     });
   }
 });
+
+// #1671 (Ryan, 2026-11-22: "On the Diagnostics pages the text looks different/smaller than other pages and the tables look
+// different too"): the internal docs-style pages read alike: their lead line is PAGE_LEAD and every table is the ruled DataTable.
+describe('internal pages share one text and table style (#1671)', () => {
+  const INTERNAL_PAGES = ['DiagnosticsUnevenPage.tsx', 'DiagnosticsPerformancePage.tsx', 'McpDocsPage.tsx'];
+  for (const name of INTERNAL_PAGES) {
+    const text = readFileSync(join(SRC, name), 'utf8');
+    it(`${name}: no hand-set text size on a paragraph`, () => {
+      expect(text.match(/<p className="[^"]*\btext-(xs|sm|base|lg)\b/g) ?? []).toEqual([]);
+    });
+    it(`${name}: every DataTable is the ruled variant`, () => {
+      const tables = text.match(/<DataTable\b[^>]*>/g) ?? [];
+      expect(tables.filter(t => !/variant="ruled"/.test(t))).toEqual([]);
+    });
+  }
+});

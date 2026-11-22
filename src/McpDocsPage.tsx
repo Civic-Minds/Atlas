@@ -3,6 +3,7 @@ import { MISSING_VALUE } from '../shared/missingValue';
 import { dateTimeText } from '../shared/dateText';
 import { MCP_TESTERS_API_URL, type McpTester, type McpTesterCall } from '../shared/mcpTesters';
 import DocsPageLayout from './components/ui/DocsPageLayout';
+import { PAGE_LEAD } from './components/ui/PageSection';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
@@ -31,7 +32,8 @@ const SECTIONS = [
   { id: 'mcp-testers', label: C.testers.heading },
 ] as const;
 
-const PARAGRAPH = 'mt-4 text-sm leading-6 text-[var(--text-muted)]';
+// #1671: the same lead style as the other internal pages.
+const PARAGRAPH = PAGE_LEAD;
 const LIST = 'mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]';
 const CODE = 'mt-3 overflow-x-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-panel)] p-3 text-xs leading-5 text-[var(--text-primary)]';
 

@@ -10,7 +10,7 @@ import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
 import Pill from './components/ui/Pill';
 import DataTable, { type DataTableColumn, type DataTableSort } from './components/ui/DataTable';
 import DocsPageLayout from './components/ui/DocsPageLayout';
-import PageSection, { PageTable, PAGE_SECTION_NOTE } from './components/ui/PageSection';
+import PageSection, { PageTable, PAGE_SECTION_NOTE, PAGE_LEAD } from './components/ui/PageSection';
 import { PageTitle } from './components/ui/PageTitle';
 import PageLoadState from './components/ui/PageLoadState';
 import { DIAGNOSTICS_UNEVEN_PATH, INTERNAL_GROUPS } from '../shared/internalPages';
@@ -167,7 +167,7 @@ export default function DiagnosticsUnevenPage() {
   return (
     <DocsPageLayout width="wide">
       <PageTitle>{page.title}</PageTitle>
-      <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{page.description}</p>
+      <p className={PAGE_LEAD}>{page.description}</p>
       {agenciesLoadState === 'loading' || agenciesLoadState === 'error' || isLoading ? (
         <PageLoadState state={agenciesLoadState === 'error' && !isLoading ? 'error' : 'loading'} what="the agencies" onRetry={retry} />
       ) : (
@@ -181,7 +181,7 @@ export default function DiagnosticsUnevenPage() {
             <p className={`mt-6 ${PAGE_SECTION_NOTE}`}>Nothing flagged — no direction has a gap materially bigger than its own normal spacing.</p>
           ) : (
             <PageTable>
-              <DataTable layout="page" caption={page.title} columns={tableColumns} rows={sorted} rowKey={row => row.key} sort={sort} onSort={toggleSort} />
+              <DataTable variant="ruled" layout="page" caption={page.title} columns={tableColumns} rows={sorted} rowKey={row => row.key} sort={sort} onSort={toggleSort} />
             </PageTable>
           )}
         </PageSection>

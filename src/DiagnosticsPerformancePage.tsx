@@ -4,7 +4,7 @@ import { useAgencies } from './hooks/useAgencies';
 import { ATLAS_MODE } from '../shared/config';
 import { getAtlasMark, markAtlasOnce } from './lib/performance';
 import DocsPageLayout from './components/ui/DocsPageLayout';
-import PageSection, { PageTable } from './components/ui/PageSection';
+import PageSection, { PageTable, PAGE_LEAD } from './components/ui/PageSection';
 import { PageTitle } from './components/ui/PageTitle';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { DIAGNOSTICS_PERFORMANCE_PATH, INTERNAL_GROUPS } from '../shared/internalPages';
@@ -101,18 +101,18 @@ export default function DiagnosticsPerformancePage() {
   return (
     <DocsPageLayout width="wide">
       <PageTitle>{page.title}</PageTitle>
-      <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{page.description}</p>
+      <p className={PAGE_LEAD}>{page.description}</p>
       <div className="mt-6">
         <Pill tone="outline" size="segment" onClick={() => window.location.reload()}>Reload and measure</Pill>
       </div>
       <PageSection id="performance-page" title="This Page">
         <PageTable>
-          <DataTable layout="page" caption="This Page" columns={factColumns} rows={facts} rowKey={f => f.label} />
+          <DataTable variant="ruled" layout="page" caption="This Page" columns={factColumns} rows={facts} rowKey={f => f.label} />
         </PageTable>
       </PageSection>
       <PageSection id="performance-metrics-heading" title="Timings" intro="Use the reload button for a fresh navigation measurement. These timings are local browser measurements; production also reports Vercel Speed Insights.">
         <PageTable>
-          <DataTable layout="page" caption="Timings" columns={metricColumns} rows={rows} rowKey={m => m.label} />
+          <DataTable variant="ruled" layout="page" caption="Timings" columns={metricColumns} rows={rows} rowKey={m => m.label} />
         </PageTable>
       </PageSection>
     </DocsPageLayout>

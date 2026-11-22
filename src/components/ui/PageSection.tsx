@@ -21,6 +21,9 @@ export default function PageSection({ id, title, intro, shrink = false, children
   );
 }
 
+/** A docs-style page's lead line under its title (#1671: the internal pages read alike: Diagnostics, MCP). */
+export const PAGE_LEAD = 'mt-4 max-w-3xl text-sm leading-6 text-[var(--text-muted)]';
+
 /** The muted line of text inside a section: under its title, or under a chart. */
 export const PAGE_SECTION_NOTE = 'mt-2 max-w-3xl text-sm leading-6 text-[var(--text-muted)]';
 
