@@ -16,6 +16,17 @@
     -122.11
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
+  "excludeTripHeadsigns": [
+    "Out of Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "Lynx"
+      ]
+    }
+  ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-78/latest.zip",
   "lastFeedExpiry": "20270611",
   "lastFeedVersion": "UTC: 03-Sep-2026 17:27",

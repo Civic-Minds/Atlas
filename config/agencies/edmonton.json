@@ -16,6 +16,17 @@
     -113.15
   ],
   "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
+  "excludeTripHeadsigns": [
+    "Sorry Not In Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "Metro"
+      ]
+    }
+  ],
   "sameNameRoutes": [
     {
       "shortName": "610",
