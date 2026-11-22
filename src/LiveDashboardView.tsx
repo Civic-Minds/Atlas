@@ -208,7 +208,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
       <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={null} allOnly /></ErrorBoundary>
-      <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>{LIVE_FULL_REPORT_VIEW}</ArrowLink></p>
+      <p className="mt-8"><ArrowLink href="?view=explore" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>{LIVE_FULL_REPORT_VIEW}</ArrowLink></p>
     </>
   );
   return (
@@ -222,7 +222,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
       <ErrorBoundary label={bad(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title={LATE_STOPS_TITLE} boundary={bad('The stop list')}
-        footerLink={{ text: LIVE_EVERY_STOP_LINK, href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
+        footerLink={{ text: LIVE_EVERY_STOP_LINK, href: '?view=explore#b2', onClick: () => toFull('b2') }} />
     </>
   );
 }

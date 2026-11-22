@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A Live route's Full report has everything in one page**: the Overview and the old full analysis now open the Full report, which keeps all their figures and charts below its own
 - **Live route pages are named Live Reports in the browser tab**: "Live Reports: 504 King", so a route's report reads apart from the Live map
 - **Atlas Studio MCP agrees on the day after midnight**: just after midnight, its live answer used the new day's late-night schedule while its schedule answers used the previous day's
 - **Atlas Studio MCP doesn't guess ridership or fares**: asked for either, it says Atlas has no figure instead of giving a number from the AI's memory, unless the person asks for one
