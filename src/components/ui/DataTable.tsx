@@ -1,4 +1,4 @@
-import type { CSSProperties, Key, MouseEvent, ReactNode } from 'react';
+import { Fragment, type CSSProperties, type Key, type MouseEvent, type ReactNode } from 'react';
 import { useOpenPath } from './AppLink';
 
 export interface DataTableColumn<T> {
@@ -108,6 +108,11 @@ interface DataTableProps<T> {
   rowCurrent?: (row: T) => boolean;
   /** Hover text for a whole row (where a column was left out on a phone, its figure). */
   rowTitle?: (row: T) => string | undefined;
+  /**
+   * Content opened under a row (a tester's latest calls on the MCP page): drawn in its own full-width row straight after
+   * that row; null or undefined draws nothing.
+   */
+  rowDetail?: (row: T) => ReactNode;
   /** Current sort, for the sortable columns' arrow and aria-sort. */
   sort?: DataTableSort;
   /** Called with a sortable column's key when its header is clicked (or Enter / Space on it). */
@@ -139,7 +144,7 @@ export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
 const SELECTION_ROW = 'bg-[var(--selection-active-bg)] shadow-[inset_2px_0_0_var(--selection-active-border)]';
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowTitle, sort, onSort }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowTitle, rowDetail, sort, onSort }: DataTableProps<T>) {
   const openPath = useOpenPath();
   const fixed = layout !== 'content';
   const fill = layout === 'fill';
@@ -215,9 +220,11 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
         </tr>
       </thead>
       <tbody>
-        {rows.map(row => (
+        {rows.map(row => {
+          const detail = rowDetail?.(row);
+          return (
+          <Fragment key={rowKey(row)}>
           <tr
-            key={rowKey(row)}
             className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}${rowCurrent?.(row) ? ` ${SELECTION_ROW}` : ''}`}
             aria-current={rowCurrent?.(row) ? 'true' : undefined}
             title={rowTitle?.(row)}
@@ -231,7 +238,10 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
                 : <td key={col.key} className={className}>{col.cell(row)}</td>;
             })}
           </tr>
-        ))}
+          {detail != null && detail !== false && <tr className={v.row}><td colSpan={columns.length} className={v.td}>{detail}</td></tr>}
+          </Fragment>
+          );
+        })}
       </tbody>
     </table>
   );

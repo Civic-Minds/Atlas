@@ -37,23 +37,27 @@ function CodeBlock({ text }: { text: string }) {
   );
 }
 
+// The "On this page" menu names each section in one word (Ryan, 2026-11-22); the section keeps its full heading.
 const SECTIONS = [
-  { id: 'mcp-answers', label: C.answers.heading },
-  { id: 'mcp-tools', label: C.tools.heading },
-  { id: 'mcp-freshness', label: C.freshness.heading },
-  { id: 'mcp-connect', label: C.connect.heading },
-  { id: 'mcp-testers', label: C.testers.heading },
+  { id: 'mcp-answers', label: C.contents.answers, heading: C.answers.heading },
+  { id: 'mcp-tools', label: C.contents.tools, heading: C.tools.heading },
+  { id: 'mcp-freshness', label: C.contents.freshness, heading: C.freshness.heading },
+  { id: 'mcp-connect', label: C.contents.connect, heading: C.connect.heading },
+  { id: 'mcp-testers', label: C.contents.testers, heading: C.testers.heading },
 ] as const;
 
 // #1671: the same lead style as the other internal pages.
 const PARAGRAPH = PAGE_LEAD;
+// Ryan, 2026-11-22: the testers table's headers sit on their bottom line and its cells on their top line, so a wrapped
+// header or a two-line figure doesn't leave the names floating mid-row.
+const TESTERS_TABLE = 'mt-4 [&_thead_th]:align-bottom [&_tbody_td]:align-top [&_tbody_th]:align-top';
 const LIST = 'mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]';
 const CODE = 'overflow-x-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-panel)] p-3 text-xs leading-5 text-[var(--text-primary)]';
 
 function Section({ id, children }: { id: (typeof SECTIONS)[number]['id']; children: React.ReactNode }) {
   return (
     <section className="mt-12" aria-labelledby={id}>
-      <SectionTitle id={id}>{SECTIONS.find(s => s.id === id)!.label}</SectionTitle>
+      <SectionTitle id={id}>{SECTIONS.find(s => s.id === id)!.heading}</SectionTitle>
       {children}
     </section>
   );
@@ -87,7 +91,7 @@ function Testers() {
   if (testers === null) return <p className={PARAGRAPH}>{T.loading}</p>;
   if (!testers.length) return <p className={PARAGRAPH}>{T.none}</p>;
   const testerColumns: DataTableColumn<McpTester>[] = [
-    { key: 'name', header: T.name, rowHeader: true, cell: t => <button type="button" className="font-semibold text-[var(--text-primary)] underline" aria-expanded={open === t.name} onClick={() => setOpen(open === t.name ? null : t.name)}>{t.name}</button> },
+    { key: 'name', header: T.name, rowHeader: true, cell: t => <button type="button" className="whitespace-nowrap text-left font-semibold text-[var(--text-primary)] underline" aria-expanded={open === t.name} onClick={() => setOpen(open === t.name ? null : t.name)}>{t.name}</button> },
     { key: 'since', header: T.since, cell: t => when(t.created_at) },
     { key: 'calls', header: T.calls, cell: t => t.calls },
     { key: 'lastWeek', header: T.lastWeek, cell: t => t.calls_7d ?? MISSING_VALUE },
@@ -103,10 +107,13 @@ function Testers() {
   return (
     <>
       <p className={PARAGRAPH}>{T.intro}</p>
-      <div className="mt-4"><DataTable variant="ruled" columns={testerColumns} rows={testers} rowKey={t => t.name} caption={T.heading} /></div>
-      {open && (calls === null ? <p className={PARAGRAPH}>{T.loading}</p> : !calls.length ? <p className={PARAGRAPH}>{T.noCalls}</p> : (
-        <div className="mt-6"><DataTable variant="ruled" columns={callColumns} rows={calls} rowKey={c => c.id} caption={open} /></div>
-      ))}
+      <div className={TESTERS_TABLE}>
+        <DataTable variant="ruled" columns={testerColumns} rows={testers} rowKey={t => t.name} caption={T.heading}
+          // A tester's latest questions open right under their row (Ryan, 2026-11-22), not under the table.
+          rowDetail={t => (t.name !== open ? null : calls === null ? <p className={PARAGRAPH}>{T.loading}</p> : !calls.length ? <p className={PARAGRAPH}>{T.noCalls}</p> : (
+            <DataTable variant="ruled" columns={callColumns} rows={calls} rowKey={c => c.id} caption={open} />
+          ))} />
+      </div>
     </>
   );
 }

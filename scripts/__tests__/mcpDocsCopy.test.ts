@@ -11,3 +11,10 @@ describe('MCP docs page copy', () => {
     expect(text).toContain('last half hour');
   });
 });
+
+// Ryan, 2026-11-22: "in the table of contents the headings should be 1 word".
+describe('MCP docs page contents menu', () => {
+  it('names every section in one word', () => {
+    for (const label of Object.values(MCP_DOCS.contents)) expect(label).toMatch(/^\S+$/);
+  });
+});

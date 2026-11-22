@@ -4,6 +4,8 @@
  */
 export const MCP_DOCS = {
   title: 'MCP',
+  // Ryan, 2026-11-22: "in the table of contents the headings should be 1 word". Not asked for: the five words.
+  contents: { answers: 'Answers', tools: 'Tools', freshness: 'Freshness', connect: 'Connect', testers: 'Testers' },
   card: 'What the MCP answers, its tools, how fresh its data is and how to connect it.',
   intro: 'The Atlas Studio MCP lets Claude answer a planner’s questions from Atlas’s own data. It only reads Atlas’s published figures; it changes nothing and reaches nothing outside Atlas.',
   answers: {
