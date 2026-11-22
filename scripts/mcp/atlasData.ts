@@ -29,7 +29,8 @@ import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySn
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
-import { headwayEvery } from '../../shared/headwayText';
+import { headwayAboutRange, headwayEvery } from '../../shared/headwayText';
+import { buildStopRoutes, stopRouteLineHeadway, stopRowHeadway, stopRowRangeLow } from '../../src/utils/stopRoutes';
 import { pairChanges } from '../../shared/scheduleChangePairing';
 import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
@@ -597,6 +598,63 @@ export async function routesNear(agency: CatalogAgency, place: string, metres = 
   for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
   const info = new Map([...routeNames.values()].map(v => [v.name, v]));
   return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), ...(corner ? { matchedAs: `No stop is named for both streets; these are the closest stops on each, ${corner.apart} m apart.` } : {}), within: metres, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+}
+
+/** How many different stop names a place may match before stopFrequency asks which one is meant. */
+const STOP_CHOICES_SHOWN = 8;
+
+/**
+ * CIV-2060: how often each route comes at one stop, per part of the day, as the map's stop card shows it (buildStopRoutes:
+ * the same rows, the same numbers, so the MCP and the map never disagree). A place that matches several stop names gives
+ * the names to pick from instead of figures. Both directions' stops of one name are read together, as one stop card.
+ */
+export async function stopFrequency(agency: CatalogAgency, place: string, day: DayType, routeName?: string | null) {
+  const stops = await stopsOf(agency);
+  const parts = placeParts(place);
+  let seeds = stops.filter(s => { const n = stopMatchText(s.name); return parts.every(p => n.includes(p)); });
+  if (!seeds.length) seeds = cornerSeeds(stops, parts)?.stops ?? [];
+  const names = [...new Set(seeds.map(s => s.name))];
+  if (!names.length) return { matched: null, choices: [] as string[] };
+  const exact = names.filter(n => stopMatchText(n) === stopMatchText(place));
+  if (names.length > 1 && exact.length !== 1) return { matched: null, choices: names.slice(0, STOP_CHOICES_SHOWN), more: Math.max(0, names.length - STOP_CHOICES_SHOWN) };
+  const name = names.length === 1 ? names[0] : exact[0];
+  const at = seeds.filter(s => s.name === name);
+  const routeNames = await routeIdNames(agency);
+  const wanted = routeName ? findRoute([...new Map([...routeNames.values()].map(v => [v.name, { shortName: v.name, name: v.name, longName: v.longName, mode: v.mode }])).values()], routeName)?.name ?? null : null;
+  const routeIds = new Set(at.flatMap(s => s.routeIds).filter(id => !wanted || routeNames.get(id)?.name === wanted));
+  // Only the stop's routes' rows, through routeWithRows, so the hosted split store (no whole route file) answers too.
+  const atNames = new Set([...routeIds].map(id => routeNames.get(id)?.name).filter(Boolean));
+  const rows = (await Promise.all((await routeList(agency, day)).filter(r => atNames.has(r.name)).map(r => routeWithRows(agency, day, r)))).flatMap(r => r.rows);
+  const layers = { [agency.slug]: { type: 'FeatureCollection' as const, features: rows.map(properties => ({ type: 'Feature' as const, geometry: null, properties })) as unknown as GeoJSON.Feature[] } };
+  const routes = new Map<string, { route: string; name: string | null; destinations: Map<string, { towards: string | null; direction: number; periods: Record<string, string> }>; allDestinations: Record<string, string> }>();
+  for (const period of PERIOD_KEYS) {
+    const label = `${PERIOD_LABELS[period]} (${formatPeriodRange(period)})`;
+    for (const sr of buildStopRoutes({ siblingIdsByAgency: { [agency.slug]: new Set(at.map(s => s.id)) }, routesByAgency: { [agency.slug]: routeIds }, layers, day, period })) {
+      const r = routes.get(sr.shortName) ?? routes.set(sr.shortName, { route: sr.shortName, name: sr.longName || null, destinations: new Map(), allDestinations: {} }).get(sr.shortName)!;
+      if (sr.noNumber) { r.allDestinations[label] = sr.noNumber.text; continue; }
+      const line = stopRouteLineHeadway(sr.branches, period);
+      if (line != null) r.allDestinations[label] = headwayEvery(line);
+      for (const b of sr.branches) {
+        const key = `${b.directionId}::${b.headsign ?? ''}`;
+        const d = r.destinations.get(key) ?? r.destinations.set(key, { towards: b.headsign, direction: b.directionId, periods: {} }).get(key)!;
+        const hw = stopRowHeadway(b, period);
+        // #1667: a shared stop whose combined trips aren't even reads as a range, its sparse low end to the longest gap.
+        const low = hw != null ? stopRowRangeLow(b, period) : null;
+        const text = b.periodText ?? (hw != null ? (low != null ? headwayAboutRange(low, hw) : headwayEvery(hw)) : null);
+        if (text) d.periods[label] = b.sharedEdge ? `${text}; ${b.sharedEdge.text}` : text;
+      }
+    }
+  }
+  return {
+    matched: name,
+    stopsRead: at.length,
+    ...(wanted == null && routeName ? { routeNotFound: routeName } : {}),
+    routes: [...routes.values()].sort((a, b) => compareRouteNumber(a.route, b.route)).map(r => ({
+      route: r.route, name: r.name,
+      destinations: [...r.destinations.values()].sort((a, b) => a.direction - b.direction),
+      ...(Object.keys(r.allDestinations).length ? { allDestinations: r.allDestinations } : {}),
+    })),
+  };
 }
 
 /** Each route id's names and mode (the last day a route appears wins, as the map's days run Weekday, Saturday, Sunday): from the store's ready-made list, else from the rows. */

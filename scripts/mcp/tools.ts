@@ -237,6 +237,15 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const routes = res.routes.map(r => ({ ...r, now: today.get(r.route) ?? 'no service' }));
     return { agency: a.name, place, ...nowBlock(now, routes.every(r => r.now === 'no service')), ...res, routes, scheduleValidThrough: validThrough(a), source: SOURCE };
   },
+  stop_frequency: async ({ agency: q, stop, route, day: d }) => {
+    const a = await needAgency(q);
+    const dayType = data.parseDay(d);
+    const res = await data.stopFrequency(a, String(stop ?? ''), dayType, route != null ? String(route) : null);
+    if (!res.matched) return res.choices.length
+      ? { agency: a.name, stop, matched: null, choices: res.choices, ...(res.more ? { more: res.more } : {}), note: 'Several stops match. Ask which one is meant, or call again with one of these names exactly.' }
+      : { agency: a.name, stop, matched: null, note: 'No stop name matches every part of that. Try the stop as the agency names it, or a corner.', scheduleValidThrough: validThrough(a) };
+    return { agency: a.name, day: dayType, ...res, mapLink: mapLink({ agencies: [a.slug], day: dayType }), scheduleValidThrough: validThrough(a), source: SOURCE };
+  },
   route_history: async ({ agency: q, route, day: d }) => {
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
     if (!a) throw new Error(`No agency matches "${q}".`);
