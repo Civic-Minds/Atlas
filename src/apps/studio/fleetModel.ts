@@ -119,7 +119,12 @@ export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
 
 /** How many routes the agency's figures cover at the time of day (CIV-2002: "is this network-wide?"). */
 export function agencyRouteCount(vehicles: StudioVehiclesFile, period: PeriodKey): number {
-  return (vehicles.periods[period] ?? []).reduce((n, g) => n + g.routes.length, 0);
+  return agencyRoutes(vehicles, period).length;
+}
+
+/** Every route the agency runs at the time of day (CIV-2056: the network's "In service now" counts their vehicles). */
+export function agencyRoutes(vehicles: StudioVehiclesFile, period: PeriodKey): string[] {
+  return (vehicles.periods[period] ?? []).flatMap(g => g.routes);
 }
 
 /** The modes a route, or the whole agency, runs at any time of day: for the no-service line when the time picked has none (CIV-2002). */
