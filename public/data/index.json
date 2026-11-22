@@ -855,6 +855,17 @@
         -75.99
       ],
       "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
+      "excludeTripHeadsigns": [
+        "Not In Service"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "2"
+          ]
+        }
+      ],
       "lastFeedExpiry": "20271115",
       "lastFeedVersion": "1/20261115 19:18:20/20261116 04:00:00",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-733/latest.zip",
@@ -3556,6 +3567,17 @@
         -113.15
       ],
       "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
+      "excludeTripHeadsigns": [
+        "Sorry Not In Service"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "Metro"
+          ]
+        }
+      ],
       "sameNameRoutes": [
         {
           "shortName": "610",
@@ -3746,6 +3768,23 @@
         -106.648
       ],
       "feedUrl": "https://apps5.saskatoon.ca/data/gtfs/google_transit.zip",
+      "excludeTripHeadsigns": [
+        "Not In Service",
+        "Out of Service"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "14",
+            "25",
+            "27",
+            "29",
+            "55",
+            "63"
+          ]
+        }
+      ],
       "region": "Saskatchewan",
       "bbox": [
         52.03,
@@ -9069,6 +9108,17 @@
         -121.55
       ],
       "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
+      "excludeTripHeadsigns": [
+        "NOT IN SERVICE"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "914"
+          ]
+        }
+      ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/latest.zip",
       "lastFeedExpiry": "20270110",
       "lastFeedVersion": "2026-10-09_14:57",
@@ -9432,6 +9482,17 @@
         -122.11
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/westcat-ca-us/westcat-ca-us.zip",
+      "excludeTripHeadsigns": [
+        "Out of Service"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "Lynx"
+          ]
+        }
+      ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-78/latest.zip",
       "lastFeedExpiry": "20270611",
       "lastFeedVersion": "UTC: 03-Sep-2026 17:27",
@@ -16585,6 +16646,20 @@
         -77.0219
       ],
       "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
+      "excludeTripHeadsigns": [
+        "Not In Service"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "9999A",
+            "9999B",
+            "9999C",
+            "STRGW"
+          ]
+        }
+      ],
       "lastFeedExpiry": "20280930",
       "lastFeedVersion": "S1000208",
       "lastRefreshedAt": "2026-11-02",
@@ -27964,6 +28039,20 @@
         -77.86
       ],
       "feedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
+      "excludeTripHeadsigns": [
+        "Out of Service"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "BL",
+            "BL Gameday",
+            "WL",
+            "WL Gameday"
+          ]
+        }
+      ],
       "lastFeedExpiry": "20261213",
       "lastFeedVersion": "20260810",
       "lastRefreshedAt": "2026-11-02",
@@ -37173,6 +37262,17 @@
         -81.15702
       ],
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
+      "excludeTripHeadsigns": [
+        "Not in Service"
+      ],
+      "correctionNotices": [
+        {
+          "type": "excludedNonRevenueTrips",
+          "routeShortNames": [
+            "16"
+          ]
+        }
+      ],
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "1/20261113 22:00:00/20261114 00:00:00",
       "lastRefreshedAt": "2026-11-16",
