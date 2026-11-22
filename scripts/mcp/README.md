@@ -46,7 +46,7 @@ claude mcp add -s user atlas-studio -- /opt/homebrew/bin/node /Users/ryan/Develo
 
 `waitMinutes` in the frequency tools is the typical wait on the route's slower direction: its main stretch plus its steady branches, the number the map colours and filters the route by. A branch end that runs unevenly shows only in `shown`, the route list's own words. A range like "every 5–16 min" means every 5 on the busiest part of the route and every 16 on the quietest.
 
-The test questions, which any chat adds to: [QUESTIONS.md](QUESTIONS.md). Every round's results: [TEST-LOG.md](TEST-LOG.md). Rerun them after every change to the server.
+The test questions, which any chat adds to: [QUESTIONS.md](QUESTIONS.md). Every round's results: [TEST-LOG.md](TEST-LOG.md). Rerun them after every change to the server. Questions the pilot's testers got wrong answers to join QUESTIONS.md weekly, from the review sheet `weeklyReview.ts` writes (CIV-1853).
 
 ## Data
 
