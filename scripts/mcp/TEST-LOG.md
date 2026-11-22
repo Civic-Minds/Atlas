@@ -55,6 +55,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.22.11 | 2026-11-22 | compare_agencies keeps the other agencies' rows when one named is left out by its data terms, with a note; rank_agencies names left-out agencies in the region or country asked (#1700) |
 | 0.22.12 | 2026-11-22 | list_agencies and rank_agencies find a region by its full name, another name or its short form ("District of Columbia", "DC", "ON"), and say so when no agency is in a region by that name (#1701) |
 | 0.22.13 | 2026-11-22 | list_agencies for a region or country whose agencies are all left out by their data terms names them with the reason, as rank_agencies does; on a server with only some agencies, a filter that finds some says how many more Atlas has that it lacks (#1702) |
+| 0.22.14 | 2026-11-22 | The pilot note counts the agencies past the first five it names ("and 2 other agencies") instead of leaving them out, and lists names as "A, B and C" (#1702, Virginia) |
 
 ## Questions
 

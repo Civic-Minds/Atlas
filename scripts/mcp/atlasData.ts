@@ -25,6 +25,7 @@ import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
 import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
 import { metresBetween, withinMetres } from '../../shared/geoDistance';
+import { andOthers, joinList } from '../../shared/overflowText';
 import { placesNamed } from './places';
 import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySnapshots';
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
@@ -401,11 +402,13 @@ export function leftOutByRule(f: Pick<PeriodFigure, 'waitMinutes' | 'filter'>, e
  * #1687: a server with schedules for only some of Atlas's agencies (the hosted pilot carries 8) says so, naming the ones
  * it has, instead of pointing to an agency it then can't answer for. `names` are the agencies asked about.
  */
-export async function notOnThisServerNote(names: string[]): Promise<string> {
+export async function notOnThisServerNote(names: string[], more = 0): Promise<string> {
   const have = await availableAgencies();
   const list = have.length <= 20 ? `: ${have.map(a => a.name).join('; ')}` : '';
-  const them = names.length > 1 || /^The (agencies |\d+ other agencies )/.test(names[0] ?? '');
-  return `${names.join(' and ')} ${them ? 'are' : 'is'} in Atlas, but this server has schedules for only ${have.length} agencies${list}. Say this server can't answer for ${them ? 'them' : 'it'}; don't answer from memory.`;
+  const them = names.length > 1 || more > 0 || /^The (agencies |\d+ other agencies )/.test(names[0] ?? '');
+  // #1702: names past the first few are counted ("and 2 other agencies"), never dropped silently.
+  const named = more > 0 ? `${names.join(', ')} ${andOthers(more, 'agency', 'agencies')}` : joinList(names);
+  return `${named} ${them ? 'are' : 'is'} in Atlas, but this server has schedules for only ${have.length} agencies${list}. Say this server can't answer for ${them ? 'them' : 'it'}; don't answer from memory.`;
 }
 /** The agency a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */
 export async function agencyNotOnThisServer(query: string): Promise<CatalogAgency | null> {

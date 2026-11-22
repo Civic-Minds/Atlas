@@ -97,7 +97,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       // #1687: agencies Atlas has that this server carries no schedules for (the hosted pilot): say so instead of nothing.
       const haveSlugs = new Set(all.map(a => a.slug));
       const elsewhere = groupAgencies((await data.publicAgencies()).filter(a => !haveSlugs.has(a.slug))).filter(matches);
-      if (elsewhere.length) return { matches: 0, note: await data.notOnThisServerNote(elsewhere.slice(0, 5).map(g => agencyGroupName(g, a => a.name))) };
+      if (elsewhere.length) return { matches: 0, note: await data.notOnThisServerNote(elsewhere.slice(0, 5).map(g => agencyGroupName(g, a => a.name)), Math.max(0, elsewhere.length - 5)) };
     }
     if (!hits.length && !q && (reg || ctry)) {
       const leftOut = await leftOutIn('list', reg, ctry);

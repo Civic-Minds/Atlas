@@ -44,4 +44,10 @@ describe('agencies this server has no schedules for (#1687)', () => {
     expect(toronto.matches).toBe(1);
     expect(toronto.notOnThisServer).toBeUndefined();
   });
+  it('the pilot note counts the agencies past the first five instead of dropping them (#1702)', async () => {
+    data.useStore(store);
+    const note = await data.notOnThisServerNote(['A', 'B', 'C', 'D', 'E'], 2);
+    expect(note).toMatch(/^A, B, C, D, E and 2 other agencies are in Atlas/);
+    expect(await data.notOnThisServerNote(['A', 'B', 'C'])).toMatch(/^A, B and C are in Atlas/);
+  });
 });
