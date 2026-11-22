@@ -41,6 +41,8 @@ export const MAP_ZOOM_DEFAULT_MAX_HEADWAY = 10;
 
 /** How far the map's Nearby panel looks for routes from a point, in metres (its "No routes within 500 m" too). */
 export const NEARBY_ROUTES_RADIUS_M = 500;
+/** A feed whose schedule ends within this many days counts as expiring: the expiring-feeds check peeks at it, and the MCP warns beside its figures (CIV-2081). */
+export const FEED_EXPIRING_DAYS = 7;
 /** The most agencies one rank_agencies answer lists: each reads a file, and the hosted MCP's plan allows 50 reads a call. */
 export const RANK_AGENCIES_MAX = 30;
 

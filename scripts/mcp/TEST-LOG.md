@@ -35,6 +35,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.15.0 | 2026-11-20 | "What changed" and bus counts for YRT, HSR, TransLink, MBTA and OC Transpo (CIV-1969); buses_needed finds routes by name (#1632); schedule_changes gives trips beside grades (#1633) |
 | 0.15.1 | 2026-11-20 | buses_needed on the hosted server: Studio's file rides the split release (CIV-1977, #1634) |
 | 0.15.2 | 2026-11-21 | Hosted reads find route files whose key is encoded (TransLink's Expo, Canada and Millennium lines, SeaBus); a failed read is read again instead of breaking the next call; rank_agencies lists 30 agencies at most (multi-tool chain test) |
+| 0.18.0 | 2026-11-21 | list_agencies gives when each schedule was added; any answer whose schedule ends within 7 days says so (CIV-2081) |
 
 ## Questions
 

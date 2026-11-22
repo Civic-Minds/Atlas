@@ -14,6 +14,7 @@ import { MAP_URL } from '../../src/utils/urlSchema';
 import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
 import { buildRouteKey } from '../../src/utils/routeKey';
 import { isoDate } from '../../shared/dateText';
+import { FEED_EXPIRING_DAYS } from '../../shared/rules/limits';
 import { PERIODS } from './toolDefs';
 
 export type Args = Record<string, unknown>;
@@ -48,6 +49,22 @@ export function windowHas(t: number, w: { start: number; end: number }): boolean
   return w.start < TIME_PERIODS[0].startHour * 60 && w.end <= 1440 && t >= w.start + 1440 && t < w.end + 1440;
 }
 export const validThrough = (a: { lastFeedExpiry?: string | null }) => isoDate(a.lastFeedExpiry);
+
+/**
+ * CIV-2081: an answer whose schedule ends within FEED_EXPIRING_DAYS (scheduleValidThrough, YYYY-MM-DD) carries a
+ * warning beside it, so the figures aren't read as lasting. Every tool's answer passes through here on both servers.
+ */
+export function scheduleEndsSoon(result: unknown, today = new Date().toISOString().slice(0, 10)): unknown {
+  const end = (result as { scheduleValidThrough?: unknown } | null)?.scheduleValidThrough;
+  if (typeof end !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(end) || end < today) return result;
+  const days = Math.round((Date.parse(end) - Date.parse(today)) / 86_400_000);
+  if (days > FEED_EXPIRING_DAYS) return result;
+  return { ...(result as object), scheduleEndsSoon: `This schedule ends ${days === 0 ? 'today' : days === 1 ? 'tomorrow' : `in ${days} days`} (${end}). Atlas has no figures past that date until the agency publishes its next schedule; say so beside the figures.` };
+}
+
+export function withScheduleWarning<T extends Record<string, (args: Args) => unknown | Promise<unknown>>>(handlers: T): T {
+  return Object.fromEntries(Object.entries(handlers).map(([name, h]) => [name, async (args: Args) => scheduleEndsSoon(await h(args))])) as T;
+}
 export const SOURCE = "Atlas's published schedule data for this agency.";
 
 export async function needAgency(q: unknown) {

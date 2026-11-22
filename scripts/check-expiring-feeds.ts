@@ -7,6 +7,7 @@
  *   npx tsx scripts/check-expiring-feeds.ts [--index public/data/index.json] [--pending-index <file>]
  *     [--days 7] [--today YYYYMMDD] [--github-output <file>]
  */
+import { FEED_EXPIRING_DAYS } from '../shared/rules/limits';
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { todayUtcYmd } from '../shared/feedAvailability';
 import { checkCandidate, expiringFeedCandidates, type ExpiryCheckAgency } from '../pipeline/feedExpiryCheck';
@@ -24,7 +25,7 @@ async function main() {
   const agencies = readAgencies(arg('index') ?? 'public/data/index.json');
   const pendingPath = arg('pending-index');
   const pending = pendingPath && existsSync(pendingPath) ? readAgencies(pendingPath) : undefined;
-  const candidates = expiringFeedCandidates(agencies, { todayYmd: arg('today') ?? todayUtcYmd(), days: Number(arg('days') ?? 7), pending });
+  const candidates = expiringFeedCandidates(agencies, { todayYmd: arg('today') ?? todayUtcYmd(), days: Number(arg('days') ?? FEED_EXPIRING_DAYS), pending });
   console.error(`Peeking ${candidates.length} agencies`);
   const results = await runWithConcurrency(candidates.map(c => () => checkCandidate(c, downloadFeed)), 4);
   for (const r of results) {

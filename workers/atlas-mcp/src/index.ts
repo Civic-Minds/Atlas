@@ -9,9 +9,10 @@
 import * as data from '../../../scripts/mcp/atlasData';
 import { TOOLS, handlers as scheduleHandlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
 import { liveNowHandlers } from '../../../scripts/mcp/liveNowTools';
+import { withScheduleWarning } from '../../../scripts/mcp/toolHelpers';
 
 /** Every tool the hosted server answers: the shared ones plus route_now (CIV-1870), which the local server also adds. */
-const handlers = { ...scheduleHandlers, ...liveNowHandlers };
+const handlers = withScheduleWarning({ ...scheduleHandlers, ...liveNowHandlers });
 import { linkToken } from './linkToken';
 import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
