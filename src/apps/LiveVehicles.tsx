@@ -747,6 +747,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // The report flag's title names the agency as the card's back link does (CIV-1795), never the address.
   const reportAgency = selectedGroup ? agencies.find(a => a.slug === selectedGroup.agencySlug) : undefined;
   const reportAgencyName = reportAgency ? agencyShortNameBySlug(agencies, reportAgency.slug) : null;
+  // The same title on the vehicle card and the direction list.
+  const routeCardTitle = selectedGroup ? (
+    <RouteCardTitle
+      routeShortName={selectedGroup.routeShortName}
+      routeLongName={selectedRouteLongName}
+      routeType={selectedRouteType}
+      agencySlug={selectedGroup.agencySlug}
+      agencyName={selectedAgencyName}
+      onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+      showAgency={false}
+    />
+  ) : null;
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -757,15 +769,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             <CardBackLink onClick={() => { setVehicleCard(null); setSelectedRoute(null); setFocusedVehicle(null); }}>
               {LIVE_TAB_LABEL}
             </CardBackLink>
-            <RouteCardTitle
-              routeShortName={selectedGroup.routeShortName}
-              routeLongName={selectedRouteLongName}
-              routeType={selectedRouteType}
-              agencySlug={selectedGroup.agencySlug}
-              agencyName={selectedAgencyName}
-              onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-              showAgency={false}
-            />
+            {routeCardTitle}
           </div>
           <CardReportButton
             title={liveReportFlagTitle(reportAgencyName, agencies.length > 0, selectedGroup.routeShortName, vehicleRowName(cardVehicle, Math.max(0, allListed.findIndex(v => v.id === cardVehicle.id)), selectedRouteModeWord))}
@@ -812,15 +816,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               {/* CIV-2041 (Ryan: "1", "← Back to Live"): the list's own title, not the route's agency. */}
               {destination ? agencyShortNameBySlug(agencies, selectedGroup.agencySlug) : LIVE_TAB_LABEL}
             </CardBackLink>
-            <RouteCardTitle
-              routeShortName={selectedGroup.routeShortName}
-              routeLongName={selectedRouteLongName}
-              routeType={selectedRouteType}
-              agencySlug={selectedGroup.agencySlug}
-              agencyName={selectedAgencyName}
-              onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-              showAgency={false}
-            />
+            {routeCardTitle}
           </div>
           <CardReportButton
             title={liveReportFlagTitle(reportAgencyName, agencies.length > 0, selectedGroup.routeShortName)}
