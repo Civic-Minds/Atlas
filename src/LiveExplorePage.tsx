@@ -28,11 +28,11 @@ import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
-import LiveDashboardView, { KpiRow, type DashboardPart } from './LiveDashboardView';
+import LiveDashboardView, { type DashboardPart } from './LiveDashboardView';
 import { useLiveGaps } from './hooks/useLiveGaps';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
-import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
+import LateByHourSection from './components/Live/sections/LateByHourSection';
 import MethodSection from './components/Live/sections/MethodSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
@@ -42,7 +42,7 @@ import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/section
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, FullAnalysisSections, type FullAnalysisPart, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -278,10 +278,11 @@ export default function LiveExplorePage() {
           the Full report's own parts, the Dashboard's (dash) and Full analysis's (full, data-full-analysis) set side by side by
           what they show, each exactly as it was. The Dashboard's and Full analysis's parts are the whole day; the Direction
           pick applies to all. De-duplication is a later item. */}
-      {/* The week. */}
-      <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><KpiRow v3={v3} /></ErrorBoundary>
-      {dash('week')}
+      {/* The week. CIV-2128 (Ryan: "Honestly you decide but don't remove any graphics/interactives yet", pick 1a): Full
+          analysis's week comparison, the only copy with a heading, then the Dashboard's note on the Direction pick just above
+          the pick. Explore's and the Dashboard's copies of the same tiles are gone. */}
       {full('week')}
+      {dash('weekNote')}
 
       <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label={FILTERS_LABEL}>
         <Group label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
@@ -303,7 +304,7 @@ export default function LiveExplorePage() {
 
       {/* Stops most often late. */}
       <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
-      {dash('lateStops')}
+      {/* CIV-2128 pick 4a: the Dashboard's five stops were the top 5 of Explore's table; the table and the map stay. */}
       {full('lateStops')}
 
       {/* Trip time. */}
@@ -327,12 +328,8 @@ export default function LiveExplorePage() {
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
       {full('delivered')}
 
-      {/* How this is measured: each page kept its own, as it had it (the Dashboard's names its left-out days above, #1490). */}
+      {/* How this is measured: one copy, Explore's (CIV-2128 pick 10a; the three were the same block). */}
       <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
-      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={excludingText(routeLeftOut(v3))} id="method-dashboard" /></ErrorBoundary>
-      <div data-full-analysis>
-        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} id="method-analysis" /></ErrorBoundary>
-      </div>
     </article>,
   );
 }

@@ -110,9 +110,10 @@ describe('Live route dashboard', () => {
     // The caveat is said once, in the method (not again under the chips).
     expect(screen.queryByText(/Linked means it was measured in this stretch/)).toBeNull();
     expect(document.body.textContent).toMatch(/shows what was measured in the same stretch\. It is not the cause\./);
+    // CIV-2128: the Full report keeps one "How this is measured", Explore's, outside the Full analysis parts.
     // Method.
-    expect(fa().getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
-    expect(fa().getByText(/scheduled for \(4% of trips\)/)).toBeTruthy();
+    expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
+    expect(screen.getByText(/scheduled for \(4% of trips\)/)).toBeTruthy();
     // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
     expect(screen.getAllByText(/is more than 5½ min behind schedule\. This is based on the TTC’s 5-minute standard/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Late at a stop/)).toBeNull();
@@ -242,19 +243,19 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
     // The weeks, then the days counted, running on in the "Where the data comes from" paragraph (layout A, CIV-1075);
     // the method is open (no disclosure).
-    expect(fa().getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
-    const excluding = fa().getByText(/^Excluding .+ and .+\.$/);
+    expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
+    const excluding = screen.getByText(/^Excluding .+ and .+\.$/);
     expect(excluding.parentElement?.tagName).toBe('P');
     expect(excluding.parentElement?.textContent).toMatch(/This week is .+Excluding/);
     expect(excluding.closest('div')?.querySelector('h3')?.textContent).toBe('Where the data comes from');
-    expect([...document.querySelectorAll('#method-analysis h3')].map(h => h.textContent)).toEqual(['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']);
+    expect([...document.querySelectorAll('#method h3')].map(h => h.textContent)).toEqual(['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']);
     expect(document.querySelector('details')).toBeNull();
-    expect(fa().getAllByText((_: string, el: Element | null) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
+    expect(screen.getAllByText((_: string, el: Element | null) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
     // Layout A (CIV-1075): each group's heading on its own line, no trailing period, then one paragraph.
-    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(fa().getByText(g, { selector: 'h3' }).nextElementSibling?.tagName).toBe('P');
+    for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(g, { selector: 'h3' }).nextElementSibling?.tagName).toBe('P');
     // One name for it (CIV-1160 question 6): "Trip time", never "Run time".
     expect(screen.queryByText(/\brun time/i)).toBeNull();
-    expect(fa().getByText(/are trips we couldn’t judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
+    expect(screen.getByText(/are trips we couldn’t judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
     // Each opens with its direction, and the main row is introduced by the stretch line above it.
     expect(fa().getByText(/^\w+bound: scheduled 22 min · usually 27 \(120 trips\)$/)).toBeTruthy();
@@ -270,8 +271,8 @@ describe('Live route dashboard', () => {
     // The kept count is the trips the figures describe (the header's count), not the raw runs before matching (CIV-910).
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { level: 1 });
-    expect(fa().getByText(/are runs whose trip number isn’t on the schedule, such as extra buses\. We left out 600 of them \(30% of trips seen\), so the figures cover the 1,234 scheduled trips\./)).toBeTruthy();
-    expect(fa().getByText(/are runs by replacement buses that shares this route number\. We left out 500 of them\./)).toBeTruthy();
+    expect(screen.getByText(/are runs whose trip number isn’t on the schedule, such as extra buses\. We left out 600 of them \(30% of trips seen\), so the figures cover the 1,234 scheduled trips\./)).toBeTruthy();
+    expect(screen.getByText(/are runs by replacement buses that shares this route number\. We left out 500 of them\./)).toBeTruthy();
   });
 
   it('says the 510 first stops are less exact and leaves them out of the ranking', async () => {
@@ -315,7 +316,7 @@ describe('Live route dashboard', () => {
     renderPage(broken);
     expect(await screen.findByText(/Where delays start could not be drawn/)).toBeTruthy();
     expect(fa().getByRole('region', { name: /Late Departures by Hour/ })).toBeTruthy();
-    expect(fa().getByText('How this is measured')).toBeTruthy();
+    expect(screen.getByText('How this is measured')).toBeTruthy();
     vi.restoreAllMocks();
   });
 
@@ -340,7 +341,7 @@ describe('Live route dashboard', () => {
     renderPage(ready, '/apps/live/ttc/505?view=analysis');
     await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
     expect(summary).toContain(LATE_DEFINITION);
-    expect(document.getElementById('method-analysis')?.textContent).toBe(summary);
+    expect(document.getElementById('method')?.textContent).toBe(summary);
   });
 
   it('says why when there is nothing to show', async () => {

@@ -292,6 +292,15 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — The Live Full report groups each kind of figure together (CIV-284)
+Ryan (2026-11-22, relayed by Atlas Manager New), shown the Full report regrouped as built: "1" (approved as built).
+- The Full report's own parts, the Dashboard's and Full analysis's sit side by side by what they show: the week, along the route, late departures by hour, stops most often late, trip time, where delays start, extra wait, where bunching forms, service delivered, then "How this is measured".
+- Content is only moved: nothing deleted or reworded, no new headings.
+
+### 2026-11-22 — The Live Full report keeps one copy of each figure, no graphic removed (CIV-2128)
+Ryan (2026-11-22, relayed by Atlas Manager New), on the review page's 11 questions: "Honestly you decide but don't remove any graphics/interactives yet if that makes sense". Picks: 1a keep Full analysis's week comparison and the Dashboard's note under its tiles, drop Explore's and the Dashboard's identical tiles; 2c, 3c, 5c, 6c, 7c, 8c, 9c keep all; 4a keep Explore's table and Full analysis's map, drop the Dashboard's five stops (the top 5 of Explore's table); 10a keep Explore's "How this is measured", drop the Dashboard's and Full analysis's; 11a leave the Time of day pick as it is.
+- Why: the dropped parts repeat another copy exactly; no chart, strip, map or interactive is removed.
+
 ### 2026-11-22 — The weekday-to-Sunday story's words, dev server only (#1074, CIV-770)
 Ryan, 2026-11-22 (relayed by Atlas Manager): "1 yes like onlyl ocal right now". He was answering the word list for /research/weekday-to-sunday (_reports/1074/WORDS.md, 31 items).
 - All 31 wordings are approved, with heading 1 changed to "Where does frequent service go on Sunday evening?": "night" becomes "evening", to match the period name.

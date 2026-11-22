@@ -205,7 +205,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
 }
 
 /** The Dashboard's parts, so the Full report can set each beside the same kind of figure (CIV-284). */
-export type DashboardPart = 'week' | 'strip' | 'tripTime' | 'lateHours' | 'lateStops';
+export type DashboardPart = 'week' | 'weekNote' | 'strip' | 'tripTime' | 'lateHours' | 'lateStops';
 
 export default function LiveDashboardView({ v3, data, band, dir, uncertain, filters, toFull, lite = false, part }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[];
@@ -230,8 +230,9 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
   const on = (p: DashboardPart) => part == null || part === p;
   return (
     <>
-      {on('week') && <>
-        <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
+      {(on('week') || part === 'weekNote') && <>
+        {/* CIV-2128 (Ryan's pick 1a): the Full report keeps the Dashboard's note under the week, not its copy of the tiles. */}
+        {on('week') && <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>}
         <div className="mt-8 border-t border-[var(--border-primary)] pt-2">
           <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_DIRECTION_PICK_NOTE}</p>
           {filters}
