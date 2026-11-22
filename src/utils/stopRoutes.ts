@@ -14,6 +14,7 @@ import { noTripsInPeriod } from '../../shared/stopRoutePeriods';
 import { routeCardNoNumberWords } from './routeCardNotices';
 import type { DayType } from '../../shared/dayTypes';
 import type { PeriodKey } from '../../shared/config';
+import { headwayRangeShown } from './headwayText';
 
 /**
  * The stop card's routes and destination rows, and the rule for the frequency each row shows (CIV-997). One
@@ -41,6 +42,11 @@ export interface StopBranch {
    * stop's own 2-6 AM departures, so the stop card cannot say "every 71" beside Night Service 30 (TTC 301).
    */
   overnightCard?: true;
+  /**
+   * #1667 (Ryan, 2026-11-21, "1"): where patterns share the stop unevenly, the merged list's typical wait, the low end of a
+   * range whose top is the stop's value (its longest gap): MBTA 16 at Columbia Rd @ Seaver St, PM peak, every 11-21.
+   */
+  rangeLow?: number;
 }
 
 export interface StopRoute {
@@ -88,6 +94,13 @@ export function stopRowHeadway(branch: StopBranch, period: TimePeriod): number |
   return Math.max(own, atStop);
 }
 
+/** #1667: the low end of the row's range, where the row shows the stop's value and the range rule (headwayRangeShown) shows one. */
+export function stopRowRangeLow(branch: StopBranch, period: TimePeriod): number | null {
+  const hw = stopRowHeadway(branch, period);
+  if (branch.rangeLow == null || hw == null || branch.overnightCard || hw !== stopBranchHeadway(branch, period)) return null;
+  return headwayRangeShown(branch.rangeLow, hw) ? branch.rangeLow : null;
+}
+
 /**
  * The value on a route's own line: the stop's best value, only where it is better than every destination row
  * (the route's patterns share the stop, so the route comes more often than any one destination); else none.
@@ -118,7 +131,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   /** CIV-1959 B3: a stop on a branch shows its piece's reading, tail words or the no-number words. */
   branchReadings?: boolean;
 }): StopRoute[] {
-  type Branch = { stopId?: string; rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number; overnightCard?: true };
+  type Branch = { stopId?: string; rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number; overnightCard?: true; rangeLow?: number };
 
   const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
   // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
@@ -201,6 +214,9 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       const overnight = period === 'overnight' && p.directionFilterHeadwayByPeriod !== undefined ? routeOvernight(slug, fc, p) : null;
       // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
       const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
+      // #1667: the range's low end only where the stop shows its own published value (not a shared-stretch pooled one).
+      const rangeLow = period !== 'all' && metricValueForPeriod(service, period) === p.stopPeriodHeadways?.[matchingStopId]?.[period]
+        ? p.stopPeriodRangeLows?.[matchingStopId]?.[period] ?? undefined : undefined;
       const standIn = headlineStandIn(p);
       const newHeadway = service.value ?? standIn;
       const existing = entry.branches.get(branchKey);
@@ -224,6 +240,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
           stopId: matchingStopId,
           dirKey,
           patterns,
+          ...(rangeLow != null ? { rangeLow } : {}),
         });
       }
     }
@@ -305,7 +322,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       routeType: v.routeType,
       branches: Array.from(v.branches.values())
         .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
-        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}), ...(b.overnightCard ? { overnightCard: b.overnightCard } : {}) })),
+        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}), ...(b.overnightCard ? { overnightCard: b.overnightCard } : {}), ...(b.rangeLow != null ? { rangeLow: b.rangeLow } : {}) })),
     })), ...[...noNumber.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }
 

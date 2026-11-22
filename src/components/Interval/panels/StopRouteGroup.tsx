@@ -7,7 +7,7 @@ import {
   CardSummaryRow,
   SidebarCardListRows,
 } from '../cardUi';
-import { stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../../../utils/stopRoutes';
+import { stopRouteLineHeadway, stopRowHeadway, stopRowRangeLow, type StopBranch } from '../../../utils/stopRoutes';
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { SHARED_STRETCH_LABEL } from '../../../content/noticeCopy';
 
@@ -53,6 +53,8 @@ export default function StopRouteGroup({
       }),
       // #934: part-period wording replaces the number. The row value never overstates (stopRowHeadway).
       hw: stopRowHeadway(branch, period),
+      // #1667: the low end of a range where patterns share the stop unevenly (every 11–21).
+      shownLow: stopRowRangeLow(branch, period),
     }))
     .filter(item => item.label)
     .sort((a, b) => a.directionId - b.directionId);
@@ -120,6 +122,7 @@ export default function StopRouteGroup({
               labelWeight="regular"
               singleLine
               headway={item.hw ?? undefined}
+              trunkHeadway={item.shownLow}
               limited={item.periodText != null}
               limitedLabel={item.periodText}
               live={live}

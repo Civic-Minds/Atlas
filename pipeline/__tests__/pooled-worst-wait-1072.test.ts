@@ -15,7 +15,8 @@ const at = (...hhmm: string[]) => hhmm.map(t => { const [h, m] = t.split(':').ma
 describe('pooledReadingInWindow: the worst wait of a refused window', () => {
   it('two 30-minute branches 3 minutes apart read 27, never 15', () => {
     const bunched = [...every(540, 900, 30), ...every(543, 873, 30)].sort((a, b) => a - b);
-    expect(pooledReadingInWindow(bunched, 540, 900)).toEqual({ value: null, worstWait: 27 });
+    // #1667: the low end is the merged list's own value (27): no range, since both ends match.
+    expect(pooledReadingInWindow(bunched, 540, 900)).toEqual({ value: null, worstWait: 27, typical: 27 });
     expect(pooledHeadwayInWindow(bunched, 540, 900)).toBeNull();
   });
 
@@ -23,7 +24,7 @@ describe('pooledReadingInWindow: the worst wait of a refused window', () => {
     // Every 98 on the own pattern, then a 165-minute hole: the merged value would be 98.
     const own = [400, 498, 596, 694];
     const reading = pooledReadingInWindow([...own, 859], 360, 1320, 3, false, own);
-    expect(reading).toEqual({ value: null, worstWait: 165 });
+    expect(reading).toEqual({ value: null, worstWait: 165, typical: 98 });
   });
 
   it('#851: one held bus on a dense service still passes with its typical value, and no worst wait', () => {
@@ -47,7 +48,7 @@ describe('pooledReadingInWindow: the worst wait of a refused window', () => {
     const times = at('6:04', '6:40', '7:00', '7:10', '7:24', '7:34', '7:40', '7:54', '8:04', '8:09', '8:22', '8:32', '8:39', '8:52');
     const reading = pooledReadingInWindow(times, 360, 540);
     expect(reading.value).toBe(pooledHeadwayInWindow(times, 360, 540));
-    expect(reading).toEqual({ value: null, worstWait: 36 });
+    expect({ value: reading.value, worstWait: reading.worstWait }).toEqual({ value: null, worstWait: 36 });
   });
 });
 

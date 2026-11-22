@@ -94,9 +94,10 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
  * worst wait: the longest gap between two of its departures in the window (CIV-1072, Ryan
  * 2026-11-10: an uneven pooled window shows its longest wait instead of nothing). Two 30s three
  * minutes apart read 27, never 15; #813's 165-minute hole reads 165, never 98. worstWait is null
- * whenever value is set or the list is too short to read.
+ * whenever value is set or the list is too short to read. #1667: `typical` is the value the merged
+ * list would have read had it passed the guard, set only alongside worstWait (the range's low end).
  */
-export function pooledReadingInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): { value: number | null; worstWait: number | null } {
+export function pooledReadingInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): { value: number | null; worstWait: number | null; typical?: number } {
   const inWindow = collapseBunched(departuresInWindow(times, start, end, true));
   if (inWindow.length < minDeps) return { value: null, worstWait: null };
   const typical = allDay
@@ -118,7 +119,7 @@ export function pooledReadingInWindow(times: readonly number[], start: number, e
   // Each ratio allows at least the grace over its base: one held bus on a dense service is
   // not an alternation, while two 30s three minutes apart (27 against a mean of 15) stay out.
   if (longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
-    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return { value: null, worstWait: longest };
+    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return { value: null, worstWait: longest, typical: value };
   return { value, worstWait: null };
 }
 

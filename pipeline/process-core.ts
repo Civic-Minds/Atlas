@@ -2766,6 +2766,11 @@ export async function processGtfsBuffer(
       // nothing. Published in stopPeriodHeadways only: the route-level steps, stop order, grades
       // and the filter fields never read it, as #690 keeps every pooled value off the route.
       const worstWaitPeriodHw: Record<string, Partial<Record<PeriodKey, number>>> = {};
+      // #1667 (Ryan, 2026-11-21, "1"): a pooled period the evenness guard refused that fell back to
+      // the own pattern's value (MBTA 16 at Columbia Rd @ Seaver St, PM peak: every 27 from the minor
+      // shape alone) shows a range instead: the merged list's typical wait to its longest gap (11-21).
+      // Published as the stop's value (the longest gap) and a sparse low end; route values never read it.
+      const rangePeriodHw: Record<string, Partial<Record<PeriodKey, [number, number]>>> = {};
       for (const [stopId, times] of stopMetricMap) {
         times.sort((a, b) => a - b);
         // Prefer midday (9–15h) then PM peak (15–19h) rather than a raw all-day window.
@@ -2844,6 +2849,14 @@ export async function processGtfsBuffer(
             continue;
           }
           if (ph != null) byPeriod[pk] = ph;
+          // The range reads under worstWait's own conditions below: the merged list runs through the
+          // period, and never overnight.
+          // Only where the merged list's typical wait differs from the own value the stop falls back to: where they
+          // match, the stop already reads the merged list's wait and keeps it (the scope Ryan approved).
+          if (ph != null && isPooled && pooledPh == null && pooledReading?.worstWait != null && pooledReading.typical != null
+            && pooledReading.typical !== ph && pk !== 'overnight' && runsThroughPeriod(times, start, end, computePeriodSustained(times)[pk])) {
+            (rangePeriodHw[stopId] ??= {})[pk] = [pooledReading.typical, pooledReading.worstWait];
+          }
           // Only where the merged list runs through the period (settled rule 5: departures on both
           // sides of its midpoint and no hole over BOUNDARY_DOMINANT_RATIO times its typical gap), so
           // a straggler and the next service's first trips never read "every 150". Never overnight:
@@ -2873,9 +2886,9 @@ export async function processGtfsBuffer(
         // own, up to a 90-min window [h*60, h*60+90] so 30-min routes still show up (issue #282).
         allStopHourHw[stopId] = computeHourHeadways(times, SPARKLINE_HOURS);
       }
-      return { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw };
+      return { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw, rangePeriodHw };
     };
-    let { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled);
+    let { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw, rangePeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled);
     // CIV-226: a drawn child platform whose station the row also lists reads the station's list (Sound
     // Transit's alternating Link platforms held half the trips each, graded 60 and read every 20 on a line
     // every 10), unless another pattern of the route stops at that station (platformsAsStation). Only a
@@ -2892,7 +2905,7 @@ export async function processGtfsBuffer(
       metricStopMap = platformStations.map;
       pooled = poolFor(metricStopMap);
       stopMetricMap = pooled?.map ?? metricStopMap;
-      ({ allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled));
+      ({ allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw, rangePeriodHw } = computeStopValues(stopMetricMap, metricStopMap, pooled));
     }
     // The departure twins of the same lists (CIV-1071), pooled with the same sharers.
     const departureMetricMap = ownDepartureTwin ? remapWith(ownDepartureTwin, platformStations.remapped) : metricStopMap;
@@ -2907,7 +2920,7 @@ export async function processGtfsBuffer(
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
       : null;
     const departureValues = departureMetricMap === metricStopMap
-      ? { allStopHw, allStopPeriodHw, allStopPeriodCoverageHw, worstWaitPeriodHw }
+      ? { allStopHw, allStopPeriodHw, allStopPeriodCoverageHw, worstWaitPeriodHw, rangePeriodHw }
       : computeStopValues(departurePooled?.map ?? departureMetricMap, departureMetricMap, departurePooled);
     // #690: the route-level fallbacks (all-stop median, branch detection, the minimum stop
     // headways the filter reads) keep reading the own pattern, so pooled stop values never
@@ -3336,16 +3349,25 @@ export async function processGtfsBuffer(
       // Per-stop period headways for on-shape stops — used by Corridors to show
       // frequency at the user's chosen TO stop, not just the route terminal.
       const stopPeriodHeadways: Record<string, Partial<Record<PeriodKey, number>>> = {};
+      const stopPeriodRangeLows: Record<string, Partial<Record<PeriodKey, number>>> = {};
       for (const { stopId } of onShape) {
         const overlay = rushPeriodOverlay.get(stopId) ?? siblingRushOverlay.get(stopId);
         // CIV-1072: a refused pooled period with no value of its own shows its worst wait.
         const worstWait = departureValues.worstWaitPeriodHw[stopId];
-        const periods = overlay || worstWait ? { ...worstWait, ...departureValues.allStopPeriodHw[stopId], ...overlay } : departureValues.allStopPeriodHw[stopId];
+        // #1667: a refused pooled period that fell back to the own value reads the merged list's longest
+        // gap, with its typical wait as the low end, unless a rush overlay already gives it a value.
+        const ranges = departureValues.rangePeriodHw[stopId];
+        const rangeTop = ranges && Object.fromEntries(Object.entries(ranges).filter(([pk]) => overlay?.[pk as PeriodKey] == null).map(([pk, [, hi]]) => [pk, hi]));
+        const periods = overlay || worstWait || rangeTop ? { ...worstWait, ...departureValues.allStopPeriodHw[stopId], ...rangeTop, ...overlay } : departureValues.allStopPeriodHw[stopId];
         if (periods && Object.keys(periods).length > 0) stopPeriodHeadways[stopId] = periods;
+        for (const [pk, [lo]] of Object.entries(ranges ?? {}) as [PeriodKey, [number, number]][]) {
+          if (overlay?.[pk] == null) (stopPeriodRangeLows[stopId] ??= {})[pk] = lo;
+        }
       }
       if (Object.keys(stopPeriodHeadways).length > 0) {
         feature.properties.stopPeriodHeadways = stopPeriodHeadways;
       }
+      if (Object.keys(stopPeriodRangeLows).length > 0) feature.properties.stopPeriodRangeLows = stopPeriodRangeLows;
       // CIV-1959 B2 (ATLAS_PIECE_READING=1, off by default): each piece's one reading, for the map's stretch colour. A parallel
       // field: no stop's own published value above changes. Stops that break off, or already read the piece value, have no entry.
       if (pieceReading && departurePooled && ownMember) {

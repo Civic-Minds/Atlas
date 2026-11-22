@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildStopRoutes, headlineStandIn, stopCardAgencies, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, type StopBranch } from '../stopRoutes';
+import { buildStopRoutes, headlineStandIn, stopCardAgencies, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, stopRowRangeLow, type StopBranch } from '../stopRoutes';
 import ttc29json from './fixtures/ttc-29-weekday.json';
 import { stopRoutePeriodBit } from '../../../shared/stopRoutePeriods';
 
@@ -32,6 +32,21 @@ describe('stopRowHeadway: never overstate', () => {
 
   it('shows words, not a number, for a part-period row', () => {
     expect(stopRowHeadway(branch(5, 10, { periodText: 'every 12 min until 9:37 AM' }), 'midday')).toBeNull();
+  });
+});
+
+describe('stopRowRangeLow (#1667)', () => {
+  it('shows the range where the row reads the stop value (MBTA 16 at Columbia Rd @ Seaver St, PM peak: every 11–21)', () => {
+    expect(stopRowRangeLow(branch(21, 15, { rangeLow: 11 }), 'midday')).toBe(11);
+  });
+
+  it("none where the row shows the branch's own value instead of the stop's", () => {
+    expect(stopRowRangeLow(branch(21, 30, { rangeLow: 11 }), 'midday')).toBeNull();
+  });
+
+  it('none where the range rule would read it as one value, and none without a low end', () => {
+    expect(stopRowRangeLow(branch(21, null, { rangeLow: 19 }), 'midday')).toBeNull();
+    expect(stopRowRangeLow(branch(21, null), 'midday')).toBeNull();
   });
 });
 

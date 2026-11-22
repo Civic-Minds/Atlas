@@ -288,6 +288,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-21 — A shared stop whose combined trips are uneven shows a range (#1667, CIV-53)
+Ryan (2026-11-21, relayed by Atlas Questions, to "Should we not be using a range then"): "1". A stop where several patterns of a route stop, whose combined departures fail the evenness test, shows the combined list's typical wait to its longest gap, in the route cards' range words, instead of the minor pattern's own value.
+- MBTA 16 at Columbia Rd @ Seaver St, weekday PM peak: every 27 → every 11–21. SEPTA 63 at Oregon Av & 16th St, weekday midday: every 121 → every 12–30.
+- The stop's published value is the range's top (the longest gap), and its low end is a sparse parallel field, only where the range applies. Route values, grades and the filter never read either (#690).
+- Under worstWait's own conditions (CIV-1072): the merged list runs through the period, never overnight. Only where the merged list's typical wait differs from the own value the stop fell back to. A rush overlay that gives the stop a value wins. The range shows where the one range rule (headwayRangeShown) shows one.
+- Same-zip counts: MBTA 604 stop values on 19 routes, SEPTA 6,260 on 43; no route value, grade or filter value changes.
 ### 2026-11-21 — A shared trunk sets a route's headline only; the filter and map colour use the slowest piece (#1665, narrows CIV-1959 B1)
 Ryan, 2026-11-21 (relayed by Atlas Questions): "1". He was answering: "1. (Recommended) The trunk sets the card's headline number only; the filter and map colour still use the slowest piece (rule 11 wins). 2. Keep B1 as written (the trunk passes the whole route) and amend rule 11."
 - The rule: with `ATLAS_HEADLINE_FROM_TRUNK` on, a direction's headline value still comes from its trunk (B1, 2026-11-20). Its filter value, which sets the frequency filter and the map colour, always reads every piece, and the slowest decides, as FREQUENCY_RULES rule 11 says: a shared stretch can pass on its own line but never makes the whole route pass. This narrows B1, which had put the filter value on the trunk too.
