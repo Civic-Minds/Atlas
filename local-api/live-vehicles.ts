@@ -5,13 +5,14 @@ import {
   liveConfigRouteIds,
   liveMapArchiveFeed,
 } from '../shared/livePollingConfig.js';
-import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicleDelay.js';
+import { delayMinFromDelaySec } from '../shared/liveVehicleDelay.js';
+import { joinLiveFeed, type LiveRecord, type LiveStopTime } from '../shared/liveJoin.js';
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
 import { LIVE_POLL_SEC } from '../shared/rules/live.js';
 import { stopPlaces, type StopPlace } from './stopNames.js';
-import { routeNames } from './routeNames.js';
 import type { UpcomingStop } from '../shared/livePatterns.js';
+import { routeNames } from './routeNames.js';
 
 const FEED_TIMEOUT_MS = 15_000;
 /** CIV-1770: speeds from movement between polls, across requests. */
@@ -183,6 +184,60 @@ export function upcomingStops(stops: readonly StopUpdate[] | null | undefined, p
   return out;
 }
 
+/**
+ * Live's vehicles from joined records (CIV-2073), whether polled here or read from the recorder's v2 snapshot: route
+ * names from `routeOf`, stop names from the agency's stops file, speed from movement between reports.
+ */
+export function vehiclesFromRecords(
+  agency: string,
+  records: readonly LiveRecord[],
+  routeOf: (routeId: string) => { shortName: string; displayName: string } | undefined,
+  places: ReadonlyMap<string, StopPlace>,
+  nowSec: number,
+  /** The trip updates' own timestamp (#1673), what the next stop is read against; `nowSec` without one. */
+  feedNowSec: number = nowSec,
+) {
+  const vehicles = [];
+  for (const rec of records) {
+    const route = routeOf(rec.r);
+    if (!route) continue;
+    const delayMin = rec.delay == null ? null : delayMinFromDelaySec(rec.delay);
+    // A stop with no time stays timeless (undefined, not 0), as the feed gave it; the departure is kept where it differs.
+    const asUpdate = (list: readonly LiveStopTime[]) => ({
+      stopTimeUpdate: list.map(([stopId, time, dep]) => ({ stopId, arrival: { time: time ?? undefined }, departure: { time: dep ?? time ?? undefined } })),
+    });
+    const own = rec.stu.length ? asUpdate(rec.stu) : undefined;
+    const others = (rec.stuV ?? []).map(asUpdate);
+    const vehicle = { currentStatus: rec.currentStatus as number | null };
+    const stop = rec.tripId ? vehicleNextStop(vehicle, own, others, places, feedNowSec) : null;
+    vehicles.push({
+      id: rec.id,
+      routeShortName: route.shortName,
+      displayName: route.displayName,
+      tripId: rec.tripId,
+      lat: rec.lat,
+      lon: rec.lon,
+      bearing: rec.brg,
+      // CIV-1770: from movement between reports, not the feed's momentary speed (TTC's read 0 for moving buses).
+      speedKmh: movementSpeeds.speedFor(agency, rec.id, rec.lat, rec.lon, rec.t, nowSec),
+      tsEpoch: rec.t,
+      delayMin,
+      headsign: rec.hs,
+      directionId: rec.d,
+      vehicleLabel: rec.label,
+      // CIV-2024: the stop the feed says it is heading to or arriving at, by name; while it stands at a stop, that stop (CIV-2034).
+      nextStop: stop?.name ?? null,
+      ...(stop?.at ? { atStop: true } : {}),
+      // CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern.
+      upcomingStops: rec.tripId ? upcomingStops(own?.stopTimeUpdate, places, nowSec) : [],
+      status: statusForDelay(delayMin),
+      statusLabel: null,
+      headwayGapMin: null,
+    });
+  }
+  return vehicles;
+}
+
 async function fetchHandler(request: Request): Promise<Response> {
   const agency = requestAgency(request);
   if (!agency) return json({ error: 'A single valid agency slug is required' }, 400);
@@ -231,104 +286,14 @@ async function fetchHandler(request: Request): Promise<Response> {
     for (const [routeId, name] of archiveRoutes) if (filter.test(routeId)) routeById.set(routeId, name);
   }
 
-  const updatesByTrip = new Map<string, any>();
-  /**
-   * CIV-2024 (#1653): trip updates by their vehicle, for a position whose trip id the updates don't use. Every update
-   * a vehicle has (#1673): at a trip's end the feed already carries its next trip under the same vehicle.
-   */
-  const updatesByVehicle = new Map<string, any[]>();
-  const headwaysByRoute = new Map<string, number[]>();
-  // #1673: stop times are read against the trip updates' own timestamp, not this server's clock: the feed is often
-  // 15-25 s old, and a stop a few seconds "past" by the clock is still ahead in the feed.
+  const routeOf = (routeId: string) => routeById.get(routeId);
+  // CIV-2073: the same join the cloud recorder stores (shared/liveJoin.ts), then the same reading of it (vehiclesFromRecords).
+  const nowSec = Date.now() / 1000;
+  const { records, headways } = joinLiveFeed(positions.data, updates.ok ? updates.data : null, id => routeOf(id)?.shortName, nowSec);
+  // #1673: the next stop is read against the trip updates' own timestamp, not this server's clock.
   const feedHeaderSec = updates.ok ? Number(updates.data.header?.timestamp) : NaN;
-  const feedNowSec = Number.isFinite(feedHeaderSec) && feedHeaderSec > 0 ? feedHeaderSec : Date.now() / 1000;
-  if (updates.ok) {
-    for (const entity of updates.data.entity ?? []) {
-      const tripUpdate = entity.tripUpdate;
-      const tripId = tripUpdate?.trip?.tripId;
-      const route = tripUpdate?.trip?.routeId ? routeById.get(tripUpdate.trip.routeId) : undefined;
-      if (!tripId || !route) continue;
-      updatesByTrip.set(tripId, tripUpdate);
-      if (tripUpdate.vehicle?.id) {
-        const key = String(tripUpdate.vehicle.id);
-        const list = updatesByVehicle.get(key);
-        if (list) list.push(tripUpdate); else updatesByVehicle.set(key, [tripUpdate]);
-      }
-
-      const arrivalsByStop = new Map<string, number[]>();
-      for (const stop of tripUpdate.stopTimeUpdate ?? []) {
-        const timestamp = Number(stop.arrival?.time ?? stop.departure?.time);
-        if (!stop.stopId || !Number.isFinite(timestamp) || timestamp <= 0) continue;
-        const arrivals = arrivalsByStop.get(String(stop.stopId)) ?? [];
-        arrivals.push(timestamp);
-        arrivalsByStop.set(String(stop.stopId), arrivals);
-      }
-      for (const arrivals of arrivalsByStop.values()) {
-        arrivals.sort((a, b) => a - b);
-        for (let index = 1; index < arrivals.length; index += 1) {
-          const gap = (arrivals[index] - arrivals[index - 1]) / 60;
-          if (gap > 0 && gap <= 180) {
-            const gaps = headwaysByRoute.get(route.shortName) ?? [];
-            gaps.push(gap);
-            headwaysByRoute.set(route.shortName, gaps);
-          }
-        }
-      }
-    }
-  }
-
-  const headways: Record<string, { gapMin: number; samples: number }> = {};
-  for (const [route, gaps] of headwaysByRoute) {
-    gaps.sort((a, b) => a - b);
-    headways[route] = {
-      gapMin: Math.round(gaps[Math.floor(gaps.length / 2)] * 10) / 10,
-      samples: gaps.length,
-    };
-  }
-
-  const vehicles = [];
-  for (const entity of positions.data.entity ?? []) {
-    const vehicle = entity.vehicle;
-    const route = vehicle?.trip?.routeId ? routeById.get(vehicle.trip.routeId) : undefined;
-    const lat = Number(vehicle?.position?.latitude);
-    const lon = Number(vehicle?.position?.longitude);
-    if (!vehicle || !route || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-
-    const tripId = String(vehicle.trip?.tripId ?? '');
-    const update = tripId ? updatesByTrip.get(tripId) : undefined;
-    const delaySeconds = update ? explicitTripDelaySec(update) : null;
-    const delayMin = delaySeconds == null ? null : delayMinFromDelaySec(delaySeconds);
-    const lastStop = update?.stopTimeUpdate?.at(-1);
-    const headsign = update?.trip?.tripHeadsign ?? lastStop?.stopHeadsign ?? null;
-
-    vehicles.push({
-      id: String(vehicle.vehicle?.id ?? tripId ?? `${lat},${lon}`),
-      routeShortName: route.shortName,
-      displayName: route.displayName,
-      tripId,
-      lat,
-      lon,
-      bearing: vehicle.position?.bearing == null ? null : Number(vehicle.position.bearing),
-      // CIV-1770: from movement between reports, not the feed's momentary speed (TTC's read 0 for moving buses).
-      speedKmh: movementSpeeds.speedFor(agency, String(vehicle.vehicle?.id ?? tripId ?? `${lat},${lon}`), lat, lon,
-        vehicle.timestamp == null ? null : Number(vehicle.timestamp), Date.now() / 1000),
-      tsEpoch: vehicle.timestamp == null ? null : Number(vehicle.timestamp),
-      delayMin,
-      headsign,
-      directionId: vehicle.trip?.directionId == null ? null : Number(vehicle.trip.directionId),
-      vehicleLabel: vehicle.vehicle?.label ?? null,
-      // CIV-2024: the stop the feed says it is heading to or arriving at, by name; while it stands at a stop, that stop (CIV-2034).
-      ...(() => {
-        const stop = tripId ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, places, feedNowSec) : null;
-        return { nextStop: stop?.name ?? null, ...(stop?.at ? { atStop: true } : {}) };
-      })(),
-      // CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern.
-      upcomingStops: tripId ? upcomingStops(update?.stopTimeUpdate, places, Date.now() / 1000) : [],
-      status: statusForDelay(delayMin),
-      statusLabel: null,
-      headwayGapMin: null,
-    });
-  }
+  const feedNowSec = Number.isFinite(feedHeaderSec) && feedHeaderSec > 0 ? feedHeaderSec : nowSec;
+  const vehicles = vehiclesFromRecords(agency, records, routeOf, places, nowSec, feedNowSec);
 
   return json({
     vehicles,
