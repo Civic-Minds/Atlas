@@ -77,12 +77,8 @@ on:
 env:
   TZ: America/Toronto
 
-# Same group as the weekly refresh (refresh-feeds.yml): the two can never run at once, because
-# overlapping runs could publish tiles and agency data from different builds. Queue, never
-# cancel, so a run that is mid-upload always finishes.
-concurrency:
-  group: atlas-data-release
-  cancel-in-progress: false
+# Only the publish job joins atlas-data-release (below). Dry runs use read-only keys and write nothing, so
+# they run side by side: a workflow-level group kept one pending run and cancelled the rest (#1704).
 
 # Nothing gets more than read access unless a job below asks for it.
 permissions:
@@ -388,6 +384,12 @@ jobs:
   publish:
     if: inputs.mode == 'publish'
     runs-on: ubuntu-latest
+    # Same group as the weekly refresh (refresh-feeds.yml) and the History rebuilds: they can never run at once,
+    # because overlapping runs could publish tiles and agency data from different builds. Queue, never cancel, so a
+    # run that is mid-upload always finishes. GitHub still keeps one pending run per group: dispatch one publish at a time.
+    concurrency:
+      group: atlas-data-release
+      cancel-in-progress: false
     permissions:
       contents: write
       pull-requests: write

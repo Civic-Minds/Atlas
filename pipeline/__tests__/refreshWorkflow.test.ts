@@ -45,6 +45,13 @@ describe('weekly refresh workflow contract', () => {
     expect(workflow).toMatch(/^    timeout-minutes: \d+$/m);
   });
 
+  it('rebuild-release queues only its publish job with the refresh; dry runs never cancel each other (#1704)', () => {
+    const workflow = readFileSync(resolve('.github/workflows/rebuild-release.yml'), 'utf8');
+    expect(workflow).not.toMatch(/^concurrency:/m);
+    expect(workflow).toMatch(/^  publish:\n(?:    .*\n|\s*\n)*?    concurrency:\n      group: atlas-data-release\n      cancel-in-progress: false$/m);
+    expect(workflow.match(/group: atlas-data-release/g)).toHaveLength(1);
+  });
+
   it('passes reviewed release-gate overrides to both the refresh and publish steps', () => {
     const workflow = readFileSync(resolve('.github/workflows/refresh-feeds.yml'), 'utf8');
     expect(workflow).toMatch(/workflow_dispatch:[\s\S]*\n      allow:\n/);
