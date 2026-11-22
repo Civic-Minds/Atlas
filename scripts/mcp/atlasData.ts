@@ -351,6 +351,16 @@ export function figurePasses(f: Pick<PeriodFigure, 'waitMinutes' | 'filter'>, ev
   return readingPassesHeadwayFilter(f.filter ?? { wait: f.waitMinutes, breaks: 0 }, every);
 }
 
+/**
+ * CIV-2086: a route whose figure is within "every N" but which the map's filter rule still leaves out (some waits in
+ * the period run longer, such as OC Transpo 34 on a Sunday midday). Listed so an answer doesn't read as if the route
+ * runs less often.
+ */
+export function leftOutByRule(f: Pick<PeriodFigure, 'waitMinutes' | 'filter'>, every: number): boolean {
+  const wait = f.waitMinutes ?? f.filter?.wait ?? null;
+  return wait != null && wait <= every && !figurePasses(f, every);
+}
+
 /** A ranking file's wait as a filter reading (RankWait). */
 export function rankWaitReading(w: RankWait | undefined): RouteFilterReading {
   return Array.isArray(w) ? { wait: w[0], breaks: w[1] } : { wait: w ?? null, breaks: 0 };
@@ -366,7 +376,7 @@ export async function routesMeeting(agency: CatalogAgency, day: DayType, period:
   const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
   const running = figures.filter(f => f.waitMinutes != null);
   const meeting = figures.filter(f => figurePasses(f, every)).sort((a, b) => (a.waitMinutes ?? a.filter?.wait ?? 0) - (b.waitMinutes ?? b.filter?.wait ?? 0));
-  return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
+  return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting, leftOut: figures.filter(f => leftOutByRule(f, every)) };
 }
 
 /**
@@ -404,7 +414,7 @@ export async function entryRoutesMeeting(entry: AgencyEntry, day: DayType, perio
   const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
   const running = figures.filter(f => f.waitMinutes != null);
   const meeting = figures.filter(f => figurePasses(f, every)).sort((a, b) => (a.waitMinutes ?? a.filter?.wait ?? 0) - (b.waitMinutes ?? b.filter?.wait ?? 0));
-  return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
+  return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting, leftOut: figures.filter(f => leftOutByRule(f, every)) };
 }
 
 /** Studio's schedule comparison for an agency, if one was built (tmp/studio/<slug>-before-after.json). */

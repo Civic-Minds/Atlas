@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP names routes the frequency filter leaves out**: a list of routes every N min or better silently skipped routes whose usual wait fits but whose longer waits don't, so answers made them look less frequent
 - **Atlas Studio MCP finds the agency you name**: "Sound Transit" gave Owen Sound Transit's figures, "MTA New York" and "Metrolinx" weren't found, "GO Transit" also listed Chicago and Durango, and one agency named twice was compared with itself
 - **Atlas Studio MCP answers how many people live near frequent service**: per metro, from Atlas's dated coverage table, and says so when a city has no figure
 - **Live's vehicle card says which stop a stopped vehicle is at**: it showed no stop while the vehicle stood at one; it now reads "At" and the stop's name
