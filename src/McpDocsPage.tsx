@@ -3,6 +3,7 @@ import { MCP_TESTERS_API_URL, type McpTester, type McpTesterCall } from '../shar
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
+import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { TOOLS, TOOL_SUMMARIES, SERVER_VERSION } from '../scripts/mcp/toolDefs';
 import { LIVE_TOOLS } from '../scripts/mcp/liveTools';
 import { MCP_DOCS as C } from '../shared/mcpDocsCopy';
@@ -42,9 +43,6 @@ function Section({ id, children }: { id: (typeof SECTIONS)[number]['id']; childr
 }
 
 const T = C.testers;
-const TABLE = 'mt-4 w-full text-left text-sm';
-const TH = 'py-2 pr-4 font-semibold text-[var(--text-primary)]';
-const TD = 'py-2 pr-4 align-top text-[var(--text-muted)]';
 const when = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
 /** The hosted pilot's testers and each one's latest calls, read through the local API (local-api/mcp-testers.ts). */
@@ -63,35 +61,23 @@ function Testers() {
   if (testers === 'unavailable') return <p className={PARAGRAPH}>{T.unavailable}</p>;
   if (testers === null) return <p className={PARAGRAPH}>{T.loading}</p>;
   if (!testers.length) return <p className={PARAGRAPH}>{T.none}</p>;
+  const testerColumns: DataTableColumn<McpTester>[] = [
+    { key: 'name', header: T.name, rowHeader: true, cell: t => <button type="button" className="font-semibold text-[var(--text-primary)] underline" aria-expanded={open === t.name} onClick={() => setOpen(open === t.name ? null : t.name)}>{t.name}</button> },
+    { key: 'since', header: T.since, cell: t => when(t.created_at) },
+    { key: 'calls', header: T.calls, cell: t => t.calls },
+    { key: 'status', header: T.status, cell: t => (t.revoked_at ? T.revoked : T.active) },
+  ];
+  const callColumns: DataTableColumn<McpTesterCall>[] = [
+    { key: 'when', header: T.when, cell: c => when(c.at) },
+    { key: 'question', header: T.question, cell: c => c.question ?? T.noQuestion },
+    { key: 'tool', header: T.tool, cell: c => <><code className="text-xs">{c.tool}</code>{Number(c.ok) ? '' : ` (${T.failed})`}</> },
+  ];
   return (
     <>
       <p className={PARAGRAPH}>{T.intro}</p>
-      <table className={TABLE}>
-        <thead><tr><th className={TH}>{T.name}</th><th className={TH}>{T.since}</th><th className={TH}>{T.calls}</th><th className={TH}>{T.status}</th></tr></thead>
-        <tbody>
-          {testers.map(t => (
-            <tr key={t.name}>
-              <td className={TD}><button type="button" className="font-semibold text-[var(--text-primary)] underline" aria-expanded={open === t.name} onClick={() => setOpen(open === t.name ? null : t.name)}>{t.name}</button></td>
-              <td className={TD}>{when(t.created_at)}</td>
-              <td className={TD}>{t.calls}</td>
-              <td className={TD}>{t.revoked_at ? T.revoked : T.active}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="mt-4"><DataTable variant="ruled" columns={testerColumns} rows={testers} rowKey={t => t.name} caption={T.heading} /></div>
       {open && (calls === null ? <p className={PARAGRAPH}>{T.loading}</p> : !calls.length ? <p className={PARAGRAPH}>{T.noCalls}</p> : (
-        <table className={TABLE}>
-          <thead><tr><th className={TH}>{T.when}</th><th className={TH}>{T.question}</th><th className={TH}>{T.tool}</th></tr></thead>
-          <tbody>
-            {calls.map(c => (
-              <tr key={c.id}>
-                <td className={TD}>{when(c.at)}</td>
-                <td className={TD}>{c.question ?? T.noQuestion}</td>
-                <td className={TD}><code className="text-xs">{c.tool}</code>{Number(c.ok) ? '' : ` (${T.failed})`}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="mt-6"><DataTable variant="ruled" columns={callColumns} rows={calls} rowKey={c => c.id} caption={open} /></div>
       ))}
     </>
   );
