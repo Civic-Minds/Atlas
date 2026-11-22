@@ -1,5 +1,4 @@
-import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
-import { DEFAULT_LIVE_ARCHIVE_BUCKET } from './rules/live.js';
+import { S3Client } from '@aws-sdk/client-s3';
 
 export function liveArchiveClient(): S3Client | null {
   const accountId = process.env.R2_ACCOUNT_ID;
@@ -11,17 +10,6 @@ export function liveArchiveClient(): S3Client | null {
     endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
     credentials: { accessKeyId, secretAccessKey },
   });
-}
-
-export interface ArchivedVehicle {
-  id: string;
-  r: string; // route_id
-  d: number | null; // direction_id
-  lat: number;
-  lon: number;
-  spd: number | null;
-  brg: number | null;
-  t: number | null; // per-vehicle GTFS-RT position timestamp
 }
 
 /**
@@ -40,52 +28,3 @@ export function datesForWindow(nowMs: number, sinceMinutes: number): string[] {
   return [...dates];
 }
 
-/**
- * Read archived vehicle positions for `slug` captured in the last `sinceMinutes`.
- * Lists every date prefix the window touches (not just "today") and paginates
- * each listing instead of assuming a single page.
- */
-export async function fetchRecentPositions(
-  slug: string,
-  sinceMinutes: number,
-  bucket = process.env.R2_LIVE_BUCKET_NAME ?? DEFAULT_LIVE_ARCHIVE_BUCKET,
-): Promise<{ capturedAt: number; vehicles: ArchivedVehicle[] }[]> {
-  const client = liveArchiveClient();
-  if (!client) return [];
-
-  const nowMs = Date.now();
-  const dates = datesForWindow(nowMs, sinceMinutes);
-  const cutoffSec = Math.floor((nowMs - sinceMinutes * 60_000) / 1000);
-  const keys: string[] = [];
-  for (const date of dates) {
-    let token: string | undefined;
-    do {
-      const page = await client.send(new ListObjectsV2Command({
-        Bucket: bucket,
-        Prefix: `positions/${slug}/${date}/`,
-        ContinuationToken: token,
-      }));
-      for (const o of page.Contents ?? []) {
-        if (!o.Key) continue;
-        const match = o.Key.match(/\/(\d+)\.json$/);
-        const capturedAt = match ? Number(match[1]) : null;
-        if (capturedAt != null && capturedAt >= cutoffSec) keys.push(o.Key);
-      }
-      token = page.IsTruncated ? page.NextContinuationToken : undefined;
-    } while (token);
-  }
-
-  const snapshots = await Promise.all(keys.map(async key => {
-    try {
-      const object = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
-      const parsed = JSON.parse(await object.Body!.transformToString());
-      const vehicles: ArchivedVehicle[] = parsed.vehicles ?? parsed.records ?? [];
-      const capturedAt: number = parsed.capturedAt ?? parsed.ts ?? 0;
-      return { capturedAt, vehicles };
-    } catch {
-      return null;
-    }
-  }));
-
-  return snapshots.filter((s): s is { capturedAt: number; vehicles: ArchivedVehicle[] } => s !== null);
-}

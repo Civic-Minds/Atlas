@@ -4,7 +4,7 @@ import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
-import { gapText, minutesText } from './liveFormat';
+import { minutesText } from './liveFormat';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR } from './rules/live';
 
 /**
@@ -344,30 +344,6 @@ export const STUDIO_SETTINGS_TEXT = {
     bunchedWithinMin: 'min apart',
     gappedFactor: '× the scheduled wait',
   },
-} as const;
-
-/**
- * CIV-1893, Studio's "right now" view of a route: wording pending Ryan's OK. The figures and the definitions under them
- * come from shared/liveNow.ts, the same as the MCP's route_now.
- */
-export const STUDIO_NOW_PENDING = {
-  title: 'Right now',
-  /** The reading's time and how old it is: "Reading from 8:26 PM, 0.7 min ago". */
-  reading: (clock: string, ageMin: number): string => `Reading from ${clock}, ${minutesText(ageMin)} ago`,
-} as const;
-
-/**
- * CIV-1828, the route panel redesign's two options (2026-11-20): wording pending Ryan's pick. "Right now" as one table row
- * per direction, so a direction, a stretch and a stop each read as what they are (Ryan: "Is this destinations or parts of
- * the route or what?"). Option A also names the worst stretches under the table, each as "between X and Y".
- */
-export const STUDIO_ROUTE_NOW_PENDING = {
-  columns: { direction: 'Direction', vehicles: 'Vehicles', bunched: 'Bunched', gapped: 'Long gaps' },
-  /** "Bunched between Beverley St and Shaw St: 54 sec apart" (under a minute in seconds, CIV-2021). `place` is betweenLabel's. */
-  bunchedAt: (place: string, min: number): string => `Bunched ${place}: ${gapText(min)} apart`,
-  /** "Long gap between Mountstephen St and Wolfrey Ave: 24 min wait, scheduled every 7 min". */
-  gappedAt: (place: string, waitMin: number, scheduledMin: number | null): string =>
-    `Long gap ${place}: ${minutesText(waitMin)} wait${scheduledMin != null ? `, scheduled every ${minutesText(scheduledMin)}` : ''}`,
 } as const;
 
 /**
