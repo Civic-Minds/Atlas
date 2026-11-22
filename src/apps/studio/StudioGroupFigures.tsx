@@ -27,15 +27,17 @@ interface BusRow { key: string; label: string; value: string | number; now?: boo
  * row placed by its bus count, so the comparison reads straight down. Where the buses the schedule's own frequency needs
  * differ from those on the road, the now row says so in a second line.
  */
-export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'current'): BusRow[] {
+export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'current', inService: number | null = null): BusRow[] {
   const atTarget = groupAtTarget(g, split);
   // CIV-2002 (Ryan: "is this network-wide?"): one number for the schedule, the buses its own frequencies need, worked out
   // as the target rows are, so the rows compare straight down; the route card reads the same as the network table.
   const now: BusRow = { key: 'now', label: fleetNetworkText(g.modes).asScheduled, value: g.implied, now: true };
   const targets: BusRow[] = STUDIO_TARGETS.map(hw => ({ key: `at-${hw}`, label: headwayEvery(hw), value: atTarget[hw] ?? MISSING_VALUE }));
   // The now row goes before the first target needing fewer buses (after any needing the same).
+  // CIV-2056: the vehicles Live sees on the road right now, straight under the schedule's row.
+  const sched: BusRow[] = inService == null ? [now] : [now, { key: 'live', label: fleetNetworkText(g.modes).inServiceNow, value: inService }];
   const at = targets.findIndex(r => typeof r.value === 'number' && r.value < g.implied);
-  return at < 0 ? [...targets, now] : [...targets.slice(0, at), now, ...targets.slice(at)];
+  return at < 0 ? [...targets, ...sched] : [...targets.slice(0, at), ...sched, ...targets.slice(at)];
 }
 
 /**
@@ -43,7 +45,7 @@ export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'curre
  * time and layover in one line. A shared middle's trips keep the branches' current mix (CIV-1712's choice is gone: its
  * words were never approved and read as nothing to a planner).
  */
-export function StudioGroupFigures({ group, showRunning = true, network = false, modes }: { group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): its rows read "If every route ran every 15 min". */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[] }) {
+export function StudioGroupFigures({ group, showRunning = true, network = false, modes, inService = null }: { group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): its rows read "If every route ran every 15 min". */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[]; /** CIV-2056: the group's vehicles on the road now, from Live; null leaves the row out. */ inService?: number | null }) {
   // CIV-2003: lines in the card are the shared card body text, as the route card's no-data line.
   if (!group) return <CardBodyText className="!mt-0">{noServiceText(modes)}</CardBodyText>;
   const N = fleetNetworkText(group.modes);
@@ -55,7 +57,7 @@ export function StudioGroupFigures({ group, showRunning = true, network = false,
       <DataTable
         caption={PAGE_NAMES.studioVehicles}
         layout="fill"
-        rows={busRows(group)}
+        rows={busRows(group, 'current', inService)}
         rowKey={r => r.key}
         rowCurrent={r => !!r.now}
         columns={[

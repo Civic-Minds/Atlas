@@ -416,6 +416,16 @@ export function liveMapArchiveFeed(slug: string) {
   return positions ? { positions, tripUpdatesUrl: LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === slug)?.url ?? null } : null;
 }
 
+/**
+ * CIV-2056: Live reads every vehicle of this route: one of its polled routes, or an agency whose whole feed the Live map
+ * shows (Kingston). A route of a filtered feed (the MBTA's) can't be told by its short name, so it isn't.
+ */
+export function liveFollowsRoute(slug: string, routeShortName: string): boolean {
+  const polled = getPolledRoute(slug, routeShortName);
+  if (polled) return isLiveEligibleRoute(polled);
+  return liveMapArchiveFeed(slug)?.positions.routeFilterSource === '.+';
+}
+
 /** Every city on the Live map, the one list Studio's Live reads too (CIV-2046): polled routes plus the archiver's map feeds. */
 export const LIVE_AGENCY_SLUGS: readonly string[] = [...new Set([
   ...LIVE_POLLING_ROUTES.filter(isLiveEligibleRoute).map(r => r.slug),
