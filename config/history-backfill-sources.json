@@ -18,5 +18,15 @@
   "kingston": {
     "_note": "CIV-1863: the 2016 period only (the other Kingston periods are already v2 sidecars, CIV-437). Mobility Database mdb-733 = the OpenMobilityData city-of-kingston/779 archive; dataset 20161102 holds the Sep 6 - Dec 30, 2016 timetable. No anchor month: Sep's first full week starts before the zip, so the vote picks the week of 2016-09-12.",
     "20161102": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/city-of-kingston/779/20161102/gtfs.zip"
+  },
+  "indygo": {
+    "_note": "CIV-2059: IndyGo 2015-2022 from the OpenMobilityData indygo/210 archive (reached through the Mobility Database's ntd-50050 dataset list; mdb-1237 only has 2023-era files). One zip per published v1 period key, each checked to hold a weekday timetable around its key date. No anchor month: the vote picks the first full week in force (refDates 2015-10-07 to 2022-10-12, each in its own year). 2021 is in the Atlas archive (20211009), not here.",
+    "20151012": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/indygo/210/20151012/gtfs.zip",
+    "20160901": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/indygo/210/20160901/gtfs.zip",
+    "20170928": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/indygo/210/20170928/gtfs.zip",
+    "20180608": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/indygo/210/20180608/gtfs.zip",
+    "20191204": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/indygo/210/20191204/gtfs.zip",
+    "20201012": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/indygo/210/20201012/gtfs.zip",
+    "20221208": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/indygo/210/20221208/gtfs.zip"
   }
 }
