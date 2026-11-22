@@ -547,8 +547,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 {/* CIV-2046, CIV-461 (Ryan: "Should massdot be a thin like the transitland and the other one are"): MassDOT, where
                     Live is on, and each agency whose data licence requires credit, as cards like the sources above. */}
                 {FEATURES.live && <LinkCard as={OutboundLink} href={MASSDOT_CREDIT_URL} kind="attribution" icon="external">{MBTA_VEHICLES_CREDIT}</LinkCard>}
+                {/* A licence's own sentence may not name its agency (TTC's doesn't): a small label above says whose it is. */}
                 {agencyCredits(agencies).map(c => (
-                  <LinkCard key={c.slug} id={sourceCreditId(c.slug)} as={OutboundLink} href={c.url} kind="attribution" icon="external">{c.text}</LinkCard>
+                  <div key={c.slug} id={sourceCreditId(c.slug)}>
+                    {c.ownWords && <p className="text-xs text-[var(--text-dim)] mb-1">{c.name}</p>}
+                    <LinkCard as={OutboundLink} href={c.url} kind="attribution" icon="external">{c.text}</LinkCard>
+                  </div>
                 ))}
               </div>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">

@@ -10,6 +10,8 @@ export interface AgencyCredit {
   shortName: string;
   url: string;
   text: string;
+  /** The text is the licence's own sentence, which may not name the agency: About labels it with the agency's name. */
+  ownWords: boolean;
 }
 
 type Credited = { slug: string; name: string; dataLicense?: AgencyDataLicense; lastRefreshedAt?: string | null };
@@ -24,7 +26,7 @@ export function agencyCredit(a: Credited): AgencyCredit | null {
   const text = l.credit ?? scheduleDataCredit(a.name, l.name);
   // The licence asks for the data's last-updated date in its own words (STO): the day Atlas last took the feed.
   const updated = l.updatedLabel && a.lastRefreshedAt ? ` ${l.updatedLabel} ${a.lastRefreshedAt.slice(0, 10)}.` : '';
-  return { slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: l.url, text: `${text}${updated}` };
+  return { slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: l.url, text: `${text}${updated}`, ownWords: !!l.credit };
 }
 
 /** The credits for these agencies (all of them, or the slugs given), in the order given, each once. */
