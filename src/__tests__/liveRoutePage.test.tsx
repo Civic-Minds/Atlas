@@ -279,11 +279,11 @@ describe('Live route dashboard', () => {
       unmount();
       vi.setSystemTime(new Date('2026-10-25T20:00:00Z'));
       renderPage(ready);
-      // Staleness is the header line's own "data up to" segment (caution colour, role=status); the age is its hover text. No second line.
+      // Staleness is the header line's own "data up to" segment (role=status, plain grey as the pill: CIV-2007); the age is its hover text. No second line.
       const status = await screen.findByRole('status');
       expect(status.textContent).toBe('data up to Oct 14');
       expect(status.getAttribute('title')).toBe('Data up to Oct 14, 11 days ago.');
-      expect(status.className).toContain('status-caution');
+      expect(status.className).not.toContain('status-caution');
       expect(status.parentElement?.textContent).toBe('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
       expect(document.body.textContent).not.toMatch(/11 days ago/);
       // Developer hints stay off by default, even in a dev build; ?dev=1 turns them on.

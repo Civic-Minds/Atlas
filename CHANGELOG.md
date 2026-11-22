@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **What's New shows each release's highlights**: the panel lists the three or four most important changes, and the What's New page keeps the full list
+- **A Live route page's "data up to" date stays plain grey when the data is old**: it turned bold warning colour, though the date already says how old it is, as the map's pill now does
 - **Live's days-recorded count counts only near-full days**: Hamilton read 3 days when its first day held only a third of a day's recordings
 - **The Diagnostics pages' text and tables match the MCP page**: their intro was larger and their tables smaller and denser than the other internal pages
 - **The "On this page" menu no longer slides sideways**: scrolling sideways over it on a docs page moved the whole list

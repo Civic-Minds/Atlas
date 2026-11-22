@@ -89,17 +89,17 @@ export function routeSubtitle(v3: LiveV3, /** The agency's short name (useLiveAg
 }
 
 /**
- * The subtitle line. When the analysis is stale, its "data up to Oct 14" segment takes the caution colour and carries
- * role=status; the age ("Data up to Oct 14, 3 days ago.") is that segment's hover text, not a line of its own.
+ * The subtitle line. Its "data up to Oct 14" segment stays the line's own plain grey, as the pill does (Ryan, CIV-2007:
+ * the date says it). When the analysis is stale it carries role=status, and the age ("Data up to Oct 14, 3 days ago.")
+ * is its hover text, not a line of its own.
  */
 export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: string; route: string }) {
   const f = freshness(v3, route, Date.now());
   const line = routeSubtitle(v3, useLiveAgencyName(agency));
   const at = line.lastIndexOf(' · data up to ');
   if (!f.stale) return <>{line}</>;
-  const stale = 'font-bold text-[var(--status-caution-text)]';
-  if (at < 0) return <>{line}{line ? ' · ' : ''}<span role="status" title={f.text} className={stale}>{f.text}</span></>;
-  return <>{line.slice(0, at)} · <span role="status" title={f.text} className={stale}>{line.slice(at + 3)}</span></>;
+  if (at < 0) return <>{line}{line ? ' · ' : ''}<span role="status" title={f.text}>{f.text}</span></>;
+  return <>{line.slice(0, at)} · <span role="status" title={f.text}>{line.slice(at + 3)}</span></>;
 }
 
 /**
