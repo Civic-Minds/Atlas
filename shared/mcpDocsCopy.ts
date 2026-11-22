@@ -41,4 +41,17 @@ export const MCP_DOCS = {
     desktop: 'Claude Desktop: add this to claude_desktop_config.json, then quit and reopen Claude Desktop:',
     hosted: 'Testers use the hosted server through a private link made for each of them. They add it in Claude as a custom connector.',
   },
+  testers: {
+    heading: 'Testers',
+    intro: 'Who has a link to the hosted server, and how much they have used it. Choose a name to see their latest questions.',
+    unavailable: 'Usage can’t be read: the admin token isn’t on this Mac, or the hosted server didn’t answer.',
+    loading: 'Loading…',
+    none: 'No testers yet.',
+    name: 'Name', since: 'Since', calls: 'Calls', status: 'Status',
+    active: 'Active', revoked: 'Link stopped',
+    question: 'Question', tool: 'Tool', when: 'When',
+    noQuestion: 'No question given',
+    failed: 'failed',
+    noCalls: 'No calls yet.',
+  },
 } as const;
