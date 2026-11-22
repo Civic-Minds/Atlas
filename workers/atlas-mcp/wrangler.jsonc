@@ -16,6 +16,8 @@
     "DATA_ORIGIN": "https://data.transitatlas.fyi",
     // Fair use per tester (placeholders for the manager to confirm): calls a day, and the burst limit below.
     "DAILY_CALL_CAP": "300",
+    // Testers with their own daily cap (src/dailyCap.ts). Ryan, via MCP Breaker (2026-11-22): the internal testing link gets about 2,000.
+    "TESTER_DAILY_CAPS": { "MCP check": 2000 },
     // Ryan, 2026-11-21: "turn on live vehicles for cloud too".
     "LIVE_TOOLS": "on"
   },

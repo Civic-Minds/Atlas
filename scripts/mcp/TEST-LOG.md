@@ -50,6 +50,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 
 | 0.22.7 | 2026-11-22 | After midnight, route_now reads the same service day as the schedule tools' "now" (12:37 AM Sunday is Saturday's late period), from one shared rule (#1690) |
 | 0.22.8 | 2026-11-22 | Answers that use an agency read through the 511 API (sfmta, samtrans, smart-ca, tridelta, lavta, petaluma, santarosa, fast-ca, ace) carry "Data provided by 511.org" with its link, to give at the end (#1694) |
+| 0.22.9 | 2026-11-22 | Hosted: a tester can have its own daily cap in config (TESTER_DAILY_CAPS); the internal testing link gets 2,000 a day, every other tester stays at 300 |
 
 ## Questions
 

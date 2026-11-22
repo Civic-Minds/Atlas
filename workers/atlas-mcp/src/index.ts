@@ -18,6 +18,7 @@ import { coverageHandlers } from '../../../scripts/mcp/coverageTools';
 const handlers = withScheduleWarning({ ...scheduleHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers, ...coverageHandlers });
 import { linkToken } from './linkToken';
 import { deleteOldCalls } from './retention';
+import { dailyCapFor } from './dailyCap';
 import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
 import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
@@ -45,7 +46,7 @@ async function sameSecret(a: string, b: string): Promise<boolean> {
 let activeRelease: { id: string; checkedAt: number } | null = null;
 
 /** Test deployments only (wrangler.pilot-test.jsonc): the split files ship inside the Worker as static assets, for a first test with nothing uploaded to R2. */
-type TestEnv = Env & { ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
+type TestEnv = Env & { TESTER_DAILY_CAPS?: Record<string, number> | string; ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
 
 /**
  * The Live tools read the private bucket (CIV-1860; scripts/mcp/releaseLivePrivate.ts writes it daily), with a short
@@ -148,7 +149,7 @@ async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env
   // Said as a tool result, not a bare HTTP error, so the assistant can tell the person plainly.
   const limited = (message: string, retryAfter: string) => json({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: message }], isError: true } }, 200, { 'Retry-After': retryAfter });
   if (!success) return limited('Too many requests in a short time. Wait a minute and try again.', '60');
-  if (tester.used >= Number(env.DAILY_CALL_CAP)) return limited("You've reached the daily fair-use limit for Atlas Studio (it counts the last 24 hours). Try again later.", '3600');
+  if (tester.used >= dailyCapFor(tester.name, env)) return limited("You've reached the daily fair-use limit for Atlas Studio (it counts the last 24 hours). Try again later.", '3600');
 
   const { question, ...args } = params.arguments ?? {};
   const started = Date.now();

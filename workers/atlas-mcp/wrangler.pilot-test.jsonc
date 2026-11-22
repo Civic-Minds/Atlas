@@ -13,7 +13,7 @@
   // Invocation logs would record each request URL, and a tester's link carries their token in the path: keep them off.
   "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false } },
   // LIVE_TOOLS on (Ryan, 2026-11-21: "turn on live vehicles for cloud too"): testers get route_now, route_reliability and route_bunching.
-  "vars": { "DATA_ORIGIN": "https://data.transitatlas.fyi", "DAILY_CALL_CAP": "300", "DATA_FROM_ASSETS": "1", "LIVE_TOOLS": "on" },
+  "vars": { "DATA_ORIGIN": "https://data.transitatlas.fyi", "DAILY_CALL_CAP": "300", "TESTER_DAILY_CAPS": { "MCP check": 2000 }, "DATA_FROM_ASSETS": "1", "LIVE_TOOLS": "on" },
   // Read only: MCP_LIVE is the Live tools' private figures (CIV-1860); MCP_LIVE_ARCHIVE is the recorder's bucket, for route_now's last half hour.
   "r2_buckets": [
     { "binding": "MCP_LIVE", "bucket_name": "atlas-mcp-live" },
