@@ -95,11 +95,13 @@ export const EARLY_STEP_LABEL = '1+ min ahead';
 export const ON_TIME_LABEL = 'On time';
 export const DELAY_STEP_LABELS = [ON_TIME_LABEL, '1–3 min', '3+ min behind'] as const;
 
-export const LATE_DEFINITION = "is more than 5½ min behind schedule. This is based on the TTC’s 5-minute standard, plus 30 seconds because we only record each vehicle’s location once a minute.";
+/** How late is Late, the one place its words live (E9). */
+export const LATE_LIMIT_TEXT = 'more than 5½ min';
+export const LATE_DEFINITION = `is ${LATE_LIMIT_TEXT} behind schedule. This is based on the TTC’s 5-minute standard, plus 30 seconds because we only record each vehicle’s location once a minute.`;
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
-export const LATE_THRESHOLD = 'more than 5½ min late';
+export const LATE_THRESHOLD = `${LATE_LIMIT_TEXT} late`;
 
 /** The title of every "Where delays start" section and the name of the stretch it marks (one name, CIV-1448). */
 export const DELAY_STARTS_TITLE = 'Where delays start';

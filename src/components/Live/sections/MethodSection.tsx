@@ -6,10 +6,15 @@ import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, c
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
-import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
+import { phoneMethodLines, aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 import { percentText, countText } from '../../../../shared/numberText';
 import { DOCS_PATH } from '../../../../shared/pagePaths';
+import { METHOD_TERMS_LINK } from '../../../../shared/liveGlossary';
+import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../../hooks/useMediaQuery';
+
+/** The link under the block to the Docs glossary. */
+const termsLink = <p className="mt-2 text-xs"><ArrowLink href={`${DOCS_PATH}#glossary`}>{METHOD_TERMS_LINK}</ArrowLink></p>;
 
 /**
  * The two weeks, then the days left out (nothing when every day counted), running on in the paragraph (CIV-1075). `namedAbove`
@@ -31,6 +36,16 @@ export type MethodSectionProps =
   | { scope: 'agency'; s: AgencySummary; /** The agency's short name (useLiveAgencyName). */ agencyName: string };
 
 export default function MethodSection(props: MethodSectionProps): ReactNode {
+  // Phones (Ryan, 2026-11-22, #1151 option 1): the short line for each figure, then the glossary link; wider screens keep it all.
+  const phone = useMediaQuery(PHONE_MEDIA_QUERY);
+  if (phone) {
+    const v3 = props.scope === 'route' ? props.data.v3 : null;
+    return (
+      <MethodFootnote id={props.scope === 'route' ? 'method' : 'agency-method'} groups={[{ label: METHOD_GROUPS.numbers, items: phoneMethodLines(v3
+        ? { aheadMin: Math.abs(v3.thresholds.earlyAtOrBelowMin), underMin: Math.round(v3.thresholds.bunchedGapSec / 60) }
+        : {}) }]} after={termsLink} />
+    );
+  }
   if (props.scope === 'route') {
     const { data } = props;
     const { v3 } = data;
@@ -99,6 +114,6 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
           { label: METHOD_GROUPS.colours, items: [w && colourLine] },
           { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
         
-    ]} after={<p className="mt-2 text-xs"><ArrowLink href={`${DOCS_PATH}#glossary`}>What these terms mean</ArrowLink></p>} />
+    ]} after={termsLink} />
   );
 }

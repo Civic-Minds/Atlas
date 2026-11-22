@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's "How this is measured" fits a phone**: on a phone it is one short line per figure and a link to the full glossary, instead of about 25 lines of small text
 - **Atlas Studio MCP finds the agency you name**: "Sound Transit" gave Owen Sound Transit's figures, "MTA New York" and "Metrolinx" weren't found, "GO Transit" also listed Chicago and Durango, and one agency named twice was compared with itself
 - **Atlas Studio MCP answers how many people live near frequent service**: per metro, from Atlas's dated coverage table, and says so when a city has no figure
 - **Live's vehicle card says which stop a stopped vehicle is at**: it showed no stop while the vehicle stood at one; it now reads "At" and the stop's name
