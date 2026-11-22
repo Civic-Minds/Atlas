@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The "On this page" menu no longer slides sideways**: scrolling sideways over it on a docs page moved the whole list
 - **Atlas Studio MCP warns when a route's two frequency figures disagree**: SEPTA 63 read "every 10 min" beside its own "every 60 min" with no explanation; the answer now flags it and goes by the route's list
 - **Atlas Studio MCP testers can ask how a route is running right now**: the online version only knew the schedule, so "how many vehicles are on the 504 now" got the planned count
 - **Studio's running time no longer counts short turns as extra branches**: TTC Line 1 read 247 minutes, the full route plus three short turns, which looked like a round trip

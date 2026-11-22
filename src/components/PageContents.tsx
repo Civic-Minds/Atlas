@@ -163,7 +163,7 @@ export default function PageContents({ items, title }: { items: readonly PageCon
           end of the page, measured with the footer as it is now: if the footer or the box's offset changes, measure again. The
           padding, taken back by negative margins, keeps the active item's left line and the focus outlines inside the box.
         */}
-        <div ref={listRef} style={fade ? { maskImage: fade, WebkitMaskImage: fade } : undefined} className="mt-2 grid gap-1.5 text-sm lg:-my-1 lg:-ml-[14px] lg:-mr-1 lg:block lg:max-h-[calc(100vh-320px)] lg:space-y-2 lg:overflow-y-auto lg:overscroll-contain lg:py-1 lg:pl-[14px] lg:pr-1">
+        <div ref={listRef} style={fade ? { maskImage: fade, WebkitMaskImage: fade } : undefined} className="mt-2 grid gap-1.5 text-sm lg:-my-1 lg:-ml-[14px] lg:-mr-1 lg:block lg:max-h-[calc(100vh-320px)] lg:space-y-2 lg:overflow-y-auto lg:overflow-x-hidden lg:overscroll-contain lg:py-1 lg:pl-[14px] lg:pr-1">
           {items.map((item) => (
             <a
               key={item.id}
