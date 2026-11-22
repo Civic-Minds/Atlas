@@ -21,7 +21,7 @@ import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
 import { TIER_MAXES } from '../shared/rules/frequency.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
-import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
+import { clearLoneOriginRows, labelConvergingOrigins, originLabelOf } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
@@ -47,6 +47,7 @@ import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { headsignBranchCode } from '../shared/branchCode.js';
+import { isRailRoute } from './routeMode.js';
 import { computePeriodCoverageHeadways, departuresInWindow, periodMedianHeadway } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
@@ -963,9 +964,16 @@ export async function processGtfsBuffer(
     // true outside Weekday; for Weekday, true only when the trip runs on that map's day.
     inGroup: boolean; inHeadsign: boolean; inShape: boolean;
   };
-  // CIV-2025 (Ryan, 2026-11-21): trains are read like buses, so no route keys its stop data by headsign and origin (the
-  // rail-only CIV-1152 split); every trip keeps its plain headsign key, and its shape scopes its stop values.
-  const metricHeadsign = (_routeId: string, headsign: string | null, _variant: unknown): string | null => headsign;
+  // CIV-2025 restore 1 (pending Ryan): trains are grouped by destination before shape. A rail line's stop values are scoped by
+  // headsign, so the origins of a rail direction that converge under one headsign (convergingOrigins: CTA Green's
+  // Harlem-bound trips from Ashland/63rd and from Cottage Grove) each key their stop data by headsign and origin (CIV-1152).
+  // Otherwise every origin row read the whole headsign's trips (every 10, where each branch runs every 20). Every other trip
+  // and feature keeps its plain headsign key.
+  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
+  const metricHeadsign = (routeId: string, headsign: string | null, variant: unknown): string | null => {
+    const origin = originLabelOf(variant);
+    return headsign && origin && railRouteIds.has(routeId) ? `${headsign} ${origin}` : headsign;
+  };
   const featureMetricHeadsign = (feature: GeoJsonFeature): string | null =>
     metricHeadsign(feature.properties.routeId as string, feature.properties.headsign as string | null, feature.properties.routeVariant);
   const stopTripMeta = new Map<string, { shortName: string; dirId: string; headsign: string | null; displayHeadsign: string | null; shapeId: string | null }>();
@@ -1213,10 +1221,12 @@ export async function processGtfsBuffer(
     }
     return drawnHeadsignsByPool.get(poolKey) ?? new Set();
   };
-  // A pattern: route_id + shape (every trip on the feature's own shape, as in its shape-scoped stop metrics), for every
-  // mode (CIV-2025).
-  const sharedPatternKey = (routeId: string, _headsign: string | null, shapeId: string | null | undefined): string | null =>
-    shapeId ? `${routeId}|sh|${shapeId}` : null;
+  // A pattern: route_id + shape for buses (every trip on the feature's own shape, as in its shape-scoped stop metrics),
+  // route_id + headsign for rail (headsign-scoped metrics; CIV-2025 restore 1).
+  const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
+    if (railRouteIds.has(routeId)) return `${routeId}|hs|${headsign ?? ''}`;
+    return shapeId ? `${routeId}|sh|${shapeId}` : null;
+  };
   // Trips pool only under a headsign that an eligible feature draws (regular or time-limited,
   // not span, partial-weekday or drop-off-only): `${shortName}::${dir}::${day}::${routeId}::${headsign}`.
   // Filled from the built features before the stop_times pass reads it.
@@ -2435,6 +2445,7 @@ export async function processGtfsBuffer(
     }
     const featureHeadsign = featureMetricHeadsign(feature);
     const featureRoute = routeById.get(feature.properties.routeId as string);
+    const railFeature = railRouteIds.has(feature.properties.routeId as string);
     const headsignMap = featureHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`)
       : undefined;
@@ -2508,9 +2519,13 @@ export async function processGtfsBuffer(
         return headlineWindowValue(sorted) != null;
       });
     const shapeMap = !shapeOffRepresentativeDay && !shapeIsThinHeadsignFragment ? ownShapeMap : undefined;
-    // A shape-scoped map prevents unrelated branches from being combined, for every mode (CIV-2025: trains read their
-    // shape first, as buses do).
-    const ownMetricStopMap = shapeMap ?? headsignMap ?? stopMap;
+    // Rail feeds commonly publish several physical shapes for one displayed line and destination (short turns, service
+    // patterns, or timetable variants). For buses, a shape-scoped map prevents unrelated branches from being combined; for
+    // rail, the same-destination headsign pool preserves service that would otherwise disappear when the daytime shape wins
+    // feature deduplication (e.g. TTC Lines 1 and 2 evening; WMATA Yellow to Huntington on weekends). CIV-2025 restore 1.
+    const ownMetricStopMap = railFeature
+      ? (headsignMap ?? shapeMap ?? stopMap)
+      : (shapeMap ?? headsignMap ?? stopMap);
     // CIV-226: remapped below (platformsAsStation) once the stop values say which platforms are drawn.
     let metricStopMap: Map<string, number[]> = ownMetricStopMap;
     // #690: the stop values below read what serves each stop, not only the drawn pattern. At
@@ -2524,7 +2539,7 @@ export async function processGtfsBuffer(
     const ownMember = readsSharedPool(feature)
       ? sharedPatternKey(feature.properties.routeId as string, featureHeadsign, featureShape)
       : null;
-    const ownIsPattern = shapeMap != null && ownMetricStopMap === shapeMap;
+    const ownIsPattern = railFeature ? (headsignMap != null && ownMetricStopMap === headsignMap) : (shapeMap != null && ownMetricStopMap === shapeMap);
     const poolFor = (map: Map<string, number[]>) => ownMember && ownIsPattern && stopDepsBySharedMember.has(`${poolKey}::${ownMember}`)
       ? buildPooledStopMap(map, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
@@ -3574,6 +3589,30 @@ export async function processGtfsBuffer(
       });
       feature.properties.headway = headway;
       feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, TIER_MAXES);
+      // #898 (CIV-2025 restore 1): a rail row's headline reads the headsign's pooled terminal sample. Where that sample has
+      // more departures than the pattern's own (two origins to one destination: WMATA Yellow to Huntington on weekends,
+      // every 16 each, every 8 together), the tier is graded on the same pool at every drawn stop with a reading, on the
+      // shared every-gap rule (the rail midday window stays removed), never better than the headline's tier, so the card's
+      // "every 8" and its colour agree. The drawn stops with a reading, not every stop of the headsign's map: a rail
+      // headsign's map also holds stops only a few pull-out trips serve (SEPTA T2: Woodland Av and Elmwood Av, 10 trips each).
+      if (railFeature && headway != null && terminalId && headsignMap && featureHeadsign && coverageStops.length > 1
+        && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
+        const own = new Set(shapeMap?.get(terminalId) ?? []).size;
+        const pooledDepartures = new Set(headsignMap.get(terminalId) ?? []).size;
+        if (pooledDepartures > own && pooledDepartures >= MIN_POOLED_TIER_DEPARTURES) {
+          const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
+          const drawnIds = coverageStops.filter(p => allStopHw[p.stopId] != null).map(p => p.stopId);
+          feature.properties.tier = drawnIds.length < 2 ? feature.properties.tier : liftTierOnDestinationPool({
+            currentTier: feature.properties.tier as string,
+            headway,
+            day: day as DayType,
+            drawnStopIds: drawnIds,
+            gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '')?.tier ?? null,
+            otherWeekdays: () => otherWeekdayPools(hsKey),
+            tiers: TIER_MAXES,
+          });
+        }
+      }
       // #728: the tier is phase 2's every-gap grade of the one shape that won dedupe, while the
       // period values below read the whole destination at the terminal. A shape that covers part
       // of the day or has one hole is graded 60 or infrequent beside periods of 8-20 (Brampton 7
@@ -3662,10 +3701,13 @@ export async function processGtfsBuffer(
     // #690: the period values read the same destination pool as the headline when it qualifies.
     const periodPoolTimes = pooledHeadlineTimes(terminalStopId);
     const periodsFromPool = periodPoolTimes != null;
-    const scopedTerminalList = periodPoolTimes ?? selectTerminalDepartureTimes(
-      terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
-      headsignTerminalTimes,
-    );
+    // Rail reads the headsign's terminal list first (CIV-2025 restore 1), buses the better of shape and headsign.
+    const scopedTerminalList = periodPoolTimes ?? (railFeature
+      ? (headsignTerminalTimes ?? (terminalStopId ? shapeMap?.get(terminalStopId) : undefined))
+      : selectTerminalDepartureTimes(
+        terminalStopId ? shapeMap?.get(terminalStopId) : undefined,
+        headsignTerminalTimes,
+      ));
     // The row has a terminal list only when it holds a departure: one definition for the period
     // values, the hour values, their gaps and the departure counts, so an empty list never reads
     // as "a list" to one of them and "no list" to another (CIV-1109 review note).
