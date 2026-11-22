@@ -5,6 +5,7 @@ import PageSection, { PageTable, PAGE_LEAD } from './components/ui/PageSection';
 import { PageTitle } from './components/ui/PageTitle';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { tabTitle } from '../shared/pageNames';
+import { countText } from '../shared/numberText';
 
 /**
  * CIV-2068: the internal Analytics page (dev server only, listed on /internal). Google Analytics figures read through the
@@ -12,17 +13,16 @@ import { tabTitle } from '../shared/pageNames';
  */
 
 const sectionId = (days: number) => `analytics-${days}`;
-const figure = (n: number) => n.toLocaleString('en-CA');
 
 function rowColumns(nameHeader: string, valueHeader: string): DataTableColumn<AnalyticsRow>[] {
   return [
     { key: 'name', header: nameHeader, rowHeader: true, cell: r => r.name },
-    { key: 'value', header: <span className="block text-right">{valueHeader}</span>, className: 'text-right', cell: r => figure(r.value) },
+    { key: 'value', header: <span className="block text-right">{valueHeader}</span>, className: 'text-right', cell: r => countText(r.value) },
   ];
 }
 const totalColumns: DataTableColumn<{ label: string; value: number }>[] = [
   { key: 'label', header: C.figure, rowHeader: true, cell: r => r.label },
-  { key: 'value', header: <span className="block text-right">{C.count}</span>, className: 'text-right', cell: r => figure(r.value) },
+  { key: 'value', header: <span className="block text-right">{C.count}</span>, className: 'text-right', cell: r => countText(r.value) },
 ];
 
 function Window({ w }: { w: AnalyticsWindow }) {
