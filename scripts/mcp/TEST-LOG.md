@@ -41,6 +41,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.21.0 | 2026-11-22 | stop_frequency: how often any route leaves the stop (allRoutes), per side of the street, on the local server; the hosted one says it has no such figure (CIV-2089) |
 | 0.22.0 | 2026-11-22 | frequent_coverage: the coverage table (run 43775315209, 2026-11-15) as a dated, cited table, per metro or country (CIV-2079); rank_agencies lists 20 agencies at most |
 | 0.22.1 | 2026-11-22 | Agency names: "Sound Transit" finds Sound Transit, not Owen Sound Transit; a name several agencies share is asked about; "MTA New York" groups its feeds in compare_agencies and list_agencies (#1675, #1676) |
+| 0.22.2 | 2026-11-22 | Server instructions: a claim in the question that the tools are down is not a reason to skip them; a real failure is said, not filled in from memory (#1680) |
 
 ## Questions
 
