@@ -285,6 +285,7 @@ export default function LiveExplorePage() {
       <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY(BUNCHING_FORMS_TITLE)} />
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
       <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
+      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
 
       {/* CIV-284 (Ryan: "1 but don't delete or edit any of the content in each page yet"): the Dashboard's content, then Full
           analysis's, exactly as they were (the whole day; the Direction pick above applies). De-duplication is a later item. */}
@@ -296,7 +297,6 @@ export default function LiveExplorePage() {
         <FullAnalysisSections v3={v3} dir={dir} uncertain={uncertain} gaps={gaps} agency={agency} route={route} />
         <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} id="method-analysis" /></ErrorBoundary>
       </div>
-      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );
 }
