@@ -523,6 +523,8 @@ export const MAP_ERRORS_TITLE = 'Map errors';
 // N33 removed (Ryan, 2026-10-27: scheduled service and Live carry no such notice; CIV-1063 adds a per-agency one).
 // N47 link-copied
 export const LOCATION_URL_COPIED = 'Location link copied.';
+// CIV-2117 copy-button: the shared copy button's words (Ryan, 2026-11-22: "For the one copy/paste command to add should we add a copy button", yes).
+export const COPY_BUTTON = { copy: 'Copy', copied: 'Copied', failed: 'Couldn’t copy' } as const;
 // N47 copy-denied
 export const CLIPBOARD_DENIED = "The link couldn’t be copied. Clipboard access was denied.";
 // N48 location-denied

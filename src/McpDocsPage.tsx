@@ -6,6 +6,7 @@ import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PAGE_LEAD } from './components/ui/PageSection';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
+import CopyButton from './components/ui/CopyButton';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { TOOLS, TOOL_SUMMARIES, SERVER_VERSION } from '../scripts/mcp/toolDefs';
 import { LIVE_TOOLS } from '../scripts/mcp/liveTools';
@@ -22,7 +23,19 @@ const CHECKOUT = '/Users/ryan/Developer/Code/Platforms/Atlas';
 const NODE = '/opt/homebrew/bin/node';
 const ARGS = [`${CHECKOUT}/node_modules/tsx/dist/cli.mjs`, `${CHECKOUT}/scripts/mcp/atlas-mcp.ts`];
 const CLAUDE_CODE = `claude mcp add -s user atlas-studio -- ${NODE} ${ARGS.join(' ')}`;
+// CIV-2117: as the Nov 17-18 Gemini rounds added it (TEST-LOG; _reports/mcp-tests/run-agy.py).
+const ANTIGRAVITY = `agy mcp add -e ATLAS_ROOT=${CHECKOUT} atlas-studio ${NODE} ${ARGS.join(' ')}`;
 const CLAUDE_DESKTOP = JSON.stringify({ mcpServers: { 'atlas-studio': { command: NODE, args: ARGS } } }, null, 2);
+
+/** A command or config block to paste elsewhere, with the shared copy button (CIV-2117). */
+function CodeBlock({ text }: { text: string }) {
+  return (
+    <div className="relative mt-3">
+      <pre className={`${CODE} pr-20`}><code>{text}</code></pre>
+      <CopyButton text={text} className="absolute right-2 top-2" />
+    </div>
+  );
+}
 
 const SECTIONS = [
   { id: 'mcp-answers', label: C.answers.heading },
@@ -35,7 +48,7 @@ const SECTIONS = [
 // #1671: the same lead style as the other internal pages.
 const PARAGRAPH = PAGE_LEAD;
 const LIST = 'mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]';
-const CODE = 'mt-3 overflow-x-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-panel)] p-3 text-xs leading-5 text-[var(--text-primary)]';
+const CODE = 'overflow-x-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-panel)] p-3 text-xs leading-5 text-[var(--text-primary)]';
 
 function Section({ id, children }: { id: (typeof SECTIONS)[number]['id']; children: React.ReactNode }) {
   return (
@@ -121,9 +134,11 @@ export default function McpDocsPage() {
 
       <Section id="mcp-connect">
         <p className={PARAGRAPH}>{C.connect.code}</p>
-        <pre className={CODE}><code>{CLAUDE_CODE}</code></pre>
+        <CodeBlock text={CLAUDE_CODE} />
         <p className={PARAGRAPH}>{C.connect.desktop}</p>
-        <pre className={CODE}><code>{CLAUDE_DESKTOP}</code></pre>
+        <CodeBlock text={CLAUDE_DESKTOP} />
+        <p className={PARAGRAPH}>{C.connect.antigravity}</p>
+        <CodeBlock text={ANTIGRAVITY} />
         <p className={PARAGRAPH}>{C.connect.hosted}</p>
       </Section>
 
