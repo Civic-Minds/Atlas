@@ -11,6 +11,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio MCP testers can ask how a route is running right now**: the online version only knew the schedule, so "how many vehicles are on the 504 now" got the planned count
 - **Studio's running time no longer counts short turns as extra branches**: TTC Line 1 read 247 minutes, the full route plus three short turns, which looked like a round trip
 - **A route passes the frequency filter only when every part of it does**: a busy shared stretch made routes with slower branches pass (TARC 1, TTC 102); the stretch can still show its own number on the card
+- **Fleet's route card shows how many vehicles are in service now**: beside "As scheduled", for routes Live follows, while the picked time of day is the current one
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches
 - **Studio's Schedules list looks like the map's route lists**: it had its own taller rows with the time of day on a second line; it now uses the agency card's rows, with both dates' figures at the right
 - **Studio's Schedules map lines are as thin as the regular map's**: every route was drawn about twice as thick, so the picked route didn't stand out

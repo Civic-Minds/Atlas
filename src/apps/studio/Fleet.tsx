@@ -31,6 +31,7 @@ import { StudioGroupFigures } from './StudioGroupFigures';
 import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, changeGroups, modesFor, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
+import { useInServiceNow } from './useInServiceNow';
 
 /**
  * Fleet (CIV-1828, a placeholder name) and Schedules, two pages of Atlas Studio on the main map (CIV-1922: Fleet
@@ -149,6 +150,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
     .map(r => ({ route: r, longName: file.changes.find(c => c.route === r)?.name ?? null })), [file]);
   const fleet = useMemo(() => (vehicles && vehicles !== 'missing' ? agencyFleet(vehicles, period) : null), [vehicles, period]);
   const routeGroup = route && vehicles && vehicles !== 'missing' ? groupFor(vehicles, route, period) : null;
+  const inService = useInServiceNow(slug, routeGroup?.routes ?? null, period);
   // The words follow the modes even at a time of day with no service (CIV-2002).
   const routeModes = routeGroup?.modes ?? (route && vehicles && vehicles !== 'missing' ? modesFor(vehicles, route) : undefined);
   const agencyModes = fleet?.modes ?? (vehicles && vehicles !== 'missing' ? modesFor(vehicles, null) : undefined);
@@ -199,7 +201,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                 <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date), routeModes) || vehiclesNeededTitle(routeModes)}>
                   {/* CIV-2003: a line inside the card is the card's body text. */}
                   {vehicles === 'missing' ? <CardBodyText className="!mt-0">{C.noData}</CardBodyText>
-                    : routeGroup ? <StudioGroupFigures group={routeGroup} /> : vehicles ? <StudioGroupFigures group={null} modes={routeModes} />
+                    : routeGroup ? <StudioGroupFigures group={routeGroup} inService={inService} /> : vehicles ? <StudioGroupFigures group={null} modes={routeModes} />
                     // CIV-2003: while the vehicles load, the shared loading line in the mode word, as the no-service line.
                     : <CardLoadingLine what={vehiclesWord(routeModes)} />}
                 </SidebarCardSection>

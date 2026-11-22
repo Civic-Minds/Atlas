@@ -71,7 +71,8 @@ export function vehiclesNeededTitle(modes: readonly number[] | undefined): strin
  */
 export const fleetNetworkText = (modes: readonly number[] | undefined) => {
   const word = vehiclesWord(modes);
-  return { ifEveryRouteRan: 'If every route ran', asScheduled: 'As scheduled', count: word.charAt(0).toUpperCase() + word.slice(1) };
+  // CIV-2056 (Ryan, 2026-11-21: "1" to adding "In service now" next to "As scheduled", Live cities only).
+  return { ifEveryRouteRan: 'If every route ran', asScheduled: 'As scheduled', inServiceNow: 'In service now', count: word.charAt(0).toUpperCase() + word.slice(1) };
 };
 
 /** A time of day with no service: "No trains at this time of day." (CIV-2002: by mode, as the rest of Fleet). */
