@@ -77,6 +77,8 @@ export const STUDIO_COVERAGE_PATH = '/studio/coverage';
 export const INTERNAL_PATH = '/internal';
 /** CIV-1900: the Atlas Studio MCP's internal docs page (dev server only). */
 export const MCP_DOCS_PATH = '/internal/mcp';
+/** CIV-2068: site visits from Google Analytics (dev server only). */
+export const ANALYTICS_PATH = '/internal/analytics';
 
 /** The map's address parameter that opens an agency card (`/?operator=<slug>`); shareUrlState.ts re-exports it (CIV-1783). */
 export const AGENCY_CARD_PARAM = 'operator';

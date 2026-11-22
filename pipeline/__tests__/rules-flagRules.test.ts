@@ -29,7 +29,7 @@ describe('feature switches per build (rules audit move 10)', () => {
 
   it('keeps the feature routes', () => {
     expect(FEATURE_ROUTES).toEqual({
-      research: '/research', studio: '/studio', studioVehicles: '/studio/vehicles', studioChanges: '/studio/changes', studioCoverage: '/studio/coverage', internal: '/internal', mcpDocs: '/internal/mcp',
+      research: '/research', studio: '/studio', studioVehicles: '/studio/vehicles', studioChanges: '/studio/changes', studioCoverage: '/studio/coverage', internal: '/internal', mcpDocs: '/internal/mcp', analytics: '/internal/analytics',
       nightService: '/research/night', freeChildFares: '/research/free-child-fares', bustangConnections: '/research/bustang-connections',
       frequentService: { map: '/research/frequent-service', story: '/research/frequent-service/story' },
     });

@@ -43,6 +43,8 @@ async function loadHandlers() {
   handlers['/api/mcp-coverage'] = mcpCoverage.fetch;
   const { default: mcpTesters } = await import('./local-api/mcp-testers.js');
   handlers['/api/mcp-testers'] = mcpTesters.fetch;
+  const { default: analytics } = await import('./local-api/analytics.js');
+  handlers['/api/analytics'] = analytics.fetch;
   const { default: routeNow } = await import('./local-api/route-now.js');
   handlers['/api/route-now'] = routeNow.fetch;
   handlers['/api/privacy-region'] = privacyRegionResponse;
