@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MISSING_VALUE } from '../shared/missingValue';
 import { MCP_TESTERS_API_URL, type McpTester, type McpTesterCall } from '../shared/mcpTesters';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
@@ -65,6 +66,7 @@ function Testers() {
     { key: 'name', header: T.name, rowHeader: true, cell: t => <button type="button" className="font-semibold text-[var(--text-primary)] underline" aria-expanded={open === t.name} onClick={() => setOpen(open === t.name ? null : t.name)}>{t.name}</button> },
     { key: 'since', header: T.since, cell: t => when(t.created_at) },
     { key: 'calls', header: T.calls, cell: t => t.calls },
+    { key: 'lastWeek', header: T.lastWeek, cell: t => t.calls_7d ?? MISSING_VALUE },
     { key: 'status', header: T.status, cell: t => (t.revoked_at ? T.revoked : T.active) },
   ];
   const callColumns: DataTableColumn<McpTesterCall>[] = [

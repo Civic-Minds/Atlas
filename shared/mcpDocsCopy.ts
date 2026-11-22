@@ -3,7 +3,7 @@
  * list itself is not here: the page reads it from the tool definitions (scripts/mcp/toolDefs.ts).
  */
 export const MCP_DOCS = {
-  title: 'Atlas Studio MCP',
+  title: 'MCP',
   card: 'What the MCP answers, its tools, how fresh its data is and how to connect it.',
   intro: 'The Atlas Studio MCP lets Claude answer a planner’s questions from Atlas’s own data. It only reads Atlas’s published figures; it changes nothing and reaches nothing outside Atlas.',
   answers: {
@@ -47,7 +47,7 @@ export const MCP_DOCS = {
     unavailable: 'Usage can’t be read: the admin token isn’t on this Mac, or the hosted server didn’t answer.',
     loading: 'Loading…',
     none: 'No testers yet.',
-    name: 'Name', since: 'Since', calls: 'Calls', status: 'Status',
+    name: 'Name', since: 'Since', calls: 'Calls', lastWeek: 'Last 7 days', status: 'Status',
     active: 'Active', revoked: 'Link stopped',
     question: 'Question', tool: 'Tool', when: 'When',
     noQuestion: 'No question given',
