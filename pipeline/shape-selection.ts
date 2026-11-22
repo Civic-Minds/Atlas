@@ -1,5 +1,6 @@
 import type { GtfsData, GtfsRoute } from '../types/gtfs.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
+import { isRailRoute } from './routeMode.js';
 import { haversineDistance } from './utils.js';
 import type { GeoJsonFeature } from './geojson-types.js';
 import type { DayType } from '../shared/dayTypes.js';
@@ -295,12 +296,20 @@ export function buildShapeSelectionContext(
   const routeDirToDisplayShape = new Map<string, string>();
   const routeDirToAnalysisShapes = new Map<string, Set<string>>();
 
-  // CIV-2025 (Ryan, 2026-11-21): every mode keeps its busy shapes for analysis and draws its longest, as buses do (trains
-  // took only their longest shape and skipped the shape filter).
+  // CIV-2025 restore 2 (pending Ryan): a train draws and analyses only its longest shape and skips the bus shape filter, so
+  // a line's busy short-turn shape never stands in for the whole line (GO KI drawn Bramalea–Union only; MARC lost 15
+  // stops). Buses keep their busy shapes for analysis and draw their longest.
   for (const [key, counts] of shapeCounts) {
     const byLength = [...counts.keys()]
       .filter(sid => shapeById.has(sid))
       .sort((a, b) => shapeLen(b) - shapeLen(a))[0];
+    if (isRailRoute(routeById.get(key.split('::')[0]), agencySlug)) {
+      if (byLength) {
+        routeDirToDisplayShape.set(key, byLength);
+        routeDirToAnalysisShapes.set(key, new Set([byLength]));
+      }
+      continue;
+    }
     if (byLength) routeDirToDisplayShape.set(key, byLength);
 
     const shapeEntries = [...counts.entries()]
@@ -312,11 +321,13 @@ export function buildShapeSelectionContext(
 
   const shapeFilterForPhase1 = new Map<string, Set<string>>();
   for (const [key, shapeIds] of routeDirToAnalysisShapes) {
+    if (isRailRoute(routeById.get(key.split('::')[0]), agencySlug)) continue;
     shapeFilterForPhase1.set(key, withEachDaysPattern(shapeIds, shapeCountsByDay.get(key)?.values() ?? [], shapeLen, stopsOfShape));
   }
 
   const dayPickShapes = new Map<string, Set<string>>();
   for (const [hKey, hShapeCounts] of headsignShapeCounts) {
+    if (isRailRoute(routeById.get(hKey.split('::')[0]), agencySlug)) continue;
     const shapeEntries = [...hShapeCounts.entries()]
       .map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) }))
       .filter((e): e is { sid: string; trips: number; len: number } => e.len != null);
