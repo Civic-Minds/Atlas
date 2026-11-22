@@ -69,7 +69,11 @@ export const SOURCE = "Atlas's published schedule data for this agency.";
 
 export async function needAgency(q: unknown) {
   const a = await data.findAgency(String(q ?? ''));
-  if (!a) throw new Error(`No agency matching "${q}" has data here. Use list_agencies to search.`);
+  if (!a) {
+    const elsewhere = await data.agencyNotOnThisServer(String(q ?? ''));
+    if (elsewhere) throw new Error(await data.notOnThisServerNote([elsewhere.name]));
+    throw new Error(`No agency matching "${q}" has data here. Use list_agencies to search.`);
+  }
   return a;
 }
 export function needPeriod(p: unknown) {

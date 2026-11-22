@@ -386,6 +386,25 @@ export function leftOutByRule(f: Pick<PeriodFigure, 'waitMinutes' | 'filter'>, e
   return wait != null && wait <= every && !figurePasses(f, every);
 }
 
+/**
+ * #1687: a server with schedules for only some of Atlas's agencies (the hosted pilot carries 8) says so, naming the ones
+ * it has, instead of pointing to an agency it then can't answer for. `names` are the agencies asked about.
+ */
+export async function notOnThisServerNote(names: string[]): Promise<string> {
+  const have = await availableAgencies();
+  const list = have.length <= 20 ? `: ${have.map(a => a.name).join('; ')}` : '';
+  const them = names.length > 1;
+  return `${names.join(' and ')} ${them ? 'are' : 'is'} in Atlas, but this server has schedules for only ${have.length} agencies${list}. Say this server can't answer for ${them ? 'them' : 'it'}; don't answer from memory.`;
+}
+/** The agency a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */
+export async function agencyNotOnThisServer(query: string): Promise<CatalogAgency | null> {
+  const have = new Set((await availableAgencies()).map(a => a.slug));
+  try {
+    const a = await findAgency(query, await publicAgencies());
+    return a && !have.has(a.slug) ? a : null;
+  } catch { return null; }
+}
+
 /** A ranking file's wait as a filter reading (RankWait). */
 export function rankWaitReading(w: RankWait | undefined): RouteFilterReading {
   return Array.isArray(w) ? { wait: w[0], breaks: w[1] } : { wait: w ?? null, breaks: 0 };
@@ -567,14 +586,16 @@ export async function rankLabels(slug: string, day: DayType): Promise<RouteLabel
 export async function agenciesWithRouteName(text: string): Promise<Array<{ agency: string; routes: string[] }>> {
   const q = text.trim().toLowerCase();
   const labelOf = ([route, name]: RouteLabel) => `${route}${name ? ` ${name}` : ''}`;
+  // #1687: only agencies this server has schedules for, so a pointer never leads to "no data here".
+  const have = new Set((await availableAgencies()).map(a => a.slug));
   if (store.routeNameText) {
     const [agencies, texts] = await Promise.all([rankAgencies(), store.routeNameText()]);
-    return (agencies ?? []).flatMap(a => {
+    return (agencies ?? []).filter(a => have.has(a.slug)).flatMap(a => {
       const names = [...new Set((texts?.[a.slug] ?? '').split('\n').filter(line => line && hasWholeWords(line, q)))];
       return names.length ? [{ agency: a.name, routes: names.slice(0, 6) }] : [];
     });
   }
-  return ((await agencyIndex()) ?? []).flatMap(a => {
+  return ((await agencyIndex()) ?? []).filter(a => have.has(a.slug)).flatMap(a => {
     const names = [...new Set((a.days.Weekday ?? []).filter(r => hasWholeWords(`${r.route} ${r.name ?? ''}`, q)).map(r => labelOf([r.route, r.name])))];
     return names.length ? [{ agency: a.name, routes: names.slice(0, 6) }] : [];
   });
