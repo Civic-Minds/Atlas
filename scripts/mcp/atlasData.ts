@@ -13,6 +13,7 @@ import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGr
 import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RankWait, RouteLabel, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
+import { PUBLIC_TIER_MAXES, headwayGradeOn } from '../../shared/rules/frequency';
 import { routeGroupKey } from '../../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures, readingPassesHeadwayFilter, routeFilterReading, type RouteFilterReading } from '../../shared/routeHeadwayFilter';
 import { frequencyChange } from '../../shared/frequencyChange';
@@ -201,6 +202,7 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
     shown: shown ?? (trips > 0 ? `some trips (${trips}), but no regular frequency` : 'no service'),
     ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
     ...(edgeWait(shown, waitMinutes) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
+    ...(waitBelowShown(shown, waitMinutes) ? { warning: `waitMinutes (every ${waitMinutes} min) is more frequent than anything this route's list shows (${shown}). Atlas may have read it from a stretch this route shares with other routes, so it can overstate this route's own service. Go by "shown" for this route, and say the two disagree.` } : {}),
     filter: routeFilterReading(r.rows, period),
   };
 }
@@ -210,6 +212,20 @@ export function edgeWait(shown: string | null, waitMinutes: number | null): bool
   if (!shown || waitMinutes == null || !/\b(until|from)\b/.test(shown)) return false;
   const shownMins = [...shown.matchAll(/every (\d+(?:\.\d+)?)/g)].map(m => Number(m[1]));
   return shownMins.length > 0 && waitMinutes > Math.max(...shownMins);
+}
+
+/**
+ * A wait a whole public grade more frequent than the most frequent figure the route list shows (#1666: SEPTA 63 PM
+ * peak, waitMinutes 10 beside "every 60 min"). waitMinutes reads the route's slower part, so it should never beat
+ * every shown figure; when it lands in a better grade, the two contradict and the answer must say so. Same-grade
+ * rounding (36 beside "every 37 min") is not flagged.
+ */
+export function waitBelowShown(shown: string | null, waitMinutes: number | null): boolean {
+  if (!shown || waitMinutes == null) return false;
+  const shownMins = [...shown.matchAll(/every (\d+(?:\.\d+)?)/g)].map(m => Number(m[1]));
+  if (!shownMins.length) return false;
+  const grade = (m: number) => headwayGradeOn(m, PUBLIC_TIER_MAXES) ?? Infinity;
+  return grade(waitMinutes) < grade(Math.min(...shownMins));
 }
 
 /** The first and last departures of the day, and any break inside it, as clock times. */

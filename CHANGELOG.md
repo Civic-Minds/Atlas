@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP warns when a route's two frequency figures disagree**: SEPTA 63 read "every 10 min" beside its own "every 60 min" with no explanation; the answer now flags it and goes by the route's list
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches
 - **Live's route card shows the same schedule as the map's route card**: it gave its own range across all stops (TTC 510 "every 5–10 min"), hiding branches and short turns; it now lists the shared stretch and each branch
 - **Studio's "No Live data" note lists the other cities like every other list**: it used big boxed buttons and mixed short and full agency names; a Live city without figures yet now gets the same note

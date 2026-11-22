@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { hourlyFrequency, edgeWait, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
+import { hourlyFrequency, edgeWait, waitBelowShown, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
 import { agencyLabel, withAgency } from '../mcp/localData';
 import { diskStore } from '../mcp/diskStore';
 import { startsInWindow, windowHas } from '../mcp/tools';
@@ -51,6 +51,20 @@ describe('Atlas MCP server data (CIV-1650)', () => {
     } as unknown as GtfsData;
     const { runs } = stopToStopRuns(gtfs, new Set(['A']), new Set(['B']), 'Saturday');
     expect(runs.map(r => [r.tripId, r.start, r.minutes]).sort()).toEqual([['t1', 600, 30], ['t2', 620, 25]]);
+  });
+});
+
+describe('waitBelowShown (#1666)', () => {
+  it('flags a wait a grade more frequent than every shown figure', () => {
+    expect(waitBelowShown('every 60 min', 10)).toBe(true);
+    expect(waitBelowShown('every 30–57 min', 9)).toBe(true);
+  });
+  it('leaves agreeing figures and same-grade rounding alone', () => {
+    expect(waitBelowShown('every 37 min', 36)).toBe(false);
+    expect(waitBelowShown('every 15–56 min', 15)).toBe(false);
+    expect(waitBelowShown('every 10 min', 12)).toBe(false);
+    expect(waitBelowShown('some trips (2), but no regular frequency', 10)).toBe(false);
+    expect(waitBelowShown('every 60 min', null)).toBe(false);
   });
 });
 
