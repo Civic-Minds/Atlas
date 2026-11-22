@@ -296,8 +296,6 @@ async function fetchHandler(request: Request): Promise<Response> {
 
     const tripId = String(vehicle.trip?.tripId ?? '');
     const update = tripId ? updatesByTrip.get(tripId) : undefined;
-    // CIV-2024 (#1653): the trip update by trip id, else by the update's vehicle id.
-    const tripUpdate = update ?? (vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined);
     const delaySeconds = update ? explicitTripDelaySec(update) : null;
     const delayMin = delaySeconds == null ? null : delayMinFromDelaySec(delaySeconds);
     const lastStop = update?.stopTimeUpdate?.at(-1);
