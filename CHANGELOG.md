@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route lists show the number their route card shows**: a card row reading "every 16 min from 6:39 AM" was listed by the period's typical gap instead (MBTA 65 weekday AM peak read "every 8–14" beside it)
 - **Atlas Studio MCP no longer answers for WMATA and 15 other agencies**: their data terms don't allow sharing their data with other tools, or need written permission first; they stay on the map and in History
 - **Atlas Studio MCP agrees on the day after midnight**: just after midnight, its live answer used the new day's late-night schedule while its schedule answers used the previous day's
 - **Atlas Studio MCP doesn't guess ridership or fares**: asked for either, it says Atlas has no figure instead of giving a number from the AI's memory, unless the person asks for one
