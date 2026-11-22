@@ -14,6 +14,7 @@ import { longDate } from '../../shared/dateText';
 import { headwayOrBetter } from '../../shared/headwayText';
 import { countText, decimalText, percentText } from '../../shared/numberText';
 import { FALLOFF_STORY } from '../../shared/researchStories';
+import { AGENCY_COLUMN, FALLOFF_TABLE_COLUMNS } from '../content/noticeCopy';
 
 /**
  * #1074 (CIV-770): how much frequent service is left on Sunday evening, against a weekday morning. On the Frequent service
@@ -40,22 +41,22 @@ const agencyPair = (a: FalloffAgency) => pair(a.slug, a.name, a.weekdayMorning, 
 const allPair = (label: string) => pair('all', label, all.weekdayMorning, all.sundayEvening, true);
 
 const AGENCY_COLUMNS: DataTableColumn<FalloffAgency>[] = [
-  { key: 'agency', header: 'Agency', cell: a => a.name, rowHeader: true, className: 'font-normal', width: 12 },
+  { key: 'agency', header: AGENCY_COLUMN, cell: a => a.name, rowHeader: true, className: 'font-normal', width: 12 },
   { key: 'morning', header: MORNING_LABEL, cell: a => pct(a.weekdayMorning), width: 7 },
   { key: 'sunday', header: SUNDAY_LABEL, cell: a => pct(a.sundayEvening), width: 7 },
 ];
 type TimeRow = (typeof FALLOFF_TIMES)[number];
 const TIME_COLUMNS: DataTableColumn<TimeRow>[] = [
-  { key: 'when', header: 'When', cell: t => `${whenLabel(t.day, t.period)} (${periodHours(t.period)})`, rowHeader: true, className: 'font-normal', width: 12 },
-  { key: 'all', header: 'All agencies', cell: t => pct(all[t.key]), width: 6 },
+  { key: 'when', header: FALLOFF_TABLE_COLUMNS.when, cell: t => `${whenLabel(t.day, t.period)} (${periodHours(t.period)})`, rowHeader: true, className: 'font-normal', width: 12 },
+  { key: 'all', header: FALLOFF_TABLE_COLUMNS.all, cell: t => pct(all[t.key]), width: 6 },
   { key: 'canada', header: canada.country, cell: t => pct(canada[t.key]), width: 6 },
   { key: 'us', header: unitedStates.country, cell: t => pct(unitedStates[t.key]), width: 6 },
 ];
 type RegionRow = (typeof noSundayRegions)[number];
 const REGION_COLUMNS: DataTableColumn<RegionRow>[] = [
-  { key: 'region', header: 'State or province', cell: r => r.region, rowHeader: true, className: 'font-normal', width: 12 },
-  { key: 'none', header: 'No Sunday service', cell: r => r.noSunday, width: 7 },
-  { key: 'agencies', header: 'Agencies', cell: r => r.agencies, width: 6 },
+  { key: 'region', header: FALLOFF_TABLE_COLUMNS.region, cell: r => r.region, rowHeader: true, className: 'font-normal', width: 12 },
+  { key: 'none', header: FALLOFF_TABLE_COLUMNS.noSunday, cell: r => r.noSunday, width: 7 },
+  { key: 'agencies', header: FALLOFF_TABLE_COLUMNS.agencies, cell: r => r.agencies, width: 6 },
 ];
 const regionTiles: MapTile[] = noSundayRegions.filter(r => REGION_TILES[r.region]).map(r => {
   const { abbr, col, row } = REGION_TILES[r.region];

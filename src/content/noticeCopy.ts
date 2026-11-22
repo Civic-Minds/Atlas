@@ -1136,3 +1136,12 @@ export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: se
 /** Studio's About panel, Live part (Ryan, 2026-11-19): the heading, and the two explanation lines moved out of the side panel (bunching's is bunchingSplitNote). */
 export const STUDIO_ABOUT_LIVE_HEADING = 'Live';
 export const LEARN_MORE_LABEL = 'Learn more';
+
+/** The weekday-to-Sunday story's table columns (#1074; Ryan approved them with the page's words, 2026-11-22). Its agency column is AGENCY_COLUMN. */
+export const FALLOFF_TABLE_COLUMNS = {
+  when: 'When',
+  all: 'All agencies',
+  region: 'State or province',
+  noSunday: 'No Sunday service',
+  agencies: 'Agencies',
+} as const;

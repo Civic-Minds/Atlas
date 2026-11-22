@@ -45,9 +45,8 @@ export const holdingNetworks = frequentMornings.filter(a => a.sundayEvening >= H
 /** Agencies frequent in the morning with nothing frequent on Sunday evening (every agency, counted by the data file). */
 export const noneOnSundayEvening = study.sized.noneOnSundayEvening;
 
-/** The Greater Toronto and Hamilton Area's agencies, in the outline's order. */
-const GTHA = ['ttc', 'miway', 'brampton', 'hamilton', 'yrt', 'burlington', 'oakville', 'go', 'drt'];
-export const gthaAgencies = GTHA.map(slug => {
+/** The Greater Toronto and Hamilton Area's agencies, in the outline's order (the data file's list, set by its builder). */
+export const gthaAgencies = study.gtha.map(slug => {
   const a = study.agencies.find(x => x.slug === slug);
   if (!a) throw new Error(`falloff-story.json has no ${slug}`);
   return a;
