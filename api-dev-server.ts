@@ -77,9 +77,11 @@ createServer(async (req, res) => {
     response.headers.forEach((value, name) => res.setHeader(name, value));
     res.writeHead(response.status);
     res.end(body);
-  } catch (err: any) {
+  } catch (err) {
+    // The detail stays in this server's log; the client gets a fixed message (code scanning alert #55).
+    console.error('[api-dev-server]', err);
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err.message }));
+    res.end(JSON.stringify({ error: 'Internal server error' }));
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);

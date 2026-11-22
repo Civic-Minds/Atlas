@@ -35,7 +35,9 @@ async function handler(req: Request): Promise<Response> {
   try {
     return json({ available: true, answer: await liveNowHandlers.route_now({ agency, route }) });
   } catch (e) {
-    return json({ available: true, error: e instanceof Error ? e.message : String(e) });
+    // The detail stays in this server's log; the page gets a fixed message (code scanning alert #55).
+    console.error('[route-now]', e);
+    return json({ available: true, error: 'route_now failed' });
   }
 }
 
