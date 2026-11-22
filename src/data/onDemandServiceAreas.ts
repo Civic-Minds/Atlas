@@ -499,10 +499,53 @@ export const RTD_FLEXRIDE_SERVICE_AREA = {
   } satisfies Record<string, OnDemandZoneDetails>,
 };
 
+const WEX_EXPRESS_SOURCE_URL = 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1';
+const WEX_EXPRESS_SOURCE_LABEL = 'U.S. Census Bureau TIGERweb county boundary (Wexford County, Michigan)';
+
+/**
+ * CIV-1726: Wex Express (Cadillac/Wexford Transit Authority) covers all of Wexford County, as the agency confirmed by
+ * email (2026-11-16, CIV-1655). The zone is the county's Census boundary, simplified to about 50 m.
+ */
+export const WEX_EXPRESS_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
+  polygonFeature('wex-express', WEX_EXPRESS_SOURCE_URL, WEX_EXPRESS_SOURCE_LABEL, [[-85.577123,44.164914],[-85.334777,44.165118],[-85.338404,44.425376],[-85.336269,44.454172],[-85.334,44.512303],[-85.455929,44.512311],[-85.817802,44.512969],[-85.817906,44.480766],[-85.820822,44.360027],[-85.821186,44.164197],[-85.577123,44.164914]] as [number, number][], 'Wexford County'),
+];
+
+export const WEX_EXPRESS_ON_DEMAND_AGENCY = {
+  slug: 'wex-express',
+  name: 'Wex Express',
+  region: 'Michigan',
+  center: [44.339, -85.578] as [number, number],
+  url: '',
+  bbox: [44.164197, -85.821186, 44.512969, -85.334] as [number, number, number, number],
+  cities: ['Cadillac, Michigan'],
+  displayArea: 'Wexford County',
+  onDemandOnly: true,
+  ...ON_DEMAND_ROLLOUT,
+  websiteUrl: 'https://wexexpress.us',
+  onDemandServiceArea: {
+    features: WEX_EXPRESS_SERVICE_AREAS,
+    sourceUrl: WEX_EXPRESS_SOURCE_URL,
+    sourceLabel: WEX_EXPRESS_SOURCE_LABEL,
+    sourceRetrievedAt: '2026-11-22',
+    serviceName: 'Wex Express',
+    // The agency publishes when rides can be requested, not separate service hours (wexexpress.us, 2026-11-22).
+    serviceHours: 'Ride requests Monday–Friday 5 AM–6 PM and Saturday 9 AM–noon.',
+    hoursNote: 'These are the hours the agency takes ride requests; it doesn’t publish separate service hours.',
+    bookingInfo: 'Book in the WexExpress app or call or text (231) 779-0123. Booking at least 2 hours ahead is recommended.',
+    pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
+    bookingUrl: 'https://wexexpress.us/general-services',
+    availability: {
+      Weekday: [{ startHour: 5, endHour: 18 }],
+      Saturday: [{ startHour: 9, endHour: 12 }],
+      Sunday: [],
+    } satisfies OnDemandAvailability,
+  },
+};
+
 const MUSKOKA_DRT_SOURCE_URL = 'https://services1.arcgis.com/5Av2OaC0epjp7wD3/arcgis/rest/services/District_DRT_Phase_1_2_Service_Area/FeatureServer/0';
 const MUSKOKA_DRT_SOURCE_LABEL = 'District of Muskoka DRT Phase 1.2 service-area layer';
 
-/** Phase 1.2 boundary from the District's Muskoka Transit map layer (shared by the District, 2026-10-10). */
+/** Phase 1.2 boundary from the District's Muskoka Transit map layer (shared by the District, 2026-10-10; the District confirmed the map is accurate by email, 2026-11-16, CIV-1726). */
 export const MUSKOKA_DRT_SERVICE_AREAS: GeoJSON.Feature<GeoJSON.Polygon>[] = [
   polygonFeature('muskoka-drt', MUSKOKA_DRT_SOURCE_URL, MUSKOKA_DRT_SOURCE_LABEL, [[-79.4077152, 44.9529788], [-79.4032798, 44.9561251], [-79.3728407, 44.9774685], [-79.3439002, 44.9848119], [-79.3081787, 44.9958112], [-79.3067381, 44.9958082], [-79.3052975, 44.9958051], [-79.3042755, 44.995055], [-79.3032535, 44.994305], [-79.2934102, 44.9632788], [-79.2866319, 44.9539609], [-79.2864992, 44.9536933], [-79.2966717, 44.9513184], [-79.3069017, 44.9528217], [-79.315803, 44.9547237], [-79.3247044, 44.9566257], [-79.3328826, 44.9410456], [-79.3367645, 44.9380121], [-79.3371182, 44.9375305], [-79.3418409, 44.9346937], [-79.3427982, 44.9328802], [-79.3432247, 44.9304398], [-79.3423143, 44.922776], [-79.3413954, 44.9190104], [-79.342168, 44.9152448], [-79.3402223, 44.9097488], [-79.3389749, 44.9062743], [-79.3370644, 44.8844842], [-79.316817, 44.8621791], [-79.3072504, 44.8597086], [-79.3066488, 44.8584999], [-79.3058082, 44.8518377], [-79.3049624, 44.8504717], [-79.303916, 44.8490171], [-79.3030869, 44.8470107], [-79.3044458, 44.8423644], [-79.3050614, 44.8415642], [-79.3052579, 44.8415559], [-79.3103344, 44.844052], [-79.3152368, 44.8428652], [-79.3191929, 44.8330676], [-79.3217043, 44.8316157], [-79.3252953, 44.8308877], [-79.3292206, 44.834774], [-79.3278866, 44.8421985], [-79.3262193, 44.8486372], [-79.3233728, 44.8498247], [-79.3210232, 44.85286], [-79.3333512, 44.8622671], [-79.3401877, 44.8784994], [-79.3632891, 44.8953735], [-79.3744411, 44.9057426], [-79.3802287, 44.9043417], [-79.3823942, 44.9040877], [-79.3834324, 44.9045138], [-79.3836606, 44.9051671], [-79.3845995, 44.9062938], [-79.3855446, 44.9074313], [-79.3869595, 44.9080818], [-79.3893576, 44.9090797], [-79.3922771, 44.909778], [-79.3929347, 44.9110871], [-79.3954027, 44.912433], [-79.398119, 44.9142205], [-79.4128431, 44.9211411], [-79.4172611, 44.9300973], [-79.4143063, 44.9322555], [-79.4075591, 44.9288784], [-79.4001746, 44.9279133], [-79.3946318, 44.924222], [-79.3911119, 44.9290531], [-79.4077152, 44.9529788]], 'Gravenhurst–Bracebridge'),
 ];
