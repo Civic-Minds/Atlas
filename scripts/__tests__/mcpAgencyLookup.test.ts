@@ -51,7 +51,7 @@ describe('agency lookup', () => {
   });
 
   it('finds a service brand in route names only as whole words (#1682)', async () => {
-    data.useStore({ ...store, rankAgencies: async () => [{ slug: 'psta', name: 'PSTA' }, { slug: 'yrt', name: 'York Region Transit' }], routeNameText: async () => ({ psta: '19 LARGO TRANSIT / TARPON SPRINGS', yrt: 'blue Viva Blue' }) } as unknown as AtlasStore);
+    data.useStore({ ...store, catalog: async () => [{ slug: 'psta', name: 'PSTA' }, { slug: 'yrt', name: 'York Region Transit' }], available: async () => new Set(['psta', 'yrt']), rankAgencies: async () => [{ slug: 'psta', name: 'PSTA' }, { slug: 'yrt', name: 'York Region Transit' }], routeNameText: async () => ({ psta: '19 LARGO TRANSIT / TARPON SPRINGS', yrt: 'blue Viva Blue' }) } as unknown as AtlasStore);
     expect(await data.agenciesWithRouteName('go transit')).toEqual([]);
     expect((await data.agenciesWithRouteName('viva')).map(a => a.agency)).toEqual(['York Region Transit']);
     expect(data.hasWholeWords('Largo Transit', 'transit')).toBe(true);

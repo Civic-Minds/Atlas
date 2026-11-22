@@ -46,13 +46,14 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     if (!q && !reg && !ctry) return { agencies: entries.length, note: 'Filter by name or city, region or country to list them.' };
     // #1681: an operator's name (Metrolinx) lists the agencies it runs, which Atlas lists under their own names.
     const operator = q ? data.operatorNamed(q, all) : null;
-    const hitGroups = entries.filter(g => {
+    const matches = (g: ReturnType<typeof groupAgencies>[number]) => {
       const home = groupHome(g);
       // A name or place matches where a word starts ("GO Transit" is not inside "Chicago Transit", #1682).
       return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => data.hasWordsAt(x, q))) || g.members.some(a => [a.slug, a.name, ...(a.cities ?? [])].some(x => data.hasWordsAt(x, q))) || !!operator?.members.some(a => g.members.includes(a)))
         && (!reg || g.members.some(a => (a.region ?? '').toLowerCase() === reg))
         && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
-    });
+    };
+    const hitGroups = entries.filter(matches);
     const earliest = (xs: Array<string | null>) => xs.filter((x): x is string => !!x).sort()[0] ?? null;
     // CIV-2081: when its schedule was added (the earliest of a parent's feeds) beside when it runs out.
     const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, added: earliest(g.members.map(m => isoDate(m.lastRefreshedAt))), end: earliest(g.members.map(m => validThrough(m))), parts: g.parent ? g.members : null }));
@@ -61,6 +62,12 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     if (!hits.length && q) {
       const excluded = await data.excludedAgencyNote(q);
       if (excluded) return { matches: 0, note: excluded };
+    }
+    if (!hits.length) {
+      // #1687: agencies Atlas has that this server carries no schedules for (the hosted pilot): say so instead of nothing.
+      const haveSlugs = new Set(all.map(a => a.slug));
+      const elsewhere = groupAgencies((await data.publicAgencies()).filter(a => !haveSlugs.has(a.slug))).filter(matches);
+      if (elsewhere.length) return { matches: 0, note: await data.notOnThisServerNote(elsewhere.slice(0, 5).map(g => agencyGroupName(g, a => a.name))) };
     }
     if (!hits.length && q && !reg && !ctry) {
       // A service brand is not an agency name (Viva is part of York Region Transit): look for it in route names.
@@ -189,7 +196,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const asked = Array.isArray(agencies) ? agencies.map(q => String(q ?? '')) : [];
     const found = await Promise.all(asked.map(async q => ({ q, e: await data.findAgencyEntry(q) })));
     const missing = found.find(f => !f.e);
-    if (missing) throw new Error(`No agency matching "${missing.q}" has data here. Use list_agencies to search.`);
+    if (missing) {
+      const elsewhere = await data.agencyNotOnThisServer(missing.q);
+      throw new Error(elsewhere ? await data.notOnThisServerNote([elsewhere.name]) : `No agency matching "${missing.q}" has data here. Use list_agencies to search.`);
+    }
     const byEntry = new Map<string, { e: data.AgencyEntry; names: string[] }>();
     for (const { q, e } of found) { const k = e!.members.map(m => m.slug).sort().join(','); (byEntry.get(k) ?? byEntry.set(k, { e: e!, names: [] }).get(k)!).names.push(q); }
     const sameNotes = [...byEntry.values()].filter(x => x.names.length > 1).map(x => `${x.names.map(n => `"${n}"`).join(' and ')} are the same agency (${x.e.name}), shown once.`);
@@ -213,13 +223,14 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const tried = named ? await data.busesNeeded(a.slug, named.shortName, key) : null;
     const res = tried?.cached && tried.groups.length ? tried : await data.busesNeeded(a.slug, route, key);
     const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
-    if (!res.cached) return { agency: a.name, route, period, ...nowInfo, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
-    if (!res.groups.length) return { agency: a.name, route, period, ...nowInfo, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
+    if (!res.cached) return { agency: a.name, route, period, ...nowInfo, scheduleValidThrough: validThrough(a), answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
+    if (!res.groups.length) return { agency: a.name, route, period, ...nowInfo, scheduleValidThrough: validThrough(a), answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
     const missing = every != null && !STUDIO_TARGETS.includes(every);
     const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
     const neededAt = (at: Partial<Record<number, number>>) => Object.fromEntries(targets.filter(t => at[t] != null).map(t => [headwayEvery(t), at[t]]));
     return {
-      agency: a.name, route, period, ...nowInfo,
+      // #1688: the schedule's end date, as every schedule tool gives it (and the ends-within-a-week warning reads).
+      agency: a.name, route, period, ...nowInfo, scheduleValidThrough: validThrough(a),
       ...(res.olderSchedule ? { note: `These figures come from an older schedule file (${res.feed}) than the newest one on this Mac.` } : {}),
       day: `A representative weekday in the week of ${res.referenceDate}.`,
       groups: res.groups.map(g => ({
