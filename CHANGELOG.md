@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- **Atlas Studio MCP knows a state or province by its short name**: asking for agencies in "District of Columbia" or "DC" found none, because Atlas files them under "Washington DC"; a region it doesn't know now says so instead of an empty list, and a region whose only agency is left out by its data terms (WMATA in DC) names it and says why
+- **Atlas Studio MCP knows a state or province by its short name**: asking for agencies in "District of Columbia" or "DC" found none, because Atlas files them under "Washington DC"; a region it doesn't know now says so instead of an empty list, and a region whose only agency is left out by its data terms (WMATA in DC) names it and says why; on the test server, a list also says how many more agencies Atlas has there that the test server can't answer for
 - **Atlas Studio MCP still compares the other agencies when one is left out**: naming Whitehorse Transit beside Kingston returned only the note about Whitehorse's data terms, and a Yukon ranking came back empty with no reason; both now say which agency is left out and why
 - **Studio Live stays steady while a route loads**: opening a route whose data was slow to arrive sent the page into a re-render loop, logging hundreds of errors and keeping the browser busy
 - **Atlas Studio MCP finds cities when asked for agencies near one**: "Washington DC" found nothing, "Washington" quietly meant Washington State Ferries and "Bethesda" was measured from Baltimore; it now measures from the city, says what it used, and marks agencies the test server has no schedules for

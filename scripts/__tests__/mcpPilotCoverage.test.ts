@@ -6,8 +6,9 @@ import type { AtlasStore } from '../../shared/mcpStore';
 
 // #1687: the hosted pilot carries a few agencies; one outside them is named as such, not pointed to and then failed.
 const catalog = [
-  { slug: 'stm', name: 'STM (Montréal)', cities: ['Montréal'] }, { slug: 'ttc', name: 'Toronto Transit Commission', cities: ['Toronto'] },
-  { slug: 'hsr', name: 'Hamilton Street Railway', cities: ['Hamilton'] },
+  { slug: 'stm', name: 'STM (Montréal)', cities: ['Montréal'] }, { slug: 'ttc', name: 'Toronto Transit Commission', region: 'Ontario', cities: ['Toronto'] },
+  { slug: 'hsr', name: 'Hamilton Street Railway', region: 'Ontario', cities: ['Hamilton'] },
+  { slug: 'kingston', name: 'Kingston Transit', region: 'Ontario', cities: ['Kingston'] },
 ];
 const store = {
   catalog: async () => catalog, available: async () => new Set(['ttc', 'hsr']),
@@ -33,5 +34,14 @@ describe('agencies this server has no schedules for (#1687)', () => {
     data.useStore(store);
     const res = await handlers.buses_needed({ agency: 'TTC', route: '504', period: 'midday' }) as Record<string, unknown>;
     expect(res).toHaveProperty('scheduleValidThrough');
+  });
+  it('a filter that finds some agencies here says how many more Atlas has that this server lacks (#1702)', async () => {
+    data.useStore(store);
+    const on = await handlers.list_agencies({ region: 'ON' }) as { matches: number; notOnThisServer?: string };
+    expect(on.matches).toBe(2);
+    expect(on.notOnThisServer).toMatch(/^The 1 other agency this filter finds is in Atlas, but this server has schedules for only 2 agencies/);
+    const toronto = await handlers.list_agencies({ query: 'Toronto' }) as { matches: number; notOnThisServer?: string };
+    expect(toronto.matches).toBe(1);
+    expect(toronto.notOnThisServer).toBeUndefined();
   });
 });

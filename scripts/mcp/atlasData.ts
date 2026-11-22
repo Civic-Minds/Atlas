@@ -404,7 +404,7 @@ export function leftOutByRule(f: Pick<PeriodFigure, 'waitMinutes' | 'filter'>, e
 export async function notOnThisServerNote(names: string[]): Promise<string> {
   const have = await availableAgencies();
   const list = have.length <= 20 ? `: ${have.map(a => a.name).join('; ')}` : '';
-  const them = names.length > 1 || /^The agencies /.test(names[0] ?? '');
+  const them = names.length > 1 || /^The (agencies |\d+ other agencies )/.test(names[0] ?? '');
   return `${names.join(' and ')} ${them ? 'are' : 'is'} in Atlas, but this server has schedules for only ${have.length} agencies${list}. Say this server can't answer for ${them ? 'them' : 'it'}; don't answer from memory.`;
 }
 /** The agency a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */

@@ -112,7 +112,12 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const inRoutes = await data.agenciesWithRouteName(q);
       if (inRoutes.length) return { matches: 0, note: `No agency is named "${query}". It appears in route names at these agencies, so it may be a service run by one of them: ${inRoutes.slice(0, 8).map(x => x.agency).join(', ')}.`, inRouteNames: inRoutes.slice(0, 8) };
     }
-    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.added ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule added | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule added | schedule valid through' } : {}), ...(operator ? { operatorNote: `${operator.name} runs ${operator.members.map(a => a.name).join(' and ')}; Atlas lists each as its own agency.` } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+    // #1702 (MCP Breaker): a partial server (the hosted pilot) says how many more agencies the filter finds in Atlas that it
+    // has no schedules for ("ON" listed the pilot's 5 Ontario agencies and said nothing of the other 30).
+    const haveAll = new Set(all.map(a => a.slug));
+    const others = hits.length ? groupAgencies((await data.publicAgencies()).filter(a => !haveAll.has(a.slug))).filter(matches).length : 0;
+    const othersNote = others ? { notOnThisServer: await data.notOnThisServerNote([`The ${others} other ${others === 1 ? 'agency' : 'agencies'} this filter finds`]) } : {};
+    return { matches: hits.length, ...othersNote, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.added ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule added | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule added | schedule valid through' } : {}), ...(operator ? { operatorNote: `${operator.name} runs ${operator.members.map(a => a.name).join(' and ')}; Atlas lists each as its own agency.` } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
   },
   rank_agencies: async (args) => {
     const feeds = await data.rankAgencies();
