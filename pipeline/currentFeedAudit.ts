@@ -28,7 +28,6 @@ export interface CurrentFeedFinding {
     deinterleaved: number;
     clusteredJumps: number;
     repairedClusteredJumps: number;
-    knownIsolatedPointFixed: number;
   };
   validation: Pick<ValidationReport, 'errors' | 'warnings' | 'infos' | 'issues'>;
 }
@@ -79,7 +78,6 @@ export function summarizeCurrentFeed(
       deinterleaved: anomalies.filter(anomaly => anomaly.deinterleaved).length,
       clusteredJumps: anomalies.filter(anomaly => anomaly.clusteredJumps).length,
       repairedClusteredJumps: anomalies.filter(anomaly => anomaly.repairedClusteredJumps).length,
-      knownIsolatedPointFixed: anomalies.filter(anomaly => anomaly.knownIsolatedPointFixed).length,
     },
     validation: {
       errors: validation.errors,

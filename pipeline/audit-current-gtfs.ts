@@ -120,7 +120,6 @@ async function main(): Promise<void> {
       deinterleaved: shapeAnomalyFeeds.reduce((sum, finding) => sum + finding.shapeAnomalies.deinterleaved, 0),
       clusteredJumps: shapeAnomalyFeeds.reduce((sum, finding) => sum + finding.shapeAnomalies.clusteredJumps, 0),
       repairedClusteredJumps: shapeAnomalyFeeds.reduce((sum, finding) => sum + finding.shapeAnomalies.repairedClusteredJumps, 0),
-      knownIsolatedPointFixed: shapeAnomalyFeeds.reduce((sum, finding) => sum + finding.shapeAnomalies.knownIsolatedPointFixed, 0),
     },
     shapeAudit: 'skipped-for-structural-pass',
     findings: findings.filter(finding =>

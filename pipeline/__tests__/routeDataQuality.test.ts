@@ -7,7 +7,6 @@ const anomaly = {
   deinterleaved: false,
   clusteredJumps: true,
   repairedClusteredJumps: false,
-  knownIsolatedPointFixed: false,
 } as const;
 
 describe('routeDataQualityWarningForShape', () => {

@@ -50,7 +50,6 @@ interface ShapeAnomaly {
   deinterleaved: boolean;
   clusteredJumps: boolean;
   repairedClusteredJumps: boolean;
-  knownIsolatedPointFixed: boolean;
 }
 
 async function loadGeojson(): Promise<{ features: RouteFeature[] }> {
@@ -198,7 +197,6 @@ async function main() {
         a.clusteredJumps && (a.repairedClusteredJumps
           ? 'clustered jumps repaired (interleaved sub-path excised and bridged)'
           : 'clustered jumps detected but NOT repaired — needs manual review'),
-        a.knownIsolatedPointFixed && 'known isolated misplaced point excised (hardcoded shape_id fix)',
       ]
         .filter(Boolean)
         .join(' + ');

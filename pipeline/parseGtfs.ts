@@ -208,9 +208,8 @@ export function deinterleaveDuplicateSequences(pts: { seq: number; lat: number; 
  * route 101 terminus loop (into Downsview Park/Finch West stations) measuring
  * 30.6% bridge-savings -- almost indistinguishable from confirmed real isolated
  * corruption in Nancy at 33-88% savings. Too thin a margin to trust as a general
- * rule. Known isolated cases (Nancy STAN-68$70, STAN-75$53) are handled by the
- * narrowly-scoped KNOWN_ISOLATED_POINT_FIXES excision below instead, keyed to
- * those exact shape_ids -- not a general heuristic applied to every feed.
+ * rule. (Nancy's isolated cases were once excised by a list keyed to shape_id;
+ * the feed was republished with new ids and the list removed, #247.)
  */
 function findClusteredJumpRanges(points: [number, number][]): Array<[number, number]> {
     if (points.length < 10) return [];
@@ -253,61 +252,6 @@ function findClusteredJumpRanges(points: [number, number][]): Array<[number, num
         i = j + 1;
     }
     return ranges;
-}
-
-/**
- * Specific, confirmed-real single-point corruption cases that the general
- * findClusteredJumpRanges deliberately doesn't catch (see its doc comment) --
- * a misplaced point in each of these two Nancy Réseau Stan shapes, verified
- * visually against the rendered map (routes T2 and Corol). Keyed by shape_id
- * and the exact published coordinate of the misplaced point, matched within
- * a small tolerance -- not by array index, which could shift if the upstream
- * feed's point count ever changes on refresh.
- */
-const KNOWN_ISOLATED_POINT_FIXES: Record<string, [number, number][]> = {
-    '10757$STAN-68$70': [[48.69601821899414, 6.123730182647705]],
-    '10757$STAN-75$53': [
-        [48.702552795410156, 6.131019115447998],
-        [48.65890884399414, 6.177466869354248],
-        [48.67235565185547, 6.160637855529785],
-        [48.67512512207031, 6.1585187911987305],
-    ],
-    // Found via a full sweep of every Nancy shape for isolated single reversals
-    // after the two above were fixed but a route T2 variant (STAN-67$16) still
-    // showed a visible break on the rendered map -- these three plus the four
-    // above are the only candidates whose bridge-savings (33-90%) matches the
-    // confirmed-real range; four other candidates found in the same sweep
-    // scored 1.7-3.1% savings (the same near-noise signature as false positives
-    // found elsewhere) and are deliberately left alone.
-    // STAN-67$16 needed a second point removed beyond the isolated-reversal
-    // sweep above -- visual re-inspection after the first fix showed the line
-    // still cutting through blocks near Rue de l'Ornain. The two points sit
-    // adjacent (indices 477-478) and neither shows a sharp bearing reversal on
-    // its own (the surrounding path only turns ~29°), so the isolated-reversal
-    // sweep never found this one -- it's the fourth, still-undetected
-    // corruption pattern tracked in #247. Removing both together (bridging
-    // directly from the point before to the point after) saves ~41% of the
-    // through-distance, matching the confirmed-real range.
-    '10757$STAN-67$16': [
-        [48.69816589355469, 6.122346878051758],
-        [48.69740676879883, 6.119966983795166],
-    ],
-    '10757$STAN-76$100': [
-        [48.67463302612305, 6.1587138175964355],
-    ],
-    '10757$STAN-19$23': [
-        [48.717010498046875, 6.221489906311035],
-    ],
-};
-
-export function excludeKnownIsolatedPoints(shapeId: string, points: [number, number][]): { points: [number, number][]; removed: boolean } {
-    const targets = KNOWN_ISOLATED_POINT_FIXES[shapeId];
-    if (!targets) return { points, removed: false };
-    const EPSILON = 1e-6;
-    const filtered = points.filter(([lat, lon]) =>
-        !targets.some(([tLat, tLon]) => Math.abs(lat - tLat) < EPSILON && Math.abs(lon - tLon) < EPSILON)
-    );
-    return { points: filtered, removed: filtered.length < points.length };
 }
 
 export function detectClusteredJumps(points: [number, number][]): boolean {
@@ -383,29 +327,27 @@ export const groupShapes = (
             ? deinterleaved
             : truncateAtImplausibleJump(deinterleaved);
         const wasTruncated = truncated.length < deinterleaved.length;
-        const knownFix = excludeKnownIsolatedPoints(id, truncated);
-        const hasClusteredJumps = detectClusteredJumps(knownFix.points);
-        let finalPoints = knownFix.points;
+        const hasClusteredJumps = detectClusteredJumps(truncated);
+        let finalPoints = truncated;
         let repairedClusteredJumps = false;
         // Agency opt-in: the repair reads a real out-and-back on long grid segments as an
         // interleaved detour. Streamline Goldline (#433) runs out and back on Durston, Hunters
         // Way and Babcock with 300-611 m segments; the repair cut points 80-103 and left six
         // stops 95-512 m off the line. Such shapes stay raw and are still flagged.
         if (hasClusteredJumps && !options.skipClusteredJumpRepair) {
-            const repair = repairClusteredJumps(knownFix.points);
+            const repair = repairClusteredJumps(truncated);
             if (repair.repaired) {
                 finalPoints = repair.points;
                 repairedClusteredJumps = true;
             }
         }
-        if (hadDuplicateSequences || wasTruncated || hasClusteredJumps || knownFix.removed) {
+        if (hadDuplicateSequences || wasTruncated || hasClusteredJumps) {
             anomalies.push({
                 shapeId: id,
                 truncated: wasTruncated,
                 deinterleaved: hadDuplicateSequences,
                 clusteredJumps: hasClusteredJumps,
                 repairedClusteredJumps,
-                knownIsolatedPointFixed: knownFix.removed,
             });
         }
         return { id, points: finalPoints };

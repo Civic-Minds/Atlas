@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import JSZip from 'jszip';
-import { parseCsv, parseGtfsZip, truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, excludeKnownIsolatedPoints, synthesizeCalendarFromDates } from '../parseGtfs.js';
+import { parseCsv, parseGtfsZip, truncateAtImplausibleJump, groupShapes, deinterleaveDuplicateSequences, detectClusteredJumps, repairClusteredJumps, synthesizeCalendarFromDates } from '../parseGtfs.js';
 import type { GtfsCalendarDate } from '../../types/gtfs.js';
 
 /** YYYYMMDD for a date offset by `days` from 2025-01-05 (a Sunday), for building fixture date lists. */
@@ -302,14 +302,13 @@ describe('detectClusteredJumps', () => {
     expect(detectClusteredJumps(points)).toBe(false);
   });
 
-  it('does not flag a real isolated single-point reversal from Nancy shape 10757$STAN-68$70 (index 12) -- deliberately left to the scoped known-shape fix, not the general detector', () => {
+  it('does not flag a real isolated single-point reversal from Nancy shape 10757$STAN-68$70 (index 12) -- deliberately left alone by the general detector', () => {
     // Real points 0-39 as published (self-contained slice reproducing the shape's
     // own local median -- a shorter slice understates the median and misses the
     // flag, same lesson as the STAN-56 repro above). Point 12 sits ~239m from its
     // neighbors with a ~100 degree reversal and nothing else nearby is anomalous,
     // so MIN_CLUSTER=2 correctly leaves it alone -- a general isolated-reversal
-    // heuristic was tried and rejected (see findClusteredJumpRanges doc comment);
-    // this exact case is instead handled by excludeKnownIsolatedPoints below.
+    // heuristic was tried and rejected (see findClusteredJumpRanges doc comment).
     const points: [number, number][] = [
       [48.69089126586914, 6.12836217880249], [48.69093322753906, 6.1283159255981445],
       [48.69112014770508, 6.128424167633057], [48.691463470458984, 6.128377914428711],
@@ -420,107 +419,6 @@ describe('groupShapes skipClusteredJumpRepair (#433)', () => {
     const { shapes, anomalies } = groupShapes(rows, new Set(), { skipClusteredJumpRepair: true });
     expect(anomalies[0]).toMatchObject({ clusteredJumps: true, repairedClusteredJumps: false });
     expect(shapes[0].points).toEqual(points);
-  });
-});
-
-describe('excludeKnownIsolatedPoints', () => {
-  // These are the two real isolated-single-point corruption cases the general
-  // findClusteredJumpRanges deliberately doesn't catch (see its doc comment) --
-  // confirmed real by visual inspection of the rendered map (Nancy Réseau Stan
-  // routes T2 and Corol). Handled here by exact shape_id + coordinate match
-  // instead of a general heuristic, since a general one was tried and found to
-  // sit too close to real terminus-loop geometry on live agencies (TTC).
-  it('excises the known misplaced point for Nancy shape 10757$STAN-68$70', () => {
-    const points: [number, number][] = [
-      [48.696083068847656, 6.125679016113281],
-      [48.69601821899414, 6.123730182647705], // the known misplaced point
-      [48.69815444946289, 6.124143123626709],
-    ];
-    const result = excludeKnownIsolatedPoints('10757$STAN-68$70', points);
-    expect(result.removed).toBe(true);
-    expect(result.points).toEqual([
-      [48.696083068847656, 6.125679016113281],
-      [48.69815444946289, 6.124143123626709],
-    ]);
-  });
-
-  it('excises all four known misplaced points for Nancy shape 10757$STAN-75$53', () => {
-    const points: [number, number][] = [
-      [48.70254898071289, 6.131021022796631],
-      [48.702552795410156, 6.131019115447998], // known misplaced point (idx 43)
-      [48.70269012451172, 6.131475925445557],
-      [48.65890884399414, 6.177466869354248], // known misplaced point (idx 405)
-      [48.67235565185547, 6.160637855529785], // known misplaced point (idx 456)
-      [48.67512512207031, 6.1585187911987305], // known misplaced point (idx 482)
-    ];
-    const result = excludeKnownIsolatedPoints('10757$STAN-75$53', points);
-    expect(result.removed).toBe(true);
-    expect(result.points).toEqual([
-      [48.70254898071289, 6.131021022796631],
-      [48.70269012451172, 6.131475925445557],
-    ]);
-  });
-
-  // Found via a full sweep of every Nancy shape after the two cases above were
-  // fixed but route T2's other direction (STAN-67$16) still showed a visible
-  // break on the map. Confirmed real (33-90% bridge-savings, matching the
-  // established range) vs. four other sweep candidates at 1.7-3.1% savings
-  // that were left alone as noise.
-  it('excises both known misplaced points for Nancy shape 10757$STAN-67$16 (a two-point cluster, not a single isolated point)', () => {
-    // Visual re-inspection after the single-point fix showed the line still
-    // cutting through blocks -- the adjacent point at 6.122347 also needed
-    // removing (neither shows a sharp reversal on its own, tracked in #247).
-    const points: [number, number][] = [
-      [48.69923400878906, 6.127908229827881],
-      [48.69816589355469, 6.122346878051758], // known misplaced point
-      [48.69740676879883, 6.119966983795166], // known misplaced point
-      [48.69609451293945, 6.122805118560791],
-    ];
-    const result = excludeKnownIsolatedPoints('10757$STAN-67$16', points);
-    expect(result.removed).toBe(true);
-    expect(result.points).toEqual([
-      [48.69923400878906, 6.127908229827881],
-      [48.69609451293945, 6.122805118560791],
-    ]);
-  });
-
-  it('excises the known misplaced point for Nancy shape 10757$STAN-76$100', () => {
-    const points: [number, number][] = [
-      [48.673855, 6.157254],
-      [48.67463302612305, 6.1587138175964355], // the known misplaced point
-      [48.674972, 6.157852],
-    ];
-    const result = excludeKnownIsolatedPoints('10757$STAN-76$100', points);
-    expect(result.removed).toBe(true);
-    expect(result.points).toEqual([
-      [48.673855, 6.157254],
-      [48.674972, 6.157852],
-    ]);
-  });
-
-  it('excises the known misplaced point for Nancy shape 10757$STAN-19$23', () => {
-    const points: [number, number][] = [
-      [48.71567153930664, 6.222369194030762],
-      [48.717010498046875, 6.221489906311035], // the known misplaced point
-      [48.71556854248047, 6.221330165863037],
-    ];
-    const result = excludeKnownIsolatedPoints('10757$STAN-19$23', points);
-    expect(result.removed).toBe(true);
-    expect(result.points).toEqual([
-      [48.71567153930664, 6.222369194030762],
-      [48.71556854248047, 6.221330165863037],
-    ]);
-  });
-
-  it('is a no-op for any other shape_id, even one with a similarly-shaped anomaly', () => {
-    const points: [number, number][] = [
-      [48.696083068847656, 6.125679016113281],
-      [48.69601821899414, 6.123730182647705],
-      [48.69815444946289, 6.124143123626709],
-    ];
-    const result = excludeKnownIsolatedPoints('some-other-shape-id', points);
-    expect(result.removed).toBe(false);
-    expect(result.points).toEqual(points);
   });
 });
 

@@ -192,13 +192,6 @@ export interface ShapeAnomaly {
     // the interleaved detour, self-verified afterward) vs. left as the
     // original, still-corrupted points because repair didn't fully resolve it.
     repairedClusteredJumps: boolean;
-    // Whether this shape matched one of the narrowly-scoped, hardcoded known
-    // single-point corruption fixes (see KNOWN_ISOLATED_POINT_FIXES in
-    // parseGtfs.ts) -- NOT a general detector; a generalized isolated-reversal
-    // heuristic was tried and found too close to real terminus-loop geometry
-    // on live agencies (TTC) to trust broadly, so these two confirmed-real
-    // Nancy cases are excised by exact shape_id + coordinate match instead.
-    knownIsolatedPointFixed: boolean;
 }
 
 // ---------------------------------------------------------------------------
