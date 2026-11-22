@@ -83,6 +83,11 @@ export async function availableAgencies(): Promise<CatalogAgency[]> {
 
 /** An agency by slug or name (case-insensitive), among those available. */
 /** The short names riders use for an agency (config shortName, such as "HSR" or "TTC"), lower case. */
+export async function shortNames(): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  for (const [slug, m] of await store.meta()) if (m.shortName) out.set(slug, m.shortName.toLowerCase());
+  return out;
+}
 /** An agency's own time zone from its config, or null (#1627). */
 export async function timeZoneOf(slug: string): Promise<string | null> { return (await store.meta()).get(slug)?.timezone ?? null; }
 

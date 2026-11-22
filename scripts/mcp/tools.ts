@@ -76,10 +76,12 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     if (!q && !reg && !ctry) return { agencies: entries.length, note: 'Filter by name or city, region or country to list them.' };
     // #1681: an operator's name (Metrolinx) lists the agencies it runs, which Atlas lists under their own names.
     const operator = q ? data.operatorNamed(q, all) : null;
+    // #1705: an agency's short name (HSR) finds it, as it does in the route tools.
+    const short = q ? await data.shortNames() : new Map<string, string>();
     const matches = (g: ReturnType<typeof groupAgencies>[number]) => {
       const home = groupHome(g);
       // A name or place matches where a word starts ("GO Transit" is not inside "Chicago Transit", #1682).
-      return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => data.hasWordsAt(x, q))) || g.members.some(a => [a.slug, a.name, ...(a.cities ?? [])].some(x => data.hasWordsAt(x, q))) || !!operator?.members.some(a => g.members.includes(a)))
+      return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => data.hasWordsAt(x, q))) || g.members.some(a => [a.slug, a.name, short.get(a.slug) ?? '', ...(a.cities ?? [])].some(x => data.hasWordsAt(x, q))) || !!operator?.members.some(a => g.members.includes(a)))
         && (!reg || g.members.some(a => sameRegion(a.region, reg)))
         && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
     };

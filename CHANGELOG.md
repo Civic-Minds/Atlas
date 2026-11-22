@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP finds an agency by its short name in lists**: asking for "HSR" listed nothing, though the route tools took it; the agency list now matches short names too
+- **Atlas Studio MCP's question count is right**: every new chat reused the same example ID and a blank ID counted as a question, so testers' questions were undercounted; assistants now make up a random ID and a blank one isn't counted
 - **History can't be wiped by a build without its v2 switch**: a build run without it replaced the published History file with the old format, dropping TTC, CTA and most MBTA routes; it now refuses when the live file holds v2 history
 - **Atlas Studio MCP knows a state or province by its short name**: asking for agencies in "District of Columbia" or "DC" found none, because Atlas files them under "Washington DC"; a region it doesn't know now says so instead of an empty list, and a region whose only agency is left out by its data terms (WMATA in DC) names it and says why; on the test server, a list also says how many more agencies Atlas has there that the test server can't answer for
 - **Atlas Studio MCP still compares the other agencies when one is left out**: naming Whitehorse Transit beside Kingston returned only the note about Whitehorse's data terms, and a Yukon ranking came back empty with no reason; both now say which agency is left out and why

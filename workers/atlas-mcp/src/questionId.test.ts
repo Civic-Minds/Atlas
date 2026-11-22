@@ -15,11 +15,19 @@ describe('question and question ID on every tool', () => {
     const compare = TOOLS.find(t => t.name === 'compare_agencies')!.inputSchema as { required: string[] };
     expect(compare.required).toEqual(expect.arrayContaining(['agencies', 'period', 'every']));
   });
+  it('gives no example ID that every new chat would copy (#1707)', () => {
+    const d = (TOOLS[0].inputSchema as { properties: { question_id: { description: string } } }).properties.question_id.description;
+    expect(d).not.toMatch(/such as|e\.g\.|"[^"]+"/);
+    expect(d).toMatch(/random/);
+  });
   it('logs the ID, counts distinct IDs as questions, and has a migration for the column', () => {
     const index = readFileSync(new URL('./index.ts', import.meta.url), 'utf8');
     expect(index).toContain('question_id: questionId');
     expect(index).toContain('INSERT INTO calls (at, tester, tool, args, question, question_id,');
-    expect(index).toContain('COUNT(DISTINCT c.question_id)');
+    // #1706: a blank ID is stored as none and never counted as a question.
+    expect(index).toContain("typeof questionId === 'string' && questionId.trim() ? questionId.trim().slice(0, 100) : null");
+    expect(index).toContain("COUNT(DISTINCT NULLIF(TRIM(c.question_id), ''))");
+    expect(index).not.toContain('COUNT(DISTINCT c.question_id)');
     expect(index).toContain('AS questions_7d');
     const migration = readFileSync(new URL('../migrations/0002_question_id.sql', import.meta.url), 'utf8');
     expect(migration).toMatch(/ALTER TABLE calls ADD COLUMN question_id TEXT/);

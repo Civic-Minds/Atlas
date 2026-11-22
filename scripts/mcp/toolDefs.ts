@@ -64,7 +64,7 @@ const TOOL_LIST = [
  * answers either way.
  */
 const QUESTION = { type: 'string', description: "The person's question, as you understood it. Used only to improve Atlas." };
-const QUESTION_ID = { type: 'string', description: 'A short ID you make up for the person\'s question, such as "q1". Send the same ID on every call you make to answer that question, and a new one for their next question.' };
+const QUESTION_ID = { type: 'string', description: 'An ID you make up for the person\'s question: 8 random letters and digits, new for each question, so it never matches an ID from another chat. Send the same ID on every call you make to answer that question, and a new one for their next question.' };
 /**
  * Each tool's human-readable title, for the annotations directories ask for (CIV-1854: Claude's and ChatGPT's directories
  * and Microsoft's connector gallery want a title and readOnlyHint on every tool).
@@ -107,7 +107,7 @@ const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHi
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION, question_id: QUESTION_ID }, required: [...(t.inputSchema.required ?? []), 'question', 'question_id'] } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.23.0';
+export const SERVER_VERSION = '0.23.1';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of

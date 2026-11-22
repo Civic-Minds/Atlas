@@ -32,7 +32,7 @@ const LOG_LIMIT = 500;
 export function groupQuestions(tester: string, calls: LoggedCall[]): ReviewQuestion[] {
   const groups = new Map<string, ReviewQuestion>();
   for (const c of [...calls].sort((a, b) => a.at.localeCompare(b.at) || a.id - b.id)) {
-    const key = c.question_id ? `id:${c.question_id}` : c.question ? `q:${c.question.trim()}` : `call:${c.id}`;
+    const key = c.question_id?.trim() ? `id:${c.question_id.trim()}` : c.question ? `q:${c.question.trim()}` : `call:${c.id}`;
     const g = groups.get(key);
     if (g) { g.calls.push(c); if (!g.question && c.question) g.question = c.question; }
     else groups.set(key, { tester, question: c.question ?? '', firstAt: c.at, calls: [c] });

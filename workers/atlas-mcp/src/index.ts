@@ -159,7 +159,7 @@ async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env
   const ms = Date.now() - started;
   const logged = text.length > MAX_LOGGED_RESULT ? `${text.slice(0, MAX_LOGGED_RESULT)}\n[cut: the answer was ${text.length} characters]` : text;
   ctx.waitUntil(env.DB.prepare('INSERT INTO calls (at, tester, tool, args, question, question_id, ok, result, ms, release_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    .bind(new Date().toISOString(), tester.name, name, JSON.stringify(args), typeof question === 'string' ? question.slice(0, 2000) : null, typeof questionId === 'string' ? questionId.slice(0, 100) : null, ok ? 1 : 0, logged, ms, releaseId).run());
+    .bind(new Date().toISOString(), tester.name, name, JSON.stringify(args), typeof question === 'string' ? question.slice(0, 2000) : null, typeof questionId === 'string' && questionId.trim() ? questionId.trim().slice(0, 100) : null, ok ? 1 : 0, logged, ms, releaseId).run());
   return rpcResult(id, toolCallResult(outcome));
 }
 
@@ -183,7 +183,7 @@ async function handleAdmin(request: Request, env: Env, url: URL): Promise<Respon
     // CIV-2063: calls in the last 7 days too, for the internal MCP page. Questions count the distinct question IDs the
     // assistant sent (Ryan, 2026-11-22); calls with no ID aren't counted as questions.
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS calls_7d, (SELECT COUNT(DISTINCT c.question_id) FROM calls c WHERE c.tester = t.name) AS questions, (SELECT COUNT(DISTINCT c.question_id) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS questions_7d FROM testers t ORDER BY t.created_at').bind(weekAgo, weekAgo).all();
+    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS calls_7d, (SELECT COUNT(DISTINCT NULLIF(TRIM(c.question_id), '')) FROM calls c WHERE c.tester = t.name) AS questions, (SELECT COUNT(DISTINCT NULLIF(TRIM(c.question_id), '')) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS questions_7d FROM testers t ORDER BY t.created_at').bind(weekAgo, weekAgo).all();
     return json({ testers: rows.results });
   }
   if (!name && request.method === 'POST') {
