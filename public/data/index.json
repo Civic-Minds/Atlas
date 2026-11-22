@@ -504,10 +504,10 @@
         -78.35
       ],
       "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
-      "lastFeedExpiry": "20261129",
+      "lastFeedExpiry": "20261220",
       "lastFeedVersion": null,
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-726/latest.zip",
-      "lastRefreshedAt": "2026-11-09",
+      "lastRefreshedAt": "2026-11-22",
       "cities": [
         "Oshawa, Ontario",
         "Ajax, Ontario",
@@ -517,10 +517,10 @@
         "Newmarket, Ontario",
         "Barrie, Ontario"
       ],
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261122",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261129",
+      "expiredFeedCheckExpiry": "20261220",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -528,10 +528,10 @@
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
-          "shapeAnomalies": 1,
+          "shapeAnomalies": 2,
           "routeHeadwayMismatches": 0,
-          "featureCount": 211,
-          "feedExpiry": "20261129",
+          "featureCount": 209,
+          "feedExpiry": "20261220",
           "routeCount": 38,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
@@ -547,10 +547,12 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20261129",
-      "lastServiceWeek": "9d1483cb284fa5ae",
-      "feedObtainedAt": "20261027",
-      "lastFeedStart": "20261106"
+      "lastPeekedExpiry": "20261220",
+      "lastServiceWeek": "9f9e69322c89b486",
+      "feedObtainedAt": "20261122",
+      "lastFeedStart": "20261106",
+      "lastRawArchiveKey": "20261220-415be922ecff81fd",
+      "lastFeedContentKey": "b0713176eede063b"
     },
     {
       "slug": "go",
@@ -7762,10 +7764,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261121",
+      "lastFeedCheckAt": "20261122",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261221",
+      "expiredFeedCheckExpiry": "20261222",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7781,7 +7783,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-21"
+        "scoredAt": "2026-11-22"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7790,7 +7792,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "d7b823c950d945a3dd2eed4a98d70092e93edd181e23acc5694f637131eecb41"
+      "refusedFeedSha256": "19bf90304b1545c23c3b53512e23777c88f33756c7583e73db79f0835c642c16"
     },
     {
       "slug": "hocts",
@@ -13285,10 +13287,10 @@
       "cities": [
         "Santa Barbara, California"
       ],
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261122",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261129",
+      "expiredFeedCheckExpiry": "20270228",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -13306,7 +13308,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-22"
+        "checkedAt": "2026-11-22",
+        "scoredAt": "2026-11-22"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -13318,7 +13321,8 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "3e94d3b15666d7da",
       "feedObtainedAt": "20260722",
-      "lastFeedStart": "20260817"
+      "lastFeedStart": "20260817",
+      "heldFeedStart": "20261130"
     },
     {
       "slug": "slotransit",
@@ -15095,10 +15099,10 @@
         }
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
-      "lastFeedExpiry": "20261129",
+      "lastFeedExpiry": "20270228",
       "lastFeedVersion": null,
       "region": "Missouri",
-      "lastRefreshedAt": "2026-11-16",
+      "lastRefreshedAt": "2026-11-22",
       "cities": [
         "St. Louis, Missouri",
         "Florissant, Missouri",
@@ -15106,11 +15110,11 @@
         "Saint Peters, Missouri"
       ],
       "timezone": "America/Chicago",
-      "lastRawArchiveKey": "20261129-75b2e33e46ec92c5",
-      "lastFeedCheckAt": "20261116",
+      "lastRawArchiveKey": "20270228-8d78af1d9027c164",
+      "lastFeedCheckAt": "20261122",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261129",
+      "expiredFeedCheckExpiry": "20270228",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
@@ -15126,8 +15130,8 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 424,
-          "feedExpiry": "20261129",
+          "featureCount": 428,
+          "feedExpiry": "20270228",
           "routeCount": 59,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
@@ -15150,11 +15154,11 @@
           "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
         }
       ],
-      "lastPeekedExpiry": "20261129",
-      "lastServiceWeek": "b73eb5c15fa818a9",
-      "feedObtainedAt": "20261116",
-      "lastFeedStart": "20261102",
-      "lastFeedContentKey": "228c21954179d74e"
+      "lastPeekedExpiry": "20270228",
+      "lastServiceWeek": "478f9cff7f907a13",
+      "feedObtainedAt": "20261122",
+      "lastFeedStart": "20261119",
+      "lastFeedContentKey": "28cab6342c17b780"
     },
     {
       "slug": "kcata",
@@ -24778,31 +24782,29 @@
       "feedUrl": "https://evta.org/gtfs.zip",
       "websiteUrl": "https://www.coretransit.org",
       "region": "Colorado",
-      "lastFeedExpiry": "20261121",
-      "lastFeedVersion": "S1000093",
-      "lastRefreshedAt": "2026-11-02",
-      "lastFeedCheckAt": "20261121",
+      "lastFeedExpiry": "20270410",
+      "lastFeedVersion": "S1000107",
+      "lastRefreshedAt": "2026-11-22",
+      "lastFeedCheckAt": "20261122",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270410",
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://evta.org/gtfs.zip",
-      "lastPeekedExpiry": "20261121",
+      "lastPeekedExpiry": "20270410",
       "feedQuality": {
-        "status": "degraded",
-        "score": 65,
-        "reasons": [
-          "The schedule dates in this feed have passed."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 45,
-          "feedExpiry": "20261121",
-          "routeCount": 4,
+          "featureCount": 51,
+          "feedExpiry": "20270410",
+          "routeCount": 5,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
@@ -24814,10 +24816,11 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastServiceWeek": "f84c82af76e2c786",
-      "feedObtainedAt": "20260416",
-      "lastFeedStart": "20260412",
-      "heldFeedStart": "20261122"
+      "lastServiceWeek": "7cf30e5002b17582",
+      "feedObtainedAt": "20261122",
+      "lastFeedStart": "20261122",
+      "lastRawArchiveKey": "20270410-cf7fdab38c8838ef",
+      "lastFeedContentKey": "0c0f34ea658553c2"
     },
     {
       "slug": "all-points-transit",
