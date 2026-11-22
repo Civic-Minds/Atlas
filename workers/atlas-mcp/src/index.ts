@@ -174,7 +174,9 @@ async function handleAdmin(request: Request, env: Env, url: URL): Promise<Respon
   if (area !== 'testers') return json({ error: 'Not found' }, 404);
 
   if (!name && request.method === 'GET') {
-    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls FROM testers t ORDER BY t.created_at').all();
+    // CIV-2063: calls in the last 7 days too, for the internal MCP page.
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS calls_7d FROM testers t ORDER BY t.created_at').bind(weekAgo).all();
     return json({ testers: rows.results });
   }
   if (!name && request.method === 'POST') {
