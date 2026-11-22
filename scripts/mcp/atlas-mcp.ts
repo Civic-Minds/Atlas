@@ -78,8 +78,9 @@ const { onDemandHandlers, useOnDemandBase } = await import('./onDemandTools');
 // ATLAS_ON_DEMAND_BASE: read the on-demand zones from another bucket (ATLAS_ON_DEMAND_BETA=0: promoted services only).
 if (process.env.ATLAS_ON_DEMAND_BASE) useOnDemandBase(process.env.ATLAS_ON_DEMAND_BASE, process.env.ATLAS_ON_DEMAND_BETA !== '0');
 const { nightHandlers } = await import('./nightTools');
+const { coverageHandlers } = await import('./coverageTools');
 const { withScheduleWarning } = await import('./toolHelpers');
-const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = withScheduleWarning({ ...tools.handlers, ...localHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers });
+const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = withScheduleWarning({ ...tools.handlers, ...localHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers, ...coverageHandlers });
 // Every tool's definition, the local ones included.
 const TOOLS = tools.TOOLS;
 
