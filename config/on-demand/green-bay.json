@@ -7,7 +7,7 @@
     "sourceRetrievedAt": "2026-11-21",
     "bookingInfo": "Book in the GBM On Demand app or call 920-448-3185 (option 2).",
     "bookingUrl": "https://www.greenbaywi.gov/GBM-On-Demand",
-    "tripRules": "Trips can start and end anywhere in the zones open at that hour. If a bus is the quicker way, the app offers the bus instead.",
+    "tripRules": "Trips can start and end anywhere in the zones open at that hour.",
     "zoneMetadata": {
       "Daytime Zone": {
         "serviceName": "GBM On Demand",
