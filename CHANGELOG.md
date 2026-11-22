@@ -21,6 +21,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Fleet's network total shows how many vehicles are in service now**: beside "As scheduled", for cities where Live follows every route (Kingston), while the picked time of day is the current one
 - **Fleet's route card shows how many vehicles are in service now**: beside "As scheduled", for routes Live follows, while the picked time of day is the current one
 - **Stop cards show a range where a route's patterns share a stop unevenly**: MBTA 16 at Columbia Rd read "every 27" from one minor pattern alone; it now reads "every 11–21 min", the combined trips' typical wait to their longest gap
+- **Atlas Studio MCP answers how often buses come at a stop**: planners ask it per stop, not per route; it gives the same figures as the map's stop card
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches
 - **Studio's Schedules list looks like the map's route lists**: it had its own taller rows with the time of day on a second line; it now uses the agency card's rows, with both dates' figures at the right
 - **Studio's Schedules map lines are as thin as the regular map's**: every route was drawn about twice as thick, so the picked route didn't stand out

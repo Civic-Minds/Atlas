@@ -34,6 +34,8 @@ async function results(data: typeof import('./atlasData')) {
     meeting: await data.routesMeeting(a, 'Weekday', 'midday', 20),
     byHours: await data.routesByHours(a, 'Weekday', 1320, null),
     near: await data.routesNear(a, 'Dufferin'),
+    stopChoices: await data.stopFrequency(a, 'Dufferin', 'Weekday'),
+    stop: await data.stopFrequency(a, 'Dufferin Station', 'Weekday'),
     agenciesNear: await data.agenciesNear('Toronto', 60),
   };
 }
@@ -66,6 +68,10 @@ describe('Atlas Studio MCP stores (CIV-1840)', () => {
     expect(await results(data)).toEqual(fromDisk);
     expect(fromDisk.routes).toEqual(['29']);
     expect(fromDisk.near.routes.length).toBeGreaterThan(0);
+    // CIV-2060: a place matching two stop names asks which; one name gives the stop card's routes.
+    expect(fromDisk.stopChoices.matched).toBeNull();
+    expect(fromDisk.stopChoices.choices).toEqual(expect.arrayContaining(['Dufferin Station', 'Dufferin St at Bloor St']));
+    expect(fromDisk.stop.matched).toBe('Dufferin Station');
 
     // CIV-2014: the local server's cloud-first store. An agency in the release reads the release; one only on this Mac
     // (dry-run output) reads its route file, the tools making its summaries from the rows. Same answers either way.
