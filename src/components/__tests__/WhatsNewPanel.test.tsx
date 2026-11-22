@@ -46,6 +46,28 @@ describe('WhatsNewPanel', () => {
     expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Public change one.', 'Public change two.']);
   });
 
+  it('shows only the highlights, set per site, while the page lists every line (CIV-2026)', () => {
+    const features: WhatsNewFeature[] = [
+      { public: { version: '3.3.0', text: 'Minor fix.' } },
+      { public: { version: '3.3.0', text: 'Big change.', highlight: true } },
+      { beta: { version: '3.3.0', text: 'Beta launch.', highlight: true } },
+    ];
+    const { unmount } = render(<WhatsNewPanel onClose={() => {}} includeBeta={false} features={features} releases={RELEASES} />);
+    expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Big change.']);
+    unmount();
+    render(<WhatsNewPanel onClose={() => {}} includeBeta features={features} releases={RELEASES} />);
+    expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Big change.', 'Beta launch. Beta']);
+    expect(visibleWhatsNew(false, features, RELEASES)[0].items).toHaveLength(2);
+  });
+
+  it('marks 3-4 highlights on each site in the latest release', () => {
+    for (const includeBeta of [false, true]) {
+      const n = visibleWhatsNew(includeBeta)[0].items.filter(item => item.highlight).length;
+      expect(n).toBeGreaterThanOrEqual(3);
+      expect(n).toBeLessThanOrEqual(4);
+    }
+  });
+
   it('shows the app release date, never the map data date', () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta features={FEATURES_LIST} releases={RELEASES} />);
     expect(screen.getByRole('heading', { level: 3 }).textContent).toBe('Version 3.3 · Released Oct 12, 2026');
