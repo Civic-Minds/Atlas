@@ -1597,7 +1597,9 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
-    const countingStretches = headlinePieces
+    // #1665 (rule 11): the filter value always reads every piece, so the slowest decides it, as with B1 off. A shared
+    // trunk may set the direction's headline number (B1), never the filter: it never makes the whole route pass.
+    const countingStretches = [d.main, ...d.tails]
       .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
       .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
     const counting = countingStretches.map(c => c.p);

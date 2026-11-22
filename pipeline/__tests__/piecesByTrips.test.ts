@@ -133,7 +133,9 @@ describe('with B1, B2 and B3 on the new pieces', () => {
       { times: every(562, 712, 30), stops: [...t, ...tl] } // 586 to 736 at the tail's middle stop,
     ]));
     expect(d.tails).toHaveLength(1);
-    expect(rollupDirection({ ...d, headlineFromTrunk: true })!.period[MIDDAY].filterValue).toBe(15);
+    // #1665 (rule 11): the trunk sets the headline (15); the tail's 164 still sets the filter.
+    expect(rollupDirection({ ...d, headlineFromTrunk: true })!.period[MIDDAY].value).toBe(15);
+    expect(rollupDirection({ ...d, headlineFromTrunk: true })!.period[MIDDAY].filterValue).toBe(164);
     const r = directionPieceReadings(d, (s, k) => stretchFilterValue(stretchPeriods(s)[k]))!;
     expect(r.pieces[1].periods[MIDDAY]).toEqual({ t: 'tail', v: 164, every: 30, until: 736 });
   });
