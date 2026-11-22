@@ -52,6 +52,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Stop cards show a range where a route's patterns share a stop unevenly**: MBTA 16 at Columbia Rd read "every 27" from one minor pattern alone; it now reads "every 11–21 min", the combined trips' typical wait to their longest gap
 - **Atlas Studio MCP answers how often buses come at a stop**: planners ask it per stop, not per route; it gives the same figures as the map's stop card
 - **Route cards say when a period slows down**: a route that runs every 15 until 8:45 PM and every 30 after now reads "every 15 min until 8:45 PM, then every 30 min" instead of only one of the two (Kingston 701 evening)
+- **Atlas Studio MCP's right-now answers give Live's Scheduled lines**: the same shared stretch and branch lines as Live's route card, so the two never disagree
 - **Live's route card counts vehicles under each branch it lists**: on a branching route such as the 501, each Scheduled line shows how many vehicles are on that branch and its own longest and shortest gap, so a thin branch no longer hides behind the route-wide count
 - **Live's route card shows gaps as soon as it opens**: it starts from the last half hour of recorded positions, where it used to wait until its own readings covered a full gap, which on the 501 took about 9 minutes
 - **Studio's Live route panel shows the same Right now card as Live**: vehicles, Scheduled lines and per-branch gaps from the same live readings, steered by the panel's Direction chip, so the two views no longer give different right-now figures
