@@ -4,7 +4,7 @@ import { getVehicleStatus } from '../../utils/colors';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import type { RouteAnalysisPatterns } from '../../hooks/useRouteAnalysisPatterns';
 import { destinationKind } from '../../utils/liveGrouping';
-import { DIRECTION_LABEL, NEXT_STOP_LABEL, ON_TIME_LABEL, SHORT_TURN_LABEL, UPDATED_LABEL, VEHICLE_LABEL, updatedAgoText } from '../../../shared/liveWording';
+import { AT_STOP_LABEL, DIRECTION_LABEL, NEXT_STOP_LABEL, ON_TIME_LABEL, SHORT_TURN_LABEL, UPDATED_LABEL, VEHICLE_LABEL, updatedAgoText } from '../../../shared/liveWording';
 import { speedText } from '../../../shared/unitText';
 import { LIVE_STATUS_LABEL } from '../../content/noticeCopy';
 
@@ -33,7 +33,7 @@ export interface VehicleCardRow {
  * at a stop the agency's stops file names), and how long ago the feed placed it last (`nowSec` given).
  */
 export function vehicleCardRows(
-  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status'> & Partial<Pick<LiveVehicle, 'id' | 'vehicleLabel' | 'nextStop' | 'tsEpoch'>>,
+  v: Pick<LiveVehicle, 'headsign' | 'directionId' | 'speedKmh' | 'delayMin' | 'statusLabel' | 'status'> & Partial<Pick<LiveVehicle, 'id' | 'vehicleLabel' | 'nextStop' | 'atStop' | 'tsEpoch'>>,
   directionLabel: string | null | undefined,
   /** Whether this trip is a short turn or a branch (destinationKind); unknown: no tag. */
   tripEnd?: 'shortTurn' | 'branch',
@@ -54,7 +54,7 @@ export function vehicleCardRows(
   else if (direction) rows.push({ label: DIRECTION_LABEL, value: `to ${direction}` });
   if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && tripEnd === 'shortTurn' ? { tag: SHORT_TURN_LABEL } : {}) });
   const nextStop = v.nextStop?.trim();
-  if (nextStop) rows.push({ label: NEXT_STOP_LABEL, value: nextStop });
+  if (nextStop) rows.push({ label: v.atStop ? AT_STOP_LABEL : NEXT_STOP_LABEL, value: nextStop });
   if (v.speedKmh != null) rows.push({ label: 'Speed', value: speedText(v.speedKmh) });
   const schedule = delayLabel(v);
   if (schedule) rows.push({ label: LIVE_STATUS_LABEL, value: schedule, status: v.status });

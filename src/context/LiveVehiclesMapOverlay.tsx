@@ -15,8 +15,10 @@ export interface LiveVehicle {
   headsign: string | null;
   directionId: number | null;
   vehicleLabel: string | null;
-  /** CIV-2024: the stop it is heading to or arriving at, by name; null when the feed gives none or it stands at a stop. */
+  /** CIV-2024: the stop it is heading to or arriving at, by name (the stop it stands at when atStop); null when the feed gives none. */
   nextStop?: string | null;
+  /** CIV-2034: nextStop is the stop it stands at ("At <stop>"), not the next one. */
+  atStop?: boolean;
   status: 'no_data' | 'early' | 'late' | 'on_time';
   statusLabel?: string | null;
   headwayGapMin?: number | null;

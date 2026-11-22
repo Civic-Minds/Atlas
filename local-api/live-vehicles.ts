@@ -126,9 +126,24 @@ export function vehicleNextStop(
   vehicleUpdates: readonly { stopTimeUpdate?: readonly StopUpdate[] | null }[] | undefined,
   names: ReadonlyMap<string, string>,
   nowSec: number,
-): string | null {
+): { name: string; at: boolean } | null {
+  const at = vehicle.currentStatus === STOPPED_AT;
   for (const u of [tripUpdate, ...(vehicleUpdates ?? []).filter(v => v !== tripUpdate)]) {
-    const name = u ? nextStopName(vehicle, u.stopTimeUpdate, names, nowSec) : null;
+    const name = !u ? null : at ? stoppedAtName(u.stopTimeUpdate, names, nowSec) : nextStopName(vehicle, u.stopTimeUpdate, names, nowSec);
+    if (name) return { name, at };
+  }
+  return null;
+}
+
+/**
+ * CIV-2034 (Ryan, 2026-11-21, "1"): the stop a vehicle stands at, for the card's "At <stop>": the first stop in its trip
+ * update it has not yet left (its departure, else its arrival, still ahead), by name.
+ */
+export function stoppedAtName(stops: readonly StopUpdate[] | null | undefined, names: ReadonlyMap<string, string>, nowSec: number): string | null {
+  for (const s of stops ?? []) {
+    const t = Number(s.departure?.time ?? s.arrival?.time);
+    if (!Number.isFinite(t) || t < nowSec || !s.stopId) continue;
+    const name = names.get(String(s.stopId));
     if (name) return name;
   }
   return null;
@@ -283,10 +298,11 @@ async function fetchHandler(request: Request): Promise<Response> {
       headsign,
       directionId: vehicle.trip?.directionId == null ? null : Number(vehicle.trip.directionId),
       vehicleLabel: vehicle.vehicle?.label ?? null,
-      // CIV-2024: the stop the feed says it is heading to or arriving at, by name; none while it stands at a stop.
-      nextStop: tripId
-        ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, names, feedNowSec)
-        : null,
+      // CIV-2024: the stop the feed says it is heading to or arriving at, by name; while it stands at a stop, that stop (CIV-2034).
+      ...(() => {
+        const stop = tripId ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, names, feedNowSec) : null;
+        return { nextStop: stop?.name ?? null, ...(stop?.at ? { atStop: true } : {}) };
+      })(),
       status: statusForDelay(delayMin),
       statusLabel: null,
       headwayGapMin: null,

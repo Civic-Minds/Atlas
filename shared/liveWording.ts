@@ -67,6 +67,8 @@ export const DIRECTION_LABEL = 'Direction';
 /** The vehicle card's rows (CIV-2024, Ryan: "label the number 'Vehicle', add 'Next stop' ... and 'Updated N sec ago'"). */
 export const VEHICLE_LABEL = 'Vehicle';
 export const NEXT_STOP_LABEL = 'Next stop';
+/** CIV-2034 (Ryan, "1"): while the vehicle stands at a stop, the card says "At <stop>" instead of hiding the row. */
+export const AT_STOP_LABEL = 'At';
 export const UPDATED_LABEL = 'Updated';
 /** How long ago the feed placed the vehicle: "25 sec ago" under a minute, then whole minutes, "2 min ago" (CIV-2024). */
 export const updatedAgoText = (ageSec: number): string => {
