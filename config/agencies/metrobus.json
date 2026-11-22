@@ -3,6 +3,12 @@
   "officialName": "Metrobus",
   "nameQualifier": "St. John's",
   "websiteUrl": "https://www.metrobus.com",
+  "dataLicense": {
+    "url": "https://metrobus.com/gtfs.asp",
+    "attribution": "required",
+    "name": "Metrobus Data Terms of Use & EULA",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Newfoundland",
   "center": [
     47.5615,

@@ -3,6 +3,12 @@
   "officialName": "GCRTA",
   "nameQualifier": "Cleveland",
   "websiteUrl": "https://www.riderta.com",
+  "dataLicense": {
+    "url": "http://www.riderta.com/developers",
+    "attribution": "required",
+    "name": "Developer's License Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ohio",
   "center": [
     41.4993,

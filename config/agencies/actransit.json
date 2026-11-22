@@ -20,6 +20,12 @@
   "lastFeedVersion": "S1000256",
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.actransit.org",
+  "dataLicense": {
+    "url": "https://www.actransit.org/data-terms-and-conditions/",
+    "attribution": "required",
+    "name": "CC BY 3.0",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Berkeley, California",
     "Oakland, California",

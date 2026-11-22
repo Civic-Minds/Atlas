@@ -3,6 +3,11 @@
   "officialName": "C-TRAN",
   "nameQualifier": "Vancouver, WA",
   "websiteUrl": "http://www.C-TRAN.com",
+  "dataLicense": {
+    "url": "https://c-tran.com/about-c-tran/business/c-tran-gtfs-data",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     45.6513,
     -122.5972

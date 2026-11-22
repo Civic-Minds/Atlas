@@ -5,6 +5,12 @@
   "shortName": "SEPTA",
   "displayArea": "Philadelphia",
   "websiteUrl": "https://septa.org/",
+  "dataLicense": {
+    "url": "https://www3.septa.org/developer/",
+    "attribution": "none",
+    "name": "SEPTA License Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Pennsylvania",
   "center": [
     39.9526,

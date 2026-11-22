@@ -2,6 +2,11 @@
   "slug": "oakville",
   "officialName": "Oakville Transit",
   "websiteUrl": "http://www.oakvilletransit.ca/",
+  "dataLicense": {
+    "url": "http://www.oakville.ca/data/oakville-transit-route-information.html",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     43.4675,

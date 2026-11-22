@@ -4,6 +4,12 @@
   "nameQualifier": "Squamish",
   "displayArea": "Squamish",
   "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "region": "British Columbia",
   "center": [
     49.702,

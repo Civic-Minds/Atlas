@@ -2,6 +2,11 @@
   "slug": "citybus-lafayette",
   "officialName": "CityBus of Greater Lafayette",
   "websiteUrl": "https://gocitybus.com/",
+  "dataLicense": {
+    "url": "https://gocitybus.com/terms-for-use",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     40.42,
     -86.91

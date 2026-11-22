@@ -4,6 +4,12 @@
   "commonName": "WETA",
   "displayArea": "San Francisco Bay",
   "websiteUrl": "https://sanfranciscobayferry.com/",
+  "dataLicense": {
+    "url": "https://opendatacommons.org/licenses/by/summary/",
+    "attribution": "required",
+    "name": "Open Data Commons Attribution License (ODC-By)",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     37.8167,
     -122.3506

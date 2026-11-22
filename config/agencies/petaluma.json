@@ -18,6 +18,12 @@
   "lastFeedVersion": "20261104",
   "lastRefreshedAt": "2026-11-09",
   "websiteUrl": "http://cityofpetaluma.net/pubworks/transit-sub.html",
+  "dataLicense": {
+    "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+    "attribution": "unread",
+    "name": "511 Data Disseminator Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Petaluma, California"
   ],

@@ -4,6 +4,12 @@
   "commonName": "BART",
   "shortName": "BART",
   "websiteUrl": "https://www.bart.gov/",
+  "dataLicense": {
+    "url": "http://www.bart.gov/schedules/developers/developer-license-agreement",
+    "attribution": "none",
+    "name": "BART Developer License Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     37.768,
     -122.2314

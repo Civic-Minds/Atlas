@@ -3,6 +3,13 @@
   "officialName": "STO",
   "nameQualifier": "Gatineau",
   "websiteUrl": "http://www.sto.ca",
+  "dataLicense": {
+    "url": "https://www.sto.ca/affaires/espace-developpeurs-donnees-ouvertes/conditions-dutilisation-donnees-ouvertes-et-cle-api-de-la-sto/",
+    "attribution": "required",
+    "name": "Conditions d'utilisation – Données ouvertes et clé API de la STO",
+    "credit": "Le présent service intègre les données ouvertes fournies par la Société de transport de l'Outaouais (STO).",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Quebec",
   "center": [
     45.487,

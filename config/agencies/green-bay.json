@@ -12,6 +12,13 @@
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
+  "dataLicense": {
+    "url": "https://greenbaywi.gov/496/Transit-Data-Developer",
+    "attribution": "optional",
+    "name": "Transit Data Developer License Agreement & Terms of Use",
+    "credit": "Data provided under license granted by the City of Green Bay, Metro Transit.",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Green Bay, Wisconsin"
   ],

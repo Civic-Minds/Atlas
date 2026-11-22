@@ -2,6 +2,12 @@
   "slug": "london",
   "officialName": "London Transit",
   "websiteUrl": "http://www.londontransit.ca",
+  "dataLicense": {
+    "url": "https://www.londontransit.ca/open-data/ltcs-open-data-terms-of-use/",
+    "attribution": "optional",
+    "name": "LTC's Open Data – Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "preprocess": "london-route-names",
   "center": [

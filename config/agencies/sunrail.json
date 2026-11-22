@@ -3,6 +3,11 @@
   "officialName": "SunRail",
   "nameQualifier": "Orlando",
   "websiteUrl": "http://www.sunrail.com",
+  "dataLicense": {
+    "url": "https://corporate.sunrail.com/about-sunrail/gtfs-data-download/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     28.5,
     -81.4

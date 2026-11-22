@@ -2,6 +2,12 @@
   "slug": "roseville",
   "officialName": "Roseville Transit",
   "websiteUrl": "http://www.roseville.ca.us/transit",
+  "dataLicense": {
+    "url": "http://www.sacrt.com/gtfs.stm",
+    "attribution": "none",
+    "name": "SacRT License Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     38.745,
     -121.3033

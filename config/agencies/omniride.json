@@ -3,6 +3,12 @@
   "officialName": "OmniRide",
   "nameQualifier": "PRTC",
   "websiteUrl": "http://www.omniride.com",
+  "dataLicense": {
+    "url": "https://www.omniride.com/contact/developer-tools/",
+    "attribution": "none",
+    "name": "Terms and Conditions For Use of OmniRide's Data",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     38.5,
     -77.3

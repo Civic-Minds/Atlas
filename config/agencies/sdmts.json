@@ -3,6 +3,12 @@
   "officialName": "Metropolitan Transit System",
   "commonName": "San Diego MTS",
   "websiteUrl": "http://www.sdmts.com",
+  "dataLicense": {
+    "url": "https://www.sdmts.com/business-center-developers/terms-and-conditions",
+    "attribution": "none",
+    "name": "Developer License Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     32.72,
     -117.16

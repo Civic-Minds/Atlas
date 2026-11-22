@@ -5,6 +5,12 @@
       "name": "Barrie Transit",
       "officialName": "Barrie Transit",
       "websiteUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit",
+      "dataLicense": {
+        "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/barrie-gtfs",
+        "attribution": "none",
+        "name": "Barrie Transit data terms",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         44.3894,
@@ -170,6 +176,11 @@
       "name": "Brampton Transit",
       "officialName": "Brampton Transit",
       "websiteUrl": "http://www.bramptontransit.com",
+      "dataLicense": {
+        "url": "https://brampton.maps.arcgis.com/home/item.html?id=a355aabd5a8c490186bdce559c9c75fb",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         43.7315,
@@ -254,6 +265,11 @@
       "name": "Burlington Transit",
       "officialName": "Burlington Transit",
       "websiteUrl": "https://www.burlingtontransit.ca/en/index.aspx",
+      "dataLicense": {
+        "url": "https://opendata.burlington.ca/opendata-terms-of-use/City%20of%20Burlington%20-%20Open%20Data%20Terms%20of%20Use.pdf",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         43.3255,
@@ -735,6 +751,11 @@
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270102",
       "websiteUrl": "http://www.guelphtransit.ca",
+      "dataLicense": {
+        "url": "https://explore.guelph.ca/pages/open-data-license",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Guelph, Ontario"
       ],
@@ -843,6 +864,11 @@
       "name": "Kingston Transit",
       "officialName": "Kingston Transit",
       "websiteUrl": "https://www.kingstontransit.ca",
+      "dataLicense": {
+        "url": "https://opendatakingston.cityofkingston.ca/pages/open-data-licence",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         44.2312,
@@ -904,6 +930,12 @@
       "name": "London Transit",
       "officialName": "London Transit",
       "websiteUrl": "http://www.londontransit.ca",
+      "dataLicense": {
+        "url": "https://www.londontransit.ca/open-data/ltcs-open-data-terms-of-use/",
+        "attribution": "optional",
+        "name": "LTC's Open Data – Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "preprocess": "london-route-names",
       "center": [
@@ -968,6 +1000,11 @@
       "officialName": "MiWay",
       "nameQualifier": "Mississauga",
       "websiteUrl": "http://www.miway.ca",
+      "dataLicense": {
+        "url": "https://www.mississauga.ca/miway-transit/developer-download/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         43.589,
@@ -1035,6 +1072,11 @@
       "name": "Milton Transit",
       "officialName": "Milton Transit",
       "websiteUrl": "http://www.miltontransit.ca/",
+      "dataLicense": {
+        "url": "https://discover-milton.hub.arcgis.com/pages/disclaimer-and-terms-of-use",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         43.5183,
@@ -1250,6 +1292,11 @@
       "name": "Oakville Transit",
       "officialName": "Oakville Transit",
       "websiteUrl": "http://www.oakvilletransit.ca/",
+      "dataLicense": {
+        "url": "http://www.oakville.ca/data/oakville-transit-route-information.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         43.4675,
@@ -1762,6 +1809,13 @@
       "officialName": "Toronto Transit Commission",
       "shortName": "TTC",
       "websiteUrl": "https://www.ttc.ca",
+      "dataLicense": {
+        "url": "https://open.toronto.ca/open-data-licence/",
+        "attribution": "required",
+        "name": "Open Government Licence – Toronto",
+        "credit": "Contains information licensed under the Open Government Licence – Toronto.",
+        "checkedOn": "2026-11-21"
+      },
       "searchAliases": [
         "Toronto"
       ],
@@ -1962,6 +2016,13 @@
       "labelPlace": "York Region",
       "shortName": "YRT",
       "websiteUrl": "http://www.yrt.ca",
+      "dataLicense": {
+        "url": "https://www.yrt.ca/en/about-us/open-data-licence-agreement.aspx",
+        "attribution": "optional",
+        "name": "Open Data Licence Agreement",
+        "credit": "Contains public transit Information made available under YRT's Open Data Licence",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ontario",
       "center": [
         43.8828,
@@ -2293,6 +2354,11 @@
       "officialName": "RTL",
       "nameQualifier": "Longueuil",
       "websiteUrl": "http://www.rtl-longueuil.qc.ca",
+      "dataLicense": {
+        "url": "https://www.rtl-longueuil.qc.ca/CMS/MediaFree/file/GTFS/Conditions_GTFS.pdf",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "center": [
         45.538,
@@ -2365,6 +2431,11 @@
       "officialName": "STL",
       "nameQualifier": "Laval",
       "websiteUrl": "https://stlaval.ca",
+      "dataLicense": {
+        "url": "https://stlaval.ca/a-propos/diffusion/donnees-ouvertes",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "center": [
         45.61,
@@ -2433,6 +2504,12 @@
       "officialName": "STLévis",
       "displayArea": "Lévis",
       "websiteUrl": "http://www.stlevis.ca/",
+      "dataLicense": {
+        "url": "https://creativecommons.org/licenses/by/4.0/deed.fr",
+        "attribution": "required",
+        "name": "CC BY 4.0",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "center": [
         46.8,
@@ -2497,6 +2574,11 @@
       "shortName": "STM",
       "displayArea": "Montréal",
       "websiteUrl": "https://www.stm.info",
+      "dataLicense": {
+        "url": "https://www.stm.info/en/about/developers/terms-use",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "searchAliases": [
         "Montreal"
       ],
@@ -2573,6 +2655,13 @@
       "officialName": "STO",
       "nameQualifier": "Gatineau",
       "websiteUrl": "http://www.sto.ca",
+      "dataLicense": {
+        "url": "https://www.sto.ca/affaires/espace-developpeurs-donnees-ouvertes/conditions-dutilisation-donnees-ouvertes-et-cle-api-de-la-sto/",
+        "attribution": "required",
+        "name": "Conditions d'utilisation – Données ouvertes et clé API de la STO",
+        "credit": "Le présent service intègre les données ouvertes fournies par la Société de transport de l'Outaouais (STO).",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "center": [
         45.487,
@@ -2877,6 +2966,11 @@
       "nameQualifier": "Sud-Ouest",
       "displayArea": "Sud-Ouest",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITSO",
+      "dataLicense": {
+        "url": "https://www.donneesquebec.ca/licence/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "parentAgency": "exo",
       "center": [
@@ -2947,6 +3041,12 @@
       "nameQualifier": "Le Richelain–Roussillon",
       "displayArea": "Le Richelain–Roussillon",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/LRRS",
+      "dataLicense": {
+        "url": "https://exo.quebec/fr/a-propos/donnees-ouvertes",
+        "attribution": "required",
+        "name": "CC BY",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "parentAgency": "exo",
       "center": [
@@ -3018,6 +3118,11 @@
       "nameQualifier": "Laurentides",
       "displayArea": "Laurentides",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITLA",
+      "dataLicense": {
+        "url": "https://www.donneesquebec.ca/licence/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "parentAgency": "exo",
       "center": [
@@ -3088,6 +3193,11 @@
       "officialName": "exo",
       "nameQualifier": "Terrebonne-Mascouche",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/MRCLM",
+      "dataLicense": {
+        "url": "https://www.donneesquebec.ca/licence/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "parentAgency": "exo",
       "center": [
@@ -3159,6 +3269,12 @@
       "nameQualifier": "Vallée du Richelieu",
       "displayArea": "Vallée du Richelieu",
       "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITVR",
+      "dataLicense": {
+        "url": "https://exo.quebec/fr/a-propos/donnees-ouvertes",
+        "attribution": "required",
+        "name": "CC BY",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Quebec",
       "parentAgency": "exo",
       "center": [
@@ -3237,6 +3353,12 @@
       "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Abbotsford, British Columbia",
         "Chilliwack, British Columbia",
@@ -3299,6 +3421,12 @@
       "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Kelowna, British Columbia"
       ],
@@ -3407,6 +3535,13 @@
       "officialName": "TransLink",
       "nameQualifier": "Vancouver",
       "websiteUrl": "https://www.translink.ca",
+      "dataLicense": {
+        "url": "https://www.translink.ca/about-us/doing-business-with-translink/app-developer-resources/gtfs/gtfs-data",
+        "attribution": "required",
+        "name": "TransLink GTFS Static Data Terms and Conditions",
+        "credit": "Route and arrival data used in this product or service is provided by permission of TransLink. TransLink assumes no responsibility for the accuracy or currency of the Data used in this product or service.",
+        "checkedOn": "2026-11-21"
+      },
       "region": "British Columbia",
       "center": [
         49.2827,
@@ -3480,6 +3615,12 @@
       "name": "Calgary Transit",
       "officialName": "Calgary Transit",
       "websiteUrl": "http://www.calgarytransit.com",
+      "dataLicense": {
+        "url": "https://data.calgary.ca/stories/s/u45n-7awa/",
+        "attribution": "unread",
+        "name": "Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Alberta",
       "center": [
         51.0447,
@@ -3544,6 +3685,11 @@
       "commonName": "ETS",
       "shortName": "ETS",
       "websiteUrl": "https://www.edmonton.ca/ets",
+      "dataLicense": {
+        "url": "https://data.strathcona.ca/Transportation/Transit-Bus-Schedule-GTFS-Data-Feed-Zip-File/2ek5-rxs5/data?no_mobile=true",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Alberta",
       "center": [
         53.5461,
@@ -3806,6 +3952,11 @@
       "officialName": "Halifax Transit",
       "displayArea": "Halifax",
       "websiteUrl": "http://www.halifax.ca/transit",
+      "dataLicense": {
+        "url": "http://www.halifax.ca/opendata/OD_TermsOfUse.php",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Nova Scotia",
       "center": [
         44.6488,
@@ -3883,6 +4034,11 @@
       "lastFeedVersion": "2026 Nov 29  to Feb 20 2027",
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "https://www.codiactranspo.ca/",
+      "dataLicense": {
+        "url": "https://catalogue-moncton.opendata.arcgis.com/datasets/transit-files-gtfs",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Moncton, New Brunswick"
       ],
@@ -3983,13 +4139,23 @@
       "feedObtainedAt": "20261116",
       "lastFeedStart": "20261114",
       "lastRawArchiveKey": "20261219-a18f915836e35b63",
-      "lastFeedContentKey": "7e227aeb75f5d23e"
+      "lastFeedContentKey": "7e227aeb75f5d23e",
+      "dataLicense": {
+        "url": "https://www.arcgis.com/home/item.html?id=0bc9093b47c744fdb82af7e830ed8590",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      }
     },
     {
       "slug": "saint-john",
       "name": "Saint John Transit",
       "officialName": "Saint John Transit",
       "websiteUrl": "https://saintjohn.ca/en/transit",
+      "dataLicense": {
+        "url": "https://catalogue-saintjohn.opendata.arcgis.com/datasets/d6f4783521364429a2e51a64c60ae234/about",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "New Brunswick",
       "center": [
         45.2733,
@@ -4105,6 +4271,12 @@
       "officialName": "Metrobus",
       "nameQualifier": "St. John's",
       "websiteUrl": "https://www.metrobus.com",
+      "dataLicense": {
+        "url": "https://metrobus.com/gtfs.asp",
+        "attribution": "required",
+        "name": "Metrobus Data Terms of Use & EULA",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Newfoundland",
       "center": [
         47.5615,
@@ -4611,6 +4783,12 @@
       "officialName": "GCRTA",
       "nameQualifier": "Cleveland",
       "websiteUrl": "https://www.riderta.com",
+      "dataLicense": {
+        "url": "http://www.riderta.com/developers",
+        "attribution": "required",
+        "name": "Developer's License Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Ohio",
       "center": [
         41.4993,
@@ -4938,6 +5116,12 @@
       "officialName": "Capital District Transportation Authority",
       "displayArea": "Albany",
       "websiteUrl": "http://www.cdta.org",
+      "dataLicense": {
+        "url": "https://www.cdta.org/developer-license-agreement/169",
+        "attribution": "required",
+        "name": "CDTA Developer License Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "region": "New York",
       "center": [
         42.652,
@@ -5111,6 +5295,11 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2079/latest.zip",
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "https://gobroomecounty.com/transit",
+      "dataLicense": {
+        "url": "https://www.gobroomecounty.com/transit/gtfs",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
@@ -5548,6 +5737,11 @@
       "shortName": "MBTA",
       "displayArea": "Boston",
       "websiteUrl": "https://www.mbta.com/",
+      "dataLicense": {
+        "url": "https://www.mass.gov/files/documents/2017/10/27/develop_license_agree_0.pdf",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Massachusetts",
       "center": [
         42.361,
@@ -5686,6 +5880,11 @@
       "officialName": "Pioneer Valley Transit Authority",
       "labelPlace": "Pioneer Valley",
       "websiteUrl": "https://www.pvta.com",
+      "dataLicense": {
+        "url": "https://www.mass.gov/doc/developers-license-agreement-11132009/download",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Massachusetts",
       "center": [
         42.101,
@@ -5757,6 +5956,11 @@
       "name": "Worcester Regional Transit Authority",
       "officialName": "Worcester Regional Transit Authority",
       "websiteUrl": "https://therta.com/",
+      "dataLicense": {
+        "url": "https://www.massdot.state.ma.us/Portals/0/docs/developers/develop_license_agree.pdf",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Massachusetts",
       "center": [
         42.262,
@@ -5867,7 +6071,13 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "05de0a124a86b050",
       "feedObtainedAt": "20261019",
-      "lastFeedStart": "20260830"
+      "lastFeedStart": "20260830",
+      "dataLicense": {
+        "url": "https://www.cttransit.com/about/developers/terms-of-use",
+        "attribution": "none",
+        "name": "CTTRANSIT License Agreement",
+        "checkedOn": "2026-11-21"
+      }
     },
     {
       "slug": "red-deer",
@@ -5926,6 +6136,11 @@
       "name": "Lethbridge Transit",
       "officialName": "Lethbridge Transit",
       "websiteUrl": "https://LethbridgeTransit.ca",
+      "dataLicense": {
+        "url": "https://opendata.lethbridge.ca/pages/open-data-license",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Alberta",
       "center": [
         49.694,
@@ -6058,6 +6273,12 @@
       "officialName": "BC Transit",
       "nameQualifier": "Kamloops",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "British Columbia",
       "center": [
         50.674,
@@ -6170,6 +6391,12 @@
       "officialName": "BC Transit",
       "nameQualifier": "Nanaimo",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "British Columbia",
       "center": [
         49.165,
@@ -6228,6 +6455,12 @@
       "nameQualifier": "Cowichan Valley",
       "displayArea": "Cowichan Valley",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "British Columbia",
       "center": [
         48.781,
@@ -6393,6 +6626,12 @@
       "nameQualifier": "Squamish",
       "displayArea": "Squamish",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "British Columbia",
       "center": [
         49.702,
@@ -6449,6 +6688,12 @@
       "officialName": "BC Transit",
       "nameQualifier": "Pemberton Valley",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "British Columbia",
       "center": [
         50.319,
@@ -6504,6 +6749,12 @@
       "officialName": "BC Transit",
       "nameQualifier": "Whistler",
       "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "region": "British Columbia",
       "center": [
         50.116,
@@ -6954,6 +7205,12 @@
       "lastFeedVersion": "S1000068",
       "lastRefreshedAt": "2026-11-02",
       "websiteUrl": "http://www.kitsaptransit.com",
+      "dataLicense": {
+        "url": "http://www.kitsaptransit.com/privacy-policy#developer",
+        "attribution": "none",
+        "name": "Kitsap Transit Developer User Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Seattle, Washington",
         "Burien, Washington",
@@ -7373,6 +7630,11 @@
       "name": "Greater Portland Metro",
       "officialName": "Greater Portland Metro",
       "websiteUrl": "https://www.gpmetro.org",
+      "dataLicense": {
+        "url": "https://www.gpmetro.org/about-us/projects-initiatives/developers/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         43.66,
         -70.26
@@ -7451,6 +7713,11 @@
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-10-07",
       "websiteUrl": "http://www.southportland.org/departments/bus-transportation/",
+      "dataLicense": {
+        "url": "https://www.gpmetro.org/about-us/projects-initiatives/developers/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Portland, Maine"
       ],
@@ -7864,6 +8131,11 @@
       "name": "Société de transport de Sherbrooke",
       "officialName": "Société de transport de Sherbrooke",
       "websiteUrl": "http://www.sts.qc.ca/",
+      "dataLicense": {
+        "url": "https://www.donneesquebec.ca/recherche/fr/dataset/transport-sts",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         45.398,
         -71.9181
@@ -8023,6 +8295,11 @@
       "officialName": "C-TRAN",
       "nameQualifier": "Vancouver, WA",
       "websiteUrl": "http://www.C-TRAN.com",
+      "dataLicense": {
+        "url": "https://c-tran.com/about-c-tran/business/c-tran-gtfs-data",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         45.6513,
         -122.5972
@@ -8214,6 +8491,13 @@
       "officialName": "Cherriots",
       "nameQualifier": "Salem, OR",
       "websiteUrl": "https://www.cherriots.org/",
+      "dataLicense": {
+        "url": "https://www.cherriots.org/datalicense/",
+        "attribution": "required",
+        "name": "Data Licensing Agreement",
+        "credit": "Reproduced with permission granted by the Salem Area Mass Transit District.",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         44.9396,
         -122.9975
@@ -8740,6 +9024,13 @@
       "commonName": "SFMTA - Muni",
       "shortName": "SFMTA",
       "websiteUrl": "http://www.sfmta.com",
+      "dataLicense": {
+        "url": "https://www.sfmta.com/reports/gtfs-transit-data",
+        "attribution": "required",
+        "name": "SFMTA Transit Data License Agreement",
+        "credit": "Reproduced with permission granted by the City and County of San Francisco.",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         37.7584,
         -122.4354
@@ -8842,6 +9133,12 @@
       "commonName": "BART",
       "shortName": "BART",
       "websiteUrl": "https://www.bart.gov/",
+      "dataLicense": {
+        "url": "http://www.bart.gov/schedules/developers/developer-license-agreement",
+        "attribution": "none",
+        "name": "BART Developer License Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         37.768,
         -122.2314
@@ -9001,6 +9298,12 @@
       "lastFeedVersion": "S1000256",
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "http://www.actransit.org",
+      "dataLicense": {
+        "url": "https://www.actransit.org/data-terms-and-conditions/",
+        "attribution": "required",
+        "name": "CC BY 3.0",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Berkeley, California",
         "Oakland, California",
@@ -9144,6 +9447,12 @@
       "officialName": "San Mateo County Transit District",
       "commonName": "samTrans",
       "websiteUrl": "http://www.samtrans.com",
+      "dataLicense": {
+        "url": "https://511.org/about/terms",
+        "attribution": "none",
+        "name": "MTC Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         37.5672,
         -122.3439
@@ -9283,6 +9592,12 @@
       "commonName": "WETA",
       "displayArea": "San Francisco Bay",
       "websiteUrl": "https://sanfranciscobayferry.com/",
+      "dataLicense": {
+        "url": "https://opendatacommons.org/licenses/by/summary/",
+        "attribution": "required",
+        "name": "Open Data Commons Attribution License (ODC-By)",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         37.8167,
         -122.3506
@@ -9619,6 +9934,12 @@
       "officialName": "Sonoma-Marin Area Rail Transit",
       "commonName": "SMART",
       "websiteUrl": "http://www.SonomaMarinTrain.org",
+      "dataLicense": {
+        "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+        "attribution": "unread",
+        "name": "511 Data Disseminator Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         38.2384,
         -122.6407
@@ -9724,6 +10045,11 @@
       "officialName": "VINE Transit",
       "nameQualifier": "Napa",
       "websiteUrl": "https://vinetransit.com/",
+      "dataLicense": {
+        "url": "https://vinetransit.com/open-data-portal/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         38.3079,
         -122.3118
@@ -9907,6 +10233,12 @@
       "officialName": "Tri Delta Transit",
       "nameQualifier": "Antioch",
       "websiteUrl": "http://trideltatransit.com",
+      "dataLicense": {
+        "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+        "attribution": "unread",
+        "name": "511 Data Disseminator Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         37.9967,
         -121.8336
@@ -10146,6 +10478,12 @@
       "lastFeedVersion": "20261104",
       "lastRefreshedAt": "2026-11-09",
       "websiteUrl": "http://cityofpetaluma.net/pubworks/transit-sub.html",
+      "dataLicense": {
+        "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+        "attribution": "unread",
+        "name": "511 Data Disseminator Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Petaluma, California"
       ],
@@ -10189,6 +10527,12 @@
       "name": "Santa Rosa CityBus",
       "officialName": "Santa Rosa CityBus",
       "websiteUrl": "https://srcitybus.org/",
+      "dataLicense": {
+        "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+        "attribution": "unread",
+        "name": "511 Data Disseminator Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         38.4456,
         -122.7182
@@ -10431,6 +10775,12 @@
       "lastFeedVersion": "20261102",
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "https://acerail.com/",
+      "dataLicense": {
+        "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+        "attribution": "unread",
+        "name": "511 Data Disseminator Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Livermore, California",
         "Fremont, California",
@@ -10778,6 +11128,11 @@
       "name": "Redding Area Bus Authority",
       "officialName": "Redding Area Bus Authority",
       "websiteUrl": "http://www.rabaride.com/",
+      "dataLicense": {
+        "url": "https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.5695,
         -122.3429
@@ -11143,6 +11498,11 @@
       "officialName": "Unitrans",
       "nameQualifier": "Davis",
       "websiteUrl": "http://unitrans.ucdavis.edu",
+      "dataLicense": {
+        "url": "https://unitrans.ucdavis.edu/about/gtfs/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         38.5529,
         -121.7393
@@ -11206,6 +11566,12 @@
       "name": "Roseville Transit",
       "officialName": "Roseville Transit",
       "websiteUrl": "http://www.roseville.ca.us/transit",
+      "dataLicense": {
+        "url": "http://www.sacrt.com/gtfs.stm",
+        "attribution": "none",
+        "name": "SacRT License Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         38.745,
         -121.3033
@@ -11512,6 +11878,11 @@
       "officialName": "Los Angeles County Metropolitan Transportation Authority",
       "commonName": "LA Metro",
       "websiteUrl": "https://www.metro.net",
+      "dataLicense": {
+        "url": "http://developer.metro.net/the-basics/policies/terms-and-conditions/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         34.05,
         -118.24
@@ -12019,6 +12390,11 @@
       "officialName": "Orange County Transportation Authority",
       "commonName": "OCTA",
       "websiteUrl": "http://www.octa.net/Bus-Transit/Overview",
+      "dataLicense": {
+        "url": "http://www.octa.net/News-and-Resources/Open-Data/Overview/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         33.84,
         -117.91
@@ -12211,6 +12587,12 @@
       "officialName": "Metropolitan Transit System",
       "commonName": "San Diego MTS",
       "websiteUrl": "http://www.sdmts.com",
+      "dataLicense": {
+        "url": "https://www.sdmts.com/business-center-developers/terms-and-conditions",
+        "attribution": "none",
+        "name": "Developer License Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         32.72,
         -117.16
@@ -12611,6 +12993,13 @@
       "name": "San Joaquin RTD",
       "officialName": "San Joaquin RTD",
       "websiteUrl": "http://sanjoaquinrtd.com",
+      "dataLicense": {
+        "url": "http://sanjoaquinrtd.com/preview/terms-of-use/",
+        "attribution": "required",
+        "name": "RTD Terms of Use",
+        "credit": "Route and schedule data provided by permission of San Joaquin RTD",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         37.96,
         -121.29
@@ -12756,6 +13145,11 @@
       "officialName": "Monterey-Salinas Transit",
       "commonName": "MST",
       "websiteUrl": "http://www.mst.org",
+      "dataLicense": {
+        "url": "https://mst.org/about-mst/developer-resources/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         36.6,
         -121.89
@@ -13100,6 +13494,12 @@
       "officialName": "Regional Transportation Commission of Washoe County",
       "commonName": "RTC Washoe",
       "websiteUrl": "http://www.rtcwashoe.com",
+      "dataLicense": {
+        "url": "https://www.rtcwashoe.com/terms-of-use/",
+        "attribution": "none",
+        "name": "RTC Washoe Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         39.53,
         -119.81
@@ -13213,6 +13613,12 @@
       "nameQualifier": "Phoenix",
       "displayArea": "Phoenix",
       "websiteUrl": "https://www.valleymetro.org/",
+      "dataLicense": {
+        "url": "http://www.opendefinition.org/licenses/odc-by",
+        "attribution": "required",
+        "name": "Open Data Commons Attribution License (ODC-By)",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         33.45,
         -112.07
@@ -13383,6 +13789,11 @@
       "commonName": "RTD Denver",
       "shortName": "RTD",
       "websiteUrl": "https://www.rtd-denver.com",
+      "dataLicense": {
+        "url": "https://www.rtd-denver.com/business-center/open-spatial-data/gtfs-license-agreement",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         39.74,
         -104.98
@@ -13556,6 +13967,12 @@
       "officialName": "ABQ RIDE",
       "nameQualifier": "Albuquerque",
       "websiteUrl": "https://abqride.com",
+      "dataLicense": {
+        "url": "http://www.cabq.gov/abq-data/abq-data-disclaimer-1",
+        "attribution": "required",
+        "name": "ABQ Data Disclaimer",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         35.09,
         -106.65
@@ -13666,6 +14083,12 @@
       "nameQualifier": "Austin",
       "displayArea": "Austin",
       "websiteUrl": "http://www.capmetro.org",
+      "dataLicense": {
+        "url": "https://www.capmetro.org/metrolabs/",
+        "attribution": "none",
+        "name": "Open Data License Agreement and Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         30.27,
         -97.74
@@ -13740,6 +14163,11 @@
       "commonName": "DART",
       "shortName": "DART",
       "websiteUrl": "https://www.dart.org",
+      "dataLicense": {
+        "url": "https://www.dart.org/transitdata/legalnotices.asp",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         32.78,
         -96.8
@@ -13909,6 +14337,13 @@
       "name": "METRO Houston",
       "officialName": "METRO Houston",
       "websiteUrl": "http://www.ridemetro.org",
+      "dataLicense": {
+        "url": "https://www.ridemetro.org/about/news-media/digital-assets",
+        "attribution": "required",
+        "name": "Data Use Agreement",
+        "credit": "Data is provided by permission of The Metropolitan Transit Authority of Harris County, Texas.",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         29.76,
         -95.37
@@ -14160,6 +14595,11 @@
       "name": "Nashville MTA WeGo Public Transit",
       "officialName": "Nashville MTA WeGo Public Transit",
       "websiteUrl": "http://www.wegotransit.com",
+      "dataLicense": {
+        "url": "https://www.wegotransit.com/contact-us/data-request-submission/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         36.16,
         -86.78
@@ -14765,6 +15205,11 @@
       "officialName": "Los Angeles Department of Transportation",
       "commonName": "LADOT/DASH",
       "websiteUrl": "https://www.ladottransit.com/",
+      "dataLicense": {
+        "url": "https://www.ladottransit.com/dla.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         34.05,
         -118.24
@@ -15112,6 +15557,11 @@
       "name": "Pasadena Transit",
       "officialName": "Pasadena Transit",
       "websiteUrl": "https://www.cityofpasadena.net/pasadena-transit/",
+      "dataLicense": {
+        "url": "https://www.cityofpasadena.net/pasadena-transit/real-time-applications/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         34.15,
         -118.13
@@ -15591,6 +16041,11 @@
       "nameQualifier": "Chicago",
       "displayArea": "Chicago",
       "websiteUrl": "http://www.metrarail.com/",
+      "dataLicense": {
+        "url": "https://metra.com/gtfs-realtime-api-key-request-license-agreement",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         41.8781,
         -87.6298
@@ -16132,6 +16587,12 @@
       "shortName": "SEPTA",
       "displayArea": "Philadelphia",
       "websiteUrl": "https://septa.org/",
+      "dataLicense": {
+        "url": "https://www3.septa.org/developer/",
+        "attribution": "none",
+        "name": "SEPTA License Agreement",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Pennsylvania",
       "center": [
         39.9526,
@@ -16285,6 +16746,12 @@
       "lastFeedVersion": "S1000251",
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "https://www.wmata.com",
+      "dataLicense": {
+        "url": "https://developer.wmata.com/license",
+        "attribution": "none",
+        "name": "WMATA Transit Data Terms of Use",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Downtown DC, District of Columbia",
         "Silver Spring, Maryland",
@@ -16861,6 +17328,11 @@
       "nameQualifier": "Manhattan",
       "displayArea": "Manhattan",
       "websiteUrl": "http://www.mta.info",
+      "dataLicense": {
+        "url": "http://web.mta.info/developers/developer-data-terms.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.776,
         -73.971
@@ -16930,6 +17402,11 @@
       "nameQualifier": "Brooklyn",
       "displayArea": "Brooklyn",
       "websiteUrl": "http://www.mta.info",
+      "dataLicense": {
+        "url": "http://web.mta.info/developers/developer-data-terms.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.65,
         -73.949
@@ -17000,6 +17477,11 @@
       "officialName": "MTA NYCT Bus",
       "nameQualifier": "Queens",
       "websiteUrl": "http://www.mta.info",
+      "dataLicense": {
+        "url": "http://web.mta.info/developers/developer-data-terms.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.728,
         -73.794
@@ -17069,6 +17551,11 @@
       "nameQualifier": "Bronx",
       "displayArea": "Bronx",
       "websiteUrl": "http://www.mta.info",
+      "dataLicense": {
+        "url": "http://web.mta.info/developers/developer-data-terms.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.845,
         -73.866
@@ -17137,6 +17624,11 @@
       "officialName": "MTA NYCT Bus",
       "nameQualifier": "Staten Island",
       "websiteUrl": "http://www.mta.info",
+      "dataLicense": {
+        "url": "http://web.mta.info/developers/developer-data-terms.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.634,
         -74.11
@@ -17207,6 +17699,11 @@
       "officialName": "MTA Bus Company",
       "displayArea": "New York City",
       "websiteUrl": "https://new.mta.info",
+      "dataLicense": {
+        "url": "http://web.mta.info/developers/developer-data-terms.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.7377,
         -73.8799
@@ -17347,6 +17844,11 @@
       "commonName": "MNR",
       "displayArea": "New York & Connecticut",
       "websiteUrl": "http://www.mta.info/mnr",
+      "dataLicense": {
+        "url": "http://web.mta.info/developers/developer-data-terms.html",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "New York",
       "parentAgency": "mta-new-york",
       "center": [
@@ -17446,6 +17948,11 @@
       "officialName": "NJ Transit",
       "displayArea": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
+      "dataLicense": {
+        "url": "https://www.njtransit.com/developer-tools",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "New Jersey",
       "center": [
         40.3698,
@@ -17708,6 +18215,12 @@
       "shortName": "NICE",
       "labelPlace": "Nassau County",
       "websiteUrl": "http://www.nicebus.com",
+      "dataLicense": {
+        "url": "http://www.nicebus.com/NiceBus/media/NiceBus-Images/131030_Legal-Agreements.pdf",
+        "attribution": "unread",
+        "name": "Terms of Service for Developers",
+        "checkedOn": "2026-11-21"
+      },
       "region": "New York",
       "center": [
         40.73,
@@ -19897,6 +20410,11 @@
       "officialName": "Utah Transit Authority",
       "commonName": "UTA",
       "websiteUrl": "http://www.rideuta.com",
+      "dataLicense": {
+        "url": "http://developer.rideuta.com/TermsOfUse.aspx",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.76,
         -111.89
@@ -20674,6 +21192,12 @@
       "officialName": "Valley Regional Transit",
       "nameQualifier": "Boise",
       "websiteUrl": "https://www.valleyregionaltransit.org/",
+      "dataLicense": {
+        "url": "https://www.valleyregionaltransit.org/about-us/resources/",
+        "attribution": "required",
+        "name": "CC BY 3.0",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         43.62,
         -116.2
@@ -20855,6 +21379,11 @@
       "officialName": "SunRail",
       "nameQualifier": "Orlando",
       "websiteUrl": "http://www.sunrail.com",
+      "dataLicense": {
+        "url": "https://corporate.sunrail.com/about-sunrail/gtfs-data-download/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         28.5,
         -81.4
@@ -21121,6 +21650,12 @@
       "officialName": "OmniRide",
       "nameQualifier": "PRTC",
       "websiteUrl": "http://www.omniride.com",
+      "dataLicense": {
+        "url": "https://www.omniride.com/contact/developer-tools/",
+        "attribution": "none",
+        "name": "Terms and Conditions For Use of OmniRide's Data",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         38.5,
         -77.3
@@ -21239,6 +21774,11 @@
       "nameQualifier": "Fairfax",
       "displayArea": "Fairfax",
       "websiteUrl": "http://www.ridesystems.net",
+      "dataLicense": {
+        "url": "https://www.fairfaxva.gov/government/public-works/cue-bus-map-schedule#GTFS%20Schedule%20Data%20anchor",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         38.85,
         -77.35
@@ -24651,6 +25191,13 @@
       "lastFeedVersion": null,
       "lastRefreshedAt": "2026-11-16",
       "websiteUrl": "https://greenbaywi.gov/231/Metro-Transit",
+      "dataLicense": {
+        "url": "https://greenbaywi.gov/496/Transit-Data-Developer",
+        "attribution": "optional",
+        "name": "Transit Data Developer License Agreement & Terms of Use",
+        "credit": "Data provided under license granted by the City of Green Bay, Metro Transit.",
+        "checkedOn": "2026-11-21"
+      },
       "cities": [
         "Green Bay, Wisconsin"
       ],
@@ -25030,6 +25577,11 @@
       "name": "Knoxville Area Transit",
       "officialName": "Knoxville Area Transit",
       "websiteUrl": "https://katbus.com/",
+      "dataLicense": {
+        "url": "https://www.knoxvilletn.gov/government/opendata/knoxville_area_transit_kat_gtfs_feed",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         35.96,
         -83.92
@@ -25309,6 +25861,11 @@
       "name": "Rockford Mass Transit District",
       "officialName": "Rockford Mass Transit District",
       "websiteUrl": "https://rmtd.org/",
+      "dataLicense": {
+        "url": "https://rmtd.org/gtfs/",
+        "attribution": "none",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         42.27,
         -89.09
@@ -25420,6 +25977,11 @@
       "name": "Greater Sudbury Transit",
       "officialName": "Greater Sudbury Transit",
       "websiteUrl": "https://www.greatersudbury.ca/living/transit/",
+      "dataLicense": {
+        "url": "http://www.greatersudbury.ca/inside-city-hall/open-government/open-data/open-data-apps/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         46.49,
         -81.01
@@ -29168,6 +29730,11 @@
       "name": "Whitehorse Transit",
       "officialName": "Whitehorse Transit",
       "websiteUrl": "https://whitehorse.transloc.com",
+      "dataLicense": {
+        "url": "https://data.whitehorse.ca/",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         60.72,
         -135.05
@@ -30275,6 +30842,11 @@
       "name": "CityBus of Greater Lafayette",
       "officialName": "CityBus of Greater Lafayette",
       "websiteUrl": "https://gocitybus.com/",
+      "dataLicense": {
+        "url": "https://gocitybus.com/terms-for-use",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "center": [
         40.42,
         -86.91
@@ -30826,6 +31398,12 @@
       "officialName": "NYC Ferry",
       "displayArea": "New York City",
       "websiteUrl": "https://www.ferry.nyc/",
+      "dataLicense": {
+        "url": "https://www.ferry.nyc/developer-tools/",
+        "attribution": "none",
+        "name": "NYC Ferry Developer Terms",
+        "checkedOn": "2026-11-21"
+      },
       "region": "New York",
       "center": [
         40.6499,
@@ -30966,6 +31544,11 @@
       "officialName": "Mi Transporte",
       "nameQualifier": "Guadalajara",
       "websiteUrl": "https://setrans.jalisco.gob.mx/",
+      "dataLicense": {
+        "url": "https://datos.jalisco.gob.mx/dataset/actualizacion-de-rutas-de-transporte-publico-colectivo-y-masivo-en-la-zona-metropolitana-de",
+        "attribution": "unread",
+        "checkedOn": "2026-11-21"
+      },
       "region": "Jalisco",
       "center": [
         20.6432,

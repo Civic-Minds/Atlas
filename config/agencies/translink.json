@@ -3,6 +3,13 @@
   "officialName": "TransLink",
   "nameQualifier": "Vancouver",
   "websiteUrl": "https://www.translink.ca",
+  "dataLicense": {
+    "url": "https://www.translink.ca/about-us/doing-business-with-translink/app-developer-resources/gtfs/gtfs-data",
+    "attribution": "required",
+    "name": "TransLink GTFS Static Data Terms and Conditions",
+    "credit": "Route and arrival data used in this product or service is provided by permission of TransLink. TransLink assumes no responsibility for the accuracy or currency of the Data used in this product or service.",
+    "checkedOn": "2026-11-21"
+  },
   "region": "British Columbia",
   "center": [
     49.2827,

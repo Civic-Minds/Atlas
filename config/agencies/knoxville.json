@@ -2,6 +2,11 @@
   "slug": "knoxville",
   "officialName": "Knoxville Area Transit",
   "websiteUrl": "https://katbus.com/",
+  "dataLicense": {
+    "url": "https://www.knoxvilletn.gov/government/opendata/knoxville_area_transit_kat_gtfs_feed",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     35.96,
     -83.92

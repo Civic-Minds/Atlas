@@ -3,6 +3,13 @@
   "officialName": "Toronto Transit Commission",
   "shortName": "TTC",
   "websiteUrl": "https://www.ttc.ca",
+  "dataLicense": {
+    "url": "https://open.toronto.ca/open-data-licence/",
+    "attribution": "required",
+    "name": "Open Government Licence – Toronto",
+    "credit": "Contains information licensed under the Open Government Licence – Toronto.",
+    "checkedOn": "2026-11-21"
+  },
   "searchAliases": [
     "Toronto"
   ],

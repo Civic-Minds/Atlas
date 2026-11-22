@@ -4,6 +4,11 @@
   "shortName": "MBTA",
   "displayArea": "Boston",
   "websiteUrl": "https://www.mbta.com/",
+  "dataLicense": {
+    "url": "https://www.mass.gov/files/documents/2017/10/27/develop_license_agree_0.pdf",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Massachusetts",
   "center": [
     42.361,

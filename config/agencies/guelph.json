@@ -22,6 +22,11 @@
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
   "websiteUrl": "http://www.guelphtransit.ca",
+  "dataLicense": {
+    "url": "https://explore.guelph.ca/pages/open-data-license",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Guelph, Ontario"
   ],

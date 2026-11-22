@@ -3,6 +3,11 @@
   "officialName": "MiWay",
   "nameQualifier": "Mississauga",
   "websiteUrl": "http://www.miway.ca",
+  "dataLicense": {
+    "url": "https://www.mississauga.ca/miway-transit/developer-download/",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     43.589,

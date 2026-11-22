@@ -4,6 +4,11 @@
   "nameQualifier": "Laurentides",
   "displayArea": "Laurentides",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITLA",
+  "dataLicense": {
+    "url": "https://www.donneesquebec.ca/licence/",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Quebec",
   "parentAgency": "exo",
   "center": [

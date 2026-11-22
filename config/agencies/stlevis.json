@@ -3,6 +3,12 @@
   "officialName": "STLévis",
   "displayArea": "Lévis",
   "websiteUrl": "http://www.stlevis.ca/",
+  "dataLicense": {
+    "url": "https://creativecommons.org/licenses/by/4.0/deed.fr",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Quebec",
   "center": [
     46.8,

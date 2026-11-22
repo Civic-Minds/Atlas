@@ -2,6 +2,11 @@
   "slug": "burlington",
   "officialName": "Burlington Transit",
   "websiteUrl": "https://www.burlingtontransit.ca/en/index.aspx",
+  "dataLicense": {
+    "url": "https://opendata.burlington.ca/opendata-terms-of-use/City%20of%20Burlington%20-%20Open%20Data%20Terms%20of%20Use.pdf",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     43.3255,

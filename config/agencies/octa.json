@@ -3,6 +3,11 @@
   "officialName": "Orange County Transportation Authority",
   "commonName": "OCTA",
   "websiteUrl": "http://www.octa.net/Bus-Transit/Overview",
+  "dataLicense": {
+    "url": "http://www.octa.net/News-and-Resources/Open-Data/Overview/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     33.84,
     -117.91

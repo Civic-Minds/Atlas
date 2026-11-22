@@ -3,6 +3,12 @@
   "officialName": "ABQ RIDE",
   "nameQualifier": "Albuquerque",
   "websiteUrl": "https://abqride.com",
+  "dataLicense": {
+    "url": "http://www.cabq.gov/abq-data/abq-data-disclaimer-1",
+    "attribution": "required",
+    "name": "ABQ Data Disclaimer",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     35.09,
     -106.65

@@ -2,6 +2,12 @@
   "slug": "barrie",
   "officialName": "Barrie Transit",
   "websiteUrl": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit",
+  "dataLicense": {
+    "url": "https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/barrie-gtfs",
+    "attribution": "none",
+    "name": "Barrie Transit data terms",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     44.3894,

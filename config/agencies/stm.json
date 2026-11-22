@@ -5,6 +5,11 @@
   "shortName": "STM",
   "displayArea": "Montréal",
   "websiteUrl": "https://www.stm.info",
+  "dataLicense": {
+    "url": "https://www.stm.info/en/about/developers/terms-use",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "searchAliases": [
     "Montreal"
   ],
