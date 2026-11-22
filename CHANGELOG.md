@@ -18,6 +18,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio MCP testers can ask how a route is running right now**: the online version only knew the schedule, so "how many vehicles are on the 504 now" got the planned count
 - **Studio's running time no longer counts short turns as extra branches**: TTC Line 1 read 247 minutes, the full route plus three short turns, which looked like a round trip
 - **A route passes the frequency filter only when every part of it does**: a busy shared stretch made routes with slower branches pass (TARC 1, TTC 102); the stretch can still show its own number on the card
+- **Fleet's network total shows how many vehicles are in service now**: beside "As scheduled", for cities where Live follows every route (Kingston), while the picked time of day is the current one
 - **Fleet's route card shows how many vehicles are in service now**: beside "As scheduled", for routes Live follows, while the picked time of day is the current one
 - **Stop cards show a range where a route's patterns share a stop unevenly**: MBTA 16 at Columbia Rd read "every 27" from one minor pattern alone; it now reads "every 11–21 min", the combined trips' typical wait to their longest gap
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches

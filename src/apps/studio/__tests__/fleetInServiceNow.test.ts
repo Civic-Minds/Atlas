@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { busRows } from '../StudioGroupFigures';
+import { agencyRouteCount, agencyRoutes } from '../fleetModel';
+import type { StudioVehiclesFile } from '../../../../shared/studioVehicles';
 import { liveFollowsRoute } from '../../../../shared/livePollingConfig';
 import type { StudioVehicleGroup } from '../../../../shared/studioVehicles';
 
@@ -17,5 +19,11 @@ describe('Fleet: in service now (CIV-2056)', () => {
     expect(liveFollowsRoute('ttc', '29')).toBe(false);
     expect(liveFollowsRoute('kingston', '502')).toBe(true);
     expect(liveFollowsRoute('nowhere', '1')).toBe(false);
+  });
+  it('the network total counts every route running at the time of day', () => {
+    const file = { periods: { midday: [{ ...g, routes: ['501', '504'] }, { ...g, routes: ['505'] }] } } as unknown as StudioVehiclesFile;
+    expect(agencyRoutes(file, 'midday')).toEqual(['501', '504', '505']);
+    expect(agencyRouteCount(file, 'midday')).toBe(3);
+    expect(agencyRoutes(file, 'evening')).toEqual([]);
   });
 });

@@ -28,7 +28,7 @@ import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesNeededTit
 import Widget from '../../components/Live/tool/Widget';
 import { StudioRouteTable, periodCell, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
-import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, changeGroups, modesFor, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
+import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, agencyRoutes, changeGroups, modesFor, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 import { useInServiceNow } from './useInServiceNow';
@@ -151,6 +151,10 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
   const fleet = useMemo(() => (vehicles && vehicles !== 'missing' ? agencyFleet(vehicles, period) : null), [vehicles, period]);
   const routeGroup = route && vehicles && vehicles !== 'missing' ? groupFor(vehicles, route, period) : null;
   const inService = useInServiceNow(slug, routeGroup?.routes ?? null, period);
+  // CIV-2056 (Ryan: "1"): the network's total too, where Live follows every route; only while no route is picked, so the
+  // live feed is polled once.
+  const networkRoutes = useMemo(() => (!route && vehicles && vehicles !== 'missing' ? agencyRoutes(vehicles, period) : null), [route, vehicles, period]);
+  const networkInService = useInServiceNow(slug, networkRoutes, period);
   // The words follow the modes even at a time of day with no service (CIV-2002).
   const routeModes = routeGroup?.modes ?? (route && vehicles && vehicles !== 'missing' ? modesFor(vehicles, route) : undefined);
   const agencyModes = fleet?.modes ?? (vehicles && vehicles !== 'missing' ? modesFor(vehicles, null) : undefined);
@@ -223,7 +227,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                 <>
                   {fleet && <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>}
                   <Widget title={vehiclesNeededTitle(agencyModes)}>
-                    <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} />
+                    <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} inService={networkInService} />
                   </Widget>
                 </>
               ) : null}
