@@ -4,8 +4,8 @@
  * - A group the engine found (InterlineGroup) takes its scheduledVehicles and impliedVehicles as they are.
  * - A route in no group is a group of one: scheduled is the sum of its patterns' buses now, implied the
  *   sum of needVehicles over its regular patterns, rounded up once (the CLI's route totals).
- * Running time and layover are one trip on each regular pattern of the group (partial trips left out),
- * summed. At a target headway each regular pattern runs at the headway targetVehicles gives it (trunk
+ * Running time and layover are one trip on each full pattern of the group, summed: partial trips and short turns left
+ * out (CIV-2031: TTC Line 1 read 247 min, the full route's 160 plus three short turns, like a round trip). At a target headway each regular pattern runs at the headway targetVehicles gives it (trunk
  * split by current share), and the group's cycle / headway is summed and rounded up once. Short turns are left out at a
  * target (CIV-2005): "if every route ran every N" is the whole route every N, which the full pattern already gives, and
  * keeping them at today's headway counted most of a frequent line's fleet at every 60 (TTC Line 1: 15 where ~5 run it).
@@ -38,13 +38,15 @@ export function vehicleGroupRows(
     for (const id of memberIds) seen.add(id);
     const patterns = a.patterns.filter(p => memberIds.includes(p.routeId));
     const regular = patterns.filter(p => p.role !== 'partial');
-    const layovers = regular.map(p => p.layoverMin).filter((v): v is number => v != null);
+    // CIV-2031: a short turn repeats part of a full pattern, so it isn't another branch to add to the running time.
+    const cycle = regular.filter(p => p.role !== 'short turn');
+    const layovers = cycle.map(p => p.layoverMin).filter((v): v is number => v != null);
     rows.push({
       routes: memberIds.map(nameOf).sort((x, y) => x.localeCompare(y, undefined, { numeric: true })),
       ...(modeOf ? { modes: [...new Set(memberIds.map(modeOf).filter((m): m is number => m != null))].sort((x, y) => x - y) } : {}),
       scheduled: group ? group.scheduledVehicles : patterns.reduce((s, p) => s + p.scheduledVehicles, 0),
       implied: group ? group.impliedVehicles : up(regular.reduce((s, p) => s + needVehicles(p, SCHEDULE), 0)),
-      runningMin: Math.round(regular.reduce((s, p) => s + p.runningMin, 0)),
+      runningMin: Math.round(cycle.reduce((s, p) => s + p.runningMin, 0)),
       layoverMin: layovers.length ? Math.round(layovers.reduce((s, v) => s + v, 0)) : null,
       atTarget: Object.fromEntries(STUDIO_TARGETS.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'current')])),
       // CIV-1712: the even split too, for the planner's choice, where the group has branches sharing a middle.
