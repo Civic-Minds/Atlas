@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Pages show up sooner on phones**: every page was loading the map library before its first paint, even pages with no map; it now loads only when a map is on screen
 - **Live shows Hamilton's and Burlington's buses again**: their feeds renumbered the routes Live follows, so Live now finds each route by its number in the agency's current route list
 - **Atlas Studio MCP says when the test server doesn't carry an agency**: it pointed to agencies like STM and then said it had no data for them; it now names the agencies it has. Buses-needed answers also give the schedule's end date
 - **Route lists show the number their route card shows**: a card row reading "every 16 min from 6:39 AM" was listed by the period's typical gap instead (MBTA 65 weekday AM peak read "every 8–14" beside it)
