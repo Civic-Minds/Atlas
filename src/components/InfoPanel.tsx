@@ -23,14 +23,13 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION, MBTA_VEHICLES_CREDIT } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
 import { bunchingSplitNote, figuresUpdatedText, OPEN_ABOUT_LIVE_EVENT } from '../../shared/liveWording';
 import { useLiveFiguresUpdated } from '../hooks/useLiveFiguresUpdated';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
-import { MASSDOT_CREDIT_URL } from '../content/noticeCopy';
-import { agencyCredits } from '../utils/agencyCredits';
-import { sourceCreditId, useSourcesFocus } from '../utils/sourcesFocus';
+import SourceCredits from './SourceCredits';
+import { useSourcesFocus } from '../utils/sourcesFocus';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
@@ -227,10 +226,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   useEffect(() => {
     if (!sourcesFocus.n || !open) return;
     setView('sources');
-    if (!sourcesFocus.slug) return;
-    const slug = sourcesFocus.slug;
-    const t = window.setTimeout(() => document.getElementById(sourceCreditId(slug))?.scrollIntoView?.({ block: 'center' }), 0);
-    return () => window.clearTimeout(t);
   }, [sourcesFocus, open]);
 
   useEffect(() => {
@@ -544,17 +539,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <LinkCard href="https://www.transit.land/"
                   target="_blank"
                   rel="noopener noreferrer" icon="external">Transitland</LinkCard>
-                {/* CIV-2046, CIV-461 (Ryan: "Should massdot be a thin like the transitland and the other one are"): MassDOT, where
-                    Live is on, and each agency whose data licence requires credit, as cards like the sources above. */}
-                {FEATURES.live && <LinkCard as={OutboundLink} href={MASSDOT_CREDIT_URL} kind="attribution" icon="external">{MBTA_VEHICLES_CREDIT}</LinkCard>}
-                {/* A licence's own sentence may not name its agency (TTC's doesn't): a small label above says whose it is. */}
-                {agencyCredits(agencies).map(c => (
-                  <div key={c.slug} id={sourceCreditId(c.slug)}>
-                    {c.ownWords && <p className="text-xs text-[var(--text-dim)] mb-1">{c.name}</p>}
-                    <LinkCard as={OutboundLink} href={c.url} kind="attribution" icon="external">{c.text}</LinkCard>
-                  </div>
-                ))}
               </div>
+              {/* CIV-461: each agency whose data licence requires credit, and MBTA's MassDOT credit where Live is on: one pill each. */}
+              <SourceCredits agencies={agencies} massDot={FEATURES.live} focusSlug={open ? sourcesFocus.slug : null} focusN={sourcesFocus.n} />
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>

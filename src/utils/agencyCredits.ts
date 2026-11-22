@@ -1,6 +1,6 @@
 import type { AgencyDataLicense } from '../../shared/agencyCatalog';
 import { scheduleDataCredit } from '../content/noticeCopy';
-import { agencyNames } from './agencyName';
+import { agencyNames, type AgencyNameInput } from './agencyName';
 
 /** One agency's data credit (CIV-461): its name for the map pill, its licence page, and the sentence it is credited with. */
 export interface AgencyCredit {
@@ -10,11 +10,15 @@ export interface AgencyCredit {
   shortName: string;
   url: string;
   text: string;
-  /** The text is the licence's own sentence, which may not name the agency: About labels it with the agency's name. */
-  ownWords: boolean;
+  /** Schedule sources' pill (Ryan, 2026-11-22: "The pill should just show the name of the agency"): the lists' name and place. */
+  label: { primary: string; secondary?: string };
+  /** The licence's short name ("CC BY 4.0"), linked to `url` when the pill opens. */
+  licenceName: string | null;
+  /** Wording the licence requires word for word (its own sentence, then the last-updated date it asks for), shown when the pill opens; null where it gives none. */
+  words: string | null;
 }
 
-type Credited = { slug: string; name: string; dataLicense?: AgencyDataLicense; lastRefreshedAt?: string | null };
+type Credited = Exclude<AgencyNameInput, string> & { slug: string; dataLicense?: AgencyDataLicense; lastRefreshedAt?: string | null };
 
 /**
  * The credit an agency's data licence requires, read from its config (dataLicense): the licence's own sentence where it
@@ -26,7 +30,11 @@ export function agencyCredit(a: Credited): AgencyCredit | null {
   const text = l.credit ?? scheduleDataCredit(a.name, l.name);
   // The licence asks for the data's last-updated date in its own words (STO): the day Atlas last took the feed.
   const updated = l.updatedLabel && a.lastRefreshedAt ? ` ${l.updatedLabel} ${a.lastRefreshedAt.slice(0, 10)}.` : '';
-  return { slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: l.url, text: `${text}${updated}`, ownWords: !!l.credit };
+  const names = agencyNames(a);
+  return {
+    slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: l.url, text: `${text}${updated}`,
+    label: names.list, licenceName: l.name ?? null, words: l.credit ? `${l.credit}${updated}` : null,
+  };
 }
 
 /** The credits for these agencies (all of them, or the slugs given), in the order given, each once. */

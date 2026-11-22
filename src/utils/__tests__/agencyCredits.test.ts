@@ -15,9 +15,18 @@ describe('agencyCredits (CIV-461)', () => {
     expect(agencyCredit({ slug: 'd', name: 'D' })).toBeNull();
   });
 
+  it("gives Schedule sources' pill the lists' name and place, and the licence name and required words for when it opens", () => {
+    const ttc = agencyCredit({ slug: 'ttc', name: 'Toronto Transit Commission', cities: ['Toronto, ON'], dataLicense: lic('required', { name: 'Open Government Licence – Toronto', credit: 'Contains information.' }) });
+    expect(ttc?.label).toEqual({ primary: 'TTC', secondary: 'Toronto' });
+    expect(ttc?.licenceName).toBe('Open Government Licence – Toronto');
+    expect(ttc?.words).toBe('Contains information.');
+    expect(agencyCredit({ slug: 'b', name: 'B Transit', dataLicense: lic('required', { name: 'CC BY 4.0' }) })?.words).toBeNull();
+  });
+
   it("ends with the data's last-updated date in the licence's own words where it asks for one (STO)", () => {
     const sto = { slug: 'sto', name: 'STO (Gatineau)', lastRefreshedAt: '2026-11-16', dataLicense: { ...lic('required', { credit: 'Le présent service intègre les données.' }), updatedLabel: 'Dernière mise à jour :' } };
     expect(agencyCredit(sto)?.text).toBe('Le présent service intègre les données. Dernière mise à jour : 2026-11-16.');
+    expect(agencyCredit(sto)?.words).toBe('Le présent service intègre les données. Dernière mise à jour : 2026-11-16.');
     expect(agencyCredit({ ...sto, lastRefreshedAt: null })?.text).toBe('Le présent service intègre les données.');
   });
 
