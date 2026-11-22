@@ -288,6 +288,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — MTA and NJ Transit readings are reads, not changes (CIV-460 Q2, CIV-2123)
+Ryan (2026-11-22, relayed by Atlas Questions), to keep Atlas's readings of MTA and NJ Transit data: "1".
+- The rule: these readings stay. They are how Atlas reads the data, not changes to it, so they sit within MTA's "will not modify" and NJ Transit's "as-is" terms.
+- The readings kept: NJ Transit light-rail classification, merging identical shapes, the alternate reading points, the NYC subway reference stop, and History's rename joins.
+- Why: the terms bar altering the published data, and each reading leaves the feed as published while changing only how Atlas interprets it.
+
 ### 2026-11-21 — A shared stop whose combined trips are uneven shows a range (#1667, CIV-53)
 Ryan (2026-11-21, relayed by Atlas Questions, to "Should we not be using a range then"): "1". A stop where several patterns of a route stop, whose combined departures fail the evenness test, shows the combined list's typical wait to its longest gap, in the route cards' range words, instead of the minor pattern's own value.
 - MBTA 16 at Columbia Rd @ Seaver St, weekday PM peak: every 27 → every 11–21. SEPTA 63 at Oregon Av & 16th St, weekday midday: every 121 → every 12–30.
