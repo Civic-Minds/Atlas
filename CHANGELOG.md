@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Sacramento route 30's History keeps the FSL trips apart**: the feed lists a second route also named 30 (FSL) in 2020 and 2023-2024, and its times no longer count toward route 30
 - **Studio Live's route lines are as thin as Live's**: they were drawn about twice as thick as the same route on the regular Live map
 - **Studio opens on the city the map is showing**: opening Live with the map on Toronto jumped to the agency Studio was last on, such as Hamilton
 - **A picked vehicle on Live keeps its normal dot, just darker**: the bigger dot with a white halo stood out from the rest of the map
