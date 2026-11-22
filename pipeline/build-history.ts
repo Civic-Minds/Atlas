@@ -30,6 +30,7 @@ import { historyV2FromEnv } from './historyV2Flag.js';
 import { splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
 import { compileAgencyShapes, formatShapeGap, shapeGaps, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
+import { yearsAvailable } from '../shared/historyV2Reader.js';
 import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey, labelFromRefDate, afterBuildMonth, yearMonthOf } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
@@ -825,9 +826,14 @@ async function main() {
   if (v2) {
     // CIV-843: years about to be published whose routes lose their real line (no shape_id, or one not in
     // shapes.txt). Only agencies with shape files are checked; one without any has no lines to lose.
+    // CIV-2051 (#1659): never the agency's latest published year. History draws that year on today's map lines and
+    // reads no year shape for it (historyYearMap.ts yearShape), so its change-file points warned as "not drawn" while
+    // they draw (Kingston 2026: 28 of 28 warned, all drawn).
     for (const slug of Object.keys(shapeRouteYears).sort()) {
       const periods = shapePeriods[slug];
-      if (periods?.size) buildReport.shapeGaps.push(...shapeGaps(slug, periods, shapeRouteYears[slug]));
+      const published = historyData.find(entry => entry.slug === slug);
+      const latestYear = published ? yearsAvailable(published).at(-1) : undefined;
+      if (periods?.size) buildReport.shapeGaps.push(...shapeGaps(slug, periods, shapeRouteYears[slug].filter(ry => ry.year !== latestYear)));
     }
     // Build report: every dropped snapshot (slug, route, label, reason) and the year rules' effects.
     const reportPath = resolve('tmp/history-build-report.json');
