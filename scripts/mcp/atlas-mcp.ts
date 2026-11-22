@@ -72,7 +72,7 @@ if (liveDir) {
 }
 
 const { localHandlers } = await import('./localTools');
-// route_now (CIV-1870) reads the Live recorder's snapshots: local only for now.
+// route_now (CIV-1870) reads the Live recorder's snapshots (the hosted server adds it too).
 const { liveNowHandlers } = await import('./liveNowTools');
 const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = { ...tools.handlers, ...localHandlers, ...liveNowHandlers };
 // Every tool's definition, the local ones included.

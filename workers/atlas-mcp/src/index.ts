@@ -7,7 +7,11 @@
  * found through the release pointer the map reads, so it is never staler than the map.
  */
 import * as data from '../../../scripts/mcp/atlasData';
-import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
+import { TOOLS, handlers as scheduleHandlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
+import { liveNowHandlers } from '../../../scripts/mcp/liveNowTools';
+
+/** Every tool the hosted server answers: the shared ones plus route_now (CIV-1870), which the local server also adds. */
+const handlers = { ...scheduleHandlers, ...liveNowHandlers };
 import { linkToken } from './linkToken';
 import { jsonOrNull, splitStore, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
