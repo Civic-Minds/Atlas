@@ -204,13 +204,18 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, filters, toFull, lite = false }: {
+/** The Dashboard's parts, so the Full report can set each beside the same kind of figure (CIV-284). */
+export type DashboardPart = 'week' | 'strip' | 'tripTime' | 'lateHours' | 'lateStops';
+
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, filters, toFull, lite = false, part }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[];
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
   toFull: (hash: string) => void;
   /** The lite view: tiles, strip, late by hour and the Full analysis link only. */
   lite?: boolean;
+  /** One part only (the Full report's grouping); all of them, in order, without it. */
+  part?: DashboardPart;
 }) {
   const bad = liveDrawError;
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
@@ -222,18 +227,21 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
       <p className="mt-8"><ArrowLink href="?view=explore" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>{LIVE_FULL_REPORT_VIEW}</ArrowLink></p>
     </>
   );
+  const on = (p: DashboardPart) => part == null || part === p;
   return (
     <>
-      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
-      <div className="mt-8 border-t border-[var(--border-primary)] pt-2">
-        <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_DIRECTION_PICK_NOTE}</p>
-        {filters}
-      </div>
-      <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
-      <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
-      <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title={LATE_STOPS_TITLE} boundary={bad('The stop list')}
-        footerLink={{ text: LIVE_EVERY_STOP_LINK, href: '?view=explore#b2', onClick: () => toFull('b2') }} />
+      {on('week') && <>
+        <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
+        <div className="mt-8 border-t border-[var(--border-primary)] pt-2">
+          <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_DIRECTION_PICK_NOTE}</p>
+          {filters}
+        </div>
+      </>}
+      {on('strip') && <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>}
+      {on('tripTime') && <ErrorBoundary label={bad(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>}
+      {on('lateHours') && <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>}
+      {on('lateStops') && <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title={LATE_STOPS_TITLE} boundary={bad('The stop list')}
+        footerLink={{ text: LIVE_EVERY_STOP_LINK, href: '?view=explore#b2', onClick: () => toFull('b2') }} />}
     </>
   );
 }

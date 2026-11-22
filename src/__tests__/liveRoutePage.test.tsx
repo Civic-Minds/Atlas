@@ -45,8 +45,21 @@ function renderPage(response: LiveDashboardResponse | Error, path = '/apps/live/
   return render(<MemoryRouter initialEntries={[path]}><Routes><Route path="/apps/live/:agency/:route" element={<LiveRoutePage />} /></Routes></MemoryRouter>);
 }
 
-/** CIV-284: the Full report draws Full analysis's sections as they were, after its own and the Dashboard's; these tests read that part. */
-const fa = () => within(document.querySelector('[data-full-analysis]') as HTMLElement);
+/**
+ * CIV-284: the Full report draws Full analysis's sections as they were, each beside the same kind of figure, in its own
+ * [data-full-analysis] part; these tests read those parts. Queries behave as `within`'s, across all the parts.
+ */
+const fa = () => new Proxy({} as ReturnType<typeof within>, {
+  get: (_, name: string) => (...args: unknown[]) => {
+    const kind = name.replace(/^(get|query|find)(All)?By/, '');
+    const all = [...document.querySelectorAll<HTMLElement>('[data-full-analysis]')].flatMap(r => (within(r) as unknown as Record<string, (...a: unknown[]) => HTMLElement[]>)[`queryAllBy${kind}`](...args));
+    if (name.startsWith('queryAll')) return all;
+    if (name.startsWith('getAll')) { if (!all.length) throw new Error(`${name}: no match`); return all; }
+    if (name.startsWith('query')) { if (all.length > 1) throw new Error(`${name}: ${all.length} matches`); return all[0] ?? null; }
+    if (all.length !== 1) throw new Error(`${name}: ${all.length} matches`);
+    return all[0];
+  },
+});
 
 describe('Live route dashboard', () => {
   beforeEach(() => {

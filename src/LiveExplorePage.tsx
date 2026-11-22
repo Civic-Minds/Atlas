@@ -28,7 +28,7 @@ import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
-import LiveDashboardView, { KpiRow } from './LiveDashboardView';
+import LiveDashboardView, { KpiRow, type DashboardPart } from './LiveDashboardView';
 import { useLiveGaps } from './hooks/useLiveGaps';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
@@ -41,7 +41,7 @@ import BuildupSection from './components/Live/sections/BuildupSection';
 import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
-import { BOUNDARY, FullAnalysisSections, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
+import { BOUNDARY, FullAnalysisSections, type FullAnalysisPart, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
@@ -252,6 +252,15 @@ export default function LiveExplorePage() {
     document.getElementById('x-strip')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // The Dashboard's and Full analysis's parts, one at a time (CIV-284).
+  const dash = (part: DashboardPart) => (
+    <LiveDashboardView v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} filters={null} part={part}
+      toFull={hash => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+  );
+  const full = (part: FullAnalysisPart) => (
+    <div data-full-analysis><FullAnalysisSections v3={v3} dir={dir} uncertain={uncertain} gaps={gaps} agency={agency} route={route} part={part} /></div>
+  );
+
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
       <div className="mb-2">{toAgency}</div>
@@ -265,7 +274,14 @@ export default function LiveExplorePage() {
       <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
 
+      {/* CIV-284 (Ryan: "For that Live Report does a worker want to group all similar information on that page into sections?"):
+          the Full report's own parts, the Dashboard's (dash) and Full analysis's (full, data-full-analysis) set side by side by
+          what they show, each exactly as it was. The Dashboard's and Full analysis's parts are the whole day; the Direction
+          pick applies to all. De-duplication is a later item. */}
+      {/* The week. */}
       <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><KpiRow v3={v3} /></ErrorBoundary>
+      {dash('week')}
+      {full('week')}
 
       <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label={FILTERS_LABEL}>
         <Group label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
@@ -273,28 +289,48 @@ export default function LiveExplorePage() {
         <Group label={TIME_OF_DAY_LABEL} value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
       </div>
 
+      {/* Along the route. */}
       <ErrorBoundary label={BOUNDARY(ALONG_ROUTE_TITLE)}>
         <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
       </ErrorBoundary>
+      {dash('strip')}
 
+      {/* Late departures by hour. */}
       <LateByHourSection chart="bars" id="x-late" shrink title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} day={day} boundary={BOUNDARY(LATE_BY_HOUR_TITLE)}
         before={<div className="mt-3"><Group label={DAY_LABEL} value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
-      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
-      <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
-      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY(EXTRA_WAIT_LABEL)} />
-      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY(BUNCHING_FORMS_TITLE)} />
-      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
-      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
-      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
+      {dash('lateHours')}
+      {full('lateHours')}
 
-      {/* CIV-284 (Ryan: "1 but don't delete or edit any of the content in each page yet"): the Dashboard's content, then Full
-          analysis's, exactly as they were (the whole day; the Direction pick above applies). De-duplication is a later item. */}
-      <LiveDashboardView v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} filters={null}
-        toFull={hash => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
-      {/* Each page kept its own "How this is measured", as it had it (the Dashboard's names its left-out days above, #1490). */}
+      {/* Stops most often late. */}
+      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
+      {dash('lateStops')}
+      {full('lateStops')}
+
+      {/* Trip time. */}
+      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
+      {dash('tripTime')}
+      {full('tripTime')}
+
+      {/* Where delays start. */}
+      <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
+      {full('delays')}
+
+      {/* Extra wait. */}
+      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY(EXTRA_WAIT_LABEL)} />
+      {full('wait')}
+
+      {/* Where bunching forms. */}
+      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY(BUNCHING_FORMS_TITLE)} />
+      {full('bunching')}
+
+      {/* Service delivered. */}
+      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
+      {full('delivered')}
+
+      {/* How this is measured: each page kept its own, as it had it (the Dashboard's names its left-out days above, #1490). */}
+      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
       <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={excludingText(routeLeftOut(v3))} id="method-dashboard" /></ErrorBoundary>
       <div data-full-analysis>
-        <FullAnalysisSections v3={v3} dir={dir} uncertain={uncertain} gaps={gaps} agency={agency} route={route} />
         <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} id="method-analysis" /></ErrorBoundary>
       </div>
     </article>,

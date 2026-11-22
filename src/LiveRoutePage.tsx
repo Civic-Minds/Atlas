@@ -130,18 +130,22 @@ export const BOUNDARY = liveDrawError;
  * CIV-284 (Ryan: "1 but don't delete or edit any of the content in each page yet"): Full analysis's sections, exactly as
  * they were, now drawn in the Full report (LiveExplorePage) below the Dashboard's. Always the whole day.
  */
-export function FullAnalysisSections({ v3, dir, uncertain, gaps, agency, route }: { v3: LiveV3; dir: number | null; uncertain: UncertainStart[]; gaps: ReturnType<typeof useLiveGaps>; agency: string; route: string }) {
+/** Full analysis's parts, so the Full report can set each beside the same kind of figure (CIV-284). */
+export type FullAnalysisPart = 'week' | 'lateHours' | 'tripTime' | 'delays' | 'lateStops' | 'wait' | 'bunching' | 'delivered';
+
+export function FullAnalysisSections({ v3, dir, uncertain, gaps, agency, route, part }: { v3: LiveV3; dir: number | null; uncertain: UncertainStart[]; gaps: ReturnType<typeof useLiveGaps>; agency: string; route: string; /** One part only; all of them, in order, without it. */ part?: FullAnalysisPart }) {
   const band: DashboardBand = 'all';
   const bandData = v3.bands?.[band] as DashboardBandData;
+  const on = (p: FullAnalysisPart) => part == null || part === p;
   return (<>
-        <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><WeekCompare v3={v3} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(LATE_STOPS_TITLE)}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title={LATE_STOPS_TITLE} id="b2" intro notRanked /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(EXTRA_WAIT_LABEL)}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(BUNCHING_FORMS_TITLE)}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(SERVICE_DELIVERED_TITLE)}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
+        {on('week') && <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><WeekCompare v3={v3} /></ErrorBoundary>}
+        {on('lateHours') && <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>}
+        {on('tripTime') && <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>}
+        {on('delays') && <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>}
+        {on('lateStops') && <ErrorBoundary label={BOUNDARY(LATE_STOPS_TITLE)}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title={LATE_STOPS_TITLE} id="b2" intro notRanked /></ErrorBoundary>}
+        {on('wait') && <ErrorBoundary label={BOUNDARY(EXTRA_WAIT_LABEL)}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>}
+        {on('bunching') && <ErrorBoundary label={BOUNDARY(BUNCHING_FORMS_TITLE)}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>}
+        {on('delivered') && <ErrorBoundary label={BOUNDARY(SERVICE_DELIVERED_TITLE)}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>}
   </>);
 }
 
