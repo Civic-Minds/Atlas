@@ -38,9 +38,10 @@ export const MCP_DOCS = {
     version: (v: string) => `Server version ${v}.`,
   },
   connect: {
-    heading: 'Connect it to Claude',
+    heading: 'Connect it',
     code: 'Claude Code, for every project:',
     desktop: 'Claude Desktop: add this to claude_desktop_config.json, then quit and reopen Claude Desktop:',
+    antigravity: 'Gemini, in Antigravity’s CLI (agy):',
     hosted: 'Testers use the hosted server through a private link made for each of them. They add it in Claude as a custom connector.',
   },
   testers: {
