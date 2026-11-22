@@ -113,12 +113,13 @@ function Intro({ data }: { data: AgencyPageData }) {
  * CIV-1605 (Ryan, pick 1): with the hours bar, a "from" equal to the bar's first time or an "until" equal to its last
  * leaves the cell, since the bar's end says it; a time that differs (one direction's later start) keeps its words.
  */
-function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number }, runs: AgencyPageRoute['runs']): { from?: number; until?: number; every: number } {
+function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number; then?: number }, runs: AgencyPageRoute['runs']): { from?: number; until?: number; every: number; then?: number } {
   if (!runs) return edge;
   return {
     every: edge.every,
     ...(edge.from != null && edge.from !== runs.first ? { from: edge.from } : {}),
     ...(edge.until != null && edge.until !== runs.last ? { until: edge.until } : {}),
+    ...(edge.then != null ? { then: edge.then } : {}),
   };
 }
 

@@ -61,12 +61,12 @@ export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<
   return rows;
 }
 
-type Edge = { from?: number; until?: number; every: number; stretch?: 'main' | number };
+type Edge = { from?: number; until?: number; every: number; then?: number; stretch?: 'main' | number };
 type EdgeMap = Partial<Record<string, Edge>>;
 type StretchMeta = { main?: { edge?: EdgeMap } | null; tails?: Array<{ edge?: EdgeMap }> };
 const clock = (m: number) => { const t = Math.round(m) % 1440; return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
 /** The card's period edge as words ("every 4 from 7:28"), so a change in its time or spacing is one line. */
-export const edgeText = (e: Edge) => `every ${e.every} ${e.from != null ? `from ${clock(e.from)}` : `until ${clock(e.until ?? 0)}`}${e.stretch != null ? ` (${e.stretch === 'main' ? 'main' : `branch ${e.stretch}`})` : ''}`;
+export const edgeText = (e: Edge) => `every ${e.every} ${e.from != null ? `from ${clock(e.from)}` : `until ${clock(e.until ?? 0)}`}${e.then != null ? `, then every ${e.then}` : ''}${e.stretch != null ? ` (${e.stretch === 'main' ? 'main' : `branch ${e.stretch}`})` : ''}`;
 function edgeTexts(edges: EdgeMap | undefined): Texts {
   return Object.fromEntries(Object.entries(edges ?? {}).filter(([, e]) => e).map(([k, e]) => [k, edgeText(e!)]));
 }

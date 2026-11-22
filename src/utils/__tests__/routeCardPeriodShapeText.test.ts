@@ -11,6 +11,9 @@ describe('routeCardPeriodShapeText (#934, D6)', () => {
   it('an early end reads until the last departure', () => {
     expect(routeCardPeriodShapeText(row({ pmPeak: { until: 1060, every: 10 } }), 'pmPeak')).toBe('every 10 min until 5:40 PM');
   });
+  it('a period that slows down names the slower part after the time (CIV-1913)', () => {
+    expect(routeCardPeriodShapeText(row({ evening: { until: 1245, every: 15, then: 30 } }), 'evening')).toBe('every 15 min until 8:45 PM, then every 30 min');
+  });
   it('an edge read on a named stretch goes only on a row that covers it (#1276)', () => {
     const edge = { pmPeak: { until: 1075, every: 30, stretch: 3 as const } };
     expect(routeCardPeriodShapeText({ ...row(edge), stretchCovers: ['main', 1, 3] } as ShapeProperties, 'pmPeak')).toBe('every 30 min until 5:55 PM');

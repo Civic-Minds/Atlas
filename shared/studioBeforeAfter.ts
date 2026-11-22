@@ -26,7 +26,7 @@ export interface StudioRouteDay {
 }
 
 /** A late start (`from`) or early end (`until`) in minutes after midnight, and the frequency where the period runs. */
-export interface StudioPeriodEdge { from?: number; until?: number; every: number }
+export interface StudioPeriodEdge { from?: number; until?: number; every: number; then?: number }
 
 /**
  * How big a route's change is, which decides where the page puts it:

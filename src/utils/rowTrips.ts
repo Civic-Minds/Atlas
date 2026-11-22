@@ -194,12 +194,12 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
  * PERIOD_COVERAGE_MAX_HEADWAY reads its spacing, any other its full-window wait, as stretchFilterValue), with its from / until words
  * when it starts or stops inside the period (rowPeriodEdge). Null when the row's own trips do not pass rule D.
  */
-export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number } | null {
+export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number } | null {
   if (period === 'all' || period === 'overnight' || d.noOwnServiceByPeriod?.includes(period) || !rowOwnTripsEven(d, period)) return null;
   const hw = d.headwayByPeriod?.[period] as number, cov = d.periodCoverageHeadway?.[period];
   const consistent = d.headwayByPeriodSustained?.[period] === true && typeof cov === 'number' && cov <= PERIOD_COVERAGE_MAX_HEADWAY;
   const v = consistent || typeof cov !== 'number' ? hw : cov;
   const edge = d.rowPeriodEdge?.[period];
-  if (edge && (edge.from != null || edge.until != null)) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}) };
+  if (edge && (edge.from != null || edge.until != null)) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), ...(edge.then != null ? { then: edge.then } : {}) };
   return { t: 'reading', v };
 }

@@ -186,7 +186,7 @@ export function rowReadsPeriodEdge(p: ShapeProperties, period: TimePeriod): bool
 }
 
 /** `partOfRoute`: the time was read on a short tail, not the whole route (#1510); the words say so. */
-export type PeriodEdge = { from?: number; until?: number; every: number; partOfRoute?: boolean };
+export type PeriodEdge = { from?: number; until?: number; every: number; then?: number; partOfRoute?: boolean };
 
 /** "every 30 min until 5:55 PM" / "every 9 min from 7:17 AM" for one edge. */
 export function periodEdgeText(edge: PeriodEdge): string {
@@ -194,6 +194,7 @@ export function periodEdgeText(edge: PeriodEdge): string {
     from: edge.from != null ? clockTime(edge.from) : undefined,
     until: edge.until != null ? clockTime(edge.until) : undefined,
     every: edge.every,
+    then: edge.then,
   });
   return edge.partOfRoute ? `${text} ${ON_PART_OF_ROUTE}` : text;
 }
@@ -442,7 +443,7 @@ export function routeListFilterDisplay(features: readonly ShapeProperties[], per
   if (low != null && headwayRangeShown(low, headway)) display.sharedHeadway = low;
   const edge = headway != null ? routeValueEdge(features, period, headway) : undefined;
   if (edge) {
-    display.edge = { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every, ...(edge.partOfRoute ? { partOfRoute: true } : {}) };
+    display.edge = { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every, ...(edge.then != null ? { then: edge.then } : {}), ...(edge.partOfRoute ? { partOfRoute: true } : {}) };
     display.edgeText = periodEdgeText(edge);
   }
   return display;
@@ -517,7 +518,7 @@ function routeValueEdge(features: readonly ShapeProperties[], period: TimePeriod
     if (!edge || (edge.from == null && edge.until == null) || edge.every >= value) continue;
     // #1510: an edge read on a tail (a numbered stretch) is a time for part of the route only, and says so.
     const partOfRoute = typeof edge.stretch === 'number';
-    edges.set(JSON.stringify([edge.from ?? null, edge.until ?? null, edge.every, partOfRoute]), { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every, ...(partOfRoute ? { partOfRoute: true } : {}) });
+    edges.set(JSON.stringify([edge.from ?? null, edge.until ?? null, edge.every, edge.then ?? null, partOfRoute]), { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every, ...(edge.then != null ? { then: edge.then } : {}), ...(partOfRoute ? { partOfRoute: true } : {}) });
   }
   return edges.size === 1 ? [...edges.values()][0] : undefined;
 }

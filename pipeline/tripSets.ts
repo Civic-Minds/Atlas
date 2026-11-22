@@ -1381,6 +1381,8 @@ export interface StretchPeriodEdge {
   from?: number;
   until?: number;
   every: number;
+  /** CIV-1913: the longest wait after `until` when the period slows down rather than ends ("every 15 until 8:57 PM, then every 30"). */
+  then?: number;
   /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
   stretch?: 'main' | number;
 }
@@ -1397,7 +1399,9 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
   if (value == null) return null;
   const t = departuresInWindow(stretchTimes, start, end, false);
   if (t.length < HEADLINE_MIN_DEPARTURES) return null;
-  return lateStartOrEarlyEnd(t, start, end, value) ?? (slowStartFromEnabled() ? slowStartEdge(t, start, end, value) : null);
+  return lateStartOrEarlyEnd(t, start, end, value)
+    ?? (slowStartFromEnabled() ? slowStartEdge(t, start, end, value) : null)
+    ?? (slowEndUntilEnabled() ? slowEndEdge(t, start, end, value) : null);
 }
 
 function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, value: number): StretchPeriodEdge | null {
@@ -1469,6 +1473,55 @@ export function slowStartEdge(t: readonly number[], start: number, end: number, 
     // Ryan (2026-11-13): the card names the longest wait from T on, rounded up like the period's own
     // value, not the typical gap, so it never reads better than the service runs.
     return Math.ceil(Math.max(...before)) === value ? { from: t[k], every: Math.ceil(longest) } : null;
+  }
+  return null;
+}
+
+/** CIV-1913: on by default; ATLAS_SLOW_END_UNTIL=0 turns it off for comparisons. Card wording only. */
+export function slowEndUntilEnabled(): boolean {
+  return !(typeof process !== 'undefined' && process.env?.ATLAS_SLOW_END_UNTIL === '0');
+}
+
+/**
+ * CIV-1913 (Ryan: "We already have wording for this"): slowStartEdge's mirror, for a period that runs
+ * steadily and then slows down. Kingston 701 weekday evening runs every 15 to about 9 PM, then every
+ * 30: the period reads its longest wait (30), and the card says "every 15 until <T>, then every 30"
+ * with the settled CIV-1241 "until" words. The same tests as slowStartEdge, with no new numbers:
+ * - the period's value is set after T: by a gap after T or, where the value counts it, the wait from
+ *   the last departure to the period's end;
+ * - from the period's start to T, SLOW_START_MIN_DEPARTURES departures or more, and no gap (the wait
+ *   from the period's start to the first departure included) over SLOW_START_STEADY_RATIO times their
+ *   own typical gap: steady service from the start;
+ * - the steady run's longest wait is under the value, so the card names two different numbers;
+ * - the service after T is slow: its middle wait (on the same list that sets the value) is over
+ *   SLOW_START_STEADY_RATIO times that typical gap. A single hole in steady service keeps the one-gap
+ *   reading. slowStartEdge's UNEVEN_GAP_RATIO test is left out: it would drop every 15 then every 30,
+ *   the pattern this reading is for (Kingston 701), and the middle-wait test already rules out noise.
+ * T is the latest departure that passes, so the card names the last time the faster service holds.
+ * Both numbers are longest waits rounded up, as slowStartEdge's (Ryan, 2026-11-13), so neither part
+ * reads better than it runs; `then` is the period's value. No midpoint test: both parts are named.
+ */
+export function slowEndEdge(t: readonly number[], start: number, end: number, value: number): StretchPeriodEdge | null {
+  for (let k = t.length - 2; k >= SLOW_START_MIN_DEPARTURES - 1; k--) {
+    const head = t.slice(0, k + 1);
+    const every = medianHeadwayInWindow([...head], start, head[head.length - 1], HEADLINE_MIN_DEPARTURES, true);
+    if (every == null || every <= 0) continue;
+    const gaps = head.slice(1).map((x, i) => x - head[i]);
+    const longest = Math.max(head[0] - start, ...gaps);
+    if (longest > SLOW_START_STEADY_RATIO * every) continue;
+    if (Math.ceil(longest) >= value) continue;
+    // The value is set after T: by the wait to the period's end where the value counts it, else by a gap
+    // between departures there (CapMetro 300 southbound: 30 with a 38-minute wait to 11 PM). The middle
+    // wait reads the same list.
+    const inner = t.slice(k + 1).map((x, i) => x - t[k + i]);
+    const withEnd = [...inner, end - t[t.length - 1]];
+    const after = Math.ceil(Math.max(...withEnd)) === value ? withEnd : Math.ceil(Math.max(...inner)) === value ? inner : null;
+    if (after == null) continue;
+    const sorted = [...after].sort((a, b) => a - b);
+    // A later T whose steady run already takes in the slower service reads that service's own spacing as
+    // typical (CapMetro 300: every 15 to 7:54 PM, then every 30): look earlier.
+    if (sorted[Math.floor(sorted.length / 2)] <= SLOW_START_STEADY_RATIO * every) continue;
+    return { until: t[k], every: Math.ceil(longest), then: value };
   }
   return null;
 }
