@@ -15,9 +15,9 @@ on:
         options: [smoke, full]
         default: smoke
       rule:
-        description: 'Frequency rule. map-filter = the map''s own frequency filter (the story''s numbers); map-filter-trunk = the same filter read on each route''s frequent shared middle, counting only those stops (CIV-1579); study = the September 2026 rule (reproduces the published figures); no-sustained = the same without Atlas''s sustained flag.'
+        description: 'Frequency rule. map-filter = the map''s own frequency filter (the story''s numbers); map-filter-trunk = the same filter read on each route''s frequent shared middle, counting only those stops (CIV-1579); study = the September 2026 rule (reproduces the published figures); no-sustained = the same without Atlas''s sustained flag; window-frequent / window-grading = map-filter-trunk judged on 07:00-19:00 / 07:00-22:00 weekdays (CIV-2013).'
         type: choice
-        options: [map-filter, map-filter-trunk, study, no-sustained]
+        options: [map-filter, map-filter-trunk, study, no-sustained, window-frequent, window-grading]
         default: map-filter
       provinces:
         description: 'Optional, full mode: comma-separated provinces to run instead of all (e.g. "Ontario,Quebec").'

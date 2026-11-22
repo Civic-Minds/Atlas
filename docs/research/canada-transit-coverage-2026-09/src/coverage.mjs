@@ -106,8 +106,15 @@ export function metros(collection) {
  *   value. A route that passes on its own D1 value counts every stop the map draws, as map-filter does. A route that
  *   passes only on its trunk counts only its trunk stops (trunkStopMask = 1), so a slower branch's stops are never
  *   counted at the trunk's frequency. Branch stops are left out, never counted at a branch's own value.
+ * - "window-frequent" and "window-grading" (CIV-2013): map-filter-trunk judged on one weekday window instead of the AM
+ *   peak, midday and PM peak, so a route need not run from 6 AM. The pipeline reads each window exactly as a period
+ *   (routeChartWindowHeadway, routeChartWindowTrunkHeadway and routeChartWindowEdgeWaitFail; CIV-238's first- and
+ *   last-wait rule applies inside the window): "window-frequent" is rule 9's 07:00-19:00 window, "window-grading" the
+ *   weekday grading window, 07:00-22:00. A release without those fields qualifies no route under them.
  */
-export const RULES = ['study', 'no-sustained', 'map-filter', 'map-filter-trunk'];
+/** CIV-2013: each window rule's key in the pipeline's chart-window fields (pipeline/tripSets.ts CHART_WINDOWS). */
+export const WINDOW_RULES = { 'window-frequent': 'frequentServiceWindow', 'window-grading': 'gradingWindow' };
+export const RULES = ['study', 'no-sustained', 'map-filter', 'map-filter-trunk', ...Object.keys(WINDOW_RULES)];
 export function coverageRule() {
   const rule = process.env.COVERAGE_RULE || 'study';
   if (!RULES.includes(rule)) throw new Error(`COVERAGE_RULE must be one of ${RULES.join(', ')}`);
@@ -147,7 +154,7 @@ export function hasServiceTimes(properties) {
 }
 
 export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRule()) {
-  if (rule.startsWith('map-filter')) throw new Error('map-filter decides whole routes: use qualifyingRoutes()');
+  if (rule.startsWith('map-filter') || rule in WINDOW_RULES) throw new Error('map-filter decides whole routes: use qualifyingRoutes()');
   if (properties.day !== 'Weekday') return false;
   const headways = properties.headwayByPeriod; const sustained = properties.headwayByPeriodSustained;
   if (!headways || (rule === 'study' && !sustained)) return false;
@@ -165,12 +172,13 @@ export function qualifyingRoutes(features, maxHeadwayMinutes = 15, rule = covera
 }
 
 /** The map-filter rule's verdict on grouped weekday rows: the qualifying routes' drawn rows. */
-function mapFilterRoutes(weekday, maxHeadwayMinutes, readValue) {
+function mapFilterRoutes(weekday, maxHeadwayMinutes, readValue, window) {
   const code = requireMapCode();
   // Copies: the map's normalization stamps route-wide values onto the rows it is given.
   const rows = weekday.map(feature => {
     const properties = { ...feature.properties };
-    if (readValue && readValue(properties) != null) properties.routeFilterHeadwayByPeriod = readValue(properties);
+    if (window) Object.assign(properties, windowReading(properties, window, readValue != null));
+    else if (readValue && readValue(properties) != null) properties.routeFilterHeadwayByPeriod = readValue(properties);
     return { ...feature, properties };
   });
   code.normalizeRouteFilterFeatures(rows);
@@ -189,6 +197,22 @@ function mapFilterRoutes(weekday, maxHeadwayMinutes, readValue) {
 }
 
 /**
+ * CIV-2013: a row's chart-window reading put in every period the map filter reads, so the map's own filter code judges the
+ * window: the filter value (the trunk value when `trunk`), and the window's CIV-238 mask. A row without the window
+ * fields has no value, so it never passes.
+ */
+function windowReading(properties, window, trunk) {
+  const value = (trunk ? properties.routeChartWindowTrunkHeadway : properties.routeChartWindowHeadway)?.[window] ?? null;
+  const mask = properties.routeChartWindowEdgeWaitFail?.[window] ?? 0;
+  const each = v => Object.fromEntries(PERIODS.map(period => [period, v]));
+  return {
+    routeFilterHeadwayByPeriod: each(value),
+    routeTrunkHeadwayByPeriod: each(value),
+    routeEdgeWaitFailByPeriod: mask ? each(mask) : undefined,
+  };
+}
+
+/**
  * The qualifying weekday rows, and for map-filter-trunk the stops each may count. stopsFor(row) is the row's
  * stopOrder, or only its trunk stops for a route that qualifies on its trunk alone; diagnostics count what was read.
  */
@@ -200,12 +224,14 @@ export function qualifyingRows(features, maxHeadwayMinutes = 15, rule = coverage
     const rows = [...mapFilterRoutes(weekday, maxHeadwayMinutes).values()].flat();
     return { rows, stopsFor: allStops, diagnostics: null };
   }
-  if (rule === 'map-filter-trunk') {
-    const diagnostics = { weekdayRows: weekday.length, rowsWithTrunkValue: 0, trunkOnlyRoutes: 0, trunkOnlyRows: 0, rowsSkippedNoMask: 0, rowsSkippedMaskMismatch: 0 };
+  if (rule === 'map-filter-trunk' || rule in WINDOW_RULES) {
+    const window = WINDOW_RULES[rule];
+    const diagnostics = { weekdayRows: weekday.length, rowsWithTrunkValue: 0, trunkOnlyRoutes: 0, trunkOnlyRows: 0, rowsSkippedNoMask: 0, rowsSkippedMaskMismatch: 0, ...(window ? { rowsWithWindowValue: 0 } : {}) };
     for (const row of weekday) if (row.properties.routeTrunkHeadwayByPeriod != null) diagnostics.rowsWithTrunkValue++;
-    const whole = mapFilterRoutes(weekday, maxHeadwayMinutes);
+    if (window) for (const row of weekday) if (row.properties.routeChartWindowHeadway?.[window] != null) diagnostics.rowsWithWindowValue++;
+    const whole = mapFilterRoutes(weekday, maxHeadwayMinutes, undefined, window);
     // A row without the trunk field (an older release) keeps its own D1 value.
-    const trunk = mapFilterRoutes(weekday, maxHeadwayMinutes, p => p.routeTrunkHeadwayByPeriod);
+    const trunk = mapFilterRoutes(weekday, maxHeadwayMinutes, p => p.routeTrunkHeadwayByPeriod, window);
     const trunkStops = new Map();
     const rows = [...whole.values()].flat();
     for (const [key, route] of trunk) {

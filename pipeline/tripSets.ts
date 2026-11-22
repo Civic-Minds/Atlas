@@ -51,7 +51,7 @@ import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadi
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
-import { DAYTIME_PERIOD_KEYS, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
+import { DAYTIME_PERIOD_KEYS, FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -681,6 +681,20 @@ export interface StretchPeriod {
 
 const PERIOD_WINDOWS = PERIOD_KEYS.map(key => ({ key, ...PERIOD_MINUTES[key] }));
 
+/**
+ * CIV-2013: the weekday windows the frequent-service chart may judge on, read exactly as a period is (the same value,
+ * D1, CIV-238 edges): rule 9's Frequent Service window (07:00-19:00) and the weekday grading window (07:00-22:00).
+ * Additive: nothing on screen reads them; the coverage study's window rules do (docs/research/canada-transit-coverage-2026-09).
+ */
+export const CHART_WINDOWS = [
+  { key: 'frequentServiceWindow', start: FREQUENT_SERVICE_WINDOW_START_MIN, end: FREQUENT_SERVICE_WINDOW_END_MIN },
+  { key: 'gradingWindow', start: DEFAULT_CRITERIA.dayTypes.Weekday!.timeWindow.start, end: DEFAULT_CRITERIA.dayTypes.Weekday!.timeWindow.end },
+] as const;
+export type ChartWindowKey = typeof CHART_WINDOWS[number]['key'];
+/** A key the stretch readers read: every period, then the chart windows. Published period fields still read PERIOD_WINDOWS. */
+type ReadKey = PeriodKey | ChartWindowKey;
+const READ_WINDOWS: readonly { key: ReadKey; start: number; end: number }[] = [...PERIOD_WINDOWS, ...CHART_WINDOWS];
+
 /** D8: sustained AND the first departure in [start, end] is before the midpoint AND the last after it. */
 export function sustainedWithMidpoint(times: readonly number[], sustained: boolean | undefined, start: number, end: number): boolean | null {
   if (sustained == null) return null;
@@ -1017,13 +1031,13 @@ export function tailNotThrough(s: Stretch): { notThrough: PeriodKey[] } {
   return { notThrough: PERIOD_WINDOWS.filter(({ key, start, end }) => !runsThroughPeriod(s.times, start, end, own[key].sustained)).map(w => w.key) };
 }
 
-export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
+export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
   const times = [...s.times];
-  const headways = computePeriodHeadways(times);
-  const coverage = computePeriodCoverageHeadways(times);
-  const sustained = computePeriodSustained(times);
-  const out = {} as Record<PeriodKey, StretchPeriod>;
-  for (const { key, start, end } of PERIOD_WINDOWS) {
+  const headways = computePeriodHeadways(times, true, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
+  const coverage = computePeriodCoverageHeadways(times, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
+  const sustained = computePeriodSustained(times, READ_WINDOWS) as Partial<Record<ReadKey, boolean>>;
+  const out = {} as Record<ReadKey, StretchPeriod>;
+  for (const { key, start, end } of READ_WINDOWS) {
     const runs = coverage[key] != null;
     const steady = sustained[key] === true;
     const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
@@ -1047,7 +1061,7 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
     const windowGaps = inWindow.slice(1).map((t, i) => t - inWindow[i]);
     const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headways[key] ?? 0));
     // B4: a byTrips tail speaks only in the periods where it is regular (rule D).
-    const regularHere = !s.byTrips || (s.activeIn?.includes(key) ?? false);
+    const regularHere = !s.byTrips || (s.activeIn?.includes(key as PeriodKey) ?? false);
     const countsSettled = runs && regularHere && (s.kind === 'main' || (steady && sustainedWithMidpoint(ordered, sustained[key], start, end) === true));
     out[key] = {
       // A tail speaks for the direction only where it runs steadily through the period.
@@ -1312,7 +1326,7 @@ export function nightOnlyTrips(trips: readonly DirectionTrip[]): DirectionTrip[]
 }
 
 export interface DirectionRollup {
-  period: Record<PeriodKey, {
+  period: Record<ReadKey, {
     value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
     /** The main stretch's best reading for the range's low end: its typical gap when uneven (#1142), else mainValue. */
     mainLow: number | null;
@@ -1605,7 +1619,7 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
   // at the handover pass the settled steadiness test against each other. A branch that just stops
   // (no sibling, short turns only, overlapping or slower siblings) keeps its wait. The all-day
   // value and Frequent Service are untouched.
-  const handsOver = (i: number, key: PeriodKey, start: number, end: number): boolean => {
+  const handsOver = (i: number, key: ReadKey, start: number, end: number): boolean => {
     const t = tails[i][key];
     const m = main[key];
     if (!d.tailHandoverTimes || d.disconnected || !t.counts || t.coverage == null || t.coverage <= PERIOD_COVERAGE_MAX_HEADWAY) return false;
@@ -1625,9 +1639,9 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
   // A tail that hands over is read at its own steady spacing, not left out: the slower branch
   // still decides (D1), so the main stretch's cadence never stands in for a slower branch.
   const turnTaking = (p: StretchPeriod): StretchPeriod => ({ ...p, coverage: p.headway });
-  const handover = Object.fromEntries(PERIOD_WINDOWS.map(({ key, start, end }) => [key, d.tails.map((_, i) => handsOver(i, key, start, end))])) as Record<PeriodKey, boolean[]>;
+  const handover = Object.fromEntries(READ_WINDOWS.map(({ key, start, end }) => [key, d.tails.map((_, i) => handsOver(i, key, start, end))])) as Record<ReadKey, boolean[]>;
   const period = {} as DirectionRollup['period'];
-  for (const { key } of PERIOD_WINDOWS) {
+  for (const { key } of READ_WINDOWS) {
     const counting = [main[key], ...(trunkOnly ? [] : tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key])))].filter(p => p.counts && p.value != null);
     period[key] = {
       value: counting.length > 0 ? Math.max(...counting.map(p => p.value!)) : null,
@@ -1650,8 +1664,8 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
   }
   // CIV-1579: a trunk shorter than a branch may be (5 stops, 1 km) has no trunk value.
   const trunkReadable = trunkLongEnough(d.main);
-  // Step 5a: the filter value and whether the direction runs, per period.
-  for (const { key, start, end } of PERIOD_WINDOWS) {
+  // Step 5a: the filter value and whether the direction runs, per period (and per CIV-2013 chart window).
+  for (const { key, start, end } of READ_WINDOWS) {
     const runs = runsThroughPeriod(d.main.times, start, end, main[key].sustained);
     const filterOf = stretchFilterValue;
     // #961: a sparse overnight window (#897: three departures around a hole of hours) has no
@@ -1783,7 +1797,7 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
 }
 
 export interface RouteRollup {
-  period: Record<PeriodKey, {
+  period: Record<ReadKey, {
     value: number | null; coverage: number | null; range: [number, number] | null;
     /** Step 5a filter value: every direction's filterValue, the worst; null when any has none. */
     filterValue: number | null;
@@ -1827,7 +1841,9 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
   const period = {} as RouteRollup['period'];
   const known = dirs.filter((d): d is DirectionRollup => d != null);
   const complete = dirs.length > 0 && known.length === dirs.length;
-  for (const { key } of PERIOD_WINDOWS) {
+  for (const { key } of READ_WINDOWS) {
+    // A direction read without the chart windows (a hand-built rollup) leaves the route without them.
+    if (known.some(d => d.period[key] == null)) continue;
     const values = known.map(d => d.period[key].value);
     const value = complete && values.every(v => v != null) ? Math.max(...(values as number[])) : null;
     const mains = known.map(d => d.period[key].mainLow).filter((v): v is number => v != null);
@@ -1916,6 +1932,9 @@ export const STRETCH_SHADOW_KEYS = [
   'rowPeriodEdge',
   'rowPeriodGap',
   'headwayByPeriodSustainedMid',
+  'routeChartWindowHeadway',
+  'routeChartWindowTrunkHeadway',
+  'routeChartWindowEdgeWaitFail',
 ] as const;
 
 type ShadowFeature = { properties: Record<string, unknown> };
@@ -2041,6 +2060,18 @@ export function stampStretchShadow(
       const ewf: Partial<Record<PeriodKey, number>> = {};
       for (const { key } of PERIOD_WINDOWS) if (route.period[key].edgeWaitFail) ewf[key] = route.period[key].edgeWaitFail;
       if (Object.keys(ewf).length) p.routeEdgeWaitFailByPeriod = ewf; else delete p.routeEdgeWaitFailByPeriod;
+    }
+    // CIV-2013: the route's filter value, trunk value and CIV-238 edge mask over each chart window, weekdays only, for
+    // the coverage study's window rules. JSON only (tiles never carry it); nothing on screen reads it.
+    if (slot.day === 'Weekday' && CHART_WINDOWS.every(({ key }) => route.period[key] != null)) {
+      const pick = <T>(f: (k: ChartWindowKey) => T) => Object.fromEntries(CHART_WINDOWS.map(({ key }) => [key, f(key)])) as Record<ChartWindowKey, T>;
+      p.routeChartWindowHeadway = pick(k => route.period[k].filterValue);
+      p.routeChartWindowTrunkHeadway = pick(k => route.period[k].trunkFilterValue ?? route.period[k].filterValue);
+      p.routeChartWindowEdgeWaitFail = pick(k => route.period[k].edgeWaitFail);
+    } else {
+      delete p.routeChartWindowHeadway;
+      delete p.routeChartWindowTrunkHeadway;
+      delete p.routeChartWindowEdgeWaitFail;
     }
     p.routeTrunkHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].trunkFilterValue ?? route.period[k].filterValue);
     // CIV-1579: which of the row's stops are on its direction's main stretch (1, else empty), run-length encoded

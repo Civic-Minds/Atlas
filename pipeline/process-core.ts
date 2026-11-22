@@ -4234,6 +4234,9 @@ export async function processGtfsBuffer(
       delete feature.properties.routeMiddayCap;
       delete feature.properties.routeTrunkHeadwayByPeriod;
       delete feature.properties.trunkStopMask;
+      delete feature.properties.routeChartWindowHeadway;
+      delete feature.properties.routeChartWindowTrunkHeadway;
+      delete feature.properties.routeChartWindowEdgeWaitFail;
     }
     // D8: a period the route only covers part of (the feature's own first departure after the period's
     // midpoint, or its last before it) is not steady, so the card stops reading an "every N" there.
