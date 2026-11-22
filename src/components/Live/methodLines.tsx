@@ -3,7 +3,7 @@
  * way everywhere. Their words live in shared/liveGlossary (the Docs Glossary's one home); only the page-only clauses
  * and the Ahead line are written here.
  */
-import { AGENCY_FIGURES_TEXT, COLOURED_CHANGES_TERM, EXTRA_WAIT_TEXT, POSITIONS_TERM, POSITIONS_TEXT, RECORDING_GAPS_TERM, STOPS_TERM, STOPS_TEXT, TRIP_MATCH_TERM, bunchingText, deliveredText, tripMatchText, tripTimeText } from '../../../shared/liveGlossary';
+import { AGENCY_FIGURES_TEXT, COLOURED_CHANGES_TERM, PHONE_METHOD_TEXT, EXTRA_WAIT_TEXT, POSITIONS_TERM, POSITIONS_TEXT, RECORDING_GAPS_TERM, STOPS_TERM, STOPS_TEXT, TRIP_MATCH_TERM, bunchingText, deliveredText, tripMatchText, tripTimeText } from '../../../shared/liveGlossary';
 import { COLOURED_CHANGES } from '../../../shared/liveDashboard';
 import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELIVERED_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from '../../../shared/liveWording';
 import { Term } from './MethodFootnote';
@@ -33,3 +33,19 @@ export const recordingGapsLine = <Term t={RECORDING_GAPS_TERM}>{RECORDING_GAPS}<
 /** The agency page's own lines. */
 export const networkFiguresLine = <Term t={AGENCY_FIGURES_TERM}>{AGENCY_FIGURES_TEXT}</Term>;
 export const stopsLine = <Term t={STOPS_TERM}>{STOPS_TEXT}</Term>;
+
+/**
+ * Phones (Ryan, 2026-11-22, #1151 option 1): "How this is measured" is one short line per figure, "**Late**: …". `aheadMin`
+ * adds the route page's Ahead line; `underMin` is the route's bunching gap.
+ */
+export function phoneMethodLines({ aheadMin, underMin }: { aheadMin?: number; underMin?: number } = {}) {
+  const t = PHONE_METHOD_TEXT;
+  return [
+    <Term t={LATE_LABEL} colon>{t.late}</Term>,
+    aheadMin != null && <Term t="Ahead" colon>{t.ahead(aheadMin)}</Term>,
+    <Term t={TRIP_TIME_LABEL} colon>{t.tripTime}</Term>,
+    <Term t={EXTRA_WAIT_LABEL} colon>{t.extraWait}</Term>,
+    <Term t={BUNCHING_LABEL} colon>{t.bunching(underMin)}</Term>,
+    <Term t={DELIVERED_LABEL} colon>{t.delivered}</Term>,
+  ];
+}

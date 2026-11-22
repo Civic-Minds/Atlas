@@ -5,7 +5,7 @@
  * passes it through the function, so the clause lands before the full stop.
  */
 import { COLOURED_CHANGES } from './liveDashboard.js';
-import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, DELIVERED_LABEL, EARLY_STEP_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from './liveWording.js';
+import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, DELIVERED_LABEL, EARLY_STEP_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, LATE_LIMIT_TEXT, RECORDING_GAPS, TRIP_TIME_LABEL } from './liveWording.js';
 
 /** `legend`: a chart key rather than a definition, shown as "**Term**: …" (E22) and not on the agency page. */
 export interface LiveTerm { term: string; text: string; legend?: boolean }
@@ -28,6 +28,21 @@ export const POSITIONS_TEXT = 'are recorded once a minute for each vehicle. The 
 export const tripMatchText = (clause = '') => sentence('links each vehicle to its scheduled trip by trip number', clause);
 export const AGENCY_FIGURES_TEXT = 'combine every trip on every covered route. A route with more trips has more effect on the total.';
 export const STOPS_TEXT = 'are listed once they have 30 or more departures, with up to 3 per route direction.';
+
+/**
+ * "How this is measured" on phones (Ryan, 2026-11-22, #1151 / CIV-1912, option 1): one short line per figure, "**Late**: …",
+ * then the link to the Docs glossary. Wider screens keep the full lines above.
+ */
+export const PHONE_METHOD_TEXT = {
+  late: `${LATE_LIMIT_TEXT} behind schedule.`,
+  ahead: (aheadMin: number) => `${aheadMin} min or more early.`,
+  tripTime: 'the usual time from end to end.',
+  extraWait: 'how much longer riders wait than scheduled.',
+  bunching: (underMin = 2) => `a gap under ${underMin} min, or more than twice the scheduled gap.`,
+  delivered: 'the share of scheduled trips that ran.',
+} as const;
+/** The link under the method block to the Docs glossary. */
+export const METHOD_TERMS_LINK = 'What these terms mean';
 
 export const LIVE_GLOSSARY: readonly LiveTerm[] = [
   { term: LATE_LABEL, text: LATE_DEFINITION },
