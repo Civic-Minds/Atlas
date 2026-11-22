@@ -72,7 +72,7 @@ export default function FalloffStory() {
   const key = <DotPairKey first={MORNING_LABEL} second={SUNDAY_LABEL} series={series} />;
   // The number columns are narrow: their headers name the day only, and the key above names the full time.
   const dots = (label: string, details: string, pairs: DotPair[]) => (
-    <DotPairs label={label} details={details} firstHeader={MORNING.day} secondHeader={SUNDAY_EVENING.day} series={series} groups={[{ key: label, pairs }]} />
+    <DotPairs label={label} details={details} firstHeader={MORNING.day} secondHeader={SUNDAY_EVENING.day} series={series} valueText={share => pct(share * 100)} groups={[{ key: label, pairs }]} />
   );
 
   const method = (

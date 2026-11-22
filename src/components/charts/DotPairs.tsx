@@ -80,7 +80,7 @@ export function DotPairKey({ first, second, series }: { first: string; second: s
  * (useActivePart): hovering, focusing or tapping a row fades the others and highlights its name. Names, counts and axis use
  * the chart collection's text (CHART_TEXT, CHART_COUNT, and the dim axis text); the numbers sit in two columns at the right, first then second.
  */
-export default function DotPairs({ groups, label, details, firstHeader, secondHeader, nameAbove = false, series }: {
+export default function DotPairs({ groups, label, details, firstHeader, secondHeader, nameAbove = false, series, valueText = percentText }: {
   groups: readonly DotPairGroup[];
   /** The chart's accessible name. */
   label: string;
@@ -93,6 +93,8 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
   nameAbove?: boolean;
   /** The highlighted series, shared with the key (DotPairKey); hovering or tapping a column header highlights it too. */
   series?: DotPairSeries;
+  /** How each number column writes a share (0–1); whole percents unless the page's text gives tenths (#1074). */
+  valueText?: (share: number) => string;
 }) {
   const ROW_GRID = nameAbove ? ROW_GRID_ABOVE : ROW_GRID_BESIDE;
   const NAME_CELL = nameAbove ? NAME_CELL_ABOVE : NAME_CELL_BESIDE;
@@ -145,8 +147,8 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
                     <span className={`${DOT} border-2 border-[var(--text-muted)] bg-[var(--bg-panel)] ${SERIES_PART}`} style={{ ...seriesFade(series, 'second'), left: `${pair.second * 100}%` }} />
                     <span className={`${DOT} bg-[var(--text-primary)] ${SERIES_PART}`} style={{ ...seriesFade(series, 'first'), left: `${pair.first * 100}%` }} />
                   </span>
-                  <span className={`text-right ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'first')}>{percentText(pair.first)}</span>
-                  <span className={`text-right ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'second')}>{percentText(pair.second)}</span>
+                  <span className={`text-right ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'first')}>{valueText(pair.first)}</span>
+                  <span className={`text-right ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'second')}>{valueText(pair.second)}</span>
                 </button>
               );
             })}
