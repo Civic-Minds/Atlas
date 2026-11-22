@@ -292,6 +292,16 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — Studio Live's route panel wording, items 3–8 (CIV-2021)
+Ryan (2026-11-22, relayed by Atlas Manager New), shown the items still proposed with options 1 approve as proposed, 2 change: "1".
+- 3. A route with no live reading: "No live reading for this route right now."
+- 4. A held route's line: "Its delays are hidden because <reason>." or, when even gaps aren't trusted, "No figures: <reason>."
+- 5. A stop pair's sample: "Based on 120 trips over 5 days".
+- 6. A gap under a minute in seconds: "54 sec apart".
+- 7. About, Live part, bunching: "Bunching is the share of gaps between vehicles at a stop that were under <bunched limit> (vehicles running together) or more than twice the scheduled gap (a long wait)."
+- 8. The route's week table label: "Recorded past service, not live."
+- Why: Ryan, on the earlier panel: "I'm confused what I am looking at here if live information is unavailable". Items 1, 2 and 3's second line were dropped when the panel took main Live's Right now card.
+
 ### 2026-11-22 — The first and last trips' waits keep counting on the map, cards and filter (CIV-2013)
 Ryan (2026-11-22, relayed by Atlas Manager New), asked whether the filter should ignore the wait before a route's first trip of the day, or after its last: "You tell me but really think about this". Decided with Strategy: no. CIV-238 (2026-11-19) stands for the map, the route cards and the filter.
 - Why: ignoring the first-trip wait would lift routes whose one direction has no service for the first hour of AM peak. BART Red toward Richmond (first train about 7:00), CTA 11 toward Howard and TTC 32 toward Renforth would read every 20, 18 and 8 for all of 6–9 AM, although that direction runs nothing from 6 to 7. The card already says "every N from 7:00" (CIV-1411, card wording only).
