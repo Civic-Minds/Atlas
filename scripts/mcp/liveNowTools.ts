@@ -15,6 +15,9 @@ import { NOW_RECENT_MIN, NOW_WINDOW_MIN, nowDirections, routeNow, type NowRouteR
 import { LIVE_STALE_SEC } from '../../shared/rules/live';
 import * as data from './atlasData';
 import { nowSec, nowSource } from './liveNowData';
+import { routeKeyForShortName } from '../../src/utils/routeKey';
+import { routeDirectionOverrides } from '../../src/utils/routeCardDirectionGroups';
+import { liveScheduledRows } from '../../src/utils/liveScheduledHeadway';
 import type { Args } from './toolHelpers';
 
 const NOW_SOURCE = "Atlas Live's recordings of where each vehicle was, one reading a minute, over the last half hour: gaps are measured from when vehicles passed stops, not guessed from speed.";
@@ -65,6 +68,12 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     if (!routeIsRecorded(a.slug, routeIds)) return { agency: a.name, route: s.longName ? `${s.name} ${s.longName}` : s.name, live: null, note: `Atlas has no current reading for this route: Atlas Live doesn't record it, so it has no figures for right now. Offer the published schedule (route_frequency).` };
     const snapshots = await source.snapshots(a.slug, now - NOW_WINDOW_MIN * 60, now);
     const r = routeNow({ snapshots, routeIds, directions, nowSec: now, cutoffs });
+    // CIV-2055: each direction's Scheduled lines as the Live route card shows them (its shared stretch, each branch and
+    // short turn), from the card's own reading, for the agency's day and period, not this server's clock.
+    const fc = { type: 'FeatureCollection' as const, features: rows.map(properties => ({ type: 'Feature' as const, geometry: null, properties })) as unknown as GeoJSON.Feature[] };
+    const routeKey = routeKeyForShortName(a.slug, fc.features, s.shortName || s.name, day);
+    const overrides = routeDirectionOverrides([a as Parameters<typeof routeDirectionOverrides>[0][number]], a.slug, s.shortName || s.name);
+    const scheduledFor = (directionId: number, label: string) => (routeKey && period ? liveScheduledRows(fc, routeKey, day, period, directionId, overrides, label).map(x => ({ label: x.label, value: x.value })) : []);
 
     // The reading's day and time in the agency's time zone ("Mon, Nov 16, 6:01 PM"), so an answer never reads as today's when it isn't.
     const asOf = r.asOf != null ? `${new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(r.asOf * 1000))}, ${clockTime(localClock(r.asOf, timeZone).minutes)}` : null;
@@ -76,7 +85,7 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
       ...base,
       asOf, dataAgeMin: Math.round((r.ageSec ?? 0) / 6) / 10, timeZone,
       scheduleUsed: period ? `${day}, ${PERIOD_LABELS[period]} (${formatPeriodRange(period)})` : `${day}, overnight: no scheduled gaps, so nothing is called gapped`,
-      directions: r.directions.map(d => ({ direction: d.direction, vehiclesNow: d.vehiclesNow, standingNow: d.standingNow, bunchedNow: d.bunchedNow, gappedNow: d.gappedNow, noneSeen: d.noneSeen, longestWait: d.longestWait, lastHalfHour: d.lastHalfHour })),
+      directions: r.directions.map(d => ({ direction: d.direction, scheduled: scheduledFor(d.directionId, d.direction), vehiclesNow: d.vehiclesNow, standingNow: d.standingNow, bunchedNow: d.bunchedNow, gappedNow: d.gappedNow, noneSeen: d.noneSeen, longestWait: d.longestWait, lastHalfHour: d.lastHalfHour })),
       definitions: {
         bunched: bunchedText(cutoffs.bunchedWithinMin),
         gapped: `${gappedText(cutoffs.gappedFactor)} Each stop's scheduled gap is Atlas's own for this period (branches that share a stop count together).`,
