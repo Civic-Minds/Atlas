@@ -292,6 +292,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — The weekday-to-Sunday story's words, dev server only (#1074, CIV-770)
+Ryan, 2026-11-22 (relayed by Atlas Manager): "1 yes like onlyl ocal right now". He was answering the word list for /research/weekday-to-sunday (_reports/1074/WORDS.md, 31 items).
+- All 31 wordings are approved, with heading 1 changed to "Where does frequent service go on Sunday evening?": "night" becomes "evening", to match the period name.
+- The page stays on the dev server only (FALLOFF_STORY_ENABLED follows RESEARCH_APPS_ENABLED).
+
 ### 2026-11-22 — Studio Live's route panel wording, items 3–8 (CIV-2021)
 Ryan (2026-11-22, relayed by Atlas Manager New), shown the items still proposed with options 1 approve as proposed, 2 change: "1".
 - 3. A route with no live reading: "No live reading for this route right now."

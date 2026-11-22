@@ -117,7 +117,7 @@ export const AIRPORT_STORY_DRAFT: Pick<ResearchStoryText, 'path' | 'cardTitle' |
   ],
 };
 
-const FALLOFF_HEADING = 'Where does frequent service go on Sunday night?';
+const FALLOFF_HEADING = 'Where does frequent service go on Sunday evening?';
 
 /** #1074 (CIV-770): beta only, not listed on /research yet, so it has no card or share picture. Draft words, for Ryan's OK. */
 export const FALLOFF_STORY: Pick<ResearchStoryText, 'path' | 'heading' | 'intro' | 'tabTitle' | 'description'> = {
