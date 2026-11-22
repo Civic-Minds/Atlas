@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { atlasJson, atlasR2Config, calculateReport, json, publicMapAgencies, signS3Get, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes, qualifyingRows } from '../src/coverage.mjs';
+import { atlasJson, atlasR2Config, calculateReport, json, publicMapAgencies, signS3Get, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes, qualifyingRows, WINDOW_RULES } from '../src/coverage.mjs';
 import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
 
 const { routeGroupKey } = await loadMapCode();
@@ -173,6 +173,41 @@ test('map-filter-trunk skips a trunk-only row whose mask is missing or the wrong
   assert.equal(diagnostics.rowsSkippedMaskMismatch, 1);
   assert.equal(diagnostics.rowsSkippedNoMask, 1);
   assert.equal(countedStops(rows, 15, 'map-filter-trunk').length, 3);
+});
+
+// CIV-2013: the window rules judge one weekday window, read by the pipeline exactly as a period (DRT 900's rows: D1 every
+// 24 at every period, so they fail map-filter at 15).
+const windowRows = (value, trunk, mask, masks = [undefined, undefined, undefined]) => realRows.drt.filter(r => r.properties.routeShortName === '900').map((r, i) => ({
+  ...r, properties: { ...r.properties, routeChartWindowHeadway: { frequentServiceWindow: value, gradingWindow: 40 }, routeChartWindowTrunkHeadway: { frequentServiceWindow: trunk, gradingWindow: 40 }, ...(mask ? { routeChartWindowEdgeWaitFail: { frequentServiceWindow: mask } } : {}), trunkStopMask: masks[i] },
+}));
+
+test('the window rules name exactly the pipeline\'s chart windows (CIV-2013)', async () => {
+  const { tsImport } = await import('tsx/esm/api');
+  const { CHART_WINDOWS } = await tsImport(new URL('../../../../pipeline/tripSets.ts', import.meta.url).href, import.meta.url);
+  assert.deepEqual(Object.values(WINDOW_RULES).sort(), CHART_WINDOWS.map(w => w.key).sort());
+});
+
+test('the window rules read the chart window, not the peaks and midday (CIV-2013)', () => {
+  assert.equal(qualifyingRoutes(windowRows(12, 12), 15, 'map-filter').length, 0);
+  assert.equal(countedStops(windowRows(12, 12), 15, 'window-frequent').length, 9);
+  assert.equal(countedStops(windowRows(12, 12), 15, 'window-grading').length, 0);
+  assert.equal(countedStops(windowRows(12, 12), 60, 'window-grading').length, 9);
+  assert.equal(qualifyingRows(windowRows(12, 12), 15, 'window-frequent').diagnostics.rowsWithWindowValue, 3);
+});
+
+test('a window rule fails a grade the window\'s first or last wait breaks (CIV-2013, CIV-238)', async () => {
+  const { tsImport } = await import('tsx/esm/api');
+  const { edgeWaitBit } = await tsImport(new URL('../../../../shared/rules/frequency.ts', import.meta.url).href, import.meta.url);
+  const bit = edgeWaitBit(15);
+  assert.equal(countedStops(windowRows(12, 12, bit), 15, 'window-frequent').length, 0);
+  assert.equal(countedStops(windowRows(12, 12, bit), 20, 'window-frequent').length, 9);
+});
+
+test('a window rule counts only the trunk stops of a route that passes on its trunk alone (CIV-2013)', () => {
+  const rows = windowRows(24, 12, 0, ['1*2,', '1*3', ',1*2']);
+  assert.equal(countedStops(rows, 15, 'window-frequent').length, 7);
+  // Rows without the window fields (an older release) qualify no route.
+  for (const slug of ['ttc', 'windsor']) assert.equal(routesAt(slug, 30, 'window-frequent').size, 0);
 });
 
 test('a dropped connection is retried like an error status, and a 404 is not retried (#1367)', async () => {

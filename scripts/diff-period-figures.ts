@@ -32,7 +32,11 @@ type Figures = Record<string, number | null | undefined>;
 type Flags = Record<string, boolean | null | undefined>;
 type Texts = Record<string, string | null | undefined>;
 /** One drawn row: the route's and the direction's filter value per period (what the map and its filter read), and the row's own steady flag and longest gap (what its card reads). */
-export type Row = { route: string; day: string; direction: string; routeFigure: Figures; directionFigure: Figures; steady?: Flags; longestGap?: Figures; edge?: Texts; stretchEdges?: Texts; headline?: Figures };
+export type Row = {
+  route: string; day: string; direction: string; routeFigure: Figures; directionFigure: Figures; steady?: Flags; longestGap?: Figures; edge?: Texts; stretchEdges?: Texts; headline?: Figures;
+  /** CIV-2013: what the coverage study's rules read, so a dry run counts qualifying routes without a release: the trunk value, CIV-238's edge mask, and the chart-window readings (weekday rows). Not compared. */
+  trunkFigure?: Figures; edgeWaitFail?: Figures; chartWindow?: { value: Figures; trunk: Figures; edgeWaitFail: Figures };
+};
 export type Summary = Record<string, Record<string, Row>>;
 
 export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<string, unknown> | null }>): Record<string, Row> {
@@ -56,6 +60,9 @@ export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<
       stretchEdges: stretchEdgeTexts(p.stretchMeta as StretchMeta | undefined),
       // The row's headline, the "every N min" its route card leads with (CIV-209): the all-day value and each period's.
       headline: { allDay: (p.headway ?? null) as number | null, ...((p.headwayByPeriod ?? {}) as Figures) },
+      ...(p.routeTrunkHeadwayByPeriod ? { trunkFigure: p.routeTrunkHeadwayByPeriod as Figures } : {}),
+      ...(p.routeEdgeWaitFailByPeriod ? { edgeWaitFail: p.routeEdgeWaitFailByPeriod as Figures } : {}),
+      ...(p.routeChartWindowHeadway ? { chartWindow: { value: p.routeChartWindowHeadway as Figures, trunk: (p.routeChartWindowTrunkHeadway ?? {}) as Figures, edgeWaitFail: (p.routeChartWindowEdgeWaitFail ?? {}) as Figures } } : {}),
     };
   }
   return rows;

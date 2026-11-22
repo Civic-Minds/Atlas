@@ -686,15 +686,21 @@ export function periodHeadwayInWindow(departureTimes: number[], key: PeriodKey, 
   return periodMedianHeadway(departureTimes, key, typical);
 }
 
+/** A window the period readers read: a period, or a CIV-2013 chart window read the same way (pipeline/tripSets.ts). */
+export type ReadWindow = { readonly key: string; readonly start: number; readonly end: number };
+const PERIOD_READ_WINDOWS: readonly ReadWindow[] = (Object.keys(PERIODS) as PeriodKey[]).map(key => ({ key, ...PERIODS[key] }));
+
 // The median deliberately stays based on departures inside the period. A separate max-gap value
 // below captures the part of every departure gap that overlaps the period, including boundary-
 // crossing gaps, without letting one large gap change the existing median.
-export function computePeriodHeadways(departureTimes: number[], typical = true): HeadwayByPeriod {
-  const result: HeadwayByPeriod = {};
-  for (const key of Object.keys(PERIODS) as PeriodKey[]) {
-    result[key] = periodHeadwayInWindow(departureTimes, key, typical);
+export function computePeriodHeadways(departureTimes: number[], typical = true, windows: readonly ReadWindow[] = PERIOD_READ_WINDOWS): HeadwayByPeriod {
+  const result: Record<string, number | null> = {};
+  for (const { key, start, end } of windows) {
+    result[key] = key in PERIODS
+      ? periodHeadwayInWindow(departureTimes, key as PeriodKey, typical)
+      : medianHeadwayInWindow(forCrossMidnightWindow([...departureTimes], end), start, end, 3, typical);
   }
-  return result;
+  return result as HeadwayByPeriod;
 }
 
 /** Worst wait across the entire period, including both window edges, rounded up to minutes.
@@ -704,9 +710,9 @@ export function computePeriodHeadways(departureTimes: number[], typical = true):
  * includes overnight, whose 30:00 end is the next morning's 06:00 AM-peak start, so a route's
  * 06:00 first trip no longer reads as overnight service with a 240-min wait (coast-rta TL-147).
  */
-export function computePeriodCoverageHeadways(departureTimes: number[]): HeadwayByPeriod {
-  const result: HeadwayByPeriod = {};
-  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+export function computePeriodCoverageHeadways(departureTimes: number[], windows: readonly ReadWindow[] = PERIOD_READ_WINDOWS): HeadwayByPeriod {
+  const result: Record<string, number | null> = {};
+  for (const { key, start, end } of windows) {
     const times = departuresInWindow(departureTimes, start, end, false);
     if (times.length === 0) {
       result[key] = null;
@@ -716,7 +722,7 @@ export function computePeriodCoverageHeadways(departureTimes: number[]): Headway
     for (let i = 1; i < times.length; i++) worstWait = Math.max(worstWait, times[i] - times[i - 1]);
     result[key] = Math.ceil(worstWait);
   }
-  return result;
+  return result as HeadwayByPeriod;
 }
 
 /**
@@ -958,9 +964,9 @@ export function isUnevenPeriod(departureTimes: readonly number[], start: number,
   return !firstHour;
 }
 
-export function computePeriodSustained(departureTimes: number[]): Partial<Record<PeriodKey, boolean>> {
-  const result: Partial<Record<PeriodKey, boolean>> = {};
-  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+export function computePeriodSustained(departureTimes: number[], windows: readonly ReadWindow[] = PERIOD_READ_WINDOWS): Partial<Record<PeriodKey, boolean>> {
+  const result: Record<string, boolean> = {};
+  for (const { key, start, end } of windows) {
     const dt = forCrossMidnightWindow(departureTimes, end);
     const times = departuresInWindow(departureTimes, start, end, true);
     const value = medianHeadwayInWindow(dt, start, end, 3);
@@ -974,5 +980,5 @@ export function computePeriodSustained(departureTimes: number[]): Partial<Record
       && trailingGap / value <= BOUNDARY_DOMINANT_RATIO;
     result[key] = isSustainedHeadway(gaps, value) && boundarySustained;
   }
-  return result;
+  return result as Partial<Record<PeriodKey, boolean>>;
 }

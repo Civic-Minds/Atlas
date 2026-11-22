@@ -125,6 +125,14 @@ export interface RouteProperties {
   routeTrunkHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
   /** CIV-238: per period, the public grades its first or last wait breaks (bit mask over PUBLIC_TIER_MAXES); absent = none. */
   routeEdgeWaitFailByPeriod?: Partial<Record<PeriodKey, number>>;
+  /**
+   * CIV-2013 (JSON only, weekday rows): the route's filter value, trunk value and CIV-238 edge mask over each chart window
+   * (pipeline/tripSets.ts CHART_WINDOWS: rule 9's 07:00-19:00 and the weekday grading window), read exactly as a period.
+   * Only the coverage study's window rules read them.
+   */
+  routeChartWindowHeadway?: Record<string, number | null>;
+  routeChartWindowTrunkHeadway?: Record<string, number | null>;
+  routeChartWindowEdgeWaitFail?: Record<string, number>;
   /** CIV-1579 shadow: aligned to this row's stopOrder (never fullStopOrder), "1" where the stop is on the direction's main stretch, empty where off it (shared/stopRuns decodeStopRuns). */
   trunkStopMask?: string;
   /** The direction's value is one gap between departures, not a cadence (pipeline isOneGapPeriod). Display only. */
