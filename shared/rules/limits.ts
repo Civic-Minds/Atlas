@@ -43,8 +43,8 @@ export const MAP_ZOOM_DEFAULT_MAX_HEADWAY = 10;
 export const NEARBY_ROUTES_RADIUS_M = 500;
 /** A feed whose schedule ends within this many days counts as expiring: the expiring-feeds check peeks at it, and the MCP warns beside its figures (CIV-2081). */
 export const FEED_EXPIRING_DAYS = 7;
-/** The most agencies one rank_agencies answer lists: each reads a file, and the hosted MCP's plan allows 50 reads a call. */
-export const RANK_AGENCIES_MAX = 30;
+/** The most agencies one rank_agencies answer lists: each reads a file, and the hosted MCP's plan allows 50 reads a call, shared with the parent agencies' route-name files (30 went over on the live pilot, 2026-11-22; 20 fits). */
+export const RANK_AGENCIES_MAX = 20;
 /** How often the MCP servers re-read a published release's pointer (the data release, the on-demand zones). */
 export const MCP_POINTER_RECHECK_MS = 60_000;
 
