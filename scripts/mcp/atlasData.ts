@@ -36,6 +36,7 @@ import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/ru
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
+import { mayRedistribute, redistributionExclusion } from '../../shared/rules/redistribution';
 import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
@@ -59,7 +60,8 @@ export type { RouteSummary };
  */
 async function catalogWithParents(): Promise<CatalogAgency[]> {
   const meta = await store.meta();
-  return (await store.catalog()).map(a => {
+  // #1693: an agency whose terms bar serving its data to other tools is never answered for (shared/rules/redistribution.ts).
+  return (await store.catalog()).filter(a => mayRedistribute(a.slug)).map(a => {
     if (a.parentAgency) return a;
     const name = meta.get(a.slug)?.parentAgency;
     const parent = name ? PARENT_AGENCIES.find(p => p.name === name || p.slug === name) : undefined;
@@ -107,6 +109,27 @@ export function operatorNamed(query: string, list: CatalogAgency[]): { name: str
   return op && members.length ? { name: op.name, members } : null;
 }
 
+/**
+ * #1693: asked about an agency Atlas may not serve to other tools, say so instead of "no agency matches". Exact names
+ * first (before other agencies are matched); then, when nothing else matched, names that start with the words asked.
+ */
+export async function excludedAgencyNote(query: string, exact = false): Promise<string | null> {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+  const meta = await store.meta();
+  for (const a of await store.catalog()) {
+    const x = redistributionExclusion(a.slug);
+    if (!x) continue;
+    const names = [a.slug, a.name, meta.get(a.slug)?.shortName ?? ''].filter(Boolean);
+    if (exact ? names.some(n => n.toLowerCase() === q) : names.some(n => hasWordsAt(n, q))) return `Atlas can't serve ${a.name} here: ${x.reason} The Atlas map still shows it.`;
+  }
+  return null;
+}
+async function refuseExcluded(q: string, exact: boolean): Promise<void> {
+  const note = await excludedAgencyNote(q, exact);
+  if (note) throw new Error(note);
+}
+
 export async function findAgency(query: string, list?: CatalogAgency[]): Promise<CatalogAgency | null> {
   list ??= await availableAgencies();
   const meta = await store.meta();
@@ -115,6 +138,7 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   if (byShort.length === 1) return byShort[0];
   const exact = list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q);
   if (exact) return exact;
+  await refuseExcluded(q, true);
   const op = operatorNamed(query, list);
   if (op?.members.length === 1) return op.members[0];
   if (op) throw new Error(`${op.name} runs several agencies here: ${op.members.map(a => a.name).join('; ')}. Call again with one of them.`);
@@ -126,6 +150,7 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
     if (hits.length === 1) return hits[0];
     if (hits.length > 1) throw new Error(`"${query}" matches several agencies: ${hits.slice(0, 6).map(a => a.name).join('; ')}${hits.length > 6 ? '; …' : ''}. Call again with the full name.`);
   }
+  await refuseExcluded(q, false);
   return null;
 }
 
@@ -508,7 +533,7 @@ export const RAIL_MODE_LABELS = new Set([...RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE.TR
 let index: IndexedAgency[] | null = null;
 /** The index, or null when it hasn't been built for the current data (scripts/mcp/buildIndex.ts). */
 export async function agencyIndex(): Promise<IndexedAgency[] | null> {
-  return (index ??= await store.index());
+  return (index ??= (await store.index())?.filter(a => mayRedistribute(a.slug)) ?? null);
 }
 
 const FERRY = modeLabel(ROUTE_TYPE.FERRY);
@@ -525,7 +550,7 @@ export const labelsOf = (routes: NonNullable<IndexedAgency['days'][DayType]>): R
 
 /** The agencies ranking reads, or null when the index hasn't been built. A hosted store gives them ready-made, without any agency's routes. */
 export async function rankAgencies(): Promise<RankAgency[] | null> {
-  if (store.rankAgencies) return store.rankAgencies();
+  if (store.rankAgencies) return (await store.rankAgencies())?.filter(a => mayRedistribute(a.slug)) ?? null;
   return (await agencyIndex())?.map(rankAgencyOf) ?? null;
 }
 /** Each agency's route waits on a day. */

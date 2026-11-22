@@ -5,7 +5,7 @@ import type { AtlasStore } from '../../shared/mcpStore';
 // #1676 and #1675: agency names find the agency meant, and a parent agency groups its feeds in every tool.
 const catalog = [
   { slug: 'owen-sound', name: 'Owen Sound Transit' }, { slug: 'soundtransit', name: 'Sound Transit (Seattle)' },
-  { slug: 'translink', name: 'TransLink (Vancouver)' }, { slug: 'ctran', name: 'C-TRAN (Vancouver, WA)' },
+  { slug: 'translink', name: 'TransLink (Vancouver)' }, { slug: 'c-tran-test', name: 'C-TRAN (Vancouver, WA)' },
   { slug: 'nyct-subway', name: 'MTA NYCT Subway' }, { slug: 'nyct-bus-bronx', name: 'MTA NYCT Bus (Bronx)' },
   { slug: 'go', name: 'GO Transit' }, { slug: 'upexpress', name: 'UP Express (Toronto)' },
   { slug: 'cta', name: 'Chicago Transit Authority (CTA)' }, { slug: 'durango', name: 'Durango Transit' },

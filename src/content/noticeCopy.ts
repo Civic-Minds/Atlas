@@ -1126,6 +1126,8 @@ export const COVERAGE_STUDIO_TAGS = { schedule: 'Schedule', vehicles: 'Vehicles'
 /** What an MCP cell lists: Live, once the MCP answers Live questions (CIV-1993: nothing before then). Schedule answers are universal, so they aren't listed. */
 export const COVERAGE_MCP_TAGS = {
   live: 'Live',
+  // CIV-2121, Ryan: an agency the MCP leaves out for its data terms; the hover gives the reason (shared/rules/redistribution.ts).
+  removed: 'Removed',
 } as const;
 
 export const COVERAGE_TEXT = {

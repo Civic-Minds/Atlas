@@ -58,6 +58,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, added: earliest(g.members.map(m => isoDate(m.lastRefreshedAt))), end: earliest(g.members.map(m => validThrough(m))), parts: g.parent ? g.members : null }));
     // include_parts (#1625): a parent agency's feeds too, each with its own schedule end, as rank_agencies lists them.
     const parts = include_parts === true ? Object.fromEntries(hits.slice(0, 40).filter(h => h.parts).map(h => [h.name, h.parts!.map(m => `${m.name} | ${isoDate(m.lastRefreshedAt) ?? ''} | ${validThrough(m) ?? ''}`)])) : null;
+    if (!hits.length && q) {
+      const excluded = await data.excludedAgencyNote(q);
+      if (excluded) return { matches: 0, note: excluded };
+    }
     if (!hits.length && q && !reg && !ctry) {
       // A service brand is not an agency name (Viva is part of York Region Transit): look for it in route names.
       const inRoutes = await data.agenciesWithRouteName(q);
