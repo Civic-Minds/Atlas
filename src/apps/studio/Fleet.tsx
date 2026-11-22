@@ -10,9 +10,9 @@ import PanelEmpty from '../../components/ui/PanelEmpty';
 import ViewLoadingPanel, { CardLoadingLine } from '../../components/ViewLoadingPanel';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { CardBodyText, CardSectionLabel, SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
-import RouteListRow, { RouteListColumns, RouteListHeader } from '../../components/RouteListRow';
+import { RouteListColumns, RouteListHeader } from '../../components/RouteListRow';
+import CardRouteList from '../../components/Interval/CardRouteList';
 import AgencyGroupHeader from '../../components/ui/AgencyGroupHeader';
-import { LIST_ROW_DIM } from '../../styles';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
 import { useStudioMapFrame } from '../../context/StudioMapFrame';
 import { PERIOD_KEYS, type PeriodKey } from '../../../shared/config';
@@ -45,10 +45,12 @@ const T = STUDIO_MAP_TEXT;
 const C = STUDIO_CHANGES_TEXT;
 
 /** The change list: every changed route by group; a click opens the route. Only the rows scroll. */
-function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFile; period: PeriodKey; route: string | null; onPick: (r: string) => void }) {
+function ChangeList({ file, period, onPick }: { file: StudioBeforeAfterFile; period: PeriodKey; onPick: (r: string) => void }) {
   const groups = useMemo(() => changeGroups(file), [file]);
-  // CIV-2003: the main map's route rows (RouteListRow), headings and panel body; one column per compared date, each value
-  // under its date (CIV-1806); the time of day is the top bar's.
+  // CIV-2057 (Ryan: "Why does the Schedules list look so different than a route list", then chose 1): the agency card's route
+  // rows (CardRouteList), a column per compared date at the right with the change colour's dot by the newer figure, and the
+  // time of day the figures are from at the end of the name line. Each value sits under its date (CIV-1806); the time of day
+  // is the top bar's.
   return (
     <section aria-label={T.routes} className="flex min-h-0 flex-1 flex-col">
       <RouteListHeader label={T.routes} columns={[dateRange(file.before.date, file.before.date), dateRange(file.after.date, file.after.date)]} />
@@ -56,18 +58,18 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
         {groups.map((g, i) => (
           <div key={g.key}>
             <AgencyGroupHeader rule={i === 0 ? 'none' : 'above'}>{g.title}</AgencyGroupHeader>
-            {g.routes.map(c => {
-              const l = routeTitle(c);
+            <CardRouteList onSelect={onPick} rows={g.routes.map(c => {
               const f = rowFigure(c, period);
               // One short figure per cell, a late start or early end on its own line (CIV-1922). No bold on the newer
               // figure (Ryan, CIV-1806: "Does bold mean better frequency?").
-              const cells = (['before', 'after'] as const).map(side => (PERIOD_KEYS as readonly string[]).includes(f.key) ? periodCell(c[side], f.key as PeriodKey) : { main: f[side], note: null });
-              return (
-                <RouteListRow key={c.route} shortName={l.primary} name={l.secondary ?? undefined} dotColor={CHANGE_COLOR[routeChangeAt(file, c.route, period)]}
-                  subtitle={f.label ? <span className={`block ${LIST_ROW_DIM}`}>{f.label}</span> : undefined}
-                  right={<RouteListColumns cells={cells} />} selected={c.route === route} onClick={() => onPick(c.route)} />
-              );
-            })}
+              const [before, after] = (['before', 'after'] as const).map(side => (PERIOD_KEYS as readonly string[]).includes(f.key) ? periodCell(c[side], f.key as PeriodKey) : { main: f[side], note: null });
+              return {
+                key: c.route,
+                route: routeTitle(c),
+                nameNote: f.label ?? undefined,
+                value: <RouteListColumns cells={[before, { ...after, dot: CHANGE_COLOR[routeChangeAt(file, c.route, period)] }]} />,
+              };
+            })} />
           </div>
         ))}
         {file.unchanged.length > 0 && <CardBodyText className="px-4">{C.unchangedCount(file.unchanged.length)}</CardBodyText>}
@@ -232,7 +234,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
             <CardBodyText>{intro}</CardBodyText>
             {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
           </div>
-          <ChangeList file={file} period={period} route={route} onPick={setRoute} />
+          <ChangeList file={file} period={period} onPick={setRoute} />
         </StudioPanel>
       )}
       {view === 'schedules' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}

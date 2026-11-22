@@ -8,14 +8,13 @@ export function buildFocusCase(match: unknown, focused: unknown, faded: unknown)
   return ['case', match, focused, faded];
 }
 
-/** Shared map paint for a focused route: keep network context visible while spotlighting one line. */
-export function buildFocusedRoutePaint(routeMatch: unknown, dimOpacity = FOCUS_DIM_OPACITY, dimWidth = 1.25): {
+/** Shared map opacity for a focused route: keep network context visible while spotlighting one line. Its width is
+ *  routeStyle.ts's (every map line width lives there, CIV-2057). */
+export function buildFocusedRoutePaint(routeMatch: unknown, dimOpacity = FOCUS_DIM_OPACITY): {
   opacity: unknown[];
-  width: unknown[];
 } {
   return {
     opacity: buildFocusCase(routeMatch, 1.0, dimOpacity),
-    width: buildFocusCase(routeMatch, 3.5, dimWidth),
   };
 }
 

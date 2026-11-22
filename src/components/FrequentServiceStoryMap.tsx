@@ -11,6 +11,7 @@ import { headwayOrBetter } from '../utils/headwayText';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { isLimitedService, type IrregularRouteProperties } from '../../shared/irregularRoutes';
 import { STORY_DAYTIME_PERIODS } from '../../shared/frequentDayCounts';
+import { STORY_HIGHLIGHT_WIDTH_PX, STORY_NETWORK_WIDTH_PX } from './Interval/map/routeStyle';
 
 interface Props {
   agencies: Agency[];
@@ -203,7 +204,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
       const fade = storyFade(prefersReducedMotion());
       for (const { id, minKeep } of STORY_LAYERS) {
         const base = id === 'routes';
-        map.addLayer({ id, type: 'line', source: 'story', filter: ['>=', ['get', 'keep'], minKeep], layout: line, paint: { 'line-color': cssColor(base ? '--text-dim' : '--accent'), 'line-width': base ? 1.1 : 2.1, 'line-opacity': base ? storyLayerOpacity(0).routes : 0, 'line-opacity-transition': fade } });
+        map.addLayer({ id, type: 'line', source: 'story', filter: ['>=', ['get', 'keep'], minKeep], layout: line, paint: { 'line-color': cssColor(base ? '--text-dim' : '--accent'), 'line-width': base ? STORY_NETWORK_WIDTH_PX : STORY_HIGHLIGHT_WIDTH_PX, 'line-opacity': base ? storyLayerOpacity(0).routes : 0, 'line-opacity-transition': fade } });
       }
       // A theme switch while the style was loading was skipped: draw the theme the page has now.
       paint();

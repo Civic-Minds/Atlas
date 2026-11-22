@@ -3,7 +3,7 @@ import { nightServiceTierColorExpression, type ColorVisionMode } from '../../../
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
-import { ROUTE_LINE_WIDTH_BY_ZOOM, SELECTED_ROUTE_WIDTH_BY_ZOOM, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
+import { ROUTE_LINE_WIDTH_BY_ZOOM, SELECTED_ROUTE_WIDTH_BY_ZOOM, ROUTE_HIT_WIDTH_PX, OVERVIEW_ROUTE_WIDTH_BY_ZOOM, ON_DEMAND_OUTLINE_WIDTH_PX, DEBUG_HIGHLIGHT_WIDTH_BY_ZOOM, QUALIFYING_SEGMENT_WIDTH_BY_ZOOM, SHARED_HOVER_WIDTH_BY_ZOOM, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 import { stopDotPaint } from './stopStyle';
 import { MAP_HALO, ON_DEMAND_AREA_COLOR, ROUTE_LINE_PLACEHOLDER } from '../../../../shared/rules/colours';
@@ -86,7 +86,7 @@ function addOnDemandLayers(map: maplibregl.Map) {
     source: 'on-demand-service-areas',
     paint: {
       'line-color': ON_DEMAND_AREA_COLOR,
-      'line-width': onDemandByZoom(0.75, 2) as any,
+      'line-width': onDemandByZoom(ON_DEMAND_OUTLINE_WIDTH_PX.regional, ON_DEMAND_OUTLINE_WIDTH_PX.street) as any,
       'line-opacity': onDemandByZoom(
         onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2),
         onDemandOpacity(0.95, 0.4, FOCUS_DIM_OPACITY),
@@ -158,7 +158,7 @@ function addRouteLayers(map: maplibregl.Map) {
     maxzoom: 8,
     paint: {
       'line-color': ROUTE_LINE_PLACEHOLDER,
-      'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, 7, 1.8],
+      'line-width': OVERVIEW_ROUTE_WIDTH_BY_ZOOM as any,
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.65, 7, 0.8],
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -169,7 +169,7 @@ function addRouteLayers(map: maplibregl.Map) {
     source: 'atlas-overview-pmtiles',
     'source-layer': 'routes',
     maxzoom: 8,
-    paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+    paint: { 'line-color': '#000000', 'line-width': ROUTE_HIT_WIDTH_PX, 'line-opacity': 0 },
   });
 
   // Add detailed route shapes (line) layers
@@ -199,7 +199,7 @@ function addRouteLayers(map: maplibregl.Map) {
     minzoom: 8,
     paint: {
       'line-color': '#000000',
-      'line-width': 18,
+      'line-width': ROUTE_HIT_WIDTH_PX,
       'line-opacity': 0
     }
   });
@@ -228,7 +228,7 @@ function addLocalRouteLayers(map: maplibregl.Map) {
     id: 'local-routes-hit-layer',
     type: 'line',
     source: 'local-routes',
-    paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+    paint: { 'line-color': '#000000', 'line-width': ROUTE_HIT_WIDTH_PX, 'line-opacity': 0 },
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'visible' },
   });
 }
@@ -281,7 +281,7 @@ function addNightServiceLayers(map: maplibregl.Map, colorMode: ColorVisionMode) 
     id: 'night-service-routes-hit-layer',
     type: 'line',
     source: 'night-service-routes',
-    paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+    paint: { 'line-color': '#000000', 'line-width': ROUTE_HIT_WIDTH_PX, 'line-opacity': 0 },
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
   });
 }
@@ -308,7 +308,7 @@ function addFrequentServiceLayers(map: maplibregl.Map) {
     id: 'frequent-service-routes-hit-layer',
     type: 'line',
     source: 'frequent-service-routes',
-    paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 },
+    paint: { 'line-color': '#000000', 'line-width': ROUTE_HIT_WIDTH_PX, 'line-opacity': 0 },
     layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
   });
 }
@@ -369,7 +369,7 @@ function addDebugHighlightLayer(map: maplibregl.Map, highlightRoutes: string[]) 
     'source-layer': 'routes',
     paint: {
       'line-color': buildHighlightPaint(highlightRoutes),
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3, 11, 4.5, 14, 6, 17, 8],
+      'line-width': DEBUG_HIGHLIGHT_WIDTH_BY_ZOOM as any,
       'line-opacity': 0.95,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -403,7 +403,7 @@ function addFrequencySegmentLayers(map: maplibregl.Map) {
     source: 'frequency-qualifying-segments',
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2.0, 11, 2.6, 14, 3.2, 17, 4.5],
+      'line-width': QUALIFYING_SEGMENT_WIDTH_BY_ZOOM as any,
       'line-opacity': 1.0
     },
     layout: {
@@ -417,7 +417,7 @@ function addFrequencySegmentLayers(map: maplibregl.Map) {
     source: 'frequency-qualifying-segments',
     paint: {
       'line-color': '#000000',
-      'line-width': 18,
+      'line-width': ROUTE_HIT_WIDTH_PX,
       'line-opacity': 0,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -438,7 +438,7 @@ function addSharedHoverLayer(map: maplibregl.Map) {
     source: 'shared-hover-segments',
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2.8, 11, 3.5, 14, 4.2, 17, 5.5],
+      'line-width': SHARED_HOVER_WIDTH_BY_ZOOM as any,
       'line-opacity': 1,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },

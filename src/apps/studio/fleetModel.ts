@@ -64,7 +64,7 @@ export function studioMapLines(file: StudioBeforeAfterFile, period: PeriodKey, p
     const label = routeTitle({ route, name: file.changes.find(c => c.route === route)?.name ?? null }).text;
     const removed = !after[route];
     if (route === picked && !removed && before[route]) {
-      before[route].forEach((coordinates, i) => out.push({ id: `${route}:before:${i}`, route, label, coordinates, color: CHANGE_COLOR.same, dashed: true, width: 4 }));
+      before[route].forEach((coordinates, i) => out.push({ id: `${route}:before:${i}`, route, label, coordinates, color: CHANGE_COLOR.same, dashed: true }));
     }
     (removed ? before[route] : after[route]).forEach((coordinates, i) => out.push({ id: `${route}:${removed ? 'before' : 'after'}:${i}`, route, label, coordinates, color, dashed: removed }));
   }

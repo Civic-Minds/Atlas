@@ -20,8 +20,6 @@ export interface MapLine {
   coordinates: [number, number][];
   /** Any CSS colour; a `var(--…)` token is read from the page. */
   color: string;
-  /** Line width at zoom 15, px (default 6); it narrows with the zoom as Live's segments do. */
-  width?: number;
   /** Drawn dashed (a removed route, a before shape). */
   dashed?: boolean;
   /** 0 to 1 (default 1). */

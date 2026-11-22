@@ -7,12 +7,16 @@ import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { keepLastWord } from '../../utils/keepLastWord';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
+import { LIST_ROW_DIM } from '../../styles';
 
 interface Props {
   label: string;
   /** In a route list: the route's number and name, drawn as the list rule says ("**504** King", CIV-928) in place of `label`.
    *  Direction rows ("to Broadview") leave it out. */
   routeName?: { shortName: string; name?: string | null };
+  /** A short note at the end of the route's name line, in the dim row style (Studio's Schedules: the time of day its
+   *  figures are from, CIV-2057). */
+  routeNameNote?: string;
   /** The label's weight: bold by default; 'regular' for a destination row on the route and stop cards (CIV-918:
    *  bold only for what you scan for, the route number and the frequency). */
   labelWeight?: 'bold' | 'regular';
@@ -85,7 +89,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
 
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
+export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -138,7 +142,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
         >
-          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : singleLine ? label : keepLastWord(label)}
+          {routeName ? <><RouteRowName shortName={routeName.shortName} name={routeName.name} />{routeNameNote && <span className={`${LIST_ROW_DIM} ml-1.5`}>{routeNameNote}</span>}</> : singleLine ? label : keepLastWord(label)}
         </span>
         {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
           {limited && <LimitedBadge label={limitedLabel} />}

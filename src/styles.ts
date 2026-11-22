@@ -140,7 +140,11 @@ export const AGENCY_LIST_FILTERS = 'shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)]
 /** A row of filter pills that scrolls sideways instead of wrapping. */
 export const PILL_SCROLL_ROW = 'flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden';
 
-export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black text-[var(--text-dim)]';
+/** A section heading's type and height, for a heading that takes its sides from the rows under it. */
+export const PANEL_SECTION_HEAD_TEXT = 'py-2 text-xs font-black text-[var(--text-dim)]';
+export const PANEL_SECTION_HEAD = `px-4 ${PANEL_SECTION_HEAD_TEXT}`;
+/** The agency card's route rows' side padding (CardRouteList), so a heading over them lines up with their figures (CIV-2057). */
+export const CARD_ROUTE_ROW_INSET = 'px-3';
 
 /** Scrollable body inside a floating panel */
 export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';

@@ -7,6 +7,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches
+- **Studio's Schedules list looks like the map's route lists**: it had its own taller rows with the time of day on a second line; it now uses the agency card's rows, with both dates' figures at the right
+- **Studio's Schedules map lines are as thin as the regular map's**: every route was drawn about twice as thick, so the picked route didn't stand out
 - **Live's route card shows the same schedule as the map's route card**: it gave its own range across all stops (TTC 510 "every 5–10 min"), hiding branches and short turns; it now lists the shared stretch and each branch
 - **Studio's "No Live data" note lists the other cities like every other list**: it used big boxed buttons and mixed short and full agency names; a Live city without figures yet now gets the same note
 - **Live shows Kingston and Boston, and Studio's Live lists the same cities as the main app's**: the two lists had drifted apart, so a city could be in one Live but not the other

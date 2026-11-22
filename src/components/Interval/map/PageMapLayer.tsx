@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { FloatingMapCard, MapHoverTip, type MapCardAt } from '../../Live/MapCard';
 import { stopDotPaint } from './stopStyle';
-import { SELECTED_ROUTE_WIDTH_PX } from './routeStyle';
+import { SELECTED_ROUTE_GLOW_WIDTH_PX, SELECTED_ROUTE_HALO_WIDTH_PX, SELECTED_ROUTE_WIDTH_PX, focusedRouteLineWidth } from './routeStyle';
 import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from '../../Live/routeMapModel';
 import { frameRoute, routeFramePadding } from './routeFraming';
 import { FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
@@ -33,7 +33,7 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
 const pickedStopRing = (light: boolean) => (light ? '#111827' : '#ffffff');
 
 const SOURCES = ['lines', 'segments', 'stops', 'heat'] as const;
-const LAYERS = ['line-halo', 'line', 'line-dash', 'line-sel', 'seg-halo', 'seg', 'seg-sel', 'heat', 'heat-dot', 'stp', 'stp-sel'] as const;
+const LAYERS = ['line', 'line-dash', 'line-sel', 'seg-halo', 'seg', 'seg-sel', 'heat', 'heat-dot', 'stp', 'stp-sel'] as const;
 
 interface Props extends PageMapOverlay {
   /** The map to draw on, once its style has loaded; null until then. */
@@ -87,7 +87,7 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
       type: 'FeatureCollection',
       features: (ln ?? []).map(l => ({
         type: 'Feature' as const,
-        properties: { id: l.id, label: l.label ?? '', route: l.route ?? '', color: lineColor(l.color), w: l.width ?? 6, op: (l.opacity ?? 1) * (latestHl.current && l.route !== latestHl.current ? FOCUS_DIM_OPACITY : 1), dashed: l.dashed ? 1 : 0, sel: sel?.kind === 'line' && sel.id === l.id ? 1 : 0 },
+        properties: { id: l.id, label: l.label ?? '', route: l.route ?? '', color: lineColor(l.color), hl: latestHl.current && l.route === latestHl.current ? 1 : 0, op: (l.opacity ?? 1) * (latestHl.current && l.route !== latestHl.current ? FOCUS_DIM_OPACITY : 1), dashed: l.dashed ? 1 : 0, sel: sel?.kind === 'line' && sel.id === l.id ? 1 : 0 },
         geometry: { type: 'LineString' as const, coordinates: l.coordinates },
       })),
     });
@@ -139,18 +139,19 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
     const empty = { type: 'geojson' as const, data: { type: 'FeatureCollection' as const, features: [] } };
     // Static route lines (a `lines` layer), under everything else.
     map.addSource(id('lines'), empty);
-    const lineWidth = (k: number) => ['interpolate', ['linear'], ['zoom'], 10, ['*', ['get', 'w'], 0.4 * k], 15, ['*', ['get', 'w'], k]] as unknown as maplibregl.ExpressionSpecification;
-    map.addLayer({ id: id('line-halo'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 0], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-width': lineWidth(1.5), 'line-opacity': ['get', 'op'] } });
-    map.addLayer({ id: id('line'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 0], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth(1), 'line-opacity': ['get', 'op'] } });
-    map.addLayer({ id: id('line-dash'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 1], layout: { 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth(1), 'line-opacity': ['get', 'op'], 'line-dasharray': [1.5, 1.5] } });
-    map.addLayer({ id: id('line-sel'), type: 'line', source: id('lines'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth(2.2), 'line-opacity': 0.35 } });
+    // CIV-2057 (Ryan: "Why do the lines still look so thick here"): the main map's widths, its route lines' for the network and
+    // its selected route's for the picked one (focusedRouteLineWidth), with no halo, as the main map draws them.
+    const lineWidth = focusedRouteLineWidth(['==', ['get', 'hl'], 1]) as unknown as maplibregl.ExpressionSpecification;
+    map.addLayer({ id: id('line'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 0], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth, 'line-opacity': ['get', 'op'] } });
+    map.addLayer({ id: id('line-dash'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 1], layout: { 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth, 'line-opacity': ['get', 'op'], 'line-dasharray': [1.5, 1.5] } });
+    map.addLayer({ id: id('line-sel'), type: 'line', source: id('lines'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': SELECTED_ROUTE_GLOW_WIDTH_PX, 'line-opacity': 0.35 } });
     map.addSource(id('segments'), empty);
     map.addSource(id('stops'), empty);
     // #1661: segments are the main map's picked-route width (they were 3 to 8 px, with a 5 to 12 px halo), so
     // Studio Live's lines match regular Live's; the halo adds 1 px each side.
-    map.addLayer({ id: id('seg-halo'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': SELECTED_ROUTE_WIDTH_PX + 2 } });
+    map.addLayer({ id: id('seg-halo'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': SELECTED_ROUTE_HALO_WIDTH_PX } });
     map.addLayer({ id: id('seg'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': SELECTED_ROUTE_WIDTH_PX } });
-    map.addLayer({ id: id('seg-sel'), type: 'line', source: id('segments'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': SELECTED_ROUTE_WIDTH_PX * 2, 'line-opacity': 0.35 } });
+    map.addLayer({ id: id('seg-sel'), type: 'line', source: id('segments'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': SELECTED_ROUTE_GLOW_WIDTH_PX, 'line-opacity': 0.35 } });
     // The heat: one soft dot per stop in its own step colour, bigger the more it adds (never summed with its neighbours,
     // so the colour is always the stop's own figure and matches the key). Hottest drawn on top.
     const [, top] = MAP_STEP_LIMITS.delayStarts;
@@ -211,7 +212,6 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
   useEffect(() => {
     if (!map || !ready) return;
     const halo = light ? MAP_HALO.light : MAP_HALO.dark;
-    map.setPaintProperty(id('line-halo'), 'line-color', halo);
     map.setPaintProperty(id('seg-halo'), 'line-color', halo);
     map.setPaintProperty(id('heat-dot'), 'circle-stroke-color', halo);
     map.setPaintProperty(id('stp-sel'), 'circle-stroke-color', pickedStopRing(light));
