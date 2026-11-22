@@ -1,6 +1,7 @@
 import { HEADER_TAG_INTERNAL } from './siteMode';
-import { INTERNAL_PATH, LIVE_PATH, MCP_DOCS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
+import { ANALYTICS_PATH, INTERNAL_PATH, LIVE_PATH, MCP_DOCS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
 import { MCP_DOCS } from './mcpDocsCopy';
+import { ANALYTICS_COPY } from './analytics';
 import { PAGE_NAMES } from './pageNames';
 
 /**
@@ -33,6 +34,7 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
       { title: 'Studio', description: 'Schedules and buses needed, for one agency at a time.', path: STUDIO_PATH },
       { title: PAGE_NAMES.studioCoverage, description: 'What each agency has: map, History, Live, Studio and the MCP’s figures.', path: STUDIO_COVERAGE_PATH },
       { title: MCP_DOCS.title, description: MCP_DOCS.card, path: MCP_DOCS_PATH },
+      { title: ANALYTICS_COPY.title, description: ANALYTICS_COPY.card, path: ANALYTICS_PATH },
     ],
   },
   {

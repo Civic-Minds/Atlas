@@ -43,6 +43,7 @@ const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 const InternalHomePage = import.meta.env.DEV ? React.lazy(() => import('./InternalHomePage')) : () => null;
 const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./StudioCoveragePage')) : () => null;
 const McpDocsPage = import.meta.env.DEV ? React.lazy(() => import('./McpDocsPage')) : () => null;
+const AnalyticsPage = import.meta.env.DEV ? React.lazy(() => import('./AnalyticsPage')) : () => null;
 // The diagnostics pages are maintainer-only (#1518): the same DEV check as Studio keeps them out of built bundles entirely.
 const DiagnosticsUnevenPage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsUnevenPage')) : () => null;
 const DiagnosticsPerformancePage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsPerformancePage')) : () => null;
@@ -122,6 +123,7 @@ ReactDOM.createRoot(rootElement).render(
           {FEATURES.internal && <Route path={FEATURE_ROUTES.internal} element={<InternalHomePage />} />}
           {/* CIV-1900: the MCP's internal docs page, linked from /internal. */}
           {FEATURES.internal && <Route path={FEATURE_ROUTES.mcpDocs} element={<McpDocsPage />} />}
+          {FEATURES.internal && <Route path={FEATURE_ROUTES.analytics} element={<AnalyticsPage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioCoverage} element={<StudioCoveragePage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioVehicles} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
           {FEATURES.studio && <Route path={`${FEATURE_ROUTES.studioChanges}/*`} element={<StudioChangesRedirect />} />}

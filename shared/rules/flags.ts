@@ -4,7 +4,7 @@
  * The VITE_* reads stay literal import.meta.env reads so Vite can drop off features from each build. Flag docs:
  * docs/FEATURE_FLAGS.md.
  */
-import { INTERNAL_PATH, MCP_DOCS_PATH, RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
+import { ANALYTICS_PATH, INTERNAL_PATH, MCP_DOCS_PATH, RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
@@ -214,6 +214,8 @@ export const FEATURE_ROUTES = {
   internal: INTERNAL_PATH,
   /** CIV-1900: the MCP's internal docs page, local only like /internal. */
   mcpDocs: MCP_DOCS_PATH,
+  /** CIV-2068: site visits from Google Analytics, local only like /internal. */
+  analytics: ANALYTICS_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */
