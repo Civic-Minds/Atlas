@@ -344,6 +344,8 @@ export default defineConfig(({ mode, command, isPreview }) => {
             groups: [
               { name: 'maplibre', test: /node_modules[\\/]maplibre-gl/, priority: 30 },
               { name: 'deck', test: /node_modules[\\/]@deck\.gl/, priority: 30 },
+              // #1697: only map code reads tiles; kept out of vendor so other pages don't load them before first paint.
+              { name: 'pmtiles', test: /node_modules[\\/](pmtiles|fflate)[\\/]/, priority: 30 },
               { name: 'vendor', test: /node_modules/, priority: 20 },
               // Small modules (under 10 kB each) shared by two or more chunks: one file instead of a dozen 1-2 kB ones.
               // Bigger shared modules keep their own chunks, so a page never downloads another page's code.

@@ -158,11 +158,22 @@ export function onDemandRunningState(
  * Earth to reach midnight, so a zone is never dropped before its last day has ended anywhere.
  */
 export function localDateIn(timeZone: string | null | undefined, now: Date = new Date()): string {
-  try {
-    return new Intl.DateTimeFormat('en-CA', { timeZone: timeZone || 'Etc/GMT+12', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
-  } catch {
-    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Etc/GMT+12', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  return dateFormatIn(timeZone || 'Etc/GMT+12').format(now);
+}
+
+/** #1697: one formatter per zone. Building one costs far more than using it, and the map asks once per agency at start. */
+const dateFormats = new Map<string, Intl.DateTimeFormat>();
+function dateFormatIn(timeZone: string): Intl.DateTimeFormat {
+  let format = dateFormats.get(timeZone);
+  if (!format) {
+    try {
+      format = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' });
+    } catch {
+      format = dateFormatIn('Etc/GMT+12');
+    }
+    dateFormats.set(timeZone, format);
   }
+  return format;
 }
 
 /** The service without the named zones, their hours, and any stops tied only to them. */
