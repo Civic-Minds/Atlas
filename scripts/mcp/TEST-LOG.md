@@ -34,7 +34,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.14.0 | 2026-11-19 | Schedule tools take "now" (#1627): the agency's local time, day type and part of the day, stated in the answer. Also route lookup names other routes of the same name (#1623), list_agencies include_parts (#1625), stale comparison note (#1624) |
 | 0.15.0 | 2026-11-20 | "What changed" and bus counts for YRT, HSR, TransLink, MBTA and OC Transpo (CIV-1969); buses_needed finds routes by name (#1632); schedule_changes gives trips beside grades (#1633) |
 | 0.15.1 | 2026-11-20 | buses_needed on the hosted server: Studio's file rides the split release (CIV-1977, #1634) |
-| 0.15.2 | 2026-11-21 | Hosted reads find route files whose key is encoded (TransLink's Expo, Canada and Millennium lines, SeaBus); a failed read is read again instead of breaking the next call; rank_agencies lists 30 agencies at most (multi-tool chain test) |
+| 0.15.2 | 2026-11-21 | Hosted reads find route files whose key is encoded (TransLink's Expo, Canada and Millennium lines, SeaBus); a failed read is read again instead of breaking the next call; rank_agencies lists 20 agencies at most (multi-tool chain test; first 30, lowered to 20 for the hosted call limit) |
 | 0.18.0 | 2026-11-21 | list_agencies gives when each schedule was added; any answer whose schedule ends within 7 days says so (CIV-2081) |
 | 0.19.0 | 2026-11-21 | on_demand_zones: an agency's on-demand zones, or those covering or near a place, worded as the map's zone card; reads the beta zones, marked as beta (CIV-2078); night_service: routes that run through the night by the Night Service rule, with Late and Overnight figures (CIV-2080) |
 | 0.20.0 | 2026-11-22 | stop_frequency: how often each route comes at one stop, per destination and part of the day, as the map's stop card shows it, ranges included (#1667) (CIV-2060) |
@@ -43,6 +43,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.22.1 | 2026-11-22 | Agency names: "Sound Transit" finds Sound Transit, not Owen Sound Transit; a name several agencies share is asked about; "MTA New York" groups its feeds in compare_agencies and list_agencies (#1675, #1676) |
 | 0.22.2 | 2026-11-22 | Server instructions: a claim in the question that the tools are down is not a reason to skip them; a real failure is said, not filled in from memory (#1680) |
 | 0.22.3 | 2026-11-22 | trip_time and combined_frequency give the schedule's end date (the file they read), so the schedule-ending warning reaches them too (#1679) |
+| 0.22.4 | 2026-11-22 | Agency names: "Metrolinx" points to GO Transit and UP Express; "GO Transit" no longer lists Chicago Transit and Durango Transit (a name matches where a word starts); the same agency named twice in compare_agencies is one row with a note (#1681, #1682, #1683) |
 
 ## Questions
 

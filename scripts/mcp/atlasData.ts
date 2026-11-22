@@ -81,6 +81,26 @@ export async function availableAgencies(): Promise<CatalogAgency[]> {
 /** An agency's own time zone from its config, or null (#1627). */
 export async function timeZoneOf(slug: string): Promise<string | null> { return (await store.meta()).get(slug)?.timezone ?? null; }
 
+/** True when the text has the words asked at the start of one of its words ("go transit" is not in "Chicago Transit", #1682). */
+export function hasWordsAt(text: string, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  return !!q && new RegExp(`(^|[^a-z0-9])${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(text.toLowerCase());
+}
+
+/**
+ * #1681: an operator whose services Atlas lists as agencies of their own, not under one parent agency. Asked by the
+ * operator's name, the tools point to those agencies (Metrolinx runs GO Transit and UP Express).
+ */
+export const SERVICE_OPERATORS: ReadonlyArray<{ name: string; slugs: readonly string[] }> = [{ name: 'Metrolinx', slugs: ['go', 'upexpress'] }];
+
+/** The operator named (its full name, any case) and its agencies that have data here, or null. */
+export function operatorNamed(query: string, list: CatalogAgency[]): { name: string; members: CatalogAgency[] } | null {
+  const q = query.trim().toLowerCase();
+  const op = SERVICE_OPERATORS.find(o => o.name.toLowerCase() === q);
+  const members = op ? list.filter(a => op.slugs.includes(a.slug)) : [];
+  return op && members.length ? { name: op.name, members } : null;
+}
+
 export async function findAgency(query: string, list?: CatalogAgency[]): Promise<CatalogAgency | null> {
   list ??= await availableAgencies();
   const meta = await store.meta();
@@ -89,11 +109,13 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   if (byShort.length === 1) return byShort[0];
   const exact = list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q);
   if (exact) return exact;
+  const op = operatorNamed(query, list);
+  if (op?.members.length === 1) return op.members[0];
+  if (op) throw new Error(`${op.name} runs several agencies here: ${op.members.map(a => a.name).join('; ')}. Call again with one of them.`);
   // #1676: a name inside another agency's name ("Sound Transit" in "Owen Sound Transit") must not win silently. The
   // best match starts with the words asked, then has them at a word's start, then anywhere; a tie is asked about.
   const named = (a: CatalogAgency) => a.name.toLowerCase();
-  const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  for (const tier of [(a: CatalogAgency) => named(a).startsWith(q), (a: CatalogAgency) => new RegExp(`(^|[^a-z0-9])${esc}`).test(named(a)), (a: CatalogAgency) => named(a).includes(q)]) {
+  for (const tier of [(a: CatalogAgency) => named(a).startsWith(q), (a: CatalogAgency) => hasWordsAt(a.name, q), (a: CatalogAgency) => named(a).includes(q)]) {
     const hits = list.filter(tier);
     if (hits.length === 1) return hits[0];
     if (hits.length > 1) throw new Error(`"${query}" matches several agencies: ${hits.slice(0, 6).map(a => a.name).join('; ')}${hits.length > 6 ? '; …' : ''}. Call again with the full name.`);
@@ -351,6 +373,9 @@ export async function findAgencyEntry(query: string, list?: CatalogAgency[]): Pr
   const q = query.trim().toLowerCase();
   const parent = groupAgencies(list).find(g => g.parent && (g.parent.slug === q || g.parent.name.toLowerCase() === q));
   if (parent) return { slug: parent.slug, name: parent.parent!.name, members: parent.members };
+  // #1681: an operator's agencies together, named with them ("Metrolinx (GO Transit, UP Express)").
+  const op = operatorNamed(query, list);
+  if (op && op.members.length > 1) return { slug: op.name.toLowerCase(), name: `${op.name} (${op.members.map(a => a.name).join(', ')})`, members: op.members };
   const a = await findAgency(query, list);
   return a ? { slug: a.slug, name: a.name, members: [a] } : null;
 }

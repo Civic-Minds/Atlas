@@ -44,9 +44,12 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one row under its name.
     const entries = groupAgencies(all);
     if (!q && !reg && !ctry) return { agencies: entries.length, note: 'Filter by name or city, region or country to list them.' };
+    // #1681: an operator's name (Metrolinx) lists the agencies it runs, which Atlas lists under their own names.
+    const operator = q ? data.operatorNamed(q, all) : null;
     const hitGroups = entries.filter(g => {
       const home = groupHome(g);
-      return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => x.toLowerCase().includes(q))) || g.members.some(a => [a.slug, a.name, ...(a.cities ?? [])].some(x => x.toLowerCase().includes(q))))
+      // A name or place matches where a word starts ("GO Transit" is not inside "Chicago Transit", #1682).
+      return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => data.hasWordsAt(x, q))) || g.members.some(a => [a.slug, a.name, ...(a.cities ?? [])].some(x => data.hasWordsAt(x, q))) || !!operator?.members.some(a => g.members.includes(a)))
         && (!reg || g.members.some(a => (a.region ?? '').toLowerCase() === reg))
         && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
     });
@@ -60,7 +63,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const inRoutes = await data.agenciesWithRouteName(q);
       if (inRoutes.length) return { matches: 0, note: `No agency is named "${query}". It appears in route names at these agencies, so it may be a service run by one of them: ${inRoutes.slice(0, 8).map(x => x.agency).join(', ')}.`, inRouteNames: inRoutes.slice(0, 8) };
     }
-    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.added ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule added | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule added | schedule valid through' } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.added ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule added | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule added | schedule valid through' } : {}), ...(operator ? { operatorNote: `${operator.name} runs ${operator.members.map(a => a.name).join(' and ')}; Atlas lists each as its own agency.` } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
   },
   rank_agencies: async (args) => {
     const feeds = await data.rankAgencies();
@@ -178,15 +181,21 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const minutes = Number(n);
     // One entry per agency or region (shared/agencyGroups.ts): "MTA New York" is its feeds together, a route in two of
     // them counted once.
-    const rows = await Promise.all((Array.isArray(agencies) ? agencies : []).map(async q => {
-      const e = await data.findAgencyEntry(String(q ?? ''));
-      if (!e) throw new Error(`No agency matching "${q}" has data here. Use list_agencies to search.`);
+    // #1683: the same agency named twice ("TTC" and "Toronto Transit Commission") is one row, with a note.
+    const asked = Array.isArray(agencies) ? agencies.map(q => String(q ?? '')) : [];
+    const found = await Promise.all(asked.map(async q => ({ q, e: await data.findAgencyEntry(q) })));
+    const missing = found.find(f => !f.e);
+    if (missing) throw new Error(`No agency matching "${missing.q}" has data here. Use list_agencies to search.`);
+    const byEntry = new Map<string, { e: data.AgencyEntry; names: string[] }>();
+    for (const { q, e } of found) { const k = e!.members.map(m => m.slug).sort().join(','); (byEntry.get(k) ?? byEntry.set(k, { e: e!, names: [] }).get(k)!).names.push(q); }
+    const sameNotes = [...byEntry.values()].filter(x => x.names.length > 1).map(x => `${x.names.map(n => `"${n}"`).join(' and ')} are the same agency (${x.e.name}), shown once.`);
+    const rows = await Promise.all([...byEntry.values()].map(async ({ e }) => {
       const res = await data.entryRoutesMeeting(e, dayType, key, minutes);
       const ends = e.members.map(m => validThrough(m)).filter((x): x is string => !!x).sort();
       return { slugs: e.members.map(m => m.slug), agency: e.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: ends[0] ?? null };
     }));
     const zones = now ? [...new Set(await Promise.all(rows.map(async r => (await data.timeZoneOf(r.slugs[0])) ?? now.timeZone)))] : [];
-    return { ...(now ? { ...nowBlock(now), ...(zones.length > 1 ? { nowZones: `These agencies keep different time zones (${zones.join(', ')}); "now" is ${rows[0].agency}'s.` } : {}) } : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
+    return { ...(now ? { ...nowBlock(now), ...(zones.length > 1 ? { nowZones: `These agencies keep different time zones (${zones.join(', ')}); "now" is ${rows[0].agency}'s.` } : {}) } : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), ...(sameNotes.length ? { sameAgencyNote: sameNotes.join(' ') } : {}), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
   },
   buses_needed: async (args) => {
     const a = await needAgency(args.agency);

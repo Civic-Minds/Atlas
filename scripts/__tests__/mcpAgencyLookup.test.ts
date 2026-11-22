@@ -7,6 +7,8 @@ const catalog = [
   { slug: 'owen-sound', name: 'Owen Sound Transit' }, { slug: 'soundtransit', name: 'Sound Transit (Seattle)' },
   { slug: 'translink', name: 'TransLink (Vancouver)' }, { slug: 'ctran', name: 'C-TRAN (Vancouver, WA)' },
   { slug: 'nyct-subway', name: 'MTA NYCT Subway' }, { slug: 'nyct-bus-bronx', name: 'MTA NYCT Bus (Bronx)' },
+  { slug: 'go', name: 'GO Transit' }, { slug: 'upexpress', name: 'UP Express (Toronto)' },
+  { slug: 'cta', name: 'Chicago Transit Authority (CTA)' }, { slug: 'durango', name: 'Durango Transit' },
 ];
 const store = {
   catalog: async () => catalog, available: async () => new Set(catalog.map(a => a.slug)),
@@ -29,5 +31,22 @@ describe('agency lookup', () => {
     const e = await data.findAgencyEntry('MTA New York');
     expect(e?.name).toBe('MTA New York');
     expect(e?.members.map(m => m.slug).sort()).toEqual(['nyct-bus-bronx', 'nyct-subway']);
+  });
+
+  it('points an operator to the agencies it runs (#1681)', async () => {
+    data.useStore(store);
+    await expect(data.findAgency('Metrolinx')).rejects.toThrow(/Metrolinx runs several agencies here: GO Transit; UP Express/);
+    const e = await data.findAgencyEntry('metrolinx');
+    expect(e?.name).toBe('Metrolinx (GO Transit, UP Express (Toronto))');
+    expect(e?.members.map(m => m.slug)).toEqual(['go', 'upexpress']);
+  });
+
+  it('matches a name where a word starts, not inside a word (#1682)', async () => {
+    data.useStore(store);
+    expect(data.hasWordsAt('Chicago Transit Authority (CTA)', 'GO Transit')).toBe(false);
+    expect(data.hasWordsAt('Durango Transit', 'go transit')).toBe(false);
+    expect(data.hasWordsAt('GO Transit', 'go transit')).toBe(true);
+    expect(data.hasWordsAt('UP Express (Toronto)', 'toronto')).toBe(true);
+    expect((await data.findAgency('GO Transit'))?.slug).toBe('go');
   });
 });

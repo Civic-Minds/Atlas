@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- **Atlas Studio MCP finds the agency you name**: "Sound Transit" gave Owen Sound Transit's figures, and "MTA New York" wasn't found when comparing or listing agencies
+- **Atlas Studio MCP finds the agency you name**: "Sound Transit" gave Owen Sound Transit's figures, "MTA New York" and "Metrolinx" weren't found, "GO Transit" also listed Chicago and Durango, and one agency named twice was compared with itself
 - **Atlas Studio MCP answers how many people live near frequent service**: per metro, from Atlas's dated coverage table, and says so when a city has no figure
 - **Live's vehicle card says which stop a stopped vehicle is at**: it showed no stop while the vehicle stood at one; it now reads "At" and the stop's name
 - **Live's vehicle card names the next stop at the end of a trip and between feed updates**: a bus just past its last stop, or a stop seconds behind the server's clock, showed no Next stop though the feed had one
