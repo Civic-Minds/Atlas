@@ -1,6 +1,6 @@
 # Canada Transit Coverage
 
-**Status:** figures not independently verified by Atlas; computed outside the repo.
+**Status:** superseded. The figures below were computed outside the repo and do not reproduce; see Verification for Atlas's verified figures.
 
 Snapshot date: `2026-09-19`
 Source: a separate local git repository (19 commits, no remote), last commit `364a083` (2026-09-19). The commit list is in [`source-git-log.txt`](source-git-log.txt).
@@ -9,6 +9,20 @@ Scope: 84 Atlas agencies, 2021 population, 10-minute walk, weekday 07:00-19:00.
 ## How Atlas data was used
 
 The study read Atlas's published route, stop and headway artifacts from `https://data.transitatlas.fyi` as a read-only source. It never wrote to Atlas. Population (Statistics Canada 2021 dissemination areas, US Census) and walking networks (OpenStreetMap extracts) come from outside Atlas. Atlas's own code and data were not changed by this study, and no Atlas product decision depends on it.
+
+## Verification (2026-11-21, CIV-2082)
+
+**The September table below is superseded.** Atlas's verified, dated coverage figures are in [`src/data/frequent-coverage-metros.json`](../../../src/data/frequent-coverage-metros.json): coverage cloud run 43775315209 (`.github/workflows/coverage-study.yml`, rule `map-filter-trunk`, code `ea43d0480`), dated 2026-11-15, approved by Ryan on 2026-11-15 ("1", CIV-1579). The file matches that run's artifact exactly.
+
+| Country | Metros (15-minute) | Population base | 15-minute service | 30-minute service |
+| --- | ---: | ---: | ---: | ---: |
+| Canada | 48 (18) | 27,149,074 | 29.47% | 61.53% |
+| United States | 170 (79) | 234,641,958 | 13.56% | 26.75% |
+
+- **Rule:** a route counts at 15 or 30 when the map's frequency test passes it at that setting on weekdays in AM peak, midday and PM peak, reading a branched route by its shared middle (trunk); on a route that passes only on its trunk, only the trunk's stops count. Public-map agencies only, a 10-minute walk, the 15-minute share on the 30-minute population base. The September figures used the `study` rule (every 15 or 30 sustained 7:00-19:00); see CLOUD-RUN.md for the rule options.
+- **Sources:** Canada, Statistics Canada 2021 Census: dissemination-area population and representative points (GeoSuite 2021, 92-150-X) and 2021 CMA/CA cartographic boundaries (`lcma000b21a_e`). United States, 2020 Census block groups (POP100) and 2020 CBSA boundaries (TIGERweb). Walking network: Geofabrik OpenStreetMap extracts of November 2026. Atlas routes and stops as published on 2026-11-15.
+- **Why the September figures don't reproduce:** the one full cloud run on the `study` rule (42334702058, 2026-11-07) gives Canada 8.55% / 32.26% on 33 metros and the US 4.22% / 12.96% on 126, against 8.72% / 22.98% (37) and 6.03% / 13.63% (124) here. Atlas data changed between the two dates, the metro scope differs, and the September run read "Not in service" patterns as gaps and merged routes with no short name into one (both fixed under CIV-1179).
+- **Next:** CIV-2013 reruns these figures after the current data release, with the trunk filter (#1665); cite the run ID and date with any figure.
 
 ## Headline figures
 
