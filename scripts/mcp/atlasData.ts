@@ -25,6 +25,7 @@ import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
 import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
 import { metresBetween, withinMetres } from '../../shared/geoDistance';
+import { placesNamed } from './places';
 import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySnapshots';
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
@@ -394,7 +395,7 @@ export function leftOutByRule(f: Pick<PeriodFigure, 'waitMinutes' | 'filter'>, e
 export async function notOnThisServerNote(names: string[]): Promise<string> {
   const have = await availableAgencies();
   const list = have.length <= 20 ? `: ${have.map(a => a.name).join('; ')}` : '';
-  const them = names.length > 1;
+  const them = names.length > 1 || /^The agencies /.test(names[0] ?? '');
   return `${names.join(' and ')} ${them ? 'are' : 'is'} in Atlas, but this server has schedules for only ${have.length} agencies${list}. Say this server can't answer for ${them ? 'them' : 'it'}; don't answer from memory.`;
 }
 /** The agency a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */
@@ -797,18 +798,45 @@ async function routeIdNames(agency: CatalogAgency): Promise<Map<string, { name: 
   return out;
 }
 
-/** Agencies whose centre is within `km` of a place: another agency, or a city an agency lists. */
+/**
+ * Agencies whose centre is within `km` of a place. An agency's exact name measures from its area's centre; otherwise a
+ * city (#1699: "Washington DC", "Arlington, Virginia", "Bethesda"), then the nearest name match among agencies, then a
+ * city an agency lists. `centredOn` says which it used, and `note` names the other places or agency the name could mean.
+ * `here` is false for an agency this server has no schedules for (#1687: the hosted pilot carries 8).
+ */
 export async function agenciesNear(query: string, km = 60) {
   const q = query.trim().toLowerCase();
   const all = await publicAgencies();
-  const anchor = await findAgency(query, all);
-  const byCity = all.find(a => (a.cities ?? []).some(c => c.toLowerCase().split(',')[0] === q));
-  const centre = (anchor?.center ?? byCity?.center) ?? null;
+  const meta = await store.meta();
+  const exactAgency = all.find(a => a.slug === q || a.name.toLowerCase() === q || (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q);
+  const places = exactAgency ? [] : placesNamed(query);
+  let centre: [number, number] | null = null, centredOn = '', near = query;
+  const notes: string[] = [];
+  if (exactAgency) {
+    centre = exactAgency.center ?? null; near = exactAgency.name; centredOn = `the centre of ${exactAgency.name}'s area`;
+  } else if (places.length) {
+    const [p, ...others] = places;
+    centre = [p.lat, p.lon]; near = `${p.name}, ${p.region}`; centredOn = `the city of ${near}`;
+    if (others.length) notes.push(`"${query}" is also ${others.slice(0, 4).map(o => `${o.name}, ${o.region}`).join('; ')}. This used the largest; name the state or province to choose another.`);
+    const agency = await findAgency(query, all).catch(() => null);
+    if (agency) notes.push(`"${query}" also matches the agency ${agency.name}; to measure from its area instead, give its full name.`);
+  } else {
+    const anchor = await findAgency(query, all);
+    const byCity = all.find(a => (a.cities ?? []).some(c => c.toLowerCase().split(',')[0] === q));
+    const from = anchor ?? byCity;
+    centre = from?.center ?? null;
+    if (from) { near = anchor?.name ?? query; centredOn = `the centre of ${from.name}'s area`; }
+  }
   if (!centre) return null;
-  const dist = (c?: [number, number]) => c ? metresBetween({ lat: centre[0], lon: centre[1] }, { lat: c[0], lon: c[1] }) / 1000 : Infinity;
+  const at = { lat: centre[0], lon: centre[1] };
+  const dist = (c?: [number, number]) => c ? metresBetween(at, { lat: c[0], lon: c[1] }) / 1000 : Infinity;
+  const have = new Set((await availableAgencies()).map(a => a.slug));
   // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one row at its nearest feed's distance.
-  const entries = groupAgencies(all).map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region ?? null, d: Math.min(...g.members.map(m => dist(m.center))) }));
-  return { near: anchor?.name ?? query, km, agencies: entries.filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.name, region: x.region, km: Math.round(x.d) })) };
+  const entries = groupAgencies(all).map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region ?? null, d: Math.min(...g.members.map(m => dist(m.center))), here: g.members.some(m => have.has(m.slug)) }));
+  return {
+    near, centredOn, km, ...(notes.length ? { note: notes.join(' ') } : {}), serverHas: have.size, atlasHas: all.length,
+    agencies: entries.filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.name, region: x.region, km: Math.round(x.d), here: x.here })),
+  };
 }
 
 /**
