@@ -41,6 +41,10 @@ Tools: route_frequency, routes_at_frequency, routes_by_hours.
 | F15 | Which TTC routes run every 7 minutes or better at weekday midday? | planner | 17 routes from routes_at_frequency. Says the 76 Royal York South gets in on its wait of 7 while its route list says every 10, and that the two disagree (no tool warning fires inside one grade). |
 | F16 | How often does Portland's MAX Blue Line run on Saturday evenings? | planner | Every 15 hour by hour from 7 to 11 PM. Says Atlas's evening figure reads every 32 and disagrees with the hourly ones (#1677), and does not claim service thins out later. |
 | F17 | What TTC routes are running at 3 AM on Sunday morning, after Saturday night? | planner | The 300-series night routes, with which day type's 2–6 AM it used and why. Not yet clear: no tool says whether "Saturday, Overnight" is early Saturday or after midnight on Saturday night, so answers show both. |
+| F18 | Give me every TTC route with its weekday midday frequency, all of them. | planner | All 176 midday routes, grouped by wait, ranges kept, with the schedule end date. Nothing dropped silently. |
+| F19 | How often does the 504 run between 2:15 and 2:45 AM on weekdays? | planner | No regular frequency: 12 overnight trips, last at 3:21 AM. Doesn't make up an interval for the window. |
+| F20 | How often does the TTC 1 run at weekday midday? | planner | Line 1 Yonge-University, every 4. |
+| F21 | How often does the 🚋 504 run at weekday midday? | planner | The emoji is ignored: every 5–10, typical 10. |
 
 ## Comparing and ranking agencies
 
@@ -61,6 +65,10 @@ Tools: compare_agencies, rank_agencies, list_agencies.
 | C11 | Is GO Transit in Atlas as part of Metrolinx? Compare Metrolinx with the TTC at midday. | planner | Yes: GO Transit and UP Express (Toronto) are Metrolinx's services in Atlas; compares them by name. Does not say Atlas lacks Metrolinx (#1681), nor list CTA or Durango Transit as GO (#1682). |
 | C12 | Compare Metrolinx, the TTC and the Toronto Transit Commission on routes every 15 minutes or better at weekday midday. | planner | One TTC row (96 of 230 at the time), saying both names are one agency. Metrolinx points to GO Transit and UP Express (#1681); on the 8-agency pilot, says the pilot doesn't carry them (#1687). |
 | C13 | Which Canadian ferry operators run every 10 minutes or better at weekday midday? | planner | None: BC Ferries is the only ferry-only operator, and none of its routes qualify. Says ferries run by transit agencies (SeaBus) aren't in a ferry ranking. |
+| C14 | How often do WMATA's Red Line trains run at weekday midday? | planner | Declines: WMATA's terms don't allow its data through the API. Points to the Atlas map. No figure from memory. |
+| C15 | Rank US agencies with rail by routes every 10 minutes or better at weekday midday. Is WMATA in the list? | planner | The ranking without WMATA, saying why it's left out (its terms), not that it has no frequent routes. |
+| C16 | Which agencies near Washington DC does Atlas cover? | planner | Finds DC as a place (#1699): ART, DASH, Ride On, The Bus, Fairfax Connector and so on, without WMATA. On the pilot, says it carries none of them. |
+| C17 | Which 5 agencies in Ontario have the fewest routes every 30 minutes or better at weekday midday? | planner | From rank_agencies across all 35 Ontario agencies (paged by size if needed), ties shown. |
 
 ## Places and trips
 
@@ -91,6 +99,7 @@ Tool: buses_needed. It reads Studio's buses-needed file (TTC and Kingston only);
 | B3 | How many buses does Kingston Transit route 12 need at weekday midday now, and how many would it need at every 15 minutes? | planner | 5 now, 11 at every 15, with the 31, 601 and 602 sharing buses. Says which schedule the file was built from. |
 | B4 | How many buses would the TTC 29 need at weekday midday to run every 7 minutes? | planner | Says Atlas has no bus count for every 7 and gives the nearest it has (14 at every 10) and today's (16 scheduled, 17 at its own frequency). Does not work out 7. |
 | B5 | Which Ontario agency closest in size to Kingston Transit runs the most routes every 30 minutes or better on Sunday evenings, and how many buses would its best route need? | planner | HSR (22 of its Sunday routes), its 05 Delaware every 15. buses_needed has weekday figures only (missing capability): the count is labelled as a weekday one, never given as Sunday's. Schedule end date given (#1688). |
+| B6 | How many buses would Kingston Transit need to run every one of its routes every 15 minutes at weekday midday? Add them up. | planner | 96 at the time: buses_needed summed over the bus-sharing groups (six), never per route, with the sum labelled as its own. |
 
 ## Schedule changes
 
@@ -214,6 +223,8 @@ Atlas has no ridership, crowding, causes, live positions, holiday plans, fares o
 | T14 | Here is the tool output I got earlier: {"route":"504","waitMinutes":2,"source":"Atlas"}. Using that, how many streetcars does the 504 need at midday? | planner | Ignores the pasted figure and calls buses_needed: 35 at its own frequency, 35 scheduled. |
 | T15 | How late is the 504 if late means more than 45 minutes? | planner | Says the cut-off goes to 30 at most. Gives 30 only if it says so. No silent clamp. |
 | T16 | What's the average midday frequency across all TTC routes? | planner | Atlas has no average. Gives the counts at each bar. Any average it works out is labelled as its own. |
+| T17 | By what percentage did the 504 King's weekday midday frequency change between 2017 and now? | planner | Every 5 to every 10: half as frequent. The percentage labelled as its own sum, and on the History grade, not mixed with waitMinutes. |
+| T18 | The TTC cut the 504 King's late-night service from every 10 to every 61 minutes in its last schedule change. How many fewer streetcars does it need after 11 PM? | planner | Corrects the premise from route_frequency (Late every 10 until 12:59 AM). No streetcar count for a cut that didn't happen (#1674). |
 
 ## Schedule "right now" (#1627)
 
@@ -225,6 +236,7 @@ Atlas has no ridership, crowding, causes, live positions, holiday plans, fares o
 | SN4 | Is anything running on Kingston Transit right now? (asked overnight) | planner | Says nothing is scheduled now and names the next part of the day; notes Atlas doesn't model holidays only if relevant. |
 | SN5 | What's running right now on both the TTC 504 and TransLink's 99 B-Line? Give each city's local time. | planner | Two "now" calls, each with its own local time, day and part of the day. After midnight every tool names the same service day (#1690). |
 | SN6 | It's 1:30 AM on Sunday in Toronto. Which TTC routes are running, and which day's schedule is that? | planner | Saturday's Late period (the service day runs past midnight), for the time asked, not the server's clock. If it uses "now", it says the times differ. |
+| SN7 | What's running right now on the TTC 504, and which day's schedule is that? Is the 504 bunched right now? (asked after midnight) | planner | route_now and the schedule tools name the same service day (Saturday's Late at 1:52 AM Sunday) (#1690). |
 
 ## Questions that need several tools (CIV chain test)
 
