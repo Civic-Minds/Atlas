@@ -384,6 +384,11 @@ export const STUDIO_ROUTE_PANEL_PENDING = {
   noReading: 'No live reading for this route right now.',
   /** A reading with no vehicle of the route on the road. */
   noVehicles: 'No vehicles on this route right now.',
+  /**
+   * The route's week table, labelled as recorded past service so it isn't read as live (Ryan, CIV-2021: "I'm confused what
+   * I am looking at here if live information is unavailable"). Proposed item 8.
+   */
+  weekRecorded: 'Recorded past service, not live.',
   /** About, Live part: bunching in plain words (replaces the two-figure note now that Studio shows one figure). */
   bunchingAbout: (): string =>
     `Bunching is the share of gaps between vehicles at a stop that were under ${minutesText(BUNCHED_GAP_SEC / 60)} (vehicles running together) or more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap (a long wait).`,

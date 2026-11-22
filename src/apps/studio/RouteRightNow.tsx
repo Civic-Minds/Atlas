@@ -3,6 +3,7 @@ import LiveRoutePerformance from '../../components/Live/LiveRoutePerformance';
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveFeeds } from '../../hooks/useLiveFeeds';
 import { fetchAgencyGeo, getCachedAgencyGeo } from '../../lib/agencyGeo';
+import { STUDIO_ROUTE_PANEL_PENDING } from '../../../shared/liveWording';
 import { liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
 
 const GEO_TRIES = 5;
@@ -51,6 +52,7 @@ export default function RouteRightNow({ slug, routeShortName, direction }: { slu
       onCounted={setCounted}
       scheduledRows={scheduledRows}
       direction={direction}
+      unavailableMessage={STUDIO_ROUTE_PANEL_PENDING.noReading}
     />
   );
 }

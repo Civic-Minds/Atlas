@@ -15,6 +15,7 @@ const status: { data: typeof segmentData | null; settled: boolean } = { data: se
 vi.mock('../../../hooks/useSegmentDelay', () => ({ useSegmentDelayStatus: () => status }));
 
 import LiveRoutePerformance, { agencyHour, agencyTime } from '../LiveRoutePerformance';
+import { STUDIO_ROUTE_PANEL_PENDING } from '../../../../shared/liveWording';
 
 const car = (id: string, tripId: string, at: number, tsEpoch: number): LiveVehicle => ({
   id, tripId, routeShortName: '505', displayName: '', lat: LAT, lon: lon(at), bearing: null, speedKmh: null, tsEpoch,
@@ -155,6 +156,13 @@ describe('a route with no Live analysis (CIV-1413 B)', () => {
     card();
     expect(screen.getByText('Live figures for this route aren’t available yet.')).toBeInTheDocument();
     expect(screen.queryByText(/Right now/)).toBeNull();
+  });
+
+  it('says only the right-now reading is missing in Studio (CIV-2021)', () => {
+    status.data = null; status.settled = true;
+    render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[]} feedDegraded={false} unavailableMessage={STUDIO_ROUTE_PANEL_PENDING.noReading} />);
+    expect(screen.getByText(STUDIO_ROUTE_PANEL_PENDING.noReading)).toBeInTheDocument();
+    expect(screen.queryByText('Live figures for this route aren’t available yet.')).toBeNull();
   });
 
   it('shows nothing while the file is still loading', () => {

@@ -73,7 +73,7 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
  * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
  * the table. One component for any surface that wants it; the planner's left panel uses it today.
  */
-export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle, aboutLive, lead }: {
+export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle, aboutLive, lead, label }: {
   tiles: Kpi[];
   /** The lines that explain how the figures are worked out, in order, under the table. */
   notes?: readonly string[];
@@ -89,6 +89,8 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   aboutLive?: boolean;
   /** A line under the table about what it can show (CIV-2021: a held route's line, read where the figures are). */
   lead?: string | null;
+  /** A short line over the table saying what its figures are (CIV-2021: Studio's route panel, recorded past service). */
+  label?: string;
 }) {
   const sections = usePanelSections();
   // A Bunching row with two figures says what each is, under the table (Ryan: numbers are explained, never decoded).
@@ -98,6 +100,7 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   const notes = split && !aboutLive ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
     <FiguresCard label={WEEK_COMPARE_TITLE} title={sections ? WEEK_COMPARE_TITLE : undefined}>
+      {label && <FigureNotes lines={[label]} ruled={false} tone="secondary" />}
       <DataTable
         caption={WEEK_COMPARE_TITLE}
         rows={tiles}

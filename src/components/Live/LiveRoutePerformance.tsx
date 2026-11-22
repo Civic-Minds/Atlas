@@ -116,6 +116,11 @@ interface Props {
    * pills of its own and leaves the address alone. Left out, the card's pills pick it and the address keeps it (main Live).
    */
   direction?: number | null;
+  /**
+   * CIV-2021 (Ryan: "I'm confused what I am looking at here if live information is unavailable"): the line shown when the
+   * route has no live analysis. Studio says only the right-now reading is missing; left out, main Live's own line (CIV-1413).
+   */
+  unavailableMessage?: string;
 }
 
 /**
@@ -152,7 +157,7 @@ function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, rout
 export const LIVE_RECENT_URL = '/api/live-recent';
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, direction }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE }: Props) {
   const steered = direction !== undefined;
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
@@ -218,7 +223,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     }
     return out;
   }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (!data) return settled ? <CardHelpNotice message={LIVE_ROUTE_FIGURES_UNAVAILABLE} /> : null;
+  if (!data) return settled ? <CardHelpNotice message={unavailableMessage} /> : null;
   if (!line) return null;
 
   const replacement = (data as { replacementBuses?: boolean }).replacementBuses
