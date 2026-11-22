@@ -20,3 +20,10 @@ export async function deleteOldCalls(db: D1Database, now: Date): Promise<number>
   const res = await db.prepare('DELETE FROM calls WHERE at < ?').bind(callLogCutoff(now)).run();
   return res.meta.changes ?? 0;
 }
+
+/**
+ * CIV-1841: the questions, the arguments the assistant sent and the answers are deleted 30 days after the pilot ends;
+ * the rest of each call (time, tool, duration, release) stays until the 12-month cron. Run by
+ * scripts/mcp/purgeCallText.ts once, by hand, with approval: it writes to the live D1 database.
+ */
+export const PURGE_CALL_TEXT_SQL = "UPDATE calls SET question = NULL, args = '{}', result = '' WHERE question IS NOT NULL OR args != '{}' OR result != ''";
