@@ -27,6 +27,9 @@ export const MCP_DOCS = {
     // Ryan, 2026-11-22: "In the MCP page should the Tools section be a table instead", picked 1: Tool | What it answers | Live.
     name: 'Tool', answers: 'What it answers', live: 'Live',
     liveTag: 'Live',
+    // Ryan, 2026-11-22: "For the tools should we group them together at all on the page too"; on the options, "1" (one
+    // table, a group label above each set of rows). Group names as proposed: Find, Schedules, Changes, Planning, Live.
+    groups: { find: 'Find', schedules: 'Schedules', changes: 'Changes', planning: 'Planning', live: 'Live' },
     liveNote: 'Tools marked Live answer from Live’s recordings, on this Mac and on the hosted server.',
   },
   freshness: {

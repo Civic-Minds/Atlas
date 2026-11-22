@@ -113,6 +113,11 @@ interface DataTableProps<T> {
    * that row; null or undefined draws nothing.
    */
   rowDetail?: (row: T) => ReactNode;
+  /**
+   * A group's label, drawn as a full-width row heading straight before the row it returns one for (the first row of each
+   * group, as on the MCP page's Tools table); null or undefined draws nothing.
+   */
+  rowGroupLabel?: (row: T) => ReactNode;
   /** Current sort, for the sortable columns' arrow and aria-sort. */
   sort?: DataTableSort;
   /** Called with a sortable column's key when its header is clicked (or Enter / Space on it). */
@@ -144,7 +149,7 @@ export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
 const SELECTION_ROW = 'bg-[var(--selection-active-bg)] shadow-[inset_2px_0_0_var(--selection-active-border)]';
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowTitle, rowDetail, sort, onSort }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowTitle, rowDetail, rowGroupLabel, sort, onSort }: DataTableProps<T>) {
   const openPath = useOpenPath();
   const fixed = layout !== 'content';
   const fill = layout === 'fill';
@@ -222,8 +227,12 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
       <tbody>
         {rows.map(row => {
           const detail = rowDetail?.(row);
+          const groupLabel = rowGroupLabel?.(row);
           return (
           <Fragment key={rowKey(row)}>
+          {groupLabel != null && groupLabel !== false && (
+            <tr className={v.row}><th scope="colgroup" colSpan={columns.length} className={`${v.td} pb-1 font-bold text-[var(--text-primary)]`}>{groupLabel}</th></tr>
+          )}
           <tr
             className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}${rowCurrent?.(row) ? ` ${SELECTION_ROW}` : ''}`}
             aria-current={rowCurrent?.(row) ? 'true' : undefined}

@@ -11,6 +11,7 @@ import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { TOOLS, TOOL_SUMMARIES, SERVER_VERSION } from '../scripts/mcp/toolDefs';
 import { LIVE_TOOLS } from '../scripts/mcp/liveTools';
 import { MCP_DOCS as C } from '../shared/mcpDocsCopy';
+import { TOOL_GROUPS, type ToolGroup } from '../shared/mcpToolGroups';
 import { tabTitle } from '../shared/pageNames';
 
 /**
@@ -65,6 +66,18 @@ function Section({ id, children }: { id: (typeof SECTIONS)[number]['id']; childr
 }
 
 type ToolRow = (typeof TOOLS)[number];
+const GROUP_ORDER = Object.keys(TOOL_GROUPS) as ToolGroup[];
+const groupOf = (name: string) => GROUP_ORDER.find(g => TOOL_GROUPS[g].includes(name));
+/** The tools in group order (each group in its listed order); a tool with no group goes last, so none is ever dropped. */
+const GROUPED_TOOLS: readonly ToolRow[] = [
+  ...GROUP_ORDER.flatMap(g => TOOL_GROUPS[g].map(name => TOOLS.find(t => t.name === name)).filter((t): t is ToolRow => !!t)),
+  ...TOOLS.filter(t => !groupOf(t.name)),
+];
+/** A group's label sits above its first tool. */
+const toolGroupLabel = (t: ToolRow) => {
+  const g = groupOf(t.name);
+  return g && TOOL_GROUPS[g].find(name => TOOLS.some(x => x.name === name)) === t.name ? C.tools.groups[g] : null;
+};
 /** The Tools table (Ryan, 2026-11-22: "In the MCP page should the Tools section be a table instead", picked 1). */
 const toolColumns: DataTableColumn<ToolRow>[] = [
   { key: 'tool', header: C.tools.name, rowHeader: true, cell: t => <span className="font-semibold text-[var(--text-primary)]">{t.title} <code className="text-xs font-normal text-[var(--text-muted)]">{t.name}</code></span> },
@@ -133,7 +146,7 @@ export default function McpDocsPage() {
 
       <Section id="mcp-tools">
         <p className={PARAGRAPH}>{C.tools.intro}</p>
-        <div className="mt-4"><DataTable variant="ruled" columns={toolColumns} rows={TOOLS} rowKey={t => t.name} caption={C.tools.heading} /></div>
+        <div className="mt-4"><DataTable variant="ruled" columns={toolColumns} rows={GROUPED_TOOLS} rowKey={t => t.name} caption={C.tools.heading} rowGroupLabel={toolGroupLabel} /></div>
         <p className={PARAGRAPH}>{C.tools.liveNote}</p>
       </Section>
 
