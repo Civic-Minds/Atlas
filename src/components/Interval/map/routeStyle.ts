@@ -4,7 +4,7 @@ import type { TimePeriod } from '../../../hooks/useIntervalStats';
 import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { splitRouteKey } from '../../../utils/routeKey';
 import { buildPartialMatchFilterExpression, type computeFrequencySegmentOverlay } from '../../../utils/frequencySegments';
-import { buildFocusedRoutePaint } from '../../../utils/routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint } from '../../../utils/routeFocus';
 import { CONTEXT_LINE_COLOUR } from '../../../../shared/rules/colours';
 
 /** Base route line width by zoom, shared by the regular map and the Live context lines. */
@@ -14,6 +14,71 @@ export const ROUTE_LINE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], ..
 /** The selected route's width, px, at every zoom: the main map's and Live's picked route, and Studio Live's segments (#1661). */
 export const SELECTED_ROUTE_WIDTH_PX = 3.5;
 export const SELECTED_ROUTE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, SELECTED_ROUTE_WIDTH_PX, 17, SELECTED_ROUTE_WIDTH_PX] as const;
+
+/**
+ * Every map line width lives in this file (CIV-2057): a guard test (lineWidthGuard.test.ts) fails if any other file
+ * sets a MapLibre `line-width` with a number of its own. Reuse a width below, or add a named one here.
+ */
+/** A route line faded behind a selection, px. */
+export const FADED_ROUTE_WIDTH_PX = 1.25;
+/** The selected route's other branches while one branch row is hovered, px. */
+export const SELECTED_ROUTE_OTHER_BRANCH_WIDTH_PX = 1.5;
+/** The halo under a picked line, 1 px each side of the selected route's width (#1661). */
+export const SELECTED_ROUTE_HALO_WIDTH_PX = SELECTED_ROUTE_WIDTH_PX + 2;
+/** The soft glow under a clicked line or segment, twice the selected route's width. */
+export const SELECTED_ROUTE_GLOW_WIDTH_PX = SELECTED_ROUTE_WIDTH_PX * 2;
+/** The invisible click target over a route line, px. */
+export const ROUTE_HIT_WIDTH_PX = 18;
+/** Route lines on the overview map (below zoom 8). */
+export const OVERVIEW_ROUTE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 0, 1.0, 7, 1.8] as const;
+/** On-demand zone outlines, px, at the regional and street zooms. */
+export const ON_DEMAND_OUTLINE_WIDTH_PX = { regional: 0.75, street: 2 } as const;
+/** The debug highlight over a route (the debug panel). */
+export const DEBUG_HIGHLIGHT_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 3, 11, 4.5, 14, 6, 17, 8] as const;
+/** The stretch of a route that meets the frequency filter, drawn over its faded full line (#317). */
+export const QUALIFYING_SEGMENT_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 2.0, 11, 2.6, 14, 3.2, 17, 4.5] as const;
+/** The shared stretch a combined route-card row stands for, while that row is hovered. */
+export const SHARED_HOVER_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 2.8, 11, 3.5, 14, 4.2, 17, 5.5] as const;
+/** A stop card's serving routes (no row hovered), px at zoom 8 and 14; the other routes fade to FADED_ROUTE_WIDTH_PX. */
+export const STOP_SERVING_ROUTE_WIDTH_PX = { 8: 2.0, 14: 3.0 } as const;
+/** The image export: route lines and the casing drawn under them, px. */
+export const EXPORT_ROUTE_WIDTH_PX = 6;
+export const EXPORT_CASING_WIDTH_PX = 10;
+/** The airport story's route lines and their casing. */
+export const AIRPORT_STORY_ROUTE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 2.5, 11, 3, 14, 4] as const;
+export const AIRPORT_STORY_CASING_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 4.5, 11, 5, 14, 6.5] as const;
+/** The frequent-service story: the network behind, and the highlighted lines, px. */
+export const STORY_NETWORK_WIDTH_PX = 1.1;
+export const STORY_HIGHLIGHT_WIDTH_PX = 2.1;
+
+/**
+ * A focused route's width by zoom: the matched lines at the selected route's width, the rest at the regular route width
+ * (the main map's selected route, History's route and a hovered search result; Studio's picked route, CIV-2057).
+ */
+export function focusedRouteLineWidth(match: unknown): unknown[] {
+  const out: unknown[] = ['interpolate', ['linear'], ['zoom']];
+  for (let i = 0; i < ROUTE_LINE_WIDTH_STOPS.length; i += 2) {
+    const base = ROUTE_LINE_WIDTH_STOPS[i + 1];
+    out.push(ROUTE_LINE_WIDTH_STOPS[i], base === SELECTED_ROUTE_WIDTH_PX ? SELECTED_ROUTE_WIDTH_PX : ['case', match, SELECTED_ROUTE_WIDTH_PX, base]);
+  }
+  return out;
+}
+
+/** A hovered branch row on the route card: that branch at the selected width, the route's other branches thinner, the rest faded. */
+export const hoveredBranchWidth = (branchMatch: unknown, routeMatch: unknown) => ['case', branchMatch, SELECTED_ROUTE_WIDTH_PX, routeMatch, SELECTED_ROUTE_OTHER_BRANCH_WIDTH_PX, FADED_ROUTE_WIDTH_PX];
+/** A combined (shared-stretch) row hovered: the whole route thinner, the rest faded; the shared overlay is the bright line. */
+export const hoveredCoreRowWidth = (routeMatch: unknown) => ['case', routeMatch, SELECTED_ROUTE_OTHER_BRANCH_WIDTH_PX, FADED_ROUTE_WIDTH_PX];
+/** A stop card's serving routes by zoom, the rest faded. */
+export const stopServingWidth = (servingMatch: unknown) => ['interpolate', ['linear'], ['zoom'],
+  8, ['case', servingMatch, STOP_SERVING_ROUTE_WIDTH_PX[8], FADED_ROUTE_WIDTH_PX],
+  14, ['case', servingMatch, STOP_SERVING_ROUTE_WIDTH_PX[14], FADED_ROUTE_WIDTH_PX],
+];
+/** History's open agency: its lines at the regular width, every other agency faded. */
+export function agencyFocusWidth(agencyMatch: unknown): unknown[] {
+  const out: unknown[] = ['interpolate', ['linear'], ['zoom']];
+  for (let i = 0; i < ROUTE_LINE_WIDTH_STOPS.length; i += 2) out.push(ROUTE_LINE_WIDTH_STOPS[i], ['case', agencyMatch, ROUTE_LINE_WIDTH_STOPS[i + 1], FADED_ROUTE_WIDTH_PX]);
+  return out;
+}
 
 /** The Live map's grey context lines (CIV-326), shared with the Live report maps (CIV-1405). */
 export const contextLinePaint = (opacity: number) => ({
@@ -54,8 +119,9 @@ export const RESEARCH_OVERLAY_LAYERS = [
  */
 export function researchOverlayPaint(defaultWidth: unknown, selectedRoute: string | null): { opacity: unknown; width: unknown } {
   if (!selectedRoute) return { opacity: OVERLAY_ROUTE_OPACITY, width: defaultWidth };
-  const focused = buildFocusedRoutePaint(routeKeyMatchExpression(selectedRoute));
-  return { opacity: focused.opacity, width: focusedOverlayWidth(defaultWidth, focused.width) };
+  const match = routeKeyMatchExpression(selectedRoute);
+  const focused = buildFocusedRoutePaint(match);
+  return { opacity: focused.opacity, width: focusedOverlayWidth(defaultWidth, buildFocusCase(match, SELECTED_ROUTE_WIDTH_PX, FADED_ROUTE_WIDTH_PX)) };
 }
 
 /**

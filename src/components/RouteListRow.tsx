@@ -47,7 +47,7 @@ export default function RouteListRow({
   // under the name; a row with only a dot is unchanged.
   const label = dotColor ? (
     <div className={`flex ${subtitle ? 'items-start' : 'items-center'} gap-2 min-w-0`}>
-      <span className={`w-2 h-2 rounded-full shrink-0${subtitle ? ' mt-0.5' : ''}`} style={{ background: dotColor }} />
+      <RowDot color={dotColor} className={`shrink-0${subtitle ? ' mt-0.5' : ''}`} />
       {text}
     </div>
   ) : text;
@@ -80,8 +80,18 @@ export default function RouteListRow({
   );
 }
 
+/** A route row's colour dot: before the name, or before a figure in RouteListColumns. */
+function RowDot({ color, className }: { color: string; className: string }) {
+  return <span className={`w-2 h-2 rounded-full ${className}`} style={{ background: color }} />;
+}
+
 /** One figure cell in RouteListColumns: the figure, and a short note under it in the dim row style. */
-export interface RouteListCell { main: React.ReactNode; note?: React.ReactNode }
+export interface RouteListCell {
+  main: React.ReactNode;
+  note?: React.ReactNode;
+  /** A colour dot before the figure, as the route rows' dot (Studio's Schedules: the change colour by the newer figure, CIV-2057). */
+  dot?: string;
+}
 
 /**
  * Figures in fixed columns at a route row's right end, as `right` (CIV-2003: Studio's Schedules, one column per compared
@@ -92,7 +102,10 @@ export function RouteListColumns({ cells }: { cells: readonly RouteListCell[] })
     <span className="grid shrink-0 gap-x-2 text-right text-xs" style={{ gridTemplateColumns: `repeat(${cells.length}, 5.25rem)` }}>
       {cells.map((c, i) => (
         <span key={i}>
-          <span className="block whitespace-nowrap">{c.main}</span>
+          <span className="block whitespace-nowrap">
+            {c.dot && <RowDot color={c.dot} className="inline-block mr-1 align-middle" />}
+            {c.main}
+          </span>
           {c.note && <span className={`block whitespace-nowrap ${LIST_ROW_DIM}`}>{c.note}</span>}
         </span>
       ))}

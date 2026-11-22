@@ -11,6 +11,7 @@ import { FADED_OPACITY } from './charts/useActivePart';
 import { getAgencyArtifactUrls } from '../../shared/config';
 import { routeFilterHeadway, type HeadwayFilterPeriod } from '../../shared/routeHeadwayFilter';
 import { headwayToTierColor, type ColorVisionMode } from '../utils/colors';
+import { AIRPORT_STORY_CASING_WIDTH_BY_ZOOM, AIRPORT_STORY_ROUTE_WIDTH_BY_ZOOM } from './Interval/map/routeStyle';
 
 /**
  * CIV-1550: the airport story's sticky map (the Frequent service story's pattern, FrequentServiceStoryMap). Every airport
@@ -68,8 +69,6 @@ export const ZOOMS: StoryZoom[] = [
 /** Every agency any zoom draws routes from. */
 const ZOOM_AGENCIES = [...new Set(ZOOMS.flatMap(z => Object.keys(z.routes)))];
 
-const ROUTE_WIDTH = ['interpolate', ['linear'], ['zoom'], 8, 2.5, 11, 3, 14, 4];
-const ROUTE_CASING_WIDTH = ['interpolate', ['linear'], ['zoom'], 8, 4.5, 11, 5, 14, 6.5];
 
 type RouteFeature = GeoJSON.Feature<GeoJSON.LineString | GeoJSON.MultiLineString>;
 
@@ -176,12 +175,12 @@ export default function AirportStoryMap({ day, hour, night, zoom, colorMode, chi
       map.addLayer({
         id: 'zoom-routes-casing', type: 'line', source: 'zoom-routes',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#000', 'line-width': ROUTE_CASING_WIDTH as unknown as number, 'line-opacity': 0 },
+        paint: { 'line-color': '#000', 'line-width': AIRPORT_STORY_CASING_WIDTH_BY_ZOOM as unknown as number, 'line-opacity': 0 },
       });
       map.addLayer({
         id: 'zoom-routes', type: 'line', source: 'zoom-routes',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': ['get', 'color'], 'line-width': ROUTE_WIDTH as unknown as number, 'line-opacity': 0 },
+        paint: { 'line-color': ['get', 'color'], 'line-width': AIRPORT_STORY_ROUTE_WIDTH_BY_ZOOM as unknown as number, 'line-opacity': 0 },
       });
       map.addSource('airports', { type: 'geojson', data: collection });
       map.addLayer({

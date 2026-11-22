@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { flushSync } from 'react-dom';
+import { EXPORT_CASING_WIDTH_PX, EXPORT_ROUTE_WIDTH_PX } from './map/routeStyle';
 import { useMapHold } from '../ModeTransition';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { cardFramePadding, cardInFramingPlace } from './map/routeFraming';
@@ -114,10 +115,10 @@ function emphasizeSelectedRouteForExport(map: maplibregl.Map, lightMode: boolean
       source: layer.source,
       ...(layer.sourceLayer ? { 'source-layer': layer.sourceLayer } : {}),
       filter: map.getFilter(id) as any,
-      paint: { 'line-color': lightMode ? '#ffffff' : '#0b0b0d', 'line-width': 10, 'line-opacity': 0.95 },
+      paint: { 'line-color': lightMode ? '#ffffff' : '#0b0b0d', 'line-width': EXPORT_CASING_WIDTH_PX, 'line-opacity': 0.95 },
       layout: { 'line-cap': 'round', 'line-join': 'round' },
     }, id);
-    map.setPaintProperty(id, 'line-width', 6);
+    map.setPaintProperty(id, 'line-width', EXPORT_ROUTE_WIDTH_PX);
   }
   exportSavedWidths.set(map, saved);
   return true;

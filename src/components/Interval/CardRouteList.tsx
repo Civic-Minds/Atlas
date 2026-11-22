@@ -1,3 +1,4 @@
+import type React from 'react';
 import { CardDirectionRow } from './cardUi';
 import type { routeLabels } from '../../utils/format';
 
@@ -18,6 +19,10 @@ export interface CardRouteListRow {
   /** A short note after the frequency (History: the change from the previous snapshot, "+10"), with its colour. */
   headwaySuffix?: string;
   headwaySuffixTone?: 'dim' | 'negative' | 'positive';
+  /** A short note at the end of the name line (Studio's Schedules: the time of day, CIV-2057). */
+  nameNote?: string;
+  /** Any other figure at the row's right end, in place of a frequency (Studio's Schedules: a column per date, RouteListColumns). */
+  value?: React.ReactNode;
   /** A route the list cannot open (Night: a route with no id); the row is not clickable. */
   disabled?: boolean;
 }
@@ -38,6 +43,8 @@ export default function CardRouteList({ rows, onSelect, dimmed = false }: {
           <CardDirectionRow
             label={row.route.secondary ? `${row.route.primary} ${row.route.secondary}` : row.route.primary}
             routeName={{ shortName: row.route.primary, name: row.route.secondary }}
+            routeNameNote={row.nameNote}
+            value={row.value}
             headway={row.headway}
             dotColor={row.dotColor}
             colorHeadway={row.colorHeadway}
