@@ -7,6 +7,7 @@
  * Summaries are made with the same functions route_frequency uses, rows are the map's normalised rows, so the hosted
  * tools answer as the local ones do (scripts/mcp/goldenRun.mjs checks it).
  */
+import { mayRedistribute } from '../../shared/rules/redistribution';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { splitPaths, type SplitManifest } from '../../shared/mcpSplitStore';
@@ -32,9 +33,11 @@ console.error(`${agencies.length} agencies to split into ${out}`);
 
 put(splitPaths.catalog, slimCatalog(catalog));
 put(splitPaths.meta, Object.fromEntries(meta));
-const index = await store.index();
+// #1693: an agency whose terms bar serving its data to other tools gets no files here (its catalog entry stays, so the
+// hosted server can say why it can't answer).
+const index = (await store.index())?.filter(a => mayRedistribute(a.slug)) ?? null;
 if (index) for (const [path, value] of rankFiles(index)) put(path, value);
-const history = await store.allHistory();
+const history = (await store.allHistory())?.filter(a => mayRedistribute(a.slug)) ?? null;
 if (history) for (const [path, value] of historyFiles(history)) put(path, value);
 
 for (const [i, a] of agencies.entries()) {

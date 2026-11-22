@@ -4,6 +4,7 @@ import PageSection, { PageTable, PAGE_SECTION_NOTE } from './components/ui/PageS
 import DataTable, { PAGE_FIGURE_COLUMN_REM, type DataTableColumn } from './components/ui/DataTable';
 import AppLink from './components/ui/AppLink';
 import PageLoadState from './components/ui/PageLoadState';
+import { redistributionExclusion } from '../shared/rules/redistribution';
 import TagList, { type TagListItem } from './components/ui/TagList';
 import { LINK } from './pageStyles';
 import { useAgencies } from './hooks/useAgencies';
@@ -41,7 +42,12 @@ const studioPills = (r: CoverageRow): CoveragePill[] => [
 ];
 // Schedule answers are universal, like the map, so they aren't listed; real-time answers are none today (CIV-1870).
 // CIV-1993: "Live" only once the MCP answers Live questions; before that the cell is the table's dash, no "Live from" date.
-const mcpPills = (r: CoverageRow): CoveragePill[] => (r.mcpLive === 'ready' ? [{ label: M.live }] : []);
+// CIV-2121: an agency whose terms bar serving its data to other tools reads "Removed", with the reason on hover.
+const mcpPills = (r: CoverageRow): CoveragePill[] => {
+  const excluded = redistributionExclusion(r.slug);
+  if (excluded) return [{ label: M.removed, title: excluded.reason }];
+  return r.mcpLive === 'ready' ? [{ label: M.live }] : [];
+};
 
 const COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },

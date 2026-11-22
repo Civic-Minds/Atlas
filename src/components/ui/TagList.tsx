@@ -3,7 +3,8 @@ import Tag from './Tag';
 import { MISSING_VALUE } from '../../../shared/missingValue';
 
 /** A tag that opens its page (pointer and hover as the shared pills), or a plain tag where there is no page to open. */
-export interface TagListItem { label: string; to?: string }
+/** `title`: a reason shown on hover (CIV-2121: why WMATA's MCP tag reads "Removed"). */
+export interface TagListItem { label: string; to?: string; title?: string }
 
 /**
  * CIV-2003: a table cell's small tags (the agencies page's Tag), all on one line; a dash when none apply. Studio's
@@ -14,7 +15,7 @@ export default function TagList({ tags }: { tags: readonly TagListItem[] }) {
     ? <>{MISSING_VALUE}</>
     : <span className="inline-flex flex-nowrap justify-end gap-1 whitespace-nowrap">
         {tags.map(p => p.to
-          ? <AppLink key={p.label} to={p.to}><Tag size="inline" className="hover:border-[var(--accent-border)] hover:text-[var(--text-primary)] transition-colors">{p.label}</Tag></AppLink>
-          : <Tag key={p.label} size="inline">{p.label}</Tag>)}
+          ? <AppLink key={p.label} to={p.to}><Tag size="inline" title={p.title} className="hover:border-[var(--accent-border)] hover:text-[var(--text-primary)] transition-colors">{p.label}</Tag></AppLink>
+          : <Tag key={p.label} size="inline" title={p.title}>{p.label}</Tag>)}
       </span>;
 }

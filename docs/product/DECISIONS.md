@@ -110,6 +110,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How Atlas is built
 
+- **The MCP leaves out agencies whose terms bar an API**
+  - What: an agency on the exclusion list (`shared/rules/redistribution.ts`, now WMATA) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
+  - Why: WMATA's Transit Data Terms of Use bar "creating an application programming interface that enables access to Transit Data". Ryan: "Then remove it from MCP and note this somewhere internally".
+  - Source: [decision log](#decision-log) (2026-11-22), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693)
 - **Modes come from GTFS route_type**
   - What: a route's mode is the feed's route_type; known mistakes are listed per-route overrides in the agency config, never guessed from names.
   - Why: one shared definition keeps the map menu, pages and counters agreeing.
@@ -288,6 +292,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — WMATA is left out of the MCP and any download (#1693, CIV-2121)
+Ryan (2026-11-22, relayed by the manager): "Then remove it from MCP and note this somewhere internally". Also: the Status page shows WMATA's MCP cell as "Removed", with the reason on hover.
+- Why: WMATA's Transit Data Terms of Use (https://developer.wmata.com/license) license redistribution only "within your Application" and bar "sharing (except with your Application's users)… or creating an application programming interface that enables access to Transit Data". The MCP answers WMATA questions for outside AI assistants, which is such an interface; a public download would be sharing beyond Atlas's users. The map and History show the data inside Atlas and stay.
+- How: one exclusion list, `shared/rules/redistribution.ts`, with each agency's reason. The MCP's agency lists, ranking and lookups skip it; the hosted split release builds no files for it; a question about it gets "Atlas can't serve … here". Any future download must read the same list. No email to WMATA.
+- Found in the CIV-460 legal research (`_reports/civ-460/`).
 ### 2026-11-21 — A shared stop whose combined trips are uneven shows a range (#1667, CIV-53)
 Ryan (2026-11-21, relayed by Atlas Questions, to "Should we not be using a range then"): "1". A stop where several patterns of a route stop, whose combined departures fail the evenness test, shows the combined list's typical wait to its longest gap, in the route cards' range words, instead of the minor pattern's own value.
 - MBTA 16 at Columbia Rd @ Seaver St, weekday PM peak: every 27 → every 11–21. SEPTA 63 at Oregon Av & 16th St, weekday midday: every 121 → every 12–30.
