@@ -39,12 +39,12 @@ describe('route card shows only what is live (CIV-892)', () => {
     expect(screen.queryByText(/Gaps at each stop|Stood still|Time between stops/)).toBeNull();
   });
 
-  it('never asks for the archive: no live-dashboard, no live-recent (CIV-893)', () => {
+  it('asks only for the recorded half hour, never the analysis summary (CIV-893, CIV-2047)', async () => {
     card([car('a', 't1', 2, Math.floor(Date.now() / 1000))]);
-    for (const [url] of vi.mocked(fetch).mock.calls) {
-      expect(String(url)).not.toContain('live-dashboard');
-      expect(String(url)).not.toContain('live-recent');
-    }
+    await act(async () => {});
+    const urls = vi.mocked(fetch).mock.calls.map(([url]) => String(url));
+    expect(urls.some(u => u.includes('/api/live-recent?agency=ttc&route=505'))).toBe(true);
+    expect(urls.some(u => u.includes('live-dashboard'))).toBe(false);
   });
 });
 
@@ -68,6 +68,16 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     // The direction pills show with "Right now".
     expect(screen.getByRole('button', { name: 'Westbound' })).toBeTruthy();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
+  });
+
+  it('shows a gap as soon as the card opens, from the recorded half hour (CIV-2047)', async () => {
+    // The recording saw car a at stop 1 two minutes ago; now car b is there and car a is at stop 2.
+    const recorded = { snapshots: [{ capturedAt: T0 - 120, v: [['a', 't1', LAT, lon(1), T0 - 120]] }, { capturedAt: T0 - 60, v: [['a', 't1', LAT, lon(1.5), T0 - 60]] }] };
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => recorded })));
+    card([car('a', 't1', 2, T0), car('b', 't2', 1, T0)]);
+    await act(async () => {});
+    expect(screen.getByText('Longest gap').nextElementSibling?.textContent).toBe('2 min');
+    vi.unstubAllGlobals();
   });
 
   it('names no time while the data is fresh, and "last updated" once the newest report is over 2 minutes old (CIV-1034)', () => {

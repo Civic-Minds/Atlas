@@ -114,16 +114,37 @@ interface Props {
 }
 
 /**
- * The map's polls of the route's vehicles since the card opened (up to the last 30 min). A gap needs
- * the car ahead's recent track: how long ago it passed the spot where the car behind is now.
+ * The route's recent positions: the recorded last half hour (CIV-2047, Ryan: gaps as soon as the card opens; local-api
+ * live-recent, route_now's reader), then the map's polls since the card opened, up to the last 30 min. A gap needs the car
+ * ahead's recent track: how long ago it passed the spot where the car behind is now. Without the recordings (no read
+ * token, a route not recorded) the polls alone build it up, as before.
  */
-function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] {
-  const [buffer, setBuffer] = useState<RecentSnapshot[]>([]);
+function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, routeShortName: string): RecentSnapshot[] {
+  const [polls, setPolls] = useState<RecentSnapshot[]>([]);
+  const [seed, setSeed] = useState<RecentSnapshot[]>([]);
   useEffect(() => {
-    setBuffer(b => addSnapshot(b, positionsSnapshot(vehicles, Math.floor(Date.now() / 1000))));
+    setPolls(b => addSnapshot(b, positionsSnapshot(vehicles, Math.floor(Date.now() / 1000))));
   }, [vehicles]);
-  return buffer;
+  useEffect(() => {
+    let live = true;
+    setSeed([]);
+    Promise.resolve()
+      .then(() => fetch(`${LIVE_RECENT_URL}?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(routeShortName)}`))
+      .then(r => (r.ok ? r.json() as Promise<{ snapshots?: RecentSnapshot[] }> : null))
+      .then(j => { if (live && j?.snapshots?.length) setSeed(j.snapshots); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [slug, routeShortName]);
+  return useMemo(() => {
+    if (!seed.length) return polls;
+    // The recordings up to the first poll, then the polls: one history, oldest first.
+    const first = polls[0]?.capturedAt ?? Infinity;
+    return [...seed.filter(sn => sn.capturedAt < first), ...polls].reduce<RecentSnapshot[]>((b, sn) => addSnapshot(b, sn), []);
+  }, [seed, polls]);
 }
+
+/** The recorded last half hour of a live route's positions (local only). */
+export const LIVE_RECENT_URL = '/api/live-recent';
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
 export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows }: Props) {
@@ -133,7 +154,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
   const [dir, setDir] = useState<number | null>(() => readLink(currentSearch(), LIVE_MAP_URL).dir ?? null);
   const directionId = directions.some(([id]) => id === dir) ? dir! : directions[0]?.[0] ?? 0;
-  const recent = useRecentPositions(vehicles);
+  const recent = useRecentPositions(vehicles, slug, routeShortName);
   // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
