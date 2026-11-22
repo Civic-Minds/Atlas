@@ -44,7 +44,7 @@ For every call made through your link, we log the time, the tool used, the detai
 
 We use the log only to improve Atlas’s tools and data and to apply usage limits. Only Civic Minds can read it. We do not share it with other testers or sell it.
 
-The log has no automatic expiry and is kept until we delete it. You can ask us at any time to delete your log, or your link together with its log.
+The log is kept for 12 months, then deleted; you can ask us to delete it sooner, or to delete your link together with its log.
 
 Your conversation with your assistant stays with that assistant’s provider under its own terms. Atlas receives only what the assistant sends in a call.
 

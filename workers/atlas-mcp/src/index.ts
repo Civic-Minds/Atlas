@@ -17,6 +17,7 @@ import { coverageHandlers } from '../../../scripts/mcp/coverageTools';
 /** Every tool the hosted server answers: the shared ones plus route_now (CIV-1870), which the local server also adds. */
 const handlers = withScheduleWarning({ ...scheduleHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers, ...coverageHandlers });
 import { linkToken } from './linkToken';
+import { deleteOldCalls } from './retention';
 import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
 import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
@@ -232,5 +233,9 @@ export default {
       console.error(JSON.stringify({ error: e instanceof Error ? e.message : String(e), path: url.pathname.replace(/^\/t\/[^/]+/, '/t/…') }));
       return json({ error: 'Something went wrong on our side.' }, 500);
     }
+  },
+  // #1691: once a day, calls older than the retention period (12 months) are deleted.
+  async scheduled(_controller, env, ctx): Promise<void> {
+    ctx.waitUntil(deleteOldCalls(env.DB, new Date()).then(n => console.log(JSON.stringify({ deletedOldCalls: n }))));
   },
 } satisfies ExportedHandler<TestEnv>;
