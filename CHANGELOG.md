@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's vehicle card names the next stop at the end of a trip and between feed updates**: a bus just past its last stop, or a stop seconds behind the server's clock, showed no Next stop though the feed had one
 - **Atlas Studio MCP warns when a schedule is about to run out**: an answer from a schedule ending within a week says so, and the agency list shows when each schedule was added
 - **Atlas Studio MCP answers which routes run through the night**: by the Night Service page's rule, with each route's late-night and overnight frequency
 - **What's New shows each release's highlights**: the panel lists the three or four most important changes, and the What's New page keeps the full list

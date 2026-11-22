@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { nextStopName } from '../live-vehicles.js';
+import { nextStopName, vehicleNextStop } from '../live-vehicles.js';
 
 const names = new Map([['2140', 'Dundas St West at Bathurst St'], ['2147', 'Dundas St West at Beverley St']]);
 const stops = [
@@ -18,5 +18,20 @@ describe('next stop on the vehicle card (CIV-2024, #1653)', () => {
     expect(nextStopName({ currentStatus: 1 }, stops, names, 900)).toBeNull();
     expect(nextStopName({ currentStatus: 2 }, undefined, names, 900)).toBeNull();
     expect(nextStopName({ currentStatus: 2 }, stops, names, 1200)).toBeNull();
+  });
+});
+
+describe("next stop at a trip's end (#1673)", () => {
+  const ended = { stopTimeUpdate: [{ stopId: '2140', arrival: { time: 800 } }] };
+  const nextTrip = { stopTimeUpdate: [{ stopId: '2147', departure: { time: 1300 } }] };
+  it("reads the vehicle's next trip when every stop of its own trip is past", () => {
+    expect(vehicleNextStop({ currentStatus: 2 }, ended, [ended, nextTrip], names, 900)).toBe('Dundas St West at Beverley St');
+  });
+  it("keeps its own trip's stop while one is still ahead", () => {
+    expect(vehicleNextStop({ currentStatus: 2 }, { stopTimeUpdate: stops }, [nextTrip], names, 900)).toBe('Dundas St West at Bathurst St');
+  });
+  it('falls back to the vehicle id match, and gives none while stopped', () => {
+    expect(vehicleNextStop({ currentStatus: 2 }, undefined, [nextTrip], names, 900)).toBe('Dundas St West at Beverley St');
+    expect(vehicleNextStop({ currentStatus: 1 }, ended, [nextTrip], names, 900)).toBeNull();
   });
 });

@@ -116,6 +116,24 @@ type StopUpdate = { stopId?: string | null; arrival?: { time?: unknown } | null;
  * worded "At stop" yet) or without a trip update. The one place the card's stop is chosen: a fallback (the nearest
  * stop ahead along the route) would go here.
  */
+/**
+ * #1673: the vehicle's next stop from its trip updates: the one for its trip first, then any other update the feed
+ * carries for the vehicle (at a trip's end, its next trip), the first that still has a stop ahead.
+ */
+export function vehicleNextStop(
+  vehicle: { currentStatus?: number | null },
+  tripUpdate: { stopTimeUpdate?: readonly StopUpdate[] | null } | undefined,
+  vehicleUpdates: readonly { stopTimeUpdate?: readonly StopUpdate[] | null }[] | undefined,
+  names: ReadonlyMap<string, string>,
+  nowSec: number,
+): string | null {
+  for (const u of [tripUpdate, ...(vehicleUpdates ?? []).filter(v => v !== tripUpdate)]) {
+    const name = u ? nextStopName(vehicle, u.stopTimeUpdate, names, nowSec) : null;
+    if (name) return name;
+  }
+  return null;
+}
+
 export function nextStopName(
   vehicle: { currentStatus?: number | null },
   stops: readonly StopUpdate[] | null | undefined,
@@ -180,9 +198,16 @@ async function fetchHandler(request: Request): Promise<Response> {
   }
 
   const updatesByTrip = new Map<string, any>();
-  /** CIV-2024 (#1653): a trip update by its vehicle, for a position whose trip id the updates don't use. */
-  const updatesByVehicle = new Map<string, any>();
+  /**
+   * CIV-2024 (#1653): trip updates by their vehicle, for a position whose trip id the updates don't use. Every update
+   * a vehicle has (#1673): at a trip's end the feed already carries its next trip under the same vehicle.
+   */
+  const updatesByVehicle = new Map<string, any[]>();
   const headwaysByRoute = new Map<string, number[]>();
+  // #1673: stop times are read against the trip updates' own timestamp, not this server's clock: the feed is often
+  // 15-25 s old, and a stop a few seconds "past" by the clock is still ahead in the feed.
+  const feedHeaderSec = updates.ok ? Number(updates.data.header?.timestamp) : NaN;
+  const feedNowSec = Number.isFinite(feedHeaderSec) && feedHeaderSec > 0 ? feedHeaderSec : Date.now() / 1000;
   if (updates.ok) {
     for (const entity of updates.data.entity ?? []) {
       const tripUpdate = entity.tripUpdate;
@@ -190,7 +215,11 @@ async function fetchHandler(request: Request): Promise<Response> {
       const route = tripUpdate?.trip?.routeId ? routeById.get(tripUpdate.trip.routeId) : undefined;
       if (!tripId || !route) continue;
       updatesByTrip.set(tripId, tripUpdate);
-      if (tripUpdate.vehicle?.id) updatesByVehicle.set(String(tripUpdate.vehicle.id), tripUpdate);
+      if (tripUpdate.vehicle?.id) {
+        const key = String(tripUpdate.vehicle.id);
+        const list = updatesByVehicle.get(key);
+        if (list) list.push(tripUpdate); else updatesByVehicle.set(key, [tripUpdate]);
+      }
 
       const arrivalsByStop = new Map<string, number[]>();
       for (const stop of tripUpdate.stopTimeUpdate ?? []) {
@@ -256,7 +285,7 @@ async function fetchHandler(request: Request): Promise<Response> {
       vehicleLabel: vehicle.vehicle?.label ?? null,
       // CIV-2024: the stop the feed says it is heading to or arriving at, by name; none while it stands at a stop.
       nextStop: tripId
-        ? nextStopName(vehicle, (update ?? (vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined))?.stopTimeUpdate, names, Date.now() / 1000)
+        ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, names, feedNowSec)
         : null,
       status: statusForDelay(delayMin),
       statusLabel: null,
