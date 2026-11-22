@@ -12,6 +12,8 @@ export const ATLAS_MAP_SUMMARY = `${ATLAS_MAP_CLAUSE}.`;
 
 export const PAGE_NAMES = {
   map: 'Map',
+  /** A Live route page's name in its tab (CIV-284, Ryan's pick: "Live Reports"). */
+  liveReports: 'Live Reports',
   /** The all-agencies page's links. */
   agencies: 'Agencies',
   /** The all-agencies page's heading and tab (CIV-1614: "area", not "region"). */

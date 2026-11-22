@@ -150,7 +150,7 @@ function AnalysisPage() {
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`, true), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice report />;
   const title = `${agencyName} ${route}`;
