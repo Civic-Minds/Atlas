@@ -273,15 +273,14 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
 
   const showNote = chosen != null && ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
   // Each route as the list rows show it: the number in bold, the name regular, no dash (Ryan, CIV-1117 row 5).
-  const routeOptions = useMemo(() => [['', ALL_ROUTES_LABEL] as const, ...rankRoutes(s, networkV3, chosen ?? 'fallsBehind', band).map(({ r }) => {
-    const l = routeLabels({ shortName: liveRouteNumber(r), longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
-    return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
-  }),
+  // One label build for both lists (the ranked routes and Studio's held ones), so they read alike (CIV-984 guard).
+  const routeOption = (key: string, shortName: string, longName: string | null | undefined, mode: number | null | undefined) => {
+    const l = routeLabels({ shortName, longName: longName ?? null, mode: mode ?? 3, agencyName: s.agency });
+    return [key, <RouteRowName key={key} shortName={l.primary} name={l.secondary} />, l.text] as const;
+  };
+  const routeOptions = useMemo(() => [['', ALL_ROUTES_LABEL] as const, ...rankRoutes(s, networkV3, chosen ?? 'fallsBehind', band).map(({ r }) => routeOption(r.route, liveRouteNumber(r), r.longName, r.mode)),
   // CIV-2000 (Ryan: Studio always lists held routes): after the ranked ones, by number.
-  ...(inStudio ? [...s.held].sort((a, b) => a.route.localeCompare(b.route, undefined, { numeric: true })).map(h => {
-    const l = routeLabels({ shortName: h.route, longName: h.longName ?? null, mode: h.mode ?? 3, agencyName: s.agency });
-    return [h.route, <RouteRowName key={h.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
-  }) : [])], [s, networkV3, chosen, band, inStudio]);
+  ...(inStudio ? [...s.held].sort((a, b) => a.route.localeCompare(b.route, undefined, { numeric: true })).map(h => routeOption(h.route, h.route, h.longName, h.mode)) : [])], [s, networkV3, chosen, band, inStudio]); // eslint-disable-line react-hooks/exhaustive-deps
   const openRoute = (r: string) => { setRoute(r); setPick(null); };
   const overview = <OverviewList s={s} measure={chosen} band={band} route={route} network={networkV3} onPick={openRoute} />;
   const onMapPick = (p: MapPick | null) => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); };
