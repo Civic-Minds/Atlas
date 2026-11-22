@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated November 17, 2026.
+Last updated November 22, 2026.
 
 Atlas is a free public transit map and analysis service operated by Civic Minds. You do not need an account or need to provide personal information to browse the map.
 
@@ -17,6 +17,8 @@ If you contact us, we receive the email address, message, and any attachments yo
 ## Analytics {#analytics}
 
 Production Atlas uses Vercel Web Analytics and Vercel Speed Insights to understand usage and measure site performance. These services may receive page views, device and browser information, approximate location, referrer information, and performance measurements.
+
+The public Atlas site also uses Umami, a cookie-free analytics service, for every visitor. Umami receives page views, device and browser information, approximate location, and referrer information, with map coordinates removed from page addresses. It does not set cookies, so it runs without the consent prompt.
 
 Google Analytics 4 may load only when it is configured for the production build and you allow it, or where the current regional consent flow permits it. Google Analytics can receive page views, basic usage events, device and browser information, approximate location, and referrer information. Atlas does not use these analytics services for advertising or account profiling.
 
@@ -40,7 +42,7 @@ If browser geolocation is unavailable or cannot determine a position, Atlas may 
 
 Atlas processes public transit schedule data, including GTFS feeds published by transit agencies and data providers. Map tiles and map data are provided through CARTO and OpenStreetMap and are subject to their own terms, licenses, and privacy practices.
 
-Atlas is hosted and delivered through third-party infrastructure. Vercel provides hosting, Web Analytics, and Speed Insights; Cloudflare provides parts of Atlas’s data delivery and storage; Google may provide optional Analytics; and CARTO and OpenStreetMap provide map services and data. These providers may process technical request information as part of hosting, security, delivery, analytics, or performance measurement.
+Atlas is hosted and delivered through third-party infrastructure. Vercel provides hosting, Web Analytics, and Speed Insights; Cloudflare provides parts of Atlas’s data delivery and storage; Umami provides cookie-free analytics; Google may provide optional Analytics; and CARTO and OpenStreetMap provide map services and data. These providers may process technical request information as part of hosting, security, delivery, analytics, or performance measurement.
 
 Atlas does not sell personal information or use analytics for advertising or account profiling. We disclose information to service providers only as needed to operate, secure, measure, support, or improve Atlas, or when required by law.
 

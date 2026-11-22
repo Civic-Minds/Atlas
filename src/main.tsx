@@ -14,6 +14,7 @@ import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
 import AnalyticsConsent from './components/AnalyticsConsent';
+import { loadUmami } from './lib/umami';
 import { ColorVisionProvider } from './context/ColorVisionContext';
 import { RETIRED_APP_PATHS } from './utils/appGate';
 import RouteTracker from './components/RouteTracker';
@@ -85,6 +86,8 @@ if (import.meta.env.PROD && !isInternalTestSession()) {
   inject({ beforeSend: event => ({ ...event, url: withoutMapPosition(event.url) }) });
   injectSpeedInsights({ beforeSend: event => ({ ...event, url: withoutMapPosition(event.url) }) });
 }
+// CIV-2023: Umami for every visitor on the public site (its own checks), beside Google Analytics.
+loadUmami();
 
 trackKeyboardFocus();
 

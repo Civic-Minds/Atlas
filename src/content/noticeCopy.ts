@@ -571,6 +571,8 @@ export const SLOW_CONNECTION_DECLINE = 'Not now';
 export const ANALYTICS_CONSENT_PROMPT = 'Optional analytics help improve Atlas.';
 // N64 analytics-setting
 export const ANALYTICS_SETTING_NOTE = 'Optional analytics help us understand which parts of Atlas people use.';
+// N132 umami-note (CIV-2023: Umami runs for everyone, Google Analytics only after accepting)
+export const UMAMI_NOTE = 'Atlas also counts page views with Umami, which sets no cookies and runs for every visitor.';
 // N68 view-error
 export const VIEW_ERROR_TEXT = "This view couldn’t load because of an error.";
 // N68 map-error

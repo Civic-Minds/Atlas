@@ -8,7 +8,7 @@ import Toggle from './ui/Toggle';
 import { usePromptFlag } from '../hooks/usePromptFlag';
 import ArrowLink from './ui/ArrowLink';
 import PanelHeader from './ui/PanelHeader';
-import { CLOSE_PLACES, closeLabel, ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE, PRIVACY_SETTINGS_TITLE, ANALYTICS_CONSENT_LABEL, READ_PRIVACY_POLICY_LABEL, TOGGLE_ANALYTICS_LABEL } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE, PRIVACY_SETTINGS_TITLE, ANALYTICS_CONSENT_LABEL, READ_PRIVACY_POLICY_LABEL, TOGGLE_ANALYTICS_LABEL, UMAMI_NOTE } from '../content/noticeCopy';
 import { PRIVACY_PATH } from '../../shared/pagePaths';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
@@ -23,6 +23,7 @@ function Controls({ onClose }: { onClose: () => void }) {
       <PanelHeader titleId="privacy-settings-title" title={PRIVACY_SETTINGS_TITLE} onBack={onClose} backLabel={backLinkLabel(BACK_PLACES.aboutAtlas)} onClose={onClose} closeLabel={closeLabel(CLOSE_PLACES.privacySettings)} />
       <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
         <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>
+        <p className="leading-relaxed text-[var(--text-dim)]">{UMAMI_NOTE}</p>
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
