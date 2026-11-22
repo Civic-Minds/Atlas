@@ -32,7 +32,7 @@ export type RankWait = number | null | [number, number];
  * map filter's reading (shared/routeHeadwayFilter.ts routeFilterReading): what "every N or better" counts by (CIV-2014).
  * Summaries built before it have none; they count by waitMinutes.
  */
-export interface PeriodFigure { period: string; hours: string; waitMinutes: number | null; shown: string; meaning?: string; filter?: RouteFilterReading }
+export interface PeriodFigure { period: string; hours: string; waitMinutes: number | null; shown: string; meaning?: string; warning?: string; filter?: RouteFilterReading }
 
 /**
  * Everything the list-style tools need about one route on one day, so they never read its rows: its names and mode,
