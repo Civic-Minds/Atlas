@@ -26,7 +26,7 @@ import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, join
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPeriod } from './historyRefQuality.js';
-import { historyV2FromEnv } from './historyV2Flag.js';
+import { historyV2FromEnv, v1OverV2Refusal } from './historyV2Flag.js';
 import { splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
 import { compileAgencyShapes, formatShapeGap, shapeGaps, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
@@ -235,6 +235,15 @@ async function main() {
   if (!process.env.R2_ACCESS_KEY_ID) {
     console.error('Missing R2 credentials. Add R2_* vars to .env.local');
     process.exit(1);
+  }
+
+  // #1703: never let a flag-off build overwrite a live v2 config (checked before any work, so nothing is written).
+  if (!dryRun && !verifyOnly) {
+    const refusal = v1OverV2Refusal(v2, await r2Get('atlas/history-config.json'));
+    if (refusal) {
+      console.error(refusal);
+      process.exit(1);
+    }
   }
 
   // Load index.json for name/region/center lookup
