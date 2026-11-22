@@ -37,7 +37,16 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     if (near != null) {
       const res = await data.agenciesNear(String(near), km != null ? Number(km) : 60);
       if (!res) throw new Error(`No agency or city matching "${near}".`);
-      return { ...res, agencies: res.agencies.slice(0, 40).map(a => `${a.name} | ${a.region ?? ''} | ${a.km} km`), columns: 'name | region | distance between area centres' };
+      const { serverHas, atlasHas, ...rest } = res;
+      // #1687: a server with only some of Atlas's agencies (the hosted pilot) marks the ones it can't answer for.
+      const partial = serverHas < atlasHas;
+      const missing = res.agencies.slice(0, 40).filter(a => !a.here);
+      const pilotNote = partial && missing.length ? await data.notOnThisServerNote(missing.length <= 3 ? missing.map(a => a.name) : ['The agencies marked "not on this server"']) : null;
+      return {
+        ...rest, ...(pilotNote ? { note: [rest.note, pilotNote].filter(Boolean).join(' ') } : {}),
+        agencies: res.agencies.slice(0, 40).map(a => `${a.name} | ${a.region ?? ''} | ${a.km} km${partial && !a.here ? ' | not on this server' : ''}`),
+        columns: `name | region | distance from ${res.centredOn} to each agency's area centre${partial ? ' | "not on this server" where this server has no schedules for it' : ''}`,
+      };
     }
     const q = String(query ?? '').trim().toLowerCase(), reg = String(region ?? '').trim().toLowerCase(), ctry = String(country ?? '').trim();
     const all = await data.availableAgencies();
