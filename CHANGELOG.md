@@ -12,6 +12,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio MCP no longer answers for WMATA and 15 other agencies**: their data terms don't allow sharing their data with other tools, or need written permission first; they stay on the map and in History
 - **A Live route's Full report has everything in one page**: the Overview and the old full analysis now open the Full report, which keeps all their figures and charts below its own
 - **Live route pages are named Live Reports in the browser tab**: "Live Reports: 504 King", so a route's report reads apart from the Live map
+- **Bay Area agencies credit 511.org**: while an agency whose schedules come through 511 is in view, the map's credit line reads "Data provided by 511.org", linked to 511.org, as 511's data terms require; Schedule sources says the same
 - **Atlas Studio MCP agrees on the day after midnight**: just after midnight, its live answer used the new day's late-night schedule while its schedule answers used the previous day's
 - **Atlas Studio MCP doesn't guess ridership or fares**: asked for either, it says Atlas has no figure instead of giving a number from the AI's memory, unless the person asks for one
 - **Atlas Studio MCP says which frequency figure it gives**: History and schedule changes give the map's grade while route answers give the typical wait, so the same route could seem to disagree with itself
