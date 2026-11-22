@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Pages with no sections don't show an empty "On this page" menu**: the Analytics page showed the menu's heading with nothing under it when its figures didn't load
 - **Atlas Studio MCP finds an agency by its short name in lists**: asking for "HSR" listed nothing, though the route tools took it; the agency list now matches short names too
 - **Atlas Studio MCP's question count is right**: every new chat reused the same example ID and a blank ID counted as a question, so testers' questions were undercounted; assistants now make up a random ID, a blank one isn't counted, and an ID reused on another day counts as a new question
 - **History can't be wiped by a build without its v2 switch**: a build run without it replaced the published History file with the old format, dropping TTC, CTA and most MBTA routes; it now refuses when the live file holds v2 history

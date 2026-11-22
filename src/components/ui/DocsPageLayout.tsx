@@ -40,11 +40,13 @@ export default function DocsPageLayout({ width = 'reading', contents, articleCla
       </PageShell>
     );
   }
+  // A menu with no entries (a page whose data didn't load, #1717) shows nothing, as on pages without one.
+  const menu = contents && contents.items.length > 0 ? contents : undefined;
   return (
     <PageShell>
       <div className="mt-10 lg:grid lg:grid-cols-[12rem_minmax(0,42rem)] lg:gap-12 lg:items-start">
-        {contents && <PageContents title={contents.title} items={contents.items} />}
-        <article className={`space-y-8 ${contents ? '' : 'lg:col-start-2'} ${articleClassName}`.replace(/\s+/g, ' ').trim()}>
+        {menu && <PageContents title={menu.title} items={menu.items} />}
+        <article className={`space-y-8 ${menu ? '' : 'lg:col-start-2'} ${articleClassName}`.replace(/\s+/g, ' ').trim()}>
           {children}
           {method && <section data-research-method className="mt-10 border-t border-[var(--border-primary)] pt-8">{method}</section>}
         </article>
