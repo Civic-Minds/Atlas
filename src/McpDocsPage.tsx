@@ -18,9 +18,9 @@ import { tabTitle } from '../shared/pageNames';
  * read from the tool definitions the server sends Claude, each with its plain summary (TOOL_SUMMARIES), so it can't drift; the words are in shared/mcpDocsCopy.ts.
  */
 
-/** The local server's setup, as scripts/mcp/README.md gives it (paths in the main checkout). */
-const CHECKOUT = '/Users/ryan/Developer/Code/Platforms/Atlas';
-const NODE = '/opt/homebrew/bin/node';
+/** The local server's setup, as scripts/mcp/README.md gives it, with this Mac's own checkout and Node (vite.config.ts). */
+const CHECKOUT = __ATLAS_MCP_LOCAL__.checkout;
+const NODE = __ATLAS_MCP_LOCAL__.node;
 const ARGS = [`${CHECKOUT}/node_modules/tsx/dist/cli.mjs`, `${CHECKOUT}/scripts/mcp/atlas-mcp.ts`];
 const CLAUDE_CODE = `claude mcp add -s user atlas-studio -- ${NODE} ${ARGS.join(' ')}`;
 // CIV-2117: as the Nov 17-18 Gemini rounds added it (TEST-LOG; _reports/mcp-tests/run-agy.py).
@@ -49,9 +49,9 @@ const SECTIONS = [
 
 // #1671: the same lead style as the other internal pages.
 const PARAGRAPH = PAGE_LEAD;
-// Ryan, 2026-11-22: the testers table's headers sit on their bottom line and its cells on their top line, so a wrapped
-// header or a two-line figure doesn't leave the names floating mid-row.
-const TESTERS_TABLE = 'mt-4 [&_thead_th]:align-bottom [&_tbody_td]:align-top [&_tbody_th]:align-top';
+// Ryan, 2026-11-22: the testers table's headers and cells all start on their top line (a wrapped header's second line
+// hangs below), so a two-line figure doesn't leave the names floating mid-row.
+const TESTERS_TABLE = 'mt-4 [&_thead_th]:align-top [&_tbody_td]:align-top [&_tbody_th]:align-top';
 const LIST = 'mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--text-muted)]';
 const CODE = 'overflow-x-auto rounded-lg border border-[var(--border-primary)] bg-[var(--bg-panel)] p-3 text-xs leading-5 text-[var(--text-primary)]';
 
@@ -143,13 +143,16 @@ export default function McpDocsPage() {
       </Section>
 
       <Section id="mcp-connect">
+        <p className={PARAGRAPH}>{C.connect.hosted}</p>
+        <p className={PARAGRAPH}>{C.connect.hostedCode}</p>
+        <CodeBlock text={`claude mcp add --transport http atlas-studio ${C.connect.hostedLink}`} />
+        <p className={PARAGRAPH}>{C.connect.local}</p>
         <p className={PARAGRAPH}>{C.connect.code}</p>
         <CodeBlock text={CLAUDE_CODE} />
         <p className={PARAGRAPH}>{C.connect.desktop}</p>
         <CodeBlock text={CLAUDE_DESKTOP} />
         <p className={PARAGRAPH}>{C.connect.antigravity}</p>
         <CodeBlock text={ANTIGRAVITY} />
-        <p className={PARAGRAPH}>{C.connect.hosted}</p>
       </Section>
 
       <Section id="mcp-testers">
