@@ -518,6 +518,23 @@ export function scheduleOffsetForPattern(
   return cfg.scheduleOffsetMin[patternKey];
 }
 
+/**
+ * Live's route names by GTFS-RT route_id for an agency's polled routes (CIV-2073): what Live shows a vehicle as, and the
+ * key its observed headways pool under, so the recorder and Live's own polling name routes the same way.
+ */
+export function liveRouteIdNames(
+  slug: string,
+  /** The agency's route file (route_id to short name), for the ids a Live route has now (#1696); null keeps the listed ids. */
+  routeFile: ReadonlyMap<string, { shortName: string }> | null = null,
+): Map<string, { shortName: string; displayName: string }> {
+  const out = new Map<string, { shortName: string; displayName: string }>();
+  for (const route of LIVE_POLLING_ROUTES) {
+    if (route.slug !== slug) continue;
+    for (const routeId of liveConfigRouteIds(route, routeFile)) out.set(routeId, { shortName: route.displayRouteShortName, displayName: route.displayName ?? '' });
+  }
+  return out;
+}
+
 export const LIVE_TRIP_UPDATES_FEEDS: Record<string, string> = Object.fromEntries(
   [...new Set(LIVE_POLLING_ROUTES.map(c => c.slug))].map(slug => [
     slug,

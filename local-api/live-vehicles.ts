@@ -1,20 +1,25 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
   LIVE_POLLING_ROUTES,
+  liveRouteIdNames,
   isLiveApiServable,
-  liveConfigRouteIds,
   liveMapArchiveFeed,
 } from '../shared/livePollingConfig.js';
 import { delayMinFromDelaySec } from '../shared/liveVehicleDelay.js';
 import { joinLiveFeed, type LiveRecord, type LiveStopTime } from '../shared/liveJoin.js';
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
-import { LIVE_POLL_SEC } from '../shared/rules/live.js';
+import { LIVE_POLL_SEC, LIVE_POSITIONS_ONLY_SLUGS, LIVE_STALE_PACES, livePaceSec } from '../shared/rules/live.js';
+import { RECORDER_SLUGS } from '../shared/liveArchiveFeeds.js';
+import { latestSnapshot } from '../shared/liveSource.js';
+import { nowSource } from '../scripts/mcp/liveNowData.js';
 import { stopPlaces, type StopPlace } from './stopNames.js';
 import type { UpcomingStop } from '../shared/livePatterns.js';
 import { routeNames } from './routeNames.js';
 
 const FEED_TIMEOUT_MS = 15_000;
+/** Without trip updates (a failed trip feed, or a positions-only agency read from the recorder). */
+const DEGRADED_REASON = 'Arrival time and delay information is unavailable right now.';
 /** CIV-1770: speeds from movement between polls, across requests. */
 const movementSpeeds = new MovementSpeeds();
 const USER_AGENT = 'atlas-local-live/1.0 (https://transitatlas.fyi)';
@@ -208,8 +213,7 @@ export function vehiclesFromRecords(
     });
     const own = rec.stu.length ? asUpdate(rec.stu) : undefined;
     const others = (rec.stuV ?? []).map(asUpdate);
-    const vehicle = { currentStatus: rec.currentStatus as number | null };
-    const stop = rec.tripId ? vehicleNextStop(vehicle, own, others, places, feedNowSec) : null;
+    const stop = rec.tripId ? vehicleNextStop({ currentStatus: rec.currentStatus as number | null }, own, others, places, feedNowSec) : null;
     vehicles.push({
       id: rec.id,
       routeShortName: route.shortName,
@@ -238,12 +242,49 @@ export function vehiclesFromRecords(
   return vehicles;
 }
 
+/** Live's answer from the recorder's newest snapshot (CIV-2073), or null when there is none within twice the pace. */
+export async function fromRecorder(agency: string): Promise<Response | null> {
+  const store = nowSource()?.store;
+  if (!store) return null;
+  const now = Date.now() / 1000;
+  const pace = livePaceSec(agency);
+  const snap = await latestSnapshot(store, agency, now, pace);
+  if (!snap || now - snap.capturedAt > LIVE_STALE_PACES * pace) return null;
+  const archive = LIVE_POLLING_ROUTES.some(r => r.slug === agency) ? null : liveMapArchiveFeed(agency);
+  // The agency's route file: the archive's route names, and the ids each Live route has now (#1696).
+  const [places, archiveRoutes] = await Promise.all([stopPlaces(agency), routeNames(agency)]);
+  const routeById = liveRouteIdNames(agency, archiveRoutes);
+  if (archive && archiveRoutes) {
+    const filter = new RegExp(archive.positions.routeFilterSource);
+    for (const [routeId, name] of archiveRoutes) if (filter.test(routeId)) routeById.set(routeId, name);
+  }
+  const routeOf = (routeId: string) => routeById.get(routeId);
+  // Headways the recorder keyed by route_id (a route Live names only from the GTFS) are given Live's short name here.
+  const headways = Object.fromEntries(Object.entries(snap.headways).map(([k, v]) => [routeOf(k)?.shortName ?? k, v]));
+  return json({
+    // #1673: the next stop is read against the trip updates' own timestamp.
+    vehicles: vehiclesFromRecords(agency, snap.records, routeOf, places, now, snap.tripsTimestamp ?? now),
+    headways,
+    degraded: !snap.tripsOk,
+    degradedReason: snap.tripsOk ? null : DEGRADED_REASON,
+  }, 200, LIVE_CACHE_OK);
+}
+
 async function fetchHandler(request: Request): Promise<Response> {
   const agency = requestAgency(request);
   if (!agency) return json({ error: 'A single valid agency slug is required' }, 400);
 
   if (!isLiveApiServable(agency)) {
     return json({ error: 'Unknown, inactive, or unconfigured agency' }, 404);
+  }
+
+  // CIV-2073: an agency the cloud recorder covers is read from its newest snapshot, the same records and the same
+  // reading as polling it here; polled directly only when the snapshot is late (past twice the pace) or missing, and never
+  // for a positions-only agency (SF: the recorder is the 511 key's only user).
+  if (RECORDER_SLUGS.includes(agency)) {
+    const recorded = await fromRecorder(agency);
+    if (recorded) return recorded;
+    if (LIVE_POSITIONS_ONLY_SLUGS.includes(agency)) return json({ error: failureMessage('timeout'), reason: 'timeout' }, 502, LIVE_CACHE_UPSTREAM_ERROR);
   }
 
   const configs = LIVE_POLLING_ROUTES.filter(route => route.slug === agency);
@@ -271,15 +312,7 @@ async function fetchHandler(request: Request): Promise<Response> {
     return json({ error: failureMessage(positions.reason), reason: positions.reason }, 502, LIVE_CACHE_UPSTREAM_ERROR);
   }
 
-  const routeById = new Map<string, { shortName: string; displayName: string }>();
-  for (const route of configs) {
-    for (const routeId of liveConfigRouteIds(route, archiveRoutes)) {
-      routeById.set(routeId, {
-        shortName: route.displayRouteShortName,
-        displayName: route.displayName ?? '',
-      });
-    }
-  }
+  const routeById = liveRouteIdNames(agency, archiveRoutes);
   if (archive && archiveRoutes) {
     // The archiver's own route filter, so the map shows the routes it records (the MBTA's full feed carries every mode).
     const filter = new RegExp(archive.positions.routeFilterSource);
@@ -299,7 +332,7 @@ async function fetchHandler(request: Request): Promise<Response> {
     vehicles,
     headways,
     degraded: !updates.ok,
-    degradedReason: updates.ok ? null : 'Arrival time and delay information is unavailable right now.',
+    degradedReason: updates.ok ? null : DEGRADED_REASON,
   }, 200, LIVE_CACHE_OK);
 }
 

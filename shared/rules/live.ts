@@ -87,6 +87,24 @@ export const FEED_AGE_LIMITS_SEC = { fresh: 90, degraded: 300, stale: 900 } as c
 /** The Live map asks for vehicles this often, and the vehicles answer is cached at the edge for as long. */
 export const LIVE_POLL_SEC = 15;
 
+/**
+ * Each Live feed's pace in seconds (CIV-2073, measured 2026-11-21 over 4 min at 5 s polling; docs/operations/LIVE_POLLING.md):
+ * the slower of the feed's own refresh and its vehicles' GPS reports, by median; SF 90 s, positions only, inside 511's limit (Ryan, CIV-2074 to revisit). The recorder polls at it; Live reads a
+ * snapshot older than LIVE_STALE_PACES paces as late. An agency not measured uses LIVE_POLL_SEC.
+ */
+export const LIVE_FEED_PACE_SEC: Readonly<Record<string, number>> = {
+  ttc: 30, yrt: 30, burlington: 30, halifax: 30, edmonton: 30, hamilton: 60, sfmta: 90,
+};
+/**
+ * Agencies the recorder reads vehicle positions only for, no trip updates (CIV-2073, Ryan said "1" twice, knowing their
+ * cards then show no delay, destination or next stop): SF, to stay inside 511's ~60 requests an hour at 90 s. Revisit
+ * when 511 raises the limit (CIV-2074).
+ */
+export const LIVE_POSITIONS_ONLY_SLUGS: readonly string[] = ['sfmta'];
+export const livePaceSec = (slug: string): number => LIVE_FEED_PACE_SEC[slug] ?? LIVE_POLL_SEC;
+/** Positions older than this many paces read as late (CIV-2084, Ryan: "within 2× the agency's pace"). */
+export const LIVE_STALE_PACES = 2;
+
 // ---- Archive ----
 
 /** The R2 bucket every archived agency is recorded to (CIV-1906: one Live bucket, kept 60 days). */

@@ -68,6 +68,12 @@ export const LIVE_ARCHIVE_SHARDS = [
   { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
   // Boston's MBTA (CIV-1930, Ryan): positions only, recorded for analysis (not a Live agency yet). Green Line, Silver Line, Mattapan Line and buses 23, 57, 66 and 111.
   { id: 'mbta', positionSlugs: ['mbta'], tripSlugs: [], recording: true },
+  // CIV-2073: the cloud recorder (atlas.live.v2, workers/gtfs-rt-archiver/src/v2.ts, run by wrangler.recorder.toml), Hamilton first as the canary. Its
+  // feeds and paces come from shared/liveRecorderFeeds.ts.
+  {
+    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton'],
+    paused: { since: '2026-11-21', reason: 'Not deployed yet: waits for the Workers Paid plan and the manager’s go (CIV-2073).' },
+  },
 ] as const;
 
 /**
@@ -77,6 +83,12 @@ export const LIVE_ARCHIVE_SHARDS = [
 export const RECORDING_SLUGS: readonly string[] = [...new Set(
   LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).flatMap(s => [...s.positionSlugs, ...s.tripSlugs]),
 )];
+
+/**
+ * CIV-2073: the agencies the cloud recorder covers now: in a v2 shard that is recording. Live reads these from the
+ * recorder instead of polling the agency's feed itself.
+ */
+export const RECORDER_SLUGS: readonly string[] = LIVE_ARCHIVE_SHARDS.flatMap(s => ('v2Slugs' in s && 'recording' in s && s.recording ? [...s.v2Slugs] : []));
 
 /** A feed's recording state, from its shards: recording when any shard carrying it records, else paused with the latest pause. */
 export type LiveFeedStatus = { status: 'recording' } | { status: 'paused'; since: string; reason: string } | { status: 'not archived' };
