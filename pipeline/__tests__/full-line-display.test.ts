@@ -15,8 +15,8 @@ describe('a row carries its slot\'s full line for display only (CIV-321 S4)', ()
   beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-21T12:00:00') }); });
   afterAll(() => { vi.useRealTimers(); });
 
-  // CIV-2025: skipped, not deleted. This expectation pins a train-only rule Ryan had removed; the cloud dry run measures it, and if the rule proves protective it is restored and goes to him.
-  it.skip('GO KI to Union: the full line runs from Kitchener, its section values follow it, the row is unchanged', async () => {
+  // CIV-2025 restores 1 and 2 bring this back (with restore 2 alone the row drops Etobicoke North).
+  it('GO KI to Union: the full line runs from Kitchener, its section values follow it, the row is unchanged', async () => {
     const dir = resolve(__dirname, 'fixtures', 'go-ki-week');
     const zip = new JSZip();
     for (const file of readdirSync(dir)) zip.file(file, readFileSync(resolve(dir, file)));
@@ -49,8 +49,8 @@ describe('the section fields move to the agency sections file', () => {
   }
   const isLine = (f: any) => f.properties.stopId == null;
 
-  // CIV-2025: skipped, not deleted. This expectation pins a train-only rule Ryan had removed; the cloud dry run measures it, and if the rule proves protective it is restored and goes to him.
-  it.skip('route file has none of them; putting the file back gives the full features', async () => {
+  // CIV-2025 restore 2 brings this back.
+  it('route file has none of them; putting the file back gives the full features', async () => {
     const buf = await goKiZip();
     const full = JSON.parse((await processGtfsBuffer(buf, undefined, { slug: 'go' })).geojson).features;
     const result = await processAgencyFeeds(buf, [], { slug: 'go' } as any);

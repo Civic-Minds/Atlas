@@ -222,8 +222,8 @@ describe('tier regraded on the destination pool along the drawn line (#728)', ()
     expect(await tierFor('tue-fri')).toBe('60');
   });
 
-  // CIV-2025: skipped, not deleted. This expectation pins a train-only rule Ryan had removed; the cloud dry run measures it, and if the rule proves protective it is restored and goes to him.
-  it.skip('rail (#898 review): a pool better at the terminal than at an outer drawn stop keeps the outer stop\'s grade', async () => {
+  // CIV-2025 restore 1 brings this back (the #898 pool lift).
+  it('rail (#898 review): a pool better at the terminal than at an outer drawn stop keeps the outer stop\'s grade', async () => {
     // The TTC Line 1 case: A runs s0-s8 every 10; B is a short turn s3-s8 every 10, interleaved
     // with A from s3 on (6 of 9 drawn stops, every stop of the last third), so the destination
     // pool reads every 5 at the terminal while s0-s2 see only A's every 10. The headline reads the

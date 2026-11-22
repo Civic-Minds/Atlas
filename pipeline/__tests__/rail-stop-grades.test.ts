@@ -43,8 +43,8 @@ describe('rail stop grades (#756)', () => {
     }
   });
 
-  // CIV-2025: skipped, not deleted. This expectation pins a train-only rule Ryan had removed; the cloud dry run measures it, and if the rule proves protective it is restored and goes to him.
-  it.skip('WMATA Yellow southbound to Huntington on weekends: the tier reads the pooled sample its headline reads (#898)', async () => {
+  // CIV-2025 restore 2 brings this back (it passes with restore 2 alone, not with restore 1 alone).
+  it('WMATA Yellow southbound to Huntington on weekends: the tier reads the pooled sample its headline reads (#898)', async () => {
     // Trains to Huntington start at Greenbelt and at Mt Vernon Square under one headsign, every
     // 16 each and every 8 together at every stop of the drawn pattern. The headline reads the
     // pooled terminal sample (8); the tier used to be phase 2's grade of one pattern (16: tier
