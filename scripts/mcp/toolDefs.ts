@@ -9,6 +9,7 @@ import { CUTOFF_LIMITS, DEFAULT_CUTOFFS } from '../../shared/liveCutoffs';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { NEARBY_ROUTES_RADIUS_M, RANK_AGENCIES_MAX } from '../../shared/rules/limits';
 import { joinList } from '../../shared/overflowText';
+import { NIGHT_GRADES, OVERNIGHT_NIGHT_GRADE } from '../../shared/nightService';
 
 export const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
@@ -40,6 +41,8 @@ const TOOL_LIST = [
   { name: 'routes_at_frequency', description: `Routes in an agency that run every N minutes or better in a part of the day (by waitMinutes: ${WAIT})`, inputSchema: { type: 'object', properties: { agency, period: periodOrNow, every, day }, required: ['agency', 'period', 'every'] } },
   { name: 'compare_agencies', description: 'For several agencies, how many routes run every N minutes or better in a part of the day. An agency split across feeds (MTA New York) counts as one, a route in two of its feeds once.', inputSchema: { type: 'object', properties: { agencies: { type: 'array', items: { type: 'string' } }, period: periodOrNow, every, day }, required: ['agencies', 'period', 'every'] } },
   { name: 'routes_near', description: `Routes that stop near a place: a corner ("Bathurst and Bloor"), a station or a stop name, within ${NEARBY_ROUTES_RADIUS_M} m by default, with the stops each uses there and the weekday first and last trips of each route (a route that runs only at night is marked nightRoute). Then use route_frequency for how often they run.`, inputSchema: { type: 'object', properties: { agency, place: { type: 'string', description: 'Corner, station or stop name, e.g. "Bathurst and Bloor".' }, metres: { type: 'number' }, when: { type: 'string', enum: ['now'], description: `Optional "now": also say whether each route runs in the agency's current part of the day. ${NOW_HINT}` } }, required: ['agency', 'place'] } },
+  { name: 'on_demand_zones', description: `An agency's on-demand zones (rides booked by request in an area, not a fixed route), or the zones that cover a place or come within ${NEARBY_ROUTES_RADIUS_M} m of it: each zone's service hours, who can ride, how riders are picked up, trip rules and how to book, worded as Atlas's map shows them. Only zones Atlas has mapped; it says when an agency runs on-demand service Atlas hasn't mapped.`, inputSchema: { type: 'object', properties: { agency, place: { type: 'string', description: 'Optional corner, station or stop name, e.g. "Bathurst and Bloor". Leave out for all the agency’s zones.' }, metres: { type: 'number' } }, required: ['agency'] } },
+  { name: 'night_service', description: `An agency's routes that run through the night, by Atlas's Night Service rule: a departure every ${NIGHT_GRADES.join(', ')} min or better from 2 to 5 AM (each route's grade is its loosest direction), with each route's Late and Overnight figures as route_frequency gives them. For first and last trips use routes_by_hours.`, inputSchema: { type: 'object', properties: { agency, day, every: { type: 'number', enum: [...NIGHT_GRADES], description: `The night grade: ${NIGHT_GRADES.join(', ')} min; ${OVERNIGHT_NIGHT_GRADE} when left out.` } }, required: ['agency'] } },
   { name: 'route_history', description: "How a route's frequency has changed over the years, from Atlas's History: each schedule Atlas has kept for it, oldest first, with how often it ran in each part of the day. Coverage depends on the agency; the answer says when Atlas has none.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day }, required: ['agency', 'route'] } },
   { name: 'buses_needed', description: "Buses needed to run a route in a part of the day, from Atlas Studio's buses-needed file for the agency (the same figures Studio's page shows): buses scheduled now, buses needed at the schedule's own frequency, and buses needed every 10, 15, 20, 30 or 60 minutes. Routes that share buses are counted together. Counts use the schedule's own layover. Only agencies whose file has been built have an answer; for others it says so.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string' }, period: periodOrNow, every: { type: 'number', description: 'Optional target minutes between buses: 10, 15, 20, 30 or 60.' } }, required: ['agency', 'route', 'period'] } },
   { name: 'routes_by_hours', description: "Routes whose service ends early or starts late on a day type: every route whose last trip leaves before ends_before, or whose first trip leaves after starts_after, with its first and last trips. For questions such as which routes stop before 10 PM on Sundays.", inputSchema: { type: 'object', properties: { agency, day, ends_before: { type: 'string', description: 'Clock time, e.g. "22:00" or "10 PM".' }, starts_after: { type: 'string', description: 'Clock time, e.g. "07:00".' } }, required: ['agency'] } },
@@ -65,7 +68,7 @@ const TITLES: Record<string, string> = {
   routes_at_frequency: 'Routes at a frequency', compare_agencies: 'Compare agencies', routes_near: 'Routes near a place',
   route_history: 'Route history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
   trip_time: 'Trip time between stops', combined_frequency: 'Combined frequency between stops', schedule_changes: 'Schedule changes',
-  route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced', route_now: 'How a route is running right now',
+  route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced', route_now: 'How a route is running right now', on_demand_zones: 'On-demand zones', night_service: 'Night service',
 };
 /**
  * CIV-1900: one plain line per tool for people (the internal MCP docs page): "min", no field names. Kept beside the
@@ -87,6 +90,8 @@ export const TOOL_SUMMARIES: Record<string, string> = {
   route_bunching: 'How evenly a route\'s vehicles were spaced in past weeks, from Live\'s recordings.',
   // Pending Ryan's word-for-word OK (CIV-1870).
   route_now: 'Where a route\'s vehicles are bunched and where riders have waited longest right now, from Live\'s last half hour.',
+  on_demand_zones: 'An agency\'s on-demand zones, or those covering or near a place, with hours, pickup, trip rules and booking.',
+  night_service: 'An agency\'s routes that run through the night, every 30, 60 or 90 min or better from 2 to 5 AM.',
   schedule_changes: 'What changed between an agency\'s two most recent schedules: routes added and removed, and frequency changes.',
 };
 /** Every tool only reads Atlas's own published data: nothing is changed, and nothing outside Atlas is reached. */
@@ -94,7 +99,7 @@ const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHi
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.18.0';
+export const SERVER_VERSION = '0.19.0';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of

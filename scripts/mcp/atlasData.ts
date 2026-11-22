@@ -34,6 +34,7 @@ import { pairChanges } from '../../shared/scheduleChangePairing';
 import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
+import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 
@@ -106,6 +107,12 @@ export async function routesOn(agency: CatalogAgency, day: DayType): Promise<Rou
 }
 
 /** A route's summary: what the list tools read, made with the same functions route_frequency uses. */
+/** CIV-2080: the Night Service page's rule: the route's rows that pass at 90 or better, graded as its list grades them. */
+function nightGradeOf(rows: RouteRows['rows']): NightServiceFrequency | null {
+  const lit = (rows as unknown as Array<Record<string, unknown>>).filter(row => rowPassesNightGrade(row, 90));
+  return lit.length ? routeNightGrade(lit) : null;
+}
+
 export function summarize(r: RouteRows): RouteSummary {
   const runs = routeRuns(r.rows as never, undefined);
   return {
@@ -114,6 +121,8 @@ export function summarize(r: RouteRows): RouteSummary {
     figures: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k)])) as Record<PeriodKey, PeriodFigure>,
     span: serviceSpan(r),
     bounds: runs ? { first: runs.first ?? (runs.hours.length ? runs.hours[0] * 60 : null), last: runs.last ?? (runs.hours.length ? runs.hours[runs.hours.length - 1] * 60 + 59 : null) } : null,
+
+    night: nightGradeOf(r.rows),
   };
 }
 
@@ -570,13 +579,18 @@ export function cornerSeeds<S extends { name: string; lat: number; lon: number }
   return { stops: [...new Set(close.flatMap(p => [p.x, p.y]))], apart: Math.round(best) };
 }
 
-export async function routesNear(agency: CatalogAgency, place: string, metres = NEARBY_ROUTES_RADIUS_M) {
-  const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
+/** The stops a place names: every stop whose name holds each part, else the closest pair on each street of a corner. routes_near and on_demand_zones both place a corner this way. */
+export async function placeStops(agency: CatalogAgency, place: string) {
   const parts = placeParts(place);
   const stops = await stopsOf(agency);
-  let seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
-  const corner = seeds.length ? null : cornerSeeds(stops, parts);
-  if (corner) seeds = corner.stops;
+  const named = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
+  const corner = named.length ? null : cornerSeeds(stops, parts);
+  return { stops, seeds: corner ? corner.stops : named, corner };
+}
+
+export async function routesNear(agency: CatalogAgency, place: string, metres = NEARBY_ROUTES_RADIUS_M) {
+  const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
+  const { stops, seeds, corner } = await placeStops(agency, place);
   const near = stops.filter(s => seeds.some(t => withinMetres({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }, metres)));
   const routeNames = await routeIdNames(agency);
   const byRoute = new Map<string, Set<string>>();
