@@ -307,7 +307,9 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
     waitMinutes,
     shown: shown ?? (trips > 0 ? `some trips (${trips}), but no regular frequency` : 'no service'),
     ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
-    ...(edgeWait(shown, waitMinutes) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
+    // #1711: a range in shown drops the card's edge words (TTC 501 Sunday Late "every 5–10 min" beside a 47 min wait), so
+    // the edge the filter read is named here in the card's own words ("every 5 min until 1:13 AM").
+    ...(edgeWait(shown, waitMinutes) || edgeBehindWait(shown, waitMinutes, filter.edgeText) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it${!edgeWait(shown, waitMinutes) && filter.edgeText ? ` (${filter.edgeText})` : ''}, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
     ...(waitBelowShown(shown, waitMinutes) ? { warning: `waitMinutes (every ${waitMinutes} min) is more frequent than anything this route's list shows (${shown}). Atlas may have read it from a stretch this route shares with other routes, so it can overstate this route's own service. Go by "shown" for this route, and say the two disagree.` } : {}),
     filter: routeFilterReading(r.rows, period),
   };
@@ -317,6 +319,17 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
 export function edgeWait(shown: string | null, waitMinutes: number | null): boolean {
   if (!shown || waitMinutes == null || !/\b(until|from)\b/.test(shown)) return false;
   const shownMins = [...shown.matchAll(/every (\d+(?:\.\d+)?)/g)].map(m => Number(m[1]));
+  return shownMins.length > 0 && waitMinutes > Math.max(...shownMins);
+}
+
+/**
+ * #1711: the filter's number comes from service starting or stopping partway through the period (its reading has edge
+ * words) and is longer than every figure shown, though shown names no edge (a range drops the card's edge words).
+ */
+export function edgeBehindWait(shown: string | null, waitMinutes: number | null, edgeText: string | undefined): boolean {
+  if (!shown || waitMinutes == null || !edgeText) return false;
+  // Both ends of a range ("every 5–10 min" is 5 and 10), so a wait inside the range is never called an edge wait.
+  const shownMins = [...shown.matchAll(/every (\d+(?:\.\d+)?)(?:–(\d+(?:\.\d+)?))?/g)].flatMap(m => [Number(m[1]), ...(m[2] ? [Number(m[2])] : [])]);
   return shownMins.length > 0 && waitMinutes > Math.max(...shownMins);
 }
 
