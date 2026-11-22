@@ -7,6 +7,23 @@
     -106.648
   ],
   "feedUrl": "https://apps5.saskatoon.ca/data/gtfs/google_transit.zip",
+  "excludeTripHeadsigns": [
+    "Not In Service",
+    "Out of Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "14",
+        "25",
+        "27",
+        "29",
+        "55",
+        "63"
+      ]
+    }
+  ],
   "region": "Saskatchewan",
   "bbox": [
     52.03,

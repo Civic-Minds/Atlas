@@ -14,6 +14,17 @@
     -81.15702
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
+  "excludeTripHeadsigns": [
+    "Not in Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "16"
+      ]
+    }
+  ],
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "1/20261113 22:00:00/20261114 00:00:00",
   "lastRefreshedAt": "2026-11-16",

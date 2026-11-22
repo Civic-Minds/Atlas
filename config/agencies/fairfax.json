@@ -15,6 +15,20 @@
     -77.0219
   ],
   "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
+  "excludeTripHeadsigns": [
+    "Not In Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "9999A",
+        "9999B",
+        "9999C",
+        "STRGW"
+      ]
+    }
+  ],
   "lastFeedExpiry": "20280930",
   "lastFeedVersion": "S1000208",
   "lastRefreshedAt": "2026-11-02",

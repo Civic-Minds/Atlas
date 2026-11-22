@@ -8,6 +8,20 @@
     -77.86
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
+  "excludeTripHeadsigns": [
+    "Out of Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "BL",
+        "BL Gameday",
+        "WL",
+        "WL Gameday"
+      ]
+    }
+  ],
   "lastFeedExpiry": "20261213",
   "lastFeedVersion": "20260810",
   "lastRefreshedAt": "2026-11-02",

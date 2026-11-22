@@ -16,6 +16,17 @@
     -121.55
   ],
   "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
+  "excludeTripHeadsigns": [
+    "NOT IN SERVICE"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "914"
+      ]
+    }
+  ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/latest.zip",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "2026-10-09_14:57",
