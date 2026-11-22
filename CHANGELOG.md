@@ -20,6 +20,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **A Live route page's "data up to" date stays plain grey when the data is old**: it turned bold warning colour, though the date already says how old it is, as the map's pill now does
 - **Atlas Studio MCP answers questions about on-demand zones**: it can list an agency's zones, or those covering or near a corner, with hours, pickup and booking as the map shows them
 - **Live's days-recorded count counts only near-full days**: Hamilton read 3 days when its first day held only a third of a day's recordings
+- **Agencies whose data licence asks for credit are credited**: the map's credit line names them while they're on screen, and About's schedule sources list each one by name, opening to its licence and any wording it requires
 - **The Diagnostics pages' text and tables match the MCP page**: their intro was larger and their tables smaller and denser than the other internal pages
 - **The "On this page" menu no longer slides sideways**: scrolling sideways over it on a docs page moved the whole list
 - **Atlas Studio MCP warns when a route's two frequency figures disagree**: SEPTA 63 read "every 10 min" beside its own "every 60 min" with no explanation; the answer now flags it and goes by the route's list

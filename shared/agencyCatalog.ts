@@ -13,6 +13,9 @@ export interface AgencyDataLicense {
   attribution: 'required' | 'optional' | 'none' | 'unread';
   name?: string;
   credit?: string;
+  /** The page's own words before the data's last-updated date, where it asks for one (STO: "Dernière mise à jour :"); the
+   *  credit then ends with that label and the date Atlas last took the feed (lastRefreshedAt). */
+  updatedLabel?: string;
   checkedOn: string;
 }
 

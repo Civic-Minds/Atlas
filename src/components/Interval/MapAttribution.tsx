@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import AppLink from '../ui/AppLink';
 import { MAP_FOOTER_PILLS_PHONE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS, FLOATING_CARD, MAP_BADGE, MAP_BADGE_LABEL, Z_PANEL } from '../../styles';
 import { FEATURES } from '../../../shared/config';
@@ -11,8 +11,10 @@ import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
 import { CONTEXT_CREDIT_SHORT, contextCreditTitle, MASSDOT_CREDIT_SHORT, MASSDOT_CREDIT_URL, MBTA_VEHICLES_CREDIT, ABOUT_ATLAS, WHATS_NEW_TITLE, FEEDBACK_LABEL } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
+import type { AgencyCredit } from '../../utils/agencyCredits';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
 import { mailto } from '../../../shared/contact';
+import { andOthers } from '../../../shared/overflowText';
 import { markWhatsNewSeen, whatsNewUnseen } from '../../utils/whatsNewSeen';
 
 /** A small dot on What's New while this release hasn't been opened here (light, no fill around it; VISUAL.md). */
@@ -21,9 +23,38 @@ function UnseenDot() {
 }
 
 
+/** The most agency names the credit pill lists before "and N other agencies" (CIV-461): one compact line. */
+const PILL_CREDITS_MAX = 2;
+
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean } = {}) {
+export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false, agencyCredits = [], onCreditOpen }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean; /** CIV-461: the agencies in view whose data licence requires credit, in the same pill (MassDOT's pattern). */ agencyCredits?: readonly AgencyCredit[]; /** CIV-461: a credited name (or the "and N other agencies" overflow, null) opens About → Schedule sources there. */ onCreditOpen?: (slug: string | null) => void } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  // The census credit lengthens the pill: on phones it narrows and ellipses. Agency credits never ellipse (CIV-461, Ryan:
+  // "the crowding can just list the one(s) tequiring attribution then + more"): the names that fit, then "and N other agencies".
+  // One entry per short name (nine "BC Transit" agencies are one), at most PILL_CREDITS_MAX before the overflow (Ryan, on
+  // the full legal names running across the map: keep it to one compact line); full names and sentences are in About.
+  const pillCredits = agencyCredits.filter((c, i) => agencyCredits.findIndex(o => o.shortName === c.shortName) === i);
+  const creditsKey = pillCredits.map(c => c.slug).join('|');
+  const [shownCredits, setShownCredits] = useState(Math.min(pillCredits.length, PILL_CREDITS_MAX));
+  const creditBoxRef = useRef<HTMLDivElement>(null);
+  const [boxWidth, setBoxWidth] = useState(0);
+  useLayoutEffect(() => { setShownCredits(Math.min(pillCredits.length, PILL_CREDITS_MAX)); }, [creditsKey, boxWidth, pillCredits.length]);
+  useLayoutEffect(() => {
+    const el = creditBoxRef.current;
+    if (el && shownCredits > 1 && el.scrollWidth > el.clientWidth) setShownCredits(n => n - 1);
+  }, [shownCredits, creditsKey, boxWidth]);
+  useEffect(() => {
+    const el = creditBoxRef.current?.parentElement;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(entries => setBoxWidth(Math.round(entries[0]?.contentRect.width ?? 0)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const hasCredits = pillCredits.length > 0;
+  const hiddenCredits = pillCredits.length - Math.min(shownCredits, pillCredits.length);
+  // The overflow counts agencies, not entries: a hidden "BC Transit" entry stands for each BC Transit agency in view.
+  const shownNames = new Set(pillCredits.slice(0, pillCredits.length - hiddenCredits).map(c => c.shortName));
+  const hiddenAgencies = agencyCredits.filter(c => !shownNames.has(c.shortName)).length;
   // The dot shows until What's New is opened, and returns with the next release.
   const [unseen, setUnseen] = useState(() => whatsNewUnseen(appVersion));
   useEffect(() => {
@@ -114,27 +145,41 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null, mas
         {FEEDBACK_LABEL}
       </a>
       {/* With the shading on, the credit is longer: on phones the row is narrowed and the credit shrinks (ellipsis) so it stays left of the zoom buttons. */}
-      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-w-full min-w-0' : ''}`}>
+      <div ref={creditBoxRef} className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn || hasCredits ? 'max-w-full min-w-0' : ''} ${hasCredits ? 'overflow-hidden' : ''}`}>
         <BasemapCredit
-          className={contextLayerOn ? 'min-w-0 truncate' : ''}
-          extra={contextLayerOn || massDotOn ? (
+          className={contextLayerOn && !hasCredits ? 'min-w-0 truncate' : ''}
+          extra={contextLayerOn || massDotOn || agencyCredits.length > 0 ? (
             <>
-              {contextLayerOn && (
-                <OutboundLink
-                  href="https://www.census.gov/programs-surveys/acs"
-                  kind="attribution"
-                  className={BASEMAP_CREDIT_LINK}
-                  title={contextYear ? contextCreditTitle(acsWindow(contextYear)) : undefined}
-                >
-                  {CONTEXT_CREDIT_SHORT}
-                </OutboundLink>
-              )}
-              {contextLayerOn && massDotOn && <span className={MAP_BADGE_LABEL}> · </span>}
-              {massDotOn && (
-                <OutboundLink href={MASSDOT_CREDIT_URL} kind="attribution" className={BASEMAP_CREDIT_LINK} title={MBTA_VEHICLES_CREDIT}>
-                  {MASSDOT_CREDIT_SHORT}
-                </OutboundLink>
-              )}
+              {[
+                ...(contextLayerOn ? [(
+                  <OutboundLink
+                    key="context"
+                    href="https://www.census.gov/programs-surveys/acs"
+                    kind="attribution"
+                    className={BASEMAP_CREDIT_LINK}
+                    title={contextYear ? contextCreditTitle(acsWindow(contextYear)) : undefined}
+                  >
+                    {CONTEXT_CREDIT_SHORT}
+                  </OutboundLink>
+                )] : []),
+                ...(massDotOn ? [(
+                  <OutboundLink key="massdot" href={MASSDOT_CREDIT_URL} kind="attribution" className={BASEMAP_CREDIT_LINK} title={MBTA_VEHICLES_CREDIT}>
+                    {MASSDOT_CREDIT_SHORT}
+                  </OutboundLink>
+                )] : []),
+                ...pillCredits.slice(0, pillCredits.length - hiddenCredits).map(c => (
+                  <button key={`agency-${c.slug}`} type="button" className={`${BASEMAP_CREDIT_LINK} cursor-pointer`} title={c.text} onClick={() => onCreditOpen?.(c.slug)}>
+                    {c.shortName}
+                  </button>
+                )),
+                ...(hiddenCredits > 0 ? [(
+                  <button key="agency-more" type="button" className={`${BASEMAP_CREDIT_LINK} cursor-pointer`} onClick={() => onCreditOpen?.(null)}>
+                    {andOthers(hiddenAgencies, 'agency', 'agencies')}
+                  </button>
+                )] : []),
+              ].map((link, i) => (
+                <span key={link.key}>{i > 0 && <span className={MAP_BADGE_LABEL}> · </span>}{link}</span>
+              ))}
             </>
           ) : undefined}
         />
