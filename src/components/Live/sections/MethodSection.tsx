@@ -32,7 +32,7 @@ const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0], namedAbove?: 
  * still anchors.
  */
 export type MethodSectionProps =
-  | { scope: 'route'; data: Ready; /** The left-out days' note the page already shows above, if any (#1490). */ namedAbove?: string | null }
+  | { scope: 'route'; data: Ready; /** The left-out days' note the page already shows above, if any (#1490). */ namedAbove?: string | null; /** The element id, when a page draws the block more than once (the Full report, CIV-284); else "method". */ id?: string }
   | { scope: 'agency'; s: AgencySummary; /** The agency's short name (useLiveAgencyName). */ agencyName: string };
 
 export default function MethodSection(props: MethodSectionProps): ReactNode {
@@ -41,7 +41,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
   if (phone) {
     const v3 = props.scope === 'route' ? props.data.v3 : null;
     return (
-      <MethodFootnote id={props.scope === 'route' ? 'method' : 'agency-method'} groups={[{ label: METHOD_GROUPS.numbers, items: phoneMethodLines(v3
+      <MethodFootnote id={props.scope === 'route' ? props.id ?? 'method' : 'agency-method'} groups={[{ label: METHOD_GROUPS.numbers, items: phoneMethodLines(v3
         ? { aheadMin: Math.abs(v3.thresholds.earlyAtOrBelowMin), underMin: Math.round(v3.thresholds.bunchedGapSec / 60) }
         : {}) }]} after={termsLink} />
     );
@@ -58,7 +58,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
     const glo = lim.leftOut;
     const unknown = v3.serviceDelivered?.overall.unknown ?? 0;
     return (
-      <MethodFootnote id="method" groups={[
+      <MethodFootnote id={props.id ?? 'method'} groups={[
       { label: METHOD_GROUPS.numbers, items: [
         lateLine,
         aheadLine(Math.abs(v3.thresholds.earlyAtOrBelowMin)),
