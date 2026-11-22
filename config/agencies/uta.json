@@ -3,6 +3,11 @@
   "officialName": "Utah Transit Authority",
   "commonName": "UTA",
   "websiteUrl": "http://www.rideuta.com",
+  "dataLicense": {
+    "url": "http://developer.rideuta.com/TermsOfUse.aspx",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     40.76,
     -111.89

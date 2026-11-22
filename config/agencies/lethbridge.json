@@ -2,6 +2,11 @@
   "slug": "lethbridge",
   "officialName": "Lethbridge Transit",
   "websiteUrl": "https://LethbridgeTransit.ca",
+  "dataLicense": {
+    "url": "https://opendata.lethbridge.ca/pages/open-data-license",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Alberta",
   "center": [
     49.694,

@@ -5,6 +5,12 @@
   "shortName": "NICE",
   "labelPlace": "Nassau County",
   "websiteUrl": "http://www.nicebus.com",
+  "dataLicense": {
+    "url": "http://www.nicebus.com/NiceBus/media/NiceBus-Images/131030_Legal-Agreements.pdf",
+    "attribution": "unread",
+    "name": "Terms of Service for Developers",
+    "checkedOn": "2026-11-21"
+  },
   "region": "New York",
   "center": [
     40.73,

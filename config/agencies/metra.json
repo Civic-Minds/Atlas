@@ -4,6 +4,11 @@
   "nameQualifier": "Chicago",
   "displayArea": "Chicago",
   "websiteUrl": "http://www.metrarail.com/",
+  "dataLicense": {
+    "url": "https://metra.com/gtfs-realtime-api-key-request-license-agreement",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     41.8781,
     -87.6298

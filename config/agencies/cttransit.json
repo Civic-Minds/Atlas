@@ -55,5 +55,11 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "05de0a124a86b050",
   "feedObtainedAt": "20261019",
-  "lastFeedStart": "20260830"
+  "lastFeedStart": "20260830",
+  "dataLicense": {
+    "url": "https://www.cttransit.com/about/developers/terms-of-use",
+    "attribution": "none",
+    "name": "CTTRANSIT License Agreement",
+    "checkedOn": "2026-11-21"
+  }
 }

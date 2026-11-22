@@ -2,6 +2,11 @@
   "slug": "sudbury",
   "officialName": "Greater Sudbury Transit",
   "websiteUrl": "https://www.greatersudbury.ca/living/transit/",
+  "dataLicense": {
+    "url": "http://www.greatersudbury.ca/inside-city-hall/open-government/open-data/open-data-apps/",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     46.49,
     -81.01

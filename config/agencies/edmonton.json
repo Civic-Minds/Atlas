@@ -4,6 +4,11 @@
   "commonName": "ETS",
   "shortName": "ETS",
   "websiteUrl": "https://www.edmonton.ca/ets",
+  "dataLicense": {
+    "url": "https://data.strathcona.ca/Transportation/Transit-Bus-Schedule-GTFS-Data-Feed-Zip-File/2ek5-rxs5/data?no_mobile=true",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Alberta",
   "center": [
     53.5461,

@@ -12,6 +12,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2079/latest.zip",
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://gobroomecounty.com/transit",
+  "dataLicense": {
+    "url": "https://www.gobroomecounty.com/transit/gtfs",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

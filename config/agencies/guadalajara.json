@@ -3,6 +3,11 @@
   "officialName": "Mi Transporte",
   "nameQualifier": "Guadalajara",
   "websiteUrl": "https://setrans.jalisco.gob.mx/",
+  "dataLicense": {
+    "url": "https://datos.jalisco.gob.mx/dataset/actualizacion-de-rutas-de-transporte-publico-colectivo-y-masivo-en-la-zona-metropolitana-de",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Jalisco",
   "center": [
     20.6432,

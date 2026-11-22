@@ -4,6 +4,13 @@
   "labelPlace": "York Region",
   "shortName": "YRT",
   "websiteUrl": "http://www.yrt.ca",
+  "dataLicense": {
+    "url": "https://www.yrt.ca/en/about-us/open-data-licence-agreement.aspx",
+    "attribution": "optional",
+    "name": "Open Data Licence Agreement",
+    "credit": "Contains public transit Information made available under YRT's Open Data Licence",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     43.8828,

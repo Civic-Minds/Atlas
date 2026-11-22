@@ -2,6 +2,11 @@
   "slug": "raba",
   "officialName": "Redding Area Bus Authority",
   "websiteUrl": "http://www.rabaride.com/",
+  "dataLicense": {
+    "url": "https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     40.5695,
     -122.3429

@@ -2,6 +2,13 @@
   "slug": "metrohouston",
   "officialName": "METRO Houston",
   "websiteUrl": "http://www.ridemetro.org",
+  "dataLicense": {
+    "url": "https://www.ridemetro.org/about/news-media/digital-assets",
+    "attribution": "required",
+    "name": "Data Use Agreement",
+    "credit": "Data is provided by permission of The Metropolitan Transit Authority of Harris County, Texas.",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     29.76,
     -95.37

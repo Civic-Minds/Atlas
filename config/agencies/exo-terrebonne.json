@@ -3,6 +3,11 @@
   "officialName": "exo",
   "nameQualifier": "Terrebonne-Mascouche",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/MRCLM",
+  "dataLicense": {
+    "url": "https://www.donneesquebec.ca/licence/",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Quebec",
   "parentAgency": "exo",
   "center": [

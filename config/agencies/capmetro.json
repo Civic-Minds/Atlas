@@ -4,6 +4,12 @@
   "nameQualifier": "Austin",
   "displayArea": "Austin",
   "websiteUrl": "http://www.capmetro.org",
+  "dataLicense": {
+    "url": "https://www.capmetro.org/metrolabs/",
+    "attribution": "none",
+    "name": "Open Data License Agreement and Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     30.27,
     -97.74

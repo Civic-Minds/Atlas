@@ -2,6 +2,11 @@
   "slug": "nashvillemta",
   "officialName": "Nashville MTA WeGo Public Transit",
   "websiteUrl": "http://www.wegotransit.com",
+  "dataLicense": {
+    "url": "https://www.wegotransit.com/contact-us/data-request-submission/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     36.16,
     -86.78

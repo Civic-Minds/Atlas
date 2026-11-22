@@ -3,6 +3,13 @@
   "officialName": "Cherriots",
   "nameQualifier": "Salem, OR",
   "websiteUrl": "https://www.cherriots.org/",
+  "dataLicense": {
+    "url": "https://www.cherriots.org/datalicense/",
+    "attribution": "required",
+    "name": "Data Licensing Agreement",
+    "credit": "Reproduced with permission granted by the Salem Area Mass Transit District.",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     44.9396,
     -122.9975

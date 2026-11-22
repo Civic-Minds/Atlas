@@ -19,6 +19,11 @@
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-10-07",
   "websiteUrl": "http://www.southportland.org/departments/bus-transportation/",
+  "dataLicense": {
+    "url": "https://www.gpmetro.org/about-us/projects-initiatives/developers/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Portland, Maine"
   ],

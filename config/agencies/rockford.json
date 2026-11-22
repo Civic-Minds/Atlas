@@ -2,6 +2,11 @@
   "slug": "rockford",
   "officialName": "Rockford Mass Transit District",
   "websiteUrl": "https://rmtd.org/",
+  "dataLicense": {
+    "url": "https://rmtd.org/gtfs/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     42.27,
     -89.09

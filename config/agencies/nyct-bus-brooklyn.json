@@ -4,6 +4,11 @@
   "nameQualifier": "Brooklyn",
   "displayArea": "Brooklyn",
   "websiteUrl": "http://www.mta.info",
+  "dataLicense": {
+    "url": "http://web.mta.info/developers/developer-data-terms.html",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     40.65,
     -73.949

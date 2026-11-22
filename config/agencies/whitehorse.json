@@ -2,6 +2,11 @@
   "slug": "whitehorse",
   "officialName": "Whitehorse Transit",
   "websiteUrl": "https://whitehorse.transloc.com",
+  "dataLicense": {
+    "url": "https://data.whitehorse.ca/",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     60.72,
     -135.05

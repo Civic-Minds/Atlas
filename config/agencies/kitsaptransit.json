@@ -18,6 +18,12 @@
   "lastFeedVersion": "S1000068",
   "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "http://www.kitsaptransit.com",
+  "dataLicense": {
+    "url": "http://www.kitsaptransit.com/privacy-policy#developer",
+    "attribution": "none",
+    "name": "Kitsap Transit Developer User Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Seattle, Washington",
     "Burien, Washington",

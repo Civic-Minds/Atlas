@@ -2,6 +2,11 @@
   "slug": "portlandme",
   "officialName": "Greater Portland Metro",
   "websiteUrl": "https://www.gpmetro.org",
+  "dataLicense": {
+    "url": "https://www.gpmetro.org/about-us/projects-initiatives/developers/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     43.66,
     -70.26

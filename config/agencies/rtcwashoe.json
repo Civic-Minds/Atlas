@@ -3,6 +3,12 @@
   "officialName": "Regional Transportation Commission of Washoe County",
   "commonName": "RTC Washoe",
   "websiteUrl": "http://www.rtcwashoe.com",
+  "dataLicense": {
+    "url": "https://www.rtcwashoe.com/terms-of-use/",
+    "attribution": "none",
+    "name": "RTC Washoe Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     39.53,
     -119.81

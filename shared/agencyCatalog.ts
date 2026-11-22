@@ -4,6 +4,18 @@ import type { SupplementalFeedMeta } from './feedAvailability';
 import type { HiddenAgencyReason } from './hiddenAgencyNote';
 import type { CorrectionNotice } from './correctionNotices';
 
+/**
+ * CIV-461: the agency's own data licence page, as read on `checkedOn`. `credit` is the page's own wording, verbatim,
+ * and is set only where the page gives one. `unread` means the page could not be read; check it before relying on it.
+ */
+export interface AgencyDataLicense {
+  url: string;
+  attribution: 'required' | 'optional' | 'none' | 'unread';
+  name?: string;
+  credit?: string;
+  checkedOn: string;
+}
+
 /** Fields the browser needs; pipeline feed URLs, source credentials and internal notes never ship here. */
 export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   slug: string;
@@ -43,6 +55,7 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   gtfsFares?: boolean;
   fareUrl?: string;
   websiteUrl?: string;
+  dataLicense?: AgencyDataLicense;
   searchAliases?: string[];
   cities?: string[];
   timezone?: string | null;

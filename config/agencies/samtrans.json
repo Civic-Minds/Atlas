@@ -3,6 +3,12 @@
   "officialName": "San Mateo County Transit District",
   "commonName": "samTrans",
   "websiteUrl": "http://www.samtrans.com",
+  "dataLicense": {
+    "url": "https://511.org/about/terms",
+    "attribution": "none",
+    "name": "MTC Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     37.5672,
     -122.3439

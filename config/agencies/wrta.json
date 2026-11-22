@@ -2,6 +2,11 @@
   "slug": "wrta",
   "officialName": "Worcester Regional Transit Authority",
   "websiteUrl": "https://therta.com/",
+  "dataLicense": {
+    "url": "https://www.massdot.state.ma.us/Portals/0/docs/developers/develop_license_agree.pdf",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Massachusetts",
   "center": [
     42.262,

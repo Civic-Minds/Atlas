@@ -4,6 +4,12 @@
   "nameQualifier": "Phoenix",
   "displayArea": "Phoenix",
   "websiteUrl": "https://www.valleymetro.org/",
+  "dataLicense": {
+    "url": "http://www.opendefinition.org/licenses/odc-by",
+    "attribution": "required",
+    "name": "Open Data Commons Attribution License (ODC-By)",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     33.45,
     -112.07

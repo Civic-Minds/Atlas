@@ -4,6 +4,12 @@
   "nameQualifier": "Le Richelain–Roussillon",
   "displayArea": "Le Richelain–Roussillon",
   "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/LRRS",
+  "dataLicense": {
+    "url": "https://exo.quebec/fr/a-propos/donnees-ouvertes",
+    "attribution": "required",
+    "name": "CC BY",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Quebec",
   "parentAgency": "exo",
   "center": [

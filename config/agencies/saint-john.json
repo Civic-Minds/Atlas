@@ -2,6 +2,11 @@
   "slug": "saint-john",
   "officialName": "Saint John Transit",
   "websiteUrl": "https://saintjohn.ca/en/transit",
+  "dataLicense": {
+    "url": "https://catalogue-saintjohn.opendata.arcgis.com/datasets/d6f4783521364429a2e51a64c60ae234/about",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "New Brunswick",
   "center": [
     45.2733,

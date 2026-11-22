@@ -2,6 +2,13 @@
   "slug": "sjrtd",
   "officialName": "San Joaquin RTD",
   "websiteUrl": "http://sanjoaquinrtd.com",
+  "dataLicense": {
+    "url": "http://sanjoaquinrtd.com/preview/terms-of-use/",
+    "attribution": "required",
+    "name": "RTD Terms of Use",
+    "credit": "Route and schedule data provided by permission of San Joaquin RTD",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     37.96,
     -121.29

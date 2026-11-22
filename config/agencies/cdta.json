@@ -3,6 +3,12 @@
   "officialName": "Capital District Transportation Authority",
   "displayArea": "Albany",
   "websiteUrl": "http://www.cdta.org",
+  "dataLicense": {
+    "url": "https://www.cdta.org/developer-license-agreement/169",
+    "attribution": "required",
+    "name": "CDTA Developer License Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "region": "New York",
   "center": [
     42.652,

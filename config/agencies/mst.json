@@ -3,6 +3,11 @@
   "officialName": "Monterey-Salinas Transit",
   "commonName": "MST",
   "websiteUrl": "http://www.mst.org",
+  "dataLicense": {
+    "url": "https://mst.org/about-mst/developer-resources/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     36.6,
     -121.89

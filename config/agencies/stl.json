@@ -3,6 +3,11 @@
   "officialName": "STL",
   "nameQualifier": "Laval",
   "websiteUrl": "https://stlaval.ca",
+  "dataLicense": {
+    "url": "https://stlaval.ca/a-propos/diffusion/donnees-ouvertes",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Quebec",
   "center": [
     45.61,

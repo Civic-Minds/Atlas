@@ -10,6 +10,11 @@
   "officialName": "NJ Transit",
   "displayArea": "New Jersey",
   "websiteUrl": "http://www.njtransit.com/",
+  "dataLicense": {
+    "url": "https://www.njtransit.com/developer-tools",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "New Jersey",
   "center": [
     40.3698,

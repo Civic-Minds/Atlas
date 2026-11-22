@@ -2,6 +2,12 @@
   "slug": "calgary",
   "officialName": "Calgary Transit",
   "websiteUrl": "http://www.calgarytransit.com",
+  "dataLicense": {
+    "url": "https://data.calgary.ca/stories/s/u45n-7awa/",
+    "attribution": "unread",
+    "name": "Open Data Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Alberta",
   "center": [
     51.0447,

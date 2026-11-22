@@ -4,6 +4,11 @@
   "commonName": "RTD Denver",
   "shortName": "RTD",
   "websiteUrl": "https://www.rtd-denver.com",
+  "dataLicense": {
+    "url": "https://www.rtd-denver.com/business-center/open-spatial-data/gtfs-license-agreement",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     39.74,
     -104.98

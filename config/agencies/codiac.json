@@ -18,6 +18,11 @@
   "lastFeedVersion": "2026 Nov 29  to Feb 20 2027",
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.codiactranspo.ca/",
+  "dataLicense": {
+    "url": "https://catalogue-moncton.opendata.arcgis.com/datasets/transit-files-gtfs",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Moncton, New Brunswick"
   ],

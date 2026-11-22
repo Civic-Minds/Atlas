@@ -4,6 +4,13 @@
   "commonName": "SFMTA - Muni",
   "shortName": "SFMTA",
   "websiteUrl": "http://www.sfmta.com",
+  "dataLicense": {
+    "url": "https://www.sfmta.com/reports/gtfs-transit-data",
+    "attribution": "required",
+    "name": "SFMTA Transit Data License Agreement",
+    "credit": "Reproduced with permission granted by the City and County of San Francisco.",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     37.7584,
     -122.4354

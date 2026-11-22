@@ -3,6 +3,11 @@
   "officialName": "Pioneer Valley Transit Authority",
   "labelPlace": "Pioneer Valley",
   "websiteUrl": "https://www.pvta.com",
+  "dataLicense": {
+    "url": "https://www.mass.gov/doc/developers-license-agreement-11132009/download",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Massachusetts",
   "center": [
     42.101,

@@ -4,6 +4,11 @@
   "nameQualifier": "Fairfax",
   "displayArea": "Fairfax",
   "websiteUrl": "http://www.ridesystems.net",
+  "dataLicense": {
+    "url": "https://www.fairfaxva.gov/government/public-works/cue-bus-map-schedule#GTFS%20Schedule%20Data%20anchor",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     38.85,
     -77.35

@@ -3,6 +3,12 @@
   "officialName": "Valley Regional Transit",
   "nameQualifier": "Boise",
   "websiteUrl": "https://www.valleyregionaltransit.org/",
+  "dataLicense": {
+    "url": "https://www.valleyregionaltransit.org/about-us/resources/",
+    "attribution": "required",
+    "name": "CC BY 3.0",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     43.62,
     -116.2

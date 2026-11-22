@@ -23,6 +23,12 @@
   "lastFeedVersion": "S1000251",
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.wmata.com",
+  "dataLicense": {
+    "url": "https://developer.wmata.com/license",
+    "attribution": "none",
+    "name": "WMATA Transit Data Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Downtown DC, District of Columbia",
     "Silver Spring, Maryland",

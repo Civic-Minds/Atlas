@@ -57,5 +57,10 @@
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20261114",
   "lastRawArchiveKey": "20261219-a18f915836e35b63",
-  "lastFeedContentKey": "7e227aeb75f5d23e"
+  "lastFeedContentKey": "7e227aeb75f5d23e",
+  "dataLicense": {
+    "url": "https://www.arcgis.com/home/item.html?id=0bc9093b47c744fdb82af7e830ed8590",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  }
 }

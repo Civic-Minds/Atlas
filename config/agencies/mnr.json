@@ -4,6 +4,11 @@
   "commonName": "MNR",
   "displayArea": "New York & Connecticut",
   "websiteUrl": "http://www.mta.info/mnr",
+  "dataLicense": {
+    "url": "http://web.mta.info/developers/developer-data-terms.html",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "New York",
   "parentAgency": "mta-new-york",
   "center": [

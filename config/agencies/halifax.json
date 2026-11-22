@@ -3,6 +3,11 @@
   "officialName": "Halifax Transit",
   "displayArea": "Halifax",
   "websiteUrl": "http://www.halifax.ca/transit",
+  "dataLicense": {
+    "url": "http://www.halifax.ca/opendata/OD_TermsOfUse.php",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Nova Scotia",
   "center": [
     44.6488,

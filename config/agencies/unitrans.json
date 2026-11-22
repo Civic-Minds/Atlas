@@ -3,6 +3,11 @@
   "officialName": "Unitrans",
   "nameQualifier": "Davis",
   "websiteUrl": "http://unitrans.ucdavis.edu",
+  "dataLicense": {
+    "url": "https://unitrans.ucdavis.edu/about/gtfs/",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     38.5529,
     -121.7393

@@ -19,6 +19,12 @@
   "lastFeedVersion": "20261102",
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://acerail.com/",
+  "dataLicense": {
+    "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+    "attribution": "unread",
+    "name": "511 Data Disseminator Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Livermore, California",
     "Fremont, California",

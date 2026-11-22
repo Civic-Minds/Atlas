@@ -3,6 +3,11 @@
   "officialName": "VINE Transit",
   "nameQualifier": "Napa",
   "websiteUrl": "https://vinetransit.com/",
+  "dataLicense": {
+    "url": "https://vinetransit.com/open-data-portal/",
+    "attribution": "none",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     38.3079,
     -122.3118

@@ -12,6 +12,12 @@
   "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-21"
+  },
   "cities": [
     "Kelowna, British Columbia"
   ],

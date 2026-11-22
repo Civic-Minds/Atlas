@@ -2,6 +2,12 @@
   "slug": "santarosa",
   "officialName": "Santa Rosa CityBus",
   "websiteUrl": "https://srcitybus.org/",
+  "dataLicense": {
+    "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+    "attribution": "unread",
+    "name": "511 Data Disseminator Agreement",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     38.4456,
     -122.7182

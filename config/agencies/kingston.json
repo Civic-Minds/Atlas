@@ -2,6 +2,11 @@
   "slug": "kingston",
   "officialName": "Kingston Transit",
   "websiteUrl": "https://www.kingstontransit.ca",
+  "dataLicense": {
+    "url": "https://opendatakingston.cityofkingston.ca/pages/open-data-licence",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     44.2312,

@@ -3,6 +3,12 @@
   "officialName": "NYC Ferry",
   "displayArea": "New York City",
   "websiteUrl": "https://www.ferry.nyc/",
+  "dataLicense": {
+    "url": "https://www.ferry.nyc/developer-tools/",
+    "attribution": "none",
+    "name": "NYC Ferry Developer Terms",
+    "checkedOn": "2026-11-21"
+  },
   "region": "New York",
   "center": [
     40.6499,

@@ -2,6 +2,11 @@
   "slug": "milton",
   "officialName": "Milton Transit",
   "websiteUrl": "http://www.miltontransit.ca/",
+  "dataLicense": {
+    "url": "https://discover-milton.hub.arcgis.com/pages/disclaimer-and-terms-of-use",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     43.5183,

@@ -3,6 +3,11 @@
   "officialName": "MTA NYCT Bus",
   "nameQualifier": "Staten Island",
   "websiteUrl": "http://www.mta.info",
+  "dataLicense": {
+    "url": "http://web.mta.info/developers/developer-data-terms.html",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     40.634,
     -74.11

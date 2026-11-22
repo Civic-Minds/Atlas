@@ -3,6 +3,11 @@
   "officialName": "Los Angeles County Metropolitan Transportation Authority",
   "commonName": "LA Metro",
   "websiteUrl": "https://www.metro.net",
+  "dataLicense": {
+    "url": "http://developer.metro.net/the-basics/policies/terms-and-conditions/",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     34.05,
     -118.24

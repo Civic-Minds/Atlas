@@ -3,6 +3,11 @@
   "officialName": "Los Angeles Department of Transportation",
   "commonName": "LADOT/DASH",
   "websiteUrl": "https://www.ladottransit.com/",
+  "dataLicense": {
+    "url": "https://www.ladottransit.com/dla.html",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     34.05,
     -118.24

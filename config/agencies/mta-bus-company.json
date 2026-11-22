@@ -3,6 +3,11 @@
   "officialName": "MTA Bus Company",
   "displayArea": "New York City",
   "websiteUrl": "https://new.mta.info",
+  "dataLicense": {
+    "url": "http://web.mta.info/developers/developer-data-terms.html",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "center": [
     40.7377,
     -73.8799

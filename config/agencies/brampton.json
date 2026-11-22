@@ -2,6 +2,11 @@
   "slug": "brampton",
   "officialName": "Brampton Transit",
   "websiteUrl": "http://www.bramptontransit.com",
+  "dataLicense": {
+    "url": "https://brampton.maps.arcgis.com/home/item.html?id=a355aabd5a8c490186bdce559c9c75fb",
+    "attribution": "unread",
+    "checkedOn": "2026-11-21"
+  },
   "region": "Ontario",
   "center": [
     43.7315,
