@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Atlas Studio MCP warns when a schedule is about to run out**: an answer from a schedule ending within a week says so, and the agency list shows when each schedule was added
+- **Atlas Studio MCP answers which routes run through the night**: by the Night Service page's rule, with each route's late-night and overnight frequency
 - **What's New shows each release's highlights**: the panel lists the three or four most important changes, and the What's New page keeps the full list
 - **A Live route page's "data up to" date stays plain grey when the data is old**: it turned bold warning colour, though the date already says how old it is, as the map's pill now does
 - **Atlas Studio MCP answers questions about on-demand zones**: it can list an agency's zones, or those covering or near a corner, with hours, pickup and booking as the map shows them

@@ -3,6 +3,7 @@
  * Mac (scripts/mcp/diskStore.ts), the hosted one reads the published release on R2, and tests use memory. The tools
  * never touch a file or a URL themselves, so every store must give them the same answers from the same data.
  */
+import type { NightServiceFrequency } from './nightService';
 import type { RouteFilterReading } from './routeHeadwayFilter';
 import type { DayType } from './rules/days';
 import type { PeriodKey } from './config';
@@ -45,6 +46,8 @@ export interface RouteSummary {
   span: { first: string | null; last: string | null; breaks: string[] } | null;
   /** First and last trip in minutes after midnight, as routes_by_hours compares them; null when the data has no per-hour departures. */
   bounds: { first: number | null; last: number | null } | null;
+  /** The Night Service page's grade for the route (shared/nightService.ts): every 30, 60 or 90 min or better from 2 to 5 AM, null when it doesn't run through the night. Absent in files built before CIV-2080. */
+  night?: NightServiceFrequency | null;
 }
 
 /** One agency in the ranking list: what the size and kind filters read, without its routes. */

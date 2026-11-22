@@ -11,9 +11,10 @@ import { TOOLS, handlers as scheduleHandlers, INSTRUCTIONS, SERVER_VERSION, LIVE
 import { liveNowHandlers } from '../../../scripts/mcp/liveNowTools';
 import { withScheduleWarning } from '../../../scripts/mcp/toolHelpers';
 import { onDemandHandlers } from '../../../scripts/mcp/onDemandTools';
+import { nightHandlers } from '../../../scripts/mcp/nightTools';
 
 /** Every tool the hosted server answers: the shared ones plus route_now (CIV-1870), which the local server also adds. */
-const handlers = withScheduleWarning({ ...scheduleHandlers, ...liveNowHandlers, ...onDemandHandlers });
+const handlers = withScheduleWarning({ ...scheduleHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers });
 import { linkToken } from './linkToken';
 import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';

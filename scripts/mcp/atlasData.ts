@@ -34,6 +34,7 @@ import { pairChanges } from '../../shared/scheduleChangePairing';
 import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
+import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 
@@ -106,6 +107,12 @@ export async function routesOn(agency: CatalogAgency, day: DayType): Promise<Rou
 }
 
 /** A route's summary: what the list tools read, made with the same functions route_frequency uses. */
+/** CIV-2080: the Night Service page's rule: the route's rows that pass at 90 or better, graded as its list grades them. */
+function nightGradeOf(rows: RouteRows['rows']): NightServiceFrequency | null {
+  const lit = (rows as unknown as Array<Record<string, unknown>>).filter(row => rowPassesNightGrade(row, 90));
+  return lit.length ? routeNightGrade(lit) : null;
+}
+
 export function summarize(r: RouteRows): RouteSummary {
   const runs = routeRuns(r.rows as never, undefined);
   return {
@@ -114,6 +121,8 @@ export function summarize(r: RouteRows): RouteSummary {
     figures: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k)])) as Record<PeriodKey, PeriodFigure>,
     span: serviceSpan(r),
     bounds: runs ? { first: runs.first ?? (runs.hours.length ? runs.hours[0] * 60 : null), last: runs.last ?? (runs.hours.length ? runs.hours[runs.hours.length - 1] * 60 + 59 : null) } : null,
+
+    night: nightGradeOf(r.rows),
   };
 }
 
