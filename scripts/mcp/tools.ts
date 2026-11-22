@@ -244,7 +244,8 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     if (!res.matched) return res.choices.length
       ? { agency: a.name, stop, matched: null, choices: res.choices, ...(res.more ? { more: res.more } : {}), note: 'Several stops match. Ask which one is meant, or call again with one of these names exactly.' }
       : { agency: a.name, stop, matched: null, note: 'No stop name matches every part of that. Try the stop as the agency names it, or a corner.', scheduleValidThrough: validThrough(a) };
-    return { agency: a.name, day: dayType, ...res, mapLink: mapLink({ agencies: [a.slug], day: dayType }), scheduleValidThrough: validThrough(a), source: SOURCE };
+    // CIV-2089: how often any route leaves the stop needs departure times, which only the local server reads.
+    return { agency: a.name, day: dayType, ...res, allRoutes: 'Not on this server: it has no combined figure for every route at a stop. Give each route\'s own figure and don\'t add them up.', mapLink: mapLink({ agencies: [a.slug], day: dayType }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   route_history: async ({ agency: q, route, day: d }) => {
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());

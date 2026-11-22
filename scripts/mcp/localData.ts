@@ -148,14 +148,44 @@ export async function tripTimes(agencies: ReadonlyArray<{ slug: string; label: s
   if (!toPts.length) throw new Error(`No stop matching "${toQuery}" in ${names}. Try a station or stop name as the agency writes it.`);
   return { from: [...new Set(from)].slice(0, 8), to: [...new Set(to)].slice(0, 8), readOn, byRoute, scheduleEnds: ends.sort()[0] ?? null, noDirectTrip: !byRoute.size };
 }
+/** How often any of the departures leaves in a window, by the rule Atlas combines trips at a stop with (two a minute or less apart count as one). */
+export function combinedReading(starts: number[], start: number, end: number) {
+  const r = pooledReadingInWindow(starts, start, end);
+  const n = new Set(starts.filter(s => s >= start && s < end)).size;
+  return { departures: n, every: r.value != null ? headwayEvery(Math.round(r.value)) : r.worstWait != null ? `uneven: waits up to ${headwayAmount(r.worstWait)}` : n ? 'too few trips for a regular frequency' : 'no trips' };
+}
+
 export async function combinedDepartures(agencies: ReadonlyArray<{ slug: string; label: string }>, fromQuery: string, toQuery: string, day: DayType) {
   const t = await tripTimes(agencies, fromQuery, toQuery, day, []);
-  const reading = (starts: number[], start: number, end: number) => {
-    const r = pooledReadingInWindow(starts, start, end);
-    const n = new Set(starts.filter(s => s >= start && s < end)).size;
-    return { departures: n, every: r.value != null ? headwayEvery(Math.round(r.value)) : r.worstWait != null ? `uneven: waits up to ${headwayAmount(r.worstWait)}` : n ? 'too few trips for a regular frequency' : 'no trips' };
-  };
-  return { ...t, reading };
+  return { ...t, reading: combinedReading };
+}
+
+/**
+ * CIV-2089: every departure from the stops with this exact name on a day, on any route, from the agency's schedule
+ * files: each trip's first visit there with a later stop to go to (a trip ending there doesn't leave). Null when no
+ * schedule file names the stop.
+ */
+export async function departuresAtStop(slug: string, stopName: string, day: DayType): Promise<Array<{ towards: string[]; starts: number[] }> | null> {
+  const want = norm(stopName);
+  // One entry per physical stop (or station): a name often covers both sides of a street, and a rider waits at one.
+  const out = new Map<string, { towards: Map<string, number>; starts: number[] }>();
+  for (const gtfs of await schedules(slug)) {
+    const place = placeOf(gtfs);
+    const places = new Set((gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '') === want).map(s => place(s.stop_id)));
+    if (!places.size) continue;
+    const anywhere = new Set((gtfs.stops ?? []).map(s => place(s.stop_id)));
+    const headsign = new Map((gtfs.trips ?? []).map(t => [t.trip_id, t.trip_headsign ?? '']));
+    for (const p of places) {
+      const e = out.get(p) ?? out.set(p, { towards: new Map(), starts: [] }).get(p)!;
+      for (const r of stopToStopRuns(gtfs, new Set([p]), anywhere, day).runs) {
+        e.starts.push(r.start);
+        const h = headsign.get(r.tripId);
+        if (h) e.towards.set(h, (e.towards.get(h) ?? 0) + 1);
+      }
+    }
+  }
+  if (!out.size) return null;
+  return [...out.values()].filter(e => e.starts.length).map(e => ({ towards: [...e.towards.entries()].sort((a, b) => b[1] - a[1]).map(([h]) => h).slice(0, 4), starts: e.starts }));
 }
 
 export { runningTimeSummary };

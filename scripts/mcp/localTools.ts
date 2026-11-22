@@ -8,8 +8,26 @@ import { hourRange } from '../../shared/timeText';
 import * as data from './atlasData';
 import { needAgency, window, withAlso, windowOrNow, nowBlock, staleNote, windowNote, windowHas, startsInWindow, type Args } from './toolHelpers';
 import * as local from './localData';
+import { handlers as sharedHandlers } from './tools';
+import { TIME_PERIODS } from '../../shared/rules/periods';
+import type { DayType } from '../../shared/rules/days';
 
 export const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
+  // CIV-2089: stop_frequency plus how often any route leaves the stop, from this Mac's schedule files (the hosted
+  // server has no departure times, so its answer says the figure isn't available there).
+  stop_frequency: async (args) => {
+    const res = await sharedHandlers.stop_frequency(args) as { matched?: string | null; day?: DayType; allRoutes?: unknown } & Record<string, unknown>;
+    if (!res.matched || !res.day) return res;
+    const a = await needAgency(args.agency);
+    let stops: Awaited<ReturnType<typeof local.departuresAtStop>> = null;
+    try { stops = await local.departuresAtStop(a.slug, res.matched, res.day); } catch { /* no schedule file on this Mac */ }
+    if (!stops?.length) return res;
+    const byStop = stops.map(s => ({
+      towards: s.towards,
+      periods: Object.fromEntries(TIME_PERIODS.map(p => [`${p.label} (${formatPeriodRange(p.key)})`, local.combinedReading(s.starts, p.startHour * 60, p.endHour * 60)]).filter(([, r]) => (r as { departures: number }).departures > 0)),
+    }));
+    return { ...res, allRoutes: { stops: byStop, rule: `Every route leaving this stop together, the way combined_frequency counts them: two departures ${local.BUNCHED_MINUTES} minute or less apart count as one, so the combined wait can read longer than the trips listed. One entry per side of the street or platform (towards: its most common destinations), since a rider waits at one.` } };
+  },
   trip_time: async (args) => {
     const a = await needAgency(args.agency);
     const dayType = data.parseDay(args.day);

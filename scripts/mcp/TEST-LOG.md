@@ -38,6 +38,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.18.0 | 2026-11-21 | list_agencies gives when each schedule was added; any answer whose schedule ends within 7 days says so (CIV-2081) |
 | 0.19.0 | 2026-11-21 | on_demand_zones: an agency's on-demand zones, or those covering or near a place, worded as the map's zone card; reads the beta zones, marked as beta (CIV-2078); night_service: routes that run through the night by the Night Service rule, with Late and Overnight figures (CIV-2080) |
 | 0.20.0 | 2026-11-22 | stop_frequency: how often each route comes at one stop, per destination and part of the day, as the map's stop card shows it, ranges included (#1667) (CIV-2060) |
+| 0.21.0 | 2026-11-22 | stop_frequency: how often any route leaves the stop (allRoutes), per side of the street, on the local server; the hosted one says it has no such figure (CIV-2089) |
 
 ## Questions
 
