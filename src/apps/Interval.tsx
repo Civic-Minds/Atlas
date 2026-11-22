@@ -42,7 +42,7 @@ import { liveHandoffSettled, mapFocusRoute } from '../utils/routeFocus';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { MASSDOT_CREDITED_SLUGS } from '../../shared/liveArchiveFeeds';
-import { agencyCredits } from '../utils/agencyCredits';
+import { agencyCredits, viewFeedCredits } from '../utils/agencyCredits';
 import { focusSource } from '../utils/sourcesFocus';
 import { resolveRouteSelectionForDay, routeOnAnyDay } from '../utils/routeSelection';
 import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/urlSchema';
@@ -693,7 +693,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const viewportSlugKey = useMemo(() => viewportAgencySlugs(agencies, bounds, mapZoom).sort().join('|'), [agencies, bounds, mapZoom]);
   // CIV-461: the agencies in view whose data licence requires credit, for the map's attribution pill.
   const openCreditSource = useCallback((slug: string | null) => { focusSource(slug); onInfoOpen?.('sources'); }, [onInfoOpen]);
-  const viewCredits = useMemo(() => agencyCredits(agencies, viewportSlugKey ? viewportSlugKey.split('|') : []), [agencies, viewportSlugKey]);
+  // #1692: an agency credited only for its feed's publisher (511) shows that publisher's line, not its own name.
+  const viewCredits = useMemo(() => agencyCredits(agencies, viewportSlugKey ? viewportSlugKey.split('|') : []).filter(c => c.byLicence !== false), [agencies, viewportSlugKey]);
+  const viewFeeds = useMemo(() => viewFeedCredits(agencies, viewportSlugKey ? viewportSlugKey.split('|') : []), [agencies, viewportSlugKey]);
   useEffect(() => {
     onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
   }, [viewportSlugKey, onViewportAgencySlugsChange]);
@@ -1486,7 +1488,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           Phones drop the wrapper (contents) and keep each group's own position. No z-index here, so
           the pills keep their own layer and the What's new panel still opens above the header. */}
       <div ref={footerRowRef} className={compareActive ? MAP_FOOTER_ROW_COMPARE_SLOT : MAP_FOOTER_ROW_SLOT}>
-      <MapAttribution contextLayerOn={contextLayerAvailable() && contextMetric !== null} contextYear={contextYear} massDotOn={!!liveOverlay?.vehicles.some(v => MASSDOT_CREDITED_SLUGS.has(v.agencySlug))} agencyCredits={viewCredits} onCreditOpen={openCreditSource} />
+      <MapAttribution contextLayerOn={contextLayerAvailable() && contextMetric !== null} contextYear={contextYear} massDotOn={!!liveOverlay?.vehicles.some(v => MASSDOT_CREDITED_SLUGS.has(v.agencySlug))} agencyCredits={viewCredits} feedCredits={viewFeeds} onCreditOpen={openCreditSource} />
 
       {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
           It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}

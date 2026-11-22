@@ -19,6 +19,8 @@ export interface AgencyCredit {
   words: string | null;
   /** #1692: a credit the feed's publisher requires ("Data provided by 511.org"), linked, shown when the pill opens. */
   feedLink?: { href: string; text: string } | null;
+  /** #1692: false where only the feed's publisher requires credit; the map line then shows the publisher's line (viewFeedCredits), not the agency's name. */
+  byLicence?: boolean;
 }
 
 type Credited = Exclude<AgencyNameInput, string> & { slug: string; dataLicense?: AgencyDataLicense; feedCredit?: FeedCreditKey; lastRefreshedAt?: string | null };
@@ -35,14 +37,14 @@ export function agencyCredit(a: Credited): AgencyCredit | null {
   if (l?.attribution !== 'required') {
     // #1692: the feed's publisher requires a credit though the agency's own licence does not (511.org).
     if (!feed) return null;
-    return { slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: feed.href, text: feed.label, label: names.list, licenceName: null, words: null, feedLink };
+    return { slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: feed.href, text: feed.label, label: names.list, licenceName: null, words: null, feedLink, byLicence: false };
   }
   const text = l.credit ?? scheduleDataCredit(a.name, l.name);
   // The licence asks for the data's last-updated date in its own words (STO): the day Atlas last took the feed.
   const updated = l.updatedLabel && a.lastRefreshedAt ? ` ${l.updatedLabel} ${a.lastRefreshedAt.slice(0, 10)}.` : '';
   return {
     slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: l.url, text: `${text}${updated}`,
-    label: names.list, licenceName: l.name ?? null, words: l.credit ? `${l.credit}${updated}` : null, feedLink,
+    label: names.list, licenceName: l.name ?? null, words: l.credit ? `${l.credit}${updated}` : null, feedLink, byLicence: true,
   };
 }
 
@@ -58,3 +60,10 @@ export function agencyCredits(agencies: readonly Credited[], slugs?: readonly st
   return out;
 }
 
+
+/** #1692: the feed publishers' credits (FEED_CREDITS keys) the map line shows for these agencies in view, each once. */
+export function viewFeedCredits(agencies: readonly Credited[], slugs: readonly string[]): FeedCreditKey[] {
+  const keys = new Set<FeedCreditKey>();
+  for (const s of slugs) { const k = agencies.find(a => a.slug === s)?.feedCredit; if (k) keys.add(k); }
+  return [...keys];
+}

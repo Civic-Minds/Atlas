@@ -57,6 +57,13 @@ describe('MapAttribution', () => {
     expect(container.innerHTML).not.toContain('5.75rem');
   });
 
+  it('shows "Data provided by 511.org", linked to 511.org, while a 511-fed agency is in view (#1692)', () => {
+    const { rerender } = render(<MapAttribution />);
+    expect(screen.queryByRole('link', { name: 'Data provided by 511.org' })).toBeNull();
+    rerender(<MapAttribution feedCredits={['511']} />);
+    expect(screen.getByRole('link', { name: 'Data provided by 511.org' })).toHaveAttribute('href', 'https://511.org/');
+  });
+
   it('credits MassDOT only while MBTA vehicles are on the map (CIV-2046)', () => {
     const { rerender } = render(<MapAttribution />);
     expect(screen.queryByRole('link', { name: 'MassDOT' })).toBeNull();

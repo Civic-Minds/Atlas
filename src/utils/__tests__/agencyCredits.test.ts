@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { agencyCredit, agencyCredits } from '../agencyCredits';
+import { agencyCredit, agencyCredits, viewFeedCredits } from '../agencyCredits';
 import { scheduleDataCredit } from '../../content/noticeCopy';
 import type { AgencyCatalogEntry } from '../../../shared/agencyCatalog';
 
@@ -39,6 +39,17 @@ describe('agencyCredits (CIV-461)', () => {
     expect(sfmta?.words).toBe('Reproduced with permission.');
     expect(sfmta?.feedLink?.text).toBe('Data provided by 511.org');
     expect(agencyCredit({ slug: 'x', name: 'X', dataLicense: lic('required') })?.feedLink).toBeNull();
+  });
+
+  it("names a 511-fed agency on the map only by 511's line, once however many are in view (#1692)", () => {
+    const agencies = [
+      { slug: 'samtrans', name: 'SamTrans', feedCredit: '511' as const },
+      { slug: 'sfmta', name: 'SFMTA', feedCredit: '511' as const, dataLicense: lic('required') },
+      { slug: 'ttc', name: 'TTC', dataLicense: lic('required') },
+    ];
+    expect(viewFeedCredits(agencies, ['samtrans', 'sfmta', 'ttc'])).toEqual(['511']);
+    expect(viewFeedCredits(agencies, ['ttc'])).toEqual([]);
+    expect(agencyCredits(agencies).filter(c => c.byLicence !== false).map(c => c.slug)).toEqual(['sfmta', 'ttc']);
   });
 
   it('keeps the order of the slugs given, each once, and skips agencies not in the list', () => {

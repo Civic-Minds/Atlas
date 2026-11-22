@@ -11,6 +11,7 @@ import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
 import { CONTEXT_CREDIT_SHORT, contextCreditTitle, MASSDOT_CREDIT_SHORT, MASSDOT_CREDIT_URL, MBTA_VEHICLES_CREDIT, ABOUT_ATLAS, WHATS_NEW_TITLE, FEEDBACK_LABEL } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
+import { FEED_CREDITS, type FeedCreditKey } from '../../../shared/feedCredits';
 import type { AgencyCredit } from '../../utils/agencyCredits';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
 import { mailto } from '../../../shared/contact';
@@ -27,7 +28,7 @@ function UnseenDot() {
 const PILL_CREDITS_MAX = 2;
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false, agencyCredits = [], onCreditOpen }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean; /** CIV-461: the agencies in view whose data licence requires credit, in the same pill (MassDOT's pattern). */ agencyCredits?: readonly AgencyCredit[]; /** CIV-461: a credited name (or the "and N other agencies" overflow, null) opens About → Schedule sources there. */ onCreditOpen?: (slug: string | null) => void } = {}) {
+export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false, agencyCredits = [], feedCredits = [], onCreditOpen }: { /** #1692: feed publishers' credits for the agencies in view ("Data provided by 511.org"), linked to the publisher. */ feedCredits?: readonly FeedCreditKey[]; /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean; /** CIV-461: the agencies in view whose data licence requires credit, in the same pill (MassDOT's pattern). */ agencyCredits?: readonly AgencyCredit[]; /** CIV-461: a credited name (or the "and N other agencies" overflow, null) opens About → Schedule sources there. */ onCreditOpen?: (slug: string | null) => void } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   // The census credit lengthens the pill: on phones it narrows and ellipses. Agency credits never ellipse (CIV-461, Ryan:
   // "the crowding can just list the one(s) tequiring attribution then + more"): the names that fit, then "and N other agencies".
@@ -50,7 +51,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null, mas
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const hasCredits = pillCredits.length > 0;
+  const hasCredits = pillCredits.length > 0 || feedCredits.length > 0;
   const hiddenCredits = pillCredits.length - Math.min(shownCredits, pillCredits.length);
   // The overflow counts agencies, not entries: a hidden "BC Transit" entry stands for each BC Transit agency in view.
   const shownNames = new Set(pillCredits.slice(0, pillCredits.length - hiddenCredits).map(c => c.shortName));
@@ -148,7 +149,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null, mas
       <div ref={creditBoxRef} className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn || hasCredits ? 'max-w-full min-w-0' : ''} ${hasCredits ? 'overflow-hidden' : ''}`}>
         <BasemapCredit
           className={contextLayerOn && !hasCredits ? 'min-w-0 truncate' : ''}
-          extra={contextLayerOn || massDotOn || agencyCredits.length > 0 ? (
+          extra={contextLayerOn || massDotOn || agencyCredits.length > 0 || feedCredits.length > 0 ? (
             <>
               {[
                 ...(contextLayerOn ? [(
@@ -167,6 +168,11 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null, mas
                     {MASSDOT_CREDIT_SHORT}
                   </OutboundLink>
                 )] : []),
+                ...feedCredits.map(k => (
+                  <OutboundLink key={`feed-${k}`} href={FEED_CREDITS[k].href} kind="attribution" className={BASEMAP_CREDIT_LINK}>
+                    {FEED_CREDITS[k].label}
+                  </OutboundLink>
+                )),
                 ...pillCredits.slice(0, pillCredits.length - hiddenCredits).map(c => (
                   <button key={`agency-${c.slug}`} type="button" className={`${BASEMAP_CREDIT_LINK} cursor-pointer`} title={c.text} onClick={() => onCreditOpen?.(c.slug)}>
                     {c.shortName}
