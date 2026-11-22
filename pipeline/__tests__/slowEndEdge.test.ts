@@ -57,3 +57,11 @@ describe('slow end: "every N until <time>, then every M" (CIV-1913)', () => {
     expect(periodEdge(kingston701, EVENING.start, EVENING.end, 30)).toBeNull();
   });
 });
+
+describe('slow end where service ends (CIV-1913 sample check)', () => {
+  // BART Grey toward Coliseum, weekday late (23:00-02:00): every 6-7 to 23:51, then 0:11, 0:26, 0:59 and no more trains.
+  const bartGrey = [1381, 1387, 1394, 1400, 1406, 1412, 1418, 1425, 1431, 1451, 1466, 1499];
+  it('no "then" reading when the value is the wait after the last trip of the day', () => {
+    expect(slowEndEdge(bartGrey, 1380, 1560, 61, false)).toBeNull();
+  });
+});
