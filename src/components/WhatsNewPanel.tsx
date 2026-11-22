@@ -8,7 +8,7 @@ import Panel from './ui/Panel';
 import PanelHeader from './ui/PanelHeader';
 import { WhatsNewItemText } from './WhatsNewItemText';
 import { CLOSE_PLACES, closeLabel, WHATS_NEW_TITLE, SEE_ALL_CHANGES_LABEL } from '../content/noticeCopy';
-import { shortVersion, visibleWhatsNew, type WhatsNewFeature, type WhatsNewRelease } from '../data/whatsNew';
+import { panelItems, shortVersion, visibleWhatsNew, type WhatsNewFeature, type WhatsNewRelease } from '../data/whatsNew';
 import { CHANGELOG_PATH } from '../../shared/pagePaths';
 
 /** "Released Nov 9, 2026" from the release's own date; nothing when the date is unusable. */
@@ -25,7 +25,7 @@ interface Props {
 }
 
 export function WhatsNewPanel({ onClose, includeBeta, features, releases }: Props) {
-  // Only the latest version here; older ones live on /changelog.
+  // Only the latest version here, and only its highlights (CIV-2026); every line and older versions live on /changelog.
   const visible = visibleWhatsNew(includeBeta, features, releases).slice(0, 1);
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
 
@@ -54,7 +54,7 @@ export function WhatsNewPanel({ onClose, includeBeta, features, releases }: Prop
                 {releasedLabel(release) && <span className="font-semibold text-[var(--text-dim)]"> · {releasedLabel(release)}</span>}
               </h3>
               <ul className="mt-2 space-y-2">
-                {release.items.map(item => (
+                {panelItems(release).map(item => (
                   <li key={item.text} className="flex items-start gap-2 leading-relaxed text-[var(--text-dim)]">
                     <span aria-hidden="true" className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--text-muted)]" />
                     <span>

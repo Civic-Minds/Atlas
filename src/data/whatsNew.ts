@@ -16,6 +16,11 @@
  * is now available on the public map its that compare mode is launched"); never add a second entry.
  * A public line never mentions beta.
  * Keep past releases: the panel shows only the latest, /changelog shows them all. Add each new release to RELEASES.
+ *
+ * Highlights (Ryan, 2026-11-21, CIV-2026: "the in-app What's New panel shows 3-4 lines, the most important ones (not the
+ * first 4), and the What's New page (/changelog) can have more if warranted"): mark a site's line `highlight` to put it in
+ * the panel; the page lists every line. Set per site, so a beta line has its own flag. A release with no highlight on a
+ * site shows all its lines in the panel.
  */
 
 import { EXPLORE_LABEL, TRY_IT_LABEL } from '../content/noticeCopy';
@@ -27,6 +32,8 @@ export interface WhatsNewLine {
   version: string;
   /** One short clause after the lead. */
   text: string;
+  /** One of the release's 3-4 most important lines on this site: the in-app panel shows only these (CIV-2026). */
+  highlight?: boolean;
 }
 
 /** One feature, as each site lists it. */
@@ -52,6 +59,8 @@ export interface WhatsNewItem {
   /** From the feature's beta line: shows a Beta tag. */
   beta?: boolean;
   link?: WhatsNewFeature['link'];
+  /** The site's line is a highlight: shown in the panel (CIV-2026). */
+  highlight?: boolean;
 }
 
 export interface WhatsNewRelease {
@@ -70,10 +79,10 @@ export const RELEASES: { version: string; date: string }[] = [
 ];
 
 export const WHATS_NEW: WhatsNewFeature[] = [
-  { lead: 'Clearer branches', isNew: true, public: { version: '3.5.0', text: "a slow branch no longer hides a frequent route, and each branch shows its own frequency on the route card" } },
-  { lead: 'Agencies with several feeds', isNew: true, public: { version: '3.5.0', text: "now one agency everywhere, like MTA New York’s subway, buses and railroads" } },
-  { lead: 'History by day', isNew: true, beta: { version: '3.5.0', text: 'switch between Weekday, Saturday and Sunday' } },
-  { lead: 'Frequent filter', public: { version: '3.5.0', text: 'counts the wait for the first and last bus in each time of day, so a route that starts late or ends early no longer passes' } },
+  { lead: 'Clearer branches', isNew: true, public: { version: '3.5.0', text: "the route card shows the shared stretch and each branch, each with its own frequency", highlight: true } },
+  { lead: 'Agencies with several feeds', isNew: true, public: { version: '3.5.0', text: "now one agency everywhere, like MTA New York’s subway, buses and railroads", highlight: true } },
+  { lead: 'History by day', isNew: true, beta: { version: '3.5.0', text: 'switch between Weekday, Saturday and Sunday', highlight: true } },
+  { lead: 'Frequent filter', public: { version: '3.5.0', text: 'counts the wait for the first and last trip in each time of day, so a route that starts late or ends early no longer passes', highlight: true } },
   { lead: 'Faster pages', public: { version: '3.5.0', text: 'switching between Atlas pages is instant, without reloading the site' } },
   { lead: 'Data saver', beta: { version: '3.5.0', text: 'a prompt offers it on slow connections' } },
   {
@@ -112,10 +121,17 @@ export function visibleWhatsNew(includeBeta: boolean, features: WhatsNewFeature[
         if (feature.isNew) item.isNew = true;
         if (site.beta) item.beta = true;
         if (feature.link) item.link = feature.link;
+        if (site.line.highlight) item.highlight = true;
         return [item];
       }),
     }))
     .filter(release => release.items.length > 0);
+}
+
+/** CIV-2026: the lines the in-app panel shows for a release: its highlights, or every line when none is marked. */
+export function panelItems(release: WhatsNewRelease): WhatsNewItem[] {
+  const highlights = release.items.filter(item => item.highlight);
+  return highlights.length > 0 ? highlights : release.items;
 }
 
 /** "3.3.0" -> "3.3". */
