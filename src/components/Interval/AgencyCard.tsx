@@ -201,6 +201,14 @@ function otherZoneServices(service: NonNullable<Agency['onDemandServiceArea']>):
   return [...seen].map(([serviceName, hours]) => ({ serviceName, ...hours }));
 }
 
+/** What both on-demand hours views take: structured hours, the agency's own wording, the selected day. */
+interface OnDemandHoursProps {
+  availability?: OnDemandAvailability;
+  serviceHours?: string;
+  day?: DayType;
+  className: string;
+}
+
 /**
  * Hours built from structured availability; the line covering the selected
  * day is bold. Falls back to the agency's own wording, unbolded, when no
@@ -211,12 +219,7 @@ export function OnDemandHoursText({
   serviceHours,
   day,
   className,
-}: {
-  availability?: OnDemandAvailability;
-  serviceHours?: string;
-  day?: DayType;
-  className: string;
-}) {
+}: OnDemandHoursProps) {
   const lines = formatOnDemandHoursLines(availability);
   if (lines.length === 0) {
     return serviceHours ? <p className={className}>{serviceHours}</p> : null;
@@ -250,12 +253,7 @@ export function OnDemandHoursRows({
   serviceHours,
   day,
   className,
-}: {
-  availability?: OnDemandAvailability;
-  serviceHours?: string;
-  day?: DayType;
-  className: string;
-}) {
+}: OnDemandHoursProps) {
   const lines = formatOnDemandHoursLines(availability);
   if (lines.length === 0) {
     return serviceHours ? <p className={className}>{serviceHours}</p> : null;

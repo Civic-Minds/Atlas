@@ -1348,6 +1348,36 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return () => { observer.disconnect(); publishMapOverlayVar(MAP_OVERLAY_VARS.footerHeight, null); };
   }, []);
 
+  // CIV-2083: props a component gets the same way in two places, passed once.
+  // The agency card's, in its on-demand and agency views.
+  const agencyCardProps = { layers, day, period, maxHeadway, selectedModes, hideSpan, hideLimitedService, sidebarLeft, searchBarWidth, onInfoOpen, onClose: closeAgencyCard };
+  // The settings panel's, in its two places.
+  const filterPanelProps = {
+    lightMode, setLightMode, hideSpan, hideLimitedService, setHideSpan, setHideLimitedService, livePollingOnly,
+    setLivePollingOnly, onInfoOpen, maxHeadway, setMaxHeadway, selectedModes, setSelectedModes, day, setDay, period,
+    setPeriod, agencies, allAgencies, selectedAgencies, bounds, hideLowQuality, setHideLowQuality, feedQualityEnabled,
+    showMapLegend, setShowMapLegend, dataSaver, setDataSaver,
+    limitedServiceRouteCount: isLoading ? null : stats?.limitedService ?? null,
+    inFrequency: showUi,
+    setSelectedAgencies: setSelectedAgenciesByUser,
+    compare: compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined,
+  };
+  // The map's and the comparison map's; each still passes its own layers, day, filters and callbacks.
+  const sharedMapProps = {
+    contextMetric, agencies, layers, selectedRoute, highlightRoutes, hoveredSearchRoute, hoveredBranch,
+    setSelectedRoute, selectedStop, setSelectedStop, setDisambiguationRoutes, lightMode, resetViewKey, areaFocus,
+    onLocate, mapContextOpen, mapContextView, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs,
+    onHistoryRouteClick, selectedAgencySlug, setSelectedAgencySlug, selectedOnDemandZoneId, nightServiceView,
+    nightServiceFrequency, exportTitle, frequentServiceView, frequentServiceDays, frequentServiceFrequency,
+    frequentServiceWindow, selectedModes, selectedAgencies, initialMapCenter, initialMapBounds, setQuery,
+    onMapDismiss, sidebarLeft, searchBarWidth,
+    onOnDemandStopClick: handleOnDemandStopClick,
+    onOnDemandZoneClick: handleOnDemandZoneClick,
+    selectedOnDemandSlug: selectedRoute || selectedStop ? null : selectedOnDemandSlug,
+    agencyDataLoading: isLoading,
+    agencyDataFailedCount: failedSlugs.size,
+    onClearSelection: clearMapSelection,
+  };
   return (
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`} style={mapFooterStyle(footerHeight)}>
 
@@ -1367,75 +1397,30 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
         >
           <MapCanvas
-            contextMetric={contextMetric}
+            {...sharedMapProps}
             onContextYearChange={setContextYear}
-            agencies={agencies}
-            layers={layers}
             filteredLayers={filteredLayers}
             mapFilteredLayers={mapFilteredLayers}
             maxHeadway={mapMaxHeadway}
             period={period}
             q={q}
-            selectedRoute={selectedRoute}
             liveSelectedRoute={liveMapRoute}
-            highlightRoutes={highlightRoutes}
             focusRoutes={focusRoutes}
-            hoveredSearchRoute={hoveredSearchRoute}
-            hoveredBranch={hoveredBranch}
-            setSelectedRoute={setSelectedRoute}
-            selectedStop={selectedStop}
-            setSelectedStop={setSelectedStop}
-            setDisambiguationRoutes={setDisambiguationRoutes}
-            lightMode={lightMode}
             matchesQuery={matchesQuery}
             routesForStop={routesForStop}
             onBoundsChange={onBoundsChange}
             onUserMove={onUserMoveMap}
-            resetViewKey={resetViewKey}
-            areaFocus={areaFocus}
-            onLocate={onLocate}
             showMapContext={showMapContext}
-            mapContextOpen={mapContextOpen}
-            mapContextView={mapContextView}
             onMapContextOpenChange={setMapContextOpen}
             onMapContextAgencyCountChange={setMapContextAgencyCount}
             onMapContextRouteCountChange={setMapContextRouteCount}
             day={day}
-            showRouteLayers={showRouteLayers}
-            liveRoutesOnly={liveRoutesOnly}
             hideSpan={hideSpan && !bustangView}
-            filterToAgencies={filterToAgencies}
-            agencyFilterSlugs={agencyFilterSlugs}
-            onHistoryRouteClick={onHistoryRouteClick}
             tileFilter={tileFilter}
-            selectedAgencySlug={selectedAgencySlug}
-            setSelectedAgencySlug={setSelectedAgencySlug}
-            onOnDemandStopClick={handleOnDemandStopClick}
-            onOnDemandZoneClick={handleOnDemandZoneClick}
-            selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
-            selectedOnDemandZoneId={selectedOnDemandZoneId}
-            nightServiceView={nightServiceView}
-            nightServiceFrequency={nightServiceFrequency}
             exportEnabled={exportEnabled && !compareActive}
-            exportTitle={exportTitle}
-            agencyDataLoading={isLoading}
-            agencyDataFailedCount={failedSlugs.size}
-            frequentServiceView={frequentServiceView}
-            frequentServiceDays={frequentServiceDays}
-            frequentServiceFrequency={frequentServiceFrequency}
-            frequentServiceWindow={frequentServiceWindow}
-            selectedModes={selectedModes}
-            selectedAgencies={selectedAgencies}
-            initialMapCenter={initialMapCenter}
-            initialMapBounds={initialMapBounds}
             initialOnDemandSlug={initialMapCenter || !onDemandAllowed ? null : readUrlParam(searchParams, MAP_URL.onDemand)?.split('::', 1)[0] ?? null}
             onTileLoadingChange={setIsTilesLoading}
             onBasemapLoadingChange={setIsBasemapLoading}
-            setQuery={setQuery}
-            onClearSelection={clearMapSelection}
-            onMapDismiss={onMapDismiss}
-            sidebarLeft={sidebarLeft}
-            searchBarWidth={searchBarWidth}
             onMapReady={setMapA}
             pageView={pageView}
             onPhoneErrorsChange={setPhoneMapErrors}
@@ -1450,66 +1435,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             placeholder={<ModeLoadingLabel label={loadingText('map')} />}>
             <ModeEnter enabled={compareTransitions} ready={compareBDrawn} label={loadingText('map')}>
               <MapCanvas
-            contextMetric={contextMetric}
-                agencies={agencies}
-                layers={layers}
+            {...sharedMapProps}
                 filteredLayers={compareStats.filteredLayers}
                 mapFilteredLayers={compareStats.mapFilteredLayers}
                 maxHeadway={compareB.maxHeadway}
                 period={compareB.period}
                 q={compareStats.q}
-                selectedRoute={selectedRoute}
-                highlightRoutes={highlightRoutes}
-                hoveredSearchRoute={hoveredSearchRoute}
-                hoveredBranch={hoveredBranch}
-                setSelectedRoute={setSelectedRoute}
-                selectedStop={selectedStop}
-                setSelectedStop={setSelectedStop}
-                setDisambiguationRoutes={setDisambiguationRoutes}
-                lightMode={lightMode}
                 matchesQuery={compareStats.matchesQuery}
                 routesForStop={compareStats.routesForStop}
                 onBoundsChange={onBoundsChangeB}
-                resetViewKey={resetViewKey}
-                areaFocus={areaFocus}
-                onLocate={onLocate}
                 showMapContext={false}
-                mapContextOpen={mapContextOpen}
-                mapContextView={mapContextView}
                 day={compareB.day}
-                showRouteLayers={showRouteLayers}
-                liveRoutesOnly={liveRoutesOnly}
                 hideSpan={hideSpan}
-                filterToAgencies={filterToAgencies}
-                agencyFilterSlugs={agencyFilterSlugs}
-                onHistoryRouteClick={onHistoryRouteClick}
                 tileFilter={compareStats.tileFilter}
-                selectedAgencySlug={selectedAgencySlug}
-                setSelectedAgencySlug={setSelectedAgencySlug}
-                onOnDemandStopClick={handleOnDemandStopClick}
-                onOnDemandZoneClick={handleOnDemandZoneClick}
-                selectedOnDemandSlug={selectedRoute || selectedStop ? null : selectedOnDemandSlug}
-                selectedOnDemandZoneId={selectedOnDemandZoneId}
-                nightServiceView={nightServiceView}
-                nightServiceFrequency={nightServiceFrequency}
                 exportEnabled={false}
-                exportTitle={exportTitle}
-                agencyDataLoading={isLoading}
-                agencyDataFailedCount={failedSlugs.size}
-                frequentServiceView={frequentServiceView}
-                frequentServiceDays={frequentServiceDays}
-                frequentServiceFrequency={frequentServiceFrequency}
-                frequentServiceWindow={frequentServiceWindow}
-                selectedModes={selectedModes}
-                selectedAgencies={selectedAgencies}
-                initialMapCenter={initialMapCenter}
-            initialMapBounds={initialMapBounds}
                 initialOnDemandSlug={null}
-                setQuery={setQuery}
-                onClearSelection={clearMapSelection}
-                onMapDismiss={onMapDismiss}
-                sidebarLeft={sidebarLeft}
-                searchBarWidth={searchBarWidth}
                 secondary
                 showMapControls
                 onMapReady={setMapB}
@@ -1673,22 +1613,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <AgencyCard
             ref={agencyCardRef}
             agency={agency}
-            layers={layers}
-            day={day}
-            period={period}
-            maxHeadway={maxHeadway}
-            selectedModes={selectedModes}
-            hideSpan={hideSpan}
-            hideLimitedService={hideLimitedService}
+            {...agencyCardProps}
             onRouteSelect={() => {}}
-            sidebarLeft={sidebarLeft}
-            searchBarWidth={searchBarWidth}
-            onInfoOpen={onInfoOpen}
             onDemandFocus
             onDemandZoneId={selectedOnDemandZoneId}
             onBackToAgency={setSelectedAgencySlug ? () => { setOnDemandStopAgencySlug(null); setSelectedAgencySlug(agency.slug); } : undefined}
             onSelectOnDemandZone={zoneId => handleOnDemandZoneClick({ slug: agency.slug, zoneId })}
-            onClose={closeAgencyCard}
           />
         ) : null;
       })()}
@@ -1729,19 +1659,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <AgencyCard
             ref={agencyCardRef}
             agency={agency}
-            layers={layers}
-            day={day}
-            period={period}
-            maxHeadway={maxHeadway}
-            selectedModes={selectedModes}
-            hideSpan={hideSpan}
-            hideLimitedService={hideLimitedService}
+            {...agencyCardProps}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
-            sidebarLeft={sidebarLeft}
-            searchBarWidth={searchBarWidth}
-            onInfoOpen={onInfoOpen}
             loadFailed={failedSlugs.has(agency.slug)}
-            onClose={closeAgencyCard}
           />
         ) : null;
       })()}
@@ -1851,38 +1771,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           {!hideFilterPanel && (
               <FilterPanel
               mode="filters"
-              lightMode={lightMode}
-              setLightMode={setLightMode}
-              hideSpan={hideSpan}
-              hideLimitedService={hideLimitedService}
-              setHideSpan={setHideSpan}
-                setHideLimitedService={setHideLimitedService}
-                limitedServiceRouteCount={isLoading ? null : stats?.limitedService ?? null}
-              livePollingOnly={livePollingOnly}
-              setLivePollingOnly={setLivePollingOnly}
-              onInfoOpen={onInfoOpen}
-              inFrequency={showUi}
-              maxHeadway={maxHeadway}
-              setMaxHeadway={setMaxHeadway}
-              selectedModes={selectedModes}
-              setSelectedModes={setSelectedModes}
-              day={day}
-              setDay={setDay}
-              period={period}
-              setPeriod={setPeriod}
-              agencies={agencies}
-              allAgencies={allAgencies}
-              selectedAgencies={selectedAgencies}
-              setSelectedAgencies={setSelectedAgenciesByUser}
-              bounds={bounds}
-              hideLowQuality={hideLowQuality}
-              setHideLowQuality={setHideLowQuality}
-              feedQualityEnabled={feedQualityEnabled}
-              showMapLegend={showMapLegend}
-              setShowMapLegend={setShowMapLegend}
-              dataSaver={dataSaver}
-              setDataSaver={setDataSaver}
-              compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
+              {...filterPanelProps}
             />
           )}
           {/* CIV-1567 (beta): the settings button fades and folds away (History, Live...) instead of vanishing. */}
@@ -1891,39 +1780,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               <FilterPanel
               contextMetric={contextMetric}
               setContextMetric={setContextMetric}
-              lightMode={lightMode}
-              setLightMode={setLightMode}
-              hideSpan={hideSpan}
-              hideLimitedService={hideLimitedService}
-              setHideSpan={setHideSpan}
-                setHideLimitedService={setHideLimitedService}
-                limitedServiceRouteCount={isLoading ? null : stats?.limitedService ?? null}
+              {...filterPanelProps}
                 limitedServiceRoutes={isLoading ? undefined : stats?.limitedServiceRoutes}
-              livePollingOnly={livePollingOnly}
-              setLivePollingOnly={setLivePollingOnly}
-              onInfoOpen={onInfoOpen}
-              inFrequency={showUi}
-              maxHeadway={maxHeadway}
-              setMaxHeadway={setMaxHeadway}
-              selectedModes={selectedModes}
-              setSelectedModes={setSelectedModes}
-              day={day}
-              setDay={setDay}
-              period={period}
-              setPeriod={setPeriod}
-              agencies={agencies}
-              allAgencies={allAgencies}
-              selectedAgencies={selectedAgencies}
-              setSelectedAgencies={setSelectedAgenciesByUser}
-              bounds={bounds}
-              hideLowQuality={hideLowQuality}
-              setHideLowQuality={setHideLowQuality}
-              feedQualityEnabled={feedQualityEnabled}
-              showMapLegend={showMapLegend}
-              setShowMapLegend={setShowMapLegend}
-              dataSaver={dataSaver}
-              setDataSaver={setDataSaver}
-              compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
             />
             </SettingsFold>
           )}

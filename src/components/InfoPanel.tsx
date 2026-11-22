@@ -42,8 +42,8 @@ export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
 export type { HelpTopic };
-export type HelpContext = {
-  topic: HelpTopic;
+/** What the help and agency views read about the agency they were opened from (HelpContext and OpenInfoOptions share it). */
+type HelpDetails = {
   agencyName?: string;
   expDateStr?: string;
   /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
@@ -61,24 +61,10 @@ export type HelpContext = {
   filterNotice?: string;
   rolloutNotice?: string;
 };
-export type OpenInfoOptions = {
+export type HelpContext = HelpDetails & { topic: HelpTopic };
+export type OpenInfoOptions = HelpDetails & {
   featureFilter?: 'live' | 'history';
   helpTopic?: HelpTopic;
-  agencyName?: string;
-  expDateStr?: string;
-  /** N25 (CIV-1055): set when opened from the listing-ended notice; the panel shows its variant. */
-  listingEndedDate?: string;
-  /** Whether that date has arrived (agency-local): 'ended', else 'ends'. */
-  listingEnded?: boolean;
-  manualFeedSource?: boolean;
-  lastRefreshedAt?: string;
-  lastFeedCheckAt?: string;
-  expiredFeedCheckCount?: number;
-  expiredFeedCheckSince?: string;
-  websiteUrl?: string;
-  overrideNote?: string;
-  filterNotice?: string;
-  rolloutNotice?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
