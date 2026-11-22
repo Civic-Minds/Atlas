@@ -41,6 +41,8 @@ export const MAP_ZOOM_DEFAULT_MAX_HEADWAY = 10;
 
 /** How far the map's Nearby panel looks for routes from a point, in metres (its "No routes within 500 m" too). */
 export const NEARBY_ROUTES_RADIUS_M = 500;
+/** The most agencies one rank_agencies answer lists: each reads a file, and the hosted MCP's plan allows 50 reads a call. */
+export const RANK_AGENCIES_MAX = 30;
 
 /** The zoom from which an agency's detailed GeoJSON loads. */
 export const DETAIL_GEOJSON_MIN_ZOOM = 8;

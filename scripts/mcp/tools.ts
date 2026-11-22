@@ -9,7 +9,7 @@ import { clockTime } from '../../shared/timeText';
 import { countryForRegion } from '../../shared/regionCountry';
 import * as data from './atlasData';
 import { headwayEvery } from '../../shared/headwayText';
-import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
+import { NEARBY_ROUTES_RADIUS_M, RANK_AGENCIES_MAX } from '../../shared/rules/limits';
 import { LIVE_TOOLS, liveHandlers } from './liveTools';
 import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
@@ -120,7 +120,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       return { a, routesOnDay, meeting: meeting.sort((x, y) => x.wait! - y.wait!) };
     }));
     counted.sort((x, y) => y.meeting.length - x.meeting.length || x.a.name.localeCompare(y.a.name));
-    const limit = args.limit != null ? Number(args.limit) : 15;
+    // Each agency shown reads its route names file; the hosted server's plan allows 50 reads a call, so a ranking shows
+    // RANK_AGENCIES_MAX at most (CIV chain test, 2026-11-21: limit 100 failed with "Too many subrequests").
+    const asked = args.limit != null ? Number(args.limit) : 15;
+    const limit = Math.min(asked, RANK_AGENCIES_MAX);
     const shown = await Promise.all(counted.slice(0, limit).map(async ({ a, routesOnDay, meeting }) => {
       const labels = new Map(await Promise.all(a.members.map(async m => [m.slug, await data.rankLabels(m.slug, dayType)] as const)));
       const end = a.members.map(m => ends.get(m.slug)).filter((x): x is string => !!x).sort()[0] ?? null;
@@ -129,7 +132,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
       ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
-      agenciesCompared: counted.length, ranking: shown, source: SOURCE,
+      agenciesCompared: counted.length, ranking: shown, ...(asked > limit ? { shownLimit: `The ranking shows ${RANK_AGENCIES_MAX} agencies at most; narrow it by country, region, kind or size to see others.` } : {}), source: SOURCE,
     };
   },
   route_frequency: async (args) => {

@@ -13,7 +13,7 @@ import { liveNowHandlers } from '../../../scripts/mcp/liveNowTools';
 /** Every tool the hosted server answers: the shared ones plus route_now (CIV-1870), which the local server also adds. */
 const handlers = { ...scheduleHandlers, ...liveNowHandlers };
 import { linkToken } from './linkToken';
-import { jsonOrNull, splitStore, urlReader } from '../../../shared/mcpSplitStore';
+import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
 import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
 import { splitLiveReader, useLiveReader } from '../../../scripts/mcp/liveData';
@@ -71,7 +71,7 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
   if (env.ASSETS && env.DATA_FROM_ASSETS) {
     const assets = env.ASSETS;
     if (activeRelease?.id !== 'bundled') {
-      data.useStore(splitStore(async path => jsonOrNull(await assets.fetch(`https://assets.invalid/${path}`), path)));
+      data.useStore(splitStore(async path => jsonOrNull(await assets.fetch(splitUrl('https://assets.invalid', path)), path)));
       activeRelease = { id: 'bundled', checkedAt: Date.now() };
     }
     return 'bundled';

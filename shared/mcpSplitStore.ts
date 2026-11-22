@@ -51,16 +51,39 @@ export async function jsonOrNull<T = unknown>(res: Response, path: string, missi
   return res.json() as Promise<T>;
 }
 
+/**
+ * A file's URL under a base. Each part of the path is encoded once more, because a file's name can itself hold an
+ * encoded route key (rows/Weekday/id%3A30053.json, TransLink's Expo Line) and a server decodes the URL before it looks
+ * the file up; unencoded, the read asked for id:30053.json and found nothing (CIV chain test, 2026-11-21).
+ */
+export const splitUrl = (base: string, path: string) => `${base.replace(/\/$/, '')}/${path.split('/').map(encodeURIComponent).join('/')}`;
+
 /** Reads files from a base URL (the published release's mcp folder). Works in Node and in a Worker. */
 export function urlReader(base: string, init?: RequestInit): SplitRead {
-  return async path => jsonOrNull(await fetch(`${base.replace(/\/$/, '')}/${path}`, init), path);
+  return async path => jsonOrNull(await fetch(splitUrl(base, path), init), path);
 }
 
 /** The store over a reader. Each file is read once per store; a new release is a new store. */
 export function splitStore(read: SplitRead): AtlasStore {
   const once = <T>(fn: () => Promise<T>) => { let p: Promise<T> | null = null; return () => (p ??= fn()); };
   const memo = new Map<string, Promise<unknown | null>>();
-  const get = <T>(path: string) => { if (!memo.has(path)) memo.set(path, read(path)); return memo.get(path) as Promise<T | null>; };
+  // A failed read is forgotten, so the next call reads again. A read started by an earlier request that has since ended
+  // can't be awaited in a Worker ("This promise was created by a request that has since ended"), so one that fails
+  // is read again here once (CIV chain test, 2026-11-21: one too-large rank_agencies call broke the call after it).
+  const start = (path: string) => {
+    const p = read(path);
+    memo.set(path, p);
+    p.catch(() => { if (memo.get(path) === p) memo.delete(path); });
+    return p;
+  };
+  const get = async <T>(path: string): Promise<T | null> => {
+    const cached = memo.get(path);
+    if (!cached) return start(path) as Promise<T | null>;
+    try { return (await cached) as T | null; } catch {
+      if (memo.get(path) === cached) memo.delete(path);
+      return start(path) as Promise<T | null>;
+    }
+  };
   const manifest = once(async () => { const m = await get<SplitManifest>(splitPaths.manifest); if (!m) throw new Error('This release has no MCP files.'); return m; });
   return {
     async catalog() { return ((await get<McpAgency[]>(splitPaths.catalog)) ?? []).filter(a => !a.betaOnly); },
