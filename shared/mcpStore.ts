@@ -1,3 +1,4 @@
+import type { FeedCreditKey } from './feedCredits';
 /**
  * What the Atlas Studio MCP tools read, behind one async interface (CIV-1840): the local server reads files on the
  * Mac (scripts/mcp/diskStore.ts), the hosted one reads the published release on R2, and tests use memory. The tools
@@ -11,7 +12,7 @@ import type { StudioBeforeAfterFile } from './studioBeforeAfter';
 import type { StudioVehiclesFile } from './studioVehicles';
 
 /** One public agency as the catalog lists it. */
-export interface McpAgency { slug: string; name: string; /** Its parent agency's slug (config/parent-agencies.json), when it is one feed of a larger agency. */ parentAgency?: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number] }
+export interface McpAgency { slug: string; name: string; /** Its parent agency's slug (config/parent-agencies.json), when it is one feed of a larger agency. */ parentAgency?: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number]; /** #1694: a credit the feed's publisher requires (shared/feedCredits.ts). */ feedCredit?: FeedCreditKey }
 
 /** A route line from an agency's published route file (GeoJSON LineString), before the map's own normalisation. */
 export interface McpFeature { geometry: { type: string } | null; properties: Record<string, unknown> }

@@ -48,6 +48,9 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.22.6 | 2026-11-22 | routes_at_frequency names the routes the map's filter rule leaves out though their typical wait is within the figure asked (OC Transpo 34, 42, 58, 67, 99 on Sunday midday at every 30), and says why (#1686, CIV-2086); route_frequency and routes_at_frequency say their figure is the typical wait, route_history and schedule_changes that theirs is the map's grade (#1685, CIV-2087); server instructions: asked for ridership or fares, say Atlas has no figure and give no number from memory unless asked (#1689) |
 | 0.22.7 | 2026-11-22 | After midnight, route_now reads the same service day as the schedule tools' "now" (12:37 AM Sunday is Saturday's late period), from one shared rule (#1690); WMATA is left out of every tool (its data terms bar an API to its data), and asked about it the server says it can't serve it here (#1693); 15 more agencies left out the same way, each with its own reason: Des Moines DART, NYC Ferry, Bee-Line, and 12 that need written permission first (CIV-2124); an agency Atlas has but this server carries no schedules for (the pilot's 8) is named as such, with the server's list, instead of 'no agency matching' (#1687); buses_needed gives the schedule end date (#1688) |
 
+| 0.22.7 | 2026-11-22 | After midnight, route_now reads the same service day as the schedule tools' "now" (12:37 AM Sunday is Saturday's late period), from one shared rule (#1690) |
+| 0.22.8 | 2026-11-22 | Answers that use an agency read through the 511 API (sfmta, samtrans, smart-ca, tridelta, lavta, petaluma, santarosa, fast-ca, ace) carry "Data provided by 511.org" with its link, to give at the end (#1694) |
+
 ## Questions
 
 The questions moved to [QUESTIONS.md](QUESTIONS.md), the one list any chat adds to (2026-11-18). Rounds run from it; the question numbers in the older sections below are those rounds' own.

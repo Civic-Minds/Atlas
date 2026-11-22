@@ -37,6 +37,7 @@ import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { mayRedistribute, redistributionExclusion } from '../../shared/rules/redistribution';
+import { FEED_CREDITS, type FeedCreditKey } from '../../shared/feedCredits';
 import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
@@ -403,6 +404,18 @@ export async function agencyNotOnThisServer(query: string): Promise<CatalogAgenc
     const a = await findAgency(query, await publicAgencies());
     return a && !have.has(a.slug) ? a : null;
   } catch { return null; }
+}
+
+/**
+ * #1694: the credits the feed publishers of the named agencies require (shared/feedCredits.ts: "Data provided by 511.org" for
+ * the agencies read through the 511 API), once each. Names are as the tools give them; a name may begin a longer line.
+ */
+export async function feedCreditsFor(names: readonly string[]): Promise<Array<{ label: string; href: string }>> {
+  const keys = new Set<FeedCreditKey>();
+  for (const a of await store.catalog()) {
+    if (a.feedCredit && names.some(n => n === a.name || n.startsWith(`${a.name} |`))) keys.add(a.feedCredit);
+  }
+  return [...keys].map(k => ({ label: FEED_CREDITS[k].label, href: FEED_CREDITS[k].href }));
 }
 
 /** A ranking file's wait as a filter reading (RankWait). */
