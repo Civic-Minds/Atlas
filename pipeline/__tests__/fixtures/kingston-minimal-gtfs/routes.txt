@@ -1,3 +1,0 @@
-route_id,route_short_name,route_long_name,route_type,route_color,route_text_color
-2,2,Division St - Train Station,3,F99D31,000000
-19,19,Woodhaven - Cataraqui Centre,3,00215B,FFFFFF

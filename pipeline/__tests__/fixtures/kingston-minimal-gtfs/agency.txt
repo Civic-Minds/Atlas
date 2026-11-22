@@ -1,2 +1,0 @@
-agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
-KT,Kingston Transit,https://www.kingstontransit.ca,America/Toronto,en,613-546-0000,https://www.kingstontransit.ca/fares-and-passes/,contactus@cityofkingston.ca
