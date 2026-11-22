@@ -14,6 +14,17 @@
     -75.99
   ],
   "feedUrl": "https://api.cityofkingston.ca/gtfs/gtfs.zip",
+  "excludeTripHeadsigns": [
+    "Not In Service"
+  ],
+  "correctionNotices": [
+    {
+      "type": "excludedNonRevenueTrips",
+      "routeShortNames": [
+        "2"
+      ]
+    }
+  ],
   "lastFeedExpiry": "20271115",
   "lastFeedVersion": "1/20261115 19:18:20/20261116 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-733/latest.zip",
