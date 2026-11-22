@@ -12,7 +12,7 @@ import { MASSDOT_CREDITED_SLUGS } from '../../shared/liveArchiveFeeds';
 type Agency = Parameters<typeof agencyCredits>[0][number];
 
 /** One credit in Schedule sources: the agency's pill, and what opens under it (the licence, linked, then any words it requires). */
-interface SourceCredit { slug: string; label: { primary: string; secondary?: string }; link: { href: string; text: string } | null; words: string | null }
+interface SourceCredit { slug: string; label: { primary: string; secondary?: string }; link: { href: string; text: string } | null; words: string | null; feedLink?: { href: string; text: string } | null }
 
 /**
  * About → Schedule sources' agency credits (CIV-461). Ryan, 2026-11-22: "The pill should just show the name of the agency
@@ -24,7 +24,7 @@ interface SourceCredit { slug: string; label: { primary: string; secondary?: str
 export default function SourceCredits({ agencies, massDot, focusSlug, focusN }: { agencies: readonly Agency[]; massDot: boolean; focusSlug: string | null; focusN: number }) {
   const credits = useMemo<SourceCredit[]>(() => {
     const list: SourceCredit[] = agencyCredits(agencies).map(c => ({
-      slug: c.slug, label: c.label, words: c.words,
+      slug: c.slug, label: c.label, words: c.words, feedLink: c.feedLink,
       link: c.licenceName ? { href: c.url, text: c.licenceName } : null,
     }));
     if (massDot) {
@@ -64,6 +64,7 @@ export default function SourceCredits({ agencies, massDot, focusSlug, focusN }: 
             {isOpen && (
               <div id={panelId} className="px-3 pt-2 pb-1 space-y-1">
                 {c.link && <ArrowLink as={OutboundLink} href={c.link.href} kind="attribution" tone="inline" size="xs" external wrap>{c.link.text}</ArrowLink>}
+                {c.feedLink && <ArrowLink as={OutboundLink} href={c.feedLink.href} kind="attribution" tone="inline" size="xs" external wrap>{c.feedLink.text}</ArrowLink>}
                 {c.words && <p className="text-xs leading-relaxed text-[var(--text-dim)]">{c.words}</p>}
               </div>
             )}

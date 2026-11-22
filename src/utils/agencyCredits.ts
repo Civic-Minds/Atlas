@@ -1,4 +1,5 @@
 import type { AgencyDataLicense } from '../../shared/agencyCatalog';
+import { FEED_CREDITS, type FeedCreditKey } from '../../shared/feedCredits';
 import { scheduleDataCredit } from '../content/noticeCopy';
 import { agencyNames, type AgencyNameInput } from './agencyName';
 
@@ -16,9 +17,11 @@ export interface AgencyCredit {
   licenceName: string | null;
   /** Wording the licence requires word for word (its own sentence, then the last-updated date it asks for), shown when the pill opens; null where it gives none. */
   words: string | null;
+  /** #1692: a credit the feed's publisher requires ("Powered by 511.org"), linked, shown when the pill opens. */
+  feedLink?: { href: string; text: string } | null;
 }
 
-type Credited = Exclude<AgencyNameInput, string> & { slug: string; dataLicense?: AgencyDataLicense; lastRefreshedAt?: string | null };
+type Credited = Exclude<AgencyNameInput, string> & { slug: string; dataLicense?: AgencyDataLicense; feedCredit?: FeedCreditKey; lastRefreshedAt?: string | null };
 
 /**
  * The credit an agency's data licence requires, read from its config (dataLicense): the licence's own sentence where it
@@ -26,14 +29,20 @@ type Credited = Exclude<AgencyNameInput, string> & { slug: string; dataLicense?:
  */
 export function agencyCredit(a: Credited): AgencyCredit | null {
   const l = a.dataLicense;
-  if (l?.attribution !== 'required') return null;
+  const feed = a.feedCredit ? FEED_CREDITS[a.feedCredit] : null;
+  const feedLink = feed ? { href: feed.href, text: feed.label } : null;
+  const names = agencyNames(a);
+  if (l?.attribution !== 'required') {
+    // #1692: the feed's publisher requires a credit though the agency's own licence does not (511.org).
+    if (!feed) return null;
+    return { slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: feed.href, text: feed.label, label: names.list, licenceName: null, words: null, feedLink };
+  }
   const text = l.credit ?? scheduleDataCredit(a.name, l.name);
   // The licence asks for the data's last-updated date in its own words (STO): the day Atlas last took the feed.
   const updated = l.updatedLabel && a.lastRefreshedAt ? ` ${l.updatedLabel} ${a.lastRefreshedAt.slice(0, 10)}.` : '';
-  const names = agencyNames(a);
   return {
     slug: a.slug, name: a.name, shortName: agencyNames(a.name).short, url: l.url, text: `${text}${updated}`,
-    label: names.list, licenceName: l.name ?? null, words: l.credit ? `${l.credit}${updated}` : null,
+    label: names.list, licenceName: l.name ?? null, words: l.credit ? `${l.credit}${updated}` : null, feedLink,
   };
 }
 

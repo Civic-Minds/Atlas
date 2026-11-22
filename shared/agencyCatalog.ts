@@ -1,4 +1,5 @@
 import { isAgencyVisibleInBrowser, type BrowserAgencyVisibility } from './agencyVisibility';
+import { feedCreditFor, type FeedCreditKey } from './feedCredits';
 import type { AtlasMode } from './config';
 import type { SupplementalFeedMeta } from './feedAvailability';
 import type { HiddenAgencyReason } from './hiddenAgencyNote';
@@ -59,6 +60,8 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   fareUrl?: string;
   websiteUrl?: string;
   dataLicense?: AgencyDataLicense;
+  /** #1692: a credit the feed's publisher requires (shared/feedCredits.ts), set from the feed URL at build time. */
+  feedCredit?: FeedCreditKey;
   searchAliases?: string[];
   cities?: string[];
   timezone?: string | null;
@@ -84,7 +87,10 @@ export function buildAgencyCatalog(
 ): AgencyCatalogFile {
   const agencies = source
     .filter(agency => isAgencyVisibleInBrowser(agency, { mode }))
-    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, nextServiceDatesSkipWeekendEvents: _nextServiceDatesSkipWeekendEvents, supplementalIdPrefixes: _supplementalIdPrefixes, formerSlugs: _formerSlugs, shortName: _shortName, labelPlace: _labelPlace, internalNote: _internalNote, ...agency }) => agency as unknown as AgencyCatalogEntry);
+    .map(({ feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, nextServiceDatesSkipWeekendEvents: _nextServiceDatesSkipWeekendEvents, supplementalIdPrefixes: _supplementalIdPrefixes, formerSlugs: _formerSlugs, shortName: _shortName, labelPlace: _labelPlace, internalNote: _internalNote, ...agency }) => {
+      const feedCredit = feedCreditFor(feedUrl);
+      return (feedCredit ? { ...agency, feedCredit } : agency) as unknown as AgencyCatalogEntry;
+    });
 
   return { mode, agencyCount: agencies.length, agencies };
 }

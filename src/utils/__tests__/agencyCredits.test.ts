@@ -30,6 +30,17 @@ describe('agencyCredits (CIV-461)', () => {
     expect(agencyCredit({ ...sto, lastRefreshedAt: null })?.text).toBe('Le présent service intègre les données.');
   });
 
+  it('credits 511.org for an agency read through the 511 API, alone or after its own licence (#1692)', () => {
+    const samtrans = agencyCredit({ slug: 'samtrans', name: 'SamTrans', feedCredit: '511', dataLicense: lic('none') });
+    expect(samtrans?.feedLink).toEqual({ href: 'https://511.org/', text: 'Powered by 511.org' });
+    expect(samtrans?.licenceName).toBeNull();
+    expect(agencyCredit({ slug: 'ace', name: 'ACE', feedCredit: '511' })?.text).toBe('Powered by 511.org');
+    const sfmta = agencyCredit({ slug: 'sfmta', name: 'SFMTA', feedCredit: '511', dataLicense: lic('required', { name: 'SFMTA licence', credit: 'Reproduced with permission.' }) });
+    expect(sfmta?.words).toBe('Reproduced with permission.');
+    expect(sfmta?.feedLink?.text).toBe('Powered by 511.org');
+    expect(agencyCredit({ slug: 'x', name: 'X', dataLicense: lic('required') })?.feedLink).toBeNull();
+  });
+
   it('keeps the order of the slugs given, each once, and skips agencies not in the list', () => {
     const agencies = [
       { slug: 'x', name: 'X', dataLicense: lic('required') },
@@ -40,9 +51,9 @@ describe('agencyCredits (CIV-461)', () => {
     expect(agencyCredits(agencies).map(c => c.slug)).toEqual(['x', 'z']);
   });
 
-  it('credits every agency the public catalog marks as requiring it, read from the config, no list of its own', () => {
+  it('credits every agency the public catalog marks as requiring it (by its licence, or by its feed publisher: #1692), read from the config, no list of its own', () => {
     const catalog = JSON.parse(readFileSync('public/data/catalog-public.json', 'utf8')) as { agencies: AgencyCatalogEntry[] };
-    const required = catalog.agencies.filter(a => a.dataLicense?.attribution === 'required');
+    const required = catalog.agencies.filter(a => a.dataLicense?.attribution === 'required' || a.feedCredit);
     expect(required.length).toBeGreaterThan(0);
     expect(agencyCredits(catalog.agencies).map(c => c.slug)).toEqual(required.map(a => a.slug));
   });
