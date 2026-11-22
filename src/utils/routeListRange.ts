@@ -65,11 +65,14 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
       const v = row.display(null).value;
       // A row with no number (limited, irregular) shows none; a row reading a range ("every 15–54") shows both ends.
       if (v.isLimited || v.headway == null) continue;
-      shown.push(v.headway);
-      color = Math.max(color, v.headway, v.colorHeadway ?? 0);
-      const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, v.headway);
+      // #1684: a row whose words name a time reads their number ("every 16 min from 6:39 AM" is 16), not the period's
+      // typical gap under them (MBTA 65 weekday AM peak: the list read "every 8–14" beside that row).
+      const h = v.edgeText != null && v.shownHeadway != null ? v.shownHeadway : v.headway;
+      shown.push(h);
+      color = Math.max(color, h, v.colorHeadway ?? 0);
+      const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, h);
       if (range) shown.push(v.trunkHeadway!);
-      else if (v.headwayLabel) worded.push({ h: v.headway, words: v.headwayLabel });
+      else if (v.headwayLabel) worded.push({ h, words: v.headwayLabel });
     }
   }
   if (!shown.length) return undefined;
