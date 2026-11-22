@@ -1,6 +1,6 @@
 # Terms of Service
 
-Last updated October 3, 2026.
+Last updated November 22, 2026.
 
 Atlas is a free public transit frequency map and analysis service by Civic Minds. It processes public transit schedule data into map views, service-frequency measurements, and related tools.
 
@@ -15,6 +15,14 @@ Do not scrape or bulk-download Atlas in a way that degrades the service. Do not 
 Atlas relies on public GTFS schedules and other data supplied by transit agencies and data providers. That information may be delayed, incomplete, discontinued, incorrectly classified, or wrong.
 
 Atlas is not a substitute for an agency’s official service alerts, schedules, accessibility information, or emergency instructions. Verify time-sensitive travel information with the relevant transit agency.
+
+## Atlas Studio MCP {#mcp}
+
+Atlas Studio MCP lets an AI assistant look up Atlas’s published schedule figures. It is a pilot open only to invited testers. Your link is for you alone, so do not share or publish it. Calls are limited per minute and per day, and we may revoke a link at any time.
+
+MCP answers are Atlas’s figures from published transit schedules, as of the dates the answers give. They are not travel, planning, engineering, or other professional advice, and your assistant may summarize or present them inaccurately. Check figures that matter against the agency’s own sources. The Accuracy and Liability sections apply to MCP answers as well.
+
+Calls made through your link are logged as described in the [Privacy Policy](/privacy#mcp). For help with Atlas Studio MCP, email [hey@ryanisnota.pro](mailto:hey@ryanisnota.pro?subject=Atlas%20Studio%20MCP).
 
 ## Third-Party Services {#third-party}
 

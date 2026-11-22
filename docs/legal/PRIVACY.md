@@ -1,12 +1,12 @@
 # Privacy Policy
 
-Last updated November 17, 2026.
+Last updated November 22, 2026.
 
 Atlas is a free public transit map and analysis service operated by Civic Minds. You do not need an account or need to provide personal information to browse the map.
 
 ## Scope {#scope}
 
-This policy applies to the Atlas website, map, documentation, Public deployment, Beta deployment, and related contact and feedback features. It does not govern transit agencies, linked websites, CARTO, OpenStreetMap, Cloudflare, Vercel, Google, or other third-party services; their own policies apply to their processing.
+This policy applies to the Atlas website, map, documentation, Public deployment, Beta deployment, the Atlas Studio MCP pilot, and related contact and feedback features. It does not govern transit agencies, linked websites, CARTO, OpenStreetMap, Cloudflare, Vercel, Google, or other third-party services; their own policies apply to their processing.
 
 ## Information {#information}
 
@@ -35,6 +35,20 @@ Our hosting provider may set a short-lived security cookie to check that a visit
 If you choose the locate-me button, your browser may provide precise coordinates after you grant permission. Atlas uses those coordinates to center the map and does not intentionally store them as an Atlas profile.
 
 If browser geolocation is unavailable or cannot determine a position, Atlas may request approximate city-level coordinates derived from hosting-provider request headers. This fallback is less precise than browser geolocation and is used only to center the map.
+
+## Atlas Studio MCP {#mcp}
+
+Atlas Studio MCP lets an AI assistant, such as Claude, look up Atlas’s published schedule figures. During the pilot it is open only to invited testers, each through a private link.
+
+For every call made through your link, we log the time, the tool used, the details the assistant sent (such as the agency, route, and time of day), the answer Atlas returned, how long it took, and which Atlas data release answered it. Every tool also accepts an optional question, which is the assistant’s summary of what you asked. The assistant decides whether to send it, so it may be missing or may not match your words. The log is tied to the name we gave your link. It does not include your IP address or device details, though Cloudflare, which hosts the MCP, processes request information as described under Third-Party Services.
+
+We use the log only to improve Atlas’s tools and data and to apply usage limits. Only Civic Minds can read it. We do not share it with other testers or sell it.
+
+The log has no automatic expiry and is kept until we delete it. You can ask us at any time to delete your log, or your link together with its log.
+
+Your conversation with your assistant stays with that assistant’s provider under its own terms. Atlas receives only what the assistant sends in a call.
+
+For help with Atlas Studio MCP or to have your log deleted, email [hey@ryanisnota.pro](mailto:hey@ryanisnota.pro?subject=Atlas%20Studio%20MCP).
 
 ## Third-Party Services {#third-party}
 
