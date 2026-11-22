@@ -1,6 +1,9 @@
 import type { DayType, TimePeriod } from '../hooks/useIntervalStats';
 import { buildCurrentRoute } from './routeCardRoute';
-import { buildDirectionGroups, type RouteDirectionOverrides } from './routeCardDirectionGroups';
+import { buildDirectionGroups, routeDirectionOverrides, type RouteDirectionOverrides } from './routeCardDirectionGroups';
+import { routeKeyForShortName } from './routeKey';
+import { periodKeyForHour } from '../../shared/config';
+import { getNowDay } from '../../shared/dayTypes';
 import { buildRouteCardModel, cardGroupLines, type RouteCardModel } from './routeCardRows';
 
 /** The main map's route card model for a route now, the one source Live reads its scheduled figures from (#1234, CIV-2045). */
@@ -110,4 +113,23 @@ export function liveScheduledHeadway(
     if (value != null && (best == null || value < best)) best = value;
   }
   return best;
+}
+
+/**
+ * The Live route card's Scheduled lines right now (CIV-2045) for a route by its short name: today's day type and the
+ * period of the clock hour, the agency's direction overrides, the picked direction by its number and name. Null where
+ * the route has no card or the hour has no period. One call for main Live and Studio's Live route panel (CIV-2021).
+ */
+export function liveScheduledRowsNow(
+  fc: GeoJSON.FeatureCollection | undefined,
+  agencies: Parameters<typeof routeDirectionOverrides>[0],
+  slug: string,
+  routeShortName: string,
+  counted: { directionId: number; label: string } | null,
+): LiveScheduledRow[] | null {
+  const routeKey = fc ? routeKeyForShortName(slug, fc.features, routeShortName, getNowDay()) : null;
+  if (!fc || !routeKey) return null;
+  const period = periodKeyForHour(new Date().getHours());
+  if (!period) return null;
+  return liveScheduledRows(fc, routeKey, getNowDay(), period, counted?.directionId ?? null, routeDirectionOverrides(agencies, slug, routeShortName), counted?.label ?? null);
 }

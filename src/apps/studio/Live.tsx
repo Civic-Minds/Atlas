@@ -27,7 +27,7 @@ import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
 import { GAP_MEASURES } from '../../../shared/liveDashboard';
 import LiveGlance from './LiveGlance';
-import RouteNow from './RouteNow';
+import RouteRightNow from './RouteRightNow';
 import { PanelSectionsProvider } from '../../components/Live/panelSections';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
 import StudioChips, { type StudioMenu } from './StudioChips';
@@ -139,7 +139,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
               </SidebarCardHeaderBlock>
               {/* CIV-2021: one panel of sections (no boxes inside it), each with the shared route card's section heading. */}
               <PanelSectionsProvider>
-                <RouteNow agency={slug} route={route} />
+                {/* CIV-2021: main Live's own right-now card, over the same live vehicles, steered by the Direction chip. */}
+                <RouteRightNow slug={slug} routeShortName={regularRow ? liveRouteNumber(regularRow) : route} direction={m.v3 ? m.shown : null} />
                 <WidgetPanel widgets={routeWidgets} className="!grid-cols-1 !gap-0" />
                 {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
               </PanelSectionsProvider>

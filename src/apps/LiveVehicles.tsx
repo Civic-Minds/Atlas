@@ -26,7 +26,7 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { effectiveMode, knownModeLabel, type EffectiveModeInput } from '../../shared/modes';
 import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel, GENERIC_VEHICLE } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
-import { liveScheduledHeadway, liveScheduledRows } from '../utils/liveScheduledHeadway';
+import { liveScheduledHeadway, liveScheduledRowsNow } from '../utils/liveScheduledHeadway';
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
@@ -662,16 +662,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [selectedGroup, headwaysBySlug, routeLayer, counted?.directionId, counted?.label, agencies]);
 
   // CIV-2045: the card's own Scheduled lines for the picked direction, shown in Live's Right now (no range of its own).
-  const selectedScheduledRows = useMemo(() => {
-    if (!selectedGroup) return null;
-    const fc = routeLayer(selectedGroup.agencySlug);
-    const routeKey = fc ? routeKeyForShortName(selectedGroup.agencySlug, fc.features, selectedGroup.routeShortName, getNowDay()) : null;
-    if (!fc || !routeKey) return null;
-    const period = periodKeyForHour(new Date().getHours());
-    if (!period) return null;
-    return liveScheduledRows(fc, routeKey, getNowDay(), period, counted?.directionId ?? null,
-      routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName), counted?.label ?? null);
-  }, [selectedGroup, routeLayer, counted?.directionId, counted?.label, agencies]);
+  const selectedScheduledRows = useMemo(
+    () => (selectedGroup ? liveScheduledRowsNow(routeLayer(selectedGroup.agencySlug), agencies, selectedGroup.agencySlug, selectedGroup.routeShortName, counted) : null),
+    [selectedGroup, routeLayer, counted, agencies],
+  );
 
   // A route picked (from a link or the address) that has no card: say why, never show nothing.
   const requestedRouteNote = useMemo((): string | null => {

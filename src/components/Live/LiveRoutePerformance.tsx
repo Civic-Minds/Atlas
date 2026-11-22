@@ -111,6 +111,11 @@ interface Props {
    * null while "Right now" has no count (no analysis, feed down or incomplete). Must be stable (a state setter).
    */
   onCounted?: (counted: { directionId: number; label: string; ids: string[] } | null) => void;
+  /**
+   * Studio's Live route panel (CIV-2021): the panel's own Direction chip picks the card's direction, so the card shows no
+   * pills of its own and leaves the address alone. Left out, the card's pills pick it and the address keeps it (main Live).
+   */
+  direction?: number | null;
 }
 
 /**
@@ -147,13 +152,15 @@ function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, rout
 export const LIVE_RECENT_URL = '/api/live-recent';
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, direction }: Props) {
+  const steered = direction !== undefined;
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
   const [dir, setDir] = useState<number | null>(() => readLink(currentSearch(), LIVE_MAP_URL).dir ?? null);
-  const directionId = directions.some(([id]) => id === dir) ? dir! : directions[0]?.[0] ?? 0;
+  const picked = steered ? direction : dir;
+  const directionId = directions.some(([id]) => id === picked) ? picked! : directions[0]?.[0] ?? 0;
   const recent = useRecentPositions(vehicles, slug, routeShortName);
   // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
   const [now, setNow] = useState(() => Date.now());
@@ -166,10 +173,10 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const line: LineModel | null = useMemo(() => (data ? lineModel(data, directionId) : null), [data, directionId]);
 
   useEffect(() => {
-    if (!data) return;
+    if (!data || steered) return;
     syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: dir == null ? null : directionId }));
-  }, [data, dir, directionId]);
-  useEffect(() => () => syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: null })), []);
+  }, [data, dir, directionId, steered]);
+  useEffect(() => () => { if (!steered) syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: null })); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
   // doesn't list is placed by its own movement since the card opened; until it has been seen twice it
@@ -237,7 +244,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       {replacement}
 
       {/* The direction pills only steer "Right now", so they show only with it. */}
-      {live && directions.length > 1 && <PillGroup label={DIRECTION_LABEL} options={directions} value={directionId} onChange={setDir} />}
+      {live && !steered && directions.length > 1 && <PillGroup label={DIRECTION_LABEL} options={directions} value={directionId} onChange={setDir} />}
 
       {live && (
         <SidebarCardSection label={rightNowLabel}>
