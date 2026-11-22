@@ -7,6 +7,9 @@ import { createServer } from 'http';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve('.env.local') });
+// CIV-2072: the Live feed keys (only those) come from the main checkout's .env.local when this checkout has none.
+const { loadLiveFeedKeys } = await import('./local-api/liveFeedKeys.js');
+loadLiveFeedKeys();
 
 const API_PORT = Number(process.env.ATLAS_API_PORT ?? 5001);
 
