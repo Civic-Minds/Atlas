@@ -36,4 +36,13 @@ describe('left-out agencies beside the others (#1700)', () => {
     const ontario = await handlers.rank_agencies({ region: 'Ontario', period: 'midday', every: 30 }) as { leftOutAgencies?: string };
     expect(ontario.leftOutAgencies).toBeUndefined();
   });
+  it('list_agencies for a region whose only agency is left out says so (#1702)', async () => {
+    data.useStore(store);
+    const yukon = await handlers.list_agencies({ region: 'YT' }) as { matches: number; leftOutAgencies?: string };
+    expect(yukon.matches).toBe(0);
+    expect(yukon.leftOutAgencies).toMatch(/^Left out of this list by their data terms.*Whitehorse Transit/);
+    const ontario = await handlers.list_agencies({ region: 'Ontario' }) as { matches: number; leftOutAgencies?: string };
+    expect(ontario.matches).toBe(1);
+    expect(ontario.leftOutAgencies).toBeUndefined();
+  });
 });

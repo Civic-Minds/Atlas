@@ -33,6 +33,16 @@ export function staleComparisonNote(afterYmd: string, nowMs: number): { staleNot
 }
 
 /**
+ * #1700, #1702: the agencies a region or country holds that are left out by their data terms, each with its reason, so a
+ * list they would be in says why they're missing (DC's only public agency is WMATA).
+ */
+async function leftOutIn(what: 'ranking' | 'list', reg: string, ctry: string): Promise<string | null> {
+  if (!reg && !ctry) return null;
+  const excluded = await data.excludedAgencies(a => (!reg || sameRegion(a.region, reg)) && (!ctry || data.sameCountry(countryForRegion(a.region), ctry)));
+  return excluded.length ? `Left out of this ${what} by their data terms, though the Atlas map shows them: ${excluded.slice(0, 8).map(x => `${x.name} (${x.reason})`).join('; ')}${excluded.length > 8 ? `; and ${excluded.length - 8} more` : ''}.` : null;
+}
+
+/**
  * #1701: a region no agency in Atlas has (by any of its names) says so, instead of an empty list read as "no transit
  * there". Agencies left out by their data terms count as in Atlas: their own note says why they're missing.
  */
@@ -88,6 +98,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const haveSlugs = new Set(all.map(a => a.slug));
       const elsewhere = groupAgencies((await data.publicAgencies()).filter(a => !haveSlugs.has(a.slug))).filter(matches);
       if (elsewhere.length) return { matches: 0, note: await data.notOnThisServerNote(elsewhere.slice(0, 5).map(g => agencyGroupName(g, a => a.name))) };
+    }
+    if (!hits.length && !q && (reg || ctry)) {
+      const leftOut = await leftOutIn('list', reg, ctry);
+      if (leftOut) return { matches: 0, leftOutAgencies: leftOut };
     }
     if (!hits.length && reg) {
       const unknown = await unknownRegion(String(region ?? '').trim());
@@ -171,8 +185,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     }));
     // #1700: a region or country with agencies left out by their data terms says so (Yukon's only agency is left out,
     // so its ranking was empty with no reason).
-    const excluded = reg || ctry ? await data.excludedAgencies(a => (!reg || sameRegion(a.region, reg)) && (!ctry || data.sameCountry(countryForRegion(a.region), ctry))) : [];
-    const leftOutNote = excluded.length ? `Left out of this ranking by their data terms, though the Atlas map shows them: ${excluded.slice(0, 8).map(x => `${x.name} (${x.reason})`).join('; ')}${excluded.length > 8 ? `; and ${excluded.length - 8} more` : ''}.` : null;
+    const leftOutNote = await leftOutIn('ranking', reg, ctry);
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
       ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
