@@ -79,7 +79,7 @@ logged at Ryan's request). Median/p90 in seconds. The recorder polls each feed a
 | `halifax` | 15/15 | 30/33 | 30 s |
 | `edmonton` | 30/30 | 30/31 | 30 s |
 | `hamilton` | 60/60 | 61/66 | 60 s |
-| `sfmta` | ~60 (upper bound) | ~61 | 120 s (511 key limit: about 60 requests an hour, 2 per poll); 60 s once 511 raises it |
+| `sfmta` | ~60 (upper bound) | ~61 | 90 s, positions only (511 key limit: about 60 requests an hour; Ryan, 2026-11-21); 60 s with trip updates once 511 raises it (CIV-2074) |
 
 Not measured: `translink`, `stm` and `lacmta`. Their keys are not on the dev Mac, so those cities don't run locally.
 `kingston` and `mbta` are recorded but not in `LIVE_POLLING_ROUTES`, and their pace is not measured yet.
