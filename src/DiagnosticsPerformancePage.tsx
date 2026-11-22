@@ -152,7 +152,7 @@ export default function DiagnosticsPerformancePage() {
           <DataTable variant="ruled" layout="page" caption="This Page" columns={factColumns} rows={facts} rowKey={f => f.label} />
         </PageTable>
       </PageSection>
-      <PageSection id="performance-metrics-heading" title="Timings" intro="Use the reload button for a fresh navigation measurement. These timings are local browser measurements; production also reports Vercel Speed Insights. Good and Rating use Google's Core Web Vitals thresholds.">
+      <PageSection id="performance-metrics-heading" title="Timings" intro="Use the reload button for a fresh navigation measurement. These timings are local browser measurements; production also reports Vercel Speed Insights. Good and Rating use Google’s Core Web Vitals thresholds.">
         <PageTable>
           <DataTable variant="ruled" layout="page" caption="Timings" columns={metricColumns} rows={rows} rowKey={m => m.label} />
         </PageTable>
