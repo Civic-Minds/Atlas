@@ -1,5 +1,6 @@
 import type React from 'react';
 import { CardDirectionRow } from './cardUi';
+import { CARD_ROUTE_ROW_INSET } from '../../styles';
 import type { routeLabels } from '../../utils/format';
 
 export interface CardRouteListRow {
@@ -39,7 +40,7 @@ export default function CardRouteList({ rows, onSelect, dimmed = false }: {
   return (
     <div className="py-1">
       {rows.map(row => (
-        <div key={row.key} className={`px-3 py-1 transition-colors ${row.disabled ? '' : 'hover:bg-[var(--bg-btn-hover)]'}`}>
+        <div key={row.key} className={`${CARD_ROUTE_ROW_INSET} py-1 transition-colors ${row.disabled ? '' : 'hover:bg-[var(--bg-btn-hover)]'}`}>
           <CardDirectionRow
             label={row.route.secondary ? `${row.route.primary} ${row.route.secondary}` : row.route.primary}
             routeName={{ shortName: row.route.primary, name: row.route.secondary }}

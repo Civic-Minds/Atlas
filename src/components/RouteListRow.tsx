@@ -1,5 +1,5 @@
 import React from 'react';
-import { LIST_ROW_DIM, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, SELECTION_ACTIVE_TEXT } from '../styles';
+import { CARD_ROUTE_ROW_INSET, LIST_ROW_DIM, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD_TEXT, SELECTION_ACTIVE_TEXT } from '../styles';
 import ListRow from './ui/ListRow';
 import RouteRowName from './RouteRowName';
 
@@ -113,10 +113,11 @@ export function RouteListColumns({ cells }: { cells: readonly RouteListCell[] })
   );
 }
 
-/** The heading row over a list of RouteListRows with RouteListColumns: the list's name, then each column's. */
+/** The heading row over a list of route rows with RouteListColumns (Studio's Schedules, CardRouteList): the list's name, then
+ *  each column's, at the rows' side padding so each heading sits over its figures (CIV-2057). */
 export function RouteListHeader({ label, columns }: { label: React.ReactNode; columns: readonly React.ReactNode[] }) {
   return (
-    <div className={`${PANEL_SECTION_HEAD} flex items-end justify-between gap-2`}>
+    <div className={`${CARD_ROUTE_ROW_INSET} ${PANEL_SECTION_HEAD_TEXT} flex items-end justify-between gap-2`}>
       <span>{label}</span>
       <RouteListColumns cells={columns.map(main => ({ main }))} />
     </div>
