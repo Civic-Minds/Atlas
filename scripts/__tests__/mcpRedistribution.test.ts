@@ -14,7 +14,11 @@ const store = {
 
 describe('agencies the MCP may not serve', () => {
   it('lists WMATA with its reason', () => {
-    expect(NO_REDISTRIBUTION.map(x => x.slug)).toEqual(['wmata']);
+    // CIV-2124: group A (terms bar sharing) and group C (out until written permission), each with its own reason.
+    expect(NO_REDISTRIBUTION.map(x => x.slug)).toEqual(['wmata', 'des-moines', 'nyc-ferry', 'beeline', 'norta', 'cata-lansing', 'spokane', 'trimet', 'vre', 'rtcwashoe', 'mta-flint', 'max-transit', 'citybus-lafayette', 'topeka', 'cherriots', 'ctran']);
+    expect(new Set(NO_REDISTRIBUTION.map(x => x.reason)).size).toBe(NO_REDISTRIBUTION.length);
+    for (const slug of ['norta', 'trimet', 'ctran']) expect(redistributionExclusion(slug)?.reason).toMatch(/until the agency gives written permission\.$/);
+    for (const slug of ['des-moines', 'nyc-ferry', 'beeline']) expect(redistributionExclusion(slug)?.reason).not.toMatch(/permission/);
     expect(mayRedistribute('wmata')).toBe(false);
     expect(mayRedistribute('ttc')).toBe(true);
     expect(redistributionExclusion('wmata')?.reason).toMatch(/terms don’t allow an API/);
