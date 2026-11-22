@@ -14,10 +14,10 @@
     -78.35
   ],
   "feedUrl": "https://maps.durham.ca/OpenDataGTFS/GTFS_Durham_TXT.zip",
-  "lastFeedExpiry": "20261129",
+  "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-726/latest.zip",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-22",
   "cities": [
     "Oshawa, Ontario",
     "Ajax, Ontario",
@@ -27,10 +27,10 @@
     "Newmarket, Ontario",
     "Barrie, Ontario"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261122",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261129",
+  "expiredFeedCheckExpiry": "20261220",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -38,10 +38,10 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 2,
       "routeHeadwayMismatches": 0,
-      "featureCount": 211,
-      "feedExpiry": "20261129",
+      "featureCount": 209,
+      "feedExpiry": "20261220",
       "routeCount": 38,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -57,8 +57,10 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261129",
-  "lastServiceWeek": "9d1483cb284fa5ae",
-  "feedObtainedAt": "20261027",
-  "lastFeedStart": "20261106"
+  "lastPeekedExpiry": "20261220",
+  "lastServiceWeek": "9f9e69322c89b486",
+  "feedObtainedAt": "20261122",
+  "lastFeedStart": "20261106",
+  "lastRawArchiveKey": "20261220-415be922ecff81fd",
+  "lastFeedContentKey": "b0713176eede063b"
 }

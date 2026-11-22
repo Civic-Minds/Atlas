@@ -80,10 +80,10 @@
     }
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-190/latest.zip",
-  "lastFeedExpiry": "20261129",
+  "lastFeedExpiry": "20270228",
   "lastFeedVersion": null,
   "region": "Missouri",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-22",
   "cities": [
     "St. Louis, Missouri",
     "Florissant, Missouri",
@@ -91,11 +91,11 @@
     "Saint Peters, Missouri"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20261129-75b2e33e46ec92c5",
-  "lastFeedCheckAt": "20261116",
+  "lastRawArchiveKey": "20270228-8d78af1d9027c164",
+  "lastFeedCheckAt": "20261122",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261129",
+  "expiredFeedCheckExpiry": "20270228",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
@@ -111,8 +111,8 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 424,
-      "feedExpiry": "20261129",
+      "featureCount": 428,
+      "feedExpiry": "20270228",
       "routeCount": 59,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -135,9 +135,9 @@
       "reason": "MetroLink is light rail, published as route_type 2 (commuter rail)"
     }
   ],
-  "lastPeekedExpiry": "20261129",
-  "lastServiceWeek": "b73eb5c15fa818a9",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261102",
-  "lastFeedContentKey": "228c21954179d74e"
+  "lastPeekedExpiry": "20270228",
+  "lastServiceWeek": "478f9cff7f907a13",
+  "feedObtainedAt": "20261122",
+  "lastFeedStart": "20261119",
+  "lastFeedContentKey": "28cab6342c17b780"
 }
