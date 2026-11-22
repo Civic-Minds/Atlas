@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { hourlyFrequency, edgeWait, waitBelowShown, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
+import { hourlyFrequency, edgeWait, edgeBehindWait, waitBelowShown, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
 import { agencyLabel, withAgency } from '../mcp/localData';
 import { diskStore } from '../mcp/diskStore';
 import { startsInWindow, windowHas } from '../mcp/tools';
@@ -74,6 +74,11 @@ describe('edgeWait', () => {
     expect(edgeWait('every 10 min', 10)).toBe(false);
     expect(edgeWait('every 5–10 min', 10)).toBe(false);
     expect(edgeWait('every 10 min until 12:59 AM', 10)).toBe(false);
+  });
+  it('marks a range whose edge only the filter names (#1711: TTC 501 Sunday Late, every 5–10 beside 47)', () => {
+    expect(edgeBehindWait('every 5–10 min', 47, 'every 5 min until 1:13 AM')).toBe(true);
+    expect(edgeBehindWait('every 5–10 min', 47, undefined)).toBe(false);
+    expect(edgeBehindWait('every 5–10 min', 10, 'every 5 min until 1:13 AM')).toBe(false);
   });
 });
 
