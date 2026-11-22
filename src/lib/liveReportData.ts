@@ -32,7 +32,7 @@ export const ANALYZE_DEV_HINT = 'npm run live:analyze';
  * A Live report page's tab title: the shared tab format (liveTabTitle, CIV-1796) with the build's tag in front, as every
  * other page's title has it ("[Internal] Live: 504 King | Transit Atlas" locally, no tag on public).
  */
-export const liveReportTitle = (name: string) => `${seoTitlePrefix(ATLAS_MODE)}${liveTabTitle(name)}`;
+export const liveReportTitle = (name: string, route = false) => `${seoTitlePrefix(ATLAS_MODE)}${liveTabTitle(name, route)}`;
 
 /**
  * The per-stop gaps file for the gaps-through-the-day chart: the local endpoint in dev; null on deployed builds, because

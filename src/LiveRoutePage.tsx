@@ -6,7 +6,7 @@ import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   freshness, goodDayCounts,
-  type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
+  type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
 import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
 import { useLiveGaps } from './hooks/useLiveGaps';
@@ -21,7 +21,6 @@ import { nameCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import EmptyPage from './components/ui/EmptyPage';
-import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
 import LiveExplorePage from './LiveExplorePage';
@@ -29,7 +28,7 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
+import { BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
@@ -39,8 +38,7 @@ import BuildupSection from './components/Live/sections/BuildupSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
-import { dirsOf } from './components/Live/sections/figures';
-import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText, FILTERS_LABEL, VIEW_LABEL, LIVE_SUMMARY_VIEW, LIVE_OVERVIEW_VIEW, LIVE_FULL_REPORT_VIEW } from './content/noticeCopy';
+import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText } from './content/noticeCopy';
 import { LATE_MAP_STOPS } from './components/Live/lateStopsMapModel';
 import { countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -128,29 +126,37 @@ export function RouteDevHint({ v3, route }: { v3: LiveV3; route: string }) {
 
 export const BOUNDARY = liveDrawError;
 
-function AnalysisPage() {
+/**
+ * CIV-284 (Ryan: "1 but don't delete or edit any of the content in each page yet"): Full analysis's sections, exactly as
+ * they were, now drawn in the Full report (LiveExplorePage) below the Dashboard's. Always the whole day.
+ */
+export function FullAnalysisSections({ v3, dir, uncertain, gaps, agency, route }: { v3: LiveV3; dir: number | null; uncertain: UncertainStart[]; gaps: ReturnType<typeof useLiveGaps>; agency: string; route: string }) {
+  const band: DashboardBand = 'all';
+  const bandData = v3.bands?.[band] as DashboardBandData;
+  return (<>
+        <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><WeekCompare v3={v3} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(LATE_STOPS_TITLE)}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title={LATE_STOPS_TITLE} id="b2" intro notRanked /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(EXTRA_WAIT_LABEL)}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(BUNCHING_FORMS_TITLE)}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(SERVICE_DELIVERED_TITLE)}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
+  </>);
+}
+
+/** The Summary (CIV-284): the route page's default, and every shared link's landing page. Its Full report link opens the Full report. */
+function SummaryPage({ onFull }: { onFull: (hash: string) => void }) {
   const { agency = '', route = '' } = useParams();
   const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
-  const gaps = useLiveGaps(FEATURES.liveReports ? agency : null, route);
-  // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
-  // whose answer differs by period list it per period.
-  const band: DashboardBand = 'all';
-  const [dir, setDir] = useState<number | null>(() => readUrlParam(currentSearch(), LIVE_ROUTE_URL.dir) ?? null);
-  // The filters live in the address, so a link reopens the same view.
-  useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { band: null, day: null, dir })); }, [dir]);
-  // The summary (lite) is the route page's default (CIV-284); ?view=lite still opens it. The dashboard stays at
-  // ?view=dashboard for now, and ?view=analysis is the full page.
-  const [view, setView] = useState<'dashboard' | 'analysis' | 'lite'>(() => { const v = readUrlParam(currentSearch(), LIVE_ROUTE_URL.view); return v === 'analysis' || v === 'dashboard' ? v : 'lite'; });
-  useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { view })); }, [view]);
-  useEffect(() => {
-    if (view !== 'analysis' || !window.location.hash) return;
-    document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
-  }, [view, state.kind]);
+  // The whole day, both directions; a direction in the address is kept for the Full report it links to.
+  const [dir] = useState<number | null>(() => readUrlParam(currentSearch(), LIVE_ROUTE_URL.dir) ?? null);
+  useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { band: null, day: null, dir, view: 'lite' })); }, [dir]);
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`, true), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice report />;
   const title = `${agencyName} ${route}`;
@@ -165,7 +171,6 @@ function AnalysisPage() {
   }
   // A malformed file must not blank the page: fall back to the raw names and let each section's boundary report its own problem.
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
-  const bandData = v3.bands?.[band] as DashboardBandData;
   const uncertain = data.uncertainStart ?? [];
   return (
     <DocsPageLayout width="wide">
@@ -179,34 +184,23 @@ function AnalysisPage() {
         </div>
         <RouteDevHint v3={v3} route={route} />
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`} role="group" aria-label={FILTERS_LABEL}>
-          <PillGroup label={VIEW_LABEL} value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', LIVE_SUMMARY_VIEW], ['dashboard', LIVE_OVERVIEW_VIEW], ['analysis', LIVE_FULL_REPORT_VIEW]]} />
-          <PillGroup label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
-            options={[['both', BOTH_DIRECTIONS_LABEL], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
-        </div>}
-        {view !== 'analysis' ? (
-          <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain}
-            filters={null}
-            toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
-        ) : (<>
-        <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><WeekCompare v3={v3} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(LATE_STOPS_TITLE)}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title={LATE_STOPS_TITLE} id="b2" intro notRanked /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(EXTRA_WAIT_LABEL)}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(BUNCHING_FORMS_TITLE)}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY(SERVICE_DELIVERED_TITLE)}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
-        </>)}
-        {/* One METHOD_TITLE for Summary and Full analysis alike, every line of the method (CIV-308). */}
-        {/* #1490: Summary and Dashboard name the left-out days on late by hour (its All days note); the method doesn't repeat them. */}
-        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={view !== 'analysis' ? excludingText(routeLeftOut(v3)) : null} /></ErrorBoundary>
+        <LiveDashboardView lite v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} filters={null} toFull={onFull} />
+        {/* One METHOD_TITLE for the Summary and the Full report alike, every line of the method (CIV-308). */}
+        {/* #1490: the Summary names the left-out days on late by hour (its All days note); the method doesn't repeat them. */}
+        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={excludingText(routeLeftOut(v3))} /></ErrorBoundary>
     </DocsPageLayout>
   );
 }
 
-/** ?view=explore opens the new full-analysis view (beta); everything else is the page above. */
+/** The views that open the Full report (LiveExplorePage): its own, and the retired Dashboard's and Full analysis's (CIV-284). */
+const FULL_REPORT_VIEWS: ReadonlySet<string> = new Set(['explore', 'dashboard', 'analysis']);
+
+/** ?view=explore (and the old dashboard and analysis views) opens the Full report; everything else is the Summary above. */
 export default function LiveRoutePage() {
-  const [explore] = useState(() => readUrlParam(currentSearch(), LIVE_ROUTE_URL.view) === 'explore');
-  return explore ? <LiveExplorePage /> : <AnalysisPage />;
+  const [full, setFull] = useState(() => FULL_REPORT_VIEWS.has(readUrlParam(currentSearch(), LIVE_ROUTE_URL.view) ?? ''));
+  const openFull = (hash: string) => {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${hash ? `#${hash}` : ''}`);
+    setFull(true);
+  };
+  return full ? <LiveExplorePage /> : <SummaryPage onFull={openFull} />;
 }

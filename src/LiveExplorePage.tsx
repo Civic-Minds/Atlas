@@ -28,10 +28,11 @@ import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
 import { delayText, type RouteStripStop } from './components/Live/routeStripModel';
-import { KpiRow } from './LiveDashboardView';
+import LiveDashboardView, { KpiRow } from './LiveDashboardView';
+import { useLiveGaps } from './hooks/useLiveGaps';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
-import LateByHourSection from './components/Live/sections/LateByHourSection';
+import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
 import MethodSection from './components/Live/sections/MethodSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
@@ -40,8 +41,8 @@ import BuildupSection from './components/Live/sections/BuildupSection';
 import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
-import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
+import { BOUNDARY, FullAnalysisSections, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
+import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -190,6 +191,7 @@ export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
   const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
+  const gaps = useLiveGaps(FEATURES.liveReports ? agency : null, route);
   const [link] = useState(() => readLink(currentSearch(), LIVE_ROUTE_URL));
   const [dir, setDir] = useState<number | null>(() => link.dir ?? null);
   const [day, setDay] = useState<Day>(() => link.day ?? 'all');
@@ -197,10 +199,15 @@ export default function LiveExplorePage() {
   const [band, setBand] = useState<DashboardBand>(() => link.band ?? liveBandNow(agencies.find(a => a.slug === agency)?.timezone));
   const [picked, setPicked] = useState<Selection | null>(null);
   useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { view: 'explore', dir, day, band })); }, [dir, day, band]);
+  // A link to a part of the page (the Summary's "Every stop", an old ?view=analysis#b2) lands on it once the page has drawn.
+  useEffect(() => {
+    if (state.kind !== 'done' || !window.location.hash) return;
+    document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
+  }, [state.kind]);
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`, true), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice report />;
   const title = `${agencyName} ${route}`;
@@ -279,6 +286,17 @@ export default function LiveExplorePage() {
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
       <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
       <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
+
+      {/* CIV-284 (Ryan: "1 but don't delete or edit any of the content in each page yet"): the Dashboard's content, then Full
+          analysis's, exactly as they were (the whole day; the Direction pick above applies). De-duplication is a later item. */}
+      <LiveDashboardView v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} filters={null}
+        toFull={hash => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+      {/* Each page kept its own "How this is measured", as it had it (the Dashboard's names its left-out days above, #1490). */}
+      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={excludingText(routeLeftOut(v3))} id="method-dashboard" /></ErrorBoundary>
+      <div data-full-analysis>
+        <FullAnalysisSections v3={v3} dir={dir} uncertain={uncertain} gaps={gaps} agency={agency} route={route} />
+        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} id="method-analysis" /></ErrorBoundary>
+      </div>
     </article>,
   );
 }
