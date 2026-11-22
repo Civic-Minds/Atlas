@@ -70,8 +70,9 @@ export default function FalloffStory() {
   const series = useActivePart();
   const ids = { lede: useId(), drops: useId(), holds: useId(), countries: useId(), gtha: useId(), sunday: useId() };
   const key = <DotPairKey first={MORNING_LABEL} second={SUNDAY_LABEL} series={series} />;
+  // The number columns are narrow: their headers name the day only, and the key above names the full time.
   const dots = (label: string, details: string, pairs: DotPair[]) => (
-    <DotPairs label={label} details={details} firstHeader={MORNING_LABEL} secondHeader={SUNDAY_LABEL} series={series} groups={[{ key: label, pairs }]} />
+    <DotPairs label={label} details={details} firstHeader={MORNING.day} secondHeader={SUNDAY_EVENING.day} series={series} groups={[{ key: label, pairs }]} />
   );
 
   const method = (
@@ -79,7 +80,7 @@ export default function FalloffStory() {
       dateConducted: <>{longDate(falloffStudy.date)}.</>,
       sample: <>Every agency on Atlas’s map: {countText(all.agencies)} agencies in Canada and the United States, with {countText(all.routes)} routes and {countText(all.routeKm)} route-kilometres. The lists name agencies with at least {falloffStudy.minKm} route-kilometres.</>,
       sources: <>Atlas’s published schedules, from each agency’s own schedule data, as of {longDate(falloffStudy.date)}.</>,
-      whatCounted: <>A route counts when the map draws it {headwayOrBetter(FALLOFF_MINUTES)} at that time, by the map’s own rule: the less frequent direction decides. Each route counts by the length of its longest drawn pattern. Routes the map hides as irregular are left out. {MORNING_LABEL} is {periodHours(MORNING.period)}; {SUNDAY_LABEL.toLowerCase()} is {periodHours(SUNDAY_EVENING.period)}.</>,
+      whatCounted: <>A route counts when the map draws it {headwayOrBetter(FALLOFF_MINUTES)} at that time, by the map’s own rule: the less frequent direction decides. Each route counts by the length of its longest drawn pattern. Routes the map hides as irregular are left out. {MORNING_LABEL} is {periodHours(MORNING.period)}; {SUNDAY_LABEL} is {periodHours(SUNDAY_EVENING.period)}.</>,
       limitations: <>These are scheduled trips, not the service that actually ran. A route just past {FALLOFF_MINUTES} minutes doesn’t count, so a network that runs every 16 to 20 minutes on Sunday evening drops out of the figures.</>,
     }} />
   );
