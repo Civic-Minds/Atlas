@@ -8,6 +8,7 @@ import { hourRange } from '../../shared/timeText';
 import * as data from './atlasData';
 import { needAgency, window, withAlso, windowOrNow, nowBlock, staleNote, windowNote, windowHas, startsInWindow, type Args } from './toolHelpers';
 import * as local from './localData';
+import { isoDate } from '../../shared/dateText';
 import { handlers as sharedHandlers } from './tools';
 import { TIME_PERIODS } from '../../shared/rules/periods';
 import type { DayType } from '../../shared/rules/days';
@@ -47,7 +48,7 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     }).sort((x, y) => (x.typicalMinutes ?? 1e9) - (y.typicalMinutes ?? 1e9));
     return {
       ...staleNote(a, t.scheduleEnds),
-      agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: t.from, to: t.to, day: dayType, scheduleRead: t.readOn, ...(w ? { window: w.label, windowNote: windowNote(w) } : {}),
+      agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: t.from, to: t.to, day: dayType, scheduleRead: t.readOn, scheduleValidThrough: isoDate(t.scheduleEnds), ...(w ? { window: w.label, windowNote: windowNote(w) } : {}),
       ...(t.noDirectTrip ? { answer: 'No scheduled trip goes from the first stop to the second without a transfer on these agencies. Atlas Studio counts direct trips only.' } : {}),
       routes, note: 'Scheduled minutes from leaving the first stop to arriving at the second; an hour needs at least two trips.', source: "The agency's own schedule file that Atlas processed.",
     };
@@ -66,7 +67,7 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     return {
       ...staleNote(a, c.scheduleEnds),
       ...(now ? nowBlock(now, !inWin(all, w!).length) : {}),
-      agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
+      agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn, scheduleValidThrough: isoDate(c.scheduleEnds),
       ...(c.noDirectTrip ? { answer: 'No scheduled trip goes from the first stop to the second without a transfer on these agencies. Atlas Studio counts direct trips only.' } : {}),
       routes: [...c.byRoute.keys()],
       byWindow: windows.map(win => ({
