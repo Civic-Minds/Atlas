@@ -10,7 +10,7 @@ import { STUDIO_COVERAGE_DEV_URL, STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFil
 import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
 
 /** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
-const MAP_MODULE = /[\\/]src[\\/](components[\\/]Interval[\\/](map[\\/]|MapCanvas)|components[\\/]Live[\\/]RouteMap|lib[\\/](mapStyle|pmtilesRetrySource)|apps[\\/]Interval)/;
+const MAP_MODULE = /[\\/]src[\\/](components[\\/]Interval[\\/](map[\\/]|MapCanvas)|components[\\/]Live[\\/]RouteMap|lib[\\/](mapStyle|pmtilesRetrySource|maplibreWorker)|apps[\\/]Interval)/;
 
 // https://vitejs.dev/config/
 // base: '/' for local dev and Vercel, '/Atlas/' for GitHub Pages
