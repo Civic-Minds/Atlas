@@ -32,12 +32,12 @@ describe('agencyCredits (CIV-461)', () => {
 
   it('credits 511.org for an agency read through the 511 API, alone or after its own licence (#1692)', () => {
     const samtrans = agencyCredit({ slug: 'samtrans', name: 'SamTrans', feedCredit: '511', dataLicense: lic('none') });
-    expect(samtrans?.feedLink).toEqual({ href: 'https://511.org/', text: 'Powered by 511.org' });
+    expect(samtrans?.feedLink).toEqual({ href: 'https://511.org/', text: 'Data provided by 511.org' });
     expect(samtrans?.licenceName).toBeNull();
-    expect(agencyCredit({ slug: 'ace', name: 'ACE', feedCredit: '511' })?.text).toBe('Powered by 511.org');
+    expect(agencyCredit({ slug: 'ace', name: 'ACE', feedCredit: '511' })?.text).toBe('Data provided by 511.org');
     const sfmta = agencyCredit({ slug: 'sfmta', name: 'SFMTA', feedCredit: '511', dataLicense: lic('required', { name: 'SFMTA licence', credit: 'Reproduced with permission.' }) });
     expect(sfmta?.words).toBe('Reproduced with permission.');
-    expect(sfmta?.feedLink?.text).toBe('Powered by 511.org');
+    expect(sfmta?.feedLink?.text).toBe('Data provided by 511.org');
     expect(agencyCredit({ slug: 'x', name: 'X', dataLicense: lic('required') })?.feedLink).toBeNull();
   });
 

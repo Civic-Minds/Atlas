@@ -17,7 +17,7 @@ export interface AgencyCredit {
   licenceName: string | null;
   /** Wording the licence requires word for word (its own sentence, then the last-updated date it asks for), shown when the pill opens; null where it gives none. */
   words: string | null;
-  /** #1692: a credit the feed's publisher requires ("Powered by 511.org"), linked, shown when the pill opens. */
+  /** #1692: a credit the feed's publisher requires ("Data provided by 511.org"), linked, shown when the pill opens. */
   feedLink?: { href: string; text: string } | null;
 }
 
@@ -57,3 +57,4 @@ export function agencyCredits(agencies: readonly Credited[], slugs?: readonly st
   }
   return out;
 }
+

@@ -9,7 +9,7 @@ describe('feed credits (#1692)', () => {
     expect(feedCreditFor('https://511.org.example.com/x.zip')).toBeUndefined();
     expect(feedCreditFor('not a url')).toBeUndefined();
     expect(feedCreditFor(undefined)).toBeUndefined();
-    expect(FEED_CREDITS['511'].label).toBe('Powered by 511.org');
+    expect(FEED_CREDITS['511'].label).toBe('Data provided by 511.org');
   });
 
   it('the catalog carries the credit key but never the feed URL', () => {
