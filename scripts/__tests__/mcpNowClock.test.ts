@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { agencyNow, isNow } from '../mcp/nowClock';
+import { readFileSync } from 'node:fs';
+import { agencyNow, isNow, serviceDayOf } from '../mcp/nowClock';
 
 const ttc = { slug: 'ttc', name: 'TTC' };
 // Unix ms for a Toronto wall-clock time in November (UTC-5).
@@ -29,5 +30,16 @@ describe('"now" for the schedule tools (#1627)', () => {
   it('knows "now" when asked', () => {
     expect(['now', 'Now', ' right now ', 'currently'].every(isNow)).toBe(true);
     expect(['Midday', '10:00', undefined].some(isNow)).toBe(false);
+  });
+
+  it('gives route_now and the schedule tools one service day after midnight (#1690)', () => {
+    expect(serviceDayOf(0, 0)).toEqual({ day: 'Saturday', afterMidnight: true }); // 12:37 AM Sunday is Saturday's late period
+    expect(serviceDayOf(0, 6)).toEqual({ day: 'Sunday', afterMidnight: false });
+    expect(serviceDayOf(1, 5)).toEqual({ day: 'Sunday', afterMidnight: true });
+    expect(agencyNow(ttc, 'America/Toronto', toronto('2026-11-22T00:37:00')).day).toBe('Saturday');
+    // route_now reads its day through serviceDayOf, not the calendar day.
+    const src = readFileSync(new URL('../mcp/liveNowTools.ts', import.meta.url), 'utf8');
+    expect(src).toContain('serviceDayOf(clock.dow, clock.hour)');
+    expect(src).not.toContain('dayTypeOfDow');
   });
 });

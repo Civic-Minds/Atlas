@@ -5,7 +5,7 @@
  */
 import { PERIOD_LABELS, formatPeriodRange } from '../../shared/config';
 import { clockTime } from '../../shared/timeText';
-import { dayTypeOfDow } from '../../shared/rules/days';
+import { serviceDayOf } from './nowClock';
 import { periodKeyForHour } from '../../shared/rules/periods';
 import { LIVE_AGENCY_TIMEZONES } from '../../shared/livePollingConfig';
 import { RECORDING_SLUGS } from '../../shared/liveArchiveFeeds';
@@ -51,7 +51,8 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
 
     const now = nowSec();
     const clock = localClock(now, timeZone);
-    const day = dayTypeOfDow(clock.dow);
+    // #1690: the same service day as the schedule tools' "now": after midnight, the previous day's late period.
+    const { day } = serviceDayOf(clock.dow, clock.hour);
     const period = periodKeyForHour(clock.hour);
     const s = data.findRoute(await data.routeList(a, day), String(route ?? ''));
     if (!s) throw new Error(`No route matches "${route}" at ${a.name} on a ${day.toLowerCase()}.`);

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP agrees on the day after midnight**: just after midnight, its live answer used the new day's late-night schedule while its schedule answers used the previous day's
 - **Atlas Studio MCP doesn't guess ridership or fares**: asked for either, it says Atlas has no figure instead of giving a number from the AI's memory, unless the person asks for one
 - **Atlas Studio MCP says which frequency figure it gives**: History and schedule changes give the map's grade while route answers give the typical wait, so the same route could seem to disagree with itself
 - **Atlas Studio MCP names routes the frequency filter leaves out**: a list of routes every N min or better silently skipped routes whose usual wait fits but whose longer waits don't, so answers made them look less frequent

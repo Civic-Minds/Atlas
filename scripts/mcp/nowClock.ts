@@ -5,7 +5,7 @@
  */
 import { PERIOD_LABELS, PERIOD_KEYS, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { dayTypeOfDow, type DayType } from '../../shared/rules/days';
-import { periodKeyForHour } from '../../shared/rules/periods';
+import { periodKeyForHour, toGtfsHour } from '../../shared/rules/periods';
 import { LIVE_AGENCY_TIMEZONES } from '../../shared/livePollingConfig';
 
 export interface NowInfo {
@@ -31,6 +31,16 @@ export const isNow = (v: unknown) => typeof v === 'string' && /^\s*(now|right no
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /**
+ * #1690: the service day a local clock time belongs to, for every "now" tool. Before 6 AM is the previous day's service
+ * (the late and overnight periods run to 6 AM, written 24:00 and later), so 12:37 AM Sunday is Saturday's late period.
+ * `dow` is the local day of the week (0 = Sunday).
+ */
+export function serviceDayOf(dow: number, hour: number): { day: DayType; afterMidnight: boolean } {
+  const afterMidnight = toGtfsHour(hour) >= 24;
+  return { day: dayTypeOfDow(afterMidnight ? (dow + 6) % 7 : dow), afterMidnight };
+}
+
+/**
  * The agency's "now". The time zone is the agency's own (config/agencies/<slug>.json, from its feed), else Live's table;
  * none at all throws, so an answer never uses the wrong clock. Before 6 AM counts as the previous day's service (the late
  * and overnight periods run to 6 AM, as the schedule writes 25:00 and later), so 1 AM Saturday is Friday's Weekday late period.
@@ -40,8 +50,7 @@ export function agencyNow(a: { slug: string; name: string }, timeZone: string | 
   if (!tz) throw new Error(`Atlas has no time zone for ${a.name}, so it can't tell what "now" is there. Ask for a part of the day instead.`);
   const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, hour12: false, weekday: 'short', hour: 'numeric', minute: 'numeric' }).formatToParts(new Date(ms)).map(p => [p.type, p.value]));
   const hour = Number(parts.hour) % 24, minute = Number(parts.minute), dow = DOW.indexOf(parts.weekday);
-  const early = hour < 6;
-  const day = dayTypeOfDow(early ? (dow + 6) % 7 : dow);
+  const { day, afterMidnight: early } = serviceDayOf(dow, hour);
   const period = periodKeyForHour(hour)!;
   const clock = `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
   const i = PERIOD_KEYS.indexOf(period);
