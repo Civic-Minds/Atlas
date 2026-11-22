@@ -12,7 +12,7 @@ import { FEATURE_ROUTES } from './config';
 import { titleCase } from './titleCase';
 import { siteModeLabel } from './siteMode';
 import { ABOUT_PATH, CHANGELOG_PATH, COMPARE_PATH, DOCS_PATH, FREQUENCY_PATH, HISTORY_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCH_PATH, RESEARCHERS_PATH, TERMS_PATH } from './pagePaths';
-import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
+import { FALLOFF_STORY, FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
 
 // The site's origins are in shared/rules/paths.ts (rules audit, move 6).
 import { BETA_SITE_URL, PREVIEW_SITE_URL, SITE_URL } from './rules/paths';
@@ -184,6 +184,13 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     indexable: false,
     gate: 'researchApps',
     prerender: true,
+  },
+  {
+    path: FALLOFF_STORY.path,
+    title: FALLOFF_STORY.tabTitle!,
+    description: FALLOFF_STORY.description!,
+    indexable: false,
+    gate: 'researchApps',
   },
   {
     path: FEATURE_ROUTES.frequentService.map,

@@ -12,6 +12,8 @@ import { FEATURE_ROUTES } from './config';
 import { FREQUENT_SERVICE_TITLE } from './frequentService';
 import { SITE_NAME, tabTitle } from './pageNames';
 import { titleCase } from './titleCase';
+import { countText, decimalText } from './numberText';
+import { headwayOrBetter } from './headwayText';
 import { freeChildFareStats } from '../src/data/freeChildFares';
 
 export interface ResearchStoryText {
@@ -115,6 +117,20 @@ export const AIRPORT_STORY_DRAFT: Pick<ResearchStoryText, 'path' | 'cardTitle' |
   ],
 };
 
+const FALLOFF_HEADING = 'Where does frequent service go on Sunday night?';
+
+/** #1074 (CIV-770): beta only, not listed on /research yet, so it has no card or share picture. Draft words, for Ryan's OK. */
+export const FALLOFF_STORY: Pick<ResearchStoryText, 'path' | 'heading' | 'intro' | 'tabTitle' | 'description'> = {
+  path: FEATURE_ROUTES.falloffStory,
+  heading: FALLOFF_HEADING,
+  intro: ({ agencies, morning, sunday, minutes }) => [
+    `On a weekday morning, ${decimalText(morning, 1)}% of the route-kilometres Atlas maps have a bus or train ${headwayOrBetter(minutes)}. On Sunday evening, ${decimalText(sunday, 1)}% do.`,
+    `We applied the map’s own test to ${countText(agencies)} agencies in Canada and the United States, at four times of the week, to see where frequent service holds and where it falls away.`,
+  ],
+  tabTitle: tabTitle(FALLOFF_HEADING),
+  description: 'How much frequent transit service is left on Sunday evening, compared with a weekday morning.',
+};
+
 /** Every published story, and every draft: the guard test reads these. */
 export const RESEARCH_STORIES: readonly ResearchStoryText[] = [OVERNIGHT_STORY, FREQUENT_SERVICE_STORY, FREE_CHILD_FARES_STORY];
-export const RESEARCH_STORY_DRAFTS = [AIRPORT_STORY_DRAFT] as const;
+export const RESEARCH_STORY_DRAFTS = [AIRPORT_STORY_DRAFT, FALLOFF_STORY] as const;

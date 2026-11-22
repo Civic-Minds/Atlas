@@ -591,6 +591,14 @@
       "destination": "/research/frequent-service/story/index.html"
     },
     {
+      "source": "/research/weekday-to-sunday",
+      "destination": "/research/weekday-to-sunday/index.html"
+    },
+    {
+      "source": "/research/weekday-to-sunday/",
+      "destination": "/research/weekday-to-sunday/index.html"
+    },
+    {
       "source": "/changelog",
       "destination": "/changelog/index.html"
     },

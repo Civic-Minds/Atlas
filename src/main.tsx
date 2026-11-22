@@ -37,6 +37,7 @@ const LiveToolPage = React.lazy(() => import('./LiveToolPage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const FreeChildFaresPage = React.lazy(() => import('./apps/FreeChildFaresPage'));
 const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentServiceStoryPage'));
+const FalloffStory = React.lazy(() => import('./apps/FalloffStory'));
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
@@ -147,6 +148,7 @@ ReactDOM.createRoot(rootElement).render(
           {FEATURES.researchApps && <Route path={FEATURE_ROUTES.research} element={<ResearchPage />} />}
           {FEATURES.researchApps && <Route path={FEATURE_ROUTES.freeChildFares} element={<FreeChildFaresPage />} />}
           {FEATURES.frequentService && <Route path={FEATURE_ROUTES.frequentService.story} element={<FrequentServiceStoryPage />} />}
+          {FEATURES.falloffStory && <Route path={FEATURE_ROUTES.falloffStory} element={<FalloffStory />} />}
           <Route path={`${AREA_PATH_PREFIX}:slug`} element={<AreaPage />} />
           <Route path={`${REGION_PATH_PREFIX}:slug`} element={<RegionPage />} />
           <Route path={AGENCY_INDEX_PATH} element={<AgenciesIndexPage />} />

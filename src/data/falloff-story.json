@@ -1,0 +1,4346 @@
+{
+ "release": "release-mwr8hzof",
+ "date": "2026-11-22",
+ "minKm": 50,
+ "frequentMorningMin": 10,
+ "all": {
+  "agencies": 551,
+  "routeKm": 234136,
+  "routes": 12341,
+  "weekdayMorning": 10.1,
+  "weekdayMidday": 10.9,
+  "saturdayMidday": 6.8,
+  "sundayEvening": 2.5
+ },
+ "countries": [
+  {
+   "country": "Canada",
+   "agencies": 88,
+   "routeKm": 44846,
+   "routes": 2862,
+   "weekdayMorning": 11.9,
+   "weekdayMidday": 11.4,
+   "saturdayMidday": 7.8,
+   "sundayEvening": 4.7
+  },
+  {
+   "country": "United States",
+   "agencies": 463,
+   "routeKm": 189291,
+   "routes": 9479,
+   "weekdayMorning": 9.7,
+   "weekdayMidday": 10.8,
+   "saturdayMidday": 6.5,
+   "sundayEvening": 1.9
+  }
+ ],
+ "sized": {
+  "agencies": 495,
+  "noSunday": 123,
+  "noneOnSundayEvening": 34
+ },
+ "agencies": [
+  {
+   "slug": "barrie",
+   "name": "Barrie Transit",
+   "region": "Ontario",
+   "routeKm": 257.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "belleville",
+   "name": "Belleville Transit",
+   "region": "Ontario",
+   "routeKm": 83.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "brantford",
+   "name": "Brantford Transit",
+   "region": "Ontario",
+   "routeKm": 168.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "brampton",
+   "name": "Brampton Transit",
+   "region": "Ontario",
+   "routeKm": 708.9,
+   "weekdayMorning": 43.4,
+   "sundayEvening": 5.4,
+   "hasSunday": true
+  },
+  {
+   "slug": "burlington",
+   "name": "Burlington Transit",
+   "region": "Ontario",
+   "routeKm": 173.3,
+   "weekdayMorning": 30.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "chatham-kent",
+   "name": "Ride CK",
+   "region": "Ontario",
+   "routeKm": 276.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "cornwall",
+   "name": "Cornwall Transit",
+   "region": "Ontario",
+   "routeKm": 78.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "drt",
+   "name": "Durham Region Transit",
+   "region": "Ontario",
+   "routeKm": 837,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "go",
+   "name": "GO Transit",
+   "region": "Ontario",
+   "routeKm": 3193,
+   "weekdayMorning": 1.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "grt",
+   "name": "Grand River Transit (Waterloo Region)",
+   "region": "Ontario",
+   "routeKm": 663.6,
+   "weekdayMorning": 9.3,
+   "sundayEvening": 7.6,
+   "hasSunday": true
+  },
+  {
+   "slug": "guelph",
+   "name": "Guelph Transit",
+   "region": "Ontario",
+   "routeKm": 219.2,
+   "weekdayMorning": 6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "hamilton",
+   "name": "Hamilton Street Railway",
+   "region": "Ontario",
+   "routeKm": 432.1,
+   "weekdayMorning": 46.2,
+   "sundayEvening": 6.1,
+   "hasSunday": true
+  },
+  {
+   "slug": "kingston",
+   "name": "Kingston Transit",
+   "region": "Ontario",
+   "routeKm": 324.3,
+   "weekdayMorning": 6.6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "london",
+   "name": "London Transit",
+   "region": "Ontario",
+   "routeKm": 511.6,
+   "weekdayMorning": 5.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "miway",
+   "name": "MiWay (Mississauga)",
+   "region": "Ontario",
+   "routeKm": 937.6,
+   "weekdayMorning": 30.4,
+   "sundayEvening": 2.8,
+   "hasSunday": true
+  },
+  {
+   "slug": "milton",
+   "name": "Milton Transit",
+   "region": "Ontario",
+   "routeKm": 149.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "niagara",
+   "name": "Niagara Transit",
+   "region": "Ontario",
+   "routeKm": 1003.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "octranspo",
+   "name": "OC Transpo (Ottawa)",
+   "region": "Ontario",
+   "routeKm": 1587.1,
+   "weekdayMorning": 7.5,
+   "sundayEvening": 3.7,
+   "hasSunday": true
+  },
+  {
+   "slug": "oakville",
+   "name": "Oakville Transit",
+   "region": "Ontario",
+   "routeKm": 258.4,
+   "weekdayMorning": 10.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "orillia",
+   "name": "Orillia Transit",
+   "region": "Ontario",
+   "routeKm": 65.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "north-bay",
+   "name": "North Bay Transit",
+   "region": "Ontario",
+   "routeKm": 176.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sarnia",
+   "name": "Sarnia Transit",
+   "region": "Ontario",
+   "routeKm": 219.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "simcoe",
+   "name": "Simcoe County LINX",
+   "region": "Ontario",
+   "routeKm": 253,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "st-thomas",
+   "name": "St. Thomas Transit",
+   "region": "Ontario",
+   "routeKm": 58,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "stratford",
+   "name": "Stratford Transit",
+   "region": "Ontario",
+   "routeKm": 81.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "ttc",
+   "name": "Toronto Transit Commission",
+   "region": "Ontario",
+   "routeKm": 2928.7,
+   "weekdayMorning": 43.5,
+   "sundayEvening": 32.8,
+   "hasSunday": true
+  },
+  {
+   "slug": "windsor",
+   "name": "Transit Windsor",
+   "region": "Ontario",
+   "routeKm": 336.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "yrt",
+   "name": "York Region Transit",
+   "region": "Ontario",
+   "routeKm": 1227.5,
+   "weekdayMorning": 11.9,
+   "sundayEvening": 1.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "linter",
+   "name": "L'Inter des Laurentides",
+   "region": "Quebec",
+   "routeKm": 81.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rem",
+   "name": "REM (Montréal)",
+   "region": "Quebec",
+   "routeKm": 121.4,
+   "weekdayMorning": 76.8,
+   "sundayEvening": 76.8,
+   "hasSunday": true
+  },
+  {
+   "slug": "rtc",
+   "name": "RTC (Québec)",
+   "region": "Quebec",
+   "routeKm": 1286,
+   "weekdayMorning": 8.1,
+   "sundayEvening": 6.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "rtl",
+   "name": "RTL (Longueuil)",
+   "region": "Quebec",
+   "routeKm": 1003.4,
+   "weekdayMorning": 1.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "stl",
+   "name": "STL (Laval)",
+   "region": "Quebec",
+   "routeKm": 773.9,
+   "weekdayMorning": 5.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "stlevis",
+   "name": "STLévis",
+   "region": "Quebec",
+   "routeKm": 369.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "stm",
+   "name": "STM (Montréal)",
+   "region": "Quebec",
+   "routeKm": 2633.6,
+   "weekdayMorning": 7.4,
+   "sundayEvening": 2.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "sto",
+   "name": "STO (Gatineau)",
+   "region": "Quebec",
+   "routeKm": 836,
+   "weekdayMorning": 0,
+   "sundayEvening": 2.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "sjsr",
+   "name": "Saint-Jean-sur-Richelieu",
+   "region": "Quebec",
+   "routeKm": 166.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "saint-hyacinthe",
+   "name": "Ville de Saint-Hyacinthe",
+   "region": "Quebec",
+   "routeKm": 109.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "exo",
+   "name": "exo (Trains)",
+   "region": "Quebec",
+   "routeKm": 205.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "exo-presquile",
+   "name": "exo (La Presqu'île)",
+   "region": "Quebec",
+   "routeKm": 179.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "exo-sudouest",
+   "name": "exo (Sud-Ouest)",
+   "region": "Quebec",
+   "routeKm": 446.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "exo-lrrs",
+   "name": "exo (Le Richelain–Roussillon)",
+   "region": "Quebec",
+   "routeKm": 455.2,
+   "weekdayMorning": 6.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "exo-laurentides",
+   "name": "exo (Laurentides)",
+   "region": "Quebec",
+   "routeKm": 841.7,
+   "weekdayMorning": 4.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "exo-terrebonne",
+   "name": "exo (Terrebonne-Mascouche)",
+   "region": "Quebec",
+   "routeKm": 373.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "exo-vallee-richelieu",
+   "name": "exo (Vallée du Richelieu)",
+   "region": "Quebec",
+   "routeKm": 185.5,
+   "weekdayMorning": 45,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "bc-fraser-valley",
+   "name": "BC Transit (Fraser Valley)",
+   "region": "British Columbia",
+   "routeKm": 524.8,
+   "weekdayMorning": 2.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "kelowna",
+   "name": "BC Transit (Kelowna)",
+   "region": "British Columbia",
+   "routeKm": 348.4,
+   "weekdayMorning": 8.1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "victoria",
+   "name": "BC Transit (Victoria)",
+   "region": "British Columbia",
+   "routeKm": 1007.3,
+   "weekdayMorning": 2.9,
+   "sundayEvening": 1.8,
+   "hasSunday": true
+  },
+  {
+   "slug": "translink",
+   "name": "TransLink (Vancouver)",
+   "region": "British Columbia",
+   "routeKm": 3311.3,
+   "weekdayMorning": 28.6,
+   "sundayEvening": 13,
+   "hasSunday": true
+  },
+  {
+   "slug": "calgary",
+   "name": "Calgary Transit",
+   "region": "Alberta",
+   "routeKm": 2052.2,
+   "weekdayMorning": 18.2,
+   "sundayEvening": 2.9,
+   "hasSunday": true
+  },
+  {
+   "slug": "edmonton",
+   "name": "Edmonton Transit Service (ETS)",
+   "region": "Alberta",
+   "routeKm": 2156,
+   "weekdayMorning": 12.9,
+   "sundayEvening": 4,
+   "hasSunday": true
+  },
+  {
+   "slug": "winnipeg",
+   "name": "Winnipeg Transit",
+   "region": "Manitoba",
+   "routeKm": 996.6,
+   "weekdayMorning": 31,
+   "sundayEvening": 5.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "regina",
+   "name": "Regina Transit",
+   "region": "Saskatchewan",
+   "routeKm": 365.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "saskatoon",
+   "name": "Saskatoon Transit",
+   "region": "Saskatchewan",
+   "routeKm": 370.7,
+   "weekdayMorning": 2.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "halifax",
+   "name": "Halifax Transit",
+   "region": "Nova Scotia",
+   "routeKm": 1193.7,
+   "weekdayMorning": 9.9,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "codiac",
+   "name": "Codiac Transpo (Moncton)",
+   "region": "New Brunswick",
+   "routeKm": 360.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "fredericton",
+   "name": "Fredericton Transit",
+   "region": "New Brunswick",
+   "routeKm": 334.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "saint-john",
+   "name": "Saint John Transit",
+   "region": "New Brunswick",
+   "routeKm": 151.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "t3-transit",
+   "name": "T3 Transit (PEI)",
+   "region": "Prince Edward Island",
+   "routeKm": 74.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "metrobus",
+   "name": "Metrobus (St. John's)",
+   "region": "Newfoundland",
+   "routeKm": 217.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "nfta",
+   "name": "NFTA (Buffalo)",
+   "region": "New York",
+   "routeKm": 667.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "port-huron",
+   "name": "Blue Water Area Transit (Port Huron)",
+   "region": "Michigan",
+   "routeKm": 131.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "ddot",
+   "name": "DDOT (Detroit)",
+   "region": "Michigan",
+   "routeKm": 777.5,
+   "weekdayMorning": 11.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "smart",
+   "name": "SMART (Detroit suburbs)",
+   "region": "Michigan",
+   "routeKm": 1303.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "theride",
+   "name": "TheRide (Ann Arbor)",
+   "region": "Michigan",
+   "routeKm": 314.5,
+   "weekdayMorning": 6.1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "gcrta",
+   "name": "GCRTA (Cleveland)",
+   "region": "Ohio",
+   "routeKm": 977.8,
+   "weekdayMorning": 12.6,
+   "sundayEvening": 3.1,
+   "hasSunday": true
+  },
+  {
+   "slug": "butler-county-rta",
+   "name": "Butler County Regional Transit Authority",
+   "region": "Ohio",
+   "routeKm": 220.8,
+   "weekdayMorning": 2.1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "richland-county-oh",
+   "name": "Richland County Transit",
+   "region": "Ohio",
+   "routeKm": 194.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "tarta",
+   "name": "TARTA (Toledo)",
+   "region": "Ohio",
+   "routeKm": 342.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rgrta",
+   "name": "Rochester-Genesee Regional Transportation Authority",
+   "region": "New York",
+   "routeKm": 308,
+   "weekdayMorning": 3.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cdta",
+   "name": "Capital District Transportation Authority",
+   "region": "New York",
+   "routeKm": 772.7,
+   "weekdayMorning": 3.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "centro",
+   "name": "Centro (Syracuse)",
+   "region": "New York",
+   "routeKm": 768.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "tcat",
+   "name": "Tompkins Consolidated Area Transit",
+   "region": "New York",
+   "routeKm": 214.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "broome",
+   "name": "Broome County Transit",
+   "region": "New York",
+   "routeKm": 217.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "emta",
+   "name": "Erie Metropolitan Transit Authority",
+   "region": "Pennsylvania",
+   "routeKm": 276,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "akron",
+   "name": "Akron Metro Regional Transit Authority",
+   "region": "Ohio",
+   "routeKm": 396,
+   "weekdayMorning": 4.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sarta",
+   "name": "Stark Area Regional Transit Authority",
+   "region": "Ohio",
+   "routeKm": 369.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "laketran",
+   "name": "Laketran (Lake County, OH)",
+   "region": "Ohio",
+   "routeKm": 211.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "the-rapid",
+   "name": "The Rapid (Grand Rapids)",
+   "region": "Michigan",
+   "routeKm": 540.2,
+   "weekdayMorning": 10.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mbta",
+   "name": "Massachusetts Bay Transportation Authority",
+   "region": "Massachusetts",
+   "routeKm": 2414.6,
+   "weekdayMorning": 15.6,
+   "sundayEvening": 13.6,
+   "hasSunday": true
+  },
+  {
+   "slug": "pvta",
+   "name": "Pioneer Valley Transit Authority",
+   "region": "Massachusetts",
+   "routeKm": 898.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "wrta",
+   "name": "Worcester Regional Transit Authority",
+   "region": "Massachusetts",
+   "routeKm": 325.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cttransit",
+   "name": "CTtransit",
+   "region": "Connecticut",
+   "routeKm": 2240.6,
+   "weekdayMorning": 2.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "red-deer",
+   "name": "Red Deer Transit",
+   "region": "Alberta",
+   "routeKm": 148.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "lethbridge",
+   "name": "Lethbridge Transit",
+   "region": "Alberta",
+   "routeKm": 143.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "moose-jaw",
+   "name": "Moose Jaw Transit",
+   "region": "Saskatchewan",
+   "routeKm": 53.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "prince-albert",
+   "name": "Prince Albert Transit",
+   "region": "Saskatchewan",
+   "routeKm": 75.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "kamloops",
+   "name": "BC Transit (Kamloops)",
+   "region": "British Columbia",
+   "routeKm": 179.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "south-okanagan",
+   "name": "BC Transit (South Okanagan-Similkameen)",
+   "region": "British Columbia",
+   "routeKm": 108.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "nanaimo",
+   "name": "BC Transit (Nanaimo)",
+   "region": "British Columbia",
+   "routeKm": 437.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cowichan",
+   "name": "BC Transit (Cowichan Valley)",
+   "region": "British Columbia",
+   "routeKm": 285.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "comox-valley",
+   "name": "BC Transit (Comox Valley)",
+   "region": "British Columbia",
+   "routeKm": 241.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "campbell-river",
+   "name": "BC Transit (Campbell River)",
+   "region": "British Columbia",
+   "routeKm": 68.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "squamish",
+   "name": "BC Transit (Squamish)",
+   "region": "British Columbia",
+   "routeKm": 54,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "whistler",
+   "name": "BC Transit (Whistler)",
+   "region": "British Columbia",
+   "routeKm": 108.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 8.8,
+   "hasSunday": true
+  },
+  {
+   "slug": "kingcountymetro",
+   "name": "King County Metro (Seattle)",
+   "region": "Washington",
+   "routeKm": 2268.7,
+   "weekdayMorning": 26.5,
+   "sundayEvening": 7.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "soundtransit",
+   "name": "Sound Transit (Seattle)",
+   "region": "Washington",
+   "routeKm": 258.1,
+   "weekdayMorning": 49.1,
+   "sundayEvening": 46.7,
+   "hasSunday": true
+  },
+  {
+   "slug": "piercetransit",
+   "name": "Pierce Transit",
+   "region": "Washington",
+   "routeKm": 954,
+   "weekdayMorning": 5.1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "communitytransit",
+   "name": "Community Transit (Everett)",
+   "region": "Washington",
+   "routeKm": 1057.4,
+   "weekdayMorning": 8.7,
+   "sundayEvening": 2.8,
+   "hasSunday": true
+  },
+  {
+   "slug": "everetttransit",
+   "name": "Everett Transit",
+   "region": "Washington",
+   "routeKm": 113.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "kitsaptransit",
+   "name": "Kitsap Transit",
+   "region": "Washington",
+   "routeKm": 578.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "intercitytransit",
+   "name": "Intercity Transit (Olympia)",
+   "region": "Washington",
+   "routeKm": 406.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "skagittransit",
+   "name": "Skagit Transit",
+   "region": "Washington",
+   "routeKm": 393.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "whatcomtransit",
+   "name": "Whatcom Transportation Authority",
+   "region": "Washington",
+   "routeKm": 404.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "islandtransit",
+   "name": "Island Transit (Whidbey Island)",
+   "region": "Washington",
+   "routeKm": 366.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "jeffersontransit",
+   "name": "Jefferson Transit",
+   "region": "Washington",
+   "routeKm": 483.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "clallamtransit",
+   "name": "Clallam Transit System",
+   "region": "Washington",
+   "routeKm": 485.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "portlandme",
+   "name": "Greater Portland Metro",
+   "region": "Maine",
+   "routeKm": 231.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "watertowncitibus",
+   "name": "Watertown Citibus",
+   "region": "New York",
+   "routeKm": 64.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "hudsonlink",
+   "name": "Hudson Link",
+   "region": "New York",
+   "routeKm": 90.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "wsf",
+   "name": "Washington State Ferries",
+   "region": "Washington",
+   "routeKm": 440.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "bc-ferries",
+   "name": "BC Ferries",
+   "region": "British Columbia",
+   "routeKm": 347.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sherbrooke",
+   "name": "Société de transport de Sherbrooke",
+   "region": "Quebec",
+   "routeKm": 447.3,
+   "weekdayMorning": 3.6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "eugene-ltd",
+   "name": "Lane Transit District",
+   "region": "Oregon",
+   "routeKm": 361.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "corvallis",
+   "name": "Corvallis Transit System",
+   "region": "Oregon",
+   "routeKm": 132,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "grovelink",
+   "name": "Ride Connection (GroveLink)",
+   "region": "Oregon",
+   "routeKm": 129.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rivercities",
+   "name": "RiverCities Transit",
+   "region": "Washington",
+   "routeKm": 166.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "tillamook",
+   "name": "Tillamook County Transportation District",
+   "region": "Oregon",
+   "routeKm": 328.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "columbia-area-transit",
+   "name": "Columbia Area Transit",
+   "region": "Oregon",
+   "routeKm": 330.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mats",
+   "name": "Mount Adams Transportation Service",
+   "region": "Washington",
+   "routeKm": 71.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "setd",
+   "name": "Sunset Empire Transportation District",
+   "region": "Oregon",
+   "routeKm": 137,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sfmta",
+   "name": "San Francisco Municipal Transportation Agency (SFMTA - Muni)",
+   "region": "California",
+   "routeKm": 762.8,
+   "weekdayMorning": 38.1,
+   "sundayEvening": 19.4,
+   "hasSunday": true
+  },
+  {
+   "slug": "bart",
+   "name": "Bay Area Rapid Transit (BART)",
+   "region": "California",
+   "routeKm": 394.9,
+   "weekdayMorning": 26.6,
+   "sundayEvening": 1.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "caltrain",
+   "name": "Caltrain",
+   "region": "California",
+   "routeKm": 204.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "actransit",
+   "name": "Alameda-Contra Costa Transit District (AC Transit)",
+   "region": "California",
+   "routeKm": 1334.4,
+   "weekdayMorning": 11,
+   "sundayEvening": 4.6,
+   "hasSunday": true
+  },
+  {
+   "slug": "vta",
+   "name": "Santa Clara Valley Transportation Authority (VTA)",
+   "region": "California",
+   "routeKm": 1050.3,
+   "weekdayMorning": 24.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "samtrans",
+   "name": "San Mateo County Transit District (samTrans)",
+   "region": "California",
+   "routeKm": 614.3,
+   "weekdayMorning": 13.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "goldengate",
+   "name": "Golden Gate Transit",
+   "region": "California",
+   "routeKm": 247.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "weta",
+   "name": "San Francisco Bay Area Water Emergency Transportation Authority (WETA)",
+   "region": "California",
+   "routeKm": 96.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "countyconnection",
+   "name": "County Connection (CCCTA)",
+   "region": "California",
+   "routeKm": 550.6,
+   "weekdayMorning": 1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "westcat",
+   "name": "WestCAT (Pinole)",
+   "region": "California",
+   "routeKm": 198.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "soltrans",
+   "name": "SolTrans (Vallejo)",
+   "region": "California",
+   "routeKm": 290.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "marintransit",
+   "name": "Marin Transit",
+   "region": "California",
+   "routeKm": 329.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "smart-ca",
+   "name": "Sonoma-Marin Area Rail Transit (SMART)",
+   "region": "California",
+   "routeKm": 77.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sonoma-county",
+   "name": "Sonoma County Transit (SCT)",
+   "region": "California",
+   "routeKm": 522,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "vine",
+   "name": "VINE Transit (Napa)",
+   "region": "California",
+   "routeKm": 291.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "stanford",
+   "name": "Stanford Marguerite Shuttle (SMS)",
+   "region": "California",
+   "routeKm": 144.3,
+   "weekdayMorning": 11.1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "tridelta",
+   "name": "Tri Delta Transit (Antioch)",
+   "region": "California",
+   "routeKm": 173.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "lavta",
+   "name": "Livermore Amador Valley Transit Authority",
+   "region": "California",
+   "routeKm": 164.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "unioncity",
+   "name": "Union City Transit",
+   "region": "California",
+   "routeKm": 57,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "petaluma",
+   "name": "Petaluma Transit",
+   "region": "California",
+   "routeKm": 61.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "santarosa",
+   "name": "Santa Rosa CityBus",
+   "region": "California",
+   "routeKm": 177.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rvtd",
+   "name": "Rogue Valley Transportation District (RVTD)",
+   "region": "Oregon",
+   "routeKm": 72.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "bts-or",
+   "name": "Basin Transit Service (BTS)",
+   "region": "Oregon",
+   "routeKm": 94.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "rct",
+   "name": "Redwood Coast Transit (RCT)",
+   "region": "California",
+   "routeKm": 229.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "humboldt",
+   "name": "Humboldt Transit Authority",
+   "region": "California",
+   "routeKm": 207.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "raba",
+   "name": "Redding Area Bus Authority",
+   "region": "California",
+   "routeKm": 124.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "trinity",
+   "name": "Trinity Transit",
+   "region": "California",
+   "routeKm": 94.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "sacrt",
+   "name": "Sacramento Regional Transit (SacRT)",
+   "region": "California",
+   "routeKm": 709.8,
+   "weekdayMorning": 12.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "yolobus",
+   "name": "Yolo County Transportation District (Yolobus)",
+   "region": "California",
+   "routeKm": 358.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "unitrans",
+   "name": "Unitrans (Davis)",
+   "region": "California",
+   "routeKm": 135.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "roseville",
+   "name": "Roseville Transit",
+   "region": "California",
+   "routeKm": 186.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "smart-or",
+   "name": "South Metro Area Regional Transit (SMART)",
+   "region": "Oregon",
+   "routeKm": 112.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "sam",
+   "name": "Sandy Area Metro (SAM)",
+   "region": "Oregon",
+   "routeKm": 191.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "yamhill",
+   "name": "Yamhill County Transit Area",
+   "region": "Oregon",
+   "routeKm": 228.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "lacmta",
+   "name": "Los Angeles County Metropolitan Transportation Authority (LA Metro)",
+   "region": "California",
+   "routeKm": 3272.6,
+   "weekdayMorning": 44.1,
+   "sundayEvening": 1.1,
+   "hasSunday": true
+  },
+  {
+   "slug": "metrolink",
+   "name": "Metrolink",
+   "region": "California",
+   "routeKm": 627.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "torrance-transit",
+   "name": "Torrance Transit",
+   "region": "California",
+   "routeKm": 219.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "gold-coast",
+   "name": "Gold Coast Transit District (Oxnard)",
+   "region": "California",
+   "routeKm": 257.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "bigbluebus",
+   "name": "Big Blue Bus (Santa Monica)",
+   "region": "California",
+   "routeKm": 218.8,
+   "weekdayMorning": 28.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "longbeach",
+   "name": "Long Beach Transit",
+   "region": "California",
+   "routeKm": 577.6,
+   "weekdayMorning": 2.6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "octa",
+   "name": "Orange County Transportation Authority (OCTA)",
+   "region": "California",
+   "routeKm": 1468.7,
+   "weekdayMorning": 3.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "foothill",
+   "name": "Foothill Transit",
+   "region": "California",
+   "routeKm": 1001.2,
+   "weekdayMorning": 14.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "avta",
+   "name": "Antelope Valley Transit Authority (AVTA)",
+   "region": "California",
+   "routeKm": 702.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sdmts",
+   "name": "Metropolitan Transit System (San Diego MTS)",
+   "region": "California",
+   "routeKm": 1626.1,
+   "weekdayMorning": 26.2,
+   "sundayEvening": 6.1,
+   "hasSunday": true
+  },
+  {
+   "slug": "nctd",
+   "name": "North County Transit District (NCTD)",
+   "region": "California",
+   "routeKm": 720.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "riverside",
+   "name": "Riverside Transit Agency",
+   "region": "California",
+   "routeKm": 1010.7,
+   "weekdayMorning": 1.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "omnitrans",
+   "name": "OmniTrans (San Bernardino)",
+   "region": "California",
+   "routeKm": 746.2,
+   "weekdayMorning": 13.6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "fax",
+   "name": "Fresno Area Express (FAX)",
+   "region": "California",
+   "routeKm": 377.5,
+   "weekdayMorning": 10,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "get",
+   "name": "Golden Empire Transit District (GET)",
+   "region": "California",
+   "routeKm": 345.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sjrtd",
+   "name": "San Joaquin RTD",
+   "region": "California",
+   "routeKm": 625.4,
+   "weekdayMorning": 1.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "merced",
+   "name": "Merced County Transit (The Bus)",
+   "region": "California",
+   "routeKm": 389.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mst",
+   "name": "Monterey-Salinas Transit (MST)",
+   "region": "California",
+   "routeKm": 661.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sbmtd",
+   "name": "Santa Barbara Metropolitan Transit District (MTD)",
+   "region": "California",
+   "routeKm": 219.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "slotransit",
+   "name": "City of San Luis Obispo Transit",
+   "region": "California",
+   "routeKm": 139.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "slorta",
+   "name": "San Luis Obispo Regional Transit Authority (SLORTA)",
+   "region": "California",
+   "routeKm": 528.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sunline",
+   "name": "SunLine Transit Agency (Coachella Valley)",
+   "region": "California",
+   "routeKm": 438.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rtcsnv",
+   "name": "Regional Transportation Commission of Southern Nevada (RTC)",
+   "region": "Nevada",
+   "routeKm": 1074.3,
+   "weekdayMorning": 17.3,
+   "sundayEvening": 2,
+   "hasSunday": true
+  },
+  {
+   "slug": "smat",
+   "name": "Santa Maria Regional Transit (SMRT)",
+   "region": "California",
+   "routeKm": 524.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "valleymetro",
+   "name": "Valley Metro (Phoenix)",
+   "region": "Arizona",
+   "routeKm": 2370.4,
+   "weekdayMorning": 16.9,
+   "sundayEvening": 0.3,
+   "hasSunday": true
+  },
+  {
+   "slug": "mountainline",
+   "name": "Mountain Line (Flagstaff)",
+   "region": "Arizona",
+   "routeKm": 114.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mountainmetro",
+   "name": "Mountain Metropolitan Transit (Colorado Springs)",
+   "region": "Colorado",
+   "routeKm": 333.5,
+   "weekdayMorning": 10.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rtd-denver",
+   "name": "Regional Transportation District (RTD Denver)",
+   "region": "Colorado",
+   "routeKm": 2510.3,
+   "weekdayMorning": 12.9,
+   "sundayEvening": 1,
+   "hasSunday": true
+  },
+  {
+   "slug": "bustang",
+   "name": "Bustang (CDOT)",
+   "region": "Colorado",
+   "routeKm": 821.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "abqride",
+   "name": "ABQ RIDE (Albuquerque)",
+   "region": "New Mexico",
+   "routeKm": 419.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "santafetrails",
+   "name": "Santa Fe Trails",
+   "region": "New Mexico",
+   "routeKm": 67.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "capmetro",
+   "name": "Capital Metro (Austin)",
+   "region": "Texas",
+   "routeKm": 1042.7,
+   "weekdayMorning": 14,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "dart",
+   "name": "Dallas Area Rapid Transit (DART)",
+   "region": "Texas",
+   "routeKm": 1791.1,
+   "weekdayMorning": 0.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "trinitymetro",
+   "name": "Trinity Metro (Fort Worth)",
+   "region": "Texas",
+   "routeKm": 556.7,
+   "weekdayMorning": 1.5,
+   "sundayEvening": 1.5,
+   "hasSunday": true
+  },
+  {
+   "slug": "metrohouston",
+   "name": "METRO Houston",
+   "region": "Texas",
+   "routeKm": 2987.2,
+   "weekdayMorning": 32.6,
+   "sundayEvening": 1.7,
+   "hasSunday": true
+  },
+  {
+   "slug": "via",
+   "name": "VIA Metropolitan Transit (San Antonio)",
+   "region": "Texas",
+   "routeKm": 1680.1,
+   "weekdayMorning": 6.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "embark",
+   "name": "Embark (Oklahoma City)",
+   "region": "Oklahoma",
+   "routeKm": 607.5,
+   "weekdayMorning": 2.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rockregion",
+   "name": "Rock Region Metro (Little Rock)",
+   "region": "Arkansas",
+   "routeKm": 215.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "nashvillemta",
+   "name": "Nashville MTA WeGo Public Transit",
+   "region": "Tennessee",
+   "routeKm": 610.2,
+   "weekdayMorning": 16.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mata",
+   "name": "Memphis Area Transit Authority",
+   "region": "Tennessee",
+   "routeKm": 695.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cincinnatimetro",
+   "name": "Cincinnati Metro (SORTA)",
+   "region": "Ohio",
+   "routeKm": 872.3,
+   "weekdayMorning": 7.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "tarc",
+   "name": "Transit Authority of River City (Louisville)",
+   "region": "Kentucky",
+   "routeKm": 293.9,
+   "weekdayMorning": 35.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mcts",
+   "name": "Milwaukee County Transit System (MCTS)",
+   "region": "Wisconsin",
+   "routeKm": 794.2,
+   "weekdayMorning": 27.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "metrostlouis",
+   "name": "Metro St. Louis",
+   "region": "Missouri",
+   "routeKm": 1189,
+   "weekdayMorning": 1.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "kcata",
+   "name": "Kansas City Area Transportation Authority (KCATA)",
+   "region": "Missouri",
+   "routeKm": 544.7,
+   "weekdayMorning": 7.8,
+   "sundayEvening": 1.8,
+   "hasSunday": true
+  },
+  {
+   "slug": "omahametro",
+   "name": "Omaha Metro",
+   "region": "Nebraska",
+   "routeKm": 440,
+   "weekdayMorning": 10.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "ladot",
+   "name": "Los Angeles Department of Transportation (LADOT/DASH)",
+   "region": "California",
+   "routeKm": 940.6,
+   "weekdayMorning": 17.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "culvercitybus",
+   "name": "Culver City Bus",
+   "region": "California",
+   "routeKm": 103.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "santaclarita",
+   "name": "Santa Clarita Transit",
+   "region": "California",
+   "routeKm": 410.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "montebello",
+   "name": "Montebello Bus Lines",
+   "region": "California",
+   "routeKm": 162.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "glendalebeeline",
+   "name": "Glendale Beeline",
+   "region": "California",
+   "routeKm": 140.3,
+   "weekdayMorning": 6.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "pasadenatransit",
+   "name": "Pasadena Transit",
+   "region": "California",
+   "routeKm": 149,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "norwalktransit",
+   "name": "Norwalk Transit System",
+   "region": "California",
+   "routeKm": 126,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "pvpta",
+   "name": "Palos Verdes Peninsula Transit Authority (PVPTA)",
+   "region": "California",
+   "routeKm": 61.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "gtrans",
+   "name": "GTrans (Gardena Municipal Bus Lines)",
+   "region": "California",
+   "routeKm": 91.6,
+   "weekdayMorning": 41.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "vvta",
+   "name": "Victor Valley Transit Authority (VVTA)",
+   "region": "California",
+   "routeKm": 683.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "vctc",
+   "name": "Ventura County Transportation Commission (VCTC Intercity)",
+   "region": "California",
+   "routeKm": 368.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cta",
+   "name": "Chicago Transit Authority (CTA)",
+   "region": "Illinois",
+   "routeKm": 2004.6,
+   "weekdayMorning": 66.2,
+   "sundayEvening": 21.7,
+   "hasSunday": true
+  },
+  {
+   "slug": "metra",
+   "name": "Metra (Chicago)",
+   "region": "Illinois",
+   "routeKm": 725.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "pace-bus",
+   "name": "Pace Bus (Chicago suburbs)",
+   "region": "Illinois",
+   "routeKm": 2701.5,
+   "weekdayMorning": 13.5,
+   "sundayEvening": 0.4,
+   "hasSunday": true
+  },
+  {
+   "slug": "marta",
+   "name": "MARTA (Atlanta)",
+   "region": "Georgia",
+   "routeKm": 1667.6,
+   "weekdayMorning": 15.4,
+   "sundayEvening": 7.5,
+   "hasSunday": true
+  },
+  {
+   "slug": "cobblinc",
+   "name": "CobbLinc (Marietta, GA)",
+   "region": "Georgia",
+   "routeKm": 260.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "gwinnett-transit",
+   "name": "Gwinnett County Transit",
+   "region": "Georgia",
+   "routeKm": 270.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "miami-dade-transit",
+   "name": "Miami-Dade Transit",
+   "region": "Florida",
+   "routeKm": 2500.5,
+   "weekdayMorning": 11.7,
+   "sundayEvening": 1.2,
+   "hasSunday": true
+  },
+  {
+   "slug": "broward-transit",
+   "name": "Broward County Transit",
+   "region": "Florida",
+   "routeKm": 80.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "transfort",
+   "name": "Transfort (Fort Collins)",
+   "region": "Colorado",
+   "routeKm": 154.3,
+   "weekdayMorning": 5.3,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "septa",
+   "name": "SEPTA (Philadelphia)",
+   "region": "Pennsylvania",
+   "routeKm": 3088.1,
+   "weekdayMorning": 24.7,
+   "sundayEvening": 2.2,
+   "hasSunday": true
+  },
+  {
+   "slug": "marc",
+   "name": "MARC Train (MTA Maryland)",
+   "region": "Maryland",
+   "routeKm": 181.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rideon",
+   "name": "Ride On (Montgomery County)",
+   "region": "Maryland",
+   "routeKm": 1227.9,
+   "weekdayMorning": 7.5,
+   "sundayEvening": 2.9,
+   "hasSunday": true
+  },
+  {
+   "slug": "fairfax",
+   "name": "Fairfax Connector",
+   "region": "Virginia",
+   "routeKm": 1542.7,
+   "weekdayMorning": 6,
+   "sundayEvening": 0.1,
+   "hasSunday": true
+  },
+  {
+   "slug": "art",
+   "name": "Arlington Transit (ART)",
+   "region": "Virginia",
+   "routeKm": 134.8,
+   "weekdayMorning": 30.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "dash",
+   "name": "DASH (Alexandria)",
+   "region": "Virginia",
+   "routeKm": 139.2,
+   "weekdayMorning": 34.3,
+   "sundayEvening": 1.5,
+   "hasSunday": true
+  },
+  {
+   "slug": "nyct-subway",
+   "name": "MTA NYCT Subway",
+   "region": "New York",
+   "routeKm": 710.4,
+   "weekdayMorning": 82.7,
+   "sundayEvening": 77.2,
+   "hasSunday": true
+  },
+  {
+   "slug": "nyct-bus-manhattan",
+   "name": "MTA NYCT Bus (Manhattan)",
+   "region": "New York",
+   "routeKm": 343.2,
+   "weekdayMorning": 46.9,
+   "sundayEvening": 27.4,
+   "hasSunday": true
+  },
+  {
+   "slug": "nyct-bus-brooklyn",
+   "name": "MTA NYCT Bus (Brooklyn)",
+   "region": "New York",
+   "routeKm": 783.5,
+   "weekdayMorning": 68,
+   "sundayEvening": 20.2,
+   "hasSunday": true
+  },
+  {
+   "slug": "nyct-bus-queens",
+   "name": "MTA NYCT Bus (Queens)",
+   "region": "New York",
+   "routeKm": 508.5,
+   "weekdayMorning": 56.7,
+   "sundayEvening": 23,
+   "hasSunday": true
+  },
+  {
+   "slug": "nyct-bus-bronx",
+   "name": "MTA NYCT Bus (Bronx)",
+   "region": "New York",
+   "routeKm": 435.5,
+   "weekdayMorning": 64.9,
+   "sundayEvening": 29,
+   "hasSunday": true
+  },
+  {
+   "slug": "nyct-bus-si",
+   "name": "MTA NYCT Bus (Staten Island)",
+   "region": "New York",
+   "routeKm": 1610.8,
+   "weekdayMorning": 39.5,
+   "sundayEvening": 2.4,
+   "hasSunday": true
+  },
+  {
+   "slug": "mta-bus-company",
+   "name": "MTA Bus Company",
+   "region": "New York",
+   "routeKm": 1644.3,
+   "weekdayMorning": 43.6,
+   "sundayEvening": 3.4,
+   "hasSunday": true
+  },
+  {
+   "slug": "lirr",
+   "name": "MTA Long Island Rail Road",
+   "region": "New York",
+   "routeKm": 715.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mnr",
+   "name": "Metro-North Railroad (MNR)",
+   "region": "New York",
+   "routeKm": 614.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "njt",
+   "name": "NJ Transit",
+   "region": "New Jersey",
+   "routeKm": 8543.1,
+   "weekdayMorning": 6,
+   "sundayEvening": 0.2,
+   "hasSunday": true
+  },
+  {
+   "slug": "nice",
+   "name": "Nassau Inter-County Express (NICE Bus)",
+   "region": "New York",
+   "routeKm": 684.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "tor",
+   "name": "Transport of Rockland (TOR)",
+   "region": "New York",
+   "routeKm": 280.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sct",
+   "name": "Suffolk County Transit (SCT)",
+   "region": "New York",
+   "routeKm": 837.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "part",
+   "name": "Putnam Area Rapid Transit (PART)",
+   "region": "New York",
+   "routeKm": 126.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "dutchess",
+   "name": "Dutchess County Public Transit",
+   "region": "New York",
+   "routeKm": 330.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "metro-transit",
+   "name": "Metro Transit (Minneapolis)",
+   "region": "Minnesota",
+   "routeKm": 2130.4,
+   "weekdayMorning": 23.1,
+   "sundayEvening": 6.7,
+   "hasSunday": true
+  },
+  {
+   "slug": "port-authority-pa",
+   "name": "Pittsburgh Regional Transit",
+   "region": "Pennsylvania",
+   "routeKm": 1871.7,
+   "weekdayMorning": 4.9,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "ata",
+   "name": "Area Transportation Authority (ATA)",
+   "region": "Pennsylvania",
+   "routeKm": 166.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "albemarle-county",
+   "name": "Charlottesville Area Transit (CAT)",
+   "region": "Virginia",
+   "routeKm": 118.6,
+   "weekdayMorning": 10.7,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "chemung-county",
+   "name": "Chemung County C-TRAN",
+   "region": "New York",
+   "routeKm": 279.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "decatur",
+   "name": "Decatur Public Transit System",
+   "region": "Illinois",
+   "routeKm": 217.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "essex-county",
+   "name": "Cape Ann Transportation Authority (CATA)",
+   "region": "Massachusetts",
+   "routeKm": 93.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "fort-mcmurray",
+   "name": "Regional Municipality of Wood Buffalo Transit",
+   "region": "Alberta",
+   "routeKm": 106.4,
+   "weekdayMorning": 18.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "fort-smith",
+   "name": "City of Fort Smith",
+   "region": "Arkansas",
+   "routeKm": 101,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "janesville",
+   "name": "Janesville Transit System",
+   "region": "Wisconsin",
+   "routeKm": 109.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "kaua-i-county",
+   "name": "The Kauai Bus",
+   "region": "Hawaii",
+   "routeKm": 410.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "los-alamos-county",
+   "name": "Atomic City Transit",
+   "region": "New Mexico",
+   "routeKm": 67.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "marathon-county",
+   "name": "Metro Ride",
+   "region": "Wisconsin",
+   "routeKm": 82.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "mason-city",
+   "name": "Mason City Public Transit",
+   "region": "Iowa",
+   "routeKm": 56.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "maui-county",
+   "name": "Maui County Transit",
+   "region": "Hawaii",
+   "routeKm": 333.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "medicine-hat",
+   "name": "Medicine Hat Transit",
+   "region": "Alberta",
+   "routeKm": 116.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "muscogee-county",
+   "name": "METRA",
+   "region": "Georgia",
+   "routeKm": 191.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "nash-county",
+   "name": "Tar River Transit",
+   "region": "North Carolina",
+   "routeKm": 158.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "rock-county",
+   "name": "Beloit Transit System",
+   "region": "Wisconsin",
+   "routeKm": 187.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sheboygan-county",
+   "name": "Shoreline Metro",
+   "region": "Wisconsin",
+   "routeKm": 101.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "washington-county",
+   "name": "Johnson City",
+   "region": "Tennessee",
+   "routeKm": 145.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "whitman-county",
+   "name": "City of Pullman",
+   "region": "Washington",
+   "routeKm": 60.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "beaver-county",
+   "name": "Beaver County Transit Authority",
+   "region": "Pennsylvania",
+   "routeKm": 114,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "butler-pa",
+   "name": "Butler Transit Authority",
+   "region": "Pennsylvania",
+   "routeKm": 83.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "camtran",
+   "name": "CamTran",
+   "region": "Pennsylvania",
+   "routeKm": 195,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "fact",
+   "name": "Fayette Area Coordinated Transportation",
+   "region": "Pennsylvania",
+   "routeKm": 72.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "freedom-transit",
+   "name": "Freedom Transit",
+   "region": "Pennsylvania",
+   "routeKm": 84.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "indigo",
+   "name": "IndiGO",
+   "region": "Pennsylvania",
+   "routeKm": 145.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mmvta",
+   "name": "Mid Mon Valley Transit",
+   "region": "Pennsylvania",
+   "routeKm": 235,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "new-castle",
+   "name": "New Castle Area Transit Authority",
+   "region": "Pennsylvania",
+   "routeKm": 283.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "westmoreland",
+   "name": "Westmoreland Transit",
+   "region": "Pennsylvania",
+   "routeKm": 449.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "uta",
+   "name": "Utah Transit Authority (UTA)",
+   "region": "Utah",
+   "routeKm": 1873.1,
+   "weekdayMorning": 9.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "jta",
+   "name": "Jacksonville Transportation Authority (JTA)",
+   "region": "Florida",
+   "routeKm": 740.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cats",
+   "name": "Charlotte Area Transit System (CATS)",
+   "region": "North Carolina",
+   "routeKm": 848.4,
+   "weekdayMorning": 5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "goraleigh",
+   "name": "GoRaleigh (Capital Area Transit)",
+   "region": "North Carolina",
+   "routeKm": 434.3,
+   "weekdayMorning": 11.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "gotriangle",
+   "name": "GoTriangle (Raleigh-Durham)",
+   "region": "North Carolina",
+   "routeKm": 413.6,
+   "weekdayMorning": 5.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "indygo",
+   "name": "IndyGo (Indianapolis)",
+   "region": "Indiana",
+   "routeKm": 609.4,
+   "weekdayMorning": 17.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mta-maryland",
+   "name": "Maryland Transit Administration (MTA Maryland)",
+   "region": "Maryland",
+   "routeKm": 1407.2,
+   "weekdayMorning": 19.3,
+   "sundayEvening": 1.7,
+   "hasSunday": true
+  },
+  {
+   "slug": "hart",
+   "name": "Hillsborough Area Regional Transit (HART)",
+   "region": "Florida",
+   "routeKm": 652.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "lynx",
+   "name": "LYNX (Central Florida)",
+   "region": "Florida",
+   "routeKm": 1278.6,
+   "weekdayMorning": 3.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "thebus",
+   "name": "TheBus (Honolulu)",
+   "region": "Hawaii",
+   "routeKm": 1519.5,
+   "weekdayMorning": 9,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "ripta",
+   "name": "Rhode Island Public Transit Authority (RIPTA)",
+   "region": "Rhode Island",
+   "routeKm": 855.4,
+   "weekdayMorning": 3.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "valley-regional-transit",
+   "name": "Valley Regional Transit (Boise)",
+   "region": "Idaho",
+   "routeKm": 236.8,
+   "weekdayMorning": 9.1,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "psta",
+   "name": "Pinellas Suncoast Transit Authority (PSTA)",
+   "region": "Florida",
+   "routeKm": 825.4,
+   "weekdayMorning": 4.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "palm-tran",
+   "name": "Palm Tran (West Palm Beach)",
+   "region": "Florida",
+   "routeKm": 753,
+   "weekdayMorning": 3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sunrail",
+   "name": "SunRail (Orlando)",
+   "region": "Florida",
+   "routeKm": 97.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "votran",
+   "name": "Votran (Volusia County)",
+   "region": "Florida",
+   "routeKm": 370.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "chapel-hill-transit",
+   "name": "Chapel Hill Transit",
+   "region": "North Carolina",
+   "routeKm": 202.5,
+   "weekdayMorning": 12.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mvta",
+   "name": "Minnesota Valley Transit Authority (MVTA)",
+   "region": "Minnesota",
+   "routeKm": 468.4,
+   "weekdayMorning": 14.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "omniride",
+   "name": "OmniRide (PRTC)",
+   "region": "Virginia",
+   "routeKm": 976.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "loudoun-transit",
+   "name": "Loudoun County Transit",
+   "region": "Virginia",
+   "routeKm": 874.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cue-bus",
+   "name": "CUE Bus (Fairfax)",
+   "region": "Virginia",
+   "routeKm": 88.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "pgc-the-bus",
+   "name": "Prince George's County (The Bus)",
+   "region": "Maryland",
+   "routeKm": 414.1,
+   "weekdayMorning": 0.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "fred-transit",
+   "name": "FXBGO! (Fredericksburg)",
+   "region": "Virginia",
+   "routeKm": 222.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "hrt",
+   "name": "Hampton Roads Transit",
+   "region": "Virginia",
+   "routeKm": 1053.1,
+   "weekdayMorning": 1.1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "wata",
+   "name": "Williamsburg Area Transit Authority",
+   "region": "Virginia",
+   "routeKm": 172.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "dart-first-state",
+   "name": "DART First State",
+   "region": "Delaware",
+   "routeKm": 1025.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "starmetro",
+   "name": "StarMetro (Tallahassee)",
+   "region": "Florida",
+   "routeKm": 330.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "montgomery-transit",
+   "name": "Montgomery Transit (The M)",
+   "region": "Alabama",
+   "routeKm": 433.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "carta",
+   "name": "Charleston Area Regional Transportation Authority (CARTA)",
+   "region": "South Carolina",
+   "routeKm": 346.7,
+   "weekdayMorning": 3.1,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "tricounty-link",
+   "name": "TriCounty Link",
+   "region": "South Carolina",
+   "routeKm": 113.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "cat-savannah",
+   "name": "Chatham Area Transit (CAT)",
+   "region": "Georgia",
+   "routeKm": 309.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "tulsa-transit",
+   "name": "Tulsa Transit (MTTA)",
+   "region": "Oklahoma",
+   "routeKm": 358,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "comet",
+   "name": "The COMET (Columbia, SC)",
+   "region": "South Carolina",
+   "routeKm": 458.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "greenlink",
+   "name": "GreenLink (Greenville, SC)",
+   "region": "South Carolina",
+   "routeKm": 165.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "carta-chattanooga",
+   "name": "Chattanooga Area Regional Transportation Authority",
+   "region": "Tennessee",
+   "routeKm": 140,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "citilink-fw",
+   "name": "Citilink (Fort Wayne, IN)",
+   "region": "Indiana",
+   "routeKm": 234.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "gptc",
+   "name": "Gary Public Transportation Corporation (Gary, IN)",
+   "region": "Indiana",
+   "routeKm": 290.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "bata",
+   "name": "Bay Area Transportation Authority (Traverse City, MI)",
+   "region": "Michigan",
+   "routeKm": 254.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "citylink-peoria",
+   "name": "CityLink (Peoria, IL)",
+   "region": "Illinois",
+   "routeKm": 273.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cedar-rapids",
+   "name": "Cedar Rapids Transit",
+   "region": "Iowa",
+   "routeKm": 292.2,
+   "weekdayMorning": 5.5,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "matbus",
+   "name": "MATBUS (Fargo, ND)",
+   "region": "North Dakota",
+   "routeKm": 180.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "duluth-transit",
+   "name": "Duluth Transit Authority",
+   "region": "Minnesota",
+   "routeKm": 197.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "grtc",
+   "name": "GRTC Transit (Richmond, VA)",
+   "region": "Virginia",
+   "routeKm": 480.7,
+   "weekdayMorning": 9,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "valley-metro-roanoke",
+   "name": "Valley Metro (Roanoke, VA)",
+   "region": "Virginia",
+   "routeKm": 482.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "gltc",
+   "name": "Greater Lynchburg Transit Company",
+   "region": "Virginia",
+   "routeKm": 146.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "dayton",
+   "name": "Greater Dayton RTA",
+   "region": "Ohio",
+   "routeKm": 625.2,
+   "weekdayMorning": 0.6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "youngstown-wrta",
+   "name": "Western Reserve Transit Authority (Youngstown)",
+   "region": "Ohio",
+   "routeKm": 295.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "sun-metro",
+   "name": "Sun Metro (El Paso)",
+   "region": "Texas",
+   "routeKm": 604.8,
+   "weekdayMorning": 4.5,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "b-line",
+   "name": "B-Line (Corpus Christi RTA)",
+   "region": "Texas",
+   "routeKm": 457.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "citibus",
+   "name": "Citibus (Lubbock)",
+   "region": "Texas",
+   "routeKm": 225.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "amarillo",
+   "name": "Amarillo City Transit",
+   "region": "Texas",
+   "routeKm": 122.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "missoula",
+   "name": "Mountain Line (Missoula)",
+   "region": "Montana",
+   "routeKm": 100.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sportran",
+   "name": "SporTran (Shreveport)",
+   "region": "Louisiana",
+   "routeKm": 522.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "billings",
+   "name": "MET Transit (Billings)",
+   "region": "Montana",
+   "routeKm": 159.8,
+   "weekdayMorning": 7.9,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "ecat",
+   "name": "ECAT (Escambia County)",
+   "region": "Florida",
+   "routeKm": 373.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rts",
+   "name": "RTS (Gainesville)",
+   "region": "Florida",
+   "routeKm": 299.8,
+   "weekdayMorning": 2.9,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "leetran",
+   "name": "LeeTran (Fort Myers)",
+   "region": "Florida",
+   "routeKm": 538.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "wave-mobile",
+   "name": "Wave Transit (Mobile)",
+   "region": "Alabama",
+   "routeKm": 151.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "huntsville",
+   "name": "Huntsville Shuttle",
+   "region": "Alabama",
+   "routeKm": 295.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "rfta",
+   "name": "Roaring Fork Transportation Authority (RFTA)",
+   "region": "Colorado",
+   "routeKm": 243.8,
+   "weekdayMorning": 0.8,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "durango-transit",
+   "name": "Durango Transit",
+   "region": "Colorado",
+   "routeKm": 60.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "pueblo-transit",
+   "name": "Pueblo Transit",
+   "region": "Colorado",
+   "routeKm": 130.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "eco-transit",
+   "name": "Core Transit",
+   "region": "Colorado",
+   "routeKm": 191.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "all-points-transit",
+   "name": "All Points Transit (Montrose)",
+   "region": "Colorado",
+   "routeKm": 162.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "kart",
+   "name": "Kings Area Rural Transit",
+   "region": "California",
+   "routeKm": 204.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "tulare-county-transit",
+   "name": "Tulare County Area Transit (TCAT)",
+   "region": "California",
+   "routeKm": 413.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "madison-metro",
+   "name": "Madison Metro Transit",
+   "region": "Wisconsin",
+   "routeKm": 425.2,
+   "weekdayMorning": 16.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "waukesha-metro",
+   "name": "Waukesha Metro Transit",
+   "region": "Wisconsin",
+   "routeKm": 76.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mountain-line",
+   "name": "Mountain Line Transit Authority (Morgantown)",
+   "region": "West Virginia",
+   "routeKm": 275.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "visalia",
+   "name": "Visalia Transit",
+   "region": "California",
+   "routeKm": 652.7,
+   "weekdayMorning": 1.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "green-bay",
+   "name": "Green Bay Metro",
+   "region": "Wisconsin",
+   "routeKm": 103.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "cota",
+   "name": "Central Ohio Transit Authority (COTA)",
+   "region": "Ohio",
+   "routeKm": 719.3,
+   "weekdayMorning": 29.2,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "wichita",
+   "name": "Wichita Transit",
+   "region": "Kansas",
+   "routeKm": 273.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "appleton",
+   "name": "Valley Transit (Appleton/Fox Cities)",
+   "region": "Wisconsin",
+   "routeKm": 157.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "modesto",
+   "name": "Stanislaus Regional Transit Authority (The S)",
+   "region": "California",
+   "routeKm": 625.9,
+   "weekdayMorning": 1.6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cats-baton",
+   "name": "Capital Area Transit System (Baton Rouge)",
+   "region": "Louisiana",
+   "routeKm": 329.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "knoxville",
+   "name": "Knoxville Area Transit",
+   "region": "Tennessee",
+   "routeKm": 243.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "mcallen",
+   "name": "Metro McAllen",
+   "region": "Texas",
+   "routeKm": 265.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "augusta",
+   "name": "Augusta Transit",
+   "region": "Georgia",
+   "routeKm": 121.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "lincoln",
+   "name": "StarTran (Lincoln)",
+   "region": "Nebraska",
+   "routeKm": 227.3,
+   "weekdayMorning": 1.9,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "south-bend",
+   "name": "South Bend Transpo",
+   "region": "Indiana",
+   "routeKm": 184.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "rockford",
+   "name": "Rockford Mass Transit District",
+   "region": "Illinois",
+   "routeKm": 478,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "racine",
+   "name": "Ryde Racine",
+   "region": "Wisconsin",
+   "routeKm": 155.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sudbury",
+   "name": "Greater Sudbury Transit",
+   "region": "Ontario",
+   "routeKm": 288,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "anchorage",
+   "name": "Anchorage People Mover",
+   "region": "Alaska",
+   "routeKm": 197.5,
+   "weekdayMorning": 12.4,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "lexington",
+   "name": "Lextran (Lexington, KY)",
+   "region": "Kentucky",
+   "routeKm": 261.1,
+   "weekdayMorning": 3.8,
+   "sundayEvening": 1.5,
+   "hasSunday": true
+  },
+  {
+   "slug": "mtd-champaign",
+   "name": "Champaign-Urbana MTD",
+   "region": "Illinois",
+   "routeKm": 397.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 2.5,
+   "hasSunday": true
+  },
+  {
+   "slug": "kalamazoo",
+   "name": "Kalamazoo Metro Transit",
+   "region": "Michigan",
+   "routeKm": 227.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "laredo",
+   "name": "El Metro (Laredo)",
+   "region": "Texas",
+   "routeKm": 358.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "thunder-bay",
+   "name": "Thunder Bay Transit",
+   "region": "Ontario",
+   "routeKm": 180.9,
+   "weekdayMorning": 4.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "greensboro",
+   "name": "Greensboro Transit Authority",
+   "region": "North Carolina",
+   "routeKm": 210.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "lanta",
+   "name": "Lehigh and Northampton Transportation Authority (LANTA)",
+   "region": "Pennsylvania",
+   "routeKm": 574.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "winston-salem",
+   "name": "Winston-Salem Transit Authority (WSTA)",
+   "region": "North Carolina",
+   "routeKm": 254.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cat-harrisburg",
+   "name": "Capital Area Transit (Harrisburg)",
+   "region": "Pennsylvania",
+   "routeKm": 321.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "jackson-ms",
+   "name": "City of Jackson (JTRAN)",
+   "region": "Mississippi",
+   "routeKm": 151.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "lancaster",
+   "name": "Red Rose Transit Authority (Lancaster, PA)",
+   "region": "Pennsylvania",
+   "routeKm": 366.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "colts",
+   "name": "County of Lackawanna Transit System (COLTS)",
+   "region": "Pennsylvania",
+   "routeKm": 292.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "lcta",
+   "name": "Luzerne County Transportation Authority",
+   "region": "Pennsylvania",
+   "routeKm": 276.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "cascades-east",
+   "name": "Cascades East Transit (Bend, OR)",
+   "region": "Oregon",
+   "routeKm": 431.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "mountain-transit-ca",
+   "name": "Mountain Transit (Big Bear Lake)",
+   "region": "California",
+   "routeKm": 132.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "las-cruces",
+   "name": "RoadRUNNER Transit (Las Cruces)",
+   "region": "New Mexico",
+   "routeKm": 190.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "ez-rider",
+   "name": "EZ Rider (Midland/Odessa)",
+   "region": "Texas",
+   "routeKm": 447,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "san-angelo",
+   "name": "Concho Valley Transit (San Angelo)",
+   "region": "Texas",
+   "routeKm": 185.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "brownsville",
+   "name": "Brownsville Metro",
+   "region": "Texas",
+   "routeKm": 264.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "hobbs",
+   "name": "City of Hobbs Transit",
+   "region": "New Mexico",
+   "routeKm": 85.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "longview",
+   "name": "City of Longview Transit",
+   "region": "Texas",
+   "routeKm": 170.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "texarkana",
+   "name": "Texarkana T-Line",
+   "region": "Texas",
+   "routeKm": 150.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "lake-charles",
+   "name": "Lake Charles Transit",
+   "region": "Louisiana",
+   "routeKm": 103.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "space-coast",
+   "name": "Space Coast Area Transit",
+   "region": "Florida",
+   "routeKm": 507.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "martin-county",
+   "name": "Martin County Public Transit",
+   "region": "Florida",
+   "routeKm": 138,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "indian-river",
+   "name": "Indian River Transit",
+   "region": "Florida",
+   "routeKm": 452.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "collier",
+   "name": "Collier Area Transit (Naples)",
+   "region": "Florida",
+   "routeKm": 328,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "springfield-mo",
+   "name": "City Utilities Transit (Springfield)",
+   "region": "Missouri",
+   "routeKm": 265.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "evansville",
+   "name": "METS (Evansville)",
+   "region": "Indiana",
+   "routeKm": 115,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "kenosha",
+   "name": "Kenosha Area Transit",
+   "region": "Wisconsin",
+   "routeKm": 163.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "ben-franklin",
+   "name": "Ben Franklin Transit (Tri-Cities, WA)",
+   "region": "Washington",
+   "routeKm": 398.3,
+   "weekdayMorning": 13.6,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "asheville",
+   "name": "Asheville Rides Transit",
+   "region": "North Carolina",
+   "routeKm": 198,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "bloomington",
+   "name": "Bloomington Transit",
+   "region": "Indiana",
+   "routeKm": 127.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "athens-acc",
+   "name": "Athens Clarke County Transit",
+   "region": "Georgia",
+   "routeKm": 183,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "uga",
+   "name": "UGA Campus Transit",
+   "region": "Georgia",
+   "routeKm": 215.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "blacksburg",
+   "name": "Blacksburg Transit",
+   "region": "Virginia",
+   "routeKm": 256.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "cata-state-college",
+   "name": "CATA (State College)",
+   "region": "Pennsylvania",
+   "routeKm": 156.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 2.9,
+   "hasSunday": true
+  },
+  {
+   "slug": "cyride",
+   "name": "CyRide (Ames)",
+   "region": "Iowa",
+   "routeKm": 141.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "iowa-city",
+   "name": "Iowa City Transit",
+   "region": "Iowa",
+   "routeKm": 151.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "lawrence-ku",
+   "name": "Lawrence Transit / KU on Wheels",
+   "region": "Kansas",
+   "routeKm": 164.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "springfield-il",
+   "name": "SMTD (Springfield IL)",
+   "region": "Illinois",
+   "routeKm": 283.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "barta",
+   "name": "BARTA (Reading)",
+   "region": "Pennsylvania",
+   "routeKm": 231.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "coast-nh",
+   "name": "COAST (Seacoast NH)",
+   "region": "New Hampshire",
+   "routeKm": 123.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "manchester-nh",
+   "name": "Manchester Transit Authority",
+   "region": "New Hampshire",
+   "routeKm": 275.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "advance-transit",
+   "name": "Advance Transit (Lebanon, NH)",
+   "region": "New Hampshire",
+   "routeKm": 108.5,
+   "weekdayMorning": 4.9,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "ccta",
+   "name": "Green Mountain Transit (GMT)",
+   "region": "Vermont",
+   "routeKm": 93.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "marble-valley",
+   "name": "Marble Valley Transit (Rutland)",
+   "region": "Vermont",
+   "routeKm": 113.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "bis-man",
+   "name": "Bis-Man Transit (Bismarck-Mandan)",
+   "region": "North Dakota",
+   "routeKm": 99.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "bangor",
+   "name": "Bangor Community Connector",
+   "region": "Maine",
+   "routeKm": 120.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "brandon",
+   "name": "Brandon Transit",
+   "region": "Manitoba",
+   "routeKm": 82.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "juneau",
+   "name": "Capital Transit (Juneau)",
+   "region": "Alaska",
+   "routeKm": 68.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "annapolis",
+   "name": "Annapolis Transit",
+   "region": "Maryland",
+   "routeKm": 82.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "santa-cruz-metro",
+   "name": "Santa Cruz METRO",
+   "region": "California",
+   "routeKm": 605.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sioux-falls",
+   "name": "Sioux Area Metro (SAM)",
+   "region": "South Dakota",
+   "routeKm": 91.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "yakima",
+   "name": "Yakima Transit",
+   "region": "Washington",
+   "routeKm": 133.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "grand-forks",
+   "name": "Cities Area Transit (Grand Forks)",
+   "region": "North Dakota",
+   "routeKm": 157.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "greeley",
+   "name": "Greeley-Evans Transit (GET)",
+   "region": "Colorado",
+   "routeKm": 63.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "bridgeport-gbt",
+   "name": "Greater Bridgeport Transit",
+   "region": "Connecticut",
+   "routeKm": 243.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "davenport",
+   "name": "Davenport CitiBus",
+   "region": "Iowa",
+   "routeKm": 131.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "bettendorf",
+   "name": "Bettendorf Transit",
+   "region": "Iowa",
+   "routeKm": 87.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "dubuque",
+   "name": "The Jule (Dubuque)",
+   "region": "Iowa",
+   "routeKm": 95.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "pocatello",
+   "name": "Pocatello Regional Transit",
+   "region": "Idaho",
+   "routeKm": 137.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "wilmington-nc",
+   "name": "Wave Transit (Wilmington)",
+   "region": "North Carolina",
+   "routeKm": 157.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "st-george",
+   "name": "SunTran (St. George)",
+   "region": "Utah",
+   "routeKm": 182,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "grand-junction",
+   "name": "Grand Valley Transit",
+   "region": "Colorado",
+   "routeKm": 291.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "um-transit",
+   "name": "University of Michigan Transit Services (Ann Arbor)",
+   "region": "Michigan",
+   "routeKm": 78.8,
+   "weekdayMorning": 27.5,
+   "sundayEvening": 5.9,
+   "hasSunday": true
+  },
+  {
+   "slug": "ncsu-wolfline",
+   "name": "NCSU Wolfline",
+   "region": "North Carolina",
+   "routeKm": 73.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "clemson-cat",
+   "name": "Clemson Area Transit (CATbus)",
+   "region": "South Carolina",
+   "routeKm": 105.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "streamline",
+   "name": "Streamline (Bozeman)",
+   "region": "Montana",
+   "routeKm": 64.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "athens-oh",
+   "name": "Athens Public Transit",
+   "region": "Ohio",
+   "routeKm": 215.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "connect-transit",
+   "name": "Connect Transit (Bloomington-Normal)",
+   "region": "Illinois",
+   "routeKm": 141.4,
+   "weekdayMorning": 3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "dekalb",
+   "name": "DeKalb Public Transit",
+   "region": "Illinois",
+   "routeKm": 169.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "radford",
+   "name": "Radford Transit",
+   "region": "Virginia",
+   "routeKm": 182.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "rapid-city",
+   "name": "Rapid Transit System (Rapid City, SD)",
+   "region": "South Dakota",
+   "routeKm": 155,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "sioux-city",
+   "name": "Sioux City Transit",
+   "region": "Iowa",
+   "routeKm": 147.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "imperial-valley",
+   "name": "Imperial Valley Transit",
+   "region": "California",
+   "routeKm": 390.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "kern-transit",
+   "name": "Kern Transit",
+   "region": "California",
+   "routeKm": 522.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "beaumont-ca",
+   "name": "Beaumont Transit",
+   "region": "California",
+   "routeKm": 156.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "thousand-oaks",
+   "name": "Thousand Oaks Transit",
+   "region": "California",
+   "routeKm": 140.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "simi-valley",
+   "name": "Simi Valley Transit",
+   "region": "California",
+   "routeKm": 68.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "basin-transit",
+   "name": "Basin Transit",
+   "region": "California",
+   "routeKm": 353.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "valley-express",
+   "name": "Valley Express",
+   "region": "California",
+   "routeKm": 84.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "snoqualmie-valley",
+   "name": "Snoqualmie Valley Transportation",
+   "region": "Washington",
+   "routeKm": 58.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "godurham",
+   "name": "GoDurham",
+   "region": "North Carolina",
+   "routeKm": 243.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "jacksonville-nc",
+   "name": "Jacksonville Transit",
+   "region": "North Carolina",
+   "routeKm": 121.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "fast-nc",
+   "name": "Fayetteville Area System of Transit",
+   "region": "North Carolina",
+   "routeKm": 514.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "greenway",
+   "name": "Greenway Public Transportation",
+   "region": "North Carolina",
+   "routeKm": 165.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "concord-kannapolis",
+   "name": "Rider Transit",
+   "region": "North Carolina",
+   "routeKm": 157.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "coast-rta",
+   "name": "Coast RTA",
+   "region": "South Carolina",
+   "routeKm": 755.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sunshine-bus",
+   "name": "Sunshine Bus Company",
+   "region": "Florida",
+   "routeKm": 450.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "key-west-transit",
+   "name": "Key West Transit",
+   "region": "Florida",
+   "routeKm": 95.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "citylink-north",
+   "name": "Kootenai County Citylink North",
+   "region": "Idaho",
+   "routeKm": 68.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "dcta",
+   "name": "Denton County Transportation Authority (DCTA)",
+   "region": "Texas",
+   "routeKm": 102.3,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "waco",
+   "name": "Waco Transit System",
+   "region": "Texas",
+   "routeKm": 288.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "brazos",
+   "name": "Brazos Transit District",
+   "region": "Texas",
+   "routeKm": 268.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "lafayette-la",
+   "name": "Lafayette Transit System",
+   "region": "Louisiana",
+   "routeKm": 329.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "coast-transit-ms",
+   "name": "Coast Transit Authority",
+   "region": "Mississippi",
+   "routeKm": 180.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "hub-city-transit",
+   "name": "Hub City Transit",
+   "region": "Mississippi",
+   "routeKm": 117.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "tank",
+   "name": "Transit Authority of Northern Kentucky (TANK)",
+   "region": "Kentucky",
+   "routeKm": 243.1,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "sandusky",
+   "name": "Sandusky Transit System",
+   "region": "Ohio",
+   "routeKm": 138.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "bay-metro",
+   "name": "Bay Metro (Bay City)",
+   "region": "Michigan",
+   "routeKm": 250.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "jefftran",
+   "name": "Jefferson City Transit (JeffTran)",
+   "region": "Missouri",
+   "routeKm": 95.5,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "muskegon",
+   "name": "Muskegon Area Transit System",
+   "region": "Michigan",
+   "routeKm": 91.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "smart-telluride",
+   "name": "San Miguel Authority for Regional Transportation (SMART)",
+   "region": "Colorado",
+   "routeKm": 82.2,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "winter-park",
+   "name": "The Lift",
+   "region": "Colorado",
+   "routeKm": 266.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "roundabout",
+   "name": "Clear Creek County Transit (RoundAbout)",
+   "region": "Colorado",
+   "routeKm": 60.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "breck-free-ride",
+   "name": "Breckenridge Free Ride",
+   "region": "Colorado",
+   "routeKm": 54.9,
+   "weekdayMorning": 34.3,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "summit-stage",
+   "name": "Summit Stage",
+   "region": "Colorado",
+   "routeKm": 273.8,
+   "weekdayMorning": 0.7,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "vail-transit",
+   "name": "Vail Transit",
+   "region": "Colorado",
+   "routeKm": 88.5,
+   "weekdayMorning": 18.9,
+   "sundayEvening": 6.4,
+   "hasSunday": true
+  },
+  {
+   "slug": "steamboat-springs",
+   "name": "Steamboat Springs Transit (SST)",
+   "region": "Colorado",
+   "routeKm": 69,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "gunnison-valley-rta",
+   "name": "Gunnison Valley Rural Transportation Authority (Gunnison Valley RTA)",
+   "region": "Colorado",
+   "routeKm": 55,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "timmins",
+   "name": "Timmins Transit",
+   "region": "Ontario",
+   "routeKm": 213.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "casper",
+   "name": "Casper Area Transit",
+   "region": "Wyoming",
+   "routeKm": 93.4,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "ottumwa",
+   "name": "10-15 Transit",
+   "region": "Iowa",
+   "routeKm": 105.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "bowling-green",
+   "name": "City of Bowling Green",
+   "region": "Kentucky",
+   "routeKm": 96.7,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "knox-county",
+   "name": "City of Galesburg",
+   "region": "Illinois",
+   "routeKm": 80.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "sevier-county",
+   "name": "City of Gatlinburg Trolley",
+   "region": "Tennessee",
+   "routeKm": 57.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  },
+  {
+   "slug": "howard-county",
+   "name": "City of Kokomo",
+   "region": "Indiana",
+   "routeKm": 91.9,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "sierra-vista",
+   "name": "City of Sierra Vista",
+   "region": "Arizona",
+   "routeKm": 54.8,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": false
+  },
+  {
+   "slug": "kittitas-county",
+   "name": "City of Ellensburg Public Transit (Central Transit)",
+   "region": "Washington",
+   "routeKm": 52.6,
+   "weekdayMorning": 0,
+   "sundayEvening": 0,
+   "hasSunday": true
+  }
+ ]
+}

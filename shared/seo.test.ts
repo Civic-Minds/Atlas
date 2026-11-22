@@ -171,7 +171,7 @@ describe('head tag rewriting', () => {
     const covered = [...prerenderRoutes(BETA.flags), ...researchPreviewRoutes(BETA.flags)].map(r => r.path);
     for (const path of research) expect(covered, path).toContain(path);
     expect(researchPreviewRoutes(BETA.flags).every(r => !prerenderRoutes(BETA.flags).includes(r))).toBe(true);
-    expect(researchPreviewRoutes(BETA.flags).map(r => r.path)).toEqual(['/research/night', '/research/bustang-connections', '/research/frequent-service', '/research/frequent-service/story']);
+    expect(researchPreviewRoutes(BETA.flags).map(r => r.path)).toEqual(['/research/night', '/research/bustang-connections', '/research/weekday-to-sunday', '/research/frequent-service', '/research/frequent-service/story']);
   });
 
   it('#1521: a page that is off in a build gets no file, so its address is a real 404, never the map with a 200', () => {

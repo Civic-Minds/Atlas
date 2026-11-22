@@ -52,6 +52,8 @@ export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
 // if the research stories should all be internal right now", chose "Local only"): on the Vite dev server, as the planners and
 // researchers pages are, never on beta, preview or public builds.
 export const RESEARCH_APPS_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
+// #1074 (CIV-770): the weekday-to-Sunday fall-off story, on the Frequent service story's switch. Not listed on /research yet.
+export const FALLOFF_STORY_ENABLED = RESEARCH_APPS_ENABLED;
 // CIV-1425 / CIV-1646: History's Weekday/Saturday/Sunday picker. On in beta and dev (Boston's weekend values are
 // built); public stays off until Ryan turns it on, which the env var still does anywhere. Needs History on too.
 export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && (ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev' || envFlag('VITE_HISTORY_DAY_PICKER_ENABLED'));
@@ -162,6 +164,7 @@ export const FEATURES = {
   history: HISTORY_ENABLED,
   historyDayPicker: HISTORY_DAY_PICKER_ENABLED,
   frequentService: RESEARCH_APPS_ENABLED,
+  falloffStory: FALLOFF_STORY_ENABLED,
   shareUtm: SHARE_UTM_ENABLED,
   collapseModeTabs: COLLAPSE_MODE_TABS_ENABLED,
   modeTransitions: MODE_TRANSITIONS_ENABLED,
@@ -220,6 +223,8 @@ export const FEATURE_ROUTES = {
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */
   bustangConnections: '/research/bustang-connections',
+  /** #1074: on the Frequent service story's switch, not listed on /research yet. */
+  falloffStory: '/research/weekday-to-sunday',
   frequentService: {
     map: '/research/frequent-service',
     story: '/research/frequent-service/story',

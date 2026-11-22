@@ -34,7 +34,7 @@ const SAME_WORDS_ELSEWHERE: Record<string, string[]> = {
 /** Every text an entry holds; an intro's fixed parts are its words between the counts. */
 function texts(story: Partial<ResearchStoryText>): string[] {
   const fields = [story.cardTitle, story.cardBody, story.cardLink, story.heading, story.tabTitle, story.description, story.shareImageAlt];
-  const intro = story.intro?.({ agencies: 9999, peakAge: 9999 }).flatMap(p => p.split('9999')) ?? [];
+  const intro = story.intro?.({ agencies: 9999, peakAge: 9999, morning: 9999, sunday: 9999, minutes: 9999 }).flatMap(p => p.split('9999')) ?? [];
   return [...fields, ...intro].map(t => t?.trim()).filter((t): t is string => !!t && t.length >= 12);
 }
 
