@@ -65,3 +65,16 @@ describe('slow end where service ends (CIV-1913 sample check)', () => {
     expect(slowEndEdge(bartGrey, 1380, 1560, 61, false)).toBeNull();
   });
 });
+
+describe('slow end needs a later cadence (CIV-1913 sample check)', () => {
+  // CyRide weekday midday (9:00-15:00): every 15 to 9:45, then one bus at 14:30.
+  const cyride = [540, 555, 570, 585, 870];
+  it('one trip after a long hole is not "then every 285"', () => {
+    expect(slowEndEdge(cyride, 540, 900, 285)).toBeNull();
+  });
+  // London evening (19:00-23:00): every 10-12 to 21:01, then 21:39 and 22:20.
+  const london = [1141, 1152, 1163, 1173, 1181, 1191, 1203, 1213, 1221, 1231, 1243, 1251, 1261, 1299, 1340];
+  it('two later trips still read as a slower cadence', () => {
+    expect(slowEndEdge(london, 1140, 1380, 41)).toEqual({ until: 1261, every: 12, then: 41 });
+  });
+});

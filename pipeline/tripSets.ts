@@ -1501,6 +1501,9 @@ export function slowEndUntilEnabled(): boolean {
  * Both numbers are longest waits rounded up, as slowStartEdge's (Ryan, 2026-11-13), so neither part
  * reads better than it runs; `then` is the period's value. No midpoint test: both parts are named.
  */
+/** CIV-1913: departures after T that a slow-end reading needs before it names a later cadence. */
+export const SLOW_END_MIN_LATER_DEPARTURES = 2;
+
 export function slowEndEdge(t: readonly number[], start: number, end: number, value: number, continuesAfter = true): StretchPeriodEdge | null {
   for (let k = t.length - 2; k >= SLOW_START_MIN_DEPARTURES - 1; k--) {
     const head = t.slice(0, k + 1);
@@ -1514,6 +1517,9 @@ export function slowEndEdge(t: readonly number[], start: number, end: number, va
     // between departures there (CapMetro 300 southbound: 30 with a 38-minute wait to 11 PM). The middle
     // wait reads the same list.
     const inner = t.slice(k + 1).map((x, i) => x - t[k + i]);
+    // "Then every N" is a cadence, so it needs at least two departures after T. One trip after a long hole is a
+    // hole, not slower service (CyRide midday: every 15 until 9:45 AM, then one bus at 2:30 PM read "then every 285").
+    if (inner.length < SLOW_END_MIN_LATER_DEPARTURES) continue;
     // The wait to the period's end counts only where service runs on past it. Where the last trip ends the day,
     // that wait is not a cadence (BART Grey weekday late: every 7 until 11:51 PM, then trains 15–33 min apart until
     // 12:59 AM, and the 61 is 12:59 to 2 AM), so the card keeps its plain reading.
