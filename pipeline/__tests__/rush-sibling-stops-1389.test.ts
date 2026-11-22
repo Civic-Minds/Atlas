@@ -43,7 +43,10 @@ describe('a sibling counts the rush-hour-only trips at the stops they share (CIV
     expect(warden.stopPeriodHeadways['12605'].pmPeak).toBe(30);
     expect(periodRow(warden, 'pmPeak')).toEqual(runs('19x2,10x3,30x2,10x8,15x38'));
     // Nothing else of the row moves: midday, headline, tier, row periods, route fields, labels.
-    expect(warden.stopPeriodHeadways['4220']).toMatchObject({ amPeak: 12, midday: 14, evening: 8, late: 10, overnight: 12 });
+    // #1667 (Ryan, 2026-11-21, "1"): 4220's refused pooled periods read a range, the merged list's typical wait to its
+    // longest gap; the stop's value is the top (it was the own pattern's 14, 8 and 10 in midday, evening and late).
+    expect(warden.stopPeriodHeadways['4220']).toMatchObject({ amPeak: 12, midday: 13, evening: 20, late: 20, overnight: 12 });
+    expect(warden.stopPeriodRangeLows?.['4220']).toEqual({ amPeak: 6, midday: 7, evening: 7, late: 7 });
     expect(warden).toMatchObject({ headway: 15, tier: 'infrequent', serviceClass: 'regular' });
     expect(warden.headwayByPeriod).toEqual({ amPeak: 12, midday: 15, pmPeak: 30, evening: 8, late: 10, overnight: 13 });
     expect(warden.routeFilterHeadwayByPeriod).toEqual({ amPeak: 24, midday: 30, pmPeak: 30, evening: 30, late: 20, overnight: null });

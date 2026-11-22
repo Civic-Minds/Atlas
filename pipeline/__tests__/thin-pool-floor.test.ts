@@ -33,7 +33,10 @@ describe('thin-pool fallback stops floor the period values', () => {
     // The first stop's own reading is 51 (three own departures); the merged list with the two
     // same-stop-list departures reads 33, and the row floors there rather than at the pool's 32
     // or the own list's 51.
-    expect(sat.stopPeriodHeadways[sat.stopOrder[0]].amPeak).toBe(51);
+    // #1667 (Ryan, 2026-11-21, "1"): the stop itself now reads the merged list's range, every 36-58 (it showed the own
+    // list's 51); the row's value below is unchanged.
+    expect(sat.stopPeriodHeadways[sat.stopOrder[0]].amPeak).toBe(58);
+    expect(sat.stopPeriodRangeLows?.[sat.stopOrder[0]]?.amPeak).toBe(36);
     expect(sat.headwayByPeriod.amPeak).toBe(33);
     // #1116: midday read 24 from stop 13247, a drop-off-only stop next to the terminal (no boardable departures in
     // the full feed). The terminal group is now left out with the terminal; the full feed runs every 12 to 13 there.
