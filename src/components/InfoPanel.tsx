@@ -30,6 +30,7 @@ import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { MASSDOT_CREDIT_URL } from '../content/noticeCopy';
 import { agencyCredits } from '../utils/agencyCredits';
+import { sourceCreditId, useSourcesFocus } from '../utils/sourcesFocus';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
@@ -40,7 +41,8 @@ import { PAGE_NAMES } from '../../shared/pageNames';
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
 type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'sources';
-export type Tab = 'about' | 'agencies' | 'history' | 'live';
+/** 'sources': About → Schedule sources, from the map's credit pill (CIV-461). */
+export type Tab = 'about' | 'agencies' | 'history' | 'live' | 'sources';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
 export type { HelpTopic };
@@ -106,6 +108,7 @@ interface Props {
 
 function tabToView(tab: Tab): View {
   if (tab === 'about') return 'home';
+  if (tab === 'sources') return 'sources';
   return 'agencies';
 }
 
@@ -218,6 +221,17 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   useEffect(() => {
     if (wantLive && open && view === 'home') liveRef.current?.scrollIntoView?.({ block: 'start' });
   }, [wantLive, open, view]);
+
+  // CIV-461: a name in the map's credit pill opens Schedule sources at that agency's credit.
+  const sourcesFocus = useSourcesFocus();
+  useEffect(() => {
+    if (!sourcesFocus.n || !open) return;
+    setView('sources');
+    if (!sourcesFocus.slug) return;
+    const slug = sourcesFocus.slug;
+    const t = window.setTimeout(() => document.getElementById(sourceCreditId(slug))?.scrollIntoView?.({ block: 'center' }), 0);
+    return () => window.clearTimeout(t);
+  }, [sourcesFocus, open]);
 
   useEffect(() => {
     if (view === 'agencies') {
@@ -534,7 +548,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     Live is on, and each agency whose data licence requires credit, as cards like the sources above. */}
                 {FEATURES.live && <LinkCard as={OutboundLink} href={MASSDOT_CREDIT_URL} kind="attribution" icon="external">{MBTA_VEHICLES_CREDIT}</LinkCard>}
                 {agencyCredits(agencies).map(c => (
-                  <LinkCard key={c.slug} as={OutboundLink} href={c.url} kind="attribution" icon="external">{c.text}</LinkCard>
+                  <LinkCard key={c.slug} id={sourceCreditId(c.slug)} as={OutboundLink} href={c.url} kind="attribution" icon="external">{c.text}</LinkCard>
                 ))}
               </div>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">

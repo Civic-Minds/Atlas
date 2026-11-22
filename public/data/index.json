@@ -2670,8 +2670,9 @@
         "url": "https://www.sto.ca/affaires/espace-developpeurs-donnees-ouvertes/conditions-dutilisation-donnees-ouvertes-et-cle-api-de-la-sto/",
         "attribution": "required",
         "name": "Conditions d'utilisation – Données ouvertes et clé API de la STO",
-        "credit": "Le présent service intègre les données ouvertes fournies par la Société de transport de l'Outaouais (STO).",
-        "checkedOn": "2026-11-21"
+        "credit": "Le présent service intègre les données ouvertes fournies par la Société de transport de l'Outaouais (STO). La STO n'est pas responsable de l'exactitude de l'information générée par cette application.",
+        "checkedOn": "2026-11-21",
+        "updatedLabel": "Dernière mise à jour :"
       },
       "region": "Quebec",
       "center": [

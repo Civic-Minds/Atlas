@@ -15,6 +15,12 @@ describe('agencyCredits (CIV-461)', () => {
     expect(agencyCredit({ slug: 'd', name: 'D' })).toBeNull();
   });
 
+  it("ends with the data's last-updated date in the licence's own words where it asks for one (STO)", () => {
+    const sto = { slug: 'sto', name: 'STO (Gatineau)', lastRefreshedAt: '2026-11-16', dataLicense: { ...lic('required', { credit: 'Le présent service intègre les données.' }), updatedLabel: 'Dernière mise à jour :' } };
+    expect(agencyCredit(sto)?.text).toBe('Le présent service intègre les données. Dernière mise à jour : 2026-11-16.');
+    expect(agencyCredit({ ...sto, lastRefreshedAt: null })?.text).toBe('Le présent service intègre les données.');
+  });
+
   it('keeps the order of the slugs given, each once, and skips agencies not in the list', () => {
     const agencies = [
       { slug: 'x', name: 'X', dataLicense: lic('required') },

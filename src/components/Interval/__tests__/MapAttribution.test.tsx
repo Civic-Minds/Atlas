@@ -67,14 +67,27 @@ describe('MapAttribution', () => {
     expect(screen.getByRole('link', { name: 'MassDOT' })).toBeInTheDocument();
   });
 
-  it('credits each agency in view whose licence requires it, with its own sentence (CIV-461)', () => {
-    const ttc = { slug: 'ttc', name: 'Toronto Transit Commission', url: 'https://open.toronto.ca/open-data-licence/', text: 'Contains information licensed under the Open Government Licence – Toronto.' };
+  it('credits each agency in view whose licence requires it; a name opens Schedule sources there (CIV-461)', () => {
+    const ttc = { slug: 'ttc', name: 'Toronto Transit Commission', shortName: 'TTC', url: 'https://open.toronto.ca/open-data-licence/', text: 'Contains information licensed under the Open Government Licence – Toronto.' };
+    const opened: (string | null)[] = [];
     const { rerender } = render(<MapAttribution />);
-    expect(screen.queryByRole('link', { name: ttc.name })).toBeNull();
-    rerender(<MapAttribution agencyCredits={[ttc]} massDotOn />);
-    const link = screen.getByRole('link', { name: ttc.name });
-    expect(link).toHaveAttribute('href', ttc.url);
-    expect(link).toHaveAttribute('title', ttc.text);
-    expect(screen.getAllByRole('link').map(l => l.textContent).slice(-2)).toEqual(['MassDOT', ttc.name]);
+    expect(screen.queryByRole('button', { name: 'TTC' })).toBeNull();
+    rerender(<MapAttribution agencyCredits={[ttc]} massDotOn onCreditOpen={s => opened.push(s)} />);
+    const name = screen.getByRole('button', { name: 'TTC' });
+    expect(name).toHaveAttribute('title', ttc.text);
+    fireEvent.click(name);
+    expect(opened).toEqual(['ttc']);
+    expect(screen.getAllByRole('link').map(l => l.textContent).at(-1)).toBe('MassDOT');
+    expect(screen.queryByRole('button', { name: /other agenc/ })).toBeNull();
+  });
+
+  it('keeps the pill to one compact line: one entry per short name, then "and N other agencies" (CIV-461)', () => {
+    const c = (slug: string, shortName: string) => ({ slug, name: `${shortName} full legal name`, shortName, url: `https://example.org/${slug}`, text: `${shortName} credit.` });
+    const opened: (string | null)[] = [];
+    render(<MapAttribution agencyCredits={[c('muni', 'Muni'), c('kel', 'BC Transit'), c('kam', 'BC Transit'), c('act', 'AC Transit'), c('weta', 'WETA')]} onCreditOpen={s => opened.push(s)} />);
+    expect(screen.getAllByRole('button').map(b => b.textContent)).toEqual(expect.arrayContaining(['Muni', 'BC Transit', 'and 2 other agencies']));
+    expect(screen.queryByText(/full legal name/)).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'and 2 other agencies' }));
+    expect(opened).toEqual([null]);
   });
 });
