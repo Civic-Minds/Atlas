@@ -142,6 +142,16 @@ describe('hourly figures by branch (CIV-1840)', () => {
     expect(hourlyFrequency(r501, 23 * 60, 25 * 60).map(c => c.towards)).toEqual(['Humber', 'Long Branch']);
     expect(hourlyFrequency(r501, 8 * 60, 10 * 60).map(c => c.towards)).toEqual(['Humber']);
   });
+  it('leaves out a column with no trips in the window when another passes its end stop then (#1714 part 2)', () => {
+    const rows = [
+      { directionId: 1, headsign: 'Humber', stopOrder: ['neville', 'yonge', 'humber'], departuresByHour: Object.fromEntries(Array.from({ length: 17 }, (_, i) => [String(i + 6), 14])), headwayByHour: { '20': 10, '23': null, '24': null } },
+      { directionId: 1, headsign: 'Long Branch', stopOrder: ['neville', 'yonge', 'humber', 'longbranch'], departuresByHour: { '22': 4, '23': 6, '24': 6 }, headwayByHour: { '20': null, '23': 10, '24': 10 } },
+    ];
+    const r501 = { key: '501', name: '501', shortName: '501', longName: 'Queen', mode: 'Streetcar', rows } as unknown as Parameters<typeof hourlyFrequency>[0];
+    expect(hourlyFrequency(r501, 23 * 60, 25 * 60).map(c => c.towards)).toEqual(['Long Branch']);
+    // Where it runs in the window, it keeps its column.
+    expect(hourlyFrequency(r501, 20 * 60, 25 * 60).map(c => c.towards)).toEqual(['Humber', 'Long Branch']);
+  });
 });
 
 describe('Live tools (CIV-1860)', () => {

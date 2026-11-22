@@ -590,11 +590,20 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
     if (sig != null) seen.set(sig, columns.length);
     columns.push({ row, towards: towardsOf(row) });
   }
-  return columns.map(({ row, towards }) => ({
+  const hours = (row: ShapeProperties) => Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
+    .map(([h, v]) => [+h, v] as const).filter(([h]) => inWindow(h)).sort((a, b) => a[0] - b[0]);
+  const runs = (row: ShapeProperties) => hours(row).some(([, v]) => v != null);
+  const stopsOf = (row: ShapeProperties) => (row.stopOrder as string[] | undefined) ?? [];
+  // #1714 (part 2): a column with no regular trips in any hour of the window is left out when another column of its direction
+  // passes its end stop and runs then: TTC 501 Sunday after 11 PM, the cars to Long Branch serve Humber Loop every 10, so
+  // "Humber: no regular trips" would be false for a rider there.
+  const servedByAnother = (row: ShapeProperties) => {
+    const last = stopsOf(row).at(-1);
+    return last != null && columns.some(c => c.row !== row && dirOf(c.row) === dirOf(row) && runs(c.row) && stopsOf(c.row).includes(last));
+  };
+  return columns.filter(({ row }) => runs(row) || !servedByAnother(row)).map(({ row, towards }) => ({
     towards,
-    byHour: Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
-      .map(([h, v]) => [+h, v] as const).filter(([h]) => inWindow(h)).sort((a, b) => a[0] - b[0])
-      .map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : headwayEvery(v) })),
+    byHour: hours(row).map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : headwayEvery(v) })),
   }));
 }
 
