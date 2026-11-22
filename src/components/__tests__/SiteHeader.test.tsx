@@ -32,7 +32,7 @@ describe('internal links (CIV-1872)', () => {
     // More carries the same arrow as Go to Atlas.
     expect(internal.querySelectorAll('a')[INTERNAL_HEADER_LINKS.length - 1].innerHTML).toBe(screen.getByRole('link', { name: /Go to Atlas/ }).innerHTML.replace('Go to Atlas', 'More'));
     expect(internal.querySelectorAll('a')[INTERNAL_HEADER_LINKS.length - 1]).toHaveAttribute('href', INTERNAL_PATH);
-    expect(screen.getByRole('navigation', { name: 'Site navigation' }).textContent).not.toMatch(/Studio|Coverage/);
+    expect(screen.getByRole('navigation', { name: 'Site navigation' }).textContent).not.toMatch(/Studio|Status/);
     expect(screen.getAllByRole('link', { name: /Go to Atlas/ })).toHaveLength(1);
     // The row carries the word Internal on the left, in the pale selected tint (never a dark fill).
     expect(internal.firstElementChild?.textContent).toBe('Internal');

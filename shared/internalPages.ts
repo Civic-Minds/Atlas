@@ -1,6 +1,7 @@
 import { HEADER_TAG_INTERNAL } from './siteMode';
 import { INTERNAL_PATH, LIVE_PATH, MCP_DOCS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
 import { MCP_DOCS } from './mcpDocsCopy';
+import { PAGE_NAMES } from './pageNames';
 
 /**
  * The local-only pages (CIV-1872): the /internal home page lists each once, in groups, and the content-page header's
@@ -30,7 +31,7 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
     heading: 'Tools',
     pages: [
       { title: 'Studio', description: 'Schedules and buses needed, for one agency at a time.', path: STUDIO_PATH },
-      { title: 'Coverage', description: 'What each agency has: map, History, Live, Studio and the MCP’s figures.', path: STUDIO_COVERAGE_PATH },
+      { title: PAGE_NAMES.studioCoverage, description: 'What each agency has: map, History, Live, Studio and the MCP’s figures.', path: STUDIO_COVERAGE_PATH },
       { title: MCP_DOCS.title, description: MCP_DOCS.card, path: MCP_DOCS_PATH },
     ],
   },
@@ -47,7 +48,7 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
 export const INTERNAL_HEADER_LINKS: readonly { label: string; path: string; /** Drawn with the arrow "Go to Atlas" has (Ryan: "more should have an arrow beside it"). */ arrow?: true }[] = [
   { label: 'Studio', path: STUDIO_PATH },
   { label: 'Live', path: LIVE_PATH },
-  { label: 'Coverage', path: STUDIO_COVERAGE_PATH },
   { label: MCP_DOCS.title, path: MCP_DOCS_PATH },
+  { label: PAGE_NAMES.studioCoverage, path: STUDIO_COVERAGE_PATH },
   { label: 'More', path: INTERNAL_PATH, arrow: true },
 ];

@@ -43,8 +43,8 @@ export const PAGE_NAMES = {
   studioVehicles: 'Buses Needed',
   /** CIV-1715: Studio's before/after schedule comparison. Ryan, 2026-11-19 (CIV-1922): "I said to make a page called Schedules". */
   studioSchedules: 'Schedules',
-  /** CIV-1871: the local coverage table. Proposed, waiting on Ryan's OK. */
-  studioCoverage: 'Coverage',
+  /** CIV-1871: the local agency status table (StudioCoveragePage). Renamed from Coverage to Status on Strategy's naming call (2026-11-21; Agencies is the public footer page). */
+  studioCoverage: 'Status',
 } as const;
 
 /** The footer's link-column headings (CIV-1699, Ryan: For Planners gets its own "Product" column, Studio joins it later). */
