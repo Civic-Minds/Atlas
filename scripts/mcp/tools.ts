@@ -154,10 +154,14 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const end = a.members.map(m => ends.get(m.slug)).filter((x): x is string => !!x).sort()[0] ?? null;
       return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: KIND_TEXT[a.kind], scheduleValidThrough: end, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => { const l = labels.get(r.slug)![r.i]; return `${l[0]}${l[1] ? ` ${l[1]}` : ''} (every ${r.wait})`; }) };
     }));
+    // #1700: a region or country with agencies left out by their data terms says so (Yukon's only agency is left out,
+    // so its ranking was empty with no reason).
+    const excluded = reg || ctry ? await data.excludedAgencies(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(countryForRegion(a.region), ctry))) : [];
+    const leftOutNote = excluded.length ? `Left out of this ranking by their data terms, though the Atlas map shows them: ${excluded.slice(0, 8).map(x => `${x.name} (${x.reason})`).join('; ')}${excluded.length > 8 ? `; and ${excluded.length - 8} more` : ''}.` : null;
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
       ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
-      agenciesCompared: counted.length, ranking: shown, ...(asked > limit ? { shownLimit: `The ranking shows ${RANK_AGENCIES_MAX} agencies at most; narrow it by country, region, kind or size to see others.` } : {}), source: SOURCE,
+      agenciesCompared: counted.length, ranking: shown, ...(leftOutNote ? { leftOutAgencies: leftOutNote } : {}), ...(asked > limit ? { shownLimit: `The ranking shows ${RANK_AGENCIES_MAX} agencies at most; narrow it by country, region, kind or size to see others.` } : {}), source: SOURCE,
     };
   },
   route_frequency: async (args) => {
@@ -194,23 +198,41 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, figure: `waitMinutes is ${FIGURE_LABELS.typical}`, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), ...(res.leftOut.length ? { leftOutByRule: res.leftOut.map(m => ({ route: m.route, name: m.longName, shown: m.shown, waitMinutes: m.waitMinutes })), leftOutNote: `These routes' typical wait is every ${minutes} min or better, but some of their waits in this part of the day run longer, so the map's every-${minutes} filter leaves them out. Name them when you answer.` } : {}), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
+    // #1700: an agency left out by its data terms is a note beside the others' rows, not the whole answer.
+    const asked = Array.isArray(agencies) ? agencies.map(q => String(q ?? '')) : [];
+    const leftOut: string[] = [];
+    const lookup = async (q: string) => {
+      try {
+        const e = await data.findAgencyEntry(q);
+        if (e) return e;
+      } catch (err) {
+        const note = await data.excludedAgencyNote(q);
+        if (!note) throw err;
+        leftOut.push(note);
+        return 'left out' as const;
+      }
+      const note = await data.excludedAgencyNote(q);
+      if (note) { leftOut.push(note); return 'left out' as const; }
+      return null;
+    };
+    const looked = await Promise.all(asked.map(async q => ({ q, e: await lookup(q) })));
+    const missing = looked.find(f => !f.e);
+    if (missing) {
+      const elsewhere = await data.agencyNotOnThisServer(missing.q);
+      throw new Error(elsewhere ? await data.notOnThisServerNote([elsewhere.name]) : `No agency matching "${missing.q}" has data here. Use list_agencies to search.`);
+    }
+    const found = looked.flatMap(f => (f.e && f.e !== 'left out' ? [{ q: f.q, e: f.e }] : []));
+    if (!found.length && leftOut.length) throw new Error(leftOut.join(' '));
     // "now" reads the first agency's clock (#1627); the answer says so when the others keep another time zone.
-    const first = Array.isArray(agencies) && agencies.length ? await data.findAgencyEntry(String(agencies[0] ?? '')) : null;
+    const first = found[0]?.e ?? null;
     if (isNow(p) && !first) throw new Error('Name the agencies to compare.');
     const { key, dayType, now } = first ? await periodOrNow(first.members[0], p, d) : { key: needPeriod(p), dayType: data.parseDay(d), now: null };
     const minutes = Number(n);
     // One entry per agency or region (shared/agencyGroups.ts): "MTA New York" is its feeds together, a route in two of
     // them counted once.
     // #1683: the same agency named twice ("TTC" and "Toronto Transit Commission") is one row, with a note.
-    const asked = Array.isArray(agencies) ? agencies.map(q => String(q ?? '')) : [];
-    const found = await Promise.all(asked.map(async q => ({ q, e: await data.findAgencyEntry(q) })));
-    const missing = found.find(f => !f.e);
-    if (missing) {
-      const elsewhere = await data.agencyNotOnThisServer(missing.q);
-      throw new Error(elsewhere ? await data.notOnThisServerNote([elsewhere.name]) : `No agency matching "${missing.q}" has data here. Use list_agencies to search.`);
-    }
     const byEntry = new Map<string, { e: data.AgencyEntry; names: string[] }>();
-    for (const { q, e } of found) { const k = e!.members.map(m => m.slug).sort().join(','); (byEntry.get(k) ?? byEntry.set(k, { e: e!, names: [] }).get(k)!).names.push(q); }
+    for (const { q, e } of found) { const k = e.members.map(m => m.slug).sort().join(','); (byEntry.get(k) ?? byEntry.set(k, { e, names: [] }).get(k)!).names.push(q); }
     const sameNotes = [...byEntry.values()].filter(x => x.names.length > 1).map(x => `${x.names.map(n => `"${n}"`).join(' and ')} are the same agency (${x.e.name}), shown once.`);
     const rows = await Promise.all([...byEntry.values()].map(async ({ e }) => {
       const res = await data.entryRoutesMeeting(e, dayType, key, minutes);
@@ -218,7 +240,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       return { slugs: e.members.map(m => m.slug), agency: e.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: ends[0] ?? null };
     }));
     const zones = now ? [...new Set(await Promise.all(rows.map(async r => (await data.timeZoneOf(r.slugs[0])) ?? now.timeZone)))] : [];
-    return { ...(now ? { ...nowBlock(now), ...(zones.length > 1 ? { nowZones: `These agencies keep different time zones (${zones.join(', ')}); "now" is ${rows[0].agency}'s.` } : {}) } : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), ...(sameNotes.length ? { sameAgencyNote: sameNotes.join(' ') } : {}), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
+    return { ...(now ? { ...nowBlock(now), ...(zones.length > 1 ? { nowZones: `These agencies keep different time zones (${zones.join(', ')}); "now" is ${rows[0].agency}'s.` } : {}) } : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), ...(sameNotes.length ? { sameAgencyNote: sameNotes.join(' ') } : {}), ...(leftOut.length ? { leftOutAgencies: leftOut.join(' ') } : {}), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
   },
   buses_needed: async (args) => {
     const a = await needAgency(args.agency);

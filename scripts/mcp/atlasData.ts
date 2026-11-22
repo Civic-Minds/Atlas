@@ -127,6 +127,13 @@ export async function excludedAgencyNote(query: string, exact = false): Promise<
   }
   return null;
 }
+/**
+ * #1700: the agencies left out by their data terms that a filter keeps (a region or country asked of rank_agencies), each
+ * with its reason, so a list they would have been in says why they're missing instead of coming back silently short.
+ */
+export async function excludedAgencies(keep: (a: CatalogAgency) => boolean): Promise<Array<{ name: string; reason: string }>> {
+  return (await store.catalog()).flatMap(a => { const x = redistributionExclusion(a.slug); return x && keep(a) ? [{ name: a.name, reason: x.reason }] : []; });
+}
 async function refuseExcluded(q: string, exact: boolean): Promise<void> {
   const note = await excludedAgencyNote(q, exact);
   if (note) throw new Error(note);

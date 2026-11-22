@@ -52,6 +52,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.22.8 | 2026-11-22 | Answers that use an agency read through the 511 API (sfmta, samtrans, smart-ca, tridelta, lavta, petaluma, santarosa, fast-ca, ace) carry "Data provided by 511.org" with its link, to give at the end (#1694) |
 | 0.22.9 | 2026-11-22 | Hosted: a tester can have its own daily cap in config (TESTER_DAILY_CAPS); the internal testing link gets 2,000 a day, every other tester stays at 300 |
 | 0.22.10 | 2026-11-22 | list_agencies near finds cities ("Washington DC", "Arlington, Virginia") from the places file and measures from the city, not an agency's area centre; says what it measured from and what else the name could mean; marks agencies this server has no schedules for (#1699, #1687) |
+| 0.22.11 | 2026-11-22 | compare_agencies keeps the other agencies' rows when one named is left out by its data terms, with a note; rank_agencies names left-out agencies in the region or country asked (#1700) |
 
 ## Questions
 
