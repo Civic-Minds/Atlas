@@ -35,6 +35,7 @@ import { pairChanges } from '../../shared/scheduleChangePairing';
 import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
+import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
@@ -52,13 +53,27 @@ export const currentStore = () => store;
 export function forget(slug: string): void { loaded.delete(slug); for (const k of [...daySummaries.keys()]) if (k.startsWith(`${slug}|`)) daySummaries.delete(k); store.evict?.(slug); }
 export type { RouteSummary };
 
+/**
+ * #1675: the catalog with each feed's parent agency, so every tool groups "MTA New York" the same way. The split
+ * release's slim catalog has no parentAgency; its meta file names the parent, which is mapped back to its slug here.
+ */
+async function catalogWithParents(): Promise<CatalogAgency[]> {
+  const meta = await store.meta();
+  return (await store.catalog()).map(a => {
+    if (a.parentAgency) return a;
+    const name = meta.get(a.slug)?.parentAgency;
+    const parent = name ? PARENT_AGENCIES.find(p => p.name === name || p.slug === name) : undefined;
+    return parent ? { ...a, parentAgency: parent.slug } : a;
+  });
+}
+
 /** The public catalog: the agencies the public site shows. */
-export const publicAgencies = (): Promise<CatalogAgency[]> => store.catalog();
+export const publicAgencies = (): Promise<CatalogAgency[]> => catalogWithParents();
 
 /** The public agencies Atlas can answer for here. */
 export async function availableAgencies(): Promise<CatalogAgency[]> {
   const have = await store.available();
-  return (await store.catalog()).filter(a => have.has(a.slug));
+  return (await catalogWithParents()).filter(a => have.has(a.slug));
 }
 
 /** An agency by slug or name (case-insensitive), among those available. */
@@ -72,7 +87,18 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   const q = query.trim().toLowerCase();
   const byShort = list.filter(a => (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q);
   if (byShort.length === 1) return byShort[0];
-  return list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q) ?? list.find(a => a.name.toLowerCase().includes(q)) ?? null;
+  const exact = list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q);
+  if (exact) return exact;
+  // #1676: a name inside another agency's name ("Sound Transit" in "Owen Sound Transit") must not win silently. The
+  // best match starts with the words asked, then has them at a word's start, then anywhere; a tie is asked about.
+  const named = (a: CatalogAgency) => a.name.toLowerCase();
+  const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  for (const tier of [(a: CatalogAgency) => named(a).startsWith(q), (a: CatalogAgency) => new RegExp(`(^|[^a-z0-9])${esc}`).test(named(a)), (a: CatalogAgency) => named(a).includes(q)]) {
+    const hits = list.filter(tier);
+    if (hits.length === 1) return hits[0];
+    if (hits.length > 1) throw new Error(`"${query}" matches several agencies: ${hits.slice(0, 6).map(a => a.name).join('; ')}${hits.length > 6 ? '; …' : ''}. Call again with the full name.`);
+  }
+  return null;
 }
 
 export interface RouteRows { key: string; name: string; shortName: string; longName: string | null; mode: string; rows: ShapeProperties[] }
