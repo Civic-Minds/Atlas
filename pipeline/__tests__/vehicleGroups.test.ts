@@ -60,8 +60,9 @@ describe('Studio route groups (CIV-1693)', () => {
       const members = analysis.patterns.filter(p => row.routes.includes(p.routeId) && p.role !== 'partial');
       expect(row.scheduled).toBe(analysis.patterns.filter(p => row.routes.includes(p.routeId)).reduce((s, p) => s + p.scheduledVehicles, 0));
       expect(row.implied).toBe(Math.ceil(members.reduce((s, p) => s + needVehicles(p, { kind: 'schedule' }), 0) - 1e-9));
-      expect(row.runningMin).toBe(Math.round(members.reduce((s, p) => s + p.runningMin, 0)));
-      expect(row.layoverMin).toBe(Math.round(members.reduce((s, p) => s + (p.layoverMin ?? 0), 0)));
+      const cycle = members.filter(p => p.role !== 'short turn');
+      expect(row.runningMin).toBe(Math.round(cycle.reduce((s, p) => s + p.runningMin, 0)));
+      expect(row.layoverMin).toBe(Math.round(cycle.reduce((s, p) => s + (p.layoverMin ?? 0), 0)));
     }
     const [ab, c] = rows;
     expect(ab.runningMin).toBe(60);
@@ -98,6 +99,12 @@ describe('Studio targets leave short turns out (CIV-2005)', () => {
     const full = analysis.patterns.find(p => p.role === 'main')!;
     expect(row.atTarget[60]).toBe(Math.ceil((full.runningMin + (full.layoverMin ?? 0)) / 60 - 1e-9));
     expect(row.atTarget[60]).toBeLessThan(row.implied);
+  });
+  // CIV-2031: the running time is the full pattern's, not the full pattern plus the short turn.
+  it('leaves the short turn out of the running time and layover', () => {
+    const fullRuns = analysis.patterns.filter(p => p.role !== 'partial' && p.role !== 'short turn');
+    expect(row.runningMin).toBe(Math.round(fullRuns.reduce((s, p) => s + p.runningMin, 0)));
+    expect(row.layoverMin).toBe(Math.round(fullRuns.reduce((s, p) => s + (p.layoverMin ?? 0), 0)));
   });
 });
 
