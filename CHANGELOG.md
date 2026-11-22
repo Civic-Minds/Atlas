@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live shows Hamilton's and Burlington's buses again**: their feeds renumbered the routes Live follows, so Live now finds each route by its number in the agency's current route list
 - **Atlas Studio MCP says when the test server doesn't carry an agency**: it pointed to agencies like STM and then said it had no data for them; it now names the agencies it has. Buses-needed answers also give the schedule's end date
 - **Atlas Studio MCP no longer answers for WMATA and 15 other agencies**: their data terms don't allow sharing their data with other tools, or need written permission first; they stay on the map and in History
 - **Atlas Studio MCP agrees on the day after midnight**: just after midnight, its live answer used the new day's late-night schedule while its schedule answers used the previous day's

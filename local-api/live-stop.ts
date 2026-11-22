@@ -1,5 +1,6 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
-import { LIVE_POLLING_ROUTES, isLiveApiServable } from '../shared/livePollingConfig.js';
+import { LIVE_POLLING_ROUTES, isLiveApiServable, liveConfigRouteIds } from '../shared/livePollingConfig.js';
+import { routeNames as loadRouteNames } from './routeNames.js';
 import { computeLiveStop } from '../shared/computeLiveStop.js';
 import { isRateLimited, rateLimitWebResponse } from '../shared/rateLimit.js';
 import { requestHeader } from '../shared/request.js';
@@ -60,8 +61,10 @@ async function handler(req: Request): Promise<Response> {
 
   const configs = LIVE_POLLING_ROUTES.filter(c => c.slug === agency);
   const cfg = configs[0];
+  // The listed route ids and the ones the agency's current route file gives each route's short name (#1696).
+  const routeFile = await loadRouteNames(agency);
   const routeNames = new Map<string, string>();
-  for (const c of configs) for (const id of c.routeIds) routeNames.set(id, c.displayRouteShortName);
+  for (const c of configs) for (const id of liveConfigRouteIds(c, routeFile)) routeNames.set(id, c.displayRouteShortName);
 
   const feed = await fetchTripUpdates(cfg.tripUpdatesUrl, {
     apiKeyParam: cfg.apiKeyParamEnvVar ? process.env[cfg.apiKeyParamEnvVar] : undefined,

@@ -2,6 +2,7 @@ import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
   LIVE_POLLING_ROUTES,
   isLiveApiServable,
+  liveConfigRouteIds,
   liveMapArchiveFeed,
 } from '../shared/livePollingConfig.js';
 import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicleDelay.js';
@@ -190,7 +191,8 @@ async function fetchHandler(request: Request): Promise<Response> {
     fetchFeed(positionsUrl, fetchOptions),
     tripsUrl ? fetchFeed(tripsUrl, fetchOptions) : Promise.resolve({ ok: false as const, reason: 'http-error' as const, detail: 'no trip feed' }),
     stopNames(agency),
-    archive ? routeNames(agency) : Promise.resolve(null),
+    // The agency's route file: the archive's route names, and the ids each Live route has now (#1696).
+    routeNames(agency),
   ]);
 
   if (!positions.ok) {
@@ -199,7 +201,7 @@ async function fetchHandler(request: Request): Promise<Response> {
 
   const routeById = new Map<string, { shortName: string; displayName: string }>();
   for (const route of configs) {
-    for (const routeId of route.routeIds) {
+    for (const routeId of liveConfigRouteIds(route, archiveRoutes)) {
       routeById.set(routeId, {
         shortName: route.displayRouteShortName,
         displayName: route.displayName ?? '',

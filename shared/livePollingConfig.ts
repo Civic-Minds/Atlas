@@ -12,7 +12,10 @@ export interface LiveRouteConfig {
   displayRouteShortName: string;
   /** Human-readable label for routes that aren't "Route N" (e.g. "VIVA Blue"). */
   displayName?: string;
-  /** Live GTFS-RT route_id values — include schedule-period variants. */
+  /**
+   * Live GTFS-RT route_id values — include schedule-period variants. Live also takes every route_id the agency's current
+   * route file gives this short name (liveConfigRouteIds), so a feed that renumbers its routes keeps working (#1696).
+   */
   routeIds: string[];
   scheduledHeadwayMin: number;
   /** 3–5 anchor stop_ids to read from TripUpdates. */
@@ -472,6 +475,17 @@ export function getPolledRoute(slug: string, routeShortName: string | null | und
 export function isLivePollingRoute(agencySlug?: string, routeShortName?: string | null): boolean {
   if (!agencySlug || !routeShortName) return false;
   return !!getLiveRouteConfig(agencySlug, routeShortName);
+}
+
+/**
+ * #1696: a Live route's route_ids: the ones listed, plus every id the agency's current route file gives its short name
+ * (Hamilton renumbered King from 5677/5687 to 5828, Burlington its 1 from 311/351 to 371). `routeFile` maps route_id to
+ * its short name; null (the file didn't load) leaves the listed ids.
+ */
+export function liveConfigRouteIds(cfg: Pick<LiveRouteConfig, 'routeIds' | 'displayRouteShortName'>, routeFile: ReadonlyMap<string, { shortName: string }> | null): string[] {
+  const ids = new Set(cfg.routeIds);
+  for (const [id, r] of routeFile ?? []) if (r.shortName === cfg.displayRouteShortName) ids.add(id);
+  return [...ids];
 }
 
 export function matchesLiveRouteId(cfg: LiveRouteConfig, routeId: string | null | undefined): boolean {
