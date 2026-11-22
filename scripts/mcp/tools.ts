@@ -16,6 +16,7 @@ import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGr
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { needAgency, needPeriod, mapLink, validThrough, SOURCE, windowNote, nowAt, nowBlock, periodOrNow, windowOrNow, type Args, FIGURE_LABELS } from './toolHelpers';
 import { isNow } from './nowClock';
+import { sameRegion } from './places';
 import { STUDIO_TARGETS, groupAtTarget } from '../../shared/studioVehicles';
 
 export * from './toolDefs';
@@ -29,6 +30,16 @@ export function staleComparisonNote(afterYmd: string, nowMs: number): { staleNot
   const after = Date.parse(`${afterYmd.slice(0, 4)}-${afterYmd.slice(4, 6)}-${afterYmd.slice(6, 8)}T12:00:00Z`);
   if (Number.isNaN(after) || (nowMs - after) / 86_400_000 <= COMPARISON_STALE_DAYS) return {};
   return { staleNote: 'This comparison is between schedules as of those dates. The agency may have changed its schedule since, so before saying a route was removed or cut, check route_frequency for today\'s schedule.' };
+}
+
+/**
+ * #1701: a region no agency in Atlas has (by any of its names) says so, instead of an empty list read as "no transit
+ * there". Agencies left out by their data terms count as in Atlas: their own note says why they're missing.
+ */
+async function unknownRegion(reg: string): Promise<{ regionNote: string } | null> {
+  if (!reg) return null;
+  const all = [...await data.publicAgencies(), ...await data.excludedCatalog()];
+  return all.some(a => sameRegion(a.region, reg)) ? null : { regionNote: `Atlas has no agency in a state or province named "${reg}". Give its full name or its short form, such as "Ontario" or "ON".` };
 }
 
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
@@ -59,7 +70,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const home = groupHome(g);
       // A name or place matches where a word starts ("GO Transit" is not inside "Chicago Transit", #1682).
       return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => data.hasWordsAt(x, q))) || g.members.some(a => [a.slug, a.name, ...(a.cities ?? [])].some(x => data.hasWordsAt(x, q))) || !!operator?.members.some(a => g.members.includes(a)))
-        && (!reg || g.members.some(a => (a.region ?? '').toLowerCase() === reg))
+        && (!reg || g.members.some(a => sameRegion(a.region, reg)))
         && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
     };
     const hitGroups = entries.filter(matches);
@@ -77,6 +88,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const haveSlugs = new Set(all.map(a => a.slug));
       const elsewhere = groupAgencies((await data.publicAgencies()).filter(a => !haveSlugs.has(a.slug))).filter(matches);
       if (elsewhere.length) return { matches: 0, note: await data.notOnThisServerNote(elsewhere.slice(0, 5).map(g => agencyGroupName(g, a => a.name))) };
+    }
+    if (!hits.length && reg) {
+      const unknown = await unknownRegion(String(region ?? '').trim());
+      if (unknown) return { matches: 0, ...unknown };
     }
     if (!hits.length && q && !reg && !ctry) {
       // A service brand is not an agency name (Viva is part of York Region Transit): look for it in route names.
@@ -120,7 +135,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       lo = Math.ceil(self.weekdayRoutes / 2); hi = self.weekdayRoutes * 2;
     }
     const reg = String(args.region ?? '').trim().toLowerCase(), ctry = String(args.country ?? '').trim();
-    const pool = entries.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && a.weekdayRoutes >= lo && a.weekdayRoutes <= hi
+    const pool = entries.filter(a => (!reg || sameRegion(a.region, reg)) && (!ctry || data.sameCountry(a.country, ctry)) && a.weekdayRoutes >= lo && a.weekdayRoutes <= hi
       && (!kind || a.kind === kind));
     // Count from the waits alone (a parent's routes once each by name), then read route names only for the agencies shown.
     const counted = await Promise.all(pool.map(async a => {
@@ -156,12 +171,12 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     }));
     // #1700: a region or country with agencies left out by their data terms says so (Yukon's only agency is left out,
     // so its ranking was empty with no reason).
-    const excluded = reg || ctry ? await data.excludedAgencies(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(countryForRegion(a.region), ctry))) : [];
+    const excluded = reg || ctry ? await data.excludedAgencies(a => (!reg || sameRegion(a.region, reg)) && (!ctry || data.sameCountry(countryForRegion(a.region), ctry))) : [];
     const leftOutNote = excluded.length ? `Left out of this ranking by their data terms, though the Atlas map shows them: ${excluded.slice(0, 8).map(x => `${x.name} (${x.reason})`).join('; ')}${excluded.length > 8 ? `; and ${excluded.length - 8} more` : ''}.` : null;
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
       ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
-      agenciesCompared: counted.length, ranking: shown, ...(leftOutNote ? { leftOutAgencies: leftOutNote } : {}), ...(asked > limit ? { shownLimit: `The ranking shows ${RANK_AGENCIES_MAX} agencies at most; narrow it by country, region, kind or size to see others.` } : {}), source: SOURCE,
+      agenciesCompared: counted.length, ranking: shown, ...(leftOutNote ? { leftOutAgencies: leftOutNote } : {}), ...(await unknownRegion(String(args.region ?? '').trim()) ?? {}), ...(asked > limit ? { shownLimit: `The ranking shows ${RANK_AGENCIES_MAX} agencies at most; narrow it by country, region, kind or size to see others.` } : {}), source: SOURCE,
     };
   },
   route_frequency: async (args) => {

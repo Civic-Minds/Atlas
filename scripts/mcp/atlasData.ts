@@ -127,6 +127,8 @@ export async function excludedAgencyNote(query: string, exact = false): Promise<
   }
   return null;
 }
+/** The catalog's agencies left out by their data terms (shared/rules/redistribution.ts). */
+export const excludedCatalog = async (): Promise<CatalogAgency[]> => (await store.catalog()).filter(a => !mayRedistribute(a.slug));
 /**
  * #1700: the agencies left out by their data terms that a filter keeps (a region or country asked of rank_agencies), each
  * with its reason, so a list they would have been in says why they're missing instead of coming back silently short.

@@ -13,13 +13,16 @@ const PLACES: Place[] = (naPlaces as [string, number, number, string, string, nu
 /** Lowercase, without accents or dots ("Montréal" → "montreal", "D.C." → "dc"). */
 export const plainText = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\./g, '').replace(/\s+/g, ' ').trim().toLowerCase();
 
-/** A region's names: its own and its short form, keyed by the places file's region name. */
-const ALIASES: Record<string, string[]> = { 'District of Columbia': ['Washington DC'], 'Newfoundland and Labrador': ['Newfoundland'] };
+/** A region's other names (the places file's and the agency configs' differ; #1701: "District of Columbia", "DC"). */
+const SAME_REGION: string[][] = [['District of Columbia', 'Washington DC', 'Washington D.C.'], ['Newfoundland and Labrador', 'Newfoundland']];
+/** A region's names, plain: its own, its other names and its short form ("DC", "ON"). */
 function regionNames(region: string): string[] {
-  const names = [region, ...(ALIASES[region] ?? [])];
-  const abbr = names.map(n => REGION_TILES[n]?.abbr).find(Boolean);
-  return [...names, ...(abbr ? [abbr] : [])].map(plainText);
+  const names = SAME_REGION.find(g => g.some(n => plainText(n) === plainText(region))) ?? [region];
+  const abbr = [region, ...names].map(n => REGION_TILES[n]?.abbr).find(Boolean);
+  return [...new Set([region, ...names, ...(abbr ? [abbr] : [])].map(plainText))];
 }
+/** #1701: whether an agency's region is the one asked for, by its full name, another name or its short form. */
+export const sameRegion = (region: string | null | undefined, asked: string): boolean => !!region && regionNames(region).includes(plainText(asked));
 
 /**
  * The places a name finds, largest first: "Arlington", "Arlington, Virginia", "Arlington VA", "Washington DC".
