@@ -14,7 +14,7 @@ import { NEARBY_ROUTES_RADIUS_M, RANK_AGENCIES_MAX } from '../../shared/rules/li
 import { LIVE_TOOLS, liveHandlers } from './liveTools';
 import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
-import { needAgency, needPeriod, mapLink, validThrough, SOURCE, windowNote, nowAt, nowBlock, periodOrNow, windowOrNow, type Args } from './toolHelpers';
+import { needAgency, needPeriod, mapLink, validThrough, SOURCE, windowNote, nowAt, nowBlock, periodOrNow, windowOrNow, type Args, FIGURE_LABELS } from './toolHelpers';
 import { isNow } from './nowClock';
 import { STUDIO_TARGETS, groupAtTarget } from '../../shared/studioVehicles';
 
@@ -152,7 +152,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const r = await data.routeWithRows(a, dayType, found);
     const sameRoutes = await data.sameNameRoutes(a, dayType, r);
     return {
-      agency: a.name, route: r.name, name: r.longName, mode: r.mode, day: dayType,
+      agency: a.name, route: r.name, name: r.longName, mode: r.mode, day: dayType, figure: `waitMinutes is ${FIGURE_LABELS.typical}`,
       // The summary holds these, made by the same functions from the same rows: a hosted call doesn't work them out again.
       periods: PERIOD_KEYS.map(p => found.figures[p]),
       service: found.span,
@@ -171,7 +171,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const { key, dayType, now } = await periodOrNow(a, p, d);
     const minutes = Number(n);
     const res = await data.routesMeeting(a, dayType, key, minutes);
-    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), ...(res.leftOut.length ? { leftOutByRule: res.leftOut.map(m => ({ route: m.route, name: m.longName, shown: m.shown, waitMinutes: m.waitMinutes })), leftOutNote: `These routes' typical wait is every ${minutes} min or better, but some of their waits in this part of the day run longer, so the map's every-${minutes} filter leaves them out. Name them when you answer.` } : {}), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
+    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, figure: `waitMinutes is ${FIGURE_LABELS.typical}`, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), ...(res.leftOut.length ? { leftOutByRule: res.leftOut.map(m => ({ route: m.route, name: m.longName, shown: m.shown, waitMinutes: m.waitMinutes })), leftOutNote: `These routes' typical wait is every ${minutes} min or better, but some of their waits in this part of the day run longer, so the map's every-${minutes} filter leaves them out. Name them when you answer.` } : {}), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
     // "now" reads the first agency's clock (#1627); the answer says so when the others keep another time zone.
@@ -263,7 +263,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const h = await data.routeHistory(a, String(route ?? ''), dayType);
     if (!h) return { agency: a.name, history: null, note: "Atlas's History has no data for this agency." };
     if (!h.route) return { agency: a.name, history: null, note: `Atlas's History has ${h.routes} routes for this agency, none matching "${route}".` };
-    return { agency: a.name, day: dayType, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. Where a route starts or stops partway through a part of the day, Atlas counts the wait to the edge of that part, so a figure can be far longer than the gap between the trips that run (a route every 10 min until 1 AM shows every 61 min from 11 PM to 2 AM). That is the rule Atlas uses, not a data error.', source: "Atlas's History data." };
+    return { agency: a.name, day: dayType, figure: `Each figure is ${FIGURE_LABELS.grade}, not the typical wait route_frequency gives.`, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. Where a route starts or stops partway through a part of the day, Atlas counts the wait to the edge of that part, so a figure can be far longer than the gap between the trips that run (a route every 10 min until 1 AM shows every 61 min from 11 PM to 2 AM). That is the rule Atlas uses, not a data error.', source: "Atlas's History data." };
   },
   routes_by_hours: async (args) => {
     const a = await needAgency(args.agency);
@@ -286,6 +286,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     return {
       compares: `${file.day ?? 'one day'} service on ${date(file.before.date)} (before) with ${date(file.after.date)} (after)`,
       agency: a.name, scheduleValidThrough: validThrough(a),
+      figure: `before and after are each ${FIGURE_LABELS.grade}, not the typical wait route_frequency gives.`,
       routesAdded: paired.filter(c => !c.before).map(c => c.route), routesRemoved: paired.filter(c => !c.after).map(c => c.route),
       frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.tripsBefore != null && c.tripsAfter != null ? { tripsPerDay: `${c.tripsBefore} → ${c.tripsAfter}` } : {}), ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
       frequencyChangeCount: changes.length, shown: `${from + 1}–${Math.min(from + size, changes.length)}`,

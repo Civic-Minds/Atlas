@@ -117,3 +117,12 @@ export async function windowOrNow(a: { slug: string; name: string }, args: Args)
   const start = now.minutes, end = now.minutes + 60;
   return { w: { start, end, label: `${clockTime(start)}–${clockTime(end)}`, periods: data.periodsIn(start, end) }, now };
 }
+
+/**
+ * CIV-2087 (#1685), Ryan picked option 1: each answer says which figure it gives. The frequency tools give the typical
+ * wait; History and Changes give the map's grade. The numbers are unchanged.
+ */
+export const FIGURE_LABELS = {
+  typical: 'the typical wait',
+  grade: 'the slowest regular wait in this part of the day (the map\'s grade)',
+} as const;
