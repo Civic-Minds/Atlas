@@ -16,7 +16,7 @@ describe('LegalPage', () => {
     expect(screen.getByText('Last updated November 22, 2026.')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Analytics' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Location' })).toBeTruthy();
-    expect(screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })).toHaveLength(2);
+    expect(screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })).toHaveLength(3);
   });
 
   it('renders the expanded terms with accuracy and regional-rights sections', () => {

@@ -47,6 +47,8 @@ export const FEED_EXPIRING_DAYS = 7;
 export const RANK_AGENCIES_MAX = 20;
 /** How often the MCP servers re-read a published release's pointer (the data release, the on-demand zones). */
 export const MCP_POINTER_RECHECK_MS = 60_000;
+/** How long the hosted MCP keeps its call log before deleting it (Ryan picked a fixed 12 months, 2026-11-22, #1691). The privacy page states it. */
+export const MCP_CALL_LOG_RETENTION_MONTHS = 12;
 
 /** The zoom from which an agency's detailed GeoJSON loads. */
 export const DETAIL_GEOJSON_MIN_ZOOM = 8;
