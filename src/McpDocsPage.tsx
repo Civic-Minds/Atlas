@@ -27,11 +27,12 @@ const CLAUDE_CODE = `claude mcp add -s user atlas-studio -- ${NODE} ${ARGS.join(
 const ANTIGRAVITY = `agy mcp add -e ATLAS_ROOT=${CHECKOUT} atlas-studio ${NODE} ${ARGS.join(' ')}`;
 const CLAUDE_DESKTOP = JSON.stringify({ mcpServers: { 'atlas-studio': { command: NODE, args: ARGS } } }, null, 2);
 
-/** A command or config block to paste elsewhere, with the shared copy button (CIV-2117). */
+/** A command or config block to paste elsewhere, with the shared copy button (CIV-2117). Long commands wrap onto more
+ * lines (Ryan, 2026-11-22: "should the text wrap"), so the copy button stays in view instead of sitting past a scroll. */
 function CodeBlock({ text }: { text: string }) {
   return (
     <div className="relative mt-3">
-      <pre className={`${CODE} pr-20`}><code>{text}</code></pre>
+      <pre className={`${CODE} whitespace-pre-wrap break-all pr-20`}><code>{text}</code></pre>
       <CopyButton text={text} className="absolute right-2 top-2" />
     </div>
   );
