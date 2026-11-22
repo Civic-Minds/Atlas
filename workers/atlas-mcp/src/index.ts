@@ -183,7 +183,9 @@ async function handleAdmin(request: Request, env: Env, url: URL): Promise<Respon
     // CIV-2063: calls in the last 7 days too, for the internal MCP page. Questions count the distinct question IDs the
     // assistant sent (Ryan, 2026-11-22); calls with no ID aren't counted as questions.
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS calls_7d, (SELECT COUNT(DISTINCT NULLIF(TRIM(c.question_id), \'\')) FROM calls c WHERE c.tester = t.name) AS questions, (SELECT COUNT(DISTINCT NULLIF(TRIM(c.question_id), \'\')) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS questions_7d FROM testers t ORDER BY t.created_at').bind(weekAgo, weekAgo).all();
+    // A question is an ID on one day (#1709): assistants' made-up IDs can repeat across chats, and the question text can't
+    // break the tie because it changes between the calls for one question. A blank ID is no question (#1706).
+    const rows = await env.DB.prepare('SELECT t.name, t.created_at, t.revoked_at, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name) AS calls, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS calls_7d, (SELECT COUNT(DISTINCT NULLIF(TRIM(c.question_id), \'\') || char(31) || substr(c.at, 1, 10)) FROM calls c WHERE c.tester = t.name) AS questions, (SELECT COUNT(DISTINCT NULLIF(TRIM(c.question_id), \'\') || char(31) || substr(c.at, 1, 10)) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS questions_7d FROM testers t ORDER BY t.created_at').bind(weekAgo, weekAgo).all();
     return json({ testers: rows.results });
   }
   if (!name && request.method === 'POST') {

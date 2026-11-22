@@ -58,6 +58,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.22.14 | 2026-11-22 | The pilot note counts the agencies past the first five it names ("and 2 other agencies") instead of leaving them out, and lists names as "A, B and C" (#1702, Virginia) |
 | 0.23.0 | 2026-11-22 | Every tool asks for the question and a question ID shared by every call made for one question (both required in the schema); the hosted log keeps the ID and the testers list counts questions as well as calls |
 | 0.23.1 | 2026-11-22 | list_agencies finds an agency by its short name ("HSR", #1705); the question_id description asks for 8 random letters and digits with no example to copy (#1707); a blank question_id is logged as none and never counted as a question (#1706) |
+| 0.23.2 | 2026-11-22 | Hosted: the testers list counts a question as a question ID on one UTC day, so the same made-up ID from chats on different days counts twice; the weekly review sheet groups the same way (#1709) |
 
 ## Questions
 

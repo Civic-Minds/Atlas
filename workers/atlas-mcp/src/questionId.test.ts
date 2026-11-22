@@ -26,7 +26,8 @@ describe('question and question ID on every tool', () => {
     expect(index).toContain('INSERT INTO calls (at, tester, tool, args, question, question_id,');
     // #1706: a blank ID is stored as none and never counted as a question.
     expect(index).toContain("typeof questionId === 'string' && questionId.trim() ? questionId.trim().slice(0, 100) : null");
-    expect(index).toContain("COUNT(DISTINCT NULLIF(TRIM(c.question_id), \\'\\'))");
+    // #1709: an ID repeated on another day counts as another question.
+    expect(index).toContain("COUNT(DISTINCT NULLIF(TRIM(c.question_id), \\'\\') || char(31) || substr(c.at, 1, 10))");
     expect(index).not.toContain('COUNT(DISTINCT c.question_id)');
     expect(index).toContain('AS questions_7d');
     const migration = readFileSync(new URL('../migrations/0002_question_id.sql', import.meta.url), 'utf8');

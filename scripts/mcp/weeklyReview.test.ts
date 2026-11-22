@@ -17,6 +17,15 @@ describe('weekly pilot review (CIV-1853)', () => {
     expect(groups[0].question).toBe('How often does the 504 run?');
     expect(groups[0].firstAt).toBe('2026-11-20T10:00:00Z');
   });
+  it('splits a question ID repeated on another day into its own question (#1709)', () => {
+    const groups = groupQuestions('Tester', [
+      call(1, '2026-11-20T10:00:00Z', { question_id: 'k3m9x2qa', question: 'How often does the 504 run?' }),
+      call(2, '2026-11-20T10:01:00Z', { question_id: 'k3m9x2qa', question: 'How often does the 504 run at night?' }),
+      call(3, '2026-11-21T09:00:00Z', { question_id: 'k3m9x2qa', question: 'Which routes serve Union?' }),
+    ]);
+    expect(groups.map(g => g.calls.map(c => c.id))).toEqual([[1, 2], [3]]);
+  });
+
   it('writes one section per question, oldest first, with each call and failed calls marked', () => {
     const sheet = reviewSheet([
       { tester: 'B', question: 'Second', firstAt: '2026-11-21T09:00:00Z', calls: [call(2, '2026-11-21T09:00:00Z', { ok: 0, result: 'Unknown route' })] },
