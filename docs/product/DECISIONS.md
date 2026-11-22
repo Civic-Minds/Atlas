@@ -292,6 +292,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — The first and last trips' waits keep counting on the map, cards and filter (CIV-2013)
+Ryan (2026-11-22, relayed by Atlas Manager New), asked whether the filter should ignore the wait before a route's first trip of the day, or after its last: "You tell me but really think about this". Decided with Strategy: no. CIV-238 (2026-11-19) stands for the map, the route cards and the filter.
+- Why: ignoring the first-trip wait would lift routes whose one direction has no service for the first hour of AM peak. BART Red toward Richmond (first train about 7:00), CTA 11 toward Howard and TTC 32 toward Renforth would read every 20, 18 and 8 for all of 6–9 AM, although that direction runs nothing from 6 to 7. The card already says "every N from 7:00" (CIV-1411, card wording only).
+- Counts it rested on (cloud dry runs 45039609341 base, 45043094165, 45037720037): ignoring the first-trip wait changed 404 AM-peak results at every 30 and lifted 232 routes to every 30 all weekday (118 agencies). Ignoring both ends lifted 265.
+- Side effect kept: 25 small metros whose buses start between 6:30 and 7:00 stay off the frequent-service city chart under its current test (every weekday period from 6 AM). Whether the chart should judge on a daytime window instead is a separate question for Ryan; it does not change the map.
+
 ### 2026-11-22 — MCP asks for a question ID; privacy line (CIV-2145)
 Ryan (2026-11-22, relayed by Atlas Manager New), on the privacy line as drafted: "1".
 - The rule: every Atlas Studio MCP tool asks for the question and a question ID the assistant makes up, both required in the schema; the hosted log keeps the ID so calls for one question group together.
