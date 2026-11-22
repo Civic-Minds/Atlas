@@ -211,7 +211,8 @@ jobs:
           cd $STUDY
           mkdir -p data/source/ca-osm
           pbf=data/source/ca-osm/$SLUG-latest.osm.pbf
-          # Geofabrik first, then the openstreetmap.fr mirror (Geofabrik refused GitHub's runners, CIV-1179).
+          # Geofabrik first, then the openstreetmap.fr mirror (Geofabrik refused GitHub's runners, CIV-1179). Geofabrik keeps
+          # each province in its own folder (canada/<slug>/<slug>-latest); its redirect from the old path is broken (#1695).
           # Each source is tried with backoff (10 s, doubling), one download at a time.
           fetch() {
             local url=$1 tries=$2 wait=10
@@ -221,7 +222,11 @@ jobs:
             done
             return 1
           }
-          [ -s "$pbf" ] || fetch "https://download.geofabrik.de/north-america/canada/$SLUG-latest.osm.pbf" 3 \
+          # "latest" can point at a day's file before it exists (#1695), so the two days before follow it.
+          gf="https://download.geofabrik.de/north-america/canada/$SLUG/$SLUG"
+          [ -s "$pbf" ] || fetch "$gf-latest.osm.pbf" 3 \
+            || fetch "$gf-$(date -u -d '1 day ago' +%y%m%d).osm.pbf" 2 \
+            || fetch "$gf-$(date -u -d '2 days ago' +%y%m%d).osm.pbf" 2 \
             || fetch "https://download.openstreetmap.fr/extracts/north-america/canada/${SLUG//-/_}-latest.osm.pbf" 6
           node src/run-ca-province.mjs --province "$PROVINCE" --pbf "$pbf" \
             --population data/derived/population-areas.geojson --cma data/derived/cma-2021.geojson \

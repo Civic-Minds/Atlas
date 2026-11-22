@@ -96,7 +96,17 @@ async function network(coverage, highwayFiles) {
   const output = resolve(dataRoot, 'walking-network.geojson');
   try { const info = await stat(output); if (info.size < 650_000_000) return JSON.parse(await readFile(output, 'utf8')); } catch {}
   const allHighways = resolve(dataRoot, 'all-highways.osm.pbf');
-  try { await stat(allHighways); } catch { await command(['merge', ...highwayFiles, '-o', allHighways, '--overwrite']); }
+  try { await stat(allHighways); } catch {
+    if (highwayFiles.length < 2) await command(['merge', ...highwayFiles, '-o', allHighways, '--overwrite']);
+    else {
+      // #1695: states read from different downloads (Geofabrik for one, a mirror region file for another) hold the same
+      // border nodes at different versions, and merge keeps both, so extract stops ("Node ID twice"). time-filter keeps
+      // each object's newest version.
+      const versions = resolve(dataRoot, 'all-highways-versions.osm.pbf');
+      await command(['merge', ...highwayFiles, '-o', versions, '--overwrite']);
+      await command(['time-filter', versions, '-o', allHighways, '--overwrite']);
+    }
+  }
   const extracts = [];
   await mkdir(resolve(dataRoot, 'agency-extracts'), { recursive: true });
   for (const item of coverage) {

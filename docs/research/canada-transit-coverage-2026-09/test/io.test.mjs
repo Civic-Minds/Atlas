@@ -79,15 +79,18 @@ test('downloadFirst falls back past a refused source and a missing one, without 
   assert.equal((await stat(join(dir, 'region.pbf'))).size, 200_000);
 });
 
-test('state sources: Geofabrik, then the mirror state file, then its region; Hawaii has Geofabrik only', async () => {
+test('state sources: Geofabrik latest and the two days before, then the mirror state file, then its region; Hawaii has Geofabrik only', async () => {
   const { stateSources, mirrorRegion } = await import('../src/osmSources.mjs');
-  assert.deepEqual(stateSources('Alabama', '/s').map(s => s.url), [
-    'https://download.geofabrik.de/north-america/us/alabama-latest.osm.pbf',
+  const now = new Date('2026-11-22T05:00:00Z');
+  assert.deepEqual(stateSources('Alabama', '/s', now).map(s => s.url), [
+    'https://download.geofabrik.de/north-america/us/alabama/alabama-latest.osm.pbf',
+    'https://download.geofabrik.de/north-america/us/alabama/alabama-261121.osm.pbf',
+    'https://download.geofabrik.de/north-america/us/alabama/alabama-261120.osm.pbf',
     'https://download.openstreetmap.fr/extracts/north-america/us-south/alabama-latest.osm.pbf',
     'https://download.openstreetmap.fr/extracts/north-america/us-south-latest.osm.pbf',
   ]);
-  assert.equal(stateSources('District of Columbia', '/s')[0].url, 'https://download.geofabrik.de/north-america/us/district-of-columbia-latest.osm.pbf');
-  assert.equal(stateSources('Hawaii', '/s').length, 1);
+  assert.equal(stateSources('District of Columbia', '/s')[0].url, 'https://download.geofabrik.de/north-america/us/district-of-columbia/district-of-columbia-latest.osm.pbf');
+  assert.equal(stateSources('Hawaii', '/s', now).length, 3);
   // Every state but Alaska and Hawaii, plus DC, has a mirror region.
   assert.equal(['Alaska', 'Hawaii'].map(mirrorRegion).filter(Boolean).length, 0);
   assert.equal(mirrorRegion('New York'), 'us-northeast');
