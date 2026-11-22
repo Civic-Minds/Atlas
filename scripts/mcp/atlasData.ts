@@ -162,21 +162,23 @@ export function otherExactMatches<R extends Pick<RouteRows, 'shortName' | 'name'
 export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string): R | null {
   const q = query.trim().toLowerCase();
   const names = (r: R) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
-  // Exact matches: a short-name match first, then a daytime route before a night-only one (TTC "King" is the 504, not the
-  // 304), else the list's order. CIV-2025: trains no longer win a tie over buses (#1623 had GO's "Lakeshore West" pick the
-  // LW train over bus 18 with the same long name; otherExactMatches still names the other).
+  // CIV-2025 restore 3 (pending Ryan): rail before bus when names tie.
+  const rail = (r: R) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
+  // Exact matches: a short-name match first, then rail before bus (#1623: GO's "Lakeshore West" is the LW train, not bus 18
+  // with the same long name), then a daytime route before a night-only one (TTC "King" is the 504, not the 304), else the list's order.
   const night = (r: R) => { const f = (r as { figures?: RouteSummary['figures'] }).figures; return f && isNightRoute({ figures: f }) ? 1 : 0; };
   const exact = routes.filter(r => names(r).includes(q)).map((r, i) => ({ r, i, short: r.shortName.toLowerCase() === q ? 0 : 1 }))
-    .sort((a, b) => a.short - b.short || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
+    .sort((a, b) => a.short - b.short || rail(a.r) - rail(b.r) || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
   if (exact) return exact;
-  const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `)));
+  const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
   if (line.length) return line[0];
   // Otherwise the map's route-search rule (shared/routeMatch.ts): best match first, then, among routes matched only by
-  // name, one holding the words typed as whole words ("E Line" is METRO E Line, not METRO Blue Line, "bluE LINE").
+  // name, one holding the words typed as whole words ("E Line" is METRO E Line, not METRO Blue Line, "bluE LINE"),
+  // then rail before bus.
   const words = new RegExp(`(^|[^a-z0-9])${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-z0-9])`);
   const whole = (r: R) => (names(r).some(n => words.test(n)) ? 0 : 1);
   const ranked = routes.map(r => ({ r, rank: routeTextMatchRank({ shortName: r.shortName, longName: r.longName }, q) }))
-    .filter(x => x.rank <= ROUTE_TEXT_MATCH_MAX).sort((a, b) => a.rank - b.rank || whole(a.r) - whole(b.r));
+    .filter(x => x.rank <= ROUTE_TEXT_MATCH_MAX).sort((a, b) => a.rank - b.rank || whole(a.r) - whole(b.r) || rail(a.r) - rail(b.r));
   return ranked[0]?.r ?? null;
 }
 
