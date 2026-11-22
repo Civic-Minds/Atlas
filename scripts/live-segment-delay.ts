@@ -38,7 +38,7 @@ import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
 import { DAYTIME_PERIOD_KEYS } from '../shared/rules/periods.js';
-import { LIVE_MIN_SAMPLE, LIVE_WINDOW_DAYS } from '../shared/rules/live.js';
+import { LIVE_MIN_SAMPLE, LIVE_WINDOW_DAYS, SAME_STOP_M } from '../shared/rules/live.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -947,14 +947,13 @@ for (const d of new Set([...patterns.values()].map(p => p.directionId))) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
   for (const p of regularPatterns(dirPatterns.map(q => ({ stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 })))) for (const st of p.stops) regularStops.add(`${d}|${st}`);
 }
-// One place listed twice: a pattern with two consecutive stop ids under 30 m apart (TTC 501 "Queen St East at
+// One place listed twice: a pattern with two consecutive stop ids under SAME_STOP_M apart (TTC 501 "Queen St East at
 // Parliament St" then "QUEEN ST. E. AT PARLIAMENT AVE.", 16 m and 9 s apart). B2 ranks the place once, under the first id.
-const SAME_PLACE_M = 30;
 const repeatedStops = new Set<string>();
 for (const p of patterns.values()) {
   for (let i = 1; i < p.stops.length; i++) {
     const a = stopsById.get(p.stops[i - 1].stopId), b = stopsById.get(p.stops[i].stopId);
-    if (a && b && a.stop_id !== b.stop_id && haversineM(Number(a.stop_lat), Number(a.stop_lon), Number(b.stop_lat), Number(b.stop_lon)) < SAME_PLACE_M) repeatedStops.add(`${p.directionId}|${b.stop_id}`);
+    if (a && b && a.stop_id !== b.stop_id && haversineM(Number(a.stop_lat), Number(a.stop_lon), Number(b.stop_lat), Number(b.stop_lon)) < SAME_STOP_M) repeatedStops.add(`${p.directionId}|${b.stop_id}`);
   }
 }
 /** Stops (B2) and delay build-up (B3) for a set of runs. */

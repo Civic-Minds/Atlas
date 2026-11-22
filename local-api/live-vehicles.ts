@@ -9,8 +9,9 @@ import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicl
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
 import { LIVE_POLL_SEC } from '../shared/rules/live.js';
-import { stopNames } from './stopNames.js';
+import { stopPlaces, type StopPlace } from './stopNames.js';
 import { routeNames } from './routeNames.js';
+import type { UpcomingStop } from '../shared/livePatterns.js';
 
 const FEED_TIMEOUT_MS = 15_000;
 /** CIV-1770: speeds from movement between polls, across requests. */
@@ -125,7 +126,7 @@ export function vehicleNextStop(
   vehicle: { currentStatus?: number | null },
   tripUpdate: { stopTimeUpdate?: readonly StopUpdate[] | null } | undefined,
   vehicleUpdates: readonly { stopTimeUpdate?: readonly StopUpdate[] | null }[] | undefined,
-  names: ReadonlyMap<string, string>,
+  names: ReadonlyMap<string, Pick<StopPlace, 'name'>>,
   nowSec: number,
 ): { name: string; at: boolean } | null {
   const at = vehicle.currentStatus === STOPPED_AT;
@@ -140,11 +141,11 @@ export function vehicleNextStop(
  * CIV-2034 (Ryan, 2026-11-21, "1"): the stop a vehicle stands at, for the card's "At <stop>": the first stop in its trip
  * update it has not yet left (its departure, else its arrival, still ahead), by name.
  */
-export function stoppedAtName(stops: readonly StopUpdate[] | null | undefined, names: ReadonlyMap<string, string>, nowSec: number): string | null {
+export function stoppedAtName(stops: readonly StopUpdate[] | null | undefined, names: ReadonlyMap<string, Pick<StopPlace, 'name'>>, nowSec: number): string | null {
   for (const s of stops ?? []) {
     const t = Number(s.departure?.time ?? s.arrival?.time);
     if (!Number.isFinite(t) || t < nowSec || !s.stopId) continue;
-    const name = names.get(String(s.stopId));
+    const name = names.get(String(s.stopId))?.name;
     if (name) return name;
   }
   return null;
@@ -153,22 +154,33 @@ export function stoppedAtName(stops: readonly StopUpdate[] | null | undefined, n
 export function nextStopName(
   vehicle: { currentStatus?: number | null },
   stops: readonly StopUpdate[] | null | undefined,
-  names: ReadonlyMap<string, string>,
+  places: ReadonlyMap<string, Pick<StopPlace, 'name'>>,
   nowSec: number,
 ): string | null {
   if (vehicle.currentStatus === STOPPED_AT || !stops?.length) return null;
   for (const s of stops) {
     const t = Number(s.arrival?.time ?? s.departure?.time);
     if (!Number.isFinite(t) || t < nowSec || !s.stopId) continue;
-    const name = names.get(String(s.stopId));
+    const name = places.get(String(s.stopId))?.name;
     if (name) return name;
   }
   return null;
 }
 
-/** The stops a trip update lists still ahead of now (CIV-2047), in order. */
-export function upcomingStopIds(stops: readonly StopUpdate[] | null | undefined, nowSec: number): string[] {
-  return (stops ?? []).filter(st => st.stopId && !(Number(st.arrival?.time ?? st.departure?.time) < nowSec)).map(st => String(st.stopId));
+/**
+ * The stops a trip update lists still ahead of now (CIV-2047), in order, by name and place from the agency's stops file.
+ * Not by id: the trip update gives GTFS stop ids, but the Live analysis patterns they are matched against key stops by the
+ * agency's public stop number (TTC 510's "Union Station Streetcar Platform" is 1656 there; GTFS 1656 is on Wilson Ave).
+ * A stop the file has no place for is left out.
+ */
+export function upcomingStops(stops: readonly StopUpdate[] | null | undefined, places: ReadonlyMap<string, StopPlace>, nowSec: number): UpcomingStop[] {
+  const out: UpcomingStop[] = [];
+  for (const st of stops ?? []) {
+    if (!st.stopId || Number(st.arrival?.time ?? st.departure?.time) < nowSec) continue;
+    const p = places.get(String(st.stopId));
+    if (p?.lonLat) out.push({ name: p.name, lonLat: p.lonLat });
+  }
+  return out;
 }
 
 async function fetchHandler(request: Request): Promise<Response> {
@@ -192,10 +204,10 @@ async function fetchHandler(request: Request): Promise<Response> {
   const tripsUrl = config?.tripUpdatesUrl ?? archive?.tripUpdatesUrl ?? null;
   if (!positionsUrl) return json({ error: 'Unknown, inactive, or unconfigured agency' }, 404);
 
-  const [positions, updates, names, archiveRoutes] = await Promise.all([
+  const [positions, updates, places, archiveRoutes] = await Promise.all([
     fetchFeed(positionsUrl, fetchOptions),
     tripsUrl ? fetchFeed(tripsUrl, fetchOptions) : Promise.resolve({ ok: false as const, reason: 'http-error' as const, detail: 'no trip feed' }),
-    stopNames(agency),
+    stopPlaces(agency),
     // The agency's route file: the archive's route names, and the ids each Live route has now (#1696).
     routeNames(agency),
   ]);
@@ -309,11 +321,11 @@ async function fetchHandler(request: Request): Promise<Response> {
       vehicleLabel: vehicle.vehicle?.label ?? null,
       // CIV-2024: the stop the feed says it is heading to or arriving at, by name; while it stands at a stop, that stop (CIV-2034).
       ...(() => {
-        const stop = tripId ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, names, feedNowSec) : null;
+        const stop = tripId ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, places, feedNowSec) : null;
         return { nextStop: stop?.name ?? null, ...(stop?.at ? { atStop: true } : {}) };
       })(),
-      // CIV-2047: the stops its trip update lists ahead (stop ids), to tell its service pattern.
-      upcomingStops: tripId ? upcomingStopIds(update?.stopTimeUpdate, Date.now() / 1000) : [],
+      // CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern.
+      upcomingStops: tripId ? upcomingStops(update?.stopTimeUpdate, places, Date.now() / 1000) : [],
       status: statusForDelay(delayMin),
       statusLabel: null,
       headwayGapMin: null,

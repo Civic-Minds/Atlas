@@ -1,14 +1,22 @@
 import { useEffect, useState } from 'react';
 import { fetchLiveDashboard } from '../lib/liveDashboardFetch';
 import type { LiveV3 } from '../../shared/liveDashboard';
+import type { StopPattern } from '../../shared/livePatterns';
 
 export interface RouteAnalysisPatterns {
   /** The analysis's run-time patterns per direction: main, branch, short turn. */
   patterns: NonNullable<NonNullable<LiveV3['runningTime']>['patterns']>;
   /** Every stop name the analysis has for the route. */
   stopNames: string[];
-  /** CIV-2047: each direction's trip patterns with their stop ids, for which pattern a live vehicle runs. */
-  stopPatterns?: LiveV3['patterns'];
+  /** CIV-2047: each direction's trip patterns, their stops with their places, for which pattern a live vehicle runs. */
+  stopPatterns?: Record<string, StopPattern[]>;
+}
+
+/** Each direction's trip patterns with each stop's place, from the analysis's stop list (same stop ids, same direction). */
+function placedPatterns(v3: LiveV3): Record<string, StopPattern[]> | undefined {
+  if (!v3.patterns) return undefined;
+  const at = new Map<string, [number, number] | undefined>(v3.stops.map(s => [`${s.directionId}|${s.stopId}`, s.lonLat]));
+  return Object.fromEntries(Object.entries(v3.patterns).map(([dir, ps]) => [dir, ps.map(p => ({ stops: p.stops.map(s => ({ ...s, lonLat: at.get(`${dir}|${s.stopId}`) ?? null })) }))]));
 }
 
 /**
@@ -25,7 +33,7 @@ export function useRouteAnalysis(slug: string | null, route: string | null, enab
     let live = true;
     fetchLiveDashboard(slug, route)
       .then(d => {
-        if (live) setLoaded({ key, value: d.status === 'ready' && d.v3.runningTime?.patterns ? { patterns: d.v3.runningTime.patterns, stopNames: d.v3.stops.map(s => s.name), stopPatterns: d.v3.patterns } : null });
+        if (live) setLoaded({ key, value: d.status === 'ready' && d.v3.runningTime?.patterns ? { patterns: d.v3.runningTime.patterns, stopNames: d.v3.stops.map(s => s.name), stopPatterns: placedPatterns(d.v3) } : null });
       })
       .catch(() => { if (live) setLoaded({ key, value: null }); });
     return () => { live = false; };

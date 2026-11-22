@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import type { MapFocus } from '../utils/routeFocus';
+import type { UpcomingStop } from '../../shared/livePatterns';
 
 export interface LiveVehicle {
   id: string;
@@ -20,7 +21,8 @@ export interface LiveVehicle {
   /** CIV-2034: nextStop is the stop it stands at ("At <stop>"), not the next one. */
   atStop?: boolean;
   /** CIV-2047: the stop ids its trip update lists ahead, to tell which service pattern it runs. */
-  upcomingStops?: string[];
+  /** CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern. */
+  upcomingStops?: UpcomingStop[];
   status: 'no_data' | 'early' | 'late' | 'on_time';
   statusLabel?: string | null;
   headwayGapMin?: number | null;

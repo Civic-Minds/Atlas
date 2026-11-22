@@ -47,6 +47,14 @@ export const LIVE_STUDIO_MIN_RECORDED_DAYS = 7;
 /** Live's figures cover the last this many service days, bad-recording days left out and named ("Rolling 7 days only", docs/product/DECISIONS.md; Studio's stop pairs too, CIV-1828). */
 export const LIVE_WINDOW_DAYS = 7;
 
+/**
+ * Two stop ids are one place when they are under this far apart: the Live analysis ranks a stop listed twice in a row
+ * once (TTC 501 "Queen St East at Parliament St" then "QUEEN ST. E. AT PARLIAMENT AVE.", 16 m apart), and CIV-2047 takes
+ * a trip update's stop for an analysis stop of the same name under it (the two key stops differently, GTFS id vs public
+ * stop number, and a name alone repeats across a city).
+ */
+export const SAME_STOP_M = 30;
+
 // ---- Bunching (shared/bunching.ts) ----
 
 /** A gap under this many seconds is bunched. */

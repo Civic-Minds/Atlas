@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { nextStopName, stoppedAtName, vehicleNextStop } from '../live-vehicles.js';
 
-const names = new Map([['2140', 'Dundas St West at Bathurst St'], ['2147', 'Dundas St West at Beverley St']]);
+const names = new Map([['2140', { name: 'Dundas St West at Bathurst St' }], ['2147', { name: 'Dundas St West at Beverley St' }]]);
 const stops = [
   { stopId: '2140', arrival: { time: 1000 } },
   { stopId: '9999', arrival: { time: 1050 } },
