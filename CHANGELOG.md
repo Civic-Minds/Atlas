@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio Live stays steady while a route loads**: opening a route whose data was slow to arrive sent the page into a re-render loop, logging hundreds of errors and keeping the browser busy
 - **Atlas Studio MCP finds cities when asked for agencies near one**: "Washington DC" found nothing, "Washington" quietly meant Washington State Ferries and "Bethesda" was measured from Baltimore; it now measures from the city, says what it used, and marks agencies the test server has no schedules for
 - **Pages show up sooner on phones**: every page was loading the map library before its first paint, even pages with no map; it now loads only when a map is on screen
 - **Live shows Hamilton's and Burlington's buses again**: their feeds renumbered the routes Live follows, so Live now finds each route by its number in the agency's current route list

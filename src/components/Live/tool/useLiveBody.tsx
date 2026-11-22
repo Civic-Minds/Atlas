@@ -40,6 +40,10 @@ import type { MapPick } from '../../MapApp';
  * card, the sidebar's widgets, the route menu's options. The frames own where each goes.
  */
 
+/** #1649: one empty list for every render. A new [] each render made the overlay's pill and card new too, and Studio's
+ * page overlay re-rendered without end ("Maximum update depth exceeded") while a route's data was loading. */
+const NONE: readonly never[] = [];
+
 /** How many stop pairs the "Falls behind" lists show. */
 export const FALLS_BEHIND_ROWS = 10;
 
@@ -202,7 +206,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   const lossReports = useMemo(() => new Map<string, TimeLossReport>([...lossData].map(([r, d]) => [r, timeLossReport(d, [band])])), [lossData, band]);
   const ids = v3 ? Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b) : [];
   const shown = v3 ? (dir != null && ids.includes(dir) ? dir : ids[0]) : 0;
-  const uncertain = ready?.uncertainStart ?? [];
+  const uncertain = ready?.uncertainStart ?? NONE;
   const stops = useMemo(() => (v3 ? directionStopsById(v3, shown, band, uncertain) : new Map<string, RouteStripStop>()), [v3, shown, band]); // eslint-disable-line react-hooks/exhaustive-deps
   const measured: RouteMapModel = useMemo(() => {
     const loss = (r: string, d: number) => { const x = lossData.get(r); return x ? timeLossBySegment(x, band, d) : undefined; };
@@ -260,7 +264,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   return {
     routes, ready, v3, ids, shown, model, heat, anchor, card, routePanel, routeBody, networkLossWidget, summary, overview, routeOptions,
     networkDates: [...new Set([...networkV3.values()].flatMap(b => b.window.dates))].sort(),
-    dataDates: v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? [], dataRoute: v3 ? ready?.route ?? '' : '',
+    dataDates: v3 ? v3.window.dates : route ? NONE : s.weekly?.thisWeek.dates ?? NONE, dataRoute: v3 ? ready?.route ?? '' : '',
     note: showNote ? ready!.note : undefined,
     frameKey: ready && route ? `route-${ready.route}` : noRouteData && network.size === routes.length ? `route-${route}` : `network-${network.size === routes.length ? 'all' : 'loading'}`,
     onMapPick, loadingRoute: own.kind === 'loading', backToNetwork, openRoute,
