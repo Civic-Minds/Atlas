@@ -54,6 +54,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Route cards say when a period slows down**: a route that runs every 15 until 8:45 PM and every 30 after now reads "every 15 min until 8:45 PM, then every 30 min" instead of only one of the two (Kingston 701 evening)
 - **Live's route card counts vehicles under each branch it lists**: on a branching route such as the 501, each Scheduled line shows how many vehicles are on that branch and its own longest and shortest gap, so a thin branch no longer hides behind the route-wide count
 - **Live's route card shows gaps as soon as it opens**: it starts from the last half hour of recorded positions, where it used to wait until its own readings covered a full gap, which on the 501 took about 9 minutes
+- **Live's route card gives a gap under a minute in seconds**: it read "0 min", where Studio already said "40 sec"
 - **Live's Scheduled lines follow the direction you pick**: on some routes, such as the 501, Westbound listed the eastbound branches
 - **Studio's Schedules list looks like the map's route lists**: it had its own taller rows with the time of day on a second line; it now uses the agency card's rows, with both dates' figures at the right
 - **Studio's Schedules map lines are as thin as the regular map's**: every route was drawn about twice as thick, so the picked route didn't stand out

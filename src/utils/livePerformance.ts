@@ -228,7 +228,7 @@ export interface LiveGaps {
   cars: number;
   /** The vehicle ids behind `cars`, so a figure about those cars (how many are on time) counts the same ones. */
   carIds?: string[];
-  /** Minutes between consecutive cars, front of the line first; null when the car ahead's passing wasn't seen. */
+  /** Minutes between consecutive cars, front of the line first (whole minutes; under a minute, to the second); null when the car ahead's passing wasn't seen. */
   gapsMin: (number | null)[];
   scheduledSec: number | null;
   /** wholeLine: the timetable gap where each gap's car behind is, matching gapsMin. */
@@ -494,7 +494,9 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
         if (b.t - a.t > MAX_BRACKET_SEC) return null;
         const passed = a.t + ((car.m - a.m) / (b.m - a.m)) * (b.t - a.t);
         const gap = car.t - passed;
-        return gap < 0 ? null : Math.round(gap / 60); // negative only from clock skew between cars
+        // Negative only from clock skew between cars. Whole minutes, but under a minute in seconds, so the card can say
+        // "40 sec" (gapText) instead of "0 min" (CIV-2021).
+        return gap < 0 ? null : gap < 60 ? Math.round(gap) / 60 : Math.round(gap / 60);
       }
     }
     return null;

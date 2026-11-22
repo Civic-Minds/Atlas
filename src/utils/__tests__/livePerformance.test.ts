@@ -80,6 +80,14 @@ describe('livePerformance', () => {
     expect(g.scheduledSec).toBe(300);
   });
 
+  it('keeps a gap under a minute to the second, so the card can say "30 sec" (CIV-2021)', () => {
+    const line = lineModel(data, 0)!;
+    const t0 = 10_000;
+    // Car a passed position 1 at t0+120 s; car b is there at t0+150 s: 30 s behind.
+    const snaps = [snap(t0, [['a', 't1', 0]]), snap(t0 + 120, [['a', 't1', 1]]), { capturedAt: t0 + 150, v: [['a', 't1', LAT, lon(1.25), t0 + 150], ['b', 't2', LAT, lon(1), t0 + 150]] as [string, string, number, number, number][] }];
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', snaps, t0 + 150, { countFewCars: true })!.gapsMin).toEqual([0.5]);
+  });
+
   it('leaves a gap unknown when the car ahead was never seen passing', () => {
     const line = lineModel(data, 0)!;
     const t0 = 10_000;

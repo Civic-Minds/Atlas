@@ -11,13 +11,13 @@ import { type SegmentBand, type SegmentDelayData } from '../../utils/segmentDela
 import { headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
 import type { LiveScheduledRow } from '../../utils/liveScheduledHeadway';
 import { branchOnlyStops, vehiclesByPattern } from '../../../shared/livePatterns';
+import { gapText } from '../../../shared/liveFormat';
 import { useRouteAnalysis } from '../../hooks/useRouteAnalysisPatterns';
 import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
 import { DIRECTION_LABEL, LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL } from '../../../shared/liveWording';
-import { delayAmount } from '../../../shared/headwayText';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
@@ -91,8 +91,8 @@ function PatternRowFigures({ cars, extremes }: { cars: number; extremes: ReturnT
   return (
     <>
       {line(VEHICLES_LABEL, String(cars))}
-      {extremes && line(LONGEST_GAP_LABEL, delayAmount(extremes.longest.min), extremes.longest.tooFar)}
-      {extremes && line(SHORTEST_GAP_LABEL, delayAmount(extremes.shortest.min), extremes.shortest.tooClose)}
+      {extremes && line(LONGEST_GAP_LABEL, gapText(extremes.longest.min), extremes.longest.tooFar)}
+      {extremes && line(SHORTEST_GAP_LABEL, gapText(extremes.shortest.min), extremes.shortest.tooClose)}
     </>
   );
 }
@@ -274,8 +274,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                   breaks the shared too-far / too-close rule; only once more than half the gaps were measured. */}
               {extremes && !(scheduledRows && scheduledRows.length > 0 && rowFigures) && (
                 <Stats items={[
-                  [LONGEST_GAP_LABEL, delayAmount(extremes.longest.min), extremes.longest.tooFar ? AMBER : undefined],
-                  [SHORTEST_GAP_LABEL, delayAmount(extremes.shortest.min), extremes.shortest.tooClose ? AMBER : undefined],
+                  [LONGEST_GAP_LABEL, gapText(extremes.longest.min), extremes.longest.tooFar ? AMBER : undefined],
+                  [SHORTEST_GAP_LABEL, gapText(extremes.shortest.min), extremes.shortest.tooClose ? AMBER : undefined],
                 ]} />
               )}
             </>
