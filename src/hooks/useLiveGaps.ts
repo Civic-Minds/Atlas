@@ -13,7 +13,7 @@ export function useLiveGaps(agency: string | null | undefined, route: string | n
     if (!url) return;
     let live = true;
     fetch(url)
-      .then(r => (r.ok ? r.json() : null))
+      .then(r => (r.ok ? r.json() as Promise<{ status?: string; directions?: unknown }> : null))
       .then(d => { if (live) setData(d && d.status !== 'no_analysis' && d.directions ? d as LiveGaps : null); })
       .catch(() => { if (live) setData(null); });
     return () => { live = false; };

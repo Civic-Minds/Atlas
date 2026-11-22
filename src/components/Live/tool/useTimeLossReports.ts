@@ -9,7 +9,7 @@ function load(agency: string, route: string): Promise<SegmentDelayData | null> {
   let p = cache.get(key);
   if (!p) {
     p = fetch(`/api/live-segments?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}&fields=segments`)
-      .then(r => (r.ok ? r.json() : null))
+      .then(r => (r.ok ? r.json() as Promise<{ noData?: boolean; segments?: unknown }> : null))
       // The last LIVE_WINDOW_DAYS service dates, good days only ("Rolling 7 days only"), where the file has them.
       .then(j => (j && !j.noData && Array.isArray(j.segments) ? recentSegmentData(j as SegmentDelayData) : null))
       .catch(() => null);

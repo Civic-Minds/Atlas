@@ -22,7 +22,7 @@
     "build": "tsc && vite build && npm run prerender && node scripts/vercel-root-shell.mjs",
     "prerender": "vite build --ssr src/prerender.tsx --outDir .prerender && npx tsx scripts/prerender-routes.ts",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json && node scripts/typecheck-pipeline.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json && node scripts/typecheck-pipeline.mjs && tsc --noEmit -p workers/atlas-mcp/tsconfig.json",
     "check:vercel": "bash scripts/check-vercel.sh",
     "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json",
     "typecheck:mcp-worker": "tsc --noEmit -p workers/atlas-mcp/tsconfig.json",

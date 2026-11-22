@@ -78,7 +78,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const operator = q ? data.operatorNamed(q, all) : null;
     // #1705: an agency's short name (HSR) finds it, as it does in the route tools.
     const short = q ? await data.shortNames() : new Map<string, string>();
-    const matches = (g: ReturnType<typeof groupAgencies>[number]) => {
+    const matches = (g: (typeof entries)[number]) => {
       const home = groupHome(g);
       // A name or place matches where a word starts ("GO Transit" is not inside "Chicago Transit", #1682).
       return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => data.hasWordsAt(x, q))) || g.members.some(a => [a.slug, a.name, short.get(a.slug) ?? '', ...(a.cities ?? [])].some(x => data.hasWordsAt(x, q))) || !!operator?.members.some(a => g.members.includes(a)))
@@ -331,7 +331,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const a = await needAgency(q);
     const dayType = data.parseDay(d);
     const res = await data.stopFrequency(a, String(stop ?? ''), dayType, route != null ? String(route) : null);
-    if (!res.matched) return res.choices.length
+    if (!res.matched) return res.choices?.length
       ? { agency: a.name, stop, matched: null, choices: res.choices, ...(res.more ? { more: res.more } : {}), note: 'Several stops match. Ask which one is meant, or call again with one of these names exactly.' }
       : { agency: a.name, stop, matched: null, note: 'No stop name matches every part of that. Try the stop as the agency names it, or a corner.', scheduleValidThrough: validThrough(a) };
     // CIV-2089: how often any route leaves the stop needs departure times, which only the local server reads.
