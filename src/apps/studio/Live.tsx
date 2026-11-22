@@ -122,8 +122,9 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   // CIV-2001: the top bar's search finds this page's routes; its results take the panel's place while it's open.
   const searchOpen = useStudioSearchOpen();
   const searchRoutes = useMemo(() => s.routes.map(r => ({ route: liveRouteNumber(r), longName: r.longName ?? null, routeType: r.mode ?? null })), [s.routes]);
-  const routeRow = route ? s.routes.find(r => r.route === route) ?? s.held.find(r => r.route === route) : null;
-  const label = route ? routeLabels({ shortName: routeRow ? liveRouteNumber(routeRow) : route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
+  const regularRow = route ? s.routes.find(r => r.route === route) ?? null : null;
+  const routeRow = regularRow ?? (route ? s.held.find(r => r.route === route) ?? null : null);
+  const label = route ? routeLabels({ shortName: regularRow ? liveRouteNumber(regularRow) : route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
 
   return (
     <>
