@@ -11,6 +11,7 @@ import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
 import { CONTEXT_CREDIT_SHORT, contextCreditTitle, MASSDOT_CREDIT_SHORT, MASSDOT_CREDIT_URL, MBTA_VEHICLES_CREDIT, ABOUT_ATLAS, WHATS_NEW_TITLE, FEEDBACK_LABEL } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
+import type { AgencyCredit } from '../../utils/agencyCredits';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
 import { mailto } from '../../../shared/contact';
 import { markWhatsNewSeen, whatsNewUnseen } from '../../utils/whatsNewSeen';
@@ -22,8 +23,10 @@ function UnseenDot() {
 
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean } = {}) {
+export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false, agencyCredits = [] }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean; /** CIV-461: the agencies in view whose data licence requires credit, in the same pill (MassDOT's pattern). */ agencyCredits?: readonly AgencyCredit[] } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  // The census or agency credits lengthen the pill: on phones it narrows and ellipses like the shading's credit.
+  const longCredit = contextLayerOn || agencyCredits.length > 0;
   // The dot shows until What's New is opened, and returns with the next release.
   const [unseen, setUnseen] = useState(() => whatsNewUnseen(appVersion));
   useEffect(() => {
@@ -113,28 +116,37 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null, mas
       >
         {FEEDBACK_LABEL}
       </a>
-      {/* With the shading on, the credit is longer: on phones the row is narrowed and the credit shrinks (ellipsis) so it stays left of the zoom buttons. */}
-      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-w-full min-w-0' : ''}`}>
+      {/* With the shading or agency credits on, the credit is longer: on phones the row is narrowed and the credit shrinks (ellipsis) so it stays left of the zoom buttons. */}
+      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${longCredit ? 'max-w-full min-w-0' : ''}`}>
         <BasemapCredit
-          className={contextLayerOn ? 'min-w-0 truncate' : ''}
-          extra={contextLayerOn || massDotOn ? (
+          className={longCredit ? 'min-w-0 truncate' : ''}
+          extra={contextLayerOn || massDotOn || agencyCredits.length > 0 ? (
             <>
-              {contextLayerOn && (
-                <OutboundLink
-                  href="https://www.census.gov/programs-surveys/acs"
-                  kind="attribution"
-                  className={BASEMAP_CREDIT_LINK}
-                  title={contextYear ? contextCreditTitle(acsWindow(contextYear)) : undefined}
-                >
-                  {CONTEXT_CREDIT_SHORT}
-                </OutboundLink>
-              )}
-              {contextLayerOn && massDotOn && <span className={MAP_BADGE_LABEL}> · </span>}
-              {massDotOn && (
-                <OutboundLink href={MASSDOT_CREDIT_URL} kind="attribution" className={BASEMAP_CREDIT_LINK} title={MBTA_VEHICLES_CREDIT}>
-                  {MASSDOT_CREDIT_SHORT}
-                </OutboundLink>
-              )}
+              {[
+                ...(contextLayerOn ? [(
+                  <OutboundLink
+                    key="context"
+                    href="https://www.census.gov/programs-surveys/acs"
+                    kind="attribution"
+                    className={BASEMAP_CREDIT_LINK}
+                    title={contextYear ? contextCreditTitle(acsWindow(contextYear)) : undefined}
+                  >
+                    {CONTEXT_CREDIT_SHORT}
+                  </OutboundLink>
+                )] : []),
+                ...(massDotOn ? [(
+                  <OutboundLink key="massdot" href={MASSDOT_CREDIT_URL} kind="attribution" className={BASEMAP_CREDIT_LINK} title={MBTA_VEHICLES_CREDIT}>
+                    {MASSDOT_CREDIT_SHORT}
+                  </OutboundLink>
+                )] : []),
+                ...agencyCredits.map(c => (
+                  <OutboundLink key={`agency-${c.slug}`} href={c.url} kind="attribution" className={BASEMAP_CREDIT_LINK} title={c.text}>
+                    {c.name}
+                  </OutboundLink>
+                )),
+              ].map((link, i) => (
+                <span key={link.key}>{i > 0 && <span className={MAP_BADGE_LABEL}> · </span>}{link}</span>
+              ))}
             </>
           ) : undefined}
         />

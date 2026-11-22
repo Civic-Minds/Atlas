@@ -23,7 +23,8 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION, MBTA_VEHICLES_CREDIT } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION, MBTA_VEHICLES_CREDIT, MASSDOT_CREDIT_URL } from '../content/noticeCopy';
+import { agencyCredits } from '../utils/agencyCredits';
 import { bunchingSplitNote, figuresUpdatedText, OPEN_ABOUT_LIVE_EVENT } from '../../shared/liveWording';
 import { useLiveFiguresUpdated } from '../hooks/useLiveFiguresUpdated';
 import RegionFilterPills from './RegionFilterPills';
@@ -528,12 +529,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <LinkCard href="https://www.transit.land/"
                   target="_blank"
                   rel="noopener noreferrer" icon="external">Transitland</LinkCard>
+                {/* CIV-2046, CIV-461 (Ryan: "Should massdot be a thin like the transitland and the other one are"): MassDOT, where
+                    Live is on, and each agency whose data licence requires credit, as cards like the sources above. */}
+                {FEATURES.live && <LinkCard as={OutboundLink} href={MASSDOT_CREDIT_URL} kind="attribution" icon="external">{MBTA_VEHICLES_CREDIT}</LinkCard>}
+                {agencyCredits(agencies).map(c => (
+                  <LinkCard key={c.slug} as={OutboundLink} href={c.url} kind="attribution" icon="external">{c.text}</LinkCard>
+                ))}
               </div>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>
-              {/* CIV-2046: MBTA vehicle data is MassDOT's (Developers License Agreement); the map credits it too while MBTA vehicles show. */}
-              {FEATURES.live && <p className="text-xs text-[var(--text-dim)] leading-relaxed">{MBTA_VEHICLES_CREDIT}</p>}
               {/* CIV-1814 item 41 (Ryan: "put into the about area similar to how the last date GTFS was updated is"). */}
               {liveFiguresUpdated && (
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed">{figuresUpdatedText(liveFiguresUpdated)}</p>

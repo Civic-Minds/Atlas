@@ -66,4 +66,15 @@ describe('MapAttribution', () => {
     expect(screen.getByRole('link', { name: 'U.S. Census Bureau' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'MassDOT' })).toBeInTheDocument();
   });
+
+  it('credits each agency in view whose licence requires it, with its own sentence (CIV-461)', () => {
+    const ttc = { slug: 'ttc', name: 'Toronto Transit Commission', url: 'https://open.toronto.ca/open-data-licence/', text: 'Contains information licensed under the Open Government Licence – Toronto.' };
+    const { rerender } = render(<MapAttribution />);
+    expect(screen.queryByRole('link', { name: ttc.name })).toBeNull();
+    rerender(<MapAttribution agencyCredits={[ttc]} massDotOn />);
+    const link = screen.getByRole('link', { name: ttc.name });
+    expect(link).toHaveAttribute('href', ttc.url);
+    expect(link).toHaveAttribute('title', ttc.text);
+    expect(screen.getAllByRole('link').map(l => l.textContent).slice(-2)).toEqual(['MassDOT', ttc.name]);
+  });
 });

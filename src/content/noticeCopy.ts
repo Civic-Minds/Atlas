@@ -396,6 +396,10 @@ export const CONTEXT_CREDIT_SHORT = 'U.S. Census Bureau';
 export const MASSDOT_CREDIT_SHORT = 'MassDOT';
 export const MASSDOT_CREDIT_URL = 'https://www.mass.gov/massdot-developers-data-sources';
 export const MBTA_VEHICLES_CREDIT = `MBTA vehicle locations are provided by ${MASSDOT_CREDIT_SHORT}.`;
+// CIV-461 (proposed wording, not yet Ryan's): an agency whose data licence requires credit but gives no sentence of its own,
+// in MassDOT's pattern. A licence's own sentence (dataLicense.credit) is used verbatim instead wherever it gives one.
+export const scheduleDataCredit = (agencyName: string, licenceName?: string) =>
+  `${agencyName} schedules are provided by ${agencyName}${licenceName ? ` under the ${licenceName}` : ''}.`;
 export const contextCreditTitle = (years: readonly [number, number]) =>
   `Source: U.S. Census Bureau, American Community Survey 5-year estimates (${years[0]}–${years[1]}) and TIGER/Line boundaries`;
 // The tap card's lines: "1,240 people per square kilometre", "$62,000 a year", "Could be off by about 18%".
