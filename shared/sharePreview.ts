@@ -29,7 +29,7 @@ export function shareImageForCity(city: ShareCity): { path: string; alt: string 
 }
 
 /** Even-odd test of a [lon, lat] point against an area's boundary rings (holes and islands both work). */
-function insideRings(lon: number, lat: number, rings: ShareCity['rings']): boolean {
+export function insideRings(lon: number, lat: number, rings: readonly (readonly (readonly number[])[])[]): boolean {
   let inside = false;
   for (const ring of rings) {
     for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {

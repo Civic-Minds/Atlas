@@ -45,6 +45,8 @@ export const NEARBY_ROUTES_RADIUS_M = 500;
 export const FEED_EXPIRING_DAYS = 7;
 /** The most agencies one rank_agencies answer lists: each reads a file, and the hosted MCP's plan allows 50 reads a call. */
 export const RANK_AGENCIES_MAX = 30;
+/** How often the MCP servers re-read a published release's pointer (the data release, the on-demand zones). */
+export const MCP_POINTER_RECHECK_MS = 60_000;
 
 /** The zoom from which an agency's detailed GeoJSON loads. */
 export const DETAIL_GEOJSON_MIN_ZOOM = 8;

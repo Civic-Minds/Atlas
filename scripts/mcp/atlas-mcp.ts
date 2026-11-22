@@ -26,7 +26,7 @@ const { splitStore, urlReader } = await import('../../shared/mcpSplitStore');
 // CIV-2014: published data from the cloud (the release the map reads), this Mac only for unpublished files. The pointer is
 // re-read at most once a minute, so a release published while the server runs is picked up. ATLAS_MCP_DATA_DIR (a folder
 // of route files) and split:<folder> keep reading disk, for tests and the MCP chat's runs.
-const POINTER_RECHECK_MS = 60_000;
+const { MCP_POINTER_RECHECK_MS: POINTER_RECHECK_MS } = await import('../../shared/rules/limits');
 const POINTER_TIMEOUT_MS = 5_000;
 let cloud: { releaseId: string | null; checkedAt: number } | null = null;
 /** The note answers carry while the cloud can't be reached and the copy on this Mac is older than the latest release. */
@@ -74,8 +74,11 @@ if (liveDir) {
 const { localHandlers } = await import('./localTools');
 // route_now (CIV-1870) reads the Live recorder's snapshots (the hosted server adds it too).
 const { liveNowHandlers } = await import('./liveNowTools');
+const { onDemandHandlers, useOnDemandBase } = await import('./onDemandTools');
+// ATLAS_ON_DEMAND_BASE: read the on-demand zones from another bucket (ATLAS_ON_DEMAND_BETA=0: promoted services only).
+if (process.env.ATLAS_ON_DEMAND_BASE) useOnDemandBase(process.env.ATLAS_ON_DEMAND_BASE, process.env.ATLAS_ON_DEMAND_BETA !== '0');
 const { withScheduleWarning } = await import('./toolHelpers');
-const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = withScheduleWarning({ ...tools.handlers, ...localHandlers, ...liveNowHandlers });
+const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = withScheduleWarning({ ...tools.handlers, ...localHandlers, ...liveNowHandlers, ...onDemandHandlers });
 // Every tool's definition, the local ones included.
 const TOOLS = tools.TOOLS;
 

@@ -570,13 +570,18 @@ export function cornerSeeds<S extends { name: string; lat: number; lon: number }
   return { stops: [...new Set(close.flatMap(p => [p.x, p.y]))], apart: Math.round(best) };
 }
 
-export async function routesNear(agency: CatalogAgency, place: string, metres = NEARBY_ROUTES_RADIUS_M) {
-  const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
+/** The stops a place names: every stop whose name holds each part, else the closest pair on each street of a corner. routes_near and on_demand_zones both place a corner this way. */
+export async function placeStops(agency: CatalogAgency, place: string) {
   const parts = placeParts(place);
   const stops = await stopsOf(agency);
-  let seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
-  const corner = seeds.length ? null : cornerSeeds(stops, parts);
-  if (corner) seeds = corner.stops;
+  const named = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
+  const corner = named.length ? null : cornerSeeds(stops, parts);
+  return { stops, seeds: corner ? corner.stops : named, corner };
+}
+
+export async function routesNear(agency: CatalogAgency, place: string, metres = NEARBY_ROUTES_RADIUS_M) {
+  const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
+  const { stops, seeds, corner } = await placeStops(agency, place);
   const near = stops.filter(s => seeds.some(t => withinMetres({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }, metres)));
   const routeNames = await routeIdNames(agency);
   const byRoute = new Map<string, Set<string>>();
