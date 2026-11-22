@@ -34,14 +34,15 @@ describe('headline from the trunk (CIV-1959 B1)', () => {
     const off = rollupDirection(d)!;
     const onR = rollupDirection(on(d))!;
     expect(off.period[MIDDAY].filterValue).toBeGreaterThan(60); // today: the tail's wait wins
-    expect(onR.period[MIDDAY].filterValue).toBe(15);
+    // #1665 (rule 11): the trunk sets the headline only; the filter still reads the slowest piece.
+    expect(onR.period[MIDDAY].filterValue).toBe(off.period[MIDDAY].filterValue);
     expect(onR.period[MIDDAY].value).toBe(15);
     expect(onR.period[MIDDAY].coverage).toBeLessThanOrEqual(30);
     // trunkFilterValue is the same reading as before; mainValue too
     expect(onR.period[MIDDAY].trunkFilterValue).toBe(off.period[MIDDAY].trunkFilterValue);
     expect(onR.period[MIDDAY].mainValue).toBe(off.period[MIDDAY].mainValue);
     const route = rollupRoute([onR, rollupDirection(on(rtd15()))]);
-    expect(route.period[MIDDAY].filterValue).toBe(15);
+    expect(route.period[MIDDAY].filterValue).toBeGreaterThan(60);
   });
 
   // TTC 29: the trunk every 8; half the trips (every 16) run on to a branch. At 4 stops the branch is under the
@@ -58,7 +59,9 @@ describe('headline from the trunk (CIV-1959 B1)', () => {
     expect(rollupDirection(four)!.period[MIDDAY].filterValue).toBe(8);
     expect(rollupDirection(five)!.period[MIDDAY].filterValue).toBe(16); // today: the flip
     expect(rollupDirection(on(four))!.period[MIDDAY].filterValue).toBe(8);
-    expect(rollupDirection(on(five))!.period[MIDDAY].filterValue).toBe(8);
+    // #1665: the headline reads the trunk (8); the filter keeps the branch's 16, so the route does not pass at 10.
+    expect(rollupDirection(on(five))!.period[MIDDAY].value).toBe(8);
+    expect(rollupDirection(on(five))!.period[MIDDAY].filterValue).toBe(16);
   });
 
   it('the all-day value, Frequent Service and night still read the branches', () => {
@@ -113,7 +116,9 @@ describe('headline from the trunk (CIV-1959 B1)', () => {
     expect(headlineTrunk(d)).not.toBeNull();
     for (const k of ['midday', 'pmPeak'] as const) {
       const onR = rollupDirection(on(d))!;
-      expect(onR.period[k].filterValue).toBe(onR.period[k].mainValue);
+      expect(onR.period[k].value).toBe(onR.period[k].mainValue);
+      // #1665: the 30-minute tails still decide the filter, as with the switch off.
+      expect(onR.period[k].filterValue).toBe(rollupDirection(d)!.period[k].filterValue);
     }
   });
 
@@ -138,5 +143,21 @@ describe('the switch', () => {
     expect(headlineFromTrunkFromEnv()).toBe(false);
     process.env.ATLAS_HEADLINE_FROM_TRUNK = '1';
     expect(headlineFromTrunkFromEnv()).toBe(true);
+  });
+
+  it('#1665: a shared trunk never makes the whole route pass the filter (TARC 1-like)', () => {
+    // A trunk every 15 fed by three branches every 45 (TARC 1: trunk 15, branches 30-60): the card's headline may read
+    // the trunk, but the filter value is the slowest branch's, so the route fails "every 15 or better".
+    const trunk = stopsOf('t', 18, i => [43.6 + i * 0.01, -79.4]);
+    const tail = stopsOf('a', 6, i => [43.78 + (i + 1) * 0.004, -79.4]);
+    const tailB = stopsOf('b', 6, i => [43.77, -79.4 + (i + 1) * 0.005]);
+    const d = build('tarc1', [
+      { times: every(360, 1380, 45), stops: [...trunk, ...tail] },
+      { times: every(375, 1380, 45), stops: [...trunk, ...tailB] },
+      { times: every(390, 1380, 45), stops: trunk },
+    ]);
+    const onR = rollupDirection(on(d))!, off = rollupDirection(d)!;
+    expect(onR.period[MIDDAY].filterValue).toBe(off.period[MIDDAY].filterValue);
+    expect(onR.period[MIDDAY].filterValue!).toBeGreaterThan(15);
   });
 });
