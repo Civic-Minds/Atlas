@@ -73,12 +73,17 @@ function run(script: string, args: string[]): boolean {
   return r.status === 0;
 }
 
-/** Service dates (UTC folders) the agency's archive holds. */
-async function archiveDates(slug: string): Promise<string[] | null> {
+/** Snapshots per service date (UTC folder) the agency's archive holds; the recorder writes only snapshots that carry vehicles. */
+async function archiveDates(slug: string): Promise<Map<string, number> | null> {
   try {
     const bucket = LIVE_ARCHIVE_BUCKET_BY_SLUG[slug] ?? DEFAULT_LIVE_ARCHIVE_BUCKET;
-    const { prefixes } = await listKeys(bucket, `positions/${slug}/`, '/');
-    return prefixes.map(p => p.split('/').at(-2)!).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d));
+    const { keys } = await listKeys(bucket, `positions/${slug}/`);
+    const byDate = new Map<string, number>();
+    for (const k of keys) {
+      const d = k.split('/').at(-2)!;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) byDate.set(d, (byDate.get(d) ?? 0) + 1);
+    }
+    return byDate;
   } catch { return null; }
 }
 

@@ -5,7 +5,8 @@
  */
 import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS } from './liveArchiveFeeds';
 import { LIVE_MIN_DAYS_TO_SHOW } from './rules/live';
-import { HEALTHY_DAY_SHARE } from './routeMetrics';
+import { HEALTHY_DAY_SHARE, dayHealth } from './routeMetrics';
+import { dayTypeOfDow } from './rules/days';
 import { percentText } from './numberText';
 import { countOf, plural } from './overflowText';
 import { qualityHold, type LiveV3 } from './liveDashboard';
@@ -19,6 +20,8 @@ export interface LiveCoverage {
   /** Service dates with recordings still kept, oldest first; null when the archive could not be read. */
   firstDay: string | null;
   lastDay: string | null;
+  /** Of those, the near-full days: each holds at least HEALTHY_DAY_SHARE of a typical day's snapshots (dayHealth), so a
+   *  partial first day or today's day so far isn't counted. */
   daysRecorded: number | null;
   /** Whether a day's recordings exist within the last two days (otherwise recording is paused or stopped). */
   recordingNow: boolean | null;
@@ -49,11 +52,17 @@ export function routeIsRecorded(slug: string, routeIds: readonly string[]): bool
 
 const addDays = (ymd: string, n: number) => new Date(Date.parse(`${ymd}T12:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
 
-/** One agency's coverage from the dates its archive holds (YYYY-MM-DD), or null dates when they could not be listed. */
-export function liveCoverage(slug: string, dates: readonly string[] | null, today: string): LiveCoverage {
+/** A UTC date folder's day type, for comparing each day with typical days of its own kind. */
+const dayTypeOfDate = (ymd: string) => dayTypeOfDow(new Date(`${ymd}T12:00:00Z`).getUTCDay());
+
+/**
+ * One agency's coverage from the snapshots its archive holds per date (YYYY-MM-DD → count), or null when they could not
+ * be listed. Days recorded counts only near-full days, by the same rule Live's analysis uses for a good day (dayHealth).
+ */
+export function liveCoverage(slug: string, snapshotsByDate: ReadonlyMap<string, number> | null, today: string): LiveCoverage {
   const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === slug);
   const trip = LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === slug);
-  const sorted = dates ? [...new Set(dates)].sort() : null;
+  const sorted = snapshotsByDate ? [...snapshotsByDate.keys()].sort() : null;
   const last = sorted?.at(-1) ?? null;
   return {
     slug,
@@ -61,7 +70,7 @@ export function liveCoverage(slug: string, dates: readonly string[] | null, toda
     routes: pos ? routesRecorded(pos.routeFilterSource) : 'every route',
     firstDay: sorted?.[0] ?? null,
     lastDay: last,
-    daysRecorded: sorted ? sorted.length : null,
+    daysRecorded: snapshotsByDate ? dayHealth(snapshotsByDate, dayTypeOfDate).filter(d => d.healthy).length : null,
     recordingNow: sorted ? last != null && last >= addDays(today, -2) : null,
     archiveOnly: Boolean(pos?.archiveOnly ?? trip?.archiveOnly),
   };
