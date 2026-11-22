@@ -1,0 +1,83 @@
+name: Studio Live refresh
+
+# Rebuilds Studio's Live files for every Studio city every day (CIV-2077; Ryan picked "Add those two checks and switch on
+# a daily automatic run for every Studio city, matching TTC"). Every agency Live records except the TTC, whose report
+# rebuilds in live-report-refresh.yml. The files go to the PRIVATE archive bucket under studio-live/; this Mac copies them
+# into ../_live-data/out with `npm run studio:sync`.
+#
+#   gh workflow run studio-live-refresh.yml                     dry-run: builds with the read-only keys, uploads nothing
+#   gh workflow run studio-live-refresh.yml -f mode=publish     main only: builds and uploads, then switches the pointer
+#
+# Studio is private and this repository is public: the script logs counts only, and the job uploads no artifact and
+# saves no cache. Its safety checks (docs/operations/LIVE_ANALYSIS.md): each run uploads to its own prefix and switches
+# studio-live/current.json once, so a failed upload changes nothing; an agency whose either week has too few good days
+# keeps its last files.
+#
+# The daily run is off until the repository variable STUDIO_LIVE_DAILY is 1 (the first scheduled publish needs a go).
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run builds and uploads nothing (read-only keys). publish uploads and switches the pointer (main only).'
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - publish
+  # 09:47 UTC, after live-report-refresh (09:17) and off the :00/:30 rush.
+  schedule:
+    - cron: '47 9 * * *'
+
+permissions:
+  contents: read
+
+env:
+  TZ: America/Toronto
+
+concurrency:
+  group: studio-live-refresh
+  cancel-in-progress: false
+
+jobs:
+  studio-live:
+    if: github.event_name != 'schedule' || vars.STUDIO_LIVE_DAILY == '1'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 150
+    env:
+      MODE: ${{ github.event_name == 'schedule' && 'publish' || inputs.mode }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      # The write keys only when publishing from main; a dry run never sees them.
+      R2_ACCESS_KEY_ID: ${{ (github.event_name == 'schedule' || inputs.mode == 'publish') && github.ref == 'refs/heads/main' && secrets.R2_ACCESS_KEY_ID || secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ (github.event_name == 'schedule' || inputs.mode == 'publish') && github.ref == 'refs/heads/main' && secrets.R2_SECRET_ACCESS_KEY || secrets.R2_RO_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Check the mode and the branch
+        run: |
+          case "$MODE" in dry-run|publish) ;; *) echo "mode must be dry-run or publish, got: $MODE"; exit 1 ;; esac
+          if [ "$MODE" = "publish" ] && [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "Refusing to publish from $GITHUB_REF: publishing only runs from main. Use mode=dry-run for a branch."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build and upload Studio's Live files
+        run: |
+          if [ "$MODE" = "publish" ]; then
+            npx tsx scripts/studio-live-cloud.ts --days 15 --work "$RUNNER_TEMP/studio-live"
+          else
+            npx tsx scripts/studio-live-cloud.ts --dry-run --days 15 --work "$RUNNER_TEMP/studio-live"
+          fi

@@ -17,12 +17,12 @@
  * private bucket), R2_BUCKET_NAME (Live's published TTC files), R2_ARCHIVE_BUCKET_NAME, MCP_LIVE_BUCKET (the private bucket).
  */
 import { spawnSync } from 'child_process';
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_ARCHIVE_SLUGS, liveCoverage, liveFiguresReady } from '../../shared/liveCoverage';
 import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_MIN_DAYS_TO_SHOW } from '../../shared/rules/live';
-import { readCsv } from '../live-agency-summary';
+import { analyseArchivedAgency, LiveBuildFailed } from '../liveArchiveAnalysis';
 import { liveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
 import type { AgencySummary } from '../../shared/liveAgency';
@@ -88,7 +88,6 @@ async function archiveDates(slug: string): Promise<Map<string, number> | null> {
 }
 
 interface Built { files: Map<string, unknown>; routes: string[]; manifest: LiveManifest | null }
-class BuildFailed extends Error {}
 
 /** The TTC: Live's own published summaries (live-report-refresh builds them daily). */
 async function fromPublished(slug: string): Promise<Built> {
@@ -111,26 +110,10 @@ async function fromPublished(slug: string): Promise<Built> {
 /** Any other agency: fetch its archive and timetables, run Live's analysis per route, keep the routes with enough good days. */
 function fromArchive(slug: string): Built {
   const files = new Map<string, unknown>();
-  const archive = join(work, `archive-${slug}`), feeds = join(work, 'gtfs', 'candidates', `${slug}-feeds`), out = join(work, 'out');
-  mkdirSync(out, { recursive: true });
-  if (!run('scripts/live-fetch-archive.ts', ['--agency', slug, '--days', String(days), '--out', archive, '--prune'])) throw new BuildFailed('fetch');
-  if (!run('scripts/live-gtfs-for-window.ts', ['--agency', slug, '--days', String(days), '--feeds-dir', feeds, '--archive', archive])) throw new BuildFailed('timetables');
-  const feedDirs = existsSync(feeds) ? readdirSync(feeds).map(d => join(feeds, d)).filter(d => existsSync(join(d, 'trips.txt'))).sort() : [];
-  if (!feedDirs.length) throw new BuildFailed('timetables');
-  const gtfs = feedDirs.join(',');
-  // The archive and the analysis key routes by the live feed's route_id; answers use the route number riders know.
-  const shortOf = new Map<string, string>();
-  for (const d of feedDirs) for (const r of readCsv(readFileSync(join(d, 'routes.txt'), 'utf8'))) shortOf.set(r.route_id, r.route_short_name || r.route_id);
+  const { outDir: out, shortOf, routes: analysed } = analyseArchivedAgency(slug, { work, days, run });
   const short = (id: string) => shortOf.get(id) ?? id;
-  const archived = [...new Set(readdirSync(archive).map(f => f.match(/^(.+)-\d{4}-\d{2}-\d{2}\.jsonl$/)?.[1]).filter((r): r is string => !!r && /^[A-Za-z0-9]+$/.test(r)))]
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const ready = new Map<string, { generatedAt: string; v3: LiveV3 }>();
-  for (const route of archived) {
-    const file = join(out, `${slug}-${route}-segments.json`);
-    if (!run('scripts/live-segment-delay.ts', ['--gtfs', gtfs, '--archive', archive, '--route', route, '--days', String(days), '--agency', slug, '--out', file])) continue;
-    const r = JSON.parse(readFileSync(file, 'utf8')) as { generatedAt?: string; v3?: LiveV3 };
-    if (r.v3 && liveFiguresReady(r.v3)) ready.set(route, { generatedAt: r.generatedAt ?? new Date().toISOString(), v3: r.v3 });
-  }
+  for (const [route, r] of analysed) if (r.v3 && liveFiguresReady(r.v3)) ready.set(route, { generatedAt: r.generatedAt ?? new Date().toISOString(), v3: r.v3 });
   const routes = [...ready.keys()].map(short);
   if (!routes.length) return { files, routes, manifest: null };
   // Titles and the ranking come from the agency summary live-segment-delay.ts rebuilds after each route.
@@ -158,7 +141,7 @@ let failed = 0;
 for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
   try {
     const coverage = liveCoverage(slug, await archiveDates(slug), today);
-    if (coverage.daysRecorded == null) throw new BuildFailed('archive');
+    if (coverage.daysRecorded == null) throw new LiveBuildFailed('archive');
     // Too few days for any route to qualify (the first may be partial): skip the analysis.
     const built = slug === 'ttc' ? await fromPublished(slug)
       : coverage.daysRecorded > LIVE_MIN_DAYS_TO_SHOW ? fromArchive(slug) : { files: new Map(), routes: [], manifest: null } as Built;

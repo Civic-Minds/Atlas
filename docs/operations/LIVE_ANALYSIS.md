@@ -30,14 +30,27 @@ every stored surface zip the window needs into `gtfs/candidates/surface-feeds/`)
 its timetable below 90%, when another stored timetable matches a day better than the one chosen, or when the fetch could not
 read more than 2% of a day's snapshots.
 
-Atlas Studio agencies (Kingston, CIV-1686) are refreshed on Ryan's Mac only, never on GitHub: Studio is local only (DECISIONS,
-2026-11-15) and the repository is public, so a run's files and logs would make the report public (CIV-1716, Ryan picked option 1 on
-2026-11-16). `npm run studio:report` (Kingston, last 15 service dates; `npm run studio:report -- <slug> --days N` for another) reads
-with the local keys and writes nothing to R2. It fetches the agency's positions (`live-fetch-archive.ts --agency`), takes each
-service date's timetable from the agency's own archived static GTFS (`live-gtfs-for-window.ts --agency`, `gtfs/archive/<slug>/`),
-analyses every route in its archive (`live-analyze.sh all --agency <slug>`) and writes a time-loss report per route to
-`$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to the one shared folder, `Atlas-worktrees/_live-data`, whichever checkout runs
-it. Kingston has enough recorded days from about 2026-12-28.
+Atlas Studio agencies (every city Live records except the TTC) are rebuilt in the cloud every day (CIV-2077; Ryan picked
+"Add those two checks and switch on a daily automatic run for every Studio city, matching TTC"). The workflow
+`studio-live-refresh.yml` runs Live's route analysis for each of them (`scripts/studio-live-cloud.ts`) and uploads the files
+Studio's Live page reads (`<slug>-<route>-segments.json`, `<slug>-agency.json`) to the PRIVATE archive bucket under
+`studio-live/`. The repository is public (CIV-1716), so the log shows counts only and the job uploads no artifact and saves
+no cache. `npm run studio:sync` copies the current files into `../_live-data/out` on this Mac, one agency at a time, whole.
+
+- `gh workflow run studio-live-refresh.yml` (mode `dry-run`, the default) builds with the read-only keys and uploads
+  nothing; the log gives the counts. `-f mode=publish` uploads, from `main` only.
+- **No half-finished upload**: a run uploads to its own prefix (`studio-live/runs/<run id>/`) and then switches
+  `studio-live/current.json` to it in one write. A failed upload removes its prefix and leaves the pointer alone. The
+  newest three runs nothing points at are kept; to undo, point an agency back at one of them by hand.
+- **No thin weeks**: an agency's new files replace its old ones only when each of its two weeks has at least
+  `LIVE_MIN_HEALTHY_DAYS_PER_WEEK` good days on any route. Its first build needs only this week. Otherwise it keeps its
+  last files.
+- The daily run (09:47 UTC) is off until the repository variable `STUDIO_LIVE_DAILY` is `1`. The first scheduled publish
+  needs a go.
+
+`npm run studio:report` (Kingston, last 15 service dates; `npm run studio:report -- <slug> --days N` for another) still
+builds the same on this Mac, plus a time-loss report per route in `$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to
+the one shared folder, `Atlas-worktrees/_live-data`, whichever checkout runs it.
 
 One exception, for the hosted Atlas Studio MCP only (CIV-1860, Ryan approved 2026-11-18): the `mcp-live` job in
 `live-report-refresh.yml` analyses every recorded agency, Studio agencies included, and writes the MCP's small figure files
