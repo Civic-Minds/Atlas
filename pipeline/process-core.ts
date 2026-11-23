@@ -3801,7 +3801,11 @@ export async function processGtfsBuffer(
       if (branchReadingsFromEnv() && pk !== 'overnight' && period.headway != null && period.coverage != null) {
         // The filter's own value for the row (stretchFilterValue): a steady period within PERIOD_COVERAGE_MAX_HEADWAY reads its spacing, never its wait,
         // so it has no edge; any other period reads its full-window wait, and an edge that sets it is worded.
-        const edgeValue = period.sustained === true && period.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? period.headway : period.coverage;
+        // #1715: the steadiness the card reads, after D8's midpoint test (headwayByPeriodSustainedMid, applied to the flag below):
+        // a period D8 calls unsteady reads its wait on the card, so its edge is read here (TTC 510 weekday evening to Queens Quay:
+        // "every 10 min until 10:03 PM", not a bare 57).
+        const steady = period.sustained === true && (feature.properties.headwayByPeriodSustainedMid as HeadwayByPeriodSustained | undefined)?.[pk] !== false;
+        const edgeValue = steady && period.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? period.headway : period.coverage;
         const edge = periodEdge(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end, edgeValue);
         if (edge) rowEdges[pk] = edge;
         else {
