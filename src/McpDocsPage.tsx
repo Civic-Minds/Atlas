@@ -153,7 +153,7 @@ function Usage() {
           xTickLabels={(_p, i) => usage.days.length <= 7 || i % 7 === 0}
         />
       </div>
-      {!usage.complete && <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">{U.partial}</p>}
+      {!usage.complete && <p className={PARAGRAPH}>{U.partial}</p>}
     </>
   );
 }

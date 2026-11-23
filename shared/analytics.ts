@@ -107,7 +107,7 @@ export const ANALYTICS_COPY = {
   mapViews: (views: string) => `The map (/) had ${views} views; the bars show every other page.`,
   barsLabel: (heading: string) => `Bar chart: ${heading}`,
   /** The date is shortDate(PAGE_VIEWS_FIXED_ON). */
-  pageViewsNote: (date: string) => `Page views before ${date} read high, and so does the map's count under Pages: Google Analytics also counted each map move and filter change as a view of the map.`,
+  pageViewsNote: (date: string) => `Page views before ${date} read high, and so does the map’s count under Pages: Google Analytics also counted each map move and filter change as a view of the map.`,
 } as const;
 
 /** GA's placeholder names (sources and countries), in words. */
