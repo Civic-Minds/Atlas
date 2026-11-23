@@ -166,7 +166,13 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
   // The map's pick in a ref: a new callback each render would redraw the overlay every time.
   const setRouteRef = useRef(setRoute);
   setRouteRef.current = setRoute;
-  const onPick = useMemo(() => (p: MapPick | null) => { if (p?.kind === 'line' && p.route) setRouteRef.current(p.route); }, []);
+  const routeRef = useRef(route);
+  routeRef.current = route;
+  // #1748: an empty-map click or Escape (a null pick) closes the open route, as on the main map.
+  const onPick = useMemo(() => (p: MapPick | null) => {
+    if (p?.kind === 'line' && p.route) setRouteRef.current(p.route);
+    else if (!p && routeRef.current) setRouteRef.current(null);
+  }, []);
   const { setOverlay } = usePageMapOverlay();
   // Studio's frame owns where the map is framed (CIV-1925).
   const { frameKey, framedMemory, holdFrame } = useStudioMapFrame();

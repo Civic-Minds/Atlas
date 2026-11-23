@@ -185,6 +185,9 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
       setTip(text ? { x: e.point.x, y: e.point.y, text } : null);
     };
     const onOut = () => setTip(null);
+    // #1748: Escape dismisses the selection like an empty-map click, as on the main map (Interval's Escape handler).
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') pick.current(null, null); };
+    window.addEventListener('keydown', onKey);
     const onPlace = () => placeRef.current();
     map.on('click', onClick);
     map.on('mousemove', onMove);
@@ -196,6 +199,7 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
       ownFramed.current = null;
       map.off('click', onClick);
       map.off('mousemove', onMove);
+      window.removeEventListener('keydown', onKey);
       map.off('mouseout', onOut);
       map.off('move', onPlace);
       map.off('resize', onPlace);
