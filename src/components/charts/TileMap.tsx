@@ -10,8 +10,8 @@ export interface MapTile {
   row: number;
   /** The figure in the middle (an age, "Mix", "–"). */
   value: string;
-  /** The small number under it (agencies). */
-  count: number;
+  /** The small number under it (agencies); left out, the tile shows only its name and figure. */
+  count?: number;
   /** A colour, or "none" for an outline only. */
   fill: string;
   /** The fill is dark enough that the words need the panel colour. */
@@ -60,7 +60,7 @@ export default function TileMap({ tiles, label, details }: {
               style={t.darkFill ? { color: 'var(--bg-panel)' } : undefined}>
               <span className="text-xs leading-3 sm:leading-4">{t.abbr}</span>
               <span className={`text-xs leading-3 sm:text-sm sm:leading-5 ${t.value.length > 2 ? 'font-semibold sm:font-black' : CHART_COUNT}`}>{t.value}</span>
-              <span className="hidden text-xs leading-3 sm:block">{t.count}</span>
+              {t.count != null && <span className="hidden text-xs leading-3 sm:block">{t.count}</span>}
             </span>
           </button>
         );
