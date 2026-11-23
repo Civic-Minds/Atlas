@@ -9,7 +9,7 @@ import { createSign } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { ANALYTICS_RANGES, ANALYTICS_TOP_ROWS, type AnalyticsResponse, type AnalyticsRow, type AnalyticsWindow } from '../shared/analytics.js';
+import { ANALYTICS_RANGES, ANALYTICS_TOP_ROWS, type AnalyticsDay, type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow } from '../shared/analytics.js';
 
 const CREDENTIALS = join(homedir(), 'Developer/Credentials');
 const KEY_FILE = join(CREDENTIALS, 'Google Analytics read-only for Atlas.json');
@@ -63,23 +63,61 @@ async function accessToken(sa: ServiceAccount): Promise<string> {
 
 interface GaReport { rows?: { dimensionValues?: { value: string }[]; metricValues: { value: string }[] }[] }
 
-/** The three reports for one window: totals, top pages by views, countries by visitors. */
+/**
+ * The five reports for one window (batchRunReports' limit): totals for the window and the one before it, top pages by
+ * views, countries by visitors, sources by visits, and visitors per day.
+ */
 export function windowRequests(days: number) {
   const dateRanges = [{ startDate: `${days}daysAgo`, endDate: 'yesterday' }];
+  const withPrevious = [...dateRanges, { startDate: `${days * 2}daysAgo`, endDate: `${days + 1}daysAgo` }];
+  const top = (dimension: string, metric: string) => ({ dateRanges, dimensions: [{ name: dimension }], metrics: [{ name: metric }], orderBys: [{ metric: { metricName: metric }, desc: true }], limit: ANALYTICS_TOP_ROWS });
   return [
-    { dateRanges, metrics: [{ name: 'sessions' }, { name: 'activeUsers' }, { name: 'screenPageViews' }] },
-    { dateRanges, dimensions: [{ name: 'pagePath' }], metrics: [{ name: 'screenPageViews' }], orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: ANALYTICS_TOP_ROWS },
-    { dateRanges, dimensions: [{ name: 'country' }], metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: ANALYTICS_TOP_ROWS },
+    { dateRanges: withPrevious, metrics: [{ name: 'sessions' }, { name: 'activeUsers' }, { name: 'screenPageViews' }] },
+    top('pagePath', 'screenPageViews'),
+    top('country', 'activeUsers'),
+    top('sessionSource', 'sessions'),
+    { dateRanges, dimensions: [{ name: 'date' }], metrics: [{ name: 'activeUsers' }], orderBys: [{ dimension: { dimensionName: 'date' } }] },
   ];
 }
 
 const num = (v: string | undefined) => Number(v ?? 0) || 0;
 const rowsOf = (r: GaReport | undefined): AnalyticsRow[] => (r?.rows ?? []).map(x => ({ name: x.dimensionValues?.[0]?.value ?? '', value: num(x.metricValues[0]?.value) }));
 
+/** With two date ranges GA adds a dateRange dimension ("date_range_0", "date_range_1") and doesn't promise the order. */
+function totalsFor(report: GaReport | undefined, range: 'date_range_0' | 'date_range_1'): AnalyticsTotals {
+  const rows = report?.rows ?? [];
+  const row = rows.find(r => r.dimensionValues?.[0]?.value === range) ?? (range === 'date_range_0' && !rows[0]?.dimensionValues ? rows[0] : undefined);
+  const t = row?.metricValues ?? [];
+  return { visits: num(t[0]?.value), visitors: num(t[1]?.value), pageViews: num(t[2]?.value) };
+}
+
+const ymdToMs = (d: string) => Date.UTC(Number(d.slice(0, 4)), Number(d.slice(4, 6)) - 1, Number(d.slice(6, 8)));
+const msToYmd = (ms: number) => new Date(ms).toISOString().slice(0, 10).replaceAll('-', '');
+
+/** Visitors per day, oldest first; GA leaves out a day with no visits, so a gap between two days is filled with 0. */
+export function dailyOf(report: GaReport | undefined): AnalyticsDay[] {
+  const got = new Map((report?.rows ?? []).map(r => [r.dimensionValues?.[0]?.value ?? '', num(r.metricValues[0]?.value)] as const));
+  const dates = [...got.keys()].filter(d => /^\d{8}$/.test(d)).sort();
+  if (!dates.length) return [];
+  const out: AnalyticsDay[] = [];
+  for (let ms = ymdToMs(dates[0]); ms <= ymdToMs(dates[dates.length - 1]); ms += 86_400_000) {
+    const date = msToYmd(ms);
+    out.push({ date, visitors: got.get(date) ?? 0 });
+  }
+  return out;
+}
+
 /** One window's figures from the batchRunReports answer (reports in windowRequests' order). */
 export function readWindow(days: (typeof ANALYTICS_RANGES)[number], reports: GaReport[]): AnalyticsWindow {
-  const t = reports[0]?.rows?.[0]?.metricValues ?? [];
-  return { days, totals: { visits: num(t[0]?.value), visitors: num(t[1]?.value), pageViews: num(t[2]?.value) }, pages: rowsOf(reports[1]), countries: rowsOf(reports[2]) };
+  return {
+    days,
+    totals: totalsFor(reports[0], 'date_range_0'),
+    previous: totalsFor(reports[0], 'date_range_1'),
+    pages: rowsOf(reports[1]),
+    countries: rowsOf(reports[2]),
+    sources: rowsOf(reports[3]),
+    daily: dailyOf(reports[4]),
+  };
 }
 
 export default {

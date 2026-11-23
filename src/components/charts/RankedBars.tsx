@@ -1,3 +1,4 @@
+import { countText } from '../../../shared/numberText';
 import type { Key, ReactNode } from 'react';
 import { withCount } from './chartCategories';
 import { ACTIVE_BG, CHART_COUNT, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
@@ -18,7 +19,7 @@ export interface RankedBar {
  * bar the split bar's way (useActivePart): hovering, focusing or tapping a row fades the other bars and highlights its name,
  * and the names and counts use the split bar legend's text (CategorySpark, SplitBar).
  */
-export default function RankedBars({ bars: allBars, max, label, details, defaultKey = null, keepEmpty = false }: {
+export default function RankedBars({ bars: allBars, max, label, details, defaultKey = null, keepEmpty = false, labelWidth = '4.5rem' }: {
   bars: readonly RankedBar[];
   /** The value a full-width bar stands for (shared when two charts sit on one scale). */
   max: number;
@@ -30,6 +31,8 @@ export default function RankedBars({ bars: allBars, max, label, details, default
   defaultKey?: Key | null;
   /** Keep bars with no count (chartCategories: only where the empty bar is the point). */
   keepEmpty?: boolean;
+  /** The name column's width (CSS length); wider for long names such as page addresses. */
+  labelWidth?: string;
 }) {
   const bars = withCount(allBars, keepEmpty);
   const { active, clear, faded, partEvents } = useActivePart(defaultKey);
@@ -41,7 +44,8 @@ export default function RankedBars({ bars: allBars, max, label, details, default
           type="button"
           aria-label={bar.sentence}
           {...partEvents(bar.key)}
-          className={`grid w-full cursor-pointer grid-cols-[4.5rem_1fr_3rem] items-center gap-3 rounded-sm border-0 bg-transparent p-0 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT}`}
+          style={{ gridTemplateColumns: `${labelWidth} 1fr 3rem` }}
+          className={`grid w-full cursor-pointer items-center gap-3 rounded-sm border-0 bg-transparent p-0 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT}`}
         >
           <span>
             <span data-active={active === bar.key ? 'true' : undefined} className="-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors"
@@ -51,7 +55,7 @@ export default function RankedBars({ bars: allBars, max, label, details, default
             <span className="block h-full rounded-full opacity-90 transition-opacity"
               style={{ width: `${(bar.value / max) * 100}%`, background: bar.fill, opacity: faded(bar.key) ? FADED_OPACITY : undefined }} />
           </span>
-          <span className={`text-right ${CHART_COUNT}`}>{bar.value}</span>
+          <span className={`text-right ${CHART_COUNT}`}>{countText(bar.value)}</span>
         </button>
       ))}
     </div>
