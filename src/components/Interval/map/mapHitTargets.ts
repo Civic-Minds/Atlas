@@ -23,16 +23,41 @@ export const MAP_HIT_PRIORITY = [
 
 export type MapHitKind = typeof MAP_HIT_PRIORITY[number]['kind'];
 
-export interface MapHit {
-  kind: MapHitKind;
+export interface MapHit<K extends string = MapHitKind> {
+  kind: K;
   features: MapGeoJSONFeature[];
+}
+
+/** One kind of thing a click can pick, its layers and how far from the pointer it answers. */
+export interface MapHitRule<K extends string = string> { kind: K; layers: readonly string[]; tolerancePx: number }
+
+const toleranceOf = (kind: MapHitKind) => MAP_HIT_PRIORITY.find(r => r.kind === kind)!.tolerancePx;
+
+/**
+ * CIV-2189 (#1748 follow-up; Ryan: "The Studio map has different basic behaviours too and I don't know why"): a page's
+ * drawing on the map (PageMapLayer, Studio) picks by the main map's rule: stops first and only under the pointer, then
+ * its lines within the main map's route-line distance. Its segments are route lines, so they take that distance too.
+ */
+export function pageMapHitPriority(layerId: (name: string) => string): MapHitRule<'stop' | 'segment' | 'line'>[] {
+  return [
+    { kind: 'stop', layers: [layerId('stp')], tolerancePx: toleranceOf('stop') },
+    { kind: 'segment', layers: [layerId('seg')], tolerancePx: toleranceOf('route') },
+    { kind: 'line', layers: [layerId('line'), layerId('line-dash')], tolerancePx: toleranceOf('route') },
+  ];
 }
 
 type HitMap = Pick<MaplibreMap, 'getLayer' | 'queryRenderedFeatures'>;
 
-/** The highest-priority kind with a feature under the point, and its features; null over empty map. */
-export function topMapHit(map: HitMap, point: { x: number; y: number }): MapHit | null {
-  for (const { kind, layers, tolerancePx } of MAP_HIT_PRIORITY) {
+/**
+ * The highest-priority kind with a feature under the point, and its features; null over empty map. The main map's
+ * list by default; a page's drawing passes its own (pageMapHitPriority), read by the same rule.
+ */
+export function topMapHit<K extends string = MapHitKind>(
+  map: HitMap,
+  point: { x: number; y: number },
+  rules: readonly MapHitRule<K>[] = MAP_HIT_PRIORITY as unknown as readonly MapHitRule<K>[],
+): MapHit<K> | null {
+  for (const { kind, layers, tolerancePx } of rules) {
     const present = layers.filter(id => map.getLayer(id));
     if (present.length === 0) continue;
     const where: PointLike | [PointLike, PointLike] = tolerancePx > 0

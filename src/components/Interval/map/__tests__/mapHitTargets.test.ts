@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAP_HIT_PRIORITY, topMapHit } from '../mapHitTargets';
+import { MAP_HIT_PRIORITY, pageMapHitPriority, topMapHit } from '../mapHitTargets';
 
 // A map whose layers each answer with the features "under" the pointer; the box a query used is recorded.
 function fakeMap(hits: Record<string, string[]>, missing: string[] = []) {
@@ -60,5 +60,29 @@ describe('map click priority (CIV-1011 #13)', () => {
     expect(topMapHit(map, P)).toBeNull();
     expect(map.queries[0].layers).not.toContain('stops-layer');
     expect(map.queries.flatMap(q => q.layers)).not.toContain('local-routes-hit-layer');
+  });
+});
+
+// CIV-2189: Studio's map (PageMapLayer) picks by the main map's rule, not its own 6 px box.
+describe("a page's drawing picks by the main map's rule (CIV-2189)", () => {
+  const rules = pageMapHitPriority(name => `page-${name}`);
+  const tol = (kind: string) => MAP_HIT_PRIORITY.find(r => r.kind === kind)!.tolerancePx;
+
+  it('uses the main map\'s distances: stops under the pointer, lines and segments at the route-line distance', () => {
+    expect(rules.map(r => [r.kind, r.tolerancePx])).toEqual([['stop', tol('stop')], ['segment', tol('route')], ['line', tol('route')]]);
+  });
+
+  it('a stop on a segment opens the stop, a segment over a line opens the segment', () => {
+    expect(topMapHit(fakeMap({ 'page-stp': ['s'], 'page-seg': ['g'] }), P, rules)?.kind).toBe('stop');
+    expect(topMapHit(fakeMap({ 'page-seg': ['g'], 'page-line': ['l'] }), P, rules)?.kind).toBe('segment');
+    expect(topMapHit(fakeMap({ 'page-line-dash': ['l'] }), P, rules)?.kind).toBe('line');
+    expect(topMapHit(fakeMap({}), P, rules)).toBeNull();
+  });
+
+  it('asks for segments within the route-line box, never a 6 px one', () => {
+    const map = fakeMap({ 'page-seg': ['g'] });
+    topMapHit(map, P, rules);
+    const r = tol('route');
+    expect(map.queries.find(q => q.layers.includes('page-seg'))?.where).toEqual([[P.x - r, P.y - r], [P.x + r, P.y + r]]);
   });
 });
