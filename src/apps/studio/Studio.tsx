@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import StudioChips from './StudioChips';
 import { StudioSettingsProvider, type StudioGeneralSettings } from './StudioSettings';
 import { useLocation, useNavigate } from 'react-router';
 import { Activity, Bus, GitCompare } from 'lucide-react';
@@ -162,6 +163,9 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
         }),
         tabsPortal,
       )}
+      {/* #1747 (Ryan: "Inside Studio why is the settings button hidden on the main page but it appears when you open Schedules
+          app?"): with no page open the top bar still holds the Settings gear, alone; a page's chips bring it with their menus. */}
+      {active && closed && !leaving && <StudioChips container={headerPortal} menus={[]} />}
       {(open || leaving) && (
         <div className={open ? '' : `opacity-0 transition-opacity ${MODE_EASE} pointer-events-none`}>
           {v.noData && (

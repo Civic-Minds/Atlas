@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import Studio from '../apps/studio/Studio';
@@ -25,6 +25,18 @@ function setup(url: string) {
   render(<MemoryRouter initialEntries={[url]}><PageMapOverlayProvider><Studio agencyCatalog={[]} tabsPortal={tabs} headerPortal={null} /></PageMapOverlayProvider><Where /></MemoryRouter>);
   return tabs;
 }
+
+// #1747: with no page open, Studio's top bar still holds the Settings gear.
+describe('Studio with no page open (#1747)', () => {
+  it('shows the Settings gear in the top bar, alone', () => {
+    const tabs = document.createElement('div');
+    const header = document.createElement('div');
+    document.body.append(tabs, header);
+    render(<MemoryRouter initialEntries={['/studio']}><PageMapOverlayProvider><Studio agencyCatalog={[]} tabsPortal={tabs} headerPortal={header} settings={{ lightMode: true, setLightMode: () => {}, showMapLegend: true, setShowMapLegend: () => {}, dataSaver: false, setDataSaver: () => {} }} /></PageMapOverlayProvider></MemoryRouter>);
+    expect(screen.queryByText('live panel')).toBeNull();
+    expect(within(header).getAllByRole('button', { name: /settings/i }).length).toBe(1);
+  });
+});
 
 describe('Studio mode tabs toggle their panel (#1588)', () => {
   it('clicking the active tab closes its panel, stays in Studio and keeps the agency', () => {
