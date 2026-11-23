@@ -13,7 +13,9 @@ vehicle positions and the timetable.
 
 The report pages on beta read `atlas/live/ttc/<route>.json`, `agency.json` and `manifest.json` from the public bucket. The
 `live-report-refresh.yml` workflow rebuilds them from the last 15 service dates. It runs and publishes every day at 09:17 UTC
-(CIV-1690), for TTC only, and can also be run by hand:
+(CIV-1690), for TTC only, and can also be run by hand. GitHub sometimes drops a scheduled run, so backups at 14:17 and
+19:17 UTC run only when the day's publish hasn't succeeded yet, and the manager's check-in flags a refresh whose last
+success (`scripts/ci/refresh-last-success.sh`) is over 30 hours old (CIV-2177):
 
 - `gh workflow run live-report-refresh.yml` (mode `no-publish`, the default) builds everything with the read-only R2 keys and
   writes nothing. The run artifact `live-report-files-<run id>` holds the files and `review/summary.md`: the weeks covered, the
@@ -45,7 +47,7 @@ no cache. `npm run studio:sync` copies the current files into `../_live-data/out
 - **No thin weeks**: an agency's new files replace its old ones only when each of its two weeks has at least
   `LIVE_MIN_HEALTHY_DAYS_PER_WEEK` good days on any route. Its first build needs only this week. Otherwise it keeps its
   last files.
-- The daily run (09:47 UTC) is off until the repository variable `STUDIO_LIVE_DAILY` is `1`. The first scheduled publish
+- The daily run (09:47 UTC, with backups at 14:47 and 19:47 that run only when the day's hasn't succeeded) is off until the repository variable `STUDIO_LIVE_DAILY` is `1`. The first scheduled publish
   needs a go.
 
 `npm run studio:report` (Kingston, last 15 service dates; `npm run studio:report -- <slug> --days N` for another) still
