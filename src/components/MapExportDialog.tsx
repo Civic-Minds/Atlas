@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Download, Share2 } from 'lucide-react';
 import { PanelCloseButton } from './ui/PanelHeader';
-import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP, CARD_NOTE } from '../styles';
+import { CARD_NOTE, CONTROL_ACTIVE, CONTROL_INACTIVE, FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
 import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
@@ -134,7 +134,8 @@ export default function MapExportDialog({ open, prepareSource, releaseSource, de
               type="button"
               onClick={() => setSelectedSizeId(size.id)}
               aria-pressed={selectedSizeId === size.id}
-              className={`rounded-lg px-2 py-2 text-xs font-black transition-colors ${selectedSizeId === size.id ? 'bg-[var(--control-active-bg)] text-[var(--control-active-fg)]' : 'text-[var(--text-dim)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--text-primary)]'}`}
+              // #1754: the shared control states, so only the picked size reads as selected and hover stays lighter than it.
+              className={`rounded-lg border px-2 py-2 text-xs font-black transition-colors ${selectedSizeId === size.id ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
             >
               <span className="block">{size.label}</span>
               <span className="mt-0.5 block text-xs font-bold opacity-75">{SIZE_HINTS[size.id]}</span>
