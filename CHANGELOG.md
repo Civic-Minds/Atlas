@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The internal Analytics page shows charts**: visitors per day, the change from the period before, and where visitors came from, so a spike or a new referrer (such as the City of Toronto's open data showcase) stands out
+- **The internal MCP page charts questions per day**: every tester together over the last 28 days, so it's clear at a glance whether the hosted server is being used
 - **Atlas Studio MCP's hour-by-hour view no longer says a stop has no trips when another branch serves it**: TTC 501's Sunday "Humber: no regular trips" after 11 PM is gone, since the cars to Long Branch pass Humber Loop every 10
 - **Atlas Studio MCP's hour-by-hour view keeps a branch that runs mostly at night**: TTC 501's Sunday westbound read "no regular trips" after 11 PM because the cars that run then go to Long Branch, a branch too small over the whole day to get its own column
 - **Atlas Studio MCP explains a long wait where service ends partway through a period**: TTC 501's Sunday Late read "every 5–10 min" beside a 47 min wait with nothing to connect them; it now says the wait counts from the main stretch's last trip ("every 5 min until 1:13 AM") to 2 AM
