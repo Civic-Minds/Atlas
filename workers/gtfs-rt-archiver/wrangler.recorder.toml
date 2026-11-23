@@ -4,12 +4,15 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-ARCHIVE_SHARD = "all"
+ARCHIVE_SHARD = "live-v2"
 
 [[r2_buckets]]
 binding = "BUCKET"
 bucket_name = "atlas-live"
 
+# CIV-2073, step A (2026-11-23, Ryan: "Yes"): the Hamilton canary. Runs only the live-v2 shard (v2 snapshots for
+# Hamilton); every v1 shard stays on its own Worker. Step B switches ARCHIVE_SHARD to "all" (below) with its own go.
+#
 # CIV-2073: the one recorder Worker. It runs every shard marked recording in shared/liveArchiveFeeds.ts: the v1 archive
 # shards and the v2 cloud recorder (live-v2, Hamilton first as the canary). It replaces the per-shard wrangler.*.toml
 # Workers, which exist only because the free plan caps CPU at 10 ms and crons at five.
@@ -19,6 +22,9 @@ bucket_name = "atlas-live"
 #   2. Mark the live-v2 shard recording (shared/liveArchiveFeeds.ts) and add crons = ["* * * * *"] below.
 #   3. Deploy this Worker, then remove the [triggers] from the per-shard Workers and redeploy them (or delete them),
 #      moving their shards' crons here; shared/__tests__/liveArchiveFeeds.test.ts then checks this file.
+
+[triggers]
+crons = ["* * * * *"]
 
 [observability]
 enabled = true

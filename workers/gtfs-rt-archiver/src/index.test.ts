@@ -110,7 +110,8 @@ describe('one recorder Worker (CIV-2073)', () => {
   it('runs every recording shard under "all", and one shard by its id', () => {
     const recording = LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).map(s => s.id);
     expect(shardsToRun('all').map(s => s.id)).toEqual(recording);
-    expect(shardsToRun('all').map(s => s.id)).not.toContain('live-v2');
+    // Step A: the canary Worker runs the live-v2 shard alone.
+    expect(shardsToRun('live-v2').map(s => s.id)).toEqual(['live-v2']);
     expect(shardsToRun('hamilton').map(s => s.id)).toEqual(['hamilton']);
     expect(shardsToRun('nope')).toEqual([]);
   });

@@ -71,8 +71,8 @@ export const LIVE_ARCHIVE_SHARDS = [
   // CIV-2073: the cloud recorder (atlas.live.v2, workers/gtfs-rt-archiver/src/v2.ts, run by wrangler.recorder.toml), Hamilton first as the canary. Its
   // feeds and paces come from shared/liveRecorderFeeds.ts.
   {
-    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton'],
-    paused: { since: '2026-11-21', reason: 'Not deployed yet: waits for the Workers Paid plan and the manager’s go (CIV-2073).' },
+    // Recording since 2026-11-23 (Ryan: "Yes" to the Hamilton canary): atlas-live-recorder, wrangler.recorder.toml.
+    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton'], recording: true,
   },
 ] as const;
 
