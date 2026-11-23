@@ -283,7 +283,12 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   ...(inStudio ? [...s.held].sort((a, b) => a.route.localeCompare(b.route, undefined, { numeric: true })).map(h => routeOption(h.route, h.route, h.longName, h.mode)) : [])], [s, networkV3, chosen, band, inStudio]); // eslint-disable-line react-hooks/exhaustive-deps
   const openRoute = (r: string) => { setRoute(r); setPick(null); };
   const overview = <OverviewList s={s} measure={chosen} band={band} route={route} network={networkV3} onPick={openRoute} />;
-  const onMapPick = (p: MapPick | null) => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); };
+  // #1748: an empty-map click or Escape (a null pick) dismisses the selection as the main map does (dismissMapSelection):
+  // the picked stop or segment and the open route go together, back to the network.
+  const onMapPick = (p: MapPick | null) => {
+    if (!p) { if (route) backToNetwork(); else setPick(null); return; }
+    if (!route && p.kind === 'segment' && p.route) setRoute(p.route); else setPick(p);
+  };
   return {
     routes, held, ready, v3, ids, shown, model, heat, anchor, card, routePanel, routeBody, networkLossWidget, summary, overview, routeOptions,
     networkDates: [...new Set([...networkV3.values()].flatMap(b => b.window.dates))].sort(),

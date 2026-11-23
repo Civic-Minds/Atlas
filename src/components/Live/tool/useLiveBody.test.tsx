@@ -26,3 +26,20 @@ describe('useLiveBody while an open route loads (#1649)', () => {
     expect(result.current.card).toBe(first.card);
   });
 });
+
+// #1748: an empty-map click or Escape (a null pick) dismisses like the main map: the open route closes with its pick.
+describe('useLiveBody dismissal (#1748)', () => {
+  it('closes the open route on a null pick, and only clears the pick with no route open', () => {
+    const setRoute = vi.fn(), setPick = vi.fn();
+    const args = { agency: 'ttc', agencyName: 'TTC', s, setRoute, dir: null, setDir: noop, band: 'all' as const, measure: null, pick: null, setPick, inStudio: true };
+    const open = renderHook(() => useLiveBody({ ...args, route: '501' }));
+    open.result.current.onMapPick(null);
+    expect(setRoute).toHaveBeenCalledWith(null);
+    expect(setPick).toHaveBeenCalledWith(null);
+    setRoute.mockClear(); setPick.mockClear();
+    const network = renderHook(() => useLiveBody({ ...args, route: null }));
+    network.result.current.onMapPick(null);
+    expect(setRoute).not.toHaveBeenCalled();
+    expect(setPick).toHaveBeenCalledWith(null);
+  });
+});
