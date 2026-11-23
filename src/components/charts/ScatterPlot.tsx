@@ -1,7 +1,7 @@
 import { useId, type Key } from 'react';
 import DataTable from '../ui/DataTable';
 import { niceAxis } from './ProfileBars';
-import { useWidth } from './RunTimeChart';
+import { useElementWidth } from '../../hooks/useElementWidth';
 import { AXIS_W } from './sparkParts';
 import { CHART_COUNT, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
 
@@ -38,7 +38,7 @@ export default function ScatterPlot({ points, label, xTitle, yTitle, formatX, fo
 }) {
   const tableId = useId();
   const part = useActivePart();
-  const [ref, width] = useWidth();
+  const [ref, width] = useElementWidth();
   const xs = points.map(p => p.x), ys = points.map(p => p.y);
   const xa = niceAxis(xMin ?? Math.min(...xs), Math.max(...xs));
   const ya = niceAxis(yMin ?? Math.min(...ys), Math.max(...ys));

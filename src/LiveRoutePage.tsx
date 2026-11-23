@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
 import { dateRange } from '../shared/dateText';
 import { useParams } from 'react-router';
@@ -124,6 +124,27 @@ export function RouteDevHint({ v3, route }: { v3: LiveV3; route: string }) {
   return <DevHint hint={freshness(v3, route, Date.now()).devHint} className="mt-2" />;
 }
 
+/**
+ * A route report's header, shared by the Summary and the Full report (CIV-2083): the way back to the agency, the
+ * title, the subtitle, the link to the live map, the developer hint and the report's note.
+ */
+export function RouteReportHeader({ toAgency, data, v3, agency, route, title }: { toAgency: ReactNode; data: Ready; v3: LiveV3; agency: string; route: string; title: string }) {
+  return (
+    <>
+      <div className="mb-2">{toAgency}</div>
+      <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
+        <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
+        <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
+          <RouteSubtitle v3={v3} agency={agency} route={route} />
+        </p>
+        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">{VIEW_ON_LIVE_MAP}</ArrowLink>}
+      </div>
+      <RouteDevHint v3={v3} route={route} />
+      {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
+    </>
+  );
+}
+
 export const BOUNDARY = liveDrawError;
 
 /**
@@ -178,16 +199,7 @@ function SummaryPage({ onFull }: { onFull: (hash: string) => void }) {
   const uncertain = data.uncertainStart ?? [];
   return (
     <DocsPageLayout width="wide">
-        <div className="mb-2">{toAgency}</div>
-        <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
-          <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
-          <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
-            <RouteSubtitle v3={v3} agency={agency} route={route} />
-          </p>
-          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">{VIEW_ON_LIVE_MAP}</ArrowLink>}
-        </div>
-        <RouteDevHint v3={v3} route={route} />
-        {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
+        <RouteReportHeader toAgency={toAgency} data={data} v3={v3} agency={agency} route={route} title={title} />
         <LiveDashboardView lite v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} filters={null} toFull={onFull} />
         {/* One METHOD_TITLE for the Summary and the Full report alike, every line of the method (CIV-308). */}
         {/* #1490: the Summary names the left-out days on late by hour (its All days note); the method doesn't repeat them. */}

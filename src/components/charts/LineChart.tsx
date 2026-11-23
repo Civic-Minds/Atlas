@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import DataTable from '../ui/DataTable';
 import { niceAxis } from './ProfileBars';
-import { useWidth } from './RunTimeChart';
+import { useElementWidth } from '../../hooks/useElementWidth';
 import { AXIS_W } from './sparkParts';
 import { CHART_COUNT, CHART_TEXT } from './useActivePart';
 
@@ -37,7 +37,7 @@ export default function LineChart({ points, label, yTitle, formatY, height = 240
 }) {
   const tableId = useId();
   const [hover, setHover] = useState<number | null>(null);
-  const [ref, width] = useWidth();
+  const [ref, width] = useElementWidth();
   const real = points.filter((p): p is LinePoint => p != null);
   if (real.length === 0) return null;
   const xs = real.map(p => p.x), ys = real.map(p => p.y);

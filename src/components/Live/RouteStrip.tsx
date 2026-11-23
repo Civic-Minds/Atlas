@@ -1,4 +1,5 @@
-import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { Fragment, useCallback, useId, useMemo, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from 'react';
+import { useElementWidth } from '../../hooks/useElementWidth';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, LESS_EXACT, MIN_N, NOT_MEASURED_CELL, NOT_MEASURED_KEY, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, fewerThanText, gapsOffText, showAllStopsText, stripTableCaption, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary, type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan, stripLegendFlags } from './routeStripModel';
@@ -41,21 +42,27 @@ const GUTTER = 72;
 const MARK_H = 26;
 const LINE_H = 24;
 
-/** Measures the element's width, so the layout follows the column it sits in, not the window. */
-function useWidth() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const read = () => setWidth(el.getBoundingClientRect().width || el.clientWidth || 0);
-    read();
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(read);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return [ref, width] as const;
+/**
+ * The strip's focusable box, shared by the straight and the branch strip (CIV-2083): arrow keys move between stops,
+ * leaving the box clears the picked stop, and the picked stop is read out to screen readers.
+ */
+export function StripFrame({ frameRef, summary, tableId, onKey, onLeave, liveId, announce, children }: { frameRef: Ref<HTMLDivElement>; summary: string; tableId: string; onKey: (e: KeyboardEvent<HTMLDivElement>) => void; onLeave: () => void; liveId: string; announce: string; children: ReactNode }) {
+  return (
+    <div
+      ref={frameRef}
+      role="group"
+      aria-roledescription={STRIP_ROLE}
+      aria-label={summary}
+      aria-describedby={tableId}
+      tabIndex={0}
+      onKeyDown={onKey}
+      onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) onLeave(); }}
+      className="relative rounded-md outline-offset-4 focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+    >
+      <span id={liveId} className="sr-only" aria-live="polite">{announce}</span>
+      {children}
+    </div>
+  );
 }
 
 export function swatchStyle(mode: RouteStripMode, step: Step | null, uncertain: boolean): CSSProperties {
@@ -114,7 +121,7 @@ interface Track {
  * arrow keys step through the stops, and the same figures are in a table for screen readers.
  */
 export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, legend: showLegend = true, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch }: RouteStripProps) {
-  const [ref, width] = useWidth();
+  const [ref, width] = useElementWidth();
   const [active, setActive] = useState<number | null>(null);
   const [allStops, setAllStops] = useState(false);
   const liveId = useId();
@@ -204,18 +211,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
 
   return (
     <figure className={`m-0 min-w-0 ${className}`.trim()}>
-      <div
-        ref={ref}
-        role="group"
-        aria-roledescription={STRIP_ROLE}
-        aria-label={summary}
-        aria-describedby={tableId}
-        tabIndex={0}
-        onKeyDown={onKey}
-        onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setActive(null); }}
-        className="relative rounded-md outline-offset-4 focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
-      >
-        <span id={liveId} className="sr-only" aria-live="polite">{announce}</span>
+      <StripFrame frameRef={ref} summary={summary} tableId={tableId} onKey={onKey} onLeave={() => setActive(null)} liveId={liveId} announce={announce}>
         {vertical ? (
           allStops
             ? <VerticalList stops={stops} tracks={tracks} phone={phone} active={active ?? selected} setActive={pickStop} />
@@ -293,7 +289,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
             {activeStop && active != null && <Tooltip stop={activeStop} x={xs[active]} width={width} top={labelsTop + 6 + labelRows * LABEL_LINE} />}
           </div>
         ) : null}
-      </div>
+      </StripFrame>
       {vertical && count > 2 && (
         <button type="button" onClick={() => setAllStops(v => !v)} aria-expanded={allStops} className="mt-2 text-xs font-bold text-[var(--accent)]">
           {allStops ? SHOW_KEY_STOPS : showAllStopsText(count)}
