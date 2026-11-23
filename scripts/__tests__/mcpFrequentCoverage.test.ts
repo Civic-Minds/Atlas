@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { coverageHandlers } from '../mcp/coverageTools';
-import coverageMetros from '../../src/data/frequent-coverage-metros.json';
+import coverageFile from '../../src/data/frequent-coverage-metros.json';
+
+// CIV-2013: the tool serves the chart's default window, the first.
+const coverageMetros = coverageFile.windows[0];
 
 // CIV-2079: the coverage table as a dated, cited table; no figure for a city outside it.
 const call = (args: Record<string, unknown>) => coverageHandlers.frequent_coverage(args) as Promise<Record<string, any>>;
@@ -10,8 +13,9 @@ describe('frequent_coverage', () => {
     const r = await call({ city: 'Toronto' });
     const toronto = coverageMetros.countries.find(c => c.country === 'canada')!.metros.find(m => m.name === 'Toronto')!;
     expect(r.metros[0]).toMatchObject({ metro: 'Toronto', country: 'Canada', withinWalkOfEvery15: `${(toronto.fifteenMinute * 100).toFixed(1)}%` });
-    expect(r.source.figuresAsOf).toBe('2026-11-15');
-    expect(r.source.rule).toBe(coverageMetros.source.rule);
+    expect(r.source.figuresAsOf).toBe('2026-11-23');
+    expect(r.source.weekdayHours).toBe('7 AM–7 PM');
+    expect(r.source.rule).toBe(coverageFile.source.rule);
   });
 
   it('finds a metro by one part of its name', async () => {

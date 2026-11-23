@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 // The story map's MapLibre worker URL is a Vite build import (?worker&url) the test runner can't load; no map is drawn here.
 vi.mock('../../lib/maplibreWorker', () => ({}));
 import FrequentServiceStory from '../FrequentServiceStory';
-import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../../data/frequentServiceStory';
+import { frequentCoverageWindows, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../../data/frequentServiceStory';
 import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
 import recheck from '../../data/definition-recheck-2026-10-30.json';
 
@@ -166,6 +166,20 @@ describe('FrequentServiceStory', () => {
       `Say how often: ${frequentServiceDefinitionSample.withWait} agencies`,
       `In the chart above: ${frequentServiceStoryStats.chartedAgencies} agencies`,
     ]);
+  });
+
+  it('CIV-2013: the coverage section picks its weekday hours, 7 AM–7 PM by default, and every figure follows the pick', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const group = screen.getByRole('group', { name: 'Weekday hours' });
+    const [day, evening] = frequentCoverageWindows;
+    const pill = (name: string) => Array.from(group.querySelectorAll('button')).find(b => b.textContent === name)!;
+    expect(pill('7 AM–7 PM').getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByText(/on weekdays from 7 AM to 7 PM\./)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`about ${day.interpretation.canadaThirtyToFifteenRatio} times as many people in Canada`))).toBeInTheDocument();
+    fireEvent.click(pill('7 AM–10 PM'));
+    expect(pill('7 AM–10 PM').getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByText(/on weekdays from 7 AM to 10 PM\./)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`about ${evening.interpretation.canadaThirtyToFifteenRatio} times as many people in Canada`))).toBeInTheDocument();
   });
 
   it('CIV-1603: shows each city’s weekday and Sunday routes at 15 min, and at 30 min when picked', () => {

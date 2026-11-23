@@ -10,7 +10,7 @@ import DotPairs, { DotPairKey } from '../components/charts/DotPairs';
 import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
-import { frequentCoverageCountries, frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities, frequentWeekendFetched } from '../data/frequentServiceStory';
+import { frequentCoverageWindows, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities, frequentWeekendFetched } from '../data/frequentServiceStory';
 import FrequentServiceMapPile from '../components/FrequentServiceMapPile';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
@@ -21,7 +21,7 @@ import { countOf, joinList } from '../../shared/overflowText';
 import { countText, percentText } from '../../shared/numberText';
 import Pill from '../components/ui/Pill';
 import { CHART_TEXT, useActivePart } from '../components/charts/useActivePart';
-import { hourTime } from '../../shared/timeText';
+import { clockTime, hourTime, timeRange } from '../../shared/timeText';
 import { FREQUENT_SERVICE_STORY } from '../../shared/researchStories';
 import { DevPlaceholder, devPlaceholder } from '../content/devPlaceholder';
 
@@ -38,7 +38,7 @@ interface Props {
 const FREQUENT_SERVICE_CONDUCTED = '2026-10-11';
 const FREQUENT_SERVICE_DEFINITIONS_UPDATED = '2026-11-03';
 
-type CoverageRow = (typeof frequentServiceCoverageStats)[number];
+type CoverageRow = (typeof frequentCoverageWindows)[number]['stats'][number];
 const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
   // Same classes as the agency and area tables (compact variant): regular-weight names, plain digits, default text colour.
   { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-normal' },
@@ -48,8 +48,9 @@ const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
 ];
 
 /** CIV-1577: the city chart's rows for its screen-reader table, each country's cities in the chart's order. */
-const COVERAGE_CITY_ROWS = frequentCoverageCountries.flatMap(country => country.metros.map(metro => ({ ...metro, country: country.label })));
-type CoverageCityRow = (typeof COVERAGE_CITY_ROWS)[number];
+const coverageCityRows = (w: (typeof frequentCoverageWindows)[number]) => w.countries.flatMap(country => country.metros.map(metro => ({ ...metro, country: country.label })));
+type CoverageCityRow = ReturnType<typeof coverageCityRows>[number];
+type CoverageWindowKey = (typeof frequentCoverageWindows)[number]['key'];
 const CITY_COLUMNS: DataTableColumn<CoverageCityRow>[] = [
   { key: 'city', header: 'City', cell: row => row.name, rowHeader: true, className: 'font-normal', width: 10 },
   { key: 'country', header: 'Country', cell: row => row.country, width: 8 },
@@ -125,6 +126,9 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   const coverageSeries = useActivePart();
   const coverageDetails = [coverageTableId, citiesTableId].join(' ');
   const [weekendMinutes, setWeekendMinutes] = useState<WeekendThreshold>(15);
+  // CIV-2013 (Ryan, 2026-11-23): the coverage section's weekday window; the first (7 AM–7 PM) is the default.
+  const [coverageWindowKey, setCoverageWindowKey] = useState<CoverageWindowKey>(frequentCoverageWindows[0].key);
+  const coverageWindow = frequentCoverageWindows.find(w => w.key === coverageWindowKey) ?? frequentCoverageWindows[0];
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -283,10 +287,17 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="population-heading" className={STORY_HEADING}>The threshold changes who can rely on the network.</h2>
               <p className={STORY_PARAGRAPH}>
-                We applied the same test to Atlas route data and population geography: a 10-minute walk to the frequent part of a route at that threshold in the weekday AM peak, midday and PM peak. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
+                We applied the same test to Atlas route data and population geography: a 10-minute walk to the frequent part of a route at that threshold on weekdays from {clockTime(coverageWindow.start)} to {clockTime(coverageWindow.end)}. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
               </p>
-              <p className={STORY_PARAGRAPH}>The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service.</p>
+              <p className={STORY_PARAGRAPH}>The practical difference is large: 30-minute service reaches about {coverageWindow.interpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {coverageWindow.interpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service.</p>
               <DevPlaceholder as="p" className={STORY_PARAGRAPH} what="cities paragraph" />
+            </div>
+            <div className="mt-8 flex gap-1.5" role="group" aria-label="Weekday hours">
+              {frequentCoverageWindows.map(w => (
+                <Pill key={w.key} size="segment" tone="outline" selected={coverageWindow.key === w.key} onClick={() => setCoverageWindowKey(w.key)}>
+                  {timeRange(w.start, w.end)}
+                </Pill>
+              ))}
             </div>
             <div className="mt-10">
               <DotPairKey first={headwayAmount(15)} second={headwayAmount(30)} series={coverageSeries} />
@@ -294,7 +305,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                   Canada and the US side by side from lg, stacked below, rows at the agency chart's spacing. The cities with nobody near
                   15-minute service are one line of names under their country (their numbers stay in the screen-reader table). */}
               <div className="mt-6 grid gap-x-12 gap-y-10 lg:grid-cols-2">
-                {frequentCoverageCountries.map(country => {
+                {coverageWindow.countries.map(country => {
                   const noneAtFifteen = country.metros.filter(metro => metro.fifteenMinute === 0);
                   return (
                     <div key={country.country}>
@@ -323,8 +334,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
               <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
               <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {longDate(frequentServiceCoverageUpdated)}.</p>
-              <ChartTableDetails id={coverageTableId} caption="Population within a ten-minute walk of frequent transit by headway threshold" columns={COVERAGE_COLUMNS} rows={frequentServiceCoverageStats} rowKey={row => row.country} />
-              <ChartTableDetails id={citiesTableId} caption={devPlaceholder('cities table caption')} columns={CITY_COLUMNS} rows={COVERAGE_CITY_ROWS} rowKey={row => row.id} />
+              <ChartTableDetails id={coverageTableId} caption="Population within a ten-minute walk of frequent transit by headway threshold" columns={COVERAGE_COLUMNS} rows={coverageWindow.stats} rowKey={row => row.country} />
+              <ChartTableDetails id={citiesTableId} caption={devPlaceholder('cities table caption')} columns={CITY_COLUMNS} rows={coverageCityRows(coverageWindow)} rowKey={row => row.id} />
             </div>
           </section>
 
