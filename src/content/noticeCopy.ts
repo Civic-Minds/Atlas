@@ -1133,8 +1133,12 @@ export const COVERAGE_TEXT = {
 /** CIV-1890: the About menu inside Studio, in place of the public atlas's text. Ryan OK'd it as written on 2026-11-21: "1 for now" (provisional). */
 export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: see how routes ran against their schedule, how many vehicles a route needs, and what changed between schedules.';
 
-/** Studio's About panel, Live part (Ryan, 2026-11-19): the heading, and the two explanation lines moved out of the side panel (bunching's is bunchingSplitNote). */
-export const STUDIO_ABOUT_LIVE_HEADING = 'Live';
+/**
+ * #1751 (Ryan, 2026-11-23, "Yes"): the info panel's Measurements page, under its Data heading, holds Live's definitions (the
+ * bunching line and the grey-colour line, which were About's Live part); Live's Learn more opens it. "this notice isnt specific to
+ * an error", so it is a page of its own, not an explainer.
+ */
+export const MEASUREMENTS_TITLE = 'Measurements';
 export const LEARN_MORE_LABEL = 'Learn more';
 
 /** The weekday-to-Sunday story's table columns (#1074; Ryan approved them with the page's words, 2026-11-22). Its agency column is AGENCY_COLUMN. */
