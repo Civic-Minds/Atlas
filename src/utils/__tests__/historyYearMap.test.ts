@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
+import { createPropertyExpression, latest, type StylePropertySpecification } from '@maplibre/maplibre-gl-style-spec';
+import { historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyFeatureKey, historyPeriodValue, historyTileKeyExpression, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
 import { localRouteHeadwayColor } from '../../components/Interval/map/routeStyle';
 
 const snap = (year: number, v2: Record<string, unknown> | undefined, extra: Record<string, unknown> = {}) =>
@@ -49,8 +50,23 @@ describe('historyYearRoutes (#1028 batch A)', () => {
 
   it("colours today's lines by route number, with the given fallback", () => {
     const expr = historyYearColorExpression(historyYearRoutes(agency, 2014, 'default'), 'FALLBACK') as unknown[];
-    expect(expr).toEqual(['match', ['to-string', ['get', 'routeShortName']], '6', localRouteHeadwayColor(15, 'default'), '9', localRouteHeadwayColor(null, 'default'), 'OLD', localRouteHeadwayColor(30, 'default'), 'FALLBACK']);
+    expect(expr).toEqual(['match', historyTileKeyExpression(), '6', localRouteHeadwayColor(15, 'default'), '9', localRouteHeadwayColor(null, 'default'), 'OLD', localRouteHeadwayColor(30, 'default'), 'FALLBACK']);
     expect(historyYearColorExpression([], 'FALLBACK')).toBe('FALLBACK');
+  });
+
+  // A route with no short name is keyed by its route id, as the History build keys it (MBTA Red, CTA Red, SkyTrain).
+  it('finds a today\'s line with a blank short name by its route id', () => {
+    const color = (props: Record<string, unknown>) => {
+      const c = createPropertyExpression(['match', historyTileKeyExpression(), 'Red', '#f00', '6', '#0f0', '#999'], 'layers[0].paint.line-color', latest.paint_line['line-color'] as StylePropertySpecification);
+      if (c.result !== 'success') throw new Error(JSON.stringify(c.value));
+      return c.value.evaluate({ zoom: 11 }, { type: 'LineString', properties: props }).toString();
+    };
+    expect(color({ routeShortName: '', routeId: 'Red' })).toBe(color({ routeShortName: 'Red', routeId: 'x' }));
+    expect(color({ routeId: 'Red' })).not.toBe(color({ routeShortName: 'Blue', routeId: 'Red' }));
+    expect(color({ routeShortName: '6', routeId: 'Red' })).toBe(color({ routeShortName: '6' }));
+    expect(historyFeatureKey({ routeShortName: '', routeId: 'Boat-F1' })).toBe('Boat-F1');
+    expect(historyFeatureKey({ routeShortName: ' 6 ', routeId: '1006' })).toBe('6');
+    expect(historyFeatureKey({ routeShortName: null, routeId: 30053 })).toBe('30053');
   });
 });
 
