@@ -53,6 +53,7 @@ export default function RouteRightNow({ slug, routeShortName, direction }: { slu
       scheduledRows={scheduledRows}
       direction={direction}
       unavailableMessage={STUDIO_ROUTE_PANEL_PENDING.noReading}
+      liveEnabled
     />
   );
 }

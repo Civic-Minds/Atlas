@@ -22,11 +22,16 @@ function load(slug: string, route: string): Promise<SegmentDelayData | null> {
 
 /**
  * Archived "where vehicles lose time" stats for a live route (Live mode only), and whether the answer is in: settled is
- * false only while a route that has stats is still loading.
+ * false only while a route that has stats is still loading. `liveEnabled` stands in for Live mode where a caller reads
+ * the local endpoints itself (#1750: Studio's route panel, on the dev server with Live switched off).
  */
-export function useSegmentDelayStatus(slug: string | null | undefined, routeShortName: string | null | undefined): { data: SegmentDelayData | null; settled: boolean } {
+export function useSegmentDelayStatus(
+  slug: string | null | undefined,
+  routeShortName: string | null | undefined,
+  liveEnabled: boolean = FEATURES.live,
+): { data: SegmentDelayData | null; settled: boolean } {
   const [loaded, setLoaded] = useState<{ key: string; data: SegmentDelayData | null } | null>(null);
-  const enabled = FEATURES.live && !!slug && !!routeShortName && !!getPolledRoute(slug, routeShortName);
+  const enabled = liveEnabled && !!slug && !!routeShortName && !!getPolledRoute(slug, routeShortName);
   const key = `${slug}::${routeShortName}`;
   useEffect(() => {
     if (!enabled) return;
