@@ -1,10 +1,10 @@
 import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { buildCoverageMetros } from '../../../scripts/build-frequent-coverage-metros';
-import coverageMetros from '../frequent-coverage-metros.json';
-import { LARGEST_COUNT, metroDisplayName, selectCoverageMetros, WIPED_OUT_MIN_POPULATION, WIPED_OUT_MIN_THIRTY } from '../frequentCoverageMetrosRule';
-import { frequentCoverageWindows } from '../frequentServiceStory';
-import { CHART_WINDOWS } from '../../../pipeline/tripSets';
+import { buildCoverageMetros } from '../build-frequent-coverage-metros';
+import coverageMetros from '../../src/data/frequent-coverage-metros.json';
+import { LARGEST_COUNT, metroDisplayName, selectCoverageMetros, WIPED_OUT_MIN_POPULATION, WIPED_OUT_MIN_THIRTY } from '../../src/data/frequentCoverageMetrosRule';
+import { frequentCoverageWindows } from '../../src/data/frequentServiceStory';
+import { CHART_WINDOWS } from '../../pipeline/tripSets';
 
 // CIV-2013: one run per chart window, in the main checkout's git-excluded editorial folder; only on Ryan's Macs.
 const EDITORIAL = ['/Users/ryan', '/Users/atlas'].map(home => `${home}/Developer/Code/Platforms/Atlas/`).find(root => existsSync(`${root}editorial/research`));
