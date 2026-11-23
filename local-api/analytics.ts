@@ -9,7 +9,7 @@ import { createSign } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { ANALYTICS_RANGES, ANALYTICS_TOP_ROWS, type AnalyticsDay, type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow } from '../shared/analytics.js';
+import { ANALYTICS_RANGES, ANALYTICS_REGION_ROWS, ANALYTICS_TOP_ROWS, TILE_MAP_COUNTRIES, type AnalyticsDay, type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow } from '../shared/analytics.js';
 
 const CREDENTIALS = join(homedir(), 'Developer/Credentials');
 const KEY_FILE = join(CREDENTIALS, 'Google Analytics read-only for Atlas.json');
@@ -80,6 +80,18 @@ export function windowRequests(days: number) {
   ];
 }
 
+/** Visitors by state or province in the US and Canada; a second batch, since the first holds batchRunReports' five. */
+export function regionRequest(days: number) {
+  return {
+    dateRanges: [{ startDate: `${days}daysAgo`, endDate: 'yesterday' }],
+    dimensions: [{ name: 'region' }],
+    metrics: [{ name: 'activeUsers' }],
+    dimensionFilter: { filter: { fieldName: 'country', inListFilter: { values: [...TILE_MAP_COUNTRIES] } } },
+    orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+    limit: ANALYTICS_REGION_ROWS,
+  };
+}
+
 const num = (v: string | undefined) => Number(v ?? 0) || 0;
 const rowsOf = (r: GaReport | undefined): AnalyticsRow[] => (r?.rows ?? []).map(x => ({ name: x.dimensionValues?.[0]?.value ?? '', value: num(x.metricValues[0]?.value) }));
 
@@ -107,8 +119,8 @@ export function dailyOf(report: GaReport | undefined): AnalyticsDay[] {
   return out;
 }
 
-/** One window's figures from the batchRunReports answer (reports in windowRequests' order). */
-export function readWindow(days: (typeof ANALYTICS_RANGES)[number], reports: GaReport[]): AnalyticsWindow {
+/** One window's figures from the batchRunReports answer (reports in windowRequests' order, then regionRequest's). */
+export function readWindow(days: (typeof ANALYTICS_RANGES)[number], reports: GaReport[], regionReport?: GaReport): AnalyticsWindow {
   return {
     days,
     totals: totalsFor(reports[0], 'date_range_0'),
@@ -117,6 +129,7 @@ export function readWindow(days: (typeof ANALYTICS_RANGES)[number], reports: GaR
     countries: rowsOf(reports[2]),
     sources: rowsOf(reports[3]),
     daily: dailyOf(reports[4]),
+    regions: rowsOf(regionReport),
   };
 }
 
@@ -126,15 +139,19 @@ export default {
     if (!sa || !property) return json({ available: false });
     try {
       const token = await accessToken(sa);
-      const windows = await Promise.all(ANALYTICS_RANGES.map(async days => {
+      const batch = async (requests: unknown[]) => {
         const res = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${property}:batchRunReports`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ requests: windowRequests(days) }),
+          body: JSON.stringify({ requests }),
           signal: AbortSignal.timeout(15_000),
         });
         if (!res.ok) throw new Error(`report ${res.status}`);
-        return readWindow(days, ((await res.json()) as { reports: GaReport[] }).reports);
+        return ((await res.json()) as { reports: GaReport[] }).reports;
+      };
+      const windows = await Promise.all(ANALYTICS_RANGES.map(async days => {
+        const [reports, [regions]] = await Promise.all([batch(windowRequests(days)), batch([regionRequest(days)])]);
+        return readWindow(days, reports, regions);
       }));
       return json({ available: true, windows });
     } catch {

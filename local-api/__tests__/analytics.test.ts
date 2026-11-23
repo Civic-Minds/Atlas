@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dailyOf, readWindow, windowRequests } from '../analytics';
-import { ANALYTICS_TOP_ROWS } from '../../shared/analytics';
+import { dailyOf, readWindow, regionRequest, windowRequests } from '../analytics';
+import { ANALYTICS_LABEL_MAX, ANALYTICS_TOP_ROWS, placeName, renamedRows, shortLabel, sourceName } from '../../shared/analytics';
 
 // CIV-2068: the Analytics page's figures from the GA4 Data API (read-only key on this Mac).
 describe('Analytics through the local API', () => {
@@ -38,9 +38,18 @@ describe('Analytics through the local API', () => {
       countries: [{ name: 'Canada', value: 70 }],
       sources: [{ name: 'google', value: 30 }],
       daily: [{ date: '20261121', visitors: 5 }],
+      regions: [],
     });
+    expect(readWindow(14, [], { rows: [{ dimensionValues: [{ value: 'Ontario' }], metricValues: [{ value: '40' }] }] }).regions).toEqual([{ name: 'Ontario', value: 40 }]);
     expect(readWindow(7, []).totals).toEqual({ visits: 0, visitors: 0, pageViews: 0 });
     expect(readWindow(7, []).previous).toEqual({ visits: 0, visitors: 0, pageViews: 0 });
+  });
+
+  it('asks for visitors by state or province in the US and Canada only, for the tile map', () => {
+    const r = regionRequest(14);
+    expect(r.dimensions[0].name).toBe('region');
+    expect(r.dimensionFilter.filter.inListFilter.values).toEqual(['United States', 'Canada']);
+    expect(r.dateRanges).toEqual([{ startDate: '14daysAgo', endDate: 'yesterday' }]);
   });
 
   it('fills a day GA leaves out (no visits) with 0, across a month end', () => {
@@ -55,5 +64,15 @@ describe('Analytics through the local API', () => {
     process.env.GA4_KEY_FILE = '/nonexistent/key.json';
     const { default: handler } = await import('../analytics');
     expect(await (await handler.fetch()).json()).toEqual({ available: false });
+  });
+
+  it('names sources in words and adds up a site’s several addresses', () => {
+    expect(['(direct)', 'google', 'bing', 'ig', 'm.facebook.com', 'teams.public.onecdn.static.microsoft', 'chatgpt.com', 'open.toronto.ca', 'example.org'].map(sourceName))
+      .toEqual(['Direct', 'Google', 'Bing', 'Instagram', 'Facebook', 'Microsoft Teams', 'ChatGPT', 'City of Toronto open data', 'example.org']);
+    expect(placeName('(not set)')).toBe('Not known');
+    expect(renamedRows([{ name: 'google', value: 5 }, { name: 'm.facebook.com', value: 4 }, { name: 'facebook.com', value: 3 }], sourceName))
+      .toEqual([{ name: 'Facebook', value: 7 }, { name: 'Google', value: 5 }]);
+    expect(shortLabel('x'.repeat(40))).toHaveLength(ANALYTICS_LABEL_MAX);
+    expect(shortLabel('/agency/metrostlouis')).toBe('/agency/metrostlouis');
   });
 });

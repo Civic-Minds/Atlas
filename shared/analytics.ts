@@ -5,8 +5,8 @@
  */
 
 export const ANALYTICS_API_URL = '/api/analytics';
-/** The two windows the page shows, in days, ending yesterday (today is still filling in). */
-export const ANALYTICS_RANGES = [7, 28] as const;
+/** The two periods the page switches between, in days, ending yesterday (today is still filling in). Ryan, 2026-11-22: "Maybe last 14 and 28?" */
+export const ANALYTICS_RANGES = [14, 28] as const;
 export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
 /** Rows in the top pages and countries tables. */
 export const ANALYTICS_TOP_ROWS = 10;
@@ -26,6 +26,8 @@ export interface AnalyticsWindow {
   sources: AnalyticsRow[];
   /** Visitors per day across the window, oldest first, a day with no visits as 0. */
   daily: AnalyticsDay[];
+  /** Visitors by state or province (GA's region names), for the tile map. */
+  regions: AnalyticsRow[];
 }
 
 /**
@@ -39,22 +41,29 @@ export type AnalyticsResponse = { available: true; windows: AnalyticsWindow[] } 
 export const ANALYTICS_COPY = {
   title: 'Analytics',
   card: 'Visits, top pages and countries from Google Analytics.',
-  intro: 'Visits to the public site from Google Analytics, for the last 7 and 28 days up to yesterday.',
+  intro: 'Visits to the public site from Google Analytics, up to yesterday.',
+  periodLabel: 'Period',
+  periodOption: (days: number) => `Last ${days} days`,
+  figuresHeading: 'Overview',
+  /** "On this page" labels, one or two words each (Ryan, 2026-11-22: "On this page stuff is supposed to be 1-2 words max"). */
+  nav: { overview: 'Overview', daily: 'Visitors', sources: 'Sources', pages: 'Pages', where: 'Locations' },
   unavailable: 'Analytics can’t be read: the Google Analytics key isn’t on this Mac, or Google didn’t answer.',
   loading: 'Loading…',
-  windowHeading: (days: number) => `Last ${days} days`,
   totals: { visits: 'Visits', visitors: 'Visitors', pageViews: 'Page views' },
   pages: 'Top Pages',
-  countries: 'Countries',
+  where: 'Where Visitors Are',
+  mapLabel: (days: number) => `Tile map of visitors by US state and Canadian province over the last ${days} days`,
+  region: 'State or province',
+  /** A tile's screen-reader sentence. */
+  regionSentence: (region: string, visitors: string) => `${region}: ${visitors} visitors`,
+  otherCountries: 'Outside the US and Canada',
   page: 'Page',
   country: 'Country',
   views: 'Views',
   visitorsColumn: 'Visitors',
-  figure: 'Figure',
-  count: 'Count',
-  /** "+78% vs the 28 days before"; the percent comes from signedPercentText. */
-  change: (percent: string, days: number) => `${percent} vs the ${days} days before`,
-  noEarlier: (days: number) => `No visits in the ${days} days before`,
+  /** "+78% vs prior 28 days" (short enough for one line in a figure card); the percent comes from signedPercentText. */
+  change: (percent: string, days: number) => `${percent} vs prior ${days} days`,
+  noEarlier: (days: number) => `None in prior ${days} days`,
   daily: 'Visitors per Day',
   dailyAxis: 'Visitors',
   /** The line's hover sentence and screen-reader text for one day. */
@@ -63,9 +72,57 @@ export const ANALYTICS_COPY = {
   sources: 'Where Visitors Came From',
   source: 'Source',
   visitsColumn: 'Visits',
-  /** GA's placeholder source names, in words. */
-  sourceNames: { '(direct)': 'Direct (typed or bookmarked)', '(not set)': 'Not known' } as Record<string, string>,
+  /** The home page's row in Top Pages: it's the map. */
+  homePage: 'Map (/)',
   barsLabel: (heading: string) => `Bar chart: ${heading}`,
   /** The date is shortDate(PAGE_VIEWS_FIXED_ON). */
-  pageViewsNote: (date: string) => `Page views before ${date} read high: Google Analytics also counted each map move and filter change as a view of the home page (/).`,
+  pageViewsNote: (date: string) => `Page views before ${date} read high, and so does the Map (/) bar: Google Analytics also counted each map move and filter change as a view of the map.`,
 } as const;
+
+/** GA's placeholder names (sources and countries), in words. */
+const PLACEHOLDER_NAMES: Record<string, string> = { '(direct)': 'Direct', '(not set)': 'Not known' };
+/**
+ * Where a visit came from, by name: GA reports the referring site as it saw it ("m.facebook.com", "ig",
+ * "teams.public.onecdn.static.microsoft"). Sites with several addresses are named once, so their visits add up in one bar.
+ */
+const SOURCE_NAMES: ReadonlyArray<readonly [RegExp, string]> = [
+  [/^(www\.)?google(\.|$)/, 'Google'],
+  [/^(www\.)?bing(\.|$)/, 'Bing'],
+  [/^(duckduckgo|ddg)(\.|$)/, 'DuckDuckGo'],
+  [/(^|\.)linkedin\.com$|^lnkd\.in$/, 'LinkedIn'],
+  [/(^|\.)facebook\.com$|^fb$/, 'Facebook'],
+  [/(^|\.)instagram\.com$|^ig$/, 'Instagram'],
+  [/(^|\.)(t\.co|twitter\.com|x\.com)$/, 'X'],
+  [/(^|\.)bsky\.app$/, 'Bluesky'],
+  [/(^|\.)reddit\.com$/, 'Reddit'],
+  [/(^|\.)chatgpt\.com$|^openai$/, 'ChatGPT'],
+  [/(^|\.)perplexity\.ai$/, 'Perplexity'],
+  [/(^|\.)github\.com$/, 'GitHub'],
+  [/\.static\.microsoft$|(^|\.)teams\.microsoft\.com$/, 'Microsoft Teams'],
+  [/^open\.toronto\.ca$/, 'City of Toronto open data'],
+];
+/** GA's region names that the tile grid (src/data/regionTileGrid.ts) knows by another name. */
+export const GA_REGION_ALIASES: Readonly<Record<string, string>> = { 'Newfoundland and Labrador': 'Newfoundland', 'District of Columbia': 'Washington DC' };
+/** The countries the tile map covers, as GA names them; the rest are listed beside it. */
+export const TILE_MAP_COUNTRIES: readonly string[] = ['United States', 'Canada'];
+/** Rows asked for in the regions report (every state and province with a visit). */
+export const ANALYTICS_REGION_ROWS = 100;
+
+/** Longest name a bar's label shows before it's cut short (the full name stays in the bar's sentence and table). */
+export const ANALYTICS_LABEL_MAX = 24;
+
+export function sourceName(raw: string): string {
+  return PLACEHOLDER_NAMES[raw] ?? SOURCE_NAMES.find(([re]) => re.test(raw))?.[1] ?? raw;
+}
+export function placeName(raw: string): string {
+  return PLACEHOLDER_NAMES[raw] ?? raw;
+}
+/** Rows renamed, those that now share a name added together, largest first. */
+export function renamedRows(rows: readonly AnalyticsRow[], nameOf: (raw: string) => string): AnalyticsRow[] {
+  const sums = new Map<string, number>();
+  for (const r of rows) sums.set(nameOf(r.name), (sums.get(nameOf(r.name)) ?? 0) + r.value);
+  return [...sums].map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+}
+/** A bar label cut to ANALYTICS_LABEL_MAX characters with an ellipsis. */
+export const shortLabel = (name: string): string => (name.length > ANALYTICS_LABEL_MAX ? `${name.slice(0, ANALYTICS_LABEL_MAX - 1)}…` : name);
+
