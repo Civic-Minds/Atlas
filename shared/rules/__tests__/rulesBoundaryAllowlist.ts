@@ -31,8 +31,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'scripts/audit-edge-transition-sample.ts': { 'grace-formula': 1 },
   'scripts/audit-edge-transition-terminal.ts': { 'grace-formula': 1 },
   'scripts/audit-frequency-candidates.ts': { 'grace-formula': 1 },
-  // Move 9 left this drifted rail set as it is (audit section 5 item 3: it leaves out light rail and the overrides).
-  'scripts/audit-shape-share.ts': { 'definition': 1 },
   'scripts/build-frequent-weekend-counts.ts': { 'scale-array': 1 },
   'scripts/build-share-maps.ts': { 'colour': 2 },
   'scripts/check-logo-icon.mjs': { 'colour': 1, 'scale-array': 1 },
