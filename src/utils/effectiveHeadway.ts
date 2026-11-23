@@ -224,6 +224,14 @@ export function routeCardPeriodShapeEvery(p: ShapeProperties, period: TimePeriod
   return p.stretchPeriodGap?.[period]?.every ?? undefined;
 }
 
+/** CIV-2171: the gap routeCardPeriodShapeText's words name (D6's one-gap form), or undefined when they name none. */
+export function routeCardPeriodShapeGap(p: ShapeProperties, period: TimePeriod): number | undefined {
+  if (period === 'all' || tailOwnEdge(p, period)) return undefined;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (edge && (edge.from != null || edge.until != null)) return undefined;
+  return p.stretchPeriodGap?.[period]?.gap;
+}
+
 export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all') return undefined;
   const own = tailOwnEdge(p, period);
