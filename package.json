@@ -156,7 +156,7 @@
     "jsdom": "^31.0.1",
     "pbf": "^5.1.2",
     "playwright": "^1.65.0",
-    "postcss": "^8.5.32",
+    "postcss": "^8.5.33",
     "tailwindcss": "^4.3.4",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
