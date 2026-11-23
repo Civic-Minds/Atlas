@@ -23,7 +23,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
 import { figuresUpdatedText, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import { useLiveFiguresUpdated } from '../hooks/useLiveFiguresUpdated';
 import RegionFilterPills from './RegionFilterPills';
@@ -39,7 +39,7 @@ import { PAGE_NAMES } from '../../shared/pageNames';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'sources' | 'measurements';
 /** 'sources': About → Schedule sources, from the map's credit pill (CIV-461). */
 export type Tab = 'about' | 'agencies' | 'history' | 'live' | 'sources';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
@@ -175,7 +175,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     return () => document.removeEventListener('mousedown', handleOutside);
   }, [open, onClose]);
 
+  // #1751: a Live Learn more opens this panel on Measurements. App counts the asks (scrollToLive), since this panel loads only
+  // on first open and would miss an event of its own (CIV-2021); a new ask wins over the tab the panel would otherwise open on,
+  // whether the panel is opening now or already open (on any page of it).
+  const liveAskSeen = useRef(0);
   useEffect(() => {
+    if (open && scrollToLive && scrollToLive !== liveAskSeen.current) {
+      liveAskSeen.current = scrollToLive;
+      setView('measurements');
+      return;
+    }
     if (open) {
       setView(
         helpContext?.topic === 'outdated-schedule' ? 'outdated-schedule'
@@ -195,14 +204,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     } else {
       setQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
     }
-  }, [open, defaultTab, featureFilter, helpContext]);
-
-  // A Learn more link in Studio's Live view opens this panel at its Live part: App counts the asks (scrollToLive), since
-  // this panel loads only on first open and would miss an event of its own (CIV-2021).
-  const liveRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (scrollToLive && open && view === 'home') liveRef.current?.scrollIntoView?.({ block: 'start' });
-  }, [scrollToLive, open, view]);
+  }, [open, defaultTab, featureFilter, helpContext, scrollToLive]);
 
   // CIV-461: a name in the map's credit pill opens Schedule sources at that agency's credit.
   const sourcesFocus = useSourcesFocus();
@@ -321,6 +323,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
     : view === 'sources' ? 'Sources'
+    : view === 'measurements' ? MEASUREMENTS_TITLE
     : null;
 
   return (
@@ -377,16 +380,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 </p>
               )}
 
-              {inStudio && (
-                <div ref={liveRef}>
-                  <p className="text-xs font-bold text-[var(--text-muted)] mb-2">{STUDIO_ABOUT_LIVE_HEADING}</p>
-                  <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-1">{STUDIO_ROUTE_PANEL_PENDING.bunchingAbout()}</p>
-                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{LIVE_NOISE_CAPTION}</p>
-                  {/* CIV-1814 item 41: when Live's figures were built, as in Sources beside the schedule refresh line. */}
-                  {liveFiguresUpdated && <p className="text-xs text-[var(--text-dim)] leading-relaxed mt-1">{figuresUpdatedText(liveFiguresUpdated)}</p>}
-                </div>
-              )}
-
               <div>
                 <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Data</p>
                 {!inStudio && <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
@@ -400,6 +393,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     onClick={() => setView('agencies')} icon="chevron">Browse agencies</LinkCard>}
                   <LinkCard as="button"
                     onClick={() => setView('sources')} icon="chevron">Schedule sources</LinkCard>
+                  {(inStudio || FEATURES.live || FEATURES.liveReports) && <LinkCard as="button"
+                    onClick={() => setView('measurements')} icon="chevron">{MEASUREMENTS_TITLE}</LinkCard>}
                 </div>
               </div>
 
@@ -504,6 +499,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   </AgencyList>
                 )}
               </div>
+            </div>
+          )}
+
+          {view === 'measurements' && (
+            // #1751: Live's definitions, moved here from About's Live part; Live's Learn more opens this page.
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-2" data-testid="measurements">
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{STUDIO_ROUTE_PANEL_PENDING.bunchingAbout()}</p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{LIVE_NOISE_CAPTION}</p>
+              {/* CIV-1814 item 41: when Live's figures were built, as in Sources beside the schedule refresh line. */}
+              {liveFiguresUpdated && <p className="text-xs text-[var(--text-dim)] leading-relaxed">{figuresUpdatedText(liveFiguresUpdated)}</p>}
             </div>
           )}
 
