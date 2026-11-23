@@ -14,39 +14,39 @@
   ],
   "feedUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx",
   "region": "Ohio",
-  "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "20260908",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270301",
+  "lastFeedVersion": "20261111",
+  "lastRefreshedAt": "2026-11-23",
   "websiteUrl": "http://www.wrtaonline.com/",
   "cities": [
     "Youngstown, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/latest.zip",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
   "feedQuality": {
     "status": "review",
-    "score": 92,
+    "score": 96,
     "reasons": [
-      "5 route shapes needed adjustment before display.",
+      "1 route shape needed adjustment before display.",
       "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 9,
+      "shapeAnomalies": 7,
       "routeHeadwayMismatches": 1,
-      "featureCount": 93,
-      "feedExpiry": "20261128",
-      "routeCount": 24,
-      "problemShapes": 5,
-      "problemShapeRoutes": 1,
+      "featureCount": 89,
+      "feedExpiry": "20270301",
+      "routeCount": 23,
+      "problemShapes": 1,
+      "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -55,9 +55,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx",
-  "lastPeekedExpiry": "20261128",
-  "lastServiceWeek": "fb14b2e1d4c5e904",
-  "feedObtainedAt": "20260908",
-  "lastFeedStart": "20260909",
-  "heldFeedStart": "20261123"
+  "lastPeekedExpiry": "20270301",
+  "lastServiceWeek": "270d9b0994242c9f",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261123",
+  "lastRawArchiveKey": "20270301-9297227012bb715f",
+  "lastFeedContentKey": "684fbe86ba26056b"
 }

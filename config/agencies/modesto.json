@@ -11,14 +11,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2273/latest.zip",
   "region": "California",
   "lastFeedExpiry": "20270630",
-  "lastFeedVersion": "20261112",
-  "lastRefreshedAt": "2026-11-16",
+  "lastFeedVersion": "20261120",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Modesto, California",
     "Turlock, California",
     "Manteca, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
@@ -33,7 +33,7 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 137,
       "feedExpiry": "20270630",
@@ -43,15 +43,15 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "c24bd52e6abf90ca",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261113",
-  "lastRawArchiveKey": "20270630-09a433161c8af975",
-  "lastFeedContentKey": "d97ce8f182d90afb"
+  "lastServiceWeek": "2ef1dc6dea9d18f8",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261121",
+  "lastRawArchiveKey": "20270630-ba33be12a67d4367",
+  "lastFeedContentKey": "0b050177473bf5e3"
 }

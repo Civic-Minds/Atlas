@@ -10,19 +10,19 @@
   "region": "New Jersey",
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3035/latest.zip",
-  "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "20",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "21",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Cherry Hill, New Jersey",
     "Center City, Pennsylvania",
     "Camden, New Jersey",
     "Philadelphia, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "healthy",
@@ -34,14 +34,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 6,
-      "feedExpiry": "20261231",
+      "feedExpiry": "20271231",
       "routeCount": 1,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -49,8 +49,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13562/PATCO_GTFS.zip",
-  "lastPeekedExpiry": "20261231",
-  "lastServiceWeek": "8bc780e295bd0d61",
-  "feedObtainedAt": "20260924",
-  "lastFeedStart": "20260924"
+  "lastPeekedExpiry": "20271231",
+  "lastServiceWeek": "73da1cdac0cd3d76",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261123",
+  "lastRawArchiveKey": "20271231-e24679570eeb6dac",
+  "lastFeedContentKey": "181954f2c542ad29"
 }

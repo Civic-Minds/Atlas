@@ -16,9 +16,9 @@
   "feedUrl": "http://www.dart.org/transitdata/latest/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-152/latest.zip",
   "lastFeedExpiry": "20261206",
-  "lastFeedVersion": "V755-218-220-20261029",
+  "lastFeedVersion": "V761-218-220-20261115",
   "region": "Texas",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Dallas, Texas",
     "Richardson, Texas",
@@ -32,7 +32,7 @@
     "Frisco, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261206",
@@ -47,7 +47,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 540,
+      "featureCount": 542,
       "feedExpiry": "20261206",
       "routeCount": 92,
       "problemShapes": 0,
@@ -55,7 +55,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -102,7 +102,9 @@
     }
   ],
   "lastPeekedExpiry": "20261206",
-  "lastServiceWeek": "efd1f9648d10c6a9",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261029"
+  "lastServiceWeek": "9c86f68948467078",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261115",
+  "lastRawArchiveKey": "20261206-8b114267ae7b2baa",
+  "lastFeedContentKey": "73e69c31f68b67b6"
 }

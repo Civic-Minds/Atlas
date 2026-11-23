@@ -28,12 +28,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "lastFeedExpiry": "20271029",
   "lastFeedVersion": "1/20261029 03:35:57/20261029 04:00:00",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271029",

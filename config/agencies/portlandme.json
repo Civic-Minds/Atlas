@@ -20,16 +20,16 @@
   ],
   "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-  "lastFeedExpiry": "20261216",
+  "lastFeedExpiry": "20261223",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Portland, Maine"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261216",
+  "expiredFeedCheckExpiry": "20261223",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -40,14 +40,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 111,
-      "feedExpiry": "20261216",
+      "feedExpiry": "20261223",
       "routeCount": 15,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -56,10 +56,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-  "lastPeekedExpiry": "20261216",
+  "lastPeekedExpiry": "20261223",
   "lastServiceWeek": "f66e13f0ea80ee55",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261116",
-  "lastRawArchiveKey": "20261216-b59bdeb61500a290",
-  "lastFeedContentKey": "ced442831bff71e0"
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261123",
+  "lastRawArchiveKey": "20261223-f27bba431f6f444a",
+  "lastFeedContentKey": "16f342f3ff01d560"
 }

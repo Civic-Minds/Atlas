@@ -43,10 +43,10 @@
     }
   ],
   "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "Fall 2026, 2026-11-13T21:35:28+00:00, version D",
+  "lastFeedVersion": "Fall 2026, 2026-11-19T01:01:13+00:00, version D",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -59,7 +59,7 @@
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -67,23 +67,23 @@
     "status": "review",
     "score": 96,
     "reasons": [
-      "4 route shapes needed adjustment before display.",
-      "5 route have stops whose frequency differs from the overall route schedule."
+      "6 route shapes needed adjustment before display.",
+      "6 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 5,
-      "routeHeadwayMismatches": 11,
-      "featureCount": 1121,
+      "shapeAnomalies": 7,
+      "routeHeadwayMismatches": 12,
+      "featureCount": 1111,
       "feedExpiry": "20261212",
       "routeCount": 184,
-      "problemShapes": 4,
+      "problemShapes": 6,
       "problemShapeRoutes": 1,
-      "mismatchRoutes": 5,
+      "mismatchRoutes": 6,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -125,9 +125,9 @@
     }
   ],
   "lastPeekedExpiry": "20261212",
-  "lastServiceWeek": "6e95fea34a9ed269",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261106",
+  "lastServiceWeek": "6df3839dd8e7f50a",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261112",
   "branchReadCorrections": [
     {
       "routeShortName": "id:CR-Providence",
@@ -138,6 +138,6 @@
       "reason": "Inbound, the Providence branch beyond Canton Junction runs hourly in the PM peak (Mansfield 15:25, 16:28, 17:34, 18:37) while the trunk it shares with Stoughton runs every 25; its trains each skip a different stop, so the branch was never read."
     }
   ],
-  "lastRawArchiveKey": "20261212-3c90dac02874275c",
-  "lastFeedContentKey": "c958350dc6b69e18"
+  "lastRawArchiveKey": "20261212-04cd2571fed0494c",
+  "lastFeedContentKey": "9a0852f3240f5e9d"
 }

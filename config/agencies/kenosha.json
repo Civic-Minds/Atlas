@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://kenoshatransit.com/gtfs",
   "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281123",
   "lastFeedVersion": "Route 1",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "region": "Wisconsin",
   "bbox": [
     42.4973,
@@ -22,8 +22,8 @@
     "Kenosha, Wisconsin"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "unknown-f5160cb1d9452de7",
-  "lastFeedCheckAt": "20261116",
+  "lastRawArchiveKey": "unknown-3041a9824e0147b8",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -37,14 +37,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 65,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281123",
       "routeCount": 17,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -61,8 +61,8 @@
     }
   ],
   "lastPeekedExpiry": "20991231",
-  "lastServiceWeek": "06be1750cbd9cfc0",
-  "feedObtainedAt": "20261116",
+  "lastServiceWeek": "04b9a0001030eb9e",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20261002",
-  "lastFeedContentKey": "e3953058469be971"
+  "lastFeedContentKey": "8cdc1985b729b4ad"
 }

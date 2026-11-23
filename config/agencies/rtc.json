@@ -18,7 +18,7 @@
   "feedUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
   "lastFeedExpiry": "20270319",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Sainte-Foy, Quebec",
     "Les Rivières, Quebec",
@@ -28,10 +28,10 @@
     "La Cité-Limoilou, Quebec",
     "Québec, Quebec"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270319",
+  "expiredFeedCheckExpiry": "20270518",
   "timezone": "America/Montreal",
   "feedQuality": {
     "status": "review",
@@ -52,7 +52,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -60,10 +60,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cdn.rtcquebec.ca/Site_Internet/DonneesOuvertes/googletransit.zip",
-  "lastPeekedExpiry": "20270319",
-  "lastServiceWeek": "f1026f2556a1d8ac",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261114",
-  "lastRawArchiveKey": "20270319-150c93d5eaa927e6",
-  "lastFeedContentKey": "c10553a0181bc910"
+  "lastPeekedExpiry": "20270518",
+  "lastServiceWeek": "86952f5b7f9fe5fd",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261121",
+  "lastRawArchiveKey": "20270518-8e78a2f148e16eff",
+  "lastFeedContentKey": "528148df80e635c5"
 }

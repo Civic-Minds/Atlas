@@ -16,13 +16,13 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
+  "lastFeedVersion": "202611230/20261122 21:00:00/20261123 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2551/latest.zip",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Kamloops, British Columbia"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -43,19 +43,19 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Vancouver",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=46",
   "lastPeekedExpiry": "20270103",
-  "lastFeedStart": "20261114",
+  "lastFeedStart": "20261121",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "f81f0d472d8d26ec",
-  "feedObtainedAt": "20261116",
-  "lastRawArchiveKey": "20270103-a6cb4a4e88cf89e5",
-  "lastFeedContentKey": "5fadfd7f6174f8e5"
+  "feedObtainedAt": "20261123",
+  "lastRawArchiveKey": "20270103-fd71d47686615f43",
+  "lastFeedContentKey": "7f7b0d08e27211b9"
 }

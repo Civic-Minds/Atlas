@@ -15,15 +15,15 @@
   "feedUrl": "https://www.talgov.com/Uploads/Public/documents/starmetro/GTFS.zip",
   "region": "Florida",
   "lastFeedExpiry": "20270101",
-  "lastFeedVersion": "26-05-02 SUM_20260728",
-  "lastRefreshedAt": "2026-11-16",
+  "lastFeedVersion": "26-08-15 FALL BACK- UP PLAN _20261120",
+  "lastRefreshedAt": "2026-11-23",
   "websiteUrl": "http://www.talgov.com/starmetro",
   "cities": [
     "Tallahassee, Florida"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20270101-14919518fce3a202",
-  "lastFeedCheckAt": "20261116",
+  "lastRawArchiveKey": "20270101-baaf752c56cb001c",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -37,7 +37,7 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 1,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 77,
       "feedExpiry": "20270101",
@@ -47,14 +47,14 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "dd5a65dd71503037",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20260502",
-  "lastFeedContentKey": "c6f83a1a720a2921"
+  "lastServiceWeek": "67fa5934e19da45e",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20260801",
+  "lastFeedContentKey": "f96350095f401aee"
 }

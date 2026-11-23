@@ -21,7 +21,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
   "lastFeedExpiry": "20270327",
   "lastFeedVersion": "S1000251",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "websiteUrl": "https://www.wmata.com",
   "dataLicense": {
     "url": "https://developer.wmata.com/license",
@@ -41,7 +41,7 @@
     "Centreville, Virginia",
     "Reston, Virginia"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
@@ -64,7 +64,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -77,7 +77,7 @@
     {
       "feedExpiry": "20270102",
       "feedVersion": null,
-      "rawArchiveKey": "20270102-211a25f1cf90891c"
+      "rawArchiveKey": "20270102-1635084897ba5a5d"
     }
   ],
   "lastPeekedExpiry": "20270327",

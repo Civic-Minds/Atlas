@@ -12,13 +12,13 @@
     "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_lightrail.zip",
     "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_metro.zip"
   ],
-  "lastFeedExpiry": "20270206",
-  "lastFeedVersion": "20260821",
+  "lastFeedExpiry": "20271225",
+  "lastFeedVersion": "20261120",
   "region": "Maryland",
   "parentAgency": "mta-maryland",
   "pageSlug": "mta-maryland-baltimore",
   "pageTitleQualifier": "Bus, Metro and Light Rail",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Baltimore, Maryland",
     "Towson, Maryland",
@@ -28,10 +28,10 @@
     "Bowie, Maryland",
     "Columbia, Maryland"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270206",
+  "expiredFeedCheckExpiry": "20271225",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -39,17 +39,17 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 445,
-      "feedExpiry": "20270206",
+      "featureCount": 454,
+      "feedExpiry": "20271225",
       "routeCount": 66,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -60,14 +60,14 @@
   "feedRefreshRetryCount": 0,
   "lastSupplementalFeeds": [
     {
-      "feedExpiry": "20261231",
+      "feedExpiry": "20271225",
       "feedVersion": null,
-      "rawArchiveKey": "20261231-1b3e8fd047f7e1e3"
+      "rawArchiveKey": "20271225-b5882b14720f5014"
     },
     {
-      "feedExpiry": "20261231",
+      "feedExpiry": "20271125",
       "feedVersion": null,
-      "rawArchiveKey": "20261231-7d536b02798b35bc"
+      "rawArchiveKey": "20271125-2b460ffab52a6a5e"
     }
   ],
   "modeOverrides": [
@@ -78,10 +78,10 @@
       "reason": "Baltimore Light RailLink is light rail, published as route_type 0 (tram)"
     }
   ],
-  "lastPeekedExpiry": "20270206",
-  "lastServiceWeek": "8153f17217cdbad4",
-  "feedObtainedAt": "20260903",
-  "lastFeedStart": "20260821",
-  "lastRawArchiveKey": "20270206-8cc37d54d3a36097",
-  "lastFeedContentKey": "0201a38634ea01c6"
+  "lastPeekedExpiry": "20271225",
+  "lastServiceWeek": "91c31e86c7cfebbb",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261120",
+  "lastRawArchiveKey": "20270206-249706d76e1e926a",
+  "lastFeedContentKey": "718a4b9e6cb908bb"
 }

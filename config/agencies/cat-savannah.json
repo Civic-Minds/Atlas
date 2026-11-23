@@ -23,21 +23,22 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20261122-a9ead00107f2b233",
-  "lastFeedCheckAt": "20261116",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261123",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261122",
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0,
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261122)",
+  "feedRefreshErrorAt": "20261123",
+  "feedRefreshRetryCount": 1,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://catchacat.org/wp-content/uploads/CAT_S70_GTFSExport_2026-08-27.zip",
   "feedQuality": {
-    "status": "review",
-    "score": 94,
+    "status": "degraded",
+    "score": 59,
     "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule.",
+      "The schedule dates in this feed have passed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -52,7 +53,8 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "modeOverrides": [
     {

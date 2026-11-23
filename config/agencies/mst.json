@@ -13,18 +13,18 @@
     -121.89
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-56/latest.zip",
-  "lastFeedExpiry": "20261204",
-  "lastFeedVersion": "202603v41",
+  "lastFeedExpiry": "20270226",
+  "lastFeedVersion": "202603v61",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Salinas, California",
     "Watsonville, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261204",
+  "expiredFeedCheckExpiry": "20270227",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "healthy",
@@ -36,14 +36,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 172,
-      "feedExpiry": "20261204",
+      "feedExpiry": "20270226",
       "routeCount": 38,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,8 +51,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-56/latest.zip",
-  "lastPeekedExpiry": "20261204",
-  "lastServiceWeek": "5f29ddb62b1ecf78",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261019"
+  "lastPeekedExpiry": "20270227",
+  "lastServiceWeek": "d006077938a74f1c",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261119",
+  "lastRawArchiveKey": "20270227-77c5e09ce20f0075",
+  "lastFeedContentKey": "dfe8fedc45b80c40"
 }

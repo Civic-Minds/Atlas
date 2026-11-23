@@ -10,7 +10,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "region": "North Dakota",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
   "bbox": [
@@ -22,7 +22,7 @@
   "cities": [
     "Bismarck, North Dakota"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -47,15 +47,15 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "8d1488151c5eac18",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261017",
-  "lastRawArchiveKey": "20261215-2e3e3e1fc96add42",
-  "lastFeedContentKey": "f9a3b7d77093c30f"
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261121",
+  "lastRawArchiveKey": "20261222-59ef91adad526fb9",
+  "lastFeedContentKey": "41e636b60128f58d"
 }

@@ -29,14 +29,14 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20260601-572eaf8ff298767c",
-  "lastFeedCheckAt": "20261116",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20261123",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261114",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20261114)",
-  "feedRefreshErrorAt": "20261116",
-  "feedRefreshRetryCount": 1,
+  "feedRefreshErrorAt": "20261123",
+  "feedRefreshRetryCount": 2,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip",
   "lastPeekedExpiry": "20261114",
@@ -61,7 +61,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-14",
-    "scoredAt": "2026-11-16"
+    "scoredAt": "2026-11-23"
   },
   "lastServiceWeek": "7c1ef8082468e813",
   "feedObtainedAt": "20261102",

@@ -17,7 +17,7 @@
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-726/latest.zip",
-  "lastRefreshedAt": "2026-11-22",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Oshawa, Ontario",
     "Ajax, Ontario",
@@ -27,7 +27,7 @@
     "Newmarket, Ontario",
     "Barrie, Ontario"
   ],
-  "lastFeedCheckAt": "20261122",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -48,7 +48,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Toronto",
   "lastFeedSourceKind": "configured",
@@ -58,9 +58,9 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20261220",
-  "lastServiceWeek": "9f9e69322c89b486",
-  "feedObtainedAt": "20261122",
+  "lastServiceWeek": "253997e39d5649b9",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20261106",
-  "lastRawArchiveKey": "20261220-415be922ecff81fd",
-  "lastFeedContentKey": "b0713176eede063b"
+  "lastRawArchiveKey": "20261220-5f7c292ddabfbebb",
+  "lastFeedContentKey": "7b14cec398cca2e8"
 }

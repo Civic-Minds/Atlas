@@ -11,8 +11,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6775/latest.zip",
   "region": "Tennessee",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20260515",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "20261120",
+  "lastRefreshedAt": "2026-11-23",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -22,7 +22,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 12,
+      "featureCount": 11,
       "feedExpiry": "20271231",
       "routeCount": 4,
       "problemShapes": 0,
@@ -30,11 +30,11 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -43,7 +43,9 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20271231",
-  "lastServiceWeek": "9448d3e9d1a8a5f7",
-  "feedObtainedAt": "20260515",
-  "lastFeedStart": "20260501"
+  "lastServiceWeek": "dd595e748512d8e7",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261120",
+  "lastRawArchiveKey": "20271231-27e60a66de5c3271",
+  "lastFeedContentKey": "5c8ba89d9b25479c"
 }

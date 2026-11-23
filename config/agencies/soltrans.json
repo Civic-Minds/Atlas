@@ -17,8 +17,8 @@
   "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-80/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261113",
-  "lastRefreshedAt": "2026-11-16",
+  "lastFeedVersion": "20261123",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Vallejo, California",
     "Fairfield, California",
@@ -29,7 +29,7 @@
     "Vacaville, California",
     "Chinatown, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -42,7 +42,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 69,
+      "featureCount": 68,
       "feedExpiry": "20271231",
       "routeCount": 15,
       "problemShapes": 0,
@@ -50,7 +50,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -60,9 +60,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
   "lastPeekedExpiry": "20271231",
-  "lastServiceWeek": "cd5dab8f9ecf7b33",
-  "feedObtainedAt": "20261116",
+  "lastServiceWeek": "73d329570deae529",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20261112",
-  "lastRawArchiveKey": "20271231-ef7a7e4d937c95c3",
-  "lastFeedContentKey": "9d83ff3ef7faf5e8"
+  "lastRawArchiveKey": "20271231-df69467ab04d66a4",
+  "lastFeedContentKey": "127335811352d0ec"
 }

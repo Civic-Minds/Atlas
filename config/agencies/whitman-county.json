@@ -40,9 +40,10 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -57,5 +58,6 @@
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20261114",
   "lastRawArchiveKey": "unknown-ee618e204a5e606b",
-  "lastFeedContentKey": "ee73073ea422e803"
+  "lastFeedContentKey": "ee73073ea422e803",
+  "refusedFeedSha256": "1a23a72d5554bada1991d0acc7274d743b7167871a4a6aa21b1051fde241bf27"
 }

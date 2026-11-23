@@ -9,14 +9,14 @@
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11346/gtfs.zip",
   "lastFeedExpiry": "20270206",
-  "lastFeedVersion": "NOVEMBER 2026_20261021",
+  "lastFeedVersion": "NOVEMBER 2026_20261111",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2001/latest.zip",
-  "lastRefreshedAt": "2026-11-08",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Canton, Ohio",
     "Akron, Ohio"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
@@ -41,13 +41,15 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "4424bc14600557c2",
-  "feedObtainedAt": "20261108",
-  "lastFeedStart": "20261108"
+  "lastServiceWeek": "1522f35ef3e0eb8f",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261108",
+  "lastRawArchiveKey": "20270206-88c7e149b11c62e2",
+  "lastFeedContentKey": "636d50115996f776"
 }

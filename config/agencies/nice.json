@@ -25,7 +25,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-521/latest.zip",
   "lastFeedExpiry": "20270109",
   "lastFeedVersion": "",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Hempstead, New York",
     "Levittown, New York",
@@ -37,21 +37,20 @@
     "Briarwood, New York",
     "Corona, New York"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
   "timezone": "America/New_York",
   "feedQuality": {
     "status": "review",
-    "score": 83,
+    "score": 93,
     "reasons": [
-      "1 minor schedule issue found while reading the feed.",
       "3 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
-      "validationWarnings": 1,
+      "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 3,
       "featureCount": 229,
@@ -62,7 +61,7 @@
       "mismatchRoutes": 3,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -71,9 +70,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-521/latest.zip",
   "lastPeekedExpiry": "20270109",
-  "lastServiceWeek": "0d0d753ae9e845f7",
-  "feedObtainedAt": "20261116",
+  "lastServiceWeek": "0ec5fd299ff1fbe8",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20261116",
-  "lastRawArchiveKey": "20270109-261244b65bf9981b",
-  "lastFeedContentKey": "6e2403eef2e8a4db"
+  "lastRawArchiveKey": "20270109-80c30037bc238718",
+  "lastFeedContentKey": "930509f26249ae88"
 }

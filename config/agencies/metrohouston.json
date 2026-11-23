@@ -15,9 +15,9 @@
   ],
   "feedUrl": "https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip",
   "lastFeedExpiry": "20270213",
-  "lastFeedVersion": "August2026IVOMS_20261008",
+  "lastFeedVersion": "August2026IVOMS_20261120",
   "region": "Texas",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Houston, Texas",
     "Alief, Texas",
@@ -31,7 +31,7 @@
     "Baytown, Texas"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2060/latest.zip",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -52,7 +52,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -82,7 +82,9 @@
     }
   ],
   "lastPeekedExpiry": "20270213",
-  "lastServiceWeek": "66fbdc66f1318f30",
-  "feedObtainedAt": "20261008",
-  "lastFeedStart": "20260830"
+  "lastServiceWeek": "4fa65cc5fcf3ad4a",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20260830",
+  "lastRawArchiveKey": "20270109-8e324c60a0f420f6",
+  "lastFeedContentKey": "ff3edb225a129a70"
 }

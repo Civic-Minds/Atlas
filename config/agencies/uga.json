@@ -9,7 +9,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
   "bbox": [
@@ -21,7 +21,7 @@
   "cities": [
     "Athens, Georgia"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -41,7 +41,7 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 29,
+      "featureCount": 30,
       "feedExpiry": "20271231",
       "routeCount": 19,
       "problemShapes": 0,
@@ -49,15 +49,15 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "d7bd0a5158573a6a",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261017",
-  "lastRawArchiveKey": "20261215-510b4ade471d8415",
-  "lastFeedContentKey": "f36622a41fdec9a5"
+  "lastServiceWeek": "6c179d7df1f33c1a",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261121",
+  "lastRawArchiveKey": "20261222-8ba64b55e8bbce88",
+  "lastFeedContentKey": "b82c832660a6e2de"
 }

@@ -11,12 +11,12 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
   "lastFeedExpiry": "20270906",
-  "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
-  "lastRefreshedAt": "2026-11-16",
+  "lastFeedVersion": "202611230/20261122 21:00:00/20261123 04:00:00",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Kelowna, British Columbia"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270906",
@@ -37,7 +37,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -48,8 +48,8 @@
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=15",
   "lastPeekedExpiry": "20270906",
   "lastServiceWeek": "832617af65ae2e2e",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261114",
-  "lastRawArchiveKey": "20270906-8d29f143473e8777",
-  "lastFeedContentKey": "7574baac5d9e09ca"
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261121",
+  "lastRawArchiveKey": "20270906-da5da7662a280c3d",
+  "lastFeedContentKey": "388b77c80c337f2a"
 }

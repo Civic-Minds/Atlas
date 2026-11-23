@@ -30,7 +30,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-57/latest.zip",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "2026-10-09_14:57",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "San Jose, California",
     "Santa Clara, California",
@@ -41,7 +41,7 @@
     "Gilroy, California",
     "Palo Alto, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -55,15 +55,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 305,
+      "featureCount": 311,
       "feedExpiry": "20270110",
-      "routeCount": 67,
+      "routeCount": 70,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip",
@@ -92,7 +92,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "5c07d34969153187",
+  "lastServiceWeek": "77df7b29dce6592b",
   "feedObtainedAt": "20261027",
-  "lastFeedStart": "20261026"
+  "lastFeedStart": "20261026",
+  "lastRawArchiveKey": "20270110-815b448ad640c55f",
+  "lastFeedContentKey": "e5837123ea3441b2"
 }

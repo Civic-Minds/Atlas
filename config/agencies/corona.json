@@ -15,12 +15,12 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip",
   "lastFeedExpiry": "20270331",
-  "lastFeedVersion": "UTC: 27-Jan-2026 10:04",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "UTC: 17-Nov-2026 17:41",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Corona, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270331",
@@ -47,13 +47,15 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "edbec468c54103c4",
-  "feedObtainedAt": "20260127",
-  "lastFeedStart": "20260127"
+  "lastServiceWeek": "4209c8e0df1a6b1a",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261117",
+  "lastRawArchiveKey": "20270331-db41d85647f80fcf",
+  "lastFeedContentKey": "a142ef4c3ea9b5a8"
 }

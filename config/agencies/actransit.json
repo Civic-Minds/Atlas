@@ -18,7 +18,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2455/latest.zip",
   "lastFeedExpiry": "20270403",
   "lastFeedVersion": "S1000256",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "websiteUrl": "http://www.actransit.org",
   "dataLicense": {
     "url": "https://www.actransit.org/data-terms-and-conditions/",
@@ -38,7 +38,7 @@
     "Castro Valley, California",
     "Milpitas, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270403",
@@ -63,13 +63,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "f58e5172775dcd43",
+  "lastServiceWeek": "ecaf69826bcce5f3",
   "feedObtainedAt": "20260723",
   "lastFeedStart": "20260809",
   "lastRawArchiveKey": "20270403-073404069aa19e66",

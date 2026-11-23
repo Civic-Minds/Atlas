@@ -16,10 +16,10 @@
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-125/latest.zip",
-  "lastFeedExpiry": "20270201",
+  "lastFeedExpiry": "20261231",
   "lastFeedVersion": "UTC: 20-Oct-2026 18:09",
   "lastRefreshedAt": "2026-11-16",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -42,7 +42,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",

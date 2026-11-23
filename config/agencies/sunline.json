@@ -14,16 +14,16 @@
     -116.1
   ],
   "feedUrl": "https://sunlinebus.com/gtfs",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281123",
   "lastFeedVersion": "Add training route",
   "region": "California",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Cathedral City, California",
     "Indio, California",
     "Palm Desert, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -42,14 +42,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
       "featureCount": 74,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281123",
       "routeCount": 17,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -57,8 +57,8 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "14d07bbf93202acc",
-  "feedObtainedAt": "20261102",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20260916",
-  "lastRawArchiveKey": "unknown-67e62bc1a8997f01",
-  "lastFeedContentKey": "89f8371c5dfc3df5"
+  "lastRawArchiveKey": "unknown-edab3bfb7ee42091",
+  "lastFeedContentKey": "4a02ed183feb336d"
 }

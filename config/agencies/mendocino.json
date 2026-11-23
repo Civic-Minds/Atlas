@@ -16,9 +16,9 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-69/latest.zip",
   "lastFeedExpiry": "20270228",
-  "lastFeedVersion": "UTC: 30-Oct-2026 17:15",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedVersion": "UTC: 18-Nov-2026 18:46",
+  "lastRefreshedAt": "2026-11-23",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -39,7 +39,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -49,7 +49,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
   "lastPeekedExpiry": "20270228",
-  "lastServiceWeek": "ea7b0eb2b3d7a63f",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261030"
+  "lastServiceWeek": "97f40ad404101b21",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261118",
+  "lastRawArchiveKey": "20270228-fcfaabd70817f97d",
+  "lastFeedContentKey": "35ac3855fc467461"
 }
