@@ -292,6 +292,13 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-22 — The MCP page's new words, dev server only (CIV-2155)
+Ryan (2026-11-22, relayed by Atlas Manager New), shown the words not asked for with options 1 approve as proposed, 2 change: "1".
+- Contents, one word each: Answers, Tools, Freshness, Connect, Testers.
+- Tool groups: Find, Schedules, Changes, Planning, Live.
+- Connect: "In Claude Code, the same link is one command, with nothing to install:" with `<your link>` in the command, and "On this Mac, the MCP can also run from its own copy of Atlas:".
+- Why: Ryan, "in the table of contents the headings should be 1 word", "For the tools should we group them together at all on the page too", and "how was elias able to add it to his claude code with a line of code".
+
 ### 2026-11-22 — The weekday-to-Sunday story's words, dev server only (#1074, CIV-770)
 Ryan, 2026-11-22 (relayed by Atlas Manager): "1 yes like onlyl ocal right now". He was answering the word list for /research/weekday-to-sunday (_reports/1074/WORDS.md, 31 items).
 - All 31 wordings are approved, with heading 1 changed to "Where does frequent service go on Sunday evening?": "night" becomes "evening", to match the period name.
