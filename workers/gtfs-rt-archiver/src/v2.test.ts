@@ -19,11 +19,14 @@ describe('cloud recorder v2 (CIV-2073)', () => {
   it('joins positions to trip updates with Live’s join and keeps every route the filter keeps', async () => {
     serve();
     const snap = await snapshotFor(feed, { BUCKET: bucket().BUCKET }, FIXTURE_NOW);
-    expect(snap.records.map(r => r.id)).toEqual(['v1', 'v2', 'v3']);
-    const [v1, v2] = snap.records;
-    expect(v1).toMatchObject({ label: '0401', delay: 120, tripId: 't1', stu: [['101', FIXTURE_NOW + 60], ['102', null], ['103', FIXTURE_NOW + 300]] });
-    // v2's trip id has no update; its stops come from the update naming its vehicle, its delay only by trip id.
-    expect(v2).toMatchObject({ delay: null, stu: [['101', FIXTURE_NOW + 600], ['101', FIXTURE_NOW + 1200], ['103', FIXTURE_NOW + 900]] });
+    expect(snap.records.map(r => r.id)).toEqual(['v1', 'v2', 'v3', 'v4']);
+    const [v1, v2, , v4] = snap.records;
+    expect(v1).toMatchObject({ label: '0401', delay: 120, tripId: 't1', stu: [['099', FIXTURE_NOW - 10], ['101', FIXTURE_NOW + 60], ['102', null], ['103', FIXTURE_NOW + 300]] });
+    // A stop past by the capture time but not by the trip feed's own timestamp is kept (#1673).
+    // v2's trip id has no update; the update naming its vehicle is kept apart (its next stop, never its pattern), its delay only by trip id.
+    expect(v2).toMatchObject({ delay: null, stu: [], stuV: [[['101', FIXTURE_NOW + 600], ['101', FIXTURE_NOW + 1200], ['103', FIXTURE_NOW + 900]]] });
+    // v4 stands at its last stop: the stop stays while its departure is ahead, and its next trip's stops come along.
+    expect(v4).toMatchObject({ stu: [['103', FIXTURE_NOW - 120, FIXTURE_NOW + 30]], stuV: [[['102', FIXTURE_NOW + 400]]] });
     expect(snap.headways['01']).toEqual({ gapMin: 10, samples: 1 });
     expect(snap).toMatchObject({ schemaVersion: 'atlas.live.v2', capturedAt: FIXTURE_NOW, tripsOk: true, sourceTimestamp: FIXTURE_NOW });
   });
