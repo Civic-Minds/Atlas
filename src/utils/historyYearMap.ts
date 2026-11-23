@@ -1,4 +1,4 @@
-import { routesForYear, shapeForYear, snapshotValue, type HistoryShapesFile, type HistorySnapshotLike, type HistoryRouteLike, type SnapshotValue } from '../../shared/historyV2Reader';
+import { routesForYear, shapeForYear, shapeYears, snapshotValue, type HistoryShapesFile, type HistorySnapshotLike, type HistoryRouteLike, type SnapshotValue } from '../../shared/historyV2Reader';
 import type { HeadwayByPeriod, PeriodKey } from '../../shared/config';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
@@ -24,7 +24,15 @@ export interface HistoryYearRoute {
   coordinates?: number[][];
   /** The line is drawn from the stop order (straight links between stops), not a published shape. */
   approximate?: boolean;
+  /** CIV-2064 review only: a latest-year route that isn't on today's map, drawn on its most recent own line, dashed. */
+  dashed?: boolean;
 }
+
+/**
+ * CIV-2064 review only (non-public builds, ?historyGone=line|dashed): latest-year routes that aren't on today's map
+ * (the review's list), drawn on their most recent year's own line; `dashed` marks them. Absent: History as it is.
+ */
+export interface HistoryGoneReview { keys: ReadonlySet<string>; dashed: boolean }
 
 type Snapshot = HistorySnapshotLike & { headwayByPeriod?: HeadwayByPeriod; noTripPeriods?: readonly PeriodKey[] };
 
@@ -131,6 +139,7 @@ export function historyYearRoutes(
   shapes: HistoryShapesFile | null | ((memberSlug: string | undefined) => HistoryShapesFile | null) = null,
   /** The latest year: it uses today's map lines, as the map does, so no year shape is read for it. */
   latestYear?: number,
+  gone?: HistoryGoneReview | null,
 ): HistoryYearRoute[] {
   const out: HistoryYearRoute[] = [];
   for (const { route, snapshot, carriedFrom } of routesForYear<Snapshot, HistoryRouteLike<Snapshot>>(agency, year)) {
@@ -144,7 +153,14 @@ export function historyYearRoutes(
       // The year's own line when it has one (not for the latest year); otherwise today's map line.
       // Snapshots' old v1 `geometry` is not used (reader contract).
       // A route carried into an unchanged year (#1591) is drawn on the line of the year its number comes from.
-      ...yearShape(typeof shapes === 'function' ? shapes((snapshot as { memberSlug?: string }).memberSlug) : shapes, route.routeShortName, carriedFrom ?? year, latestYear),
+      ...((): { coordinates?: number[][]; approximate?: boolean; dashed?: boolean } => {
+        const file = typeof shapes === 'function' ? shapes((snapshot as { memberSlug?: string }).memberSlug) : shapes;
+        if (gone && year === latestYear && gone.keys.has(route.routeShortName)) {
+          const line = mostRecentShape(file, route.routeShortName, year);
+          return line ? { ...line, ...(gone.dashed ? { dashed: true } : {}) } : {};
+        }
+        return yearShape(file, route.routeShortName, carriedFrom ?? year, latestYear);
+      })(),
     });
   }
   return out;
@@ -156,6 +172,15 @@ function yearShape(shapes: HistoryShapesFile | null, routeKey: string, year: num
   return shape.kind === 'shape' && isDrawableLineCoordinates(shape.coordinates)
     ? { coordinates: shape.coordinates, ...(shape.approximate ? { approximate: true } : {}) }
     : {};
+}
+
+/** CIV-2064 review: a route's own line in the given year or the most recent year before it that has one. */
+function mostRecentShape(shapes: HistoryShapesFile | null, routeKey: string, year: number): { coordinates: number[][]; approximate?: boolean } | null {
+  for (const y of shapeYears(shapes).filter(y => y <= year).reverse()) {
+    const shape = shapeForYear(shapes, routeKey, y);
+    if (shape.kind === 'shape' && isDrawableLineCoordinates(shape.coordinates)) return { coordinates: shape.coordinates, ...(shape.approximate ? { approximate: true } : {}) };
+  }
+  return null;
 }
 
 /** The year's routes drawn on today's map lines (those without their own shape). */

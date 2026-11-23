@@ -467,6 +467,16 @@ function addHistoryLayers(map: maplibregl.Map) {
       'line-join': 'round'
     }
   });
+  // CIV-2064 review only: a latest-year route that isn't on today's map, on its most recent own line, dashed.
+  map.setFilter('history-routes-layer', ['!=', ['get', 'dashed'], true]);
+  map.addLayer({
+    id: 'history-routes-dashed-layer',
+    type: 'line',
+    source: 'history-routes',
+    filter: ['==', ['get', 'dashed'], true],
+    paint: { 'line-color': ['get', 'color'], 'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any, 'line-opacity': 1, 'line-dasharray': [1.5, 1.5] },
+    layout: { 'line-join': 'round' },
+  });
 }
 
 /**

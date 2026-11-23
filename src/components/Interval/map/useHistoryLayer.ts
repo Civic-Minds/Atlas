@@ -51,7 +51,7 @@ export function useHistoryLayer(
       .map(r => ({
         type: 'Feature' as const,
         geometry: { type: 'LineString' as const, coordinates: r.coordinates! },
-        properties: { color: r.color, routeShortName: r.routeShortName },
+        properties: { color: r.color, routeShortName: r.routeShortName, dashed: r.dashed === true },
       }));
     source.setData({ type: 'FeatureCollection', features });
   }, [historyOverlay, mapLoaded]);

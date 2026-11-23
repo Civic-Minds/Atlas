@@ -20,7 +20,7 @@ import type { RouteListDisplay } from '../utils/effectiveHeadway';
 import { useRecentSearches } from '../hooks/useRecentSearches';
 import { useFadePresence } from '../hooks/useFadePresence';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
-import { FEATURES } from '../../shared/config';
+import { BETA_BUILD, FEATURES } from '../../shared/config';
 import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import { historyRouteMatchesQuery } from '../utils/historyRouteSearch';
 import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots';
@@ -28,7 +28,7 @@ import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey 
 import { useColorMode } from '../hooks/useColorMode';
 import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
 import { routesForYear, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
-import { HISTORY_VIEW_ALL, agencyHasWeekendValues, historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
+import { HISTORY_VIEW_ALL, type HistoryGoneReview, agencyHasWeekendValues, historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
@@ -956,12 +956,22 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   // didn't change, #1591),
   // coloured by that year's value on History's day (historyYearRoutes; Weekday unless the day picker says otherwise).
   const historyColorMode = useColorMode();
+  // CIV-2064 review only (non-public builds): ?historyGone=line|dashed draws the review list's latest-year routes that
+  // aren't on today's map on their most recent own line (/_review/civ-2064/gone.json: slug -> route keys).
+  const [goneReview, setGoneReview] = useState<Record<string, HistoryGoneReview> | null>(null);
+  useEffect(() => {
+    const mode = BETA_BUILD && typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('historyGone') : null;
+    if (mode !== 'line' && mode !== 'dashed') return;
+    fetch('/_review/civ-2064/gone.json').then(r => r.json()).then((list: Record<string, string[]>) => {
+      setGoneReview(Object.fromEntries(Object.entries(list).map(([slug, keys]) => [slug, { keys: new Set(keys), dashed: mode === 'dashed' }])));
+    }).catch(() => {});
+  }, []);
   useEffect(() => {
     if (!active) { setOverlay(null); return; }
     const agency = openAgencyHistory;
     if (!agency) { setOverlay(null); return; }
     const latestYear = yearsAvailable(agency).at(-1);
-    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorMode, view, openAgencyShapes, latestYear) : [];
+    const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorMode, view, openAgencyShapes, latestYear, goneReview?.[agency.slug]) : [];
     setOverlay({
       slug: agency.slug,
       slugs: membersOf.get(agency.slug) ?? [agency.slug],
@@ -972,7 +982,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       yearRoutes,
       day: view.day,
     });
-  }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorMode, view, membersOf]);
+  }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorMode, view, membersOf, goneReview]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 

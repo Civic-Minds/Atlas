@@ -316,8 +316,8 @@ export function useRouteStyling(
         if (map.getLayer('history-routes-layer')) {
           // The routes drawn on their own shape carry no frequency to hide by, so they keep the flat fade, at the same widths.
           const ownShapeMatch = ['==', ['get', 'routeShortName'], historyOverlay.routeShortName];
-          map.setPaintProperty('history-routes-layer', 'line-opacity', buildFocusedRoutePaint(ownShapeMatch, DIM_OPACITY).opacity as any);
-          map.setPaintProperty('history-routes-layer', 'line-width', focusedRouteLineWidth(ownShapeMatch) as any);
+          for (const id of ['history-routes-layer', 'history-routes-dashed-layer']) if (map.getLayer(id)) map.setPaintProperty(id, 'line-opacity', buildFocusedRoutePaint(ownShapeMatch, DIM_OPACITY).opacity as any);
+          for (const id of ['history-routes-layer', 'history-routes-dashed-layer']) if (map.getLayer(id)) map.setPaintProperty(id, 'line-width', focusedRouteLineWidth(ownShapeMatch) as any);
         }
       } else if (historyOverlay?.slug) {
         // History agency selection keeps the whole agency visible while dimming
@@ -327,8 +327,8 @@ export function useRouteStyling(
         // The agency's lines at the regular route widths, the rest dimmed.
         setRouteLayerPaint(map, 'line-width', agencyFocusWidth(historyAgencyMatch) as any);
         if (map.getLayer('history-routes-layer')) {
-          map.setPaintProperty('history-routes-layer', 'line-opacity', 1);
-          map.setPaintProperty('history-routes-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
+          for (const id of ['history-routes-layer', 'history-routes-dashed-layer']) if (map.getLayer(id)) map.setPaintProperty(id, 'line-opacity', 1);
+          for (const id of ['history-routes-layer', 'history-routes-dashed-layer']) if (map.getLayer(id)) map.setPaintProperty(id, 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
         }
       } else if (focusRoutes?.length) {
         // The selected route's own fade (below), for the set of routes at once.
