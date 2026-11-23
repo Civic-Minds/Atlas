@@ -11,12 +11,28 @@ declare global {
   interface Window { [BEFORE_SEND]?: (type: string, payload: { url?: string } & Record<string, unknown>) => unknown }
 }
 
-/** #1519: Umami gets the address without the map's lat and lon, as Google and Vercel do. */
-export function umamiBeforeSend(_type: string, payload: { url?: string } & Record<string, unknown>) {
+let lastPageviewPath: string | undefined;
+
+/**
+ * #1519: Umami gets the address without the map's lat and lon, as Google and Vercel do.
+ * Umami counts a page view whenever the address changes, and the map rewrites the address on every pan or filter
+ * change, so a page view whose page (path) hasn't changed is dropped (returning false cancels the send). This
+ * matches Google Analytics, which counts one view per page from RouteTracker. Custom events always go through.
+ */
+export function umamiBeforeSend(type: string, payload: { url?: string; name?: unknown } & Record<string, unknown>) {
   if (typeof payload?.url !== 'string') return payload;
   const full = withoutMapPosition(new URL(payload.url, 'https://atlas.invalid').toString());
   const u = new URL(full);
+  if (type === 'event' && !payload.name) {
+    if (u.pathname === lastPageviewPath) return false;
+    lastPageviewPath = u.pathname;
+  }
   return { ...payload, url: `${u.pathname}${u.search}${u.hash}` };
+}
+
+/** Tests only: forget the last page counted. */
+export function resetUmamiPageviewPath() {
+  lastPageviewPath = undefined;
 }
 
 /**
