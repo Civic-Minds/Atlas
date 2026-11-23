@@ -151,4 +151,3 @@ export const frequentCoverageWindows = coverageMetros.windows.map(w => ({
     metros: [...country.metros].sort((a, b) => Number(a.fifteenMinute === 0) - Number(b.fifteenMinute === 0) || b.thirtyMinute - a.thirtyMinute),
   })),
 }));
-export type FrequentCoverageWindow = (typeof frequentCoverageWindows)[number];
