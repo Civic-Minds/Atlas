@@ -105,7 +105,7 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
       type: 'FeatureCollection',
       features: m.segments.map(s => ({
         type: 'Feature' as const,
-        properties: { from: s.fromStopId, to: s.toStopId, label: s.label ?? '', route: s.route ?? '', off: s.offset ?? 0, dim: latestHl.current && s.route !== latestHl.current ? 1 : 0, color: stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
+        properties: { from: s.fromStopId, to: s.toStopId, label: s.label ?? '', route: s.route ?? '', off: s.offset ?? 0, dim: latestHl.current && s.route !== latestHl.current ? 1 : 0, color: s.color ?? stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
         geometry: { type: 'LineString' as const, coordinates: s.coordinates },
       })),
     });

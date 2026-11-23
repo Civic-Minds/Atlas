@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Export map image shows only the size you picked as selected**: hovering another size made it look picked too, since hover and selected were nearly the same grey
+- **Every route line on the Live map shows how often it runs right now**: routes without a Live report were drawn grey; they now take the main map's frequency colours for the time of day
 - **The Live map shows how often the picked route is running right now**: its "Every ~N min" line never appeared, because the gaps were looked for inside one trip instead of between trips at a stop
 - **Hamilton's Live recordings miss fewer minutes**: when Hamilton's feed briefly fails, the recorder tries once more a few seconds later instead of skipping that minute
 - **The Live card says "At <stop>" while a vehicle stands at a stop**: it never did on a real feed, because the stop status was read as text and checked as a number
