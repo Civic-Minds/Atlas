@@ -9,7 +9,7 @@ import { createSign } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { ANALYTICS_RANGES, ANALYTICS_REGION_ROWS, ANALYTICS_TOP_ROWS, TILE_MAP_COUNTRIES, type AnalyticsDay, type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow } from '../shared/analytics.js';
+import { ANALYTICS_ACTION_ROWS, ANALYTICS_RANGES, ANALYTICS_REGION_ROWS, GA_AUTOMATIC_EVENTS, ANALYTICS_TOP_ROWS, TILE_MAP_COUNTRIES, type AnalyticsDay, type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow } from '../shared/analytics.js';
 
 const CREDENTIALS = join(homedir(), 'Developer/Credentials');
 const KEY_FILE = join(CREDENTIALS, 'Google Analytics read-only for Atlas.json');
@@ -72,7 +72,7 @@ export function windowRequests(days: number) {
   const withPrevious = [...dateRanges, { startDate: `${days * 2}daysAgo`, endDate: `${days + 1}daysAgo` }];
   const top = (dimension: string, metric: string) => ({ dateRanges, dimensions: [{ name: dimension }], metrics: [{ name: metric }], orderBys: [{ metric: { metricName: metric }, desc: true }], limit: ANALYTICS_TOP_ROWS });
   return [
-    { dateRanges: withPrevious, metrics: [{ name: 'sessions' }, { name: 'activeUsers' }, { name: 'screenPageViews' }] },
+    { dateRanges: withPrevious, metrics: [{ name: 'sessions' }, { name: 'activeUsers' }, { name: 'screenPageViews' }, { name: 'averageSessionDuration' }] },
     top('pagePath', 'screenPageViews'),
     top('country', 'activeUsers'),
     top('sessionSource', 'sessions'),
@@ -80,16 +80,22 @@ export function windowRequests(days: number) {
   ];
 }
 
-/** Visitors by state or province in the US and Canada; a second batch, since the first holds batchRunReports' five. */
-export function regionRequest(days: number) {
-  return {
-    dateRanges: [{ startDate: `${days}daysAgo`, endDate: 'yesterday' }],
-    dimensions: [{ name: 'region' }],
-    metrics: [{ name: 'activeUsers' }],
-    dimensionFilter: { filter: { fieldName: 'country', inListFilter: { values: [...TILE_MAP_COUNTRIES] } } },
-    orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
-    limit: ANALYTICS_REGION_ROWS,
-  };
+/**
+ * The second batch for one window (the first holds batchRunReports' five): visitors by state or province in the US and
+ * Canada (the tile map), new against returning visitors, Atlas's own events, and top cities.
+ */
+export function moreRequests(days: number) {
+  const dateRanges = [{ startDate: `${days}daysAgo`, endDate: 'yesterday' }];
+  const byUsers = { metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }] };
+  return [
+    { dateRanges, dimensions: [{ name: 'region' }], ...byUsers, limit: ANALYTICS_REGION_ROWS,
+      dimensionFilter: { filter: { fieldName: 'country', inListFilter: { values: [...TILE_MAP_COUNTRIES] } } } },
+    { dateRanges, dimensions: [{ name: 'newVsReturning' }], metrics: [{ name: 'activeUsers' }] },
+    { dateRanges, dimensions: [{ name: 'eventName' }], metrics: [{ name: 'eventCount' }], orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }], limit: ANALYTICS_ACTION_ROWS,
+      dimensionFilter: { notExpression: { filter: { fieldName: 'eventName', inListFilter: { values: [...GA_AUTOMATIC_EVENTS] } } } } },
+    { dateRanges, dimensions: [{ name: 'city' }], ...byUsers, limit: ANALYTICS_TOP_ROWS,
+      dimensionFilter: { notExpression: { filter: { fieldName: 'city', stringFilter: { value: '(not set)' } } } } },
+  ];
 }
 
 const num = (v: string | undefined) => Number(v ?? 0) || 0;
@@ -100,7 +106,7 @@ function totalsFor(report: GaReport | undefined, range: 'date_range_0' | 'date_r
   const rows = report?.rows ?? [];
   const row = rows.find(r => r.dimensionValues?.[0]?.value === range) ?? (range === 'date_range_0' && !rows[0]?.dimensionValues ? rows[0] : undefined);
   const t = row?.metricValues ?? [];
-  return { visits: num(t[0]?.value), visitors: num(t[1]?.value), pageViews: num(t[2]?.value) };
+  return { visits: num(t[0]?.value), visitors: num(t[1]?.value), pageViews: num(t[2]?.value), visitSeconds: num(t[3]?.value) };
 }
 
 const ymdToMs = (d: string) => Date.UTC(Number(d.slice(0, 4)), Number(d.slice(4, 6)) - 1, Number(d.slice(6, 8)));
@@ -119,8 +125,8 @@ export function dailyOf(report: GaReport | undefined): AnalyticsDay[] {
   return out;
 }
 
-/** One window's figures from the batchRunReports answer (reports in windowRequests' order, then regionRequest's). */
-export function readWindow(days: (typeof ANALYTICS_RANGES)[number], reports: GaReport[], regionReport?: GaReport): AnalyticsWindow {
+/** One window's figures from the two batchRunReports answers (reports in windowRequests' and moreRequests' order). */
+export function readWindow(days: (typeof ANALYTICS_RANGES)[number], reports: GaReport[], more: GaReport[] = []): AnalyticsWindow {
   return {
     days,
     totals: totalsFor(reports[0], 'date_range_0'),
@@ -129,7 +135,10 @@ export function readWindow(days: (typeof ANALYTICS_RANGES)[number], reports: GaR
     countries: rowsOf(reports[2]),
     sources: rowsOf(reports[3]),
     daily: dailyOf(reports[4]),
-    regions: rowsOf(regionReport),
+    regions: rowsOf(more[0]),
+    returning: rowsOf(more[1]).find(r => r.name === 'returning')?.value ?? 0,
+    actions: rowsOf(more[2]),
+    cities: rowsOf(more[3]),
   };
 }
 
@@ -150,8 +159,8 @@ export default {
         return ((await res.json()) as { reports: GaReport[] }).reports;
       };
       const windows = await Promise.all(ANALYTICS_RANGES.map(async days => {
-        const [reports, [regions]] = await Promise.all([batch(windowRequests(days)), batch([regionRequest(days)])]);
-        return readWindow(days, reports, regions);
+        const [reports, more] = await Promise.all([batch(windowRequests(days)), batch(moreRequests(days))]);
+        return readWindow(days, reports, more);
       }));
       return json({ available: true, windows });
     } catch {

@@ -16,7 +16,11 @@ export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
 /** Rows in the top pages and countries tables. */
 export const ANALYTICS_TOP_ROWS = 10;
 
-export interface AnalyticsTotals { visits: number; visitors: number; pageViews: number }
+export interface AnalyticsTotals {
+  visits: number; visitors: number; pageViews: number;
+  /** Average visit length in seconds (GA's averageSessionDuration). */
+  visitSeconds: number;
+}
 export interface AnalyticsRow { name: string; value: number }
 /** One day's visitors; `date` is GA's yyyymmdd. */
 export interface AnalyticsDay { date: string; visitors: number }
@@ -33,7 +37,21 @@ export interface AnalyticsWindow {
   daily: AnalyticsDay[];
   /** Visitors by state or province (GA's region names), for the tile map. */
   regions: AnalyticsRow[];
+  /** Visitors who had been before (GA's newVsReturning "returning"). */
+  returning: number;
+  /** Atlas's own events (lib/analytics.ts trackEvent) by count, GA's automatic events left out. */
+  actions: AnalyticsRow[];
+  /** Visitors by city, GA's "(not set)" left out. */
+  cities: AnalyticsRow[];
 }
+
+/** Events GA sends by itself (page loads, scrolls, sessions); the Actions chart shows only Atlas's own. */
+export const GA_AUTOMATIC_EVENTS: readonly string[] = ['page_view', 'session_start', 'first_visit', 'user_engagement', 'scroll', 'click', 'file_download', 'form_start', 'form_submit', 'video_start', 'video_progress', 'video_complete', 'view_search_results'];
+/** "filter_changed" as "Filter changed": an event name in words. */
+export const actionName = (event: string): string => {
+  const words = event.replace(/_/g, ' ').trim();
+  return words ? words[0].toUpperCase() + words.slice(1) : event;
+};
 
 /**
  * Google Analytics counted every map move and filter change as a view of the home page until this day, when the
@@ -51,10 +69,17 @@ export const ANALYTICS_COPY = {
   shorter: (days: number, count: string) => `Last ${days} days: ${count}`,
   figuresHeading: 'Overview',
   /** "On this page" labels, one or two words each (Ryan, 2026-11-22: "On this page stuff is supposed to be 1-2 words max"). */
-  nav: { overview: 'Overview', daily: 'Visitors', sources: 'Sources', pages: 'Pages', where: 'Locations' },
+  nav: { overview: 'Overview', daily: 'Visitors', actions: 'Actions', sources: 'Sources', pages: 'Pages', where: 'Locations' },
+  actions: 'What Visitors Did',
+  action: 'Action',
+  times: 'Times',
+  cities: 'Top Cities',
+  city: 'City',
+  /** The returning-visitors card's second line: their share of all visitors. */
+  returningShare: (percent: string) => `${percent} of visitors`,
   unavailable: 'Analytics can’t be read: the Google Analytics key isn’t on this Mac, or Google didn’t answer.',
   loading: 'Loading…',
-  totals: { visits: 'Visits', visitors: 'Visitors', pageViews: 'Page views' },
+  totals: { visits: 'Visits', visitors: 'Visitors', pageViews: 'Page views', visitSeconds: 'Time per visit', returning: 'Returning visitors' },
   pages: 'Top Pages',
   where: 'Where Visitors Are',
   mapLabel: (days: number) => `Tile map of visitors by US state and Canadian province over the last ${days} days`,
@@ -112,6 +137,8 @@ export const GA_REGION_ALIASES: Readonly<Record<string, string>> = { 'Newfoundla
 export const TILE_MAP_COUNTRIES: readonly string[] = ['United States', 'Canada'];
 /** Rows asked for in the regions report (every state and province with a visit). */
 export const ANALYTICS_REGION_ROWS = 100;
+/** Rows in the actions chart (Atlas sends about 15 kinds of event). */
+export const ANALYTICS_ACTION_ROWS = 20;
 
 /** Longest name a bar's label shows before it's cut short (the full name stays in the bar's sentence and table). */
 export const ANALYTICS_LABEL_MAX = 24;
