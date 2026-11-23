@@ -2,23 +2,27 @@
  * frequent_coverage (CIV-2079): the share of a metro's people within a 10-minute walk of a route running every 15 or
  * every 30 min, served as a dated, cited table (Ryan's condition, 2026-11-21): the figures the frequent-service city
  * chart shows, from frequent-coverage-metros.json (Ryan-approved coverage run, its ID, date and rule in `source`),
- * never worked out here. Swap the file when CIV-2013's rerun lands; nothing else changes.
+ * never worked out here. CIV-2013: the file holds one run per weekday window; the tool serves the chart's default window
+ * (the first, 7 AM–7 PM) and names it.
  */
-import coverageMetros from '../../src/data/frequent-coverage-metros.json';
+import coverageFile from '../../src/data/frequent-coverage-metros.json';
+import { timeRange } from '../../shared/timeText';
 import { stopMatchText } from '../../shared/stopNameText';
 import { decimalText } from '../../shared/numberText';
 import type { Args } from './toolHelpers';
 
+const coverageMetros = coverageFile.windows[0];
 const COUNTRY_LABEL: Record<string, string> = { canada: 'Canada', us: 'United States' };
 const percent = (share: number) => `${decimalText(share * 100, 1)}%`;
 const countryOf = (q: string) => coverageMetros.countries.find(c => [c.country, COUNTRY_LABEL[c.country]].some(n => stopMatchText(n) === stopMatchText(q)) || (c.country === 'us' && /^(usa|u\.?s\.?|united states of america)$/i.test(q.trim())));
 
 const SOURCE = {
   // The run's date, as the file's source gives it (the chart's frequentServiceCoverageUpdated is the same date).
-  figuresAsOf: /\d{4}-\d{2}-\d{2}/.exec(coverageMetros.source.runs)?.[0] ?? null,
-  run: coverageMetros.source.runs,
-  rule: coverageMetros.source.rule,
-  whichMetros: coverageMetros.source.metros,
+  figuresAsOf: /\d{4}-\d{2}-\d{2}/.exec(coverageMetros.run)?.[0] ?? null,
+  run: coverageMetros.run,
+  weekdayHours: timeRange(coverageMetros.start, coverageMetros.end),
+  rule: coverageFile.source.rule,
+  whichMetros: coverageFile.source.metros,
 };
 
 export const coverageHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {

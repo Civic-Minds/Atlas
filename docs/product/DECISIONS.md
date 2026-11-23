@@ -296,6 +296,13 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-23 — The Frequent service story's coverage section reads a weekday window the reader picks, 7 AM–7 PM by default (CIV-2013)
+Ryan (2026-11-23, relayed by Atlas Manager New): "1", option: the chart uses the 7 AM–7 PM weekday window (window-frequent, run 45115615007), giving Canada 42→48 metros and US 151→169, and the chart label names the window. Then: "Thought we were going to let people choose between 7-7 or 7-10". His OK for this period-window change.
+- The rule: the coverage figures judge a route across one weekday window, read as one period (the map's frequency test, a branched route by its shared middle), instead of each of AM peak, midday and PM peak, so a route need not run from 6 AM. A picker offers 7 AM–7 PM (rule 9's Frequent Service window, the default) and 7 AM–10 PM (the weekday grading window); the bounds come from pipeline/tripSets.ts CHART_WINDOWS.
+- The picker switches the whole section, since the national pair is the chart's first row: the national figures, the cities, both screen-reader tables and the "about N times as many" sentence.
+- Counts against the AM / midday / PM rule (run 45079795875): 7 AM–7 PM, Canada 42→48 metros (30-min 60.37%→66.1%, 15-min 29.04%→36.01%), US 151→169 (26.77%→29.84%, 13.88%→15.8%); 7 AM–10 PM, Canada 42→42 (60.37%→60.49%), US 151→120 (26.77%→22.64%, 13.88%→11.28%).
+- The chart's metro rule is unchanged. London, Oshawa and Windsor leave the 7 AM–7 PM chart because they now have 15-minute service in the window, so the "nobody at 15 min" slot no longer picks them.
+
 ### 2026-11-23 — No route card names a gap over an hour; it reads "Runs irregularly in this period" (CIV-2171)
 Ryan (2026-11-23, relayed by Atlas Manager New): "1", option: cap it at an hour, the same as #773's gap words, so no card names a gap over an hour; a longer gap reads "Runs irregularly in this period".
 - The rule: a route card row whose words would name one gap over PERIOD_COVERAGE_MAX_HEADWAY (D6's one-gap words, "every 5 min, with one 169 min gap", and #1239's main-stretch gap words) reads "Runs irregularly in this period" instead, as #773's gap words already do (#962: a wait over an hour is no cadence). A gap of an hour or less keeps its words.

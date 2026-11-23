@@ -1,290 +1,561 @@
 {
   "source": {
-    "runs": "Coverage cloud run 43775315209 (rule map-filter-trunk, code ea43d0480), 2026-11-15",
-    "artifact": "editorial/research/civ1579-coverage-summary-trunk-2026-11-15",
-    "rule": "A route counts at 15 or 30 when the map’s frequency test passes it at that setting on weekdays in AM peak, midday and PM peak, reading a branched route by its shared middle (trunk); on a route that passes only on its trunk, only the trunk’s stops count (CIV-1579); public-map agencies only; a 10-minute walk; the 15-minute share on the 30-minute population base.",
+    "runs": "Coverage cloud run 45115615007 (rule window-frequent, code 63f6c3c0e), 2026-11-23; Coverage cloud run 45105059396 (rule window-grading, code c53ce836d), 2026-11-23",
+    "rule": "A route counts at 15 or 30 when the map’s frequency test passes it at that setting across the chosen weekday window, read as one period, reading a branched route by its shared middle (trunk); on a route that passes only on its trunk, only the trunk’s stops count (CIV-1579, CIV-2013); public-map agencies only; a 10-minute walk; the 15-minute share on the 30-minute population base.",
     "metros": "Per country: the 10 largest metros by population, plus every other metro over 250,000 people with at least 20% covered at 30 min and 0% at 15 min (src/data/frequentCoverageMetrosRule.ts).",
     "script": "scripts/build-frequent-coverage-metros.ts"
   },
-  "countries": [
+  "windows": [
     {
-      "country": "canada",
-      "fifteenMinute": 0.2947,
-      "thirtyMinute": 0.6153,
-      "populationBase": 27149074,
-      "metroCount": 48,
-      "fifteenMinuteMetroCount": 18,
-      "metros": [
+      "key": "frequentServiceWindow",
+      "start": 420,
+      "end": 1140,
+      "run": "Coverage cloud run 45115615007 (rule window-frequent, code 63f6c3c0e), 2026-11-23",
+      "artifact": "editorial/research/civ2013-coverage-summary-frequent-window-45115615007",
+      "countries": [
         {
-          "id": "535",
-          "name": "Toronto",
-          "runName": "Toronto",
-          "population": 6202225,
-          "fifteenMinute": 0.5404,
-          "thirtyMinute": 0.7545,
-          "pickedBy": "largest"
+          "country": "canada",
+          "fifteenMinute": 0.3601,
+          "thirtyMinute": 0.661,
+          "populationBase": 27379786,
+          "metroCount": 48,
+          "fifteenMinuteMetroCount": 25,
+          "metros": [
+            {
+              "id": "535",
+              "name": "Toronto",
+              "runName": "Toronto",
+              "population": 6202225,
+              "fifteenMinute": 0.591,
+              "thirtyMinute": 0.7901,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "462",
+              "name": "Montréal",
+              "runName": "Montréal",
+              "population": 4291732,
+              "fifteenMinute": 0.3413,
+              "thirtyMinute": 0.6273,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "933",
+              "name": "Vancouver",
+              "runName": "Vancouver",
+              "population": 2642825,
+              "fifteenMinute": 0.6371,
+              "thirtyMinute": 0.8394,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "505",
+              "name": "Ottawa–Gatineau",
+              "runName": "Ottawa - Gatineau (Ontario part / partie de l'Ontario)",
+              "population": 1488307,
+              "fifteenMinute": 0.1831,
+              "thirtyMinute": 0.5424,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "825",
+              "name": "Calgary",
+              "runName": "Calgary",
+              "population": 1481806,
+              "fifteenMinute": 0.2434,
+              "thirtyMinute": 0.7626,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "835",
+              "name": "Edmonton",
+              "runName": "Edmonton",
+              "population": 1418118,
+              "fifteenMinute": 0.2589,
+              "thirtyMinute": 0.67,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "421",
+              "name": "Québec",
+              "runName": "Québec",
+              "population": 839311,
+              "fifteenMinute": 0.3704,
+              "thirtyMinute": 0.5042,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "602",
+              "name": "Winnipeg",
+              "runName": "Winnipeg",
+              "population": 834678,
+              "fifteenMinute": 0.4757,
+              "thirtyMinute": 0.7665,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "537",
+              "name": "Hamilton",
+              "runName": "Hamilton",
+              "population": 785184,
+              "fifteenMinute": 0.4822,
+              "thirtyMinute": 0.7579,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "541",
+              "name": "Kitchener–Cambridge–Waterloo",
+              "runName": "Kitchener - Cambridge - Waterloo",
+              "population": 575847,
+              "fifteenMinute": 0.337,
+              "thirtyMinute": 0.8193,
+              "pickedBy": "largest"
+            }
+          ]
         },
         {
-          "id": "462",
-          "name": "Montréal",
-          "runName": "Montréal",
-          "population": 4291732,
-          "fifteenMinute": 0.2621,
-          "thirtyMinute": 0.5719,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "933",
-          "name": "Vancouver",
-          "runName": "Vancouver",
-          "population": 2642825,
-          "fifteenMinute": 0.5745,
-          "thirtyMinute": 0.8138,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "505",
-          "name": "Ottawa–Gatineau",
-          "runName": "Ottawa - Gatineau (Ontario part / partie de l'Ontario)",
-          "population": 1488307,
-          "fifteenMinute": 0.0756,
-          "thirtyMinute": 0.4186,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "825",
-          "name": "Calgary",
-          "runName": "Calgary",
-          "population": 1481806,
-          "fifteenMinute": 0.1034,
-          "thirtyMinute": 0.7176,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "835",
-          "name": "Edmonton",
-          "runName": "Edmonton",
-          "population": 1418118,
-          "fifteenMinute": 0.2206,
-          "thirtyMinute": 0.589,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "421",
-          "name": "Québec",
-          "runName": "Québec",
-          "population": 839311,
-          "fifteenMinute": 0.3245,
-          "thirtyMinute": 0.4115,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "602",
-          "name": "Winnipeg",
-          "runName": "Winnipeg",
-          "population": 834678,
-          "fifteenMinute": 0.4606,
-          "thirtyMinute": 0.6984,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "537",
-          "name": "Hamilton",
-          "runName": "Hamilton",
-          "population": 785184,
-          "fifteenMinute": 0.4201,
-          "thirtyMinute": 0.7411,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "541",
-          "name": "Kitchener–Cambridge–Waterloo",
-          "runName": "Kitchener - Cambridge - Waterloo",
-          "population": 575847,
-          "fifteenMinute": 0.1981,
-          "thirtyMinute": 0.6591,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "539",
-          "name": "St. Catharines–Niagara",
-          "runName": "St. Catharines - Niagara",
-          "population": 433604,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.2424,
-          "pickedBy": "wiped-out"
-        },
-        {
-          "id": "559",
-          "name": "Windsor",
-          "runName": "Windsor",
-          "population": 422630,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.3718,
-          "pickedBy": "wiped-out"
+          "country": "us",
+          "fifteenMinute": 0.158,
+          "thirtyMinute": 0.2984,
+          "populationBase": 230375697,
+          "metroCount": 169,
+          "fifteenMinuteMetroCount": 96,
+          "metros": [
+            {
+              "id": "35620",
+              "name": "New York",
+              "runName": "New York-Newark-Jersey City, NY-NJ-PA Metro Area",
+              "population": 20140470,
+              "fifteenMinute": 0.4736,
+              "thirtyMinute": 0.5755,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "31080",
+              "name": "Los Angeles",
+              "runName": "Los Angeles-Long Beach-Anaheim, CA Metro Area",
+              "population": 13200998,
+              "fifteenMinute": 0.3608,
+              "thirtyMinute": 0.6434,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "16980",
+              "name": "Chicago",
+              "runName": "Chicago-Naperville-Elgin, IL-IN-WI Metro Area",
+              "population": 9449351,
+              "fifteenMinute": 0.3217,
+              "thirtyMinute": 0.4051,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "19100",
+              "name": "Dallas",
+              "runName": "Dallas-Fort Worth-Arlington, TX Metro Area",
+              "population": 7637387,
+              "fifteenMinute": 0.0314,
+              "thirtyMinute": 0.149,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "26420",
+              "name": "Houston",
+              "runName": "Houston-The Woodlands-Sugar Land, TX Metro Area",
+              "population": 7122240,
+              "fifteenMinute": 0.1342,
+              "thirtyMinute": 0.227,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "47900",
+              "name": "Washington",
+              "runName": "Washington-Arlington-Alexandria, DC-VA-MD-WV Metro Area",
+              "population": 6327461,
+              "fifteenMinute": 0.2155,
+              "thirtyMinute": 0.4024,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "37980",
+              "name": "Philadelphia",
+              "runName": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD Metro Area",
+              "population": 6141326,
+              "fifteenMinute": 0.2474,
+              "thirtyMinute": 0.3642,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "33100",
+              "name": "Miami",
+              "runName": "Miami-Fort Lauderdale-Pompano Beach, FL Metro Area",
+              "population": 6138333,
+              "fifteenMinute": 0.1126,
+              "thirtyMinute": 0.2774,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "12060",
+              "name": "Atlanta",
+              "runName": "Atlanta-Sandy Springs-Alpharetta, GA Metro Area",
+              "population": 6089815,
+              "fifteenMinute": 0.0378,
+              "thirtyMinute": 0.1507,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "38060",
+              "name": "Phoenix",
+              "runName": "Phoenix-Mesa-Chandler, AZ Metro Area",
+              "population": 4845355,
+              "fifteenMinute": 0.1477,
+              "thirtyMinute": 0.3893,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "15380",
+              "name": "Buffalo",
+              "runName": "Buffalo-Cheektowaga, NY Metro Area",
+              "population": 1166902,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2913,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "14860",
+              "name": "Bridgeport",
+              "runName": "Bridgeport-Stamford-Norwalk, CT Metro Area",
+              "population": 957419,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2638,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "10740",
+              "name": "Albuquerque",
+              "runName": "Albuquerque, NM Metro Area",
+              "population": 916528,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2014,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "12540",
+              "name": "Bakersfield",
+              "runName": "Bakersfield, CA Metro Area",
+              "population": 909235,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2288,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "46700",
+              "name": "Vallejo",
+              "runName": "Vallejo, CA Metro Area",
+              "population": 453491,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2128,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "42200",
+              "name": "Santa Maria",
+              "runName": "Santa Maria-Santa Barbara, CA Metro Area",
+              "population": 448229,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2433,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "41500",
+              "name": "Salinas",
+              "runName": "Salinas, CA Metro Area",
+              "population": 442157,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.3837,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "11260",
+              "name": "Anchorage",
+              "runName": "Anchorage, AK Metro Area",
+              "population": 398328,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.3111,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "42100",
+              "name": "Santa Cruz",
+              "runName": "Santa Cruz-Watsonville, CA Metro Area",
+              "population": 270861,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.3435,
+              "pickedBy": "wiped-out"
+            }
+          ]
         }
       ]
     },
     {
-      "country": "us",
-      "fifteenMinute": 0.1356,
-      "thirtyMinute": 0.2675,
-      "populationBase": 234641958,
-      "metroCount": 170,
-      "fifteenMinuteMetroCount": 79,
-      "metros": [
+      "key": "gradingWindow",
+      "start": 420,
+      "end": 1320,
+      "run": "Coverage cloud run 45105059396 (rule window-grading, code c53ce836d), 2026-11-23",
+      "artifact": "editorial/research/civ2013-coverage-summary-grading-window-45105059396",
+      "countries": [
         {
-          "id": "35620",
-          "name": "New York",
-          "runName": "New York-Newark-Jersey City, NY-NJ-PA Metro Area",
-          "population": 20140470,
-          "fifteenMinute": 0.4328,
-          "thirtyMinute": 0.5655,
-          "pickedBy": "largest"
+          "country": "canada",
+          "fifteenMinute": 0.2987,
+          "thirtyMinute": 0.6049,
+          "populationBase": 26894735,
+          "metroCount": 42,
+          "fifteenMinuteMetroCount": 19,
+          "metros": [
+            {
+              "id": "535",
+              "name": "Toronto",
+              "runName": "Toronto",
+              "population": 6202225,
+              "fifteenMinute": 0.5576,
+              "thirtyMinute": 0.7538,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "462",
+              "name": "Montréal",
+              "runName": "Montréal",
+              "population": 4291732,
+              "fifteenMinute": 0.1682,
+              "thirtyMinute": 0.5793,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "933",
+              "name": "Vancouver",
+              "runName": "Vancouver",
+              "population": 2642825,
+              "fifteenMinute": 0.5745,
+              "thirtyMinute": 0.7952,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "505",
+              "name": "Ottawa–Gatineau",
+              "runName": "Ottawa - Gatineau (Ontario part / partie de l'Ontario)",
+              "population": 1488307,
+              "fifteenMinute": 0.1121,
+              "thirtyMinute": 0.5006,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "825",
+              "name": "Calgary",
+              "runName": "Calgary",
+              "population": 1481806,
+              "fifteenMinute": 0.1848,
+              "thirtyMinute": 0.6963,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "835",
+              "name": "Edmonton",
+              "runName": "Edmonton",
+              "population": 1418118,
+              "fifteenMinute": 0.2503,
+              "thirtyMinute": 0.66,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "421",
+              "name": "Québec",
+              "runName": "Québec",
+              "population": 839311,
+              "fifteenMinute": 0.3245,
+              "thirtyMinute": 0.4112,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "602",
+              "name": "Winnipeg",
+              "runName": "Winnipeg",
+              "population": 834678,
+              "fifteenMinute": 0.3537,
+              "thirtyMinute": 0.5754,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "537",
+              "name": "Hamilton",
+              "runName": "Hamilton",
+              "population": 785184,
+              "fifteenMinute": 0.3245,
+              "thirtyMinute": 0.6994,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "541",
+              "name": "Kitchener–Cambridge–Waterloo",
+              "runName": "Kitchener - Cambridge - Waterloo",
+              "population": 575847,
+              "fifteenMinute": 0.3176,
+              "thirtyMinute": 0.8144,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "559",
+              "name": "Windsor",
+              "runName": "Windsor",
+              "population": 422630,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.4187,
+              "pickedBy": "wiped-out"
+            }
+          ]
         },
         {
-          "id": "31080",
-          "name": "Los Angeles",
-          "runName": "Los Angeles-Long Beach-Anaheim, CA Metro Area",
-          "population": 13200998,
-          "fifteenMinute": 0.3308,
-          "thirtyMinute": 0.607,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "16980",
-          "name": "Chicago",
-          "runName": "Chicago-Naperville-Elgin, IL-IN-WI Metro Area",
-          "population": 9449351,
-          "fifteenMinute": 0.3063,
-          "thirtyMinute": 0.388,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "19100",
-          "name": "Dallas",
-          "runName": "Dallas-Fort Worth-Arlington, TX Metro Area",
-          "population": 7637387,
-          "fifteenMinute": 0.0084,
-          "thirtyMinute": 0.1209,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "26420",
-          "name": "Houston",
-          "runName": "Houston-The Woodlands-Sugar Land, TX Metro Area",
-          "population": 7122240,
-          "fifteenMinute": 0.1283,
-          "thirtyMinute": 0.2111,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "47900",
-          "name": "Washington",
-          "runName": "Washington-Arlington-Alexandria, DC-VA-MD-WV Metro Area",
-          "population": 6327461,
-          "fifteenMinute": 0.2041,
-          "thirtyMinute": 0.3715,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "37980",
-          "name": "Philadelphia",
-          "runName": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD Metro Area",
-          "population": 6141326,
-          "fifteenMinute": 0.2371,
-          "thirtyMinute": 0.3291,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "33100",
-          "name": "Miami",
-          "runName": "Miami-Fort Lauderdale-Pompano Beach, FL Metro Area",
-          "population": 6138333,
-          "fifteenMinute": 0.0853,
-          "thirtyMinute": 0.2116,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "12060",
-          "name": "Atlanta",
-          "runName": "Atlanta-Sandy Springs-Alpharetta, GA Metro Area",
-          "population": 6089815,
-          "fifteenMinute": 0.0374,
-          "thirtyMinute": 0.1373,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "38060",
-          "name": "Phoenix",
-          "runName": "Phoenix-Mesa-Chandler, AZ Metro Area",
-          "population": 4845355,
-          "fifteenMinute": 0.0843,
-          "thirtyMinute": 0.3707,
-          "pickedBy": "largest"
-        },
-        {
-          "id": "14860",
-          "name": "Bridgeport",
-          "runName": "Bridgeport-Stamford-Norwalk, CT Metro Area",
-          "population": 957419,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.2394,
-          "pickedBy": "wiped-out"
-        },
-        {
-          "id": "20500",
-          "name": "Durham",
-          "runName": "Durham-Chapel Hill, NC Metro Area",
-          "population": 649903,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.2677,
-          "pickedBy": "wiped-out"
-        },
-        {
-          "id": "42200",
-          "name": "Santa Maria",
-          "runName": "Santa Maria-Santa Barbara, CA Metro Area",
-          "population": 448229,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.2204,
-          "pickedBy": "wiped-out"
-        },
-        {
-          "id": "11260",
-          "name": "Anchorage",
-          "runName": "Anchorage, AK Metro Area",
-          "population": 398328,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.2594,
-          "pickedBy": "wiped-out"
-        },
-        {
-          "id": "21660",
-          "name": "Eugene",
-          "runName": "Eugene-Springfield, OR Metro Area",
-          "population": 381718,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.2381,
-          "pickedBy": "wiped-out"
-        },
-        {
-          "id": "36500",
-          "name": "Olympia",
-          "runName": "Olympia-Lacey-Tumwater, WA Metro Area",
-          "population": 294793,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.4058,
-          "pickedBy": "wiped-out"
-        },
-        {
-          "id": "42100",
-          "name": "Santa Cruz",
-          "runName": "Santa Cruz-Watsonville, CA Metro Area",
-          "population": 270861,
-          "fifteenMinute": 0,
-          "thirtyMinute": 0.298,
-          "pickedBy": "wiped-out"
+          "country": "us",
+          "fifteenMinute": 0.1128,
+          "thirtyMinute": 0.2264,
+          "populationBase": 212896733,
+          "metroCount": 120,
+          "fifteenMinuteMetroCount": 60,
+          "metros": [
+            {
+              "id": "35620",
+              "name": "New York",
+              "runName": "New York-Newark-Jersey City, NY-NJ-PA Metro Area",
+              "population": 20140470,
+              "fifteenMinute": 0.4078,
+              "thirtyMinute": 0.5046,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "31080",
+              "name": "Los Angeles",
+              "runName": "Los Angeles-Long Beach-Anaheim, CA Metro Area",
+              "population": 13200998,
+              "fifteenMinute": 0.1409,
+              "thirtyMinute": 0.3591,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "16980",
+              "name": "Chicago",
+              "runName": "Chicago-Naperville-Elgin, IL-IN-WI Metro Area",
+              "population": 8730688,
+              "fifteenMinute": 0.3234,
+              "thirtyMinute": 0.39,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "19100",
+              "name": "Dallas",
+              "runName": "Dallas-Fort Worth-Arlington, TX Metro Area",
+              "population": 7637387,
+              "fifteenMinute": 0.0241,
+              "thirtyMinute": 0.1348,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "26420",
+              "name": "Houston",
+              "runName": "Houston-The Woodlands-Sugar Land, TX Metro Area",
+              "population": 7122240,
+              "fifteenMinute": 0.0656,
+              "thirtyMinute": 0.2137,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "47900",
+              "name": "Washington",
+              "runName": "Washington-Arlington-Alexandria, DC-VA-MD-WV Metro Area",
+              "population": 6327461,
+              "fifteenMinute": 0.1657,
+              "thirtyMinute": 0.3718,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "37980",
+              "name": "Philadelphia",
+              "runName": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD Metro Area",
+              "population": 6141326,
+              "fifteenMinute": 0.2061,
+              "thirtyMinute": 0.3007,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "33100",
+              "name": "Miami",
+              "runName": "Miami-Fort Lauderdale-Pompano Beach, FL Metro Area",
+              "population": 6138333,
+              "fifteenMinute": 0.1106,
+              "thirtyMinute": 0.2148,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "12060",
+              "name": "Atlanta",
+              "runName": "Atlanta-Sandy Springs-Alpharetta, GA Metro Area",
+              "population": 6089815,
+              "fifteenMinute": 0.0369,
+              "thirtyMinute": 0.128,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "38060",
+              "name": "Phoenix",
+              "runName": "Phoenix-Mesa-Chandler, AZ Metro Area",
+              "population": 4845355,
+              "fifteenMinute": 0.0306,
+              "thirtyMinute": 0.2955,
+              "pickedBy": "largest"
+            },
+            {
+              "id": "23420",
+              "name": "Fresno",
+              "runName": "Fresno, CA Metro Area",
+              "population": 1008654,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2536,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "31540",
+              "name": "Madison",
+              "runName": "Madison, WI Metro Area",
+              "population": 680796,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2946,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "11260",
+              "name": "Anchorage",
+              "runName": "Anchorage, AK Metro Area",
+              "population": 398328,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2533,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "28420",
+              "name": "Kennewick",
+              "runName": "Kennewick-Richland, WA Metro Area",
+              "population": 303622,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.3021,
+              "pickedBy": "wiped-out"
+            },
+            {
+              "id": "36500",
+              "name": "Olympia",
+              "runName": "Olympia-Lacey-Tumwater, WA Metro Area",
+              "population": 294793,
+              "fifteenMinute": 0,
+              "thirtyMinute": 0.2126,
+              "pickedBy": "wiped-out"
+            }
+          ]
         }
       ]
     }
