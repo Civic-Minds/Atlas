@@ -6,6 +6,7 @@ import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { PERIOD_KEYS } from '../../shared/config';
 import { splitRouteKey } from './routeKey';
+import { rowIrregularInPeriod } from './effectiveHeadway';
 import {
   buildSharedStopIndex,
   getPooledPeriod,
@@ -595,7 +596,7 @@ export function computeFrequencySegmentOverlay(
       })) continue;
       const branches = group
         .map(feature => ({ feature, p: feature.properties as unknown as ShapeProperties }))
-        .filter(({ p }) => p.tier !== 'span' && p.tier !== 'infrequent')
+        .filter(({ p }) => p.tier !== 'span' && !rowIrregularInPeriod(p, period))
         .filter(({ p }) => !/drop[- ]?offs?\s+only/i.test(p.headsign ?? ''));
       const distinctHeadsigns = new Set(branches.map(({ p }) => p.headsign ?? ''));
       if (branches.length < 2 || distinctHeadsigns.size < 2) continue;

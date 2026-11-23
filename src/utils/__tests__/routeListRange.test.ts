@@ -12,8 +12,9 @@ const ttc102 = (ttc102json as unknown as GeoJSON.FeatureCollection).features.map
 
 // #1231: a list range starts at the lowest number the route card shows.
 describe('route list range from the card', () => {
-  it('starts at the card\'s lowest row, not a stretch the card does not show (TTC 102 midday: 20 and 30, was 5–30)', () => {
-    expect(routeListDisplay(ttc102, 'midday')).toMatchObject({ headway: 30, sharedHeadway: 20 });
+  // #773 (gap words): the Warden branch's row now reads "every 15 min, with one 40 min gap", the card's lowest row.
+  it('starts at the card\'s lowest row, not a stretch the card does not show (TTC 102 midday: 15 and 30, was 5–30)', () => {
+    expect(routeListDisplay(ttc102, 'midday')).toMatchObject({ headway: 30, sharedHeadway: 15 });
   });
   it('starts at the card\'s Shared stretch row where it has one (TTC 102 PM: every 7)', () => {
     expect(routeListLowEnd(ttc102, 'pmPeak')).toBe(7);

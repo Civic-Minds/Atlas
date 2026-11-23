@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
-import { periodEdgeText, routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
+import { periodEdgeText, routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeText, infrequentRowNoCadence, rowCarriesStretchWords, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
 import { isOneGapRow, rowStretchReading, SHARED_STRETCH_RATIO, type StretchRowReading } from './stretchCard';
 import { pairedTripSafeHeadway } from './pairedTripFloor';
@@ -21,6 +21,8 @@ export interface RowTrips {
   partPeriodEvery?: number;
   /** The headsign runs under three times itself in the period: its value is other headsigns' (CTA 77 Belmont & Octavia). */
   noOwnService: boolean;
+  /** #773, as #962: the row's only number was a full-window wait over PERIOD_COVERAGE_MAX_HEADWAY, so it reads no regular service. */
+  waitNotCadence?: boolean;
 }
 
 const NONE: RowTrips = { value: null, longestGap: null, partPeriod: undefined, noOwnService: false };
@@ -32,11 +34,8 @@ function stretchSlot(d: ShapeProperties) {
   return null;
 }
 
-/**
- * #1239 (Ryan, 2026-10-31): a gap goes into a row's words ("every 6 min, with a 25 min gap") only when it is at least this
- * many times the row's usual wait. "every 63 min, with a 66 min gap" (AC Transit 281 AM) isn't worth mentioning.
- */
-export const ROW_GAP_WORDS_RATIO = 1.5;
+import { ROW_GAP_WORDS_RATIO } from '../../shared/rules/frequency';
+export { ROW_GAP_WORDS_RATIO };
 
 /**
  * #1239 (Ryan, 2026-10-31): a main stretch's row reads the number the filter decides on: its direction's filter value
@@ -79,6 +78,14 @@ export function rowStretchValue(d: ShapeProperties, period: TimePeriod): (Stretc
   const r = rowStretchReading(d, period);
   if (!r || r.cadence == null) return null;
   if (d.tier === 'infrequent' && r.longestGap != null && r.longestGap > r.cadence * 1.5) return null;
+  // #773: a row the all-day grade called infrequent that now runs steadily in the period keeps its own value where the stretch
+  // is materially better than its own trips (the card's Combined rule's ratio, which then shows the "Shared stretch every N"
+  // row): TTC 43 PM, Village Green Square every 20 on a stretch of 7.
+  const own = d.headwayByPeriodSustained?.[period as Exclude<TimePeriod, 'all'>] === true ? d.headwayByPeriod?.[period as Exclude<TimePeriod, 'all'>] : null;
+  // A row that carries the stretch's words for the period (#934 / D6) keeps the stretch's number beside them (Regina 1 Saturday
+  // evening to Dieppe: "every 30 min, with one 55 min gap" reads the stretch's 37, not its own 67).
+  const carriesStretchWords = rowCarriesStretchWords(d, period);
+  if (d.tier === 'infrequent' && own != null && r.cadence < own * SHARED_STRETCH_RATIO && !carriesStretchWords) return null;
   const cadence = pairedTripSafeHeadway(d, period, r.cadence);
   return cadence == null ? null : { ...r, cadence };
 }
@@ -128,6 +135,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // start at 13:04); any other row reads its full-window wait (the settled rule, #567-#571), not the median of its gaps.
   const unsteady = value != null && !partPeriod && !filterReading && (stretch ? stretch.consistent === false : d.headwayByPeriodSustained?.[key] === false);
   const wait = d.periodCoverageHeadway?.[key];
+  let waitNotCadence = false;
   if (unsteady && typeof slotValue === 'number' && !slot?.noRegular?.includes(key)) {
     // A short burst can't take the shared stretch's number. Where the stretch is materially better than the row's own trips
     // (by the card's Combined rule's ratio, which then shows a "Shared stretch every N" row), the burst rides on other trips and the row
@@ -135,7 +143,14 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
     // from 7:07 on a stretch of 5. Otherwise the row's trips are the stretch's (CTA 9: 13 on its own trips, every 10 at
     // 74th-95th; TTC 25: 6 and 5).
     if (slotValue > value! * SHARED_STRETCH_RATIO) value = slotValue;
-  } else if (unsteady && typeof wait === 'number' && wait > value!) value = wait;
+  } else if (unsteady && typeof wait === 'number' && wait > value!) {
+    // #773, as #962: for a row the all-day grade called infrequent (it read limited before #773), a full-window wait over
+    // PERIOD_COVERAGE_MAX_HEADWAY is the filter's eligibility bound, not a cadence, so the row reads no regular service (CTA 9
+    // to Vincennes midday: two bursts 313 minutes apart, never "every 313"). A shorter wait keeps the period's number, and the
+    // gap is named below (gap words).
+    if (d.tier !== 'infrequent') value = wait;
+    else if (wait > PERIOD_COVERAGE_MAX_HEADWAY) { value = null; waitNotCadence = true; }
+  }
   // CIV-1959 follow-up (CIV-1241, CIV-1411, #934): a row that starts late, stops early or starts slowly on its own trips (rowPeriodEdge, read
   // from its own departures with the test stretches use) says when, with its in-service spacing, never the bare wait or a number that
   // hides the edge. The value stays what it was, so the colour and the filter are unchanged (CIV-1411: card wording only).
@@ -146,6 +161,20 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
     const gap = !partPeriod ? d.rowPeriodGap?.[key] : undefined;
     if (gap && gap.gap >= gap.every * ROW_GAP_WORDS_RATIO) { partPeriod = headwayPeriodShape(gap); partPeriodEvery = gap.every; }
   }
+  // #773 (Strategy's pick for Ryan, 2026-11-22: gap words): a row the all-day grade called infrequent, with no words of its
+  // own, names its one long gap where it is at least ROW_GAP_WORDS_RATIO times its number (#1239), "every 30 min, with one
+  // 60 min gap". A gap over PERIOD_COVERAGE_MAX_HEADWAY is no cadence (#962): the row reads "Runs irregularly in this period"
+  // (CTA 9 to Vincennes midday, two bursts 313 minutes apart; LA Metro 108 Mesmer / Major PM, 167).
+  if (d.tier === 'infrequent' && !partPeriod && value != null && !stretch && !waitNotCadence) {
+    const g = d.maxGapByPeriod?.[key];
+    if (typeof g === 'number' && g >= value * ROW_GAP_WORDS_RATIO) {
+      if (g <= PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = headwayPeriodShape({ every: value, gap: g }); partPeriodEvery = value; }
+      else { value = null; waitNotCadence = true; }
+    }
+  }
+  // #773: a row with no cadence by the shared gap-words test reads "Runs irregularly in this period", never its direction's
+  // filter value (Chatham-Kent 5 midday: every 45 with a 75 min gap, not "every 75").
+  if (!stretch && !partPeriod && infrequentRowNoCadence(d, period)) { value = null; waitNotCadence = true; }
   // The stretch's gap goes with the stretch's value: a row with a value of its own, faster (NYCT R late: 13 beside the
   // stretch's 165, CIV-1074 2c) or slower (Phoenix 35: 30 on a shared 15), keeps its own trips' gap. A row with no value of its
   // own, or on data without the slot's period (public tails: it lives in the sections file), takes its stretch's gap.
@@ -157,6 +186,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
     partPeriod,
     ...(partPeriodEvery != null ? { partPeriodEvery } : {}),
     noOwnService: false,
+    ...(waitNotCadence ? { waitNotCadence } : {}),
   };
 }
 

@@ -2,7 +2,7 @@ import type { HoveredBranch, ShapeProperties, TimePeriod } from '../hooks/useInt
 import type { PeriodKey } from '../../shared/config';
 import { resolveBranchLabel } from './format';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
-import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
+import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText, rowIrregularInPeriod } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowOwnTreatment, rowOwnTripsEven, rowTrips } from './rowTrips';
@@ -214,7 +214,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const noRegularLabel = noNumberRowLabel({ nightView });
   const limitedWord = noRegularLabel;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
-    group.realTier.some(direction => rowTrips(direction, period, { stretch: stretchValues }).value != null) ||
+    // #773: a row that reads "Runs irregularly" for a long gap (waitNotCadence) still runs in the period.
+    group.realTier.some(direction => { const t = rowTrips(direction, period, { stretch: stretchValues }); return t.value != null || t.waitNotCadence === true; }) ||
     group.span.length > 0,
   );
   const hasPartialPeriodService = period !== 'all' && !hasPeriodService && directions.some(direction =>
@@ -304,7 +305,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       : null);
     const groupSharedStopIds = groupShared?.stopIds ?? (groupHasCoreSummary ? sharedStopIdsForBranches(group.realTier) : []);
     const coreHeadsigns = group.realTier
-      .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
+      .filter(d => !rowIrregularInPeriod(d, period) && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
       .map(d => d.headsign)
       .filter((headsign): headsign is string => !!headsign);
     const sharedRow: CardSharedRow | null = groupHasCoreSummary && groupCoreHeadway != null

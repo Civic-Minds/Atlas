@@ -49,8 +49,9 @@ export const BURST_MAX_SPAN_MINUTES = 90;
 export const MIN_PEAK_BLOCK_DEPARTURES = 4;
 /** #720: service spanning less than this share of the grading window is limited (time-limited), not all-day. */
 export const ALL_DAY_MIN_COVERAGE = 0.4;
-/** #720: three repeated departures are the minimum evidence for a schedule; one or two trips are one-off. */
-export const MIN_SCHEDULE_DEPARTURES = 3;
+// #720: three repeated departures are the minimum evidence for a schedule (shared with the card, #773).
+import { MIN_SCHEDULE_DEPARTURES } from '../shared/rules/frequency.js';
+export { MIN_SCHEDULE_DEPARTURES };
 /** ...and this many minutes from first to last departure, at least. */
 export const MIN_PEAK_BLOCK_SPAN_MINUTES = 60;
 

@@ -59,13 +59,20 @@ describe('routeCardTrunk', () => {
     expect(shouldShowTrunkSummary(branches, 'pmPeak')).toBe(true);
   });
 
-  it('does not combine infrequent drop-off-only branches into the core', () => {
-    const branches = [
+  // #773: the period decides, not the all-day grade. A branch the all-day grade calls infrequent joins the core where it runs
+  // regularly in the period, and stays out where it is irregular there (fewer than MIN_SCHEDULE_DEPARTURES of its own).
+  it('combines an all-day infrequent branch only where it runs regularly in the period', () => {
+    const regular = [
       { ...hsrWestBranches[0], headway: 15, headwayByPeriod: { pmPeak: 15 } },
       { ...hsrWestBranches[1], headway: 15, headwayByPeriod: { pmPeak: 15 }, tier: 'infrequent' },
     ] as ShapeProperties[];
-    expect(groupTrunkHeadway(branches, 'pmPeak')).toBe(15);
-    expect(shouldShowTrunkSummary(branches, 'pmPeak')).toBe(false);
+    expect(groupTrunkHeadway(regular, 'pmPeak')).toBe(8);
+    const fewTrips = [
+      regular[0],
+      { ...regular[1], departuresByHour: { 16: 2 } },
+    ] as ShapeProperties[];
+    expect(groupTrunkHeadway(fewTrips, 'pmPeak')).toBe(15);
+    expect(shouldShowTrunkSummary(fewTrips, 'pmPeak')).toBe(false);
   });
 
   it('does not combine drop-off-only branches when tier metadata is numeric', () => {
