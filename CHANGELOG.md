@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Live map shows how often the picked route is running right now**: its "Every ~N min" line never appeared, because the gaps were looked for inside one trip instead of between trips at a stop
 - **Hamilton's Live recordings miss fewer minutes**: when Hamilton's feed briefly fails, the recorder tries once more a few seconds later instead of skipping that minute
 - **The Live card says "At <stop>" while a vehicle stands at a stop**: it never did on a real feed, because the stop status was read as text and checked as a number
 - **The Live Full report shows one topic at a time**: a row of topic pills (Along the route, Late departures by hour, Trip time and the rest) replaces one very long page, and every chart and control is still there under its topic
