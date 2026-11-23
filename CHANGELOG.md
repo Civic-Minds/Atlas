@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Live Full report shows one topic at a time**: a row of topic pills (Along the route, Late departures by hour, Trip time and the rest) replaces one very long page, and every chart and control is still there under its topic
 - **The Frequent service story lets you pick the weekday hours behind its coverage figures**: 7 AM–7 PM by default, or 7 AM–10 PM, so a route counts by how it runs across the day instead of needing service from 6 AM
 - **Route cards no longer name a gap over an hour**: a row such as "every 5 min, with one 169 min gap" now reads "Runs irregularly in this period", matching how other rows with an hour-plus hole already read
 - **Atlas Studio's schedule changes read branches as the map does when built on a Mac**: the Mac build left off the branch switches the published map uses, so Hamilton, MBTA, RTD Denver and TTC showed different stretches and stop counts than the cloud build of the same schedules

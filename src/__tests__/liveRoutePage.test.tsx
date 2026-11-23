@@ -1,4 +1,4 @@
-import { LATE_DEFINITION } from '../../shared/liveWording';
+import { BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, LATE_DEFINITION, LATE_STOPS_TITLE, METHOD_TITLE, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL } from '../../shared/liveWording';
 import { render, screen, within, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -61,6 +61,9 @@ const fa = () => new Proxy({} as ReturnType<typeof within>, {
   },
 });
 
+/** CIV-2156: the Full report shows one topic at a time; this opens a topic by its pill. */
+const openTopic = (title: string) => fireEvent.click(within(screen.getByRole('group', { name: 'TTC 505' })).getByRole('button', { name: title }));
+
 describe('Live route dashboard', () => {
   beforeEach(() => {
     clearLiveDashboardCache();
@@ -74,7 +77,8 @@ describe('Live route dashboard', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: /max-width: (479|639)px/.test(q), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     renderPage(ready);
     expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
-    for (const name of [/Where Delays Start/, /Where Bunching Forms/]) {
+    for (const [topic, name] of [[DELAY_STARTS_TITLE, /Where Delays Start/], [BUNCHING_FORMS_TITLE, /Where Bunching Forms/]] as const) {
+      openTopic(topic);
       const section = fa().getByRole('region', { name });
       expect(section.querySelectorAll('[aria-roledescription="route strip"]').length).toBe(2);
       expect(within(section).queryByRole('img', { name: /typical delay at each stop|share of gaps that are too close/ })).toBeNull();
@@ -88,27 +92,32 @@ describe('Live route dashboard', () => {
     // U9: a link is shown as a link, never as a verdict.
     expect(document.body.textContent).not.toMatch(/caused by|because of/i);
     // B1: all days, weekdays and weekends side by side, each the share late with its count; no pill swaps a number.
+    openTopic(LATE_BY_HOUR_TITLE);
     const b1 = fa().getByRole('region', { name: /Late Departures by Hour/ });
     expect(within(b1).getAllByText('All days', { selector: 'div' })[0].nextElementSibling!.textContent).toBe('9%');
     expect(within(b1).getAllByText(/late, of 1,000/).length).toBeGreaterThan(0);
     expect(within(b1).getAllByText('Weekdays', { selector: 'div' }).length).toBeGreaterThan(0);
     expect(within(b1).getAllByText('Weekends', { selector: 'div' }).length).toBeGreaterThan(0);
+    openTopic(DELAY_STARTS_TITLE);
     // B3: the route strip carries the delay; the takeaway's figures are its hover text, and the table of stretches follows.
     expect(fa().getByTitle(/^Delay jumps by 2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
     expect(fa().getByTitle(/^Delay stays about the same from end to end/)).toBeTruthy();
     // The stretches that add the most delay: at most three per direction on this page (the rest are in Explore's table).
     for (const t of fa().getAllByRole('table', { name: /the stretches that add the most delay/ })) expect(t.querySelectorAll('tbody tr').length).toBeLessThanOrEqual(3);
     // B2: a map of the stops most often late (CIV-1405), no table.
+    openTopic(LATE_STOPS_TITLE);
     const b2 = fa().getByRole('region', { name: /Stops Most Often Late/ });
     expect(within(b2).queryByRole('table')).toBeNull();
     expect(within(b2).getByText(/Click or tap a stop for its figures\./)).toBeTruthy();
     // B4: forms sentence, every link with its number, linked wording.
+    openTopic(BUNCHING_FORMS_TITLE);
     expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(1); // the caption above each strip
     // Four compact chips per direction (the thing, then High or Low with its number, CIV-1795); the caveat is said once, in the method.
     expect(fa().getAllByText('Vehicles standing still in this stretch: High (0.6 a day)').length).toBe(2);
     expect(fa().getAllByText('Uneven departures at the terminal: Low (5% of gaps off)').length).toBe(2);
     // The caveat is said once, in the method (not again under the chips).
     expect(screen.queryByText(/Linked means it was measured in this stretch/)).toBeNull();
+    openTopic(METHOD_TITLE);
     expect(document.body.textContent).toMatch(/shows what was measured in the same stretch\. It is not the cause\./);
     // CIV-2128: the Full report keeps one "How this is measured", Explore's, outside the Full analysis parts.
     // Method.
@@ -128,6 +137,8 @@ describe('Live route dashboard', () => {
     const weekly = { comparable: true, minHealthyDays: 4, thisWeek: wk(dates, good), lastWeek: wk(last, last) } as unknown as LiveV3['weekly'];
     const withBadDay: LiveV3 = { ...v3, window: { days: 7, dates, requestedDays: 7, goodDates: good }, totals: { runs: 2693, stopPassages: 80000, droppedOffTimetable: 0, goodRuns: 2368, goodStopPassages: 70000 }, weekly };
     renderPage({ ...ready, v3: withBadDay });
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    openTopic(METHOD_TITLE);
     expect(await screen.findAllByText(/Last 6 service days, Oct 10–16: 2,368 trips and 70,000 stop departures\./)).toBeTruthy();
     expect(screen.getAllByText(/Excluding Oct 11\./).length).toBeGreaterThan(0);
     expect(document.body.textContent).toMatch(/· 2,368 trips ·/);
@@ -159,6 +170,8 @@ describe('Live route dashboard', () => {
       uncertainty: { nearCutoffShare: 0.12, goodNearCutoffShare: 0.08, withinMin: 0.75, note: '' },
     };
     const { unmount } = renderPage({ ...ready, v3: withBadDay });
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    openTopic(METHOD_TITLE);
     await screen.findAllByText(/Last 6 service days/);
     const text = document.body.textContent ?? '';
     expect(text).toMatch(/We left out 60 of them \(2% of trips seen\)/);
@@ -170,6 +183,8 @@ describe('Live route dashboard', () => {
     // A file without the good-day fields shows the whole-window figures.
     const older: LiveV3 = { ...withBadDay, leftOut: { noTimetableTrip: 300, excluded: 0, excludedLabel: null, kept: 2693 }, swaps: { reassigned: 5, dropped: 9, rate: 0.04 }, uncertainty: { nearCutoffShare: 0.12, withinMin: 0.75, note: '' } };
     renderPage({ ...ready, v3: older });
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    openTopic(METHOD_TITLE);
     await screen.findAllByText(/Last 6 service days/);
     const oldText = document.body.textContent ?? '';
     expect(oldText).toMatch(/We left out 300 of them \(10% of trips seen\)/);
@@ -183,8 +198,10 @@ describe('Live route dashboard', () => {
     expect(fa().queryByRole('button', { name: 'AM peak' })).toBeNull();
     expect(fa().queryByRole('button', { name: 'Weekends' })).toBeNull();
     // All days, weekdays and weekends: three hourly charts side by side.
+    openTopic(LATE_BY_HOUR_TITLE);
     const b1 = fa().getByRole('region', { name: /Late Departures by Hour/ });
     expect(within(b1).getAllByRole('img').length).toBe(3);
+    openTopic(DELAY_STARTS_TITLE);
     expect(screen.getAllByText('By time of day').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
     expect(screen.queryByText(/^Delay jumps by 2\.4 min between Stop 2 and Stop 3/)).toBeNull();
@@ -206,6 +223,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
+    openTopic(LATE_BY_HOUR_TITLE);
     expect(fa().getByText(/^Paler bars rest on fewer than 30 departures\./)).toBeTruthy();
     // The faded-bar rule is said once per section row, not under every chart.
     expect(fa().queryAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBeLessThanOrEqual(1);
@@ -241,6 +259,7 @@ describe('Live route dashboard', () => {
     // (The page is stale by the real clock here, so the last segment is its own element; the line reads the same.)
     expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Week of Oct 8–14, compared with Oct 1–7 · 900 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
+    openTopic(METHOD_TITLE);
     // The weeks, then the days counted, running on in the "Where the data comes from" paragraph (layout A, CIV-1075);
     // the method is open (no disclosure).
     expect(screen.getByText(/This week is .+ and last week is .+\./)).toBeTruthy();
@@ -256,6 +275,7 @@ describe('Live route dashboard', () => {
     // One name for it (CIV-1160 question 6): "Trip time", never "Run time".
     expect(screen.queryByText(/\brun time/i)).toBeNull();
     expect(screen.getByText(/are trips we couldn’t judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
+    openTopic(TRIP_TIME_LABEL);
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
     // Each opens with its direction, and the main row is introduced by the stretch line above it.
     expect(fa().getByText(/^\w+bound: scheduled 22 min · usually 27 \(120 trips\)$/)).toBeTruthy();
@@ -264,6 +284,7 @@ describe('Live route dashboard', () => {
     // The extra wait sentence is gone from Full analysis (the table gives the figures); Method keeps the definition.
     expect(screen.queryByText(/riders at Spadina & Queens Quay wait about/)).toBeNull();
     expect(screen.queryByText(/of scheduled trips ran \(194 of 200\)/)).toBeNull(); // the week tile says it; the section keeps the chart and the skipped-days note
+    openTopic(SERVICE_DELIVERED_TITLE);
     expect(screen.getByTitle('Oct 14 left out: gaps in our recordings that day', { exact: false }).textContent).toBe('Excluding Oct 14');
   });
 
@@ -271,6 +292,7 @@ describe('Live route dashboard', () => {
     // The kept count is the trips the figures describe (the header's count), not the raw runs before matching (CIV-910).
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { level: 1 });
+    openTopic(METHOD_TITLE);
     expect(screen.getByText(/are runs whose trip number isn’t on the schedule, such as extra buses\. We left out 600 of them \(30% of trips seen\), so the figures cover the 1,234 scheduled trips\./)).toBeTruthy();
     expect(screen.getByText(/are runs by replacement buses that shares this route number\. We left out 500 of them\./)).toBeTruthy();
   });
@@ -279,6 +301,7 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, uncertainStart: [{ directionId: 1, stops: 4 }], note: 'Delay at the first few stops is less exact.' });
     await screen.findByRole('heading', { level: 1 });
     expect(screen.getByText('Delay at the first few stops is less exact.')).toBeTruthy();
+    openTopic(LATE_STOPS_TITLE);
     expect(screen.getByText(/Not ranked: the first 4 stops/)).toBeTruthy();
     // Westbound (direction 1) has 3 fixture stops, all within the first 4, so only eastbound rows are ranked.
     const b2 = fa().getByRole('region', { name: /Stops Most Often Late/ });
@@ -314,9 +337,13 @@ describe('Live route dashboard', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const broken = { ...ready, v3: { ...v3, bands: { ...v3.bands, all: { ...v3.bands.all, buildup: undefined as unknown as LiveV3['buildup'] } } }, uncertainStart: undefined as unknown as UncertainStart[] };
     renderPage(broken);
+    await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    openTopic(DELAY_STARTS_TITLE);
     expect(await screen.findByText(/Where delays start could not be drawn/)).toBeTruthy();
+    openTopic(LATE_BY_HOUR_TITLE);
     expect(fa().getByRole('region', { name: /Late Departures by Hour/ })).toBeTruthy();
-    expect(screen.getByText('How this is measured')).toBeTruthy();
+    openTopic(METHOD_TITLE);
+    expect(screen.getByText('How this is measured', { selector: 'h2, h3' })).toBeTruthy();
     vi.restoreAllMocks();
   });
 
@@ -340,6 +367,7 @@ describe('Live route dashboard', () => {
     window.history.replaceState(null, '', '/apps/live/ttc/505?view=analysis');
     renderPage(ready, '/apps/live/ttc/505?view=analysis');
     await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
+    openTopic(METHOD_TITLE);
     expect(summary).toContain(LATE_DEFINITION);
     expect(document.getElementById('method')?.textContent).toBe(summary);
   });
