@@ -24,7 +24,7 @@ on:
         required: false
         default: ''
       bundles:
-        description: 'Optional, full mode: comma-separated US bundle ids to run instead of all (e.g. "15,55").'
+        description: 'Optional, full mode: comma-separated US bundle ids to run instead of all (e.g. "15,55"; a split bundle runs as parts such as "06a,06b").'
         required: false
         default: ''
       reuse_run:
@@ -67,7 +67,7 @@ jobs:
       - name: Check the inputs
         run: |
           [[ "$PROVINCES_INPUT" =~ ^[A-Za-z\ ,]*$ ]] || { echo "Bad provinces: $PROVINCES_INPUT"; exit 1; }
-          [[ "$BUNDLES_INPUT" =~ ^[0-9,\-]*$ ]] || { echo "Bad bundles: $BUNDLES_INPUT"; exit 1; }
+          [[ "$BUNDLES_INPUT" =~ ^[0-9a-z,\-]*$ ]] || { echo "Bad bundles: $BUNDLES_INPUT"; exit 1; }
           [[ "$REUSE_RUN" =~ ^[0-9]*$ ]] || { echo "Bad reuse_run: $REUSE_RUN"; exit 1; }
           node -e "import('./$STUDY/src/coverage.mjs').then(m => m.coverageRule())"
       - name: Plan the US bundles (smoke mode plans Hawaii only)

@@ -51,7 +51,7 @@ export function statesForStops(stops, states) {
   return found;
 }
 
-export function deriveServiceBundles({ agencies, coverage, states, bufferMiles = 25 }) {
+export function deriveServiceBundles({ agencies, coverage, states, bufferMiles = 25, maxBundleStops = MAX_BUNDLE_STOPS }) {
   const byId = new Map(states.map(state => [state.id, state]));
   const parent = new Map(states.map(state => [state.id, state.id]));
   const find = id => { let root = id; while (parent.get(root) !== root) root = parent.get(root); while (parent.get(id) !== id) { const next = parent.get(id); parent.set(id, root); id = next; } return root; };
@@ -69,19 +69,53 @@ export function deriveServiceBundles({ agencies, coverage, states, bufferMiles =
     const root = find(row.stateIds[0]); const group = groups.get(root) ?? { stateIds: new Set(), agencies: [], stopCount: 0, qualifyingRoutes: 0 };
     row.stateIds.forEach(id => group.stateIds.add(id)); group.agencies.push(row); group.stopCount += row.stopCount; group.qualifyingRoutes += row.qualifyingRoutes; groups.set(root, group);
   }
-  return [...groups.values()].map(group => {
+  return [...groups.values()].flatMap(group => {
     const stateRows = [...group.stateIds].map(id => byId.get(id)).filter(Boolean);
-    const bounds = bufferedBounds(mergeBounds(group.agencies.filter(row => row.stopBounds).map(row => row.stopBounds)), bufferMiles);
-    return {
-      id: stateRows.map(state => state.id).sort().join('-'),
+    const id = stateRows.map(state => state.id).sort().join('-');
+    const bundle = (agencyRows, suffix = '') => ({
+      id: `${id}${suffix}`,
       states: stateRows.map(({ geometry, ...state }) => state).sort((a, b) => a.name.localeCompare(b.name)),
-      agencySlugs: group.agencies.map(row => row.slug).sort(),
-      agencies: group.agencies.map(({ slug, name }) => ({ slug, name })).sort((a, b) => a.name.localeCompare(b.name)),
-      qualifyingRoutes: group.qualifyingRoutes,
-      stopCount: group.stopCount,
-      bounds,
-    };
+      agencySlugs: agencyRows.map(row => row.slug).sort(),
+      agencies: agencyRows.map(({ slug, name }) => ({ slug, name })).sort((a, b) => a.name.localeCompare(b.name)),
+      qualifyingRoutes: agencyRows.reduce((sum, row) => sum + row.qualifyingRoutes, 0),
+      stopCount: agencyRows.reduce((sum, row) => sum + row.stopCount, 0),
+      bounds: bufferedBounds(mergeBounds(agencyRows.filter(row => row.stopBounds).map(row => row.stopBounds)), bufferMiles),
+    });
+    const parts = splitAgencies(group.agencies, maxBundleStops);
+    if (parts.length < 2) return [bundle(group.agencies)];
+    // The whole group's agencies still pick the metros, so every part reports the same metros' block groups and the
+    // merge (mergeCoverageReports: a block group is covered if any part covers it) gives the unsplit result.
+    const metroAgencySlugs = group.agencies.map(row => row.slug).sort();
+    return parts.map((rows, i) => ({ ...bundle(rows, String.fromCharCode(97 + i)), metroAgencySlugs }));
   }).sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * #1723: a bundle with more stops than this is run in parts. California's (51 agencies, 39,235 stops under the
+ * window-frequent rule) built a walking network that overflowed the runner's 12 GB heap; the largest bundle that ran
+ * (New York, New Jersey and Pennsylvania) had 32,375.
+ */
+export const MAX_BUNDLE_STOPS = 35_000;
+
+/**
+ * Splits a group's agencies into the fewest parts of at most `maxStops` stops each (an agency is never divided), north
+ * to south by the middle of each agency's stops, so each part's walking network covers one stretch of the state. A
+ * stop's walk stays inside its own agency's network extract (the extract runs 0.1 degree past its stops; the walk is
+ * 840 m), so a part's network gives each of its stops the same reach as the whole group's.
+ */
+export function splitAgencies(rows, maxStops = MAX_BUNDLE_STOPS) {
+  const total = rows.reduce((sum, row) => sum + row.stopCount, 0);
+  const count = Math.ceil(total / maxStops);
+  if (count < 2) return [rows];
+  const middle = row => (row.stopBounds ? (row.stopBounds[1] + row.stopBounds[3]) / 2 : 0);
+  const sorted = [...rows].sort((a, b) => middle(b) - middle(a) || a.slug.localeCompare(b.slug));
+  const target = total / count;
+  const parts = [[]]; let stops = 0;
+  for (const row of sorted) {
+    if (stops >= target * parts.length && parts.length < count) parts.push([]);
+    parts.at(-1).push(row); stops += row.stopCount;
+  }
+  return parts.filter(part => part.length);
 }
 
 export function mergeCoverageReports(reports) {

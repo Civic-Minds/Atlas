@@ -467,9 +467,11 @@ function distancesFromStops(g, stops, limit) {
   return distances;
 }
 
-export function calculateReport({ agencies, coverage, population, metroBoundaries, network, walkMinutes = 10, walkingSpeedMps = 1.4, maxHeadwayMinutes = 15, populationVintage = '2021', populationGeography = 'Statistics Canada dissemination area', populationAssignment = 'Dissemination-area representative point' }) {
+export function calculateReport({ agencies, coverage, population, metroBoundaries, network, metroStops = null, walkMinutes = 10, walkingSpeedMps = 1.4, maxHeadwayMinutes = 15, populationVintage = '2021', populationGeography = 'Statistics Canada dissemination area', populationAssignment = 'Dissemination-area representative point' }) {
   const stops = coverage.flatMap(item => item.stops);
-  const selected = metroBoundaries.filter(metro => stops.some(stop => pointInGeometry([stop.lon, stop.lat], metro.geometry)));
+  // #1723: a part of a split bundle picks its metros by the whole bundle's stops (metroStops), so the parts' reports
+  // hold the same block groups and merge to the unsplit result.
+  const selected = metroBoundaries.filter(metro => (metroStops ?? stops).some(stop => pointInGeometry([stop.lon, stop.lat], metro.geometry)));
   const selectedIds = new Set(selected.map(metro => metro.id));
   const areas = population.flatMap(area => {
     const metro = selected.find(candidate => pointInGeometry(area.point, candidate.geometry));
