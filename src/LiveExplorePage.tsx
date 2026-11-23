@@ -9,9 +9,8 @@ import {
 import { scheduledEveryText } from '../shared/headwayText';
 import { minutesText } from '../shared/liveFormat';
 import { SITE_URL } from '../shared/seo';
-import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
-import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
-import { RouteTitleName } from './components/RouteRowName';
+import { useLiveDashboard, liveAgencyPath } from './hooks/useLiveDashboard';
+import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { LIVE_ROUTE_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
@@ -23,7 +22,7 @@ import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
-import { SubsectionTitle, PageTitle } from './components/ui/PageTitle';
+import { SubsectionTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
@@ -41,8 +40,8 @@ import BuildupSection from './components/Live/sections/BuildupSection';
 import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
-import { BOUNDARY, FullAnalysisSections, type FullAnalysisPart, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP } from '../shared/liveWording';
+import { BOUNDARY, FullAnalysisSections, type FullAnalysisPart, RouteReportHeader, withNiceNames } from './LiveRoutePage';
+import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -263,16 +262,7 @@ export default function LiveExplorePage() {
 
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
-      <div className="mb-2">{toAgency}</div>
-      <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
-        <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
-        <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
-          <RouteSubtitle v3={v3} agency={agency} route={route} />
-        </p>
-        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">{VIEW_ON_LIVE_MAP}</ArrowLink>}
-      </div>
-      <RouteDevHint v3={v3} route={route} />
-      {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
+      <RouteReportHeader toAgency={toAgency} data={data} v3={v3} agency={agency} route={route} title={title} />
 
       {/* CIV-284 (Ryan: "For that Live Report does a worker want to group all similar information on that page into sections?"):
           the Full report's own parts, the Dashboard's (dash) and Full analysis's (full, data-full-analysis) set side by side by

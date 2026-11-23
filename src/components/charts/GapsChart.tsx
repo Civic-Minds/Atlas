@@ -3,7 +3,7 @@ import { BUNCHED_GAP_SEC, GAPPED_FACTOR } from '../../../shared/bunching';
 import { liveChartHours } from '../../utils/sparklinePeriods';
 import type { StopGaps } from '../../hooks/useLiveGaps';
 import LegendItem from '../ui/LegendItem';
-import { useWidth } from './RunTimeChart';
+import { useElementWidth } from '../../hooks/useElementWidth';
 import { TOO_CLOSE_LABEL, TOO_FAR_LABEL } from '../../../shared/liveWording';
 import { ACTIVE_BG, FADED_OPACITY, useActivePart } from './useActivePart';
 import { countOf } from '../../../shared/overflowText';
@@ -32,7 +32,7 @@ const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); retu
  * (dashed). The hour axis follows the other Live hour charts.
  */
 export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: StopGaps; ariaLabel: string; height?: number }) {
-  const [ref, width] = useWidth();
+  const [ref, width] = useElementWidth();
   // VISUAL.md: the legend picks its step, the shared way (useActivePart).
   const pick = useActivePart();
   const perHour = new Map<number, number>();

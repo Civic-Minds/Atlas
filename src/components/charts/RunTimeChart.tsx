@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useId, useState } from 'react';
+import { useElementWidth } from '../../hooks/useElementWidth';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { fadedNoteText } from '../../../shared/liveWording';
 import { hourTime as clock } from '../../../shared/timeText';
@@ -28,22 +29,6 @@ export function runTimeScale(groups: ReadonlyArray<readonly RunTimeHour[]>): { m
   const lo = Math.min(...all.map(h => Math.min(h.scheduledMin, h.typicalMin)));
   const hi = Math.max(...all.map(h => Math.max(h.scheduledMin, h.typicalMin)));
   return { min: Math.max(0, Math.floor((lo - 2) / 5) * 5), max: Math.ceil((hi + 2) / 5) * 5 };
-}
-
-export function useWidth() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const read = () => setWidth(el.getBoundingClientRect().width || el.clientWidth || 0);
-    read();
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(read);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return [ref, width] as const;
 }
 
 interface EndLabel { key: string; y: number; h: number; lines: string[]; color: string; weight: number }
@@ -82,7 +67,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
   const PAD_TOP = compact ? 6 : PAD_TOP_FULL, PAD_BOTTOM = compact ? 18 : PAD_BOTTOM_FULL, AXIS_W = compact ? 4 : AXIS_W_FULL, LABEL_W = compact ? 4 : LABEL_W_FULL;
   const tableId = useId();
   const [hover, setHover] = useState<number | null>(null);
-  const [ref, width] = useWidth();
+  const [ref, width] = useElementWidth();
   const axis = axisProp ?? liveChartHours(h => hours.some(x => x.hour === h && x.n >= minN));
   const slot = (h: number) => axis.findIndex(x => x % 24 === h);
   const pts = hours.map(h => ({ ...h, i: slot(h.hour) })).filter(h => h.i >= 0).sort((a, b) => a.i - b.i);

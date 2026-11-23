@@ -1,9 +1,4 @@
 {
   "note": "Copied code that exists today (2026-11-17). May only shrink: see scripts/check-duplicates.mjs.",
-  "pairs": {
-    "src/components/Live/BranchStrip.tsx <> src/components/Live/RouteStrip.tsx": 27,
-    "src/components/Live/BranchStrip.tsx <> src/components/charts/RunTimeChart.tsx": 12,
-    "src/components/Live/RouteStrip.tsx <> src/components/charts/RunTimeChart.tsx": 12,
-    "src/LiveExplorePage.tsx <> src/LiveRoutePage.tsx": 10
-  }
+  "pairs": {}
 }

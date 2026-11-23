@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useCallback, useId, useMemo, useState, type KeyboardEvent } from 'react';
+import { useElementWidth } from '../../hooks/useElementWidth';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop, shortStopName, stripStopName } from '../../utils/stopLabel';
-import { MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, bunchParts, delayText, labelWidth, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption, type RouteStripMode, type RouteStripStop, stripLegendFlags } from './routeStripModel';
-import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, PHONE_TAP_ROW, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
+import { MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, TRACK_NAME, bunchParts, delayText, labelWidth, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption, type RouteStripMode, type RouteStripStop, stripLegendFlags } from './routeStripModel';
+import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, PHONE_TAP_ROW, StripFrame, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
 import { countOf } from '../../../shared/overflowText';
 import { percentText, countText } from '../../../shared/numberText';
@@ -63,22 +64,6 @@ export function branchRowNames(model: BranchModel): string[] {
 /** Whether any line's name needs two lines in the gutter. */
 export const branchNamesWrap = (model: BranchModel): boolean => branchRowNames(model).some(nameWraps);
 
-function useWidth() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const read = () => setWidth(el.getBoundingClientRect().width || el.clientWidth || 0);
-    read();
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(read);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return [ref, width] as const;
-}
-
 /** Which labels fit on one line: `want` first (always tried), then `majors` evenly spaced candidates; each is centred on its x, kept inside the plot, and none overlaps another. */
 function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: readonly number[], majors: number, min: number, max: number, gap = 12): number[] {
   // Full stop names never wrap here, so they are measured at their whole length (CIV-910 Q3): a long name can't spill into the next one.
@@ -104,7 +89,7 @@ function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: read
  * main pattern, so branch stops show it as not measured. Phones get a vertical list: the branches one after another.
  */
 export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], reserveBracket = false, twoLineNames = false, minN = MIN_N, legend = true, verticalBelow = 360, className = '' }: BranchStripProps) {
-  const [ref, width] = useWidth();
+  const [ref, width] = useElementWidth();
   const [active, setActive] = useState<string | null>(null);
   const [allStops, setAllStops] = useState(false);
   const tableId = useId();
@@ -290,20 +275,9 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
 
   return (
     <figure className={`m-0 min-w-0 ${className}`.trim()}>
-      <div
-        ref={ref}
-        role="group"
-        aria-roledescription={STRIP_ROLE}
-        aria-label={summary}
-        aria-describedby={tableId}
-        tabIndex={0}
-        onKeyDown={onKey}
-        onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setActive(null); }}
-        className="relative rounded-md outline-offset-4 focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
-      >
-        <span id={liveId} className="sr-only" aria-live="polite">{announce}</span>
+      <StripFrame frameRef={ref} summary={summary} tableId={tableId} onKey={onKey} onLeave={() => setActive(null)} liveId={liveId} announce={announce}>
         {vertical ? <VerticalBranches model={model} modes={modes} minN={minN} allStops={allStops} phone={phone} active={active ?? selected} setActive={id => { setActive(id); onSelect?.(id); }} /> : width > 0 ? horizontal : null}
-      </div>
+      </StripFrame>
       {vertical && stops.length > 2 && (
         <button type="button" onClick={() => setAllStops(v => !v)} aria-expanded={allStops} className="mt-2 text-xs font-bold text-[var(--accent)]">
           {allStops ? SHOW_KEY_STOPS : showAllStopsText(stops.length)}
