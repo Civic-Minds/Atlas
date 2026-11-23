@@ -121,6 +121,11 @@ interface Props {
    * route has no live analysis. Studio says only the right-now reading is missing; left out, main Live's own line (CIV-1413).
    */
   unavailableMessage?: string;
+  /**
+   * #1750: load the route's reading even when Live mode is off. Studio's route panel sets it, as it polls the vehicles
+   * itself (useLiveFeeds(true)); left out, Live mode decides (main Live, the map card).
+   */
+  liveEnabled?: boolean;
 }
 
 /**
@@ -157,9 +162,9 @@ function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, rout
 export const LIVE_RECENT_URL = '/api/live-recent';
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled }: Props) {
   const steered = direction !== undefined;
-  const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName);
+  const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
