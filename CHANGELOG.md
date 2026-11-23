@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Hamilton's Live recordings miss fewer minutes**: when Hamilton's feed briefly fails, the recorder tries once more a few seconds later instead of skipping that minute
 - **The Live Full report shows one topic at a time**: a row of topic pills (Along the route, Late departures by hour, Trip time and the rest) replaces one very long page, and every chart and control is still there under its topic
 - **History draws subway, commuter rail and ferry lines in its latest year**: routes with no route number, such as MBTA's Red Line and Hingham ferry, the CTA L, LA Metro Rail and SkyTrain, had no line at all
 - **The Frequent service story lets you pick the weekday hours behind its coverage figures**: 7 AM–7 PM by default, or 7 AM–10 PM, so a route counts by how it runs across the day instead of needing service from 6 AM
