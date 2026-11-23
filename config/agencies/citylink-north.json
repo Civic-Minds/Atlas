@@ -37,12 +37,12 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-16",
-  "lastFeedCheckAt": "20261116",
+  "lastRefreshedAt": "2026-11-23",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -55,8 +55,8 @@
   "lastFeedSourceUrl": "https://passio3.com/kootenai/passioTransit/gtfs/google_transit.zip",
   "lastPeekedExpiry": "20271231",
   "lastServiceWeek": "4ef348f9ed0cb650",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261018",
-  "lastRawArchiveKey": "20261216-68cb6b733bab4b25",
-  "lastFeedContentKey": "f932ee00eb16d5d3"
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261122",
+  "lastRawArchiveKey": "20261223-d207c425e422934b",
+  "lastFeedContentKey": "58342206568ea5e8"
 }

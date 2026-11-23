@@ -35,7 +35,7 @@
     "Le Vieux-Longueuil, Quebec",
     "Le Sud-Ouest, Quebec"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -65,7 +65,8 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "e4ad35cb2eca9c8f",

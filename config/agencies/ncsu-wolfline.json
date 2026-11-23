@@ -27,7 +27,7 @@
   "cities": [
     "West Raleigh, North Carolina"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -54,7 +54,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -64,5 +65,6 @@
   "feedObtainedAt": "20261102",
   "lastFeedStart": "20261115",
   "lastRawArchiveKey": "20261216-95313e475d2523d2",
-  "lastFeedContentKey": "b03b87fdef0b57d3"
+  "lastFeedContentKey": "b03b87fdef0b57d3",
+  "refusedFeedSha256": "175cba0fdee4564f42871c03c883a6c524ea0487bc3c39bb9348499934ad33d3"
 }

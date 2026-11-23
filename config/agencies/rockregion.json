@@ -18,14 +18,14 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20251019-9254f70ee7df65fe",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270223",
+  "expiredFeedCheckExpiry": "20270303",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "GTFS validation failed (3 error(s))",
-  "feedRefreshErrorAt": "20261116",
-  "feedRefreshRetryCount": 1,
+  "feedRefreshErrorAt": "20261123",
+  "feedRefreshRetryCount": 2,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.rrmetro.cadavl.com/RRMETRO/GTFS/GTFS_RRMETRO.zip",
   "feedQuality": {
@@ -45,7 +45,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "lastPeekedExpiry": "20261231",
   "lastFeedStart": "20261008",

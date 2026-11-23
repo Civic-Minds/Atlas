@@ -17,11 +17,11 @@
   "region": "Montana",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Billings, Montana"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -46,15 +46,15 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "20a2aa6db3b08110",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261018",
-  "lastRawArchiveKey": "20261216-74311bb1729a0fc0",
-  "lastFeedContentKey": "9a4cc1854a097ad1"
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261122",
+  "lastRawArchiveKey": "20261223-906f74ae4e96045f",
+  "lastFeedContentKey": "d18df41c0e1e8e63"
 }

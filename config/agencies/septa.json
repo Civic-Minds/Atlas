@@ -28,8 +28,8 @@
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-502/latest.zip",
   "lastFeedExpiry": "20270220",
-  "lastFeedVersion": "v202611010",
-  "lastRefreshedAt": "2026-11-16",
+  "lastFeedVersion": "v202611220",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Havertown, Pennsylvania",
     "Philadelphia, Pennsylvania",
@@ -42,7 +42,7 @@
     "Camden, New Jersey",
     "Reading, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270220",
@@ -57,15 +57,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 1090,
+      "featureCount": 1089,
       "feedExpiry": "20270220",
-      "routeCount": 161,
+      "routeCount": 162,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -77,8 +77,8 @@
   "lastSupplementalFeeds": [
     {
       "feedExpiry": "20270220",
-      "feedVersion": "v202611010",
-      "rawArchiveKey": "20270220-fd7d36b9fc0708d1"
+      "feedVersion": "v202611220",
+      "rawArchiveKey": "20270220-a02f0a92fdd56fee"
     }
   ],
   "modeOverrides": [
@@ -132,9 +132,9 @@
     }
   ],
   "lastPeekedExpiry": "20270220",
-  "lastServiceWeek": "9a94e9ceb7ea8775",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261101",
-  "lastRawArchiveKey": "20270220-d83ba2188a38001d",
-  "lastFeedContentKey": "111503b9db0642ad"
+  "lastServiceWeek": "bc13e983018c2e67",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261122",
+  "lastRawArchiveKey": "20270220-5104105459afb596",
+  "lastFeedContentKey": "a014d76de4089c8b"
 }

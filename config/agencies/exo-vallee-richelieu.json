@@ -36,7 +36,7 @@
     "Saint-Basile-le-Grand, Quebec"
   ],
   "timezone": "America/Montreal",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -57,9 +57,9 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
@@ -67,9 +67,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citvr/google_transit.zip",
   "lastPeekedExpiry": "20270103",
-  "lastServiceWeek": "906d893f412279ce",
-  "feedObtainedAt": "20261008",
-  "lastFeedStart": "20261105",
-  "lastRawArchiveKey": "20270103-f03f2d2e92d954f4",
-  "lastFeedContentKey": "aec4511a8400d386"
+  "lastServiceWeek": "fa918c587bdcc2d2",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261112",
+  "lastRawArchiveKey": "20270103-125ddbc7d64cefd8",
+  "lastFeedContentKey": "4763ba2607207a50"
 }

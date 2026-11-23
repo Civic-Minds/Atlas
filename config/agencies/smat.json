@@ -11,11 +11,11 @@
   "lastFeedExpiry": "20280101",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Santa Maria, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280101",
@@ -24,33 +24,33 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2272/latest.zip",
   "feedQuality": {
     "status": "review",
-    "score": 90,
+    "score": 95,
     "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "1 route has stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 2,
+      "routeHeadwayMismatches": 1,
       "featureCount": 46,
       "feedExpiry": "20280101",
       "routeCount": 20,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 2,
+      "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20280101",
-  "lastServiceWeek": "fe25065527764552",
-  "feedObtainedAt": "20261116",
+  "lastServiceWeek": "2a8ff9512668be59",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20240527",
-  "lastRawArchiveKey": "unknown-6a75a41ac9e72056",
-  "lastFeedContentKey": "69c5690e9307b3f4"
+  "lastRawArchiveKey": "unknown-3180c1f6e60bfe2b",
+  "lastFeedContentKey": "d763292efb34ed2a"
 }

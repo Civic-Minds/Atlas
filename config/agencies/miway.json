@@ -20,10 +20,10 @@
     -79.14
   ],
   "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
-  "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "1",
+  "lastFeedExpiry": "20270221",
+  "lastFeedVersion": "2",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-730/latest.zip",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Mississauga, Ontario",
     "Etobicoke, Ontario",
@@ -31,10 +31,10 @@
     "Oakville, Ontario",
     "Milton, Ontario"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270103",
+  "expiredFeedCheckExpiry": "20270221",
   "timezone": "America/Toronto",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
@@ -50,23 +50,23 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
       "featureCount": 284,
-      "feedExpiry": "20270103",
+      "feedExpiry": "20270221",
       "routeCount": 67,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270103",
-  "lastServiceWeek": "95b56cfb18262172",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261110",
-  "lastRawArchiveKey": "20270103-ea1191026e12f374",
-  "lastFeedContentKey": "54e687ee126884ce"
+  "lastPeekedExpiry": "20270221",
+  "lastServiceWeek": "7a1e718554f52558",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261117",
+  "lastRawArchiveKey": "20270221-af0de74e60baccc4",
+  "lastFeedContentKey": "5d4cb78a0a76e0f4"
 }

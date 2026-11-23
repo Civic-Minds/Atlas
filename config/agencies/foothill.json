@@ -9,9 +9,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-101/latest.zip",
   "lastFeedExpiry": "20270710",
-  "lastFeedVersion": "20261030",
+  "lastFeedVersion": "20261117",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "West Covina, California",
     "Pomona, California",
@@ -24,7 +24,7 @@
     "Los Angeles, California",
     "Upland, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270710",
@@ -50,14 +50,16 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20270710",
-  "lastServiceWeek": "3263690b9d3cc1a5",
-  "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261101"
+  "lastServiceWeek": "49705e5e18db66c0",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261117",
+  "lastRawArchiveKey": "20270710-87a2cb0ee2ea01a5",
+  "lastFeedContentKey": "c9076178be33a234"
 }

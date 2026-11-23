@@ -37,12 +37,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "lastFeedExpiry": "20270319",
   "lastFeedVersion": "20261110",
   "lastRefreshedAt": "2026-11-16",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270319",
@@ -58,5 +59,6 @@
   "lastServiceWeek": "ab0002106fe461c7",
   "feedObtainedAt": "20261116",
   "lastRawArchiveKey": "20270319-bf9e878d4127910e",
-  "lastFeedContentKey": "ff5e406c6fd94456"
+  "lastFeedContentKey": "ff5e406c6fd94456",
+  "heldFeedStart": "20261130"
 }

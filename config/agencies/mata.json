@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": null,
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Memphis, Tennessee",
     "New South Memphis, Tennessee",
@@ -19,8 +19,8 @@
     "Cordova, Tennessee"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20261205-20803dd6a8e1efec",
-  "lastFeedCheckAt": "20261116",
+  "lastRawArchiveKey": "20261205-c28b0ea292ca76b9",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -35,7 +35,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 144,
+      "featureCount": 145,
       "feedExpiry": "20261205",
       "routeCount": 25,
       "problemShapes": 0,
@@ -43,7 +43,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -52,8 +52,8 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
   "lastPeekedExpiry": "20261205",
-  "lastServiceWeek": "b411be9e922a5b4b",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261116",
-  "lastFeedContentKey": "0f91bf53291a8f08"
+  "lastServiceWeek": "05993fa8f6c3dfdb",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261123",
+  "lastFeedContentKey": "60da833a7f8da996"
 }

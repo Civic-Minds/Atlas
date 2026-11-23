@@ -32,7 +32,7 @@
     "Boulder, Colorado",
     "Centennial, Colorado"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -55,7 +55,8 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "timezone": "America/Denver",
   "feedRefreshStatus": "current",

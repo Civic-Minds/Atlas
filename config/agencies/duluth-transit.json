@@ -20,7 +20,7 @@
   "cities": [
     "Duluth, Minnesota"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270327",
@@ -47,12 +47,13 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "feedRefreshStatus": "stale",
   "feedRefreshError": "GTFS validation failed (1 error(s))",
-  "feedRefreshErrorAt": "20261116",
-  "feedRefreshRetryCount": 4,
+  "feedRefreshErrorAt": "20261123",
+  "feedRefreshRetryCount": 5,
   "lastServiceWeek": "d4970b0b6d8e0112",
   "feedObtainedAt": "20260805",
   "lastFeedStart": "20260607"

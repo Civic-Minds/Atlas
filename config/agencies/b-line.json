@@ -17,13 +17,13 @@
   "region": "Texas",
   "lastFeedExpiry": "20270117",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Corpus Christi, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20270117-eb2c609e84f670d6",
-  "lastFeedCheckAt": "20261116",
+  "lastRawArchiveKey": "20270117-79e2b7b6bf6a1690",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270117",
@@ -51,10 +51,10 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
-  "lastFeedStart": "20261116",
-  "lastServiceWeek": "1c7f5d55bf8ba5e8",
-  "feedObtainedAt": "20261116",
-  "lastFeedContentKey": "5f69deece70551c5"
+  "lastFeedStart": "20261123",
+  "lastServiceWeek": "79c2682aa55fc96d",
+  "feedObtainedAt": "20261123",
+  "lastFeedContentKey": "4df42954f876b41b"
 }

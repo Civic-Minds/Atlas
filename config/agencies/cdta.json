@@ -15,19 +15,19 @@
     -73.756
   ],
   "feedUrl": "https://www.cdta.org/schedules/google_transit.zip",
-  "lastFeedExpiry": "20261128",
+  "lastFeedExpiry": "20270220",
   "lastFeedVersion": "Major",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-538/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "West Albany, New York",
     "Schenectady, New York",
     "Albany, New York"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261128",
+  "expiredFeedCheckExpiry": "20270220",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -37,25 +37,27 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 367,
-      "feedExpiry": "20261128",
+      "featureCount": 364,
+      "feedExpiry": "20270220",
       "routeCount": 64,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.cdta.org/schedules/google_transit.zip",
-  "lastPeekedExpiry": "20261128",
+  "lastPeekedExpiry": "20270220",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "2ead3cf8a6e734c2",
-  "feedObtainedAt": "20261002",
-  "lastFeedStart": "20261004"
+  "lastServiceWeek": "da68a64f6f1e4c79",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261115",
+  "lastRawArchiveKey": "20270220-7ba31d3de5a6b57b",
+  "lastFeedContentKey": "9bcbd2470aeaf61b"
 }

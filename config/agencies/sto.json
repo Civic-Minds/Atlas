@@ -23,10 +23,10 @@
     -75.391
   ],
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastFeedExpiry": "20270110",
+  "lastFeedExpiry": "20270114",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-740/latest.zip",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Gatineau, Quebec",
     "Aylmer, Quebec",
@@ -34,10 +34,10 @@
     "Orléans, Ontario",
     "Ottawa, Ontario"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270110",
+  "expiredFeedCheckExpiry": "20270114",
   "feedQuality": {
     "status": "review",
     "score": 99,
@@ -50,14 +50,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
       "featureCount": 292,
-      "feedExpiry": "20270110",
+      "feedExpiry": "20270114",
       "routeCount": 101,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Montreal",
   "feedRefreshStatus": "current",
@@ -66,10 +66,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
-  "lastPeekedExpiry": "20270110",
-  "lastServiceWeek": "19227085bc53c44b",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261115",
-  "lastRawArchiveKey": "20270110-a3c60b358001a765",
-  "lastFeedContentKey": "b2d36f3748b767a3"
+  "lastPeekedExpiry": "20270114",
+  "lastServiceWeek": "cae1392d554173c4",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261119",
+  "lastRawArchiveKey": "20270114-c2fd696f2454456a",
+  "lastFeedContentKey": "9b286c0a410ab404"
 }

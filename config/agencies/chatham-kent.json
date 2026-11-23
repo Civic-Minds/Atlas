@@ -28,12 +28,12 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "298",
-  "lastRefreshedAt": "2026-11-16",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedVersion": "299",
+  "lastRefreshedAt": "2026-11-23",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -46,8 +46,8 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-5552/latest.zip",
   "lastPeekedExpiry": "20271231",
   "lastServiceWeek": "132840bd0106c4bc",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261008",
-  "lastRawArchiveKey": "20270130-6f6de0ac016fc735",
-  "lastFeedContentKey": "0738e276080d9a6b"
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261119",
+  "lastRawArchiveKey": "20270217-098779af2bd0ca53",
+  "lastFeedContentKey": "b9e960302e165172"
 }

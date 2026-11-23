@@ -8,15 +8,15 @@
     -120.48
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281123",
   "lastFeedVersion": "PASAT 8 Route Update",
   "region": "California",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Merced, California",
     "Turlock, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -34,22 +34,22 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 69,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281123",
       "routeCount": 15,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "c6cf41d8d55ddc9d",
-  "feedObtainedAt": "20261101",
+  "lastServiceWeek": "64fbbf848b216dd9",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20260126",
-  "lastRawArchiveKey": "unknown-4e426c730c155a0f",
-  "lastFeedContentKey": "c6454410db5f17f7"
+  "lastRawArchiveKey": "unknown-7b6b16ee7a0ea733",
+  "lastFeedContentKey": "7107d0ba2220e212"
 }

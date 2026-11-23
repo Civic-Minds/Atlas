@@ -22,14 +22,14 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20250705-37f33282ddbabbdf",
-  "lastFeedCheckAt": "20261116",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20261123",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20260918",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260918)",
-  "feedRefreshErrorAt": "20261116",
-  "feedRefreshRetryCount": 7,
+  "feedRefreshErrorAt": "20261123",
+  "feedRefreshRetryCount": 8,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gamobility.info/wp-content/uploads/2025/09/google_transit.zip"
 }

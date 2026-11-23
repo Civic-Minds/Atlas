@@ -30,14 +30,14 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2416/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Springfield, Massachusetts",
     "North Chicopee, Massachusetts",
     "Chicopee, Massachusetts",
     "Worcester, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -50,7 +50,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 405,
+      "featureCount": 404,
       "feedExpiry": "20261219",
       "routeCount": 61,
       "problemShapes": 0,
@@ -58,7 +58,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -68,9 +68,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "cbde892bbc440f35",
-  "feedObtainedAt": "20261028",
-  "lastFeedStart": "20261102",
-  "lastRawArchiveKey": "20261219-c7defae022053b4e",
-  "lastFeedContentKey": "15bb99fe8cdd1e60"
+  "lastServiceWeek": "1f0917767898895b",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261119",
+  "lastRawArchiveKey": "20261219-d0847dfa29f84a22",
+  "lastFeedContentKey": "43c0324838f8c0d0"
 }

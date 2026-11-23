@@ -16,13 +16,13 @@
   "feedUrl": "https://ridematbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
   "region": "North Dakota",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281123",
   "lastFeedVersion": "9/7/2026 Schedule",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Fargo, North Dakota"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991230",
@@ -36,14 +36,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 55,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281123",
       "routeCount": 18,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -54,8 +54,8 @@
   "lastFeedSourceUrl": "https://ridematbus.com/gtfs",
   "lastPeekedExpiry": "20991230",
   "lastServiceWeek": "1799fdfc45c1a316",
-  "feedObtainedAt": "20261109",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20260906",
-  "lastRawArchiveKey": "unknown-4f38d57b91bf7e38",
-  "lastFeedContentKey": "b711ef9ea1e27902"
+  "lastRawArchiveKey": "unknown-d778eb528d626d13",
+  "lastFeedContentKey": "b35a749f9b3b0679"
 }

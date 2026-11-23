@@ -34,9 +34,9 @@
       "name": "Camden Line"
     }
   ],
-  "lastFeedExpiry": "20261231",
+  "lastFeedExpiry": "20271126",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Silver Spring, Maryland",
     "Baltimore, Maryland",
@@ -49,14 +49,14 @@
     "Bethesda, Maryland",
     "Rockville, Maryland"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261231",
+  "expiredFeedCheckExpiry": "20271126",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://feeds.mta.maryland.gov/gtfs/marc",
-  "lastPeekedExpiry": "20261231",
+  "lastPeekedExpiry": "20271126",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -69,22 +69,22 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 14,
-      "feedExpiry": "20261231",
+      "feedExpiry": "20271126",
       "routeCount": 3,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "8b9b682db50da46e",
-  "feedObtainedAt": "20261011",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20221114",
-  "lastRawArchiveKey": "20261231-8473a38603d27249",
-  "lastFeedContentKey": "211388ff0da42f1e"
+  "lastRawArchiveKey": "20271126-7313b7f76d82a300",
+  "lastFeedContentKey": "2a9b05f2563eb4a6"
 }

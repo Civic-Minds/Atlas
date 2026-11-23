@@ -25,7 +25,7 @@
   "preprocess": "mnr-bus-pairs",
   "lastFeedExpiry": "20270523",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Greenburgh, New York",
     "Danbury, Connecticut",
@@ -38,7 +38,7 @@
     "East Norwalk, Connecticut",
     "Kings Bridge, New York"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270523",
@@ -64,16 +64,16 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20270523",
-  "lastServiceWeek": "312204cc11a035ab",
-  "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261110",
+  "lastServiceWeek": "3234ce464ee868ff",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261119",
   "branchReadCorrections": [
     {
       "routeShortName": "id:2",
@@ -92,6 +92,6 @@
       "reason": "Harlem Line outbound: Southeast to Wassaic runs every two hours at midday (10:17, 12:18, 14:16); its trains skip different stops, so the branch was never read and the route showed the trunk's 61."
     }
   ],
-  "lastRawArchiveKey": "20270523-5daece1bde6ed22e",
-  "lastFeedContentKey": "58d55e30e2e31925"
+  "lastRawArchiveKey": "20270523-809ec7aed2c6a072",
+  "lastFeedContentKey": "7569c044731eb2be"
 }

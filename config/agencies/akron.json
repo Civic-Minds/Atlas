@@ -9,15 +9,15 @@
   ],
   "feedUrl": "https://www.yourmetrobus.org/Data/Sites/2/gtfs-data/metro_rta_gtfs.zip",
   "lastFeedExpiry": "20270116",
-  "lastFeedVersion": "Updated: Aug 6, 2026, 12:06 PM",
+  "lastFeedVersion": "Updated: Nov 12, 2026, 11:57 AM",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2071/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Akron, Ohio",
     "Parma, Ohio",
     "Cleveland, Ohio"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270116",
@@ -38,7 +38,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -48,8 +48,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "0f95e0659476180a",
-  "feedObtainedAt": "20260806",
-  "lastFeedStart": "20260823",
-  "heldFeedStart": "20261122"
+  "lastServiceWeek": "565675da38ef6a42",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261122",
+  "lastRawArchiveKey": "20270116-9318bad5940e25c6",
+  "lastFeedContentKey": "589ad994ced9867e"
 }

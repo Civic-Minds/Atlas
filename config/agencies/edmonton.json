@@ -44,39 +44,39 @@
       "name": "611 Downtown"
     }
   ],
-  "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "261023_1059",
+  "lastFeedExpiry": "20270206",
+  "lastFeedVersion": "261116_1306",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-714/latest.zip",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Edmonton, Alberta",
     "St. Albert, Alberta",
     "Sherwood Park, Alberta"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261212",
+  "expiredFeedCheckExpiry": "20270206",
   "feedQuality": {
     "status": "review",
-    "score": 100,
+    "score": 99,
     "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 906,
-      "feedExpiry": "20261212",
+      "routeHeadwayMismatches": 3,
+      "featureCount": 905,
+      "feedExpiry": "20270206",
       "routeCount": 240,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 1,
+      "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Edmonton",
   "feedRefreshStatus": "current",
@@ -85,10 +85,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
-  "lastPeekedExpiry": "20261212",
-  "lastServiceWeek": "9e1435a54d91bc16",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261023",
+  "lastPeekedExpiry": "20270206",
+  "lastServiceWeek": "22308ae16268fbaf",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261116",
   "modeOverrides": [
     {
       "routeType": 0,
@@ -108,5 +108,7 @@
       "mode": 100,
       "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
     }
-  ]
+  ],
+  "lastRawArchiveKey": "20270206-d4ca3796cb093a5b",
+  "lastFeedContentKey": "f4fbea121a1c28ba"
 }

@@ -18,14 +18,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2937/latest.zip",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "UTC: 04-Feb-2026 00:08",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "San Rafael, California",
     "Novato, California",
     "Chinatown, California",
     "Petaluma, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -51,14 +51,16 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "lastPeekedExpiry": "20270110",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "0aebea8b3eb4d908",
+  "lastServiceWeek": "0591a9859b84b561",
   "feedObtainedAt": "20261020",
-  "lastFeedStart": "20260412"
+  "lastFeedStart": "20260412",
+  "lastRawArchiveKey": "20270109-6190d89f9e601601",
+  "lastFeedContentKey": "dc6e2bf7dc9ad3d3"
 }

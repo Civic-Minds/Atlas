@@ -18,7 +18,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20261126-f26b0e1a77ad4deb",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20320103",
@@ -42,7 +42,8 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

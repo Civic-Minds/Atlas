@@ -21,7 +21,7 @@
     "Henderson, Nevada",
     "Enterprise, Nevada"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270821",
@@ -42,7 +42,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
@@ -56,5 +57,6 @@
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20260823",
   "lastRawArchiveKey": "20270821-1448e595969c5a9e",
-  "lastFeedContentKey": "bad99acbf06aa09e"
+  "lastFeedContentKey": "bad99acbf06aa09e",
+  "refusedFeedSha256": "c39dc63b306e3a3d542076d1a044e0b33946cda714f35b8925e9ddc0c0464e2d"
 }

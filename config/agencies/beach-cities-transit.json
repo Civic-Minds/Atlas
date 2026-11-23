@@ -9,16 +9,16 @@
   ],
   "region": "California",
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281123",
   "lastFeedVersion": "New Schedule",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Redondo Beach, California",
     "Hawthorne, California",
     "Inglewood, California",
     "Torrance, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -35,14 +35,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 12,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281123",
       "routeCount": 2,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -50,8 +50,8 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "f866bc69b1c43369",
-  "feedObtainedAt": "20261101",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20261004",
-  "lastRawArchiveKey": "unknown-f93d910e27657566",
-  "lastFeedContentKey": "91e6264fe90422f8"
+  "lastRawArchiveKey": "unknown-6d60aafd314e3ee0",
+  "lastFeedContentKey": "0fb900fdc5962fcb"
 }

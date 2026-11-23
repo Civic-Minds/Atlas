@@ -14,13 +14,13 @@
   ],
   "feedUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "202611160/20261115 23:30:00/20261116 04:00:00",
+  "lastFeedVersion": "202611230/20261122 23:30:00/20261123 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2460/latest.zip",
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Fredericton, New Brunswick"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -43,7 +43,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "timezone": "America/Halifax",
   "feedRefreshStatus": "current",
@@ -54,10 +54,10 @@
   "lastFeedSourceUrl": "https://fredericton.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/gtfs.zip",
   "lastPeekedExpiry": "20261219",
   "lastServiceWeek": "109927934ad72596",
-  "feedObtainedAt": "20261116",
-  "lastFeedStart": "20261114",
-  "lastRawArchiveKey": "20261219-a18f915836e35b63",
-  "lastFeedContentKey": "7e227aeb75f5d23e",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20261121",
+  "lastRawArchiveKey": "20261219-99f8be3241aa6373",
+  "lastFeedContentKey": "1ae97f880bfa8b9d",
   "dataLicense": {
     "url": "https://www.arcgis.com/home/item.html?id=0bc9093b47c744fdb82af7e830ed8590",
     "attribution": "unread",

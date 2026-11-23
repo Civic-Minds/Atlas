@@ -21,7 +21,7 @@
   "cities": [
     "Longview, Texas"
   ],
-  "lastFeedCheckAt": "20261119",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -49,7 +49,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "lastRawArchiveKey": "20271231-08bad8ebf7c38bcd",
   "lastFeedContentKey": "b6fd12ad6d27fdc7",

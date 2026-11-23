@@ -15,8 +15,8 @@
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=PE",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2947/latest.zip",
   "lastFeedExpiry": "20991231",
-  "lastFeedVersion": "20261104",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "20261116",
+  "lastRefreshedAt": "2026-11-23",
   "websiteUrl": "http://cityofpetaluma.net/pubworks/transit-sub.html",
   "dataLicense": {
     "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
@@ -27,7 +27,7 @@
   "cities": [
     "Petaluma, California"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -51,14 +51,16 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20991231",
-  "lastServiceWeek": "ff43292bc9514abd",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20260810"
+  "lastServiceWeek": "0dbf6005444381be",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20260810",
+  "lastRawArchiveKey": "20991231-e02b87f74468f759",
+  "lastFeedContentKey": "0fbff8298fe87318"
 }

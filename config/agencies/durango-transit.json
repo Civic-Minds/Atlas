@@ -10,9 +10,9 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-456/latest.zip",
   "lastFeedExpiry": "20300131",
   "region": "Colorado",
-  "lastFeedVersion": "2026.10 Calendar-Fares-Transfer",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261116",
+  "lastFeedVersion": "2026.11 Trolley-Loop-Fix",
+  "lastRefreshedAt": "2026-11-23",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300131",
@@ -36,14 +36,16 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20300131",
-  "lastServiceWeek": "a5646624a60e5297",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20220303"
+  "lastServiceWeek": "a809aed37676faf5",
+  "feedObtainedAt": "20261123",
+  "lastFeedStart": "20220303",
+  "lastRawArchiveKey": "20300131-6e97adaef48e2a2c",
+  "lastFeedContentKey": "5bbedb6cffb6a2ec"
 }

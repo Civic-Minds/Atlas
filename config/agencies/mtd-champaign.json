@@ -10,12 +10,12 @@
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50060/latest.zip",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 11/11/2026 5:23:14)",
-  "lastRefreshedAt": "2026-11-16",
+  "lastFeedVersion": "GTFS Feed 09/08/2026 – 19/12/2026 (Generated: 17/11/2026 10:29:52)",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Champaign, Illinois"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -39,7 +39,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,9 +48,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://developer.mtd.org/gtfs/google_transit.zip",
   "lastPeekedExpiry": "20261219",
-  "lastServiceWeek": "b238679979dcb897",
-  "feedObtainedAt": "20261116",
+  "lastServiceWeek": "cab8eb100f1bca13",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20260809",
-  "lastRawArchiveKey": "20261219-2df8e61e9a63c9e8",
-  "lastFeedContentKey": "14d7d6aa693b7ccf"
+  "lastRawArchiveKey": "20261219-6b276b69463c1e63",
+  "lastFeedContentKey": "ac05bcf9fc9b1da9"
 }

@@ -8,9 +8,9 @@
     -105.7631
   ],
   "feedUrl": "https://theliftwp.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281123",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-16",
+  "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Winter Park, Colorado",
     "Fraser, Colorado",
@@ -27,18 +27,18 @@
       "validationErrors": 0,
       "validationWarnings": 1,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 0,
+      "routeHeadwayMismatches": 3,
       "featureCount": 33,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281123",
       "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-23"
   },
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20551230",
@@ -49,9 +49,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "c495e878eb4e0598",
-  "feedObtainedAt": "20261116",
+  "lastServiceWeek": "58dfd20fea7eade5",
+  "feedObtainedAt": "20261123",
   "lastFeedStart": "20260608",
-  "lastRawArchiveKey": "20551230-6ebf757491c8b439",
-  "lastFeedContentKey": "1bee2d2de6e03d65"
+  "lastRawArchiveKey": "20551230-9b8527637a245ca1",
+  "lastFeedContentKey": "09f75c276f5593cb"
 }

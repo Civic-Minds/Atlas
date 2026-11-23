@@ -43,7 +43,7 @@
     "Rosemont–La Petite-Patrie, Quebec",
     "Ville-Marie, Quebec"
   ],
-  "lastFeedCheckAt": "20261116",
+  "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -66,11 +66,12 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22"
+    "checkedAt": "2026-11-22",
+    "scoredAt": "2026-11-23"
   },
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2126/latest.zip",
   "lastPeekedExpiry": "20270103",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
