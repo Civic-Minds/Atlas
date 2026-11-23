@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's schedule changes read branches as the map does when built on a Mac**: the Mac build left off the branch switches the published map uses, so Hamilton, MBTA, RTD Denver and TTC showed different stretches and stop counts than the cloud build of the same schedules
 - **The internal Analytics page shows charts**: visitors per day, the change from the period before, and where visitors came from, so a spike or a new referrer (such as the City of Toronto's open data showcase) stands out
 - **The internal MCP page charts questions per day**: every tester together over the last 28 days, so it's clear at a glance whether the hosted server is being used
 - **Route cards judge a branch by the period you picked**: a branch that runs steadily in the evening read "limited" because it ran thinly over the whole day; it now names its one long gap ("every 30 min, with one 60 min gap", Halifax 54) or, past an hour, reads "Runs irregularly in this period"

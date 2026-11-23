@@ -12,6 +12,8 @@
  * --slug reads config/agencies/<slug>.json (when present) so preprocess and excludes match the map.
  * A date whose service the pipeline does not read (see dateReadProblem in pipeline/feedCompare.ts)
  * stops the run with a message instead of reporting zeros.
+ * The pipeline switches are the publish job's (scripts/lib/publishFlags.ts, #1708), so the files read routes as the
+ * published map does; ATLAS_PUBLISH_FLAGS=none leaves them as the shell set them.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
@@ -19,6 +21,7 @@ import { agencyProcessOptions, type AgencyFeedConfig } from '../pipeline/agencyF
 import { compareFeedSides, comparisonMarkdown, DateNotReadError, readFeedSide } from '../pipeline/feedCompare.js';
 import type { ProcessOptions } from '../pipeline/process-core.js';
 import { studioBeforeAfterFile } from '../shared/studioBeforeAfter.js';
+import { applyPublishFlags } from './lib/publishFlags.js';
 import { dirname } from 'node:path';
 
 const args = process.argv.slice(2);
@@ -44,6 +47,7 @@ const options: ProcessOptions = existsSync(configPath)
   : { slug };
 
 try {
+  applyPublishFlags();
   const b = await readFeedSide(readFileSync(before.zip), before.date, options);
   const a = await readFeedSide(readFileSync(after.zip), after.date, options);
   const cmp = compareFeedSides(slug, { ...b, file: basename(before.zip) }, { ...a, file: basename(after.zip) });
