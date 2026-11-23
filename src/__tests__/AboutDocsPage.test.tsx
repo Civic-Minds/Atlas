@@ -93,9 +93,9 @@ describe('Docs page in the public build (CIV-1440)', () => {
     expect(on).toContain('History shows Weekday, Saturday or Sunday');
   });
 
-  it('words the train window, rush-hour routes and Night Service levels from the rules', async () => {
+  it('words rush-hour routes and Night Service levels from the rules, with no train window (CIV-2025)', async () => {
     const text = await renderWith(['modeTransitions', 'researchApps']);
-    expect(text).toContain('Trains are graded on their midday trips, from 9:30 AM–2:30 PM, where midday has enough of them');
+    expect(text).not.toContain('Trains are graded on their midday trips');
     expect(text).toContain('passes the filter for a time period only when its trips run the whole period');
     expect(text).toContain('grades routes at every 30, 60 and 90 min or better, 2–5 AM. The main map’s Overnight view stops at every 60 min.');
   });

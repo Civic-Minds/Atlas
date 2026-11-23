@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
   effectiveMode,
   getGtfsModeName,
-  isRailReplacementBus,
   normalizeRouteType,
   VIRTUAL_LRT_MODE,
 } from '../modes';
@@ -25,22 +24,6 @@ describe('effectiveMode', () => {
     expect(effectiveMode({ routeType: 702 })).toBe(3);
   });
 
-  it('classifies OC Transpo O-Train as LRT', () => {
-    expect(effectiveMode({
-      routeType: 0,
-      routeLongName: 'Confederation Line',
-      agencySlug: 'octranspo',
-    })).toBe(VIRTUAL_LRT_MODE);
-  });
-
-  it('classifies TTC Line 5 as LRT', () => {
-    expect(effectiveMode({
-      routeType: '0',
-      routeLongName: 'Line 5 Eglinton',
-      agencySlug: 'ttc',
-    })).toBe(VIRTUAL_LRT_MODE);
-  });
-
   it('keeps streetcar separate from LRT', () => {
     expect(effectiveMode({
       routeType: 0,
@@ -49,22 +32,19 @@ describe('effectiveMode', () => {
     })).toBe(0);
   });
 
-  it('classifies known route_type=0 LRT feeds', () => {
-    expect(effectiveMode({ routeType: 0, agencySlug: 'calgary', routeLongName: 'Red Line - Somerset - Bridlewood/Tuscany CTrain' })).toBe(VIRTUAL_LRT_MODE);
-    expect(effectiveMode({ routeType: 0, agencySlug: 'edmonton', routeLongName: 'Capital Line' })).toBe(VIRTUAL_LRT_MODE);
-    expect(effectiveMode({ routeType: 0, agencySlug: 'valleymetro', routeLongName: 'Valley Metro Rail A Line' })).toBe(VIRTUAL_LRT_MODE);
-    expect(effectiveMode({ routeType: 0, agencySlug: 'sdmts', routeShortName: 'Blue', routeLongName: 'San Ysidro - UTC' })).toBe(VIRTUAL_LRT_MODE);
-    expect(effectiveMode({ routeType: 0, agencySlug: 'metro-transit', routeLongName: 'METRO Blue Line' })).toBe(VIRTUAL_LRT_MODE);
-    expect(effectiveMode({ routeType: 0, agencySlug: 'nfta', routeLongName: 'Metro Rail' })).toBe(VIRTUAL_LRT_MODE);
-    expect(effectiveMode({ routeType: 0, agencySlug: 'gcrta', routeShortName: 'WL', routeLongName: 'Waterfront Line' })).toBe(VIRTUAL_LRT_MODE);
-    expect(effectiveMode({ routeType: 0, agencySlug: 'sacrt', routeShortName: 'Gold', routeLongName: 'Downtown - Folsom' })).toBe(VIRTUAL_LRT_MODE);
+  it('never guesses light rail from agency or route names (CIV-2025; "Modes are never guessed from names", 2026-10-13)', () => {
+    expect(effectiveMode({ routeType: '0', routeLongName: 'Line 7 Example', agencySlug: 'not-listed' })).toBe(0);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'not-listed', routeLongName: 'Red Line CTrain' })).toBe(0);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'not-listed', routeLongName: 'METRO Purple Line' })).toBe(0);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'calgary', routeShortName: '999', routeLongName: 'Somewhere' })).toBe(0);
+    expect(effectiveMode({ routeType: 2, agencySlug: 'grt-x', routeLongName: 'ION light rail' })).toBe(2);
   });
-});
 
-describe('isRailReplacementBus', () => {
-  it('recognizes explicitly named rail replacement buses', () => {
-    expect(isRailReplacementBus({ routeType: 3, routeLongName: 'Blue Line Replacement Bus' })).toBe(true);
-    expect(isRailReplacementBus({ routeType: 3, routeLongName: 'Blue Line' })).toBe(false);
+  it("an agency's listed correction still makes a route light rail (CIV-2025 listed the lines the old name rule found)", () => {
+    expect(effectiveMode({ routeType: '0', routeShortName: '5', routeLongName: 'Line 5 Eglinton', agencySlug: 'ttc' })).toBe(VIRTUAL_LRT_MODE);
+    expect(effectiveMode({ routeType: 0, routeShortName: '201', routeLongName: 'Red Line - Somerset - Bridlewood/Tuscany CTrain', agencySlug: 'calgary' })).toBe(VIRTUAL_LRT_MODE);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'sdmts', routeShortName: 'Blue', routeLongName: 'San Ysidro - UTC' })).toBe(VIRTUAL_LRT_MODE);
+    expect(effectiveMode({ routeType: 0, agencySlug: 'nfta', routeLongName: 'Metro Rail' })).toBe(VIRTUAL_LRT_MODE);
   });
 });
 

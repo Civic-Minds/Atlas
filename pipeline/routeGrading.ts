@@ -187,7 +187,7 @@ export function decideHeadline(i: HeadlineInputs): number | null {
 export function settleTier(currentTier: string, headway: number | null, scoped: { tier: string | null } | null, tiers: readonly number[] = TIER_MAXES): string {
   let tier = currentTier;
   // No headline (a drawn stop without an all-day value, #771): nothing to degrade to. The
-  // headline's tier is read on the route's own scale (rail 5 and 8).
+  // headline's tier is read on the grading scale (5 and 8 included), the same for every mode.
   const newTier = headway == null ? tier : headwayToTierOn(headway, tiers);
   if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[tier] ?? -1)) tier = newTier;
   if (scoped?.tier && scoped.tier !== 'infrequent' && tier === 'infrequent') tier = scoped.tier;

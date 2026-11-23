@@ -10,7 +10,7 @@ import {
     DAY_TO_TYPE,
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
-import { computePeriodHeadways, RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
+import { computePeriodHeadways, TIER_RANK, typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA } from './defaults';
 import { MINUTES_PER_DAY, PERIOD_MINUTES, TIME_PERIODS } from '../shared/config.js';
 import { publicTierOf, TIER_MAXES } from '../shared/rules/frequency.js';
@@ -24,7 +24,6 @@ export type TierDeterminerContext = {
     analysisTimes: readonly number[];
     day: DayName;
     routeType: string;
-    railLike: boolean;
 };
 
 export type TierDeterminer = (
@@ -489,28 +488,11 @@ export function applyAnalysisCriteria(
             }
         }
 
-        // For all rail routes, use the midday window (09:30–14:30) for tier classification
-        // and display stats. Outbound (dir=0): peak short-turn trains cluster every 8–10 min
-        // at Union, inflating trip count and creating long afternoon gaps that break tier checks.
-        // Inbound (dir=1): trains from multiple origin stations are merged into one "to Union"
-        // pool; full-window rush-hour density gives a spuriously low headway (e.g. every 18 min
-        // on KI when actual sustained service is much less frequent). Midday window reflects the
-        // honest off-peak combined frequency for both directions.
-        // Falls back to full window when midday has <2 trips (e.g. GO Milton, Kitchener GO), or
-        // fewer than a schedule's three departures (CIV-1085): NJT Rail 1's two midday trains
-        // read irregular although twelve run all day.
-        const MIDDAY_START = RAIL_TIER_WINDOW.start; // 09:30
-        const MIDDAY_END = RAIL_TIER_WINDOW.end;   // 14:30
+        // CIV-2025 (Ryan, 2026-11-21, DECISIONS): a train's grade and class read the whole period, as a bus's do; the rail
+        // midday window (09:30-14:30) is gone. `railLike` stays on the result as a label for audits only.
         const isRail = raw.railLike ?? isRailLikeRoute({ routeType: raw.routeType });
-        let analysisWindow = windowedTimes;
-        let analysisWindowMins = end - start;
-        if (isRail) {
-            const midday = windowedTimes.filter(t => t >= MIDDAY_START && t <= MIDDAY_END);
-            if (midday.length >= MIN_SCHEDULE_DEPARTURES) {
-                analysisWindow = midday;
-                analysisWindowMins = MIDDAY_END - MIDDAY_START;
-            }
-        }
+        const analysisWindow = windowedTimes;
+        const analysisWindowMins = end - start;
 
         const analysisGaps: number[] = [];
         for (let i = 1; i < analysisWindow.length; i++) {
@@ -578,7 +560,7 @@ export function applyAnalysisCriteria(
                         criteria.maxGraceViolations,
                         criteria.gracePercent,
                         criteria.violationPercent,
-                        { rawDepartureTimes: raw.departureTimes, analysisTimes: block, day: raw.day, routeType: raw.routeType, railLike: isRail },
+                        { rawDepartureTimes: raw.departureTimes, analysisTimes: block, day: raw.day, routeType: raw.routeType },
                         criteria.violationPercentByTier,
                     );
                     return peakBlockHoldsTier(tier, gaps, span) ? tier : 'span';
@@ -608,7 +590,6 @@ export function applyAnalysisCriteria(
                     analysisTimes: analysisWindow,
                     day: raw.day,
                     routeType: raw.routeType,
-                    railLike: isRail,
                 },
                 criteria.violationPercentByTier,
             )
@@ -627,7 +608,6 @@ export function applyAnalysisCriteria(
                 analysisTimes: analysisWindow,
                 day: raw.day,
                 routeType: raw.routeType,
-                railLike: isRail,
             },
             criteria.violationPercentByTier,
         );
@@ -874,34 +854,12 @@ export function applyAnalysisCriteria(
         const serviceClass = previousNightTailOnly ? 'time-limited' : ownServiceClass;
         // #720: a rollup that reads one-off (irregular) stays one-off whatever weekdays it runs on.
         const oneOff = ownServiceClass === 'irregular';
-        // Rail rollup: apply the existing midday representative-day logic on top of
-        // the day-type representative selection used by all modes.
-        // For dir=0 (outbound): avoids Friday extra-train distortion.
-        // For dir=1 (inbound): all trains share "Union Station" headsign so the pool is the
-        // same across weekdays; representative-day pick is still valid.
+        // CIV-2025: a train's Weekday figure reads the representative day's whole schedule, as a bus's does (no midday,
+        // median-count weekday pick for rail). `railLike` stays on the result as a label for audits only.
         const isRailRollup = rep.railLike ?? isRailLikeRoute({ routeType: rep.routeType });
-        const rollupStatsBase = (() => {
-          if (isRailRollup) {
-            // Pick the representative day's midday times. A weekday union creates spurious
-            // short gaps when some days (e.g. Fridays) run extra trains.
-            const MIDDAY_START = RAIL_TIER_WINDOW.start; // 09:30
-            const MIDDAY_END = RAIL_TIER_WINDOW.end;   // 14:30
-            const dayMiddays = entries.map(e => e.result.times.filter(t => t >= MIDDAY_START && t <= MIDDAY_END));
-            const counts = dayMiddays.map(d => d.length);
-            const sortedCounts = [...counts].sort((a, b) => a - b);
-            const medianCount = sortedCounts[Math.floor(sortedCounts.length / 2)];
-            const bestIdx = counts.reduce((bestI, c, i) =>
-              Math.abs(c - medianCount) < Math.abs(counts[bestI] - medianCount) ? i : bestI, 0);
-            const repTimes = dayMiddays[bestIdx];
-            if (repTimes.length >= 2) return repTimes;
-          }
-          return rep.times;
-        })();
+        const rollupStatsBase = rep.times;
         const stats = computeHeadwayStats(rollupStatsBase);
-        // Keep the complete representative-day schedule in the result. Rail uses a
-        // midday sample for tier stability, but downstream period/hour metrics and
-        // sparklines need the morning, evening, and overnight departures too.
-        const rollupTimes = noTimetable ? [] : isRailRollup ? rep.times : rollupStatsBase;
+        const rollupTimes = noTimetable ? [] : rollupStatsBase;
         const avgTrips = Math.round(entries.reduce((sum, e) => sum + e.result.tripCount, 0) / entries.length);
         const allStarts = entries.map(e => e.result.serviceSpan?.start ?? 0);
         const allEnds = entries.map(e => e.result.serviceSpan?.end ?? 0);

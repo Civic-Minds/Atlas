@@ -23,6 +23,7 @@ describe('rail tier scale end to end', () => {
   beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-14T12:00:00') }); });
   afterAll(() => { vi.useRealTimers(); });
 
+  // CIV-2025: back on with the train destination reading (#1712), the one train-only rule Ryan kept.
   it('TTC Line 1 weekday, every 4, reaches tier 5 in both directions (settleTier on the rail scale, not 10)', async () => {
     const result = await processGtfsBuffer(await zipDir(resolve(__dirname, 'fixtures', 'ttc-line1-weekday')), undefined, { slug: 'ttc' });
     const weekday = lines(result.geojson, 'Weekday');

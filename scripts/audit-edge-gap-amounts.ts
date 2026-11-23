@@ -5,7 +5,6 @@ import Papa from 'papaparse';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { DEFAULT_CRITERIA } from '../pipeline/defaults';
-import { RAIL_TIER_WINDOW } from '../shared/rules/frequency';
 import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
 import { TIER_MAXES } from '../shared/rules/frequency';
 
@@ -125,10 +124,6 @@ const getWindow = (raw: RawRouteDepartures): { times: number[]; actualOpening: b
   if (!dayConfig) return { times: [], actualOpening: false, actualClosing: false };
   let times = raw.departureTimes.filter(time => time >= dayConfig.timeWindow.start && time <= dayConfig.timeWindow.end);
   if (times.length < 2) times = [...raw.departureTimes].sort((a, b) => a - b);
-  if (raw.railLike) {
-    const midday = times.filter(time => time >= RAIL_TIER_WINDOW.start && time <= RAIL_TIER_WINDOW.end);
-    if (midday.length >= 2) times = midday;
-  }
   if (times.length < 2) return { times: [], actualOpening: false, actualClosing: false };
   return {
     times,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeRailTripDurations } from '../trip-duration';
+import { computeTripDurations } from '../trip-duration';
 import type { GtfsData } from '../../types/gtfs';
 
 const CALENDAR = [{
@@ -26,11 +26,11 @@ function baseGtfs(overrides: Partial<GtfsData>): GtfsData {
   };
 }
 
-describe('computeRailTripDurations', () => {
+describe('computeTripDurations', () => {
   it('picks the dominant shape by trip count, not the longest shape', () => {
     // Route R1: 5 trips on the short/common shape (SHP_COMMON), 1 trip on a
     // longer one-off detour shape (SHP_LONG). The detour has fewer stops but
-    // spans more distance — computeRailTripDurations must not be fooled by
+    // spans more distance — computeTripDurations must not be fooled by
     // that; it should still pick SHP_COMMON as representative.
     const trips = [
       ...Array.from({ length: 5 }, (_, i) => ({
@@ -56,7 +56,7 @@ describe('computeRailTripDurations', () => {
       stopTimes,
     });
 
-    const result = computeRailTripDurations(gtfs, 'test');
+    const result = computeTripDurations(gtfs);
     expect(result).toHaveLength(1);
     expect(result[0].representativeShapeId).toBe('SHP_COMMON');
     expect(result[0].durationMinutes).toBe(20);
@@ -79,7 +79,7 @@ describe('computeRailTripDurations', () => {
       stopTimes,
     });
 
-    const result = computeRailTripDurations(gtfs, 'test');
+    const result = computeTripDurations(gtfs);
     expect(result).toHaveLength(1);
     expect(result[0].directionId).toBe('1');
     expect(result[0].durationMinutes).toBe(20);
@@ -102,13 +102,13 @@ describe('computeRailTripDurations', () => {
       stopTimes,
     });
 
-    const result = computeRailTripDurations(gtfs, 'test');
+    const result = computeTripDurations(gtfs);
     expect(result).toHaveLength(1);
     expect(result[0].stopSequenceRaw).toEqual(['PLATFORM_1A', 'PLATFORM_2B']);
     expect(result[0].stopSequenceNormalized).toEqual(['STATION_1', 'STATION_2']);
   });
 
-  it('excludes non-rail routes', () => {
+  it('reads a bus route as it reads a train (CIV-2025)', () => {
     const trips = [{ trip_id: 't1', route_id: 'BUS1', service_id: 'WKDY', direction_id: '0', shape_id: 'SHP' }];
     const stopTimes = [
       stopTime('t1', 1, 'A', '12:00:00'),
@@ -122,6 +122,6 @@ describe('computeRailTripDurations', () => {
       stopTimes,
     });
 
-    expect(computeRailTripDurations(gtfs, 'test')).toHaveLength(0);
+    expect(computeTripDurations(gtfs)).toHaveLength(1);
   });
 });
