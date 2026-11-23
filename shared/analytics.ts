@@ -5,8 +5,13 @@
  */
 
 export const ANALYTICS_API_URL = '/api/analytics';
-/** The two periods the page switches between, in days, ending yesterday (today is still filling in). Ryan, 2026-11-22: "Maybe last 14 and 28?" */
+/**
+ * The page's periods, in days, ending yesterday (today is still filling in). Ryan, 2026-11-22: "Maybe last 14 and 28?",
+ * then "instead of a 7/14/28 day switcher ... what if we just showed all that data without needing a switcher": every
+ * chart shows the longer one (ANALYTICS_MAIN_DAYS) and each key figure also gives the shorter one's count.
+ */
 export const ANALYTICS_RANGES = [14, 28] as const;
+export const ANALYTICS_MAIN_DAYS = 28;
 export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
 /** Rows in the top pages and countries tables. */
 export const ANALYTICS_TOP_ROWS = 10;
@@ -41,9 +46,9 @@ export type AnalyticsResponse = { available: true; windows: AnalyticsWindow[] } 
 export const ANALYTICS_COPY = {
   title: 'Analytics',
   card: 'Visits, top pages and countries from Google Analytics.',
-  intro: 'Visits to the public site from Google Analytics, up to yesterday.',
-  periodLabel: 'Period',
-  periodOption: (days: number) => `Last ${days} days`,
+  intro: (days: number) => `Visits to the public site from Google Analytics over the last ${days} days, up to yesterday.`,
+  /** A key figure's count for the shorter period. */
+  shorter: (days: number, count: string) => `Last ${days} days: ${count}`,
   figuresHeading: 'Overview',
   /** "On this page" labels, one or two words each (Ryan, 2026-11-22: "On this page stuff is supposed to be 1-2 words max"). */
   nav: { overview: 'Overview', daily: 'Visitors', sources: 'Sources', pages: 'Pages', where: 'Locations' },

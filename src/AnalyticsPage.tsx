@@ -1,13 +1,12 @@
 import { useEffect, useId, useState } from 'react';
 import {
-  ANALYTICS_API_URL, ANALYTICS_COPY as C, ANALYTICS_RANGES, GA_REGION_ALIASES, PAGE_VIEWS_FIXED_ON, TILE_MAP_COUNTRIES, placeName, renamedRows, shortLabel, sourceName,
-  type AnalyticsRange, type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow,
+  ANALYTICS_API_URL, ANALYTICS_COPY as C, ANALYTICS_MAIN_DAYS, GA_REGION_ALIASES, PAGE_VIEWS_FIXED_ON, TILE_MAP_COUNTRIES, placeName, renamedRows, shortLabel, sourceName,
+  type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow,
 } from '../shared/analytics';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import PageSection, { PAGE_LEAD } from './components/ui/PageSection';
 import { PageTitle } from './components/ui/PageTitle';
 import Card from './components/ui/Card';
-import PillGroup from './components/ui/PillGroup';
 import { type DataTableColumn } from './components/ui/DataTable';
 import LineChart from './components/charts/LineChart';
 import RankedBars from './components/charts/RankedBars';
@@ -28,7 +27,9 @@ import { MISSING_VALUE } from '../shared/missingValue';
  * the change from the period before (Free Child Fares' figure cards), visitors per day (the chart collection's LineChart),
  * top pages and sources as the Frequent Service story's ranked bars, and a note while a period still holds the page views
  * GA over-counted before PAGE_VIEWS_FIXED_ON. Then: "I don't like how Last 7 and Last 28 are basically two separate pages
- * on top of each other" (one page with a period switch), "Maybe last 14 and 28?" (ANALYTICS_RANGES), and "Should countries
+ * on top of each other" and "Maybe last 14 and 28?", then "instead of a 7/14/28 day switcher ... what if we just showed all
+ * that data without needing a switcher like intuitively" (every chart shows 28 days; each key figure adds its last-14-days
+ * count), and "Should countries
  * be a basic lil map" (Free Child Fares' state and province tile map, with countries outside it listed beside).
  */
 
@@ -65,7 +66,7 @@ function overCounted(w: AnalyticsWindow): boolean {
   return firstDay != null && firstDay < PAGE_VIEWS_FIXED_ON;
 }
 
-function Figures({ w }: { w: AnalyticsWindow }) {
+function Figures({ w, shorter }: { w: AnalyticsWindow; shorter?: AnalyticsWindow }) {
   const keys: Array<keyof AnalyticsTotals> = ['visitors', 'visits', 'pageViews'];
   return (
     <dl className="mt-4 grid grid-cols-3 gap-3">
@@ -73,6 +74,7 @@ function Figures({ w }: { w: AnalyticsWindow }) {
         <Card key={k} tone="surface" padding="tight">
           <dt className="text-xs font-bold leading-5 text-[var(--text-muted)]">{C.totals[k]}</dt>
           <dd className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{countText(w.totals[k])}</dd>
+          {shorter && <dd className="mt-1 text-xs leading-5 text-[var(--text-primary)]">{C.shorter(shorter.days, countText(shorter.totals[k]))}</dd>}
           <dd className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{changeLine(w.totals[k], w.previous[k], w.days)}</dd>
         </Card>
       ))}
@@ -129,14 +131,14 @@ function Where({ w }: { w: AnalyticsWindow }) {
   );
 }
 
-function Period({ w }: { w: AnalyticsWindow }) {
+function Period({ w, shorter }: { w: AnalyticsWindow; shorter?: AnalyticsWindow }) {
   return (
     <>
-      <PageSection id={OVERVIEW.id} title={OVERVIEW.label}>
-        <Figures w={w} />
+      <PageSection id={OVERVIEW.id} title={OVERVIEW.nav}>
+        <Figures w={w} shorter={shorter} />
       </PageSection>
       {w.daily.length > 1 && (
-        <PageSection id={DAILY.id} title={DAILY.label}>
+        <PageSection id={DAILY.id} title={DAILY.nav}>
           <div className={`mt-4 ${PANEL}`}>
             <LineChart
               label={C.dailyLabel(w.days)}
@@ -153,13 +155,13 @@ function Period({ w }: { w: AnalyticsWindow }) {
           </div>
         </PageSection>
       )}
-      <PageSection id={SOURCES.id} title={SOURCES.label}>
+      <PageSection id={SOURCES.id} title={SOURCES.nav}>
         <div className={`mt-4 ${PANEL}`}><Bars heading={C.sources} rows={w.sources} nameHeader={C.source} valueHeader={C.visitsColumn} nameOf={sourceName} /></div>
       </PageSection>
-      <PageSection id={PAGES.id} title={PAGES.label}>
+      <PageSection id={PAGES.id} title={PAGES.nav}>
         <div className={`mt-4 ${PANEL}`}><Bars heading={C.pages} rows={w.pages} nameHeader={C.page} valueHeader={C.views} nameOf={n => (n === '/' ? C.homePage : n)} /></div>
       </PageSection>
-      <PageSection id={WHERE.id} title={WHERE.label}>
+      <PageSection id={WHERE.id} title={WHERE.nav}>
         <div className="mt-4"><Where w={w} /></div>
       </PageSection>
     </>
@@ -168,25 +170,23 @@ function Period({ w }: { w: AnalyticsWindow }) {
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsResponse | null>(null);
-  const [days, setDays] = useState<AnalyticsRange>(ANALYTICS_RANGES[ANALYTICS_RANGES.length - 1]);
   useEffect(() => { document.title = tabTitle(C.title); }, []);
   useEffect(() => {
     fetch(ANALYTICS_API_URL).then(r => r.json() as Promise<AnalyticsResponse>).then(setData).catch(() => setData({ available: false }));
   }, []);
-  const w = data?.available ? data.windows.find(x => x.days === days) : undefined;
+  const windows = data?.available ? data.windows : [];
+  const w = windows.find(x => x.days === ANALYTICS_MAIN_DAYS);
+  const shorter = windows.find(x => x.days < ANALYTICS_MAIN_DAYS);
   return (
     <DocsPageLayout contents={{ title: C.title, items: w ? SECTIONS.map(s => ({ id: s.id, label: s.nav })) : [] }}>
       <PageTitle>{C.title}</PageTitle>
-      <p className={PAGE_LEAD}>{C.intro}</p>
+      <p className={PAGE_LEAD}>{C.intro(ANALYTICS_MAIN_DAYS)}</p>
       {data == null ? <p className={PAGE_LEAD}>{C.loading}</p>
         : !w ? <p className={PAGE_LEAD}>{C.unavailable}</p>
           : (
             <>
-              <div className="mt-6">
-                <PillGroup outlined label={C.periodLabel} options={ANALYTICS_RANGES.map(d => [d, C.periodOption(d)] as const)} value={days} onChange={setDays} />
-              </div>
               {overCounted(w) && <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">{C.pageViewsNote(shortDate(PAGE_VIEWS_FIXED_ON) ?? PAGE_VIEWS_FIXED_ON)}</p>}
-              <Period w={w} />
+              <Period w={w} shorter={shorter} />
             </>
           )}
     </DocsPageLayout>
