@@ -296,6 +296,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-23 — No route card names a gap over an hour; it reads "Runs irregularly in this period" (CIV-2171)
+Ryan (2026-11-23, relayed by Atlas Manager New): "1", option: cap it at an hour, the same as #773's gap words, so no card names a gap over an hour; a longer gap reads "Runs irregularly in this period".
+- The rule: a route card row whose words would name one gap over PERIOD_COVERAGE_MAX_HEADWAY (D6's one-gap words, "every 5 min, with one 169 min gap", and #1239's main-stretch gap words) reads "Runs irregularly in this period" instead, as #773's gap words already do (#962: a wait over an hour is no cadence). A gap of an hour or less keeps its words.
+- Card wording only: the map colour and the filter do not change. No new number: PERIOD_COVERAGE_MAX_HEADWAY, imported from its one home.
+- Counts (local, all 551 published agencies, 163,810 period cards, what the card shows): 879 cards change in 204 agencies (NJ Transit 43, BC Ferries 24), none in the shared row, and every one is a gap over an hour turning to "Runs irregularly". The 878 shown to Ryan missed one card whose gap is a fraction (Waco TL-8 weekday AM, "with one 80.9 min gap").
+
 ### 2026-11-22 — A card row's "limited" state reads the period, not the all-day grade; a long gap is named or reads irregular (#773)
 Ryan (2026-11-22, relayed by Atlas Manager New), shown the per-period version with its counts and the TTC 43 and CTA 9 cases: "1", option "Use that version, but fix TTC 43 and CTA 9 first and bring back fresh counts before it merges (Recommended)". Earlier, on the all-day grade deciding: "Look into it more". On the gap choice that followed (gap words, or the existing 1.5× limit sending such rows to "Runs irregularly"): "I can't decide - ask Strategy to decide". Strategy picked gap words.
 - The rule: on a period's route card, a row is limited (and stays out of the shared stretch) when, in that period, it has fewer than MIN_SCHEDULE_DEPARTURES of its own departures, no regular service (the card's "Runs irregularly in this period") or a value that is one gap between a few departures (#955). The all-day "infrequent" grade decides only the All day view.
