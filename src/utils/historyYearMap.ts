@@ -163,9 +163,25 @@ export function onTodaysLines(routes: readonly HistoryYearRoute[]): HistoryYearR
   return routes.filter(r => !r.coordinates);
 }
 
-/** A MapLibre colour for an agency's tile lines: each year route's colour by route number. */
+/**
+ * A today's-map route's History key, as the History build names it (pipeline/historyRouteKey): its short name, or its
+ * route id when the short name is blank (#1738: MBTA's subway, commuter rail and ferries, the CTA L, LA Metro Rail,
+ * SkyTrain and two Simi Valley routes have no short name, so History keys them by id and they drew no line).
+ */
+export function historyFeatureKey(props: { routeShortName?: unknown; routeId?: unknown }): string {
+  const short = String(props.routeShortName ?? '').trim();
+  return short || String(props.routeId ?? '').trim();
+}
+
+/** historyFeatureKey as a MapLibre expression on a tile feature. */
+export function historyTileKeyExpression(): unknown {
+  return ['let', 'short', ['to-string', ['coalesce', ['get', 'routeShortName'], '']],
+    ['case', ['==', ['var', 'short'], ''], ['to-string', ['coalesce', ['get', 'routeId'], '']], ['var', 'short']]];
+}
+
+/** A MapLibre colour for an agency's tile lines: each year route's colour by its History key. */
 export function historyYearColorExpression(routes: readonly HistoryYearRoute[], fallback: unknown): unknown {
   const tiled = onTodaysLines(routes);
   if (tiled.length === 0) return fallback;
-  return ['match', ['to-string', ['get', 'routeShortName']], ...tiled.flatMap(r => [r.routeShortName, r.color]), fallback];
+  return ['match', historyTileKeyExpression(), ...tiled.flatMap(r => [r.routeShortName, r.color]), fallback];
 }

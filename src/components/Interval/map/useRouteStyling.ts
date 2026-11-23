@@ -30,7 +30,7 @@ import {
   researchOverlayPaint,
   RESEARCH_OVERLAY_LAYERS,
 } from './routeStyle';
-import { historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
+import { historyTileKeyExpression, historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
 
 export interface RouteStylingInput {
   agencies: Agency[];
@@ -204,7 +204,7 @@ export function useRouteStyling(
     if (historyYearAgencyMatch) {
       const names = onTodaysLines(historyOverlay!.yearRoutes!).map(r => r.routeShortName);
       // That day's line only, by the map's own day clause (buildRouteTileFilter); without it every day's copy drew.
-      const yearClause = ['all', historyYearAgencyMatch, ['==', ['get', 'day'], historyOverlay!.day ?? 'Weekday'], ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
+      const yearClause = ['all', historyYearAgencyMatch, ['==', ['get', 'day'], historyOverlay!.day ?? 'Weekday'], ['in', historyTileKeyExpression(), ['literal', names]]];
       routeFilter = ['any', concatFilters(routeFilter, ['!', historyYearAgencyMatch]) ?? true, yearClause];
     }
 
@@ -309,7 +309,7 @@ export function useRouteStyling(
         // History uses its own route selection state; its route gets the Frequency map's fade.
         const historyRouteMatch: any = ['all',
           ['in', ['get', 'agencySlug'], ['literal', historyOverlaySlugs(historyOverlay)]],
-          ['==', ['get', 'routeShortName'], historyOverlay.routeShortName],
+          ['==', historyTileKeyExpression(), historyOverlay.routeShortName],
         ];
         setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(historyRouteMatch, headwayExpr, colorMode) as any);
         setRouteLayerPaint(map, 'line-width', focusedRouteLineWidth(historyRouteMatch) as any);

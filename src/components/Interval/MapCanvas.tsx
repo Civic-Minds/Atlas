@@ -14,6 +14,7 @@ import { mergeUrlSearchParams } from '../../utils/syncUrlParams';
 import { MAP_URL, linkUpdate } from '../../utils/urlSchema';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
+import { historyFeatureKey } from '../../utils/historyYearMap';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
@@ -924,7 +925,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         setSelectedStopRef.current(null);
         if (onHistoryRouteClickRef.current) {
           const slug = props.agencySlug as string;
-          const rsn = props.routeShortName as string;
+          const rsn = historyFeatureKey(props);
           if (slug && rsn) onHistoryRouteClickRef.current(slug, rsn);
         } else if (uniqueRouteKeys.length > 1) {
           if (map.getZoom() < 11) {
