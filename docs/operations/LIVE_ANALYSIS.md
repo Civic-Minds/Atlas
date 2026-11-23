@@ -56,6 +56,14 @@ Opt-in only: `npm run studio:report` (Kingston, last 15 service dates; `npm run 
 another) builds the same on this Mac, for a local comparison, plus a time-loss report per route in `$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to
 the one shared folder, `Atlas-worktrees/_live-data`, whichever checkout runs it.
 
+Studio's Fleet and Schedules files (`<slug>-vehicles.json`, `<slug>-before-after.json`; CIV-1974) are built in the cloud
+rebuild too (`rebuild-release.yml`: `scripts/studio-builds.ts` from the feeds and dates in `config/studio-builds.json`,
+then `scripts/studio-files-upload.ts`) and go to the same private Live bucket under `studio/files/`; the dev server reads
+them from there (`local-api/studioFiles.ts`), or from a folder when `STUDIO_DIR` is set. An agency marked `dryRunOnly` is
+not built for publishing, so its cloud files stay as uploaded: TTC, Hamilton and Kingston keep the files built on this
+Mac (uploaded once with `npx tsx scripts/studio-files-upload.ts --from <folder> --only ttc,hamilton,kingston`, an R2
+write that needs a go) until #1710, Hamilton 01's late-night line and Kingston's values are cleared.
+
 One exception, for the hosted Atlas Studio MCP only (CIV-1860, Ryan approved 2026-11-18): the `mcp-live` job in
 `live-report-refresh.yml` analyses every recorded agency, Studio agencies included, and writes the MCP's small figure files
 (`scripts/mcp/releaseLivePrivate.ts`) to the private bucket `atlas-mcp-live`, which only the hosted MCP Worker binds. Its log

@@ -767,6 +767,19 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
+      # CIV-1974: the Studio files just built go to the private Live bucket (studio/files/), where Studio on the Mac reads
+      # them, so nothing is built on a laptop. Agencies held to the dry run aren't built above, so their files stay as they are.
+      - name: Upload Atlas Studio's buses-needed and schedule-change files
+        if: inputs.start_at != 'promote'
+        continue-on-error: true
+        run: npx tsx scripts/studio-files-upload.ts || { echo "::warning::The Studio files were not uploaded; Studio keeps the previous ones."; exit 1; }
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MCP_LIVE_BUCKET: atlas-mcp-live
+
       # Atlas Studio MCP files (CIV-1855): built from this release's agency files and History, uploaded to
       # atlas/releases/<id>/mcp/ before the pointer moves. The hosted MCP keeps answering from the release it has until a
       # release's mcp/manifest.json exists, so a failure here is a warning and never holds back the map's release.

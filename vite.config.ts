@@ -7,6 +7,7 @@ import { execSync } from 'child_process';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
 import { historyYearCounts } from './shared/historyEligibility';
 import { STUDIO_COVERAGE_DEV_URL, STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
+import { studioFiles } from './local-api/studioFiles';
 import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
 
 /** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
@@ -192,20 +193,21 @@ export default defineConfig(({ mode, command, isPreview }) => {
     },
   };
 
-  // Dev-only (configureServer never runs in a build): serve tmp/studio/<slug>-vehicles.json at
-  // /dev-studio/<slug>-vehicles.json for Atlas Studio's buses-needed page (CIV-1693). Written by
-  // `scripts/vehicles-needed.ts <feed.zip> --slug <slug> --json tmp/studio/<slug>-vehicles.json`; never on R2.
-  // Also tmp/studio/<slug>-before-after.json for the Schedule Changes page (CIV-1715), written by
-  // `scripts/compare-feed-dates.ts ... --json tmp/studio/<slug>-before-after.json`.
-  const STUDIO_DIR = resolve('tmp/studio');
+  // Dev-only (configureServer never runs in a build): serve Atlas Studio's <slug>-vehicles.json (buses needed, CIV-1693)
+  // and <slug>-before-after.json (Schedules, CIV-1715) at /dev-studio/<name>. CIV-1974: they are built in the cloud
+  // rebuild and read from the private Live bucket (local-api/studioFiles.ts), so nothing is built on the Mac; STUDIO_DIR
+  // (e.g. tmp/studio after a local build) reads a folder instead.
   const studioFixtures: Plugin = {
     name: 'studio-fixtures',
     apply: 'serve',
     configureServer(server) {
-      server.middlewares.use((req, res, next) => {
+      server.middlewares.use(async (req, res, next) => {
+        const path = (req.url ?? '').split('?')[0];
+        if (path !== STUDIO_MANIFEST_DEV_URL && path !== STUDIO_COVERAGE_DEV_URL && !path.startsWith('/dev-studio/')) return next();
+        const files = studioFiles();
         // The agency menu's list: every agency with a built Schedule Changes file (shared/studioAgencies.ts).
-        if ((req.url ?? '').split('?')[0] === STUDIO_MANIFEST_DEV_URL) {
-          const names = existsSync(STUDIO_DIR) ? readdirSync(STUDIO_DIR) : [];
+        if (path === STUDIO_MANIFEST_DEV_URL) {
+          const names = await files.list();
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Cache-Control', 'no-store');
           res.end(JSON.stringify({ agencies: studioAgenciesFromFiles(names) }));
@@ -213,8 +215,8 @@ export default defineConfig(({ mode, command, isPreview }) => {
         }
         // CIV-1871: the coverage page's local facts: which agencies have each Studio file, and the Live coverage files
         // (what scripts/mcp/releaseLivePrivate.ts writes under tmp/mcp-live-private/live/<slug>/coverage.json).
-        if ((req.url ?? '').split('?')[0] === STUDIO_COVERAGE_DEV_URL) {
-          const names = existsSync(STUDIO_DIR) ? readdirSync(STUDIO_DIR) : [];
+        if (path === STUDIO_COVERAGE_DEV_URL) {
+          const names = await files.list();
           const liveDir = resolve('tmp/mcp-live-private/live');
           const coverage: Record<string, unknown> = {};
           if (existsSync(liveDir)) {
@@ -237,13 +239,12 @@ export default defineConfig(({ mode, command, isPreview }) => {
           }));
           return;
         }
-        const m = /^\/dev-studio\/([\w-]+-(?:vehicles|before-after)\.json)$/.exec((req.url ?? '').split('?')[0]);
-        if (!m) return next();
-        const file = resolve(STUDIO_DIR, m[1]);
-        if (!file.startsWith(STUDIO_DIR) || !existsSync(file)) return next();
+        const m = /^\/dev-studio\/([\w-]+-(?:vehicles|before-after)\.json)$/.exec(path);
+        const text = m ? await files.read(m[1]) : null;
+        if (text == null) return next();
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Cache-Control', 'no-store');
-        createReadStream(file).pipe(res);
+        res.end(text);
       });
     },
   };
