@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest';
+import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
+import { FEED_DECODE_OPTIONS } from '../../local-api/live-vehicles';
 import {
   delayFromTripUpdate,
   delayMinFromDelaySec,
   explicitTripDelaySec,
   gtfsTimeToSec,
+  isInTransit,
   scheduledDelaySec,
   serviceDayStartEpoch,
 } from '../liveVehicleDelay';
@@ -74,5 +77,40 @@ describe('liveVehicleDelay', () => {
       shape,
     );
     expect(gap).toBeCloseTo(1.6, 1);
+  });
+});
+
+// #1752: a live feed decodes current_status as its name; the in-transit check compared it with 'IN_TRANSIT'.
+describe('in-transit status from a decoded feed (#1752)', () => {
+  const VehiclePosition = GtfsRealtimeBindings.transit_realtime.VehiclePosition;
+  function decodedStatus(currentStatus: number): string {
+    const FeedMessage = GtfsRealtimeBindings.transit_realtime.FeedMessage;
+    const bytes = FeedMessage.encode(FeedMessage.create({
+      header: { gtfsRealtimeVersion: '2.0', timestamp: 900 },
+      entity: [{ id: 'v1', vehicle: { vehicle: { id: '4400' }, trip: { tripId: 't1' }, currentStatus } }],
+    })).finish();
+    return FeedMessage.toObject(FeedMessage.decode(bytes), FEED_DECODE_OPTIONS).entity[0].vehicle.currentStatus;
+  }
+
+  it('reads a decoded IN_TRANSIT_TO and the recorder\'s number as in transit, and nothing else', () => {
+    expect(isInTransit(decodedStatus(VehiclePosition.VehicleStopStatus.IN_TRANSIT_TO))).toBe(true);
+    expect(isInTransit(VehiclePosition.VehicleStopStatus.IN_TRANSIT_TO)).toBe(true);
+    for (const other of [VehiclePosition.VehicleStopStatus.INCOMING_AT, VehiclePosition.VehicleStopStatus.STOPPED_AT]) {
+      expect(isInTransit(decodedStatus(other))).toBe(false);
+      expect(isInTransit(other)).toBe(false);
+    }
+    expect(isInTransit(undefined)).toBe(false);
+  });
+
+  it('times an in-transit vehicle from the stop\'s departure, as the decoded feed says it is moving', () => {
+    const serviceDayStart = 1_700_000_000;
+    const stopSec = gtfsTimeToSec('10:15:00');
+    const tu = {
+      trip: { tripId: 't1' },
+      stopTimeUpdate: [{ stopId: '5612', arrival: { time: String(serviceDayStart + stopSec + 60) }, departure: { time: String(serviceDayStart + stopSec + 120) } }],
+    };
+    const delay = (currentStatus: string) => delayFromTripUpdate(tu, { t1: { '5612': stopSec } }, serviceDayStart, { stopId: '5612', currentStatus });
+    expect(delay(decodedStatus(VehiclePosition.VehicleStopStatus.IN_TRANSIT_TO))).toBe(120);
+    expect(delay(decodedStatus(VehiclePosition.VehicleStopStatus.INCOMING_AT))).toBe(60);
   });
 });
