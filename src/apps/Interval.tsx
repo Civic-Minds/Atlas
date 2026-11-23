@@ -143,6 +143,8 @@ interface Props {
   filterToAgencies?: boolean;
   /** With filterToAgencies: the agencies to draw (History), so the agencies prop can stay the same list. */
   agencyFilterSlugs?: string[] | null;
+  /** #1744: agencies whose lines stay at full strength while every other line is dimmed (History's agency focus). */
+  focusAgencySlugs?: string[] | null;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   onOnDemandZoneClick?: (selection: { slug: string; zoneId: string }) => void;
   day: DayType;
@@ -244,7 +246,7 @@ function CompareSideSlot({ side, className = '', children }: { side: 'A' | 'B'; 
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, slowConnectionActive = false, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, focusAgencySlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, slowConnectionActive = false, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
   const [searchParams] = useSearchParams();
   // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
   const { pathname } = useLocation();
@@ -1373,7 +1375,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const sharedMapProps = {
     contextMetric, agencies, layers, selectedRoute, highlightRoutes, hoveredSearchRoute, hoveredBranch,
     setSelectedRoute, selectedStop, setSelectedStop, setDisambiguationRoutes, lightMode, resetViewKey, areaFocus,
-    onLocate, mapContextOpen, mapContextView, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs,
+    onLocate, mapContextOpen, mapContextView, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, focusAgencySlugs,
     onHistoryRouteClick, selectedAgencySlug, setSelectedAgencySlug, selectedOnDemandZoneId, nightServiceView,
     nightServiceFrequency, exportTitle, frequentServiceView, frequentServiceDays, frequentServiceFrequency,
     frequentServiceWindow, selectedModes, selectedAgencies, initialMapCenter, initialMapBounds, setQuery,

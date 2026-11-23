@@ -29,6 +29,7 @@ const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 const Studio = import.meta.env.DEV ? React.lazy(() => import('./apps/studio/Studio')) : () => null;
 import { COMPARE_PATH, isAppGated, isCompareGated, type AppId } from './utils/appGate';
 import { parseStudioPath } from '../shared/studioAgencies';
+import { getSavedStudioAgency } from './utils/studioAgency';
 import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -448,6 +449,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const inStudio = activeApp === 'studio';
   // Leaving Studio fades its page out the way it came in, as the main map's modes do (CIV-1921).
   const studioLeaving = useModeLeaving(inStudio, FEATURES.modeTransitions);
+  // #1744 (Ryan: "In Studio when I'm not inside any of the 'apps' the map is just... blank"): with no Studio page open
+  // (CIV-1894), the map's own route lines show, the remembered agency's in focus and the rest dimmed, as History's open
+  // agency is (CIV-1731's Studio map showed the agency's lines with nothing picked). A page draws its own lines instead.
+  const studioNoPage = inStudio && !parseStudioPath(pathname)?.page;
+  const studioFocusAgency = studioNoPage ? getSavedStudioAgency() : null;
+  const studioFocusSlugs = useMemo(() => (studioFocusAgency ? [studioFocusAgency] : null), [studioFocusAgency]);
   // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
   // the map re-lays out its route tiles for the filter in one long frame, which would otherwise freeze the fold midway.
   const historyEntering = useModeEntering(inHistory, FEATURES.modeTransitions);
@@ -893,7 +900,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setQuery={setQuery}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight || inBustang}
-              showRouteLayers={inFrequency || inLive || inHistory || inNight || inBustang || inFrequentService}
+              showRouteLayers={inFrequency || inLive || inHistory || inNight || inBustang || inFrequentService || studioNoPage}
+              focusAgencySlugs={studioFocusSlugs}
               liveRoutesOnly={inLive}
               nightServiceView={inNight}
               nightServiceFrequency={nightServiceFrequency}

@@ -204,6 +204,8 @@ interface MapCanvasProps {
   hideSpan?: boolean;
   filterToAgencies?: boolean;
   agencyFilterSlugs?: string[] | null;
+  /** #1744: agencies kept at full strength, every other line dimmed (History's agency focus). */
+  focusAgencySlugs?: string[] | null;
   onHistoryRouteClick?: (slug: string, routeShortName: string) => void;
   tileFilter?: any;
   selectedAgencySlug?: string | null;
@@ -303,6 +305,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   hideSpan = false,
   filterToAgencies = false,
   agencyFilterSlugs = null,
+  focusAgencySlugs = null,
   onHistoryRouteClick,
   tileFilter,
   selectedAgencySlug,
@@ -1298,7 +1301,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute: mapSelectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
-    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes,
+    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes, focusAgencySlugs,
   });
   // CIV-1567 (beta): entering History, the map keeps its old picture until it has redrawn for History's agencies.
   const mapHoldRef = useMapHold(mapRef, mapLoaded, `${filterToAgencies}|${(agencyFilterSlugs ?? []).join(',')}`, FEATURES.modeTransitions);
