@@ -94,6 +94,8 @@ export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
 /** Below PageShell's pinned header (its height is --page-header-h, set by PageShell), plus the gap a page leaves under it (CIV-1897): where a sticky side menu sits and where a jumped-to heading lands. */
 export const STICK_BELOW_HEADER = 'lg:top-[calc(var(--page-header-h,3.25rem)+1.25rem)]';
+/** Pinned right under PageShell's header at every width, for a row that sticks while the page scrolls under it (CIV-2156's topic pills). */
+export const STICK_UNDER_HEADER = 'top-[var(--page-header-h,3.25rem)]';
 export const SCROLL_BELOW_HEADER = 'scroll-mt-[calc(var(--page-header-h,3.25rem)+1.25rem)]';
 export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full px-3';
 export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';

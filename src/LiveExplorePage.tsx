@@ -41,12 +41,23 @@ import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/section
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, FullAnalysisSections, type FullAnalysisPart, RouteReportHeader, withNiceNames } from './LiveRoutePage';
-import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, METHOD_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
+import ReportTopicTabs, { type ReportTopic } from './components/Live/ReportTopicTabs';
 
 type Day = 'all' | 'weekday' | 'weekend';
+
+/** The Full report's topics (CIV-284's grouping), shown one at a time as tabs (CIV-2156). */
+type TopicKey = 'route' | 'lateHours' | 'lateStops' | 'tripTime' | 'delays' | 'wait' | 'bunching' | 'delivered' | 'method';
+/**
+ * CIV-2156: the topic holding each part a link or a picked stop jumps to (the strip, the Summary's "Every stop" #b2, an
+ * old ?view=analysis#b1/#runtime), so the tab opens before the page scrolls to it.
+ */
+const ANCHOR_TOPIC: Readonly<Record<string, TopicKey>> = {
+  'x-strip': 'route', 'x-late': 'lateHours', b1: 'lateHours', 'x-stops': 'lateStops', b2: 'lateStops', 'x-runtime': 'tripTime', runtime: 'tripTime',
+};
 
 /** What is open in the detail panel: a stop (by its place in the direction's strip) or a marked stretch. */
 type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
@@ -197,11 +208,24 @@ export default function LiveExplorePage() {
   const { agencies } = useAgencies();
   const [band, setBand] = useState<DashboardBand>(() => link.band ?? liveBandNow(agencies.find(a => a.slug === agency)?.timezone));
   const [picked, setPicked] = useState<Selection | null>(null);
+  // CIV-2156: the topic tab showing, and a part to scroll to once its tab has drawn.
+  const [openTopic, setOpenTopic] = useState<TopicKey>(() => ANCHOR_TOPIC[window.location.hash.slice(1)] ?? 'route');
+  const [jump, setJump] = useState<{ id: string; smooth: boolean } | null>(null);
+  const jumpTo = (id: string, smooth = true) => {
+    const topic = ANCHOR_TOPIC[id];
+    if (topic) setOpenTopic(topic);
+    setJump({ id, smooth });
+  };
+  useEffect(() => {
+    if (!jump) return;
+    document.getElementById(jump.id)?.scrollIntoView(jump.smooth ? { behavior: 'smooth', block: 'start' } : undefined);
+    setJump(null);
+  }, [jump, openTopic]);
   useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { view: 'explore', dir, day, band })); }, [dir, day, band]);
   // A link to a part of the page (the Summary's "Every stop", an old ?view=analysis#b2) lands on it once the page has drawn.
   useEffect(() => {
     if (state.kind !== 'done' || !window.location.hash) return;
-    document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
+    jumpTo(window.location.hash.slice(1), false);
   }, [state.kind]);
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
@@ -248,17 +272,61 @@ export default function LiveExplorePage() {
   const pickStop = (d: number, stopId: string) => {
     if (!onStrip(d, stopId)) return;
     setPicked({ dir: d, kind: 'stop', stopId });
-    document.getElementById('x-strip')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    jumpTo('x-strip');
   };
 
   // The Dashboard's and Full analysis's parts, one at a time (CIV-284).
   const dash = (part: DashboardPart) => (
     <LiveDashboardView v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} filters={null} part={part}
-      toFull={hash => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+      toFull={hash => jumpTo(hash)} />
   );
   const full = (part: FullAnalysisPart) => (
     <div data-full-analysis><FullAnalysisSections v3={v3} dir={dir} uncertain={uncertain} gaps={gaps} agency={agency} route={route} part={part} /></div>
   );
+
+  // The report's topics, in order, each with every part it had (CIV-284's grouping), one at a time as tabs (CIV-2156).
+  const topics: ReportTopic<TopicKey>[] = [
+    { key: 'route', title: ALONG_ROUTE_TITLE, body: <>
+      <ErrorBoundary label={BOUNDARY(ALONG_ROUTE_TITLE)}>
+        <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
+      </ErrorBoundary>
+      {dash('strip')}
+    </> },
+    { key: 'lateHours', title: LATE_BY_HOUR_TITLE, body: <>
+      <LateByHourSection chart="bars" id="x-late" shrink title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} day={day} boundary={BOUNDARY(LATE_BY_HOUR_TITLE)}
+        before={<div className="mt-3"><Group label={DAY_LABEL} value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
+      {dash('lateHours')}
+      {full('lateHours')}
+    </> },
+    { key: 'lateStops', title: LATE_STOPS_TITLE, body: <>
+      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
+      {/* CIV-2128 pick 4a: the Dashboard's five stops were the top 5 of Explore's table; the table and the map stay. */}
+      {full('lateStops')}
+    </> },
+    { key: 'tripTime', title: TRIP_TIME_LABEL, body: <>
+      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
+      {dash('tripTime')}
+      {full('tripTime')}
+    </> },
+    { key: 'delays', title: DELAY_STARTS_TITLE, body: <>
+      <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
+      {full('delays')}
+    </> },
+    { key: 'wait', title: EXTRA_WAIT_LABEL, body: <>
+      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY(EXTRA_WAIT_LABEL)} />
+      {full('wait')}
+    </> },
+    { key: 'bunching', title: BUNCHING_FORMS_TITLE, body: <>
+      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY(BUNCHING_FORMS_TITLE)} />
+      {full('bunching')}
+    </> },
+    { key: 'delivered', title: SERVICE_DELIVERED_TITLE, body: <>
+      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
+      {full('delivered')}
+    </> },
+    // How this is measured: one copy, Explore's (CIV-2128 pick 10a; the three were the same block).
+    { key: 'method', title: METHOD_TITLE, body: <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary> },
+  ];
 
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
@@ -280,46 +348,7 @@ export default function LiveExplorePage() {
         <Group label={TIME_OF_DAY_LABEL} value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
       </div>
 
-      {/* Along the route. */}
-      <ErrorBoundary label={BOUNDARY(ALONG_ROUTE_TITLE)}>
-        <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
-      </ErrorBoundary>
-      {dash('strip')}
-
-      {/* Late departures by hour. */}
-      <LateByHourSection chart="bars" id="x-late" shrink title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} day={day} boundary={BOUNDARY(LATE_BY_HOUR_TITLE)}
-        before={<div className="mt-3"><Group label={DAY_LABEL} value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
-      {dash('lateHours')}
-      {full('lateHours')}
-
-      {/* Stops most often late. */}
-      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
-      {/* CIV-2128 pick 4a: the Dashboard's five stops were the top 5 of Explore's table; the table and the map stay. */}
-      {full('lateStops')}
-
-      {/* Trip time. */}
-      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
-      {dash('tripTime')}
-      {full('tripTime')}
-
-      {/* Where delays start. */}
-      <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
-      {full('delays')}
-
-      {/* Extra wait. */}
-      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY(EXTRA_WAIT_LABEL)} />
-      {full('wait')}
-
-      {/* Where bunching forms. */}
-      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY(BUNCHING_FORMS_TITLE)} />
-      {full('bunching')}
-
-      {/* Service delivered. */}
-      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
-      {full('delivered')}
-
-      {/* How this is measured: one copy, Explore's (CIV-2128 pick 10a; the three were the same block). */}
-      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
+      <ReportTopicTabs topics={topics} open={openTopic} setOpen={setOpenTopic} label={routeTitle || title} />
     </article>,
   );
 }
