@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Download, Share2 } from 'lucide-react';
 import { PanelCloseButton } from './ui/PanelHeader';
-import { CARD_NOTE, CONTROL_ACTIVE, CONTROL_INACTIVE, FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
+import { CARD_NOTE, FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP } from '../styles';
+import Pill from './ui/Pill';
 import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
@@ -129,17 +130,16 @@ export default function MapExportDialog({ open, prepareSource, releaseSource, de
 
         <div className="mt-5 grid grid-cols-3 gap-1 rounded-xl border border-[var(--border-primary)] p-1">
           {MAP_EXPORT_SIZES.map(size => (
-            <button
+            // #1754: the shared Pill (control tone), so only the picked size reads as selected and hover stays lighter than it.
+            <Pill
               key={size.id}
-              type="button"
+              selected={selectedSizeId === size.id}
               onClick={() => setSelectedSizeId(size.id)}
-              aria-pressed={selectedSizeId === size.id}
-              // #1754: the shared control states, so only the picked size reads as selected and hover stays lighter than it.
-              className={`rounded-lg border px-2 py-2 text-xs font-black transition-colors ${selectedSizeId === size.id ? CONTROL_ACTIVE : CONTROL_INACTIVE}`}
+              className="!rounded-lg !px-2 !py-2 !whitespace-normal font-black"
             >
               <span className="block">{size.label}</span>
               <span className="mt-0.5 block text-xs font-bold opacity-75">{SIZE_HINTS[size.id]}</span>
-            </button>
+            </Pill>
           ))}
         </div>
 
