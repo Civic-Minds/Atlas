@@ -6,7 +6,9 @@ import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 import { headwayEvery, headwayEveryRange, headwayPeriodShape, headwayRangeShown } from './headwayText';
-import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
+import { hasRegularServiceInPeriod, isOneGapRow, routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
+import { MIN_SCHEDULE_DEPARTURES, ROW_GAP_WORDS_RATIO, SLOW_START_STEADY_RATIO } from '../../shared/rules/frequency';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
 import { clockTime } from '../../shared/timeText';
 import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, ON_PART_OF_ROUTE } from '../content/noticeCopy';
 import { routeCardLowestHeadway, routeCardRange } from './routeListRange';
@@ -59,6 +61,81 @@ function runsEveryHourAt(p: ShapeProperties, period: Exclude<TimePeriod, 'all'>,
   return true;
 }
 
+/** The row's own departures in the period (departuresByHour), or null on data without the counts. */
+function periodDepartureCount(p: ShapeProperties, period: PeriodKey): number | null {
+  if (!p.departuresByHour) return null;
+  const { start, end } = PERIOD_MINUTES[period];
+  let n = 0;
+  for (const [hour, count] of Object.entries(p.departuresByHour)) {
+    const h = Number(hour) * 60;
+    // Overnight runs past midnight (26:00-30:00): the next morning's clock hours 2-5 count too, as the pipeline reads them.
+    if ((h >= start && h < end) || (h + MINUTES_PER_DAY >= start && h + MINUTES_PER_DAY < end)) n += count ?? 0;
+  }
+  return n;
+}
+
+/**
+ * #773: fewer of the row's own departures in the period than a schedule needs (#720: MIN_SCHEDULE_DEPARTURES). A row that
+ * reads its stretch's words for the period (the main stretch's "every 30 min, with one 60 min gap", #934 / D6) speaks for
+ * the stretch's trips, not only its own, as the CIV-1069 sweep counts it: MTA Q115 Sunday Late to Jamaica, 2 own trips.
+ */
+export function rowTooFewInPeriod(p: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return false;
+  if (rowCarriesStretchWords(p, period)) return false;
+  const n = periodDepartureCount(p, period as PeriodKey);
+  return n != null && n > 0 && n < MIN_SCHEDULE_DEPARTURES;
+}
+
+/**
+ * #773 (Ryan, 2026-11-22: "Look into it more"): the per-period stand-in for the old all-day "infrequent" grade, from tests
+ * Atlas already uses. A row is irregular in a period when it has fewer of its own departures there than a schedule needs
+ * (#720: MIN_SCHEDULE_DEPARTURES), when it has no regular service there (the card's "Runs irregularly in this period",
+ * hasRegularServiceInPeriod), or when its value is one gap between a few departures (#955, isOneGapRow). On the internal 'all' path (no screen picks it) the all-day grade still decides.
+ */
+export function rowIrregularInPeriod(p: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all') return p.tier === 'infrequent';
+  if (rowTooFewInPeriod(p, period) || isOneGapRow(p, period)) return true;
+  return !hasRegularServiceInPeriod(p, period) && !rowSteadyToPeriodEdge(p, period as PeriodKey);
+}
+
+/**
+ * #773: a row that starts late or stops early in the period (its own period edge, read from its own departures with the
+ * stretches' steadiness test, CIV-1959, or its stretch's edge that the row carries: the card's "every 30 min until
+ * 12:24 AM") has regular service for the part it runs;
+ * the route's period value is empty only because the period is not covered end to end. Cobb Linc 30, AC Transit 14 and
+ * STM 12 Late and TTC 960 Sunday AM keep their number.
+ */
+function rowSteadyToPeriodEdge(p: ShapeProperties, period: PeriodKey): boolean {
+  const own = p.rowPeriodEdge?.[period];
+  if (own != null && (own.from != null || own.until != null)) return true;
+  // A main or tail row that carries its stretch's edge words (#934, #1276: rowReadsPeriodEdge).
+  const stretch = p.stretchPeriodEdge?.[period];
+  return stretch != null && (stretch.from != null || stretch.until != null) && rowReadsPeriodEdge(p, period);
+}
+
+/**
+ * #773 (gap words, Strategy's pick for Ryan, 2026-11-22): a row the all-day grade called infrequent has no cadence in the
+ * period when its long gap, at least ROW_GAP_WORDS_RATIO times its number, is over PERIOD_COVERAGE_MAX_HEADWAY, or when its
+ * own trips are unsteady and their full-window wait is over it (#962): the card and the lists read "Runs irregularly in this
+ * period" (CTA 9 to Vincennes midday, two bursts 313 minutes apart). A shorter gap is named on the card (rowTrips). A row
+ * that carries its stretch's words for the period speaks for the stretch and keeps its number.
+ */
+export function infrequentRowNoCadence(p: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all' || p.tier !== 'infrequent' || rowCarriesStretchWords(p, period)) return false;
+  const median = p.headwayByPeriod?.[period];
+  // #826: a row that runs in every hour of the period at its cadence has a hand-off at the period edge, not a hole (TTC 927).
+  if (median != null && runsEveryHourAt(p, period, median)) return false;
+  const longestGap = p.maxGapByPeriod?.[period];
+  if (median != null && longestGap != null && longestGap >= median * ROW_GAP_WORDS_RATIO && longestGap > PERIOD_COVERAGE_MAX_HEADWAY) return true;
+  const wait = p.periodCoverageHeadway?.[period];
+  return p.headwayByPeriodSustained?.[period] === false && median != null && wait != null && wait > median && wait > PERIOD_COVERAGE_MAX_HEADWAY;
+}
+
+/** #773: the row reads its stretch's words for the period (#934 / D6: the main stretch's edge or one gap). */
+export function rowCarriesStretchWords(p: ShapeProperties, period: TimePeriod): boolean {
+  return (p.stretchRole === 'main' || rowReadsPeriodEdge(p, period)) && !isOneGapRow(p, period) && routeCardPeriodShapeText(p, period) != null;
+}
+
 /** Headway shown on route cards and lists (display only — filter decisions use shared/routeHeadwayFilter). */
 export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   // A numeric gap inside a short-turn/peak-only cluster is not sustained route
@@ -70,13 +147,16 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // value (Winter Park TL-42's 56 min across 3 trips a day) would mislead (#708).
   if (period === 'all' && p.tier === 'infrequent') return null;
 
-  // An infrequent branch can still have a numeric median, but that median is
-  // misleading when the longest scheduled gap is materially larger.
-  if (period !== 'all' && p.tier === 'infrequent') {
+  // #773: a row with fewer own departures in the period than a schedule needs (#720) has no cadence there; an
+  // irregular row's median is misleading when its longest gap is over SLOW_START_STEADY_RATIO times it.
+  if (period !== 'all' && rowIrregularInPeriod(p, period)) {
+    if (rowTooFewInPeriod(p, period)) return null;
     const median = p.headwayByPeriod?.[period] ?? p.headway ?? null;
     const longestGap = p.maxGapByPeriod?.[period];
-    if (median != null && longestGap != null && longestGap > median * 1.5 && !runsEveryHourAt(p, period, median)) return null;
+    if (median != null && longestGap != null && longestGap > median * SLOW_START_STEADY_RATIO && !runsEveryHourAt(p, period, median)) return null;
   }
+
+  if (infrequentRowNoCadence(p, period)) return null;
 
   // A period median marked as unsustained still describes the active period. Display that
   // period's cadence, never the all-day headline. Coverage data remains available to the
@@ -263,7 +343,8 @@ const LIST_STEADY_INFREQUENT_MAX_GAP = 30;
  */
 function routeListRowHeadway(p: ShapeProperties, period: TimePeriod): number | null {
   const card = routeCardDisplayHeadway(p, period);
-  if (card != null || period === 'all' || p.tier !== 'infrequent') return card;
+  if (card != null || period === 'all' || !rowIrregularInPeriod(p, period)) return card;
+  if (rowTooFewInPeriod(p, period)) return null;
   if (p.headwayByPeriodSustained?.[period] !== true) return null;
   const median = p.headwayByPeriod?.[period];
   const longestGap = p.maxGapByPeriod?.[period];

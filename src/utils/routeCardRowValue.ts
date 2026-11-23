@@ -135,7 +135,8 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     (noRegularService && (period === 'all' || d.stretchPeriodOneGap === undefined || !hasRegularServiceInPeriod(d, period) || displayH == null))
     || isOneGapRow(d, period)
     || fallbackUnsteady
-    || (trips.noOwnService && variantH === undefined && allDayH == null));
+    || (trips.noOwnService && variantH === undefined && allDayH == null)
+    || trips.waitNotCadence === true);
   const isLimited = rowNoRegular
     ? true
     : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);

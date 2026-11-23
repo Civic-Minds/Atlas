@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { rowTrips } from '../rowTrips';
 import { normalizeRouteFilterFeatures } from '../../../shared/routeHeadwayFilter';
 import { routeCardDisplayHeadway, routeListDisplay, routeListDisplayHeadway } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
@@ -59,14 +60,19 @@ describe('steady infrequent-tier patterns keep their cadence (#826)', () => {
     expect(routeListDisplayHeadway(route, 'evening')).toBe(166);
   });
 
-  it('still hides an infrequent row with a real hole inside an hour', () => {
-    const holed = {
+  // #773 (gap words): a real hole inside an hour is named on the card ("every 10 min, with one 45 min gap"); a hole over
+  // PERIOD_COVERAGE_MAX_HEADWAY is no cadence and the row reads "Runs irregularly in this period" (#962).
+  it('names a real hole inside an hour, and hides a row whose hole is over an hour', () => {
+    const holed = (gap: number) => ({
       routeId: 'H', routeShortName: 'H', directionId: 0, tier: 'infrequent', headway: 10,
       headwayByPeriod: { evening: 10 }, headwayByPeriodSustained: { evening: true },
-      maxGapByPeriod: { evening: 45 }, periodCoverageHeadway: { evening: 45 },
+      maxGapByPeriod: { evening: gap }, periodCoverageHeadway: { evening: gap },
       headwayByHour: { 19: 10, 20: 10, 21: 10, 22: 10 },
-      maxGapByHour: { 19: 10, 20: 45, 21: 10, 22: 10 },
-    } as unknown as ShapeProperties;
-    expect(routeCardDisplayHeadway(holed, 'evening')).toBeNull();
+      maxGapByHour: { 19: 10, 20: gap, 21: 10, 22: 10 },
+    }) as unknown as ShapeProperties;
+    expect(routeCardDisplayHeadway(holed(45), 'evening')).toBe(10);
+    expect(rowTrips(holed(45), 'evening').partPeriod).toBe('every 10 min, with one 45 min gap');
+    expect(routeCardDisplayHeadway(holed(61), 'evening')).toBeNull();
+    expect(rowTrips(holed(61), 'evening')).toMatchObject({ value: null, waitNotCadence: true });
   });
 });

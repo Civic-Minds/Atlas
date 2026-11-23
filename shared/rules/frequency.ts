@@ -82,3 +82,15 @@ export function edgeWaitBit(grade: number): number | null {
   const i = PUBLIC_TIER_MAXES.indexOf(grade);
   return i < 0 ? null : 2 ** i;
 }
+
+/** #720: three repeated departures are the minimum evidence for a schedule; one or two trips are one-off. */
+export const MIN_SCHEDULE_DEPARTURES = 3;
+/** CIV-1411: a slow start's steady run must cover at least this many departures (#571: 4 after an allowance). */
+export const SLOW_START_MIN_DEPARTURES = 4;
+/** CIV-1411: no gap in a steady run is over this many times its typical gap. */
+export const SLOW_START_STEADY_RATIO = 1.5;
+/**
+ * #1239 (Ryan, 2026-10-31): a gap goes into a row's words ("every 6 min, with a 25 min gap") only when it is at least this
+ * many times the row's usual wait. "every 63 min, with a 66 min gap" (AC Transit 281 AM) isn't worth mentioning.
+ */
+export const ROW_GAP_WORDS_RATIO = 1.5;

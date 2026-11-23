@@ -68,8 +68,12 @@ describe('steady infrequent-tier rows in route lists (#821)', () => {
     expect(routeListDisplayHeadway([other, steady(30)], 'midday')).toBe(10);
   });
 
-  it('stays limited past 30 min or when the period is not steady', () => {
-    expect(routeListDisplay([other, steady(31)], 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
-    expect(routeListDisplay([other, steady(20, false)], 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
+  // #773 (gap words): the card names a gap up to PERIOD_COVERAGE_MAX_HEADWAY ("every 10 min, with one 31 min gap"), so the
+  // list reads such a row as it does a steady one; past the hour the row reads "Runs irregularly in this period" (#962).
+  it('lists a row whose one gap the card names, and stays limited past an hour', () => {
+    expect(routeListDisplay([other, steady(31)], 'midday')).toEqual(routeListDisplay([other, steady(30)], 'midday'));
+    expect(routeListDisplay([other, steady(20, false)], 'midday')).toEqual(routeListDisplay([other, steady(30)], 'midday'));
+    expect(routeListDisplay([other, steady(61)], 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
+    expect(routeListDisplay([other, steady(61, false)], 'midday')).toEqual({ headway: null, limited: true, noRegular: true });
   });
 });

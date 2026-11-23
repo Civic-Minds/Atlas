@@ -51,6 +51,7 @@ import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadi
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
+import { SLOW_START_MIN_DEPARTURES, SLOW_START_STEADY_RATIO } from '../shared/rules/frequency.js';
 import { DAYTIME_PERIOD_KEYS, FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
@@ -1440,15 +1441,12 @@ export function slowStartFromEnabled(): boolean {
   return !(typeof process !== 'undefined' && process.env?.ATLAS_SLOW_START_FROM === '0');
 }
 
-/** A slow start's steady run must cover at least this many departures (#571: 4 after an allowance). */
-export const SLOW_START_MIN_DEPARTURES = 4;
-/**
- * No gap in the steady run is over this many times its typical gap. Tighter than the settled steadiness
- * test, which lets LA Metro 165 AM's every 15 from 8:17 pass against every 8 from 7:04: the card would
- * say "every 8 from 7:04" for a run that slows again. Stop times are whole minutes, so Line 5's every 3.6
- * reads gaps of 3 to 5 against 4.
- */
-export const SLOW_START_STEADY_RATIO = 1.5;
+/** A slow start's steady run must cover at least this many departures (#571: 4 after an allowance). Shared with the card (#773). */
+// SLOW_START_STEADY_RATIO: no gap in the steady run is over this many times its typical gap. Tighter than the settled
+// steadiness test, which lets LA Metro 165 AM's every 15 from 8:17 pass against every 8 from 7:04: the card would say
+// "every 8 from 7:04" for a run that slows again. Stop times are whole minutes, so Line 5's every 3.6 reads gaps of 3 to 5
+// against 4.
+export { SLOW_START_MIN_DEPARTURES, SLOW_START_STEADY_RATIO };
 
 /**
  * CIV-1411 (Ryan, 2026-11-13: "dont we have a 'x mins from x time' fix for this"): the #1277 / #934

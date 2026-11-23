@@ -116,11 +116,13 @@ describe('representative value', () => {
     normalizeRouteFilterFeatures(copies);
     return routeListLowEnd(copies.map(c => c.properties) as unknown as ShapeProperties[], period) ?? undefined;
   };
-  it('TTC 102: the low end is the list\'s in every period (midday 20–30, not 11–30; AM 6, not 9)', () => {
+  // #773 (gap words): the Warden branch now reads "every 15 min, with one 40 min gap" at midday and "every 8 min, with one
+  // 20 min gap" in the evening, so the list's low end follows it.
+  it('TTC 102: the low end is the list\'s in every period (midday 15–30, not 11–30; AM 6, not 9)', () => {
     const features = fixture('ttc-102');
     const { rep } = representativeRep(features);
     expect(rep.h).toBe(30);
-    expect(rep.tp).toEqual({ amPeak: 6, midday: 20, pmPeak: 7, evening: 20 });
+    expect(rep.tp).toEqual({ amPeak: 6, midday: 15, pmPeak: 7, evening: 8 });
     for (const k of Object.keys(rep.p ?? {}) as PeriodKey[]) expect(rep.tp?.[k]).toBe(listLow(features, k));
     // The list shows no all-day range for 102, so neither does History.
     expect(rep.t).toBeUndefined();
@@ -212,7 +214,7 @@ describe('buildV2Routes', () => {
       const sat = out['102'].sat as { h: number; p?: Record<string, number | null>; t?: number; tp?: Record<string, number | null> };
       expect(sat.h).toBe(out['102'].rep.h);
       expect(sat.p).toEqual(out['102'].rep.p);
-      expect(sat.tp).toEqual({ amPeak: 6, midday: 20, pmPeak: 7, evening: 20 });
+      expect(sat.tp).toEqual({ amPeak: 6, midday: 15, pmPeak: 7, evening: 8 });
       expect(sat.tp).toEqual(out['102'].rep.tp);
       expect(sat.t).toBe(out['102'].rep.t);
       expect(Object.keys(sat)).toEqual(Object.keys(out['102'].rep).filter(k => k !== 'lim'));

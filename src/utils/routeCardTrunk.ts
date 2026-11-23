@@ -7,6 +7,7 @@ import { failingRouteSharedRanges, sharedStretchStopPass } from './frequencySegm
 import { rowTrips } from './rowTrips';
 import { SHARED_STRETCH_RATIO, stretchRowsFromMeta, trunkBeatsBranches } from './stretchCard';
 import { hourHasService } from './periodActiveRanges';
+import { rowIrregularInPeriod } from './effectiveHeadway';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -68,15 +69,17 @@ export function worstDirectionByHour(
 }
 
 /** Combined trunk headway from scheduled branch cadences on a shared section. */
-function isLimitedBranch(d: ShapeProperties): boolean {
-  return d.tier === 'infrequent'
+function isLimitedBranch(d: ShapeProperties, period?: TimePeriod): boolean {
+  // #773: in a period, a branch joins the shared number when it runs regularly there (rowIrregularInPeriod), not by the
+  // old all-day grade.
+  return (period != null ? rowIrregularInPeriod(d, period) : d.tier === 'infrequent')
     || d.tier === 'span'
     || /drop[- ]?offs?\s+only/i.test(d.headsign ?? '');
 }
 
 export function groupTrunkHeadway(branches: ShapeProperties[], period: string): number | null {
   const values = branches
-    .filter(d => !isLimitedBranch(d))
+    .filter(d => !isLimitedBranch(d, period as TimePeriod))
     .map(d => branchDisplayPeriodHeadway(d, period as TimePeriod))
     .filter((v): v is number => v != null && v > 0);
   if (values.length === 0) return null;
@@ -111,7 +114,7 @@ export function medianTerminalHeadway(branches: ShapeProperties[], period: TimeP
 
 /** True when combined trunk is materially better than typical destination wait. */
 export function shouldShowTrunkSummary(branches: ShapeProperties[], period: TimePeriod): boolean {
-  const sustainedBranches = branches.filter(d => !isLimitedBranch(d));
+  const sustainedBranches = branches.filter(d => !isLimitedBranch(d, period));
   if (sustainedBranches.length < 2) return false;
   // Two headsigns sharing a direction_id aren't necessarily branches of one corridor -- an
   // agency can mislabel opposite directions with the same direction_id (#441). Only judge this
