@@ -1,3 +1,5 @@
+import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
+
 /** GTFS HH:MM:SS (may exceed 24h) → seconds from service-day midnight. */
 export function gtfsTimeToSec(t: string): number {
   const [hh, mm, ss = '0'] = t.split(':');
@@ -73,12 +75,24 @@ function pickStopUpdate(
   return stus.length > 0 ? stus[stus.length - 1] : null;
 }
 
+const { VehicleStopStatus } = GtfsRealtimeBindings.transit_realtime.VehiclePosition;
+const IN_TRANSIT_TO = VehicleStopStatus.IN_TRANSIT_TO;
+
+/**
+ * #1752: whether a vehicle is between stops. A live feed decodes current_status as its name ("IN_TRANSIT_TO", enums as
+ * strings) and a recording stores the number (2); both count. The name comes from the bindings: the hand-typed
+ * 'IN_TRANSIT' never matched a decoded feed.
+ */
+export function isInTransit(currentStatus?: string | number | null): boolean {
+  const status = String(currentStatus ?? '');
+  return status === String(IN_TRANSIT_TO) || status === VehicleStopStatus[IN_TRANSIT_TO];
+}
+
 function predictedEpochForStop(
   stu: { arrival?: StopTimeEvent; departure?: StopTimeEvent },
   currentStatus?: string | number,
 ): number | null {
-  const status = String(currentStatus ?? '');
-  if (status === 'IN_TRANSIT' || status === '2') {
+  if (isInTransit(currentStatus)) {
     return eventEpoch(stu.departure) ?? eventEpoch(stu.arrival);
   }
   return eventEpoch(stu.arrival) ?? eventEpoch(stu.departure);
