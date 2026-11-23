@@ -12,7 +12,8 @@ describe('live report refresh workflow contract', () => {
   it('runs daily off the hour (CIV-1690), and a manual run does not publish unless asked', () => {
     expect(workflow).toContain('  workflow_dispatch:');
     const crons = [...workflow.matchAll(/^\s+- cron: '([^']+)'/gm)].map(m => m[1]);
-    expect(crons).toEqual(['17 9 * * *']);
+    // CIV-2177: the two later ones are backups, run only when the day's refresh hasn't succeeded (the gate job).
+    expect(crons).toEqual(['17 9 * * *', '17 14 * * *', '17 19 * * *']);
     expect(workflow).toMatch(/mode:\n(.*\n)*?\s+default: no-publish/);
     expect(publishJob).toContain("if: github.ref == 'refs/heads/main' && (inputs.mode == 'publish' || github.event_name == 'schedule')");
     expect(buildJob).toContain('"$GITHUB_REF" != "refs/heads/main"');
@@ -26,11 +27,20 @@ describe('live report refresh workflow contract', () => {
 
   it('keeps the jobs apart: publish waits for build, mcp-live waits for publish, and none keeps the checkout token', () => {
     expect(publishJob).toMatch(/^\n  publish:\n    needs: build\n/);
-    expect(mcpLiveJob).toMatch(/^\n  mcp-live:\n    needs: publish\n/);
+    expect(mcpLiveJob).toMatch(/^\n  mcp-live:\n    needs: \[gate, publish\]\n/);
     for (const job of [buildJob, publishJob, mcpLiveJob]) {
       expect(job.match(/uses: actions\/checkout@/g)).toHaveLength(1);
       expect(job).toMatch(/uses: actions\/checkout@v\d+\n\s+with:\n\s+persist-credentials: false/);
     }
+  });
+
+  it('runs a scheduled day once: the gate skips build and mcp-live when the publish job already succeeded today (CIV-2177)', () => {
+    const gateJob = workflow.slice(workflow.indexOf('\n  gate:'), workflow.indexOf('\n  build:'));
+    expect(gateJob).toContain('scripts/ci/refresh-last-success.sh live-report-refresh.yml publish || true');
+    expect(gateJob).toMatch(/permissions:\n\s+actions: read\n\s+contents: read\n/);
+    expect(gateJob).not.toContain('secrets.');
+    expect(buildJob).toMatch(/^\n  build:\n    needs: gate\n    if: needs\.gate\.outputs\.run == 'true'\n/);
+    expect(mcpLiveJob).toContain("if: always() && needs.gate.outputs.run == 'true' &&");
   });
 
   it('never passes the flags that are for a person at a keyboard', () => {
