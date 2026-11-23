@@ -46,8 +46,10 @@ describe('internal links (CIV-1872)', () => {
     for (const link of INTERNAL_HEADER_LINKS.filter(l => l.path !== INTERNAL_PATH && l.path !== LIVE_PATH)) expect(paths).toContain(link.path);
   });
 
-  it('opens the home page from the Internal tag', () => {
+  // #1737: the Internal tag is plain text inside the logo's link, so the whole logo goes to About; More opens the home page.
+  it('leaves the Internal tag as plain text in the logo', () => {
     render(<MemoryRouter><ModeTag word="Internal" /></MemoryRouter>);
-    expect(screen.getByRole('link', { name: 'Internal' })).toBeTruthy();
+    expect(screen.getByText('Internal')).toBeTruthy();
+    expect(screen.queryByRole('link')).toBeNull();
   });
 });
