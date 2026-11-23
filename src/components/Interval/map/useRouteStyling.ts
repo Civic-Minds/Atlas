@@ -239,9 +239,11 @@ export function useRouteStyling(
       map.setPaintProperty('route-segments-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
     }
 
-    // Live's thin context lines step back behind a picked route like every other line.
+    // Live's thin context lines step back behind a picked route like every other line. CIV-2191: they take the main
+    // map's frequency colours for the map's period, as its own lines do (local shapes carry theirs as localHeadwayColor).
     for (const id of LIVE_CONTEXT_LAYER_IDS) {
       if (!map.getLayer(id)) continue;
+      map.setPaintProperty(id, 'line-color', (id === LIVE_CONTEXT_LAYER_IDS[2] ? ['get', 'localHeadwayColor'] : buildEffectiveHeadwayColorExpression(period, colorMode)) as any);
       map.setPaintProperty(id, 'line-opacity', (selectedRoute
         ? buildFocusCase(routeKeyMatchExpression(selectedRoute), LIVE_CONTEXT_OPACITY, FOCUS_DIM_OPACITY)
         : LIVE_CONTEXT_OPACITY) as any);
