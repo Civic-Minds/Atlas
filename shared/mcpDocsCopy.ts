@@ -4,6 +4,8 @@
  */
 export const MCP_DOCS = {
   title: 'MCP',
+  // Ryan, 2026-11-22: "in the table of contents the headings should be 1 word". Not asked for: the five words.
+  contents: { answers: 'Answers', tools: 'Tools', freshness: 'Freshness', connect: 'Connect', testers: 'Testers' },
   card: 'What the MCP answers, its tools, how fresh its data is and how to connect it.',
   intro: 'The Atlas Studio MCP lets Claude answer a planner’s questions from Atlas’s own data. It only reads Atlas’s published figures; it changes nothing and reaches nothing outside Atlas.',
   answers: {
@@ -25,6 +27,9 @@ export const MCP_DOCS = {
     // Ryan, 2026-11-22: "In the MCP page should the Tools section be a table instead", picked 1: Tool | What it answers | Live.
     name: 'Tool', answers: 'What it answers', live: 'Live',
     liveTag: 'Live',
+    // Ryan, 2026-11-22: "For the tools should we group them together at all on the page too"; on the options, "1" (one
+    // table, a group label above each set of rows). Group names as proposed: Find, Schedules, Changes, Planning, Live.
+    groups: { find: 'Find', schedules: 'Schedules', changes: 'Changes', planning: 'Planning', live: 'Live' },
     liveNote: 'Tools marked Live answer from Live’s recordings, on this Mac and on the hosted server.',
   },
   freshness: {
@@ -39,10 +44,12 @@ export const MCP_DOCS = {
   },
   connect: {
     heading: 'Connect it',
-    code: 'Claude Code, for every project:',
-    desktop: 'Claude Desktop: add this to claude_desktop_config.json, then quit and reopen Claude Desktop:',
-    antigravity: 'Gemini, in Antigravity’s CLI (agy):',
+    // Ryan, 2026-11-22: "I don't want people downloading MCP atlas though i only want them using the hosted version":
+    // the page gives the hosted setup only.
     hosted: 'Testers use the hosted server through a private link made for each of them. They add it in Claude as a custom connector.',
+    // Ryan, 2026-11-22: "how was elias able to add it to his claude code with a line of code". Not asked for: these words.
+    hostedCode: 'In Claude Code, the same link is one command, with nothing to install:',
+    hostedLink: '<your link>',
   },
   testers: {
     heading: 'Testers',

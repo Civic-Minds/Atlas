@@ -301,6 +301,14 @@ Ryan (2026-11-22, relayed by Atlas Manager New), shown the Full report regrouped
 Ryan (2026-11-22, relayed by Atlas Manager New), on the review page's 11 questions: "Honestly you decide but don't remove any graphics/interactives yet if that makes sense". Picks: 1a keep Full analysis's week comparison and the Dashboard's note under its tiles, drop Explore's and the Dashboard's identical tiles; 2c, 3c, 5c, 6c, 7c, 8c, 9c keep all; 4a keep Explore's table and Full analysis's map, drop the Dashboard's five stops (the top 5 of Explore's table); 10a keep Explore's "How this is measured", drop the Dashboard's and Full analysis's; 11a leave the Time of day pick as it is.
 - Why: the dropped parts repeat another copy exactly; no chart, strip, map or interactive is removed.
 
+### 2026-11-22 — The MCP page's new words, dev server only (CIV-2155)
+Ryan (2026-11-22, relayed by Atlas Manager New), shown the words not asked for with options 1 approve as proposed, 2 change: "1".
+- Contents, one word each: Answers, Tools, Freshness, Connect, Testers.
+- Tool groups: Find, Schedules, Changes, Planning, Live.
+- Connect: "In Claude Code, the same link is one command, with nothing to install:" with `<your link>` in the command.
+- Hosted only: Ryan, after approving, "I don't want people downloading MCP atlas though i only want them using the hosted version". The page's local setup (its line and the Claude Code, Claude Desktop and Antigravity commands) is gone, and scripts/mcp/README.md (the repo is public) no longer gives the local commands; they stay on this Mac outside git for our own test rounds.
+- Why: Ryan, "in the table of contents the headings should be 1 word", "For the tools should we group them together at all on the page too", and "how was [a tester] able to add it to his claude code with a line of code".
+
 ### 2026-11-22 — The weekday-to-Sunday story's words, dev server only (#1074, CIV-770)
 Ryan, 2026-11-22 (relayed by Atlas Manager): "1 yes like onlyl ocal right now". He was answering the word list for /research/weekday-to-sunday (_reports/1074/WORDS.md, 31 items).
 - All 31 wordings are approved, with heading 1 changed to "Where does frequent service go on Sunday evening?": "night" becomes "evening", to match the period name.

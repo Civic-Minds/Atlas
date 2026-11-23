@@ -36,3 +36,15 @@ describe('DataTable end-aligned columns and row links (CIV-958)', () => {
     expect(assign).not.toHaveBeenCalled();
   });
 });
+
+describe('DataTable row detail (MCP page testers, Ryan 2026-11-22)', () => {
+  it('draws a row’s detail straight under that row, across every column, and nothing for the others', () => {
+    const two = [{ id: 'a', name: 'A', bus: 1 }, { id: 'b', name: 'B', bus: 2 }];
+    const { container } = render(<DataTable rows={two} rowKey={r => r.id} columns={columns} rowDetail={r => (r.id === 'a' ? <p>detail of A</p> : null)} />);
+    const trs = [...container.querySelectorAll('tbody > tr')];
+    expect(trs).toHaveLength(3);
+    expect(trs[1].textContent).toBe('detail of A');
+    expect(trs[1].querySelector('td')!.colSpan).toBe(2);
+    expect(trs[2].textContent).toContain('B');
+  });
+});
