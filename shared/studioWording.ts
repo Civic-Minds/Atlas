@@ -68,6 +68,17 @@ export const STUDIO_REDESIGN_TEXT = {
   change: 'Change',
   /** Schedules "period" design: the heading over routes that changed only at other times of day. */
   otherTimes: 'Changed at other times of day',
+  /** Schedules "summary" design: one count per kind of change at the time of day, each opening its routes. */
+  summary: { more: (n: number) => `${n} more often`, less: (n: number) => `${n} less often`, added: (n: number) => `${n} added`, removed: (n: number) => `${n} removed` },
+  /** The bar's accessible name. */
+  summaryLabel: 'Routes by change',
+  /** Fleet "now" design (Ryan: "how many vehcles operating right now how many needed for scheduled service at now or x hour"). */
+  scheduledNow: 'Scheduled now',
+  scheduledAt: (period: string) => `Scheduled, ${period}`,
+  /** The what-if table's heading, below the figures. */
+  whatIf: 'Every route at one frequency',
+  /** The way back from one kind's routes to the summary. */
+  allChanges: 'All changes',
 } as const;
 
 /** "Trains Needed", "Buses Needed" (the page's name), "Vehicles Needed" when modes mix (CIV-2002: Ryan, "This is a train line so why does it say buses"). */

@@ -5,16 +5,17 @@ import { readUrlParam, STUDIO_REVIEW_URL } from '../../utils/urlSchema';
  * /_review/studio-redesign/ opens each one). Without it, or with an unknown name, the screen is as it is today. Removed
  * once Ryan picks a design.
  */
-export type FleetDesign = 'today' | 'change';
-export type SchedulesDesign = 'today' | 'period' | 'byPeriod';
+export type FleetDesign = 'today' | 'change' | 'now';
+export type SchedulesDesign = 'today' | 'period' | 'byPeriod' | 'summary';
 
 const param = (): string | null => (typeof window === 'undefined' ? null : readUrlParam(window.location.search, STUDIO_REVIEW_URL.design) ?? null);
 
 export function fleetDesign(): FleetDesign {
-  return param() === 'change' ? 'change' : 'today';
+  const d = param();
+  return d === 'change' || d === 'now' ? d : 'today';
 }
 
 export function schedulesDesign(): SchedulesDesign {
   const d = param();
-  return d === 'period' || d === 'byPeriod' ? d : 'today';
+  return d === 'period' || d === 'byPeriod' || d === 'summary' ? d : 'today';
 }
