@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Every Atlas link lists its settings in the same order**: place, then route, then day and time, then filters, so two links for the same view read alike; older links still open as before
 - **Export map image shows only the size you picked as selected**: hovering another size made it look picked too, since hover and selected were nearly the same grey
 - **Every route line on the Live map shows how often it runs right now**: routes without a Live report were drawn grey; they now take the main map's frequency colours for the time of day
 - **The Live map shows how often the picked route is running right now**: its "Every ~N min" line never appeared, because the gaps were looked for inside one trip instead of between trips at a stop
