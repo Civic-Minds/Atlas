@@ -1112,6 +1112,15 @@ export const COVERAGE_HISTORY = {
 export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', realtime: 'Real-time', report: 'Report' } as const;
 
 /**
+ * CIV-2173: the Live column's recording progress, days recorded against the minimum to be listed on Studio's Live page.
+ * PENDING RYAN'S OK.
+ */
+export const COVERAGE_LIVE_PROGRESS = {
+  label: 'Days recorded',
+  days: (days: number, minDays: number) => (days < minDays ? `${days} of ${minDays} days` : `${days} ${plural(days, 'day')}`),
+} as const;
+
+/**
  * Studio's views in the Studio column. Studio's settled menu names (CIV-1834, CIV-1807) are Schedule and Vehicles; the
  * menu doesn't carry them on main yet, so they are named here until it does, and then this reads them from there.
  */

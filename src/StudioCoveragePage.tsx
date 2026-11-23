@@ -6,6 +6,7 @@ import AppLink from './components/ui/AppLink';
 import PageLoadState from './components/ui/PageLoadState';
 import { redistributionExclusion } from '../shared/rules/redistribution';
 import TagList, { type TagListItem } from './components/ui/TagList';
+import ProgressBar from './components/ui/ProgressBar';
 import { LINK } from './pageStyles';
 import { useAgencies } from './hooks/useAgencies';
 import { PAGE_NAMES } from '../shared/pageNames';
@@ -13,13 +14,18 @@ import { FEATURES } from '../shared/config';
 import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { LIVE_ARCHIVE_SLUGS, type LiveCoverage } from '../shared/liveCoverage';
 import { STUDIO_COVERAGE_DEV_URL } from '../shared/studioAgencies';
+import { LIVE_STUDIO_AGENCIES_URL } from '../shared/liveStudioAgencies';
+import { useDevFile } from './apps/studio/useDevFile';
 import { agencyPagePath, historyAgencyPath, liveMapAgencyPath } from '../shared/pagePaths';
 import { liveAgencyPath } from './hooks/useLiveDashboard';
 import { studioPath } from '../shared/studioAgencies';
 import { coverageRows, MCP_COVERAGE_API_URL, type CoverageRow } from '../shared/coverageRows';
 import historyAgencyList from '../shared/data/history-agencies.json';
-import { COVERAGE_COLUMNS as H, COVERAGE_HISTORY as HY, COVERAGE_LIVE_TAGS as L, COVERAGE_MCP_TAGS as M, COVERAGE_STUDIO_TAGS as S, COVERAGE_TEXT as T } from './content/noticeCopy';
+import { COVERAGE_COLUMNS as H, COVERAGE_HISTORY as HY, COVERAGE_LIVE_PROGRESS as LP, COVERAGE_LIVE_TAGS as L, COVERAGE_MCP_TAGS as M, COVERAGE_STUDIO_TAGS as S, COVERAGE_TEXT as T } from './content/noticeCopy';
 import { agencyNames } from './utils/agencyName';
+
+/** Days recorded per agency and the minimum to be listed on Studio's Live page (local-api/live-studio-agencies.ts). */
+interface LiveDays { minDays: number; days: Record<string, number> }
 
 interface LocalFacts { historyYears?: Record<string, number>; studio: string[]; vehicles: string[]; coverage: Record<string, LiveCoverage> }
 
@@ -49,18 +55,30 @@ const mcpPills = (r: CoverageRow): CoveragePill[] => {
   return r.mcpLive === 'ready' ? [{ label: M.live }] : [];
 };
 
-const COLUMNS: DataTableColumn<CoverageRow>[] = [
+// CIV-2173: each agency with Live recordings analysed shows its days recorded against the minimum to be listed.
+const liveCell = (r: CoverageRow, live: LiveDays | null) => {
+  const days = live?.days[r.slug];
+  return (
+    <>
+      <TagList tags={livePills(r)} />
+      {live && days != null && <div className="mt-1 flex justify-end"><ProgressBar value={days} max={live.minDays} label={LP.label}>{LP.days(days, live.minDays)}</ProgressBar></div>}
+    </>
+  );
+};
+
+const columns = (live: LiveDays | null): DataTableColumn<CoverageRow>[] => [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
   { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => <TagList tags={historyPills(r)} /> },
-  { key: 'live', header: H.live, width: WIDE + 6, cell: r => <TagList tags={livePills(r)} /> },
+  { key: 'live', header: H.live, width: WIDE + 6, cell: r => liveCell(r, live) },
   { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagList tags={studioPills(r)} /> },
   { key: 'mcp', header: H.mcp, width: WIDE + 6, cell: r => <TagList tags={mcpPills(r)} /> },
 ];
 
-function CoverageTable({ rows, caption }: { rows: CoverageRow[]; caption: string }) {
+function CoverageTable({ rows, caption, live }: { rows: CoverageRow[]; caption: string; live: LiveDays | null }) {
+  const cols = useMemo(() => columns(live), [live]);
   return (
     <PageTable>
-      <DataTable caption={caption} layout="page" rows={rows} rowKey={r => r.slug} columns={COLUMNS} />
+      <DataTable caption={caption} layout="page" rows={rows} rowKey={r => r.slug} columns={cols} />
     </PageTable>
   );
 }
@@ -90,6 +108,8 @@ export default function StudioCoveragePage() {
       .catch(() => { /* the local API isn't running: the status stays out */ });
     return () => { cancelled = true; };
   }, []);
+  const liveFile = useDevFile<LiveDays>(LIVE_STUDIO_AGENCIES_URL);
+  const live = liveFile && liveFile !== 'missing' && liveFile.days ? liveFile : null;
   useEffect(() => { document.title = `${PAGE_NAMES.studioCoverage} | Atlas`; }, []);
 
   const rows = useMemo(() => coverageRows({
@@ -114,11 +134,11 @@ export default function StudioCoveragePage() {
         <>
           {factsFailed && <p className={`mt-6 ${PAGE_SECTION_NOTE}`}>{T.factsFailed}</p>}
           <PageSection id="coverage-focus" title={T.focusHeading}>
-            <CoverageTable rows={focus} caption={T.focusHeading} />
+            <CoverageTable rows={focus} caption={T.focusHeading} live={live} />
           </PageSection>
           {others.length > 0 && (
             <PageSection id="coverage-others" title={T.othersHeading}>
-              <CoverageTable rows={others} caption={T.othersHeading} />
+              <CoverageTable rows={others} caption={T.othersHeading} live={live} />
             </PageSection>
           )}
         </>
