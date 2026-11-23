@@ -41,7 +41,7 @@ export function directionPieceTreatments(features: readonly ShapeProperties[] | 
 
 /** The words after "every N" for a tail: "every 30 min until 12:16 PM" (headwayPeriodShape, as every other part-period row). */
 export function tailText(t: Extract<PieceTreatment, { t: 'tail' }>): string {
-  return periodEdgeText({ every: t.every, ...(t.from != null ? { from: t.from } : {}), ...(t.until != null ? { until: t.until } : {}), ...(t.then != null ? { then: t.then } : {}) });
+  return periodEdgeText({ every: t.every, ...(t.from != null ? { from: t.from } : {}), ...(t.until != null ? { until: t.until } : {}), ...(t.then != null ? { then: t.then } : {}), ...(t.thenGap != null ? { thenGap: t.thenGap } : {}) });
 }
 
 /**

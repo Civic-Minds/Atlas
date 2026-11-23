@@ -78,3 +78,29 @@ describe('slow end needs a later cadence (CIV-1913 sample check)', () => {
     expect(slowEndEdge(london, 1140, 1380, 41)).toEqual({ until: 1261, every: 12, then: 41 });
   });
 });
+
+// #1724 (Ryan, 2026-11-23, "1"): one long wait in the slower part is named as a gap with #773's gap words, not read as
+// the later cadence.
+describe('slow end with one long gap: "then every M, with one G min gap" (#1724)', () => {
+  // Brampton 1 eastbound weekday evening at 00000200: every 12 until 7:42 PM, then 8:00, 8:24, 8:45, 9:10, 9:30, 9:52,
+  // 10:16 and 10:53 (18-25 minutes apart, with one 37), and on past the period's end.
+  const brampton1 = [1140, 1150, 1160, 1170, 1182, 1200, 1224, 1245, 1270, 1290, 1312, 1336, 1373];
+
+  it('Brampton 1 reads every 12 until 7:42 PM, then every 25, with one 37 min gap', () => {
+    expect(slowEndEdge(brampton1, EVENING.start, EVENING.end, 37)).toEqual({ until: 1182, every: 12, then: 25, thenGap: 37 });
+  });
+
+  it('keeps the longest wait when two waits are long: no single gap to name', () => {
+    const twoLong = [1140, 1150, 1160, 1170, 1182, 1200, 1224, 1261, 1285, 1322, 1345];
+    expect(slowEndEdge(twoLong, EVENING.start, EVENING.end, 37)).toEqual({ until: 1182, every: 12, then: 37 });
+  });
+
+  it('keeps the longest wait when the one long wait is over an hour', () => {
+    const hour = [1140, 1150, 1160, 1170, 1182, 1207, 1232, 1257, 1327, 1352];
+    expect(slowEndEdge(hour, EVENING.start, EVENING.end, 70)).toEqual({ until: 1182, every: 12, then: 70 });
+  });
+
+  it('keeps the plain reading when the slower service is steady (Kingston 701)', () => {
+    expect(slowEndEdge(kingston701, EVENING.start, EVENING.end, 30)?.thenGap).toBeUndefined();
+  });
+});

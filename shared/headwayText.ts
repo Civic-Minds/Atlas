@@ -148,7 +148,7 @@ export function runTimeAmount(minutes: number | null | undefined): string {
  * first, then its limit (Ryan, 2026-10-30, #962): "every 9 min from 7:17 AM", "every 10 min until
  * 5:40 PM", "every 10 min, with a 45 min gap", "every 15 min until 8:57 PM, then every 30 min" (CIV-1913).
  */
-export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number; then?: number }): string {
+export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number; then?: number; thenGap?: number }): string {
   if (shape.gap != null) return `${headwayEvery(shape.every)}, with one ${delayAmount(shape.gap)} gap`;
   const text = [
     headwayEvery(shape.every),
@@ -156,7 +156,9 @@ export function headwayPeriodShape(shape: { from?: string; until?: string; every
     shape.until != null ? `until ${shape.until}` : null,
   ].filter((part): part is string => part != null).join(' ');
   // CIV-1913: a period that slows down rather than ends names the slower part too.
-  return shape.then != null && shape.until != null ? `${text}, then ${headwayEvery(shape.then)}` : text;
+  if (shape.then == null || shape.until == null) return text;
+  // #1724: one long wait in the slower part is named as a gap, with D6's words.
+  return shape.thenGap != null ? `${text}, then ${headwayEvery(shape.then)}, with one ${delayAmount(shape.thenGap)} gap` : `${text}, then ${headwayEvery(shape.then)}`;
 }
 
 /**
