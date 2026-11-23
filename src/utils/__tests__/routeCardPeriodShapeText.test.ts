@@ -14,6 +14,9 @@ describe('routeCardPeriodShapeText (#934, D6)', () => {
   it('a period that slows down names the slower part after the time (CIV-1913)', () => {
     expect(routeCardPeriodShapeText(row({ evening: { until: 1245, every: 15, then: 30 } }), 'evening')).toBe('every 15 min until 8:45 PM, then every 30 min');
   });
+  it('one long wait in the slower part is named as a gap (#1724: Brampton 1 weekday evening)', () => {
+    expect(routeCardPeriodShapeText(row({ evening: { until: 1182, every: 12, then: 25, thenGap: 37 } }), 'evening')).toBe('every 12 min until 7:42 PM, then every 25 min, with one 37 min gap');
+  });
   it('an edge read on a named stretch goes only on a row that covers it (#1276)', () => {
     const edge = { pmPeak: { until: 1075, every: 30, stretch: 3 as const } };
     expect(routeCardPeriodShapeText({ ...row(edge), stretchCovers: ['main', 1, 3] } as ShapeProperties, 'pmPeak')).toBe('every 30 min until 5:55 PM');

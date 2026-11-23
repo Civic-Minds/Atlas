@@ -51,7 +51,7 @@ import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadi
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
-import { SLOW_START_MIN_DEPARTURES, SLOW_START_STEADY_RATIO } from '../shared/rules/frequency.js';
+import { ROW_GAP_WORDS_RATIO, SLOW_START_MIN_DEPARTURES, SLOW_START_STEADY_RATIO } from '../shared/rules/frequency.js';
 import { DAYTIME_PERIOD_KEYS, FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
@@ -1398,6 +1398,8 @@ export interface StretchPeriodEdge {
   every: number;
   /** CIV-1913: the longest wait after `until` when the period slows down rather than ends ("every 15 until 8:57 PM, then every 30"). */
   then?: number;
+  /** #1724: the one long wait after `until` that `then` leaves out ("then every 25 min, with one 37 min gap"). */
+  thenGap?: number;
   /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
   stretch?: 'main' | number;
 }
@@ -1541,7 +1543,18 @@ export function slowEndEdge(t: readonly number[], start: number, end: number, va
     const sorted = [...after].sort((a, b) => a - b);
     // A later T whose steady run already takes in the slower service reads that service's own spacing as
     // typical (CapMetro 300: every 15 to 7:54 PM, then every 30): look earlier.
-    if (sorted[Math.floor(sorted.length / 2)] <= SLOW_START_STEADY_RATIO * every) continue;
+    const typical = sorted[Math.floor(sorted.length / 2)];
+    if (typical <= SLOW_START_STEADY_RATIO * every) continue;
+    // #1724 (Ryan, 2026-11-23, "1"): one long wait in otherwise steadier later service is named as a gap, with #773's gap
+    // words (ROW_GAP_WORDS_RATIO, no gap over PERIOD_COVERAGE_MAX_HEADWAY), not read as the later cadence (Brampton 1 eastbound
+    // weekday evening: every 12 until 7:42 PM, then 18-25 minutes apart with one 37: "then every 25 min, with one 37 min gap").
+    // `then` is then the longest of the other waits, so it still never reads better than the service runs; the period's
+    // value (the colour and the filter) is unchanged.
+    const long = after.filter(w => w > typical * ROW_GAP_WORDS_RATIO);
+    if (long.length === 1 && value <= PERIOD_COVERAGE_MAX_HEADWAY) {
+      const rest = after.filter(w => w !== long[0]);
+      if (rest.length > 0) return { until: t[k], every: Math.ceil(longest), then: Math.ceil(Math.max(...rest)), thenGap: value };
+    }
     return { until: t[k], every: Math.ceil(longest), then: value };
   }
   return null;

@@ -296,6 +296,13 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-23 — After "until …, then", one long wait is named as a gap, not read as the later cadence (#1724, CIV-2169)
+Ryan (2026-11-23, relayed by Atlas Manager New): "1", option: after an "until…then", name one long gap ("then every 25 min, with one 37 min gap") only when exactly one wait after the slowdown is over 1.5× the typical wait and is an hour or less.
+- The rule: in CIV-1913's slow-end reading, when exactly one wait after the time is over ROW_GAP_WORDS_RATIO times the typical (middle) wait of the slower part and that wait is PERIOD_COVERAGE_MAX_HEADWAY or less, the card says "then every M, with one G min gap". M is the longest of the other waits, rounded up, so the slower part still never reads better than it runs. Otherwise "then every N" keeps the longest wait.
+- Brampton 1 eastbound weekday evening: every 12 until 7:42 PM, then 18–25 minutes apart with one 37 (10:16 to 10:53). Before: "then every 37"; now "then every 25 min, with one 37 min gap".
+- Card wording only: the period's value, the map colour and the filter do not change. No new numbers: #773's gap words (ROW_GAP_WORDS_RATIO, PERIOD_COVERAGE_MAX_HEADWAY), imported from their one home.
+- Counts: from the cloud dry-run pair (main against this change, same run date), added when it finishes.
+
 ### 2026-11-22 — A card row's "limited" state reads the period, not the all-day grade; a long gap is named or reads irregular (#773)
 Ryan (2026-11-22, relayed by Atlas Manager New), shown the per-period version with its counts and the TTC 43 and CTA 9 cases: "1", option "Use that version, but fix TTC 43 and CTA 9 first and bring back fresh counts before it merges (Recommended)". Earlier, on the all-day grade deciding: "Look into it more". On the gap choice that followed (gap words, or the existing 1.5× limit sending such rows to "Runs irregularly"): "I can't decide - ask Strategy to decide". Strategy picked gap words.
 - The rule: on a period's route card, a row is limited (and stays out of the shared stretch) when, in that period, it has fewer than MIN_SCHEDULE_DEPARTURES of its own departures, no regular service (the card's "Runs irregularly in this period") or a value that is one gap between a few departures (#955). The all-day "infrequent" grade decides only the All day view.
