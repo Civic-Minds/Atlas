@@ -5,7 +5,7 @@
 export const MCP_DOCS = {
   title: 'MCP',
   // Ryan, 2026-11-22: "in the table of contents the headings should be 1 word". Not asked for: the five words.
-  contents: { answers: 'Answers', tools: 'Tools', freshness: 'Freshness', connect: 'Connect', testers: 'Testers' },
+  contents: { answers: 'Answers', tools: 'Tools', freshness: 'Freshness', connect: 'Connect', testers: 'Testers', usage: 'Usage' },
   card: 'What the MCP answers, its tools, how fresh its data is and how to connect it.',
   intro: 'The Atlas Studio MCP lets Claude answer a planner’s questions from Atlas’s own data. It only reads Atlas’s published figures; it changes nothing and reaches nothing outside Atlas.',
   answers: {
@@ -63,5 +63,16 @@ export const MCP_DOCS = {
     noQuestion: 'No question given',
     failed: 'failed',
     noCalls: 'No calls yet.',
+  },
+  // Ryan, 2026-11-22: "The MCP page could also have a chart for the usage at the bottom if we wanted too", then "Do both".
+  usage: {
+    heading: 'Usage',
+    intro: (days: number) => `Questions asked of the hosted server each day, every tester together, over the last ${days} days (UTC). Hover a day for its calls.`,
+    chartLabel: (days: number) => `Line chart of questions per day over the last ${days} days`,
+    axis: 'Questions',
+    /** The line's hover sentence for one day. */
+    day: (questions: string, calls: string) => `${questions} questions, ${calls} calls`,
+    partial: 'The earliest days may read low: the server can’t count by day yet, so these come from each tester’s latest calls.',
+    none: 'No calls in this period.',
   },
 } as const;

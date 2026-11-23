@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { dateTimeText } from '../shared/dateText';
-import { MCP_TESTERS_API_URL, type McpTester, type McpTesterCall } from '../shared/mcpTesters';
+import { MCP_TESTERS_API_URL, MCP_USAGE_DAYS, type McpTester, type McpTesterCall, type McpUsageResponse } from '../shared/mcpTesters';
+import LineChart from './components/charts/LineChart';
+import { STORY_CHART_PANEL } from './pageStyles';
+import { countText } from '../shared/numberText';
+import { dateRange } from '../shared/dateText';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PAGE_LEAD } from './components/ui/PageSection';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
@@ -37,6 +41,7 @@ const SECTIONS = [
   { id: 'mcp-freshness', label: C.contents.freshness, heading: C.freshness.heading },
   { id: 'mcp-connect', label: C.contents.connect, heading: C.connect.heading },
   { id: 'mcp-testers', label: C.contents.testers, heading: C.testers.heading },
+  { id: 'mcp-usage', label: C.contents.usage, heading: C.usage.heading },
 ] as const;
 
 // #1671: the same lead style as the other internal pages.
@@ -123,6 +128,36 @@ function Testers() {
   );
 }
 
+const U = C.usage;
+
+/** Questions per day, all testers together, read through the local API (`?usage`), at the bottom of the page. */
+function Usage() {
+  const [usage, setUsage] = useState<McpUsageResponse | null>(null);
+  useEffect(() => {
+    fetch(`${MCP_TESTERS_API_URL}?usage=1`).then(r => r.json() as Promise<McpUsageResponse>).then(setUsage).catch(() => setUsage({ available: false }));
+  }, []);
+  if (usage == null) return <p className={PARAGRAPH}>{T.loading}</p>;
+  if (!usage.available) return <p className={PARAGRAPH}>{T.unavailable}</p>;
+  if (!usage.days.length) return <p className={PARAGRAPH}>{U.none}</p>;
+  return (
+    <>
+      <p className={PARAGRAPH}>{U.intro(MCP_USAGE_DAYS)}</p>
+      <div className={`mt-4 ${STORY_CHART_PANEL} p-5 sm:p-8`}>
+        <LineChart
+          label={U.chartLabel(MCP_USAGE_DAYS)}
+          yTitle={U.axis}
+          yMin={0}
+          formatY={countText}
+          height={200}
+          points={usage.days.map((d, i) => ({ x: i, y: d.questions, label: dateRange(d.date, d.date), sentence: U.day(countText(d.questions), countText(d.calls)) }))}
+          xTickLabels={(_p, i) => usage.days.length <= 7 || i % 7 === 0}
+        />
+      </div>
+      {!usage.complete && <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">{U.partial}</p>}
+    </>
+  );
+}
+
 export default function McpDocsPage() {
   useEffect(() => { document.title = tabTitle(C.title); }, []);
   return (
@@ -154,6 +189,10 @@ export default function McpDocsPage() {
 
       <Section id="mcp-testers">
         <Testers />
+      </Section>
+
+      <Section id="mcp-usage">
+        <Usage />
       </Section>
     </DocsPageLayout>
   );

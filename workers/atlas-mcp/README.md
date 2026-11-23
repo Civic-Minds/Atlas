@@ -18,6 +18,7 @@ A Cloudflare Worker that serves Atlas Studio's published-data tools (`scripts/mc
 | `GET /admin/testers` | Lists testers with call counts |
 | `POST /admin/testers/<name>/revoke` | Stops their link |
 | `GET /admin/testers/<name>/log?limit=100` | Their calls, newest first |
+| `GET /admin/usage` | Calls and questions per day (UTC), every tester together, for the last 28 days (the MCP page's usage chart) |
 | `DELETE /admin/testers/<name>/log` | Deletes their log |
 | `DELETE /admin/testers/<name>` | Deletes the tester and their log |
 

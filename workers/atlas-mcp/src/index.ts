@@ -18,6 +18,7 @@ import { coverageHandlers } from '../../../scripts/mcp/coverageTools';
 const handlers = withScheduleWarning({ ...scheduleHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers, ...coverageHandlers });
 import { linkToken } from './linkToken';
 import { deleteOldCalls } from './retention';
+import { usageByDay } from './usage';
 import { dailyCapFor } from './dailyCap';
 import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
@@ -177,6 +178,7 @@ async function handleAdmin(request: Request, env: Env, url: URL): Promise<Respon
   const parts = url.pathname.split('/').filter(Boolean); // admin, testers, <name>, <what>
   const [, area, rawName, what] = parts;
   const name = rawName ? decodeURIComponent(rawName) : null;
+  if (area === 'usage' && !rawName && request.method === 'GET') return json({ days: await usageByDay(env.DB) });
   if (area !== 'testers') return json({ error: 'Not found' }, 404);
 
   if (!name && request.method === 'GET') {
