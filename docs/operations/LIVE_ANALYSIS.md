@@ -30,12 +30,16 @@ every stored surface zip the window needs into `gtfs/candidates/surface-feeds/`)
 its timetable below 90%, when another stored timetable matches a day better than the one chosen, or when the fetch could not
 read more than 2% of a day's snapshots.
 
-Atlas Studio agencies (every city Live records except the TTC) are rebuilt in the cloud every day (CIV-2077; Ryan picked
-"Add those two checks and switch on a daily automatic run for every Studio city, matching TTC"). The workflow
-`studio-live-refresh.yml` runs Live's route analysis for each of them (`scripts/studio-live-cloud.ts`) and uploads the files
-Studio's Live page reads (`<slug>-<route>-segments.json`, `<slug>-agency.json`) to the PRIVATE archive bucket under
+Atlas Studio's Live files, for every city Live records (the TTC included since CIV-2186), are rebuilt in the cloud every
+day (CIV-2077; Ryan picked "Add those two checks and switch on a daily automatic run for every Studio city, matching TTC").
+The workflow `studio-live-refresh.yml` runs Live's route analysis for each of them (`scripts/studio-live-cloud.ts`; the
+TTC's routes are `LIVE_TTC_ANALYSED_ROUTES`) and uploads the files Studio's Live page reads
+(`<slug>-<route>-segments.json`, `-gaps.json`, `<slug>-agency.json`) to the PRIVATE Live bucket (`atlas-mcp-live`) under
 `studio-live/`. The repository is public (CIV-1716), so the log shows counts only and the job uploads no artifact and saves
-no cache. `npm run studio:sync` copies the current files into `../_live-data/out` on this Mac, one agency at a time, whole.
+no cache. The Mac's dev server reads those files straight from the bucket with the read-only key (`local-api/liveFiles.ts`;
+Ryan, CIV-2186: "the polling happens in the cloud so why is anything happening on my Mac?"): nothing is copied to or built
+on the Mac. Setting `LIVE_SEGMENTS_DIR` points it at a local folder instead, for a same-zip comparison; `npm run
+studio:sync` fills such a folder from the cloud.
 
 - `gh workflow run studio-live-refresh.yml` (mode `dry-run`, the default) builds with the read-only keys and uploads
   nothing; the log gives the counts. `-f mode=publish` uploads, from `main` only.
@@ -48,8 +52,8 @@ no cache. `npm run studio:sync` copies the current files into `../_live-data/out
 - The daily run (09:47 UTC) is off until the repository variable `STUDIO_LIVE_DAILY` is `1`. The first scheduled publish
   needs a go.
 
-`npm run studio:report` (Kingston, last 15 service dates; `npm run studio:report -- <slug> --days N` for another) still
-builds the same on this Mac, plus a time-loss report per route in `$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to
+Opt-in only: `npm run studio:report` (Kingston, last 15 service dates; `npm run studio:report -- <slug> --days N` for
+another) builds the same on this Mac, for a local comparison, plus a time-loss report per route in `$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to
 the one shared folder, `Atlas-worktrees/_live-data`, whichever checkout runs it.
 
 One exception, for the hosted Atlas Studio MCP only (CIV-1860, Ryan approved 2026-11-18): the `mcp-live` job in

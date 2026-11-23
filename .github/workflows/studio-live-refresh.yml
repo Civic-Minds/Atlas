@@ -1,9 +1,8 @@
 name: Studio Live refresh
 
 # Rebuilds Studio's Live files for every Studio city every day (CIV-2077; Ryan picked "Add those two checks and switch on
-# a daily automatic run for every Studio city, matching TTC"). Every agency Live records except the TTC, whose report
-# rebuilds in live-report-refresh.yml. The files go to the PRIVATE archive bucket under studio-live/; this Mac copies them
-# into ../_live-data/out with `npm run studio:sync`.
+# a daily automatic run for every Studio city, matching TTC"). Every agency Live records, the TTC included (CIV-2186). The
+# files go to the PRIVATE Live bucket (atlas-mcp-live) under studio-live/; the Mac's dev server reads them from there.
 #
 #   gh workflow run studio-live-refresh.yml                     dry-run: builds with the read-only keys, uploads nothing
 #   gh workflow run studio-live-refresh.yml -f mode=publish     main only: builds and uploads, then switches the pointer
@@ -51,6 +50,8 @@ jobs:
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
       R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
       R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      # CIV-2186: the files go to the private Live bucket the Mac's read-only key reads (the hosted MCP's bucket, under studio-live/).
+      MCP_LIVE_BUCKET: atlas-mcp-live
       # The write keys only when publishing from main; a dry run never sees them.
       R2_ACCESS_KEY_ID: ${{ (github.event_name == 'schedule' || inputs.mode == 'publish') && github.ref == 'refs/heads/main' && secrets.R2_ACCESS_KEY_ID || secrets.R2_RO_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ (github.event_name == 'schedule' || inputs.mode == 'publish') && github.ref == 'refs/heads/main' && secrets.R2_SECRET_ACCESS_KEY || secrets.R2_RO_SECRET_ACCESS_KEY }}

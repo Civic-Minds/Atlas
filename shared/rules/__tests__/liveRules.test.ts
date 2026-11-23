@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG, LIVE_MIN_EVIDENCE_DAYS, LIVE_MIN_GOOD_DAYS, LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS, LIVE_MIN_SAMPLE, LIVE_MIN_SPREAD_DAYS, LIVE_POLL_SEC, LIVE_STUDIO_MIN_RECORDED_DAYS, LIVE_WINDOW_DAYS } from '../live';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG, LIVE_MIN_EVIDENCE_DAYS, LIVE_MIN_GOOD_DAYS, LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS, LIVE_MIN_SAMPLE, LIVE_MIN_SPREAD_DAYS, LIVE_POLL_SEC, LIVE_STUDIO_MIN_RECORDED_DAYS, LIVE_TTC_ANALYSED_ROUTES, LIVE_WINDOW_DAYS } from '../live';
 
 // Rules move 2: Live's thresholds live in shared/rules/live.ts. Values pinned as they were before the move.
 describe("Live's thresholds (shared/rules/live.ts)", () => {
@@ -26,6 +26,15 @@ describe("Live's thresholds (shared/rules/live.ts)", () => {
     // live-analyze.sh's default is a shell copy; it must match.
     const sh = readFileSync(join(import.meta.dirname, '..', '..', '..', 'scripts', 'live-analyze.sh'), 'utf8');
     expect(/^DAYS=(\d+)$/m.exec(sh)?.[1]).toBe(String(LIVE_WINDOW_DAYS));
+  });
+
+  // CIV-2186: the TTC route list's shell copies match the one list.
+  it('keeps every copy of the TTC route list the same', () => {
+    const root = join(import.meta.dirname, '..', '..', '..');
+    const sh = readFileSync(join(root, 'scripts', 'live-analyze.sh'), 'utf8');
+    expect(/ROUTES=\(([\d ]+)\)/.exec(sh)?.[1].split(' ')).toEqual([...LIVE_TTC_ANALYSED_ROUTES]);
+    const yml = readFileSync(join(root, '.github', 'workflows', 'live-report-refresh.yml'), 'utf8');
+    expect(/--routes ([\d,]+)/.exec(yml)?.[1].split(',')).toEqual([...LIVE_TTC_ANALYSED_ROUTES]);
   });
 
   // Each archiver's wrangler file binds the bucket the app reads that agency from (Kingston its own, the rest atlas-live).

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Opt-in only (CIV-2186): Studio reads the cloud's Live files (local-api/liveFiles.ts); run this only for a local same-zip
+# comparison, with LIVE_SEGMENTS_DIR pointing the dev server at the result.
 # Atlas Studio's report refresh for one agency (Kingston today), on this Mac. The daily cloud build of Studio's Live
 # files is studio-live-refresh.yml (CIV-2077, private bucket; `npm run studio:sync` copies it here); this script also
 # writes the time-loss reports.
