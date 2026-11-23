@@ -88,14 +88,18 @@ function Figures({ w, shorter }: { w: AnalyticsWindow; shorter?: AnalyticsWindow
   const counts: Array<keyof Omit<AnalyticsTotals, 'visitSeconds'>> = ['visitors', 'visits', 'pageViews'];
   const short = (text: string) => (shorter ? C.shorter(shorter.days, text) : undefined);
   return (
-    <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <dl className="mt-4 space-y-3">
+      <div className="grid grid-cols-3 gap-3">
       {counts.map(k => (
         <Figure key={k} name={C.totals[k]} value={countText(w.totals[k])} shorter={short(countText(shorter?.totals[k] ?? 0))} note={changeLine(w.totals[k], w.previous[k], w.days)} />
       ))}
+      </div>
+      <div className="grid grid-cols-2 gap-3">
       <Figure name={C.totals.visitSeconds} value={secondsText(w.totals.visitSeconds)} shorter={short(secondsText(shorter?.totals.visitSeconds ?? 0))}
         note={changeLine(w.totals.visitSeconds, w.previous.visitSeconds, w.days)} />
       <Figure name={C.totals.returning} value={countText(w.returning)} shorter={short(countText(shorter?.returning ?? 0))}
         note={C.returningShare(percentText(w.totals.visitors > 0 ? w.returning / w.totals.visitors : 0))} />
+      </div>
     </dl>
   );
 }
@@ -156,6 +160,7 @@ function Where({ w }: { w: AnalyticsWindow }) {
 }
 
 function Period({ w, shorter }: { w: AnalyticsWindow; shorter?: AnalyticsWindow }) {
+  const mapViews = w.pages.find(p => p.name === '/')?.value;
   return (
     <>
       <PageSection id={OVERVIEW.id} title={OVERVIEW.nav}>
@@ -188,7 +193,11 @@ function Period({ w, shorter }: { w: AnalyticsWindow; shorter?: AnalyticsWindow 
         <div className={`mt-4 ${PANEL}`}><Bars heading={C.sources} rows={w.sources} nameHeader={C.source} valueHeader={C.visitsColumn} nameOf={sourceName} /></div>
       </PageSection>
       <PageSection id={PAGES.id} title={PAGES.nav}>
-        <div className={`mt-4 ${PANEL}`}><Bars heading={C.pages} rows={w.pages} nameHeader={C.page} valueHeader={C.views} nameOf={n => (n === '/' ? C.homePage : n)} /></div>
+        <div className={`mt-4 ${PANEL}`}>
+          {/* The map's views dwarf every other page's (3,222 against 30 over 28 days), so it's a line above the bars. */}
+          {mapViews != null && <p className="mb-4 text-xs leading-5 text-[var(--text-primary)]">{C.mapViews(countText(mapViews))}</p>}
+          <Bars heading={C.pages} rows={w.pages.filter(p => p.name !== '/')} nameHeader={C.page} valueHeader={C.views} />
+        </div>
       </PageSection>
       <PageSection id={WHERE.id} title={WHERE.nav}>
         <div className="mt-4"><Where w={w} /></div>
