@@ -21,7 +21,7 @@ import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
 import { TIER_MAXES } from '../shared/rules/frequency.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
-import { clearLoneOriginRows, labelConvergingOrigins } from './convergingOrigins.js';
+import { clearLoneOriginRows, labelConvergingOrigins, originLabelOf } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
@@ -47,6 +47,7 @@ import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { headsignBranchCode } from '../shared/branchCode.js';
+import { isRailRoute } from './routeMode.js';
 import { computePeriodCoverageHeadways, departuresInWindow, periodMedianHeadway } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
@@ -963,9 +964,16 @@ export async function processGtfsBuffer(
     // true outside Weekday; for Weekday, true only when the trip runs on that map's day.
     inGroup: boolean; inHeadsign: boolean; inShape: boolean;
   };
-  // CIV-2025 (Ryan, 2026-11-21): trains are read like buses, so no route keys its stop data by headsign and origin (the
-  // rail-only CIV-1152 split); every trip keeps its plain headsign key, and its shape scopes its stop values.
-  const metricHeadsign = (_routeId: string, headsign: string | null, _variant: unknown): string | null => headsign;
+  // TRAIN DESTINATION READING (CIV-2025, #1712; Ryan, 2026-11-22: "1", keeping this one train-only rule): a train line's
+  // stop data is read by destination, every trip going to its headsign whatever its drawn shape, so short trips and
+  // stopping patterns on shapes of their own count (NYC 1 from 238 St, MARC, SEPTA's Girard trolley). CIV-1152: the
+  // origins of a rail direction that converge under one headsign (CTA Green's Harlem-bound trips from Ashland/63rd and
+  // from Cottage Grove) each key their stop data by headsign and origin. Every other route reads its shape first.
+  const railRouteIds = new Set((gtfs.routes ?? []).filter(route => isRailRoute(route, options?.slug)).map(route => route.route_id));
+  const metricHeadsign = (routeId: string, headsign: string | null, variant: unknown): string | null => {
+    const origin = originLabelOf(variant);
+    return headsign && origin && railRouteIds.has(routeId) ? `${headsign} ${origin}` : headsign;
+  };
   const featureMetricHeadsign = (feature: GeoJsonFeature): string | null =>
     metricHeadsign(feature.properties.routeId as string, feature.properties.headsign as string | null, feature.properties.routeVariant);
   const stopTripMeta = new Map<string, { shortName: string; dirId: string; headsign: string | null; displayHeadsign: string | null; shapeId: string | null }>();
@@ -1213,10 +1221,12 @@ export async function processGtfsBuffer(
     }
     return drawnHeadsignsByPool.get(poolKey) ?? new Set();
   };
-  // A pattern: route_id + shape (every trip on the feature's own shape, as in its shape-scoped stop metrics), for every
-  // mode (CIV-2025).
-  const sharedPatternKey = (routeId: string, _headsign: string | null, shapeId: string | null | undefined): string | null =>
-    shapeId ? `${routeId}|sh|${shapeId}` : null;
+  // A pattern: route_id + shape (every trip on the feature's own shape, as in its shape-scoped stop metrics); a train line,
+  // route_id + headsign (the train destination reading, CIV-2025 #1712).
+  const sharedPatternKey = (routeId: string, headsign: string | null, shapeId: string | null | undefined): string | null => {
+    if (railRouteIds.has(routeId)) return `${routeId}|hs|${headsign ?? ''}`;
+    return shapeId ? `${routeId}|sh|${shapeId}` : null;
+  };
   // Trips pool only under a headsign that an eligible feature draws (regular or time-limited,
   // not span, partial-weekday or drop-off-only): `${shortName}::${dir}::${day}::${routeId}::${headsign}`.
   // Filled from the built features before the stop_times pass reads it.
@@ -2435,6 +2445,8 @@ export async function processGtfsBuffer(
     }
     const featureHeadsign = featureMetricHeadsign(feature);
     const featureRoute = routeById.get(feature.properties.routeId as string);
+    // The train destination reading (CIV-2025, #1712): a train line reads its headsign's map first.
+    const railFeature = railRouteIds.has(feature.properties.routeId as string);
     const headsignMap = featureHeadsign
       ? stopDepsByHeadsignGroup.get(`${shortName}::${dirId}::${day}::${featureHeadsign}`)
       : undefined;
@@ -2508,23 +2520,27 @@ export async function processGtfsBuffer(
         return headlineWindowValue(sorted) != null;
       });
     const shapeMap = !shapeOffRepresentativeDay && !shapeIsThinHeadsignFragment ? ownShapeMap : undefined;
-    // A shape-scoped map prevents unrelated branches from being combined, for every mode (CIV-2025: trains read their
-    // shape first, as buses do).
-    const ownMetricStopMap = shapeMap ?? headsignMap ?? stopMap;
+    // A shape-scoped map prevents unrelated branches from being combined. A train line reads its destination first (the
+    // train destination reading, CIV-2025 #1712): rail feeds publish several shapes for one line and destination (short
+    // turns, stopping patterns, timetable variants), and the same-destination pool keeps service that would otherwise
+    // disappear when one shape wins feature deduplication (NYC 1 from 238 St, MARC, TTC Lines 1 and 2 evening).
+    const ownMetricStopMap = railFeature
+      ? (headsignMap ?? shapeMap ?? stopMap)
+      : (shapeMap ?? headsignMap ?? stopMap);
     // CIV-226: remapped below (platformsAsStation) once the stop values say which platforms are drawn.
     let metricStopMap: Map<string, number[]> = ownMetricStopMap;
     // #690: the stop values below read what serves each stop, not only the drawn pattern. At
     // every stop where another pattern of this route direction pools with the feature's own
     // (computeStopSharers: an aligned shared run, or a same-destination variant), the stop's
     // departures are the merged lists. Only when the feature reads its own pattern's map (its
-    // shape): a feature that fell back to the headsign or group
+    // shape, or its headsign for a train line): a feature that fell back to the headsign or group
     // map already pools, and would double-count. Night service, the headline and the tier keep
     // reading the own map or the branch-scoped destination pool (pooledHeadlineTimes).
     const poolKey = `${shortName}::${dirId}::${day}`;
     const ownMember = readsSharedPool(feature)
       ? sharedPatternKey(feature.properties.routeId as string, featureHeadsign, featureShape)
       : null;
-    const ownIsPattern = shapeMap != null && ownMetricStopMap === shapeMap;
+    const ownIsPattern = railFeature ? (headsignMap != null && ownMetricStopMap === headsignMap) : (shapeMap != null && ownMetricStopMap === shapeMap);
     const poolFor = (map: Map<string, number[]>) => ownMember && ownIsPattern && stopDepsBySharedMember.has(`${poolKey}::${ownMember}`)
       ? buildPooledStopMap(map, stopSharersFor(poolKey).get(ownMember), key => stopDepsBySharedMember.get(`${poolKey}::${key}`), childToParent,
         stopDepsBySharedMember.get(`${poolKey}::${ownMember}`))
@@ -2533,7 +2549,7 @@ export async function processGtfsBuffer(
     let stopMetricMap: Map<string, number[]> = pooled?.map ?? metricStopMap;
     // Drop-off-only stops of the drawn shape (#879): own stop times all pickup_type 1. Only
     // when the feature reads its own shape map; a headsign or group fallback already pools.
-    const dropOffOnlyStops: ReadonlySet<string> = featureShape && shapeMap != null && ownMetricStopMap === shapeMap
+    const dropOffOnlyStops: ReadonlySet<string> = !railFeature && featureShape && shapeMap != null && ownMetricStopMap === shapeMap
       ? new Set([...shapeMap.keys()].filter(stopId => !(boardableStopsByShape.get(`${featureShape}::${day}`)?.has(stopId))))
       : new Set();
     // CIV-209: a drawn stop's per-stop answers (boards, has a reading, grades) come from stopReading (drawnStops.ts). It reads

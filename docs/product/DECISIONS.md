@@ -24,7 +24,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: Ryan, "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". Rail had no 20 and graded a train every 16-20 minutes 30.
   - Source: [decision log](#decision-log) (2026-11-17)
 - **Trains are read like buses**
-  - What: no rule rates, grades, filters, counts, draws or names a route differently because it is a train (or subway, light rail or ferry); the 25 train-only rules found in CIV-2025 are removed, and no mode is guessed from agency or route names (an agency's listed modeOverrides still correct a feed's route_type).
+  - What: no rule rates, grades, filters, counts, draws or names a route differently because it is a train (or subway, light rail or ferry); the 25 train-only rules found in CIV-2025 are removed except one Ryan kept by name, the train destination reading (a train card reads every trip to its destination, whatever its shape; #1712, 2026-11-22), and no mode is guessed from agency or route names (an agency's listed modeOverrides still correct a feed's route_type).
   - Why: Ryan, "This is like the 6th way in which trains are fucking different - i was never told this, i never asked for them to be different".
   - Source: Ryan, 2026-11-21, "1", answering "Remove them all, so trains are read like buses (Recommended). It would be one data rebuild, with a full before-and-after comparison first. If the comparison shows a rule was actually protecting something, that one comes back to you instead of being removed."; [decision log](#decision-log) (2026-11-21)
 - **Every direction must pass**
@@ -295,6 +295,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-22 — Trains keep one rule of their own: a train card reads every trip to its destination, whatever its shape (CIV-2025, #1712)
+Ryan (2026-11-22, relayed by Atlas Manager New): "1", answering "Keep this one rule for trains only. Today's train numbers stay, and no bus rule changes (Recommended)". The other options were a version for every mode (built and tested: it broke 19 settled bus rules, e.g. TTC 40 to Dundas West read every 11 where each branch runs every 22) and more research on an every-mode rule. His explicit OK for this mode-specific rule; the other 24 train-only rules stay removed (his "1" of 2026-11-21).
+- Why: with trains read like buses, a train card read only the trips on its drawn shape. Hand checks against timetables: NYC 1 to South Ferry read every 7 in the AM peak (really every 5: its short trips from 238 St and 207 St have shapes of their own), SEPTA's Girard trolley every 20 (really every 10, over three shapes), and MARC lost 15 of its 61 stations (nearly every train has its own shape). This one rule put 396 of the 524 changed train cards back.
+- Rule (the train destination reading): a train line's stop data is read by its headsign first, with the converging origins of one headsign kept apart (CIV-1152, CTA Green to Harlem), and its pattern for pooling is its route and headsign. Every other route reads its shape first. process-core asks whether a route is a train for this rule only; pipeline/__tests__/trainOnlyRules.test.ts allows it by name.
 
 ### 2026-11-22 — The Live Full report groups each kind of figure together (CIV-284)
 Ryan (2026-11-22, relayed by Atlas Manager New), shown the Full report regrouped as built: "1" (approved as built).
