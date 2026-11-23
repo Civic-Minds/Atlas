@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { atlasJson, atlasR2Config, calculateReport, json, publicMapAgencies, signS3Get, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes, qualifyingRows, WINDOW_RULES } from '../src/coverage.mjs';
-import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
+import { bufferedBounds, deriveServiceBundles, mergeCoverageReports, splitAgencies } from '../src/bundles.mjs';
 
 const { routeGroupKey } = await loadMapCode();
 const square = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
@@ -263,4 +263,50 @@ test('with read-only R2 keys, Atlas files are read from the bucket, not the publ
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+test('a bundle over the stop limit runs in north-to-south parts that keep the whole bundle\'s agencies for metros (#1723)', () => {
+  const states = [{ id: '06', name: 'California', geometry: square(0, 0, 10, 10) }];
+  const stopsAt = (lat, n) => Array.from({ length: n }, (_, i) => ({ lon: 1 + i * 0.001, lat }));
+  const coverage = [
+    { slug: 'south', name: 'South', qualifyingRoutes: 1, stops: stopsAt(1, 4) },
+    { slug: 'north', name: 'North', qualifyingRoutes: 1, stops: stopsAt(9, 3) },
+    { slug: 'middle', name: 'Middle', qualifyingRoutes: 1, stops: stopsAt(5, 3) },
+  ];
+  assert.deepEqual(deriveServiceBundles({ agencies: [], states, coverage }).map(b => b.id), ['06']);
+  const parts = deriveServiceBundles({ agencies: [], states, coverage, maxBundleStops: 6 });
+  assert.deepEqual(parts.map(b => [b.id, b.agencySlugs, b.stopCount]), [['06a', ['middle', 'north'], 6], ['06b', ['south'], 4]]);
+  assert.deepEqual(parts.map(b => b.metroAgencySlugs), [['middle', 'north', 'south'], ['middle', 'north', 'south']]);
+  assert.deepEqual(parts[0].states, [{ id: '06', name: 'California' }]);
+  // An agency is never divided, and a bundle under the limit stays whole.
+  assert.equal(splitAgencies([{ slug: 'big', stopCount: 50, stopBounds: [0, 0, 1, 1] }], 10).length, 1);
+});
+
+test('the parts of a split bundle merge to the unsplit report (#1723)', () => {
+  // One metro picked only by agency A's stop inside it; agency B's stop sits just outside it but within a walk of a
+  // block group inside. Unsplit, B covers that block group; split, B's part must still report the metro.
+  const line = (coordinates) => ({ type: 'Feature', geometry: { type: 'LineString', coordinates }, properties: {} });
+  const a = { slug: 'a', name: 'A', routes: 1, qualifyingRoutes: 1, stops: [{ lon: 0.0, lat: 0.0 }] };
+  const b = { slug: 'b', name: 'B', routes: 1, qualifyingRoutes: 1, stops: [{ lon: 0.052, lat: 0.0 }] };
+  const population = [
+    { id: 'near-a', population: 100, point: [0.002, 0], geometry: square(0.001, -0.001, 0.003, 0.001), properties: {} },
+    { id: 'near-b', population: 70, point: [0.048, 0], geometry: square(0.047, -0.001, 0.049, 0.001), properties: {} },
+    { id: 'between', population: 40, point: [0.025, 0], geometry: square(0.024, -0.001, 0.026, 0.001), properties: {} },
+  ];
+  const metroBoundaries = [{ id: 'm', name: 'Metro', geometry: square(-0.01, -0.01, 0.05, 0.01) }];
+  const networkA = { type: 'FeatureCollection', features: [line([[0, 0], [0.002, 0], [0.01, 0]])] };
+  const networkB = { type: 'FeatureCollection', features: [line([[0.052, 0], [0.048, 0], [0.04, 0]])] };
+  const both = { type: 'FeatureCollection', features: [...networkA.features, ...networkB.features] };
+  const run = (coverage, network, metroStops) => calculateReport({ agencies: coverage, coverage, population, metroBoundaries, network, metroStops, walkMinutes: 10 });
+  const whole = run([a, b], both);
+  const metroStops = [...a.stops, ...b.stops];
+  const merged = mergeCoverageReports([run([a], networkA, metroStops), run([b], networkB, metroStops)]);
+  const covered = report => report.areas.filter(area => area.covered).map(area => area.id).sort();
+  assert.deepEqual(covered(whole), ['near-a', 'near-b']);
+  assert.deepEqual(covered(merged), covered(whole));
+  assert.equal(merged.scope.atlasCoveragePopulation, whole.scope.atlasCoveragePopulation);
+  assert.equal(merged.scope.coveredPopulation, whole.scope.coveredPopulation);
+  assert.deepEqual(merged.byCma.map(({ id, population, coveredPopulation }) => ({ id, population, coveredPopulation })), whole.byCma.map(({ id, population, coveredPopulation }) => ({ id, population, coveredPopulation })));
+  // Without the whole bundle's stops, B's part drops the metro and its block group goes uncovered.
+  assert.deepEqual(covered(mergeCoverageReports([run([a], networkA), run([b], networkB)])), ['near-a']);
 });

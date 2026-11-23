@@ -144,7 +144,11 @@ const stateIds = bundle.states.map(state => state.id);
 const stateNames = bundle.states.map(state => state.name);
 const population = await blockGroups(stateIds);
 const populationPath = resolve(dataRoot, 'population-areas.geojson'); await saveJson(populationPath, population);
-const metro = await cbsaBoundaries(qualifying.flatMap(item => item.stops));
+// #1723: a part of a split bundle picks its metros by the whole bundle's qualifying stops (bundles.mjs, splitAgencies).
+const metroStops = bundle.metroAgencySlugs
+  ? (await coverageForAgencies(index.agencies.filter(agency => bundle.metroAgencySlugs.includes(agency.slug)), baseUrl, headway)).coverage.filter(row => row.qualifyingRoutes > 0).flatMap(item => item.stops)
+  : qualifying.flatMap(item => item.stops);
+const metro = await cbsaBoundaries(metroStops);
 if (!metro.features.length) {
   await saveJson(resolve(outputRoot, 'skipped.json'), { generatedAt: new Date().toISOString(), bundle: bundleId, status: 'skipped', reason: 'qualifying stops did not intersect a Census metro boundary' });
   console.log(JSON.stringify({ bundle: bundleId, status: 'skipped', reason: 'qualifying stops did not intersect a Census metro boundary' }, null, 2));
@@ -155,7 +159,7 @@ const metroPath = resolve(dataRoot, 'metros.geojson'); await saveJson(metroPath,
 const highways = [];
 for (const name of stateNames) { const file = await ensureHighways(name); if (!highways.includes(file)) highways.push(file); }
 const walking = await network(qualifying, highways);
-const report = calculateReport({ agencies: atlas.agencies, coverage: atlas.coverage, population: populationAreas(population, 'POP100'), metroBoundaries: metros(metro), network: walking, walkMinutes, maxHeadwayMinutes: headway, populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point' });
+const report = calculateReport({ agencies: atlas.agencies, coverage: atlas.coverage, population: populationAreas(population, 'POP100'), metroBoundaries: metros(metro), network: walking, metroStops, walkMinutes, maxHeadwayMinutes: headway, populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point' });
 await writeCoverageReport(report, outputRoot);
 await saveJson(resolve(outputRoot, 'provenance.json'), { generatedAt: new Date().toISOString(), bundle: bundleId, definition: { headwayMinutes: headway, walkMinutes, day: 'Weekday', window: '07:00–19:00' }, atlas: { baseUrl, agencies: atlas.agencies.map(({ slug, name, lastRefreshedAt }) => ({ slug, name, lastRefreshedAt })), coverage: atlas.coverage.map(({ slug, routes, qualifyingRoutes, trunk }) => ({ slug, routes, qualifyingRoutes, ...(trunk ? { trunk } : {}) })) }, census: { populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point', service: 'Census2020/TIGERweb' }, network: { source: 'Geofabrik US state extracts', states: stateNames, agencyBufferDegrees: networkBufferDegrees } });
 console.log(JSON.stringify({ bundle: bundleId, status: 'complete', output: outputRoot, agencies: report.scope.agencyCount, cmas: report.scope.selectedCmaCount, population: report.scope.atlasCoveragePopulation, coveredPopulation: report.scope.coveredPopulation, coveredPercent: Number(report.scope.coveredPercent.toFixed(2)) }, null, 2));
