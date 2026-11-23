@@ -74,7 +74,7 @@ export const BUSTANG_INFO_HEADING = MAP_EXPORT_TITLES.bustang;
 /** Where the view's map opens without a place in its link: Bustang's stops, Grand Junction to Denver ([south, west, north, east]). */
 export const BUSTANG_MAP_BOUNDS: [number, number, number, number] = [38.75, -108.65, 40.65, -104.7];
 /** The view's distance choice in its link (?within=800); 400, the default, is left out. */
-export const BUSTANG_WITHIN_PARAM = 'within';
+export { BUSTANG_WITHIN_PARAM } from './urlSchema';
 
 const DATA_FILES = import.meta.glob<{ default: unknown }>('../data/connections/*.json');
 const cached = new Map<string, Promise<BustangData>>();
