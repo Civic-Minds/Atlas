@@ -44,11 +44,8 @@ export const MCP_DOCS = {
   },
   connect: {
     heading: 'Connect it',
-    // Ryan, 2026-11-22: the commands read as if everyone had his folder. Not asked for: the line below.
-    local: 'On this Mac, the MCP can also run from its own copy of Atlas:',
-    code: 'Claude Code, for every project:',
-    desktop: 'Claude Desktop: add this to claude_desktop_config.json, then quit and reopen Claude Desktop:',
-    antigravity: 'Gemini, in Antigravity’s CLI (agy):',
+    // Ryan, 2026-11-22: "I don't want people downloading MCP atlas though i only want them using the hosted version":
+    // the page gives the hosted setup only.
     hosted: 'Testers use the hosted server through a private link made for each of them. They add it in Claude as a custom connector.',
     // Ryan, 2026-11-22: "how was elias able to add it to his claude code with a line of code". Not asked for: these words.
     hostedCode: 'In Claude Code, the same link is one command, with nothing to install:',

@@ -296,7 +296,8 @@ Dated, newest first. The rules above are the short form; this is the reasoning.
 Ryan (2026-11-22, relayed by Atlas Manager New), shown the words not asked for with options 1 approve as proposed, 2 change: "1".
 - Contents, one word each: Answers, Tools, Freshness, Connect, Testers.
 - Tool groups: Find, Schedules, Changes, Planning, Live.
-- Connect: "In Claude Code, the same link is one command, with nothing to install:" with `<your link>` in the command, and "On this Mac, the MCP can also run from its own copy of Atlas:".
+- Connect: "In Claude Code, the same link is one command, with nothing to install:" with `<your link>` in the command.
+- Hosted only: Ryan, after approving, "I don't want people downloading MCP atlas though i only want them using the hosted version". The page's local setup (its line and the Claude Code, Claude Desktop and Antigravity commands) is gone, and scripts/mcp/README.md (the repo is public) no longer gives the local commands; they stay on this Mac outside git for our own test rounds.
 - Why: Ryan, "in the table of contents the headings should be 1 word", "For the tools should we group them together at all on the page too", and "how was elias able to add it to his claude code with a line of code".
 
 ### 2026-11-22 — The weekday-to-Sunday story's words, dev server only (#1074, CIV-770)

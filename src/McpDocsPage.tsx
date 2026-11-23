@@ -19,15 +19,6 @@ import { tabTitle } from '../shared/pageNames';
  * read from the tool definitions the server sends Claude, each with its plain summary (TOOL_SUMMARIES), so it can't drift; the words are in shared/mcpDocsCopy.ts.
  */
 
-/** The local server's setup, as scripts/mcp/README.md gives it, with this Mac's own checkout and Node (vite.config.ts). */
-const CHECKOUT = __ATLAS_MCP_LOCAL__.checkout;
-const NODE = __ATLAS_MCP_LOCAL__.node;
-const ARGS = [`${CHECKOUT}/node_modules/tsx/dist/cli.mjs`, `${CHECKOUT}/scripts/mcp/atlas-mcp.ts`];
-const CLAUDE_CODE = `claude mcp add -s user atlas-studio -- ${NODE} ${ARGS.join(' ')}`;
-// CIV-2117: as the Nov 17-18 Gemini rounds added it (TEST-LOG; _reports/mcp-tests/run-agy.py).
-const ANTIGRAVITY = `agy mcp add -e ATLAS_ROOT=${CHECKOUT} atlas-studio ${NODE} ${ARGS.join(' ')}`;
-const CLAUDE_DESKTOP = JSON.stringify({ mcpServers: { 'atlas-studio': { command: NODE, args: ARGS } } }, null, 2);
-
 /** A command or config block to paste elsewhere, with the shared copy button (CIV-2117). Long commands wrap onto more
  * lines (Ryan, 2026-11-22: "should the text wrap"), so the copy button stays in view instead of sitting past a scroll. */
 function CodeBlock({ text }: { text: string }) {
@@ -159,13 +150,6 @@ export default function McpDocsPage() {
         <p className={PARAGRAPH}>{C.connect.hosted}</p>
         <p className={PARAGRAPH}>{C.connect.hostedCode}</p>
         <CodeBlock text={`claude mcp add --transport http atlas-studio ${C.connect.hostedLink}`} />
-        <p className={PARAGRAPH}>{C.connect.local}</p>
-        <p className={PARAGRAPH}>{C.connect.code}</p>
-        <CodeBlock text={CLAUDE_CODE} />
-        <p className={PARAGRAPH}>{C.connect.desktop}</p>
-        <CodeBlock text={CLAUDE_DESKTOP} />
-        <p className={PARAGRAPH}>{C.connect.antigravity}</p>
-        <CodeBlock text={ANTIGRAVITY} />
       </Section>
 
       <Section id="mcp-testers">

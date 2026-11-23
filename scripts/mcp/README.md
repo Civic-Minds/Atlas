@@ -4,29 +4,7 @@ Part of Atlas Studio, the planner toolkit (Ryan, 2026-11-17). A read-only MCP se
 
 ## Setup
 
-Paths below are for the main checkout. To replace the earlier `atlas` entry in Claude Code, first run `claude mcp remove atlas -s user`; in Claude Desktop, rename the `atlas` key. Both setups call `node` by its full path, because Claude Desktop starts servers without Homebrew on `PATH`, and `tsx`'s own launcher then can't find `node`. The server finds its data from its own file location, so the folder it starts in doesn't matter.
-
-**Claude Code** (every project, `-s user`):
-
-```bash
-claude mcp add -s user atlas-studio -- /opt/homebrew/bin/node /Users/ryan/Developer/Code/Platforms/Atlas/node_modules/tsx/dist/cli.mjs /Users/ryan/Developer/Code/Platforms/Atlas/scripts/mcp/atlas-mcp.ts
-```
-
-**Claude Desktop**: add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, merged into any `mcpServers` already there, then quit and reopen Claude Desktop:
-
-```json
-{
-  "mcpServers": {
-    "atlas-studio": {
-      "command": "/opt/homebrew/bin/node",
-      "args": [
-        "/Users/ryan/Developer/Code/Platforms/Atlas/node_modules/tsx/dist/cli.mjs",
-        "/Users/ryan/Developer/Code/Platforms/Atlas/scripts/mcp/atlas-mcp.ts"
-      ]
-    }
-  }
-}
-```
+For Atlas's own development and test rounds on this Mac only. Testers and everyone else use the hosted server through their private link (`workers/atlas-mcp`); Ryan, 2026-11-22: "I don't want people downloading MCP atlas though i only want them using the hosted version". The commands that register the local server with Claude Code, Claude Desktop and Antigravity are kept on this Mac, outside git, in `_reports/mcp-server/LOCAL-SETUP.md`.
 
 ## Tools
 

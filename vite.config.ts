@@ -1,8 +1,8 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { existsSync, statSync, createReadStream, readdirSync, readFileSync, realpathSync } from 'fs';
-import { dirname, resolve } from 'path';
+import { existsSync, statSync, createReadStream, readdirSync, readFileSync } from 'fs';
+import { resolve } from 'path';
 import { execSync } from 'child_process';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
 import { historyYearCounts } from './shared/historyEligibility';
@@ -51,11 +51,6 @@ function localHistoryFile(): string {
     if (existsSync(main)) return main;
   } catch { /* not a git checkout: the copy counts as missing */ }
   return own;
-}
-
-/** The Node on PATH (Homebrew's /opt/homebrew/bin/node, which survives upgrades), not this process's versioned Cellar path. */
-function localNode(): string {
-  try { return execSync('command -v node', { encoding: 'utf8' }).trim() || process.execPath; } catch { return process.execPath; }
 }
 
 export default defineConfig(({ mode, command, isPreview }) => {
@@ -321,12 +316,6 @@ export default defineConfig(({ mode, command, isPreview }) => {
       __ATLAS_BUILD_ID__: JSON.stringify(
         process.env.VERCEL_GIT_COMMIT_SHA || process.env.VERCEL_DEPLOYMENT_ID || 'local',
       ),
-      // The MCP page's setup commands (/internal/mcp, dev server only): this Mac's Atlas checkout and Node, so the commands
-      // run as pasted (Ryan, 2026-11-22: "everybody has a /ryan/developer folder on their computer?"). A worktree's
-      // node_modules links to the main checkout, so this is the main checkout from a worktree too. Empty in builds.
-      __ATLAS_MCP_LOCAL__: JSON.stringify(command === 'serve'
-        ? { checkout: dirname(realpathSync(resolve('node_modules'))), node: localNode() }
-        : { checkout: '', node: '' }),
     },
     base: process.env.GITHUB_ACTIONS ? '/Atlas/' : '/',
     plugins: [
