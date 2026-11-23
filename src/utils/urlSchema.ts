@@ -248,7 +248,7 @@ export const URL_PARAM_ORDER: readonly string[] = [
   MAP_URL.lat.key, MAP_URL.lon.key, MAP_URL.zoom.key,
   // Route: what is open on it (route, stop, zone, vehicle), its direction, the part of it and the view of it.
   MAP_URL.route.key, HISTORY_ROUTE_PARAM, HISTORY_ROUTE_QUERY_PARAM, HISTORY_ROUTE_MODE_PARAM, ROUTE_CHOOSER_PARAM,
-  MAP_URL.stop.key, STOP_BACK_PARAM, MAP_URL.onDemand.key, LIVE_MAP_URL.vehicle.key, LIVE_MAP_URL.group.key,
+  MAP_URL.stop.key, STOP_BACK_PARAM, MAP_URL.onDemand.key, MAP_URL.highlight.key, LIVE_MAP_URL.vehicle.key, LIVE_MAP_URL.group.key,
   LIVE_MAP_URL.dir.key, FULL_DAY_OPEN_PARAM, FULL_DAY_DIRECTION_PARAM, LIVE_MAP_URL.stretch.key, LIVE_TOOL_URL.segment.key,
   LIVE_ROUTE_URL.view.key, LIVE_TOOL_URL.tab.key,
   // Day and time.
@@ -257,6 +257,7 @@ export const URL_PARAM_ORDER: readonly string[] = [
   // Filters and settings.
   MAP_URL.headway.key, COMPARE_HEADWAY_PARAM, MAP_URL.hideSpan.key, MAP_URL.hideLimited.key, MODES_PARAM, APP_URL.hideLowQuality.key,
   FREQUENT_URL.frequency.key, NIGHT_URL.frequency.key, BUSTANG_WITHIN_PARAM, LIVE_TOOL_URL.measure.key, LIVE_AGENCY_URL.sort.key,
+  APP_URL.forceSlowConnection.key,
 ];
 
 const PARAM_RANK = new Map(URL_PARAM_ORDER.map((key, i) => [key, i]));
