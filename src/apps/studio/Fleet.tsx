@@ -15,22 +15,23 @@ import CardRouteList from '../../components/Interval/CardRouteList';
 import AgencyGroupHeader from '../../components/ui/AgencyGroupHeader';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
 import { useStudioMapFrame } from '../../context/StudioMapFrame';
-import { PERIOD_KEYS, type PeriodKey } from '../../../shared/config';
+import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
 import { periodMenuOptions } from '../../components/Interval/pickers';
 import { PAGE_NAMES } from '../../../shared/pageNames';
 import { capitalizeFirst } from '../../../shared/headwayText';
 import { dateRange, shortDate } from '../../../shared/dateText';
 import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
-import { pairedStudioFile, studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
+import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetIntroText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
-import { StudioRouteTable, periodCell, routeTitle } from './StudioRouteTable';
+import { StudioRouteTable, pairFigures, periodCell, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
-import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, agencyRoutes, changeGroups, modesFor, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
+import { CHANGE_COLOR, DEFAULT_PERIOD, type ChangeGroup, agencyFleet, agencyRouteCount, agencyRoutes, changeGroups, modesFor, groupFor, rowChange, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
+import { fleetDesign, schedulesDesign, type SchedulesDesign } from './reviewDesign';
 import { useInServiceNow } from './useInServiceNow';
 
 /**
@@ -46,8 +47,8 @@ const T = STUDIO_MAP_TEXT;
 const C = STUDIO_CHANGES_TEXT;
 
 /** The change list: every changed route by group; a click opens the route. Only the rows scroll. */
-function ChangeList({ file, period, onPick }: { file: StudioBeforeAfterFile; period: PeriodKey; onPick: (r: string) => void }) {
-  const groups = useMemo(() => changeGroups(file), [file]);
+function ChangeList({ file, period, onPick, design = 'today' }: { file: StudioBeforeAfterFile; period: PeriodKey; onPick: (r: string) => void; design?: SchedulesDesign }) {
+  const groups = useMemo(() => designGroups(changeGroups(file), period, design), [file, period, design]);
   // CIV-2057 (Ryan: "Why does the Schedules list look so different than a route list", then chose 1): the agency card's route
   // rows (CardRouteList), a column per compared date at the right with the change colour's dot by the newer figure, and the
   // time of day the figures are from at the end of the name line. Each value sits under its date (CIV-1806); the time of day
@@ -60,15 +61,19 @@ function ChangeList({ file, period, onPick }: { file: StudioBeforeAfterFile; per
           <div key={g.key}>
             <AgencyGroupHeader rule={i === 0 ? 'none' : 'above'}>{g.title}</AgencyGroupHeader>
             <CardRouteList onSelect={onPick} rows={g.routes.map(c => {
-              const f = rowFigure(c, period);
+              // CIV-2182 "period" design: a route in this time of day's group shows this time of day's figures, no label.
+              const f = design === 'period' && g.key === 'frequency' ? { ...rowFigure(c, period), ...periodFigureOf(c, period) } : rowFigure(c, period);
               // One short figure per cell, a late start or early end on its own line (CIV-1922). No bold on the newer
               // figure (Ryan, CIV-1806: "Does bold mean better frequency?").
               const [before, after] = (['before', 'after'] as const).map(side => (PERIOD_KEYS as readonly string[]).includes(f.key) ? periodCell(c[side], f.key as PeriodKey) : { main: f[side], note: null });
+              // #1746: the dot is the change at the time of day the figures are from (rowChange), never the top bar's alone.
+              const change = rowChange(file, c, f);
               return {
                 key: c.route,
                 route: routeTitle(c),
-                nameNote: f.label ?? undefined,
-                value: <RouteListColumns cells={[before, { ...after, dot: CHANGE_COLOR[routeChangeAt(file, c.route, period)] }]} />,
+                // The group heading names the time of day in the "byPeriod" design, so the row doesn't repeat it.
+                nameNote: design === 'byPeriod' ? undefined : f.label ?? undefined,
+                value: <RouteListColumns cells={[before, { ...after, dot: change ? CHANGE_COLOR[change] : undefined }]} />,
               };
             })} />
           </div>
@@ -77,6 +82,45 @@ function ChangeList({ file, period, onPick }: { file: StudioBeforeAfterFile; per
       </PanelBody>
     </section>
   );
+}
+
+/** A route's figures at one time of day, as a row figure (CIV-2182 "period" design). */
+function periodFigureOf(c: StudioRouteChange, period: PeriodKey) {
+  return { key: period, label: null, ...pairFigures(c.before, c.after, period) };
+}
+
+/** Whether a route's frequency changed grade at this time of day, or it was added or removed (it runs then on one side). */
+function changedAt(c: StudioRouteChange, period: PeriodKey): boolean {
+  if (!c.before || !c.after) return c.before?.headway[period] != null || c.after?.headway[period] != null;
+  return periodChange(c.before, c.after, period) !== 'same' && periodChange(c.before, c.after, period) !== 'none';
+}
+
+/**
+ * CIV-2182 review designs for the list's groups (#1746: "Rows mix periods ... under one heading with no grouping").
+ * "period": the frequency group keeps only routes that changed at the top bar's time of day; the rest of it move under
+ * one heading after it. "byPeriod": the frequency group splits by the time of day each row's figure is from, the top
+ * bar's first. "today": as now.
+ */
+function designGroups(groups: ChangeGroup[], period: PeriodKey, design: SchedulesDesign): ChangeGroup[] {
+  if (design === 'today') return groups;
+  return groups.flatMap(g => {
+    if (g.key !== 'frequency') return [g];
+    if (design === 'period') {
+      const here = g.routes.filter(c => changedAt(c, period)), other = g.routes.filter(c => !changedAt(c, period));
+      return [
+        { key: 'frequency', title: `${g.title} · ${PERIOD_LABELS[period]}`, routes: here },
+        { key: 'other-times', title: STUDIO_REDESIGN_TEXT.otherTimes, routes: other },
+      ].filter(x => x.routes.length > 0);
+    }
+    const byKey = new Map<string, StudioRouteChange[]>();
+    for (const c of g.routes) { const k = rowFigure(c, period).key; byKey.set(k, [...(byKey.get(k) ?? []), c]); }
+    const order = [period, ...PERIOD_KEYS.filter(k => k !== period), 'trips'];
+    return [...byKey.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b)).map(k => ({
+      key: `frequency-${k}`,
+      title: (PERIOD_KEYS as readonly string[]).includes(k) ? PERIOD_LABELS[k as PeriodKey] : STUDIO_CHANGES_TEXT.trips,
+      routes: byKey.get(k)!,
+    }));
+  });
 }
 
 /** The map key in the regular map's key card and slot, bottom left above the footer (CIV-1821). */
@@ -227,7 +271,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                 <>
                   {fleet && <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>}
                   <Widget title={vehiclesNeededTitle(agencyModes)}>
-                    <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} inService={networkInService} />
+                    <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} inService={networkInService} design={fleetDesign()} />
                   </Widget>
                 </>
               ) : null}
@@ -240,7 +284,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
             <CardBodyText>{intro}</CardBodyText>
             {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
           </div>
-          <ChangeList file={file} period={period} onPick={setRoute} />
+          <ChangeList file={file} period={period} onPick={setRoute} design={schedulesDesign()} />
         </StudioPanel>
       )}
       {view === 'schedules' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}

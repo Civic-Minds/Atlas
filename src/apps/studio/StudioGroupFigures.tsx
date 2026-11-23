@@ -5,8 +5,10 @@ import { PAGE_NAMES } from '../../../shared/pageNames';
 import { headwayEvery, runTimeAmount } from '../../../shared/headwayText';
 import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 import { MISSING_VALUE } from '../../../shared/missingValue';
+import { countText, signedCountText } from '../../../shared/numberText';
+import type { FleetDesign } from './reviewDesign';
 import { groupAtTarget, STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../../../shared/studioVehicles';
-import { STUDIO_VEHICLES_TEXT, fleetNetworkText, groupSharesText, noServiceText } from '../../../shared/studioWording';
+import { STUDIO_REDESIGN_TEXT, STUDIO_VEHICLES_TEXT, fleetNetworkText, groupSharesText, noServiceText } from '../../../shared/studioWording';
 
 /**
  * Atlas Studio's buses-needed figures (CIV-1693), now in Fleet's route card (CIV-1828, Fleet.tsx): the picked route's
@@ -40,12 +42,18 @@ export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'curre
   return at < 0 ? [...targets, ...sched] : [...targets.slice(0, at), ...sched, ...targets.slice(at)];
 }
 
+/** CIV-2182 "change" design: the schedule's own row (and Live's) first, as the baseline, then every frequency best first. */
+function changeRows(rows: BusRow[]): BusRow[] {
+  const base = rows.filter(r => r.now || r.key === 'live');
+  return [...base, ...rows.filter(r => !base.includes(r))];
+}
+
 /**
  * The open route's buses (CIV-1827): why other routes count too where they share its buses, the buses table, then running
  * time and layover in one line. A shared middle's trips keep the branches' current mix (CIV-1712's choice is gone: its
  * words were never approved and read as nothing to a planner).
  */
-export function StudioGroupFigures({ group, showRunning = true, network = false, modes, inService = null }: { group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): its rows read "If every route ran every 15 min". */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[]; /** CIV-2056: the group's vehicles on the road now, from Live; null leaves the row out. */ inService?: number | null }) {
+export function StudioGroupFigures({ group, showRunning = true, network = false, modes, inService = null, design = 'today' }: { /** CIV-2182 review: "change" puts the schedule's row first and each frequency's change from it beside its vehicles. */ design?: FleetDesign; group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): its rows read "If every route ran every 15 min". */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[]; /** CIV-2056: the group's vehicles on the road now, from Live; null leaves the row out. */ inService?: number | null }) {
   // CIV-2003: lines in the card are the shared card body text, as the route card's no-data line.
   if (!group) return <CardBodyText className="!mt-0">{noServiceText(modes)}</CardBodyText>;
   const N = fleetNetworkText(group.modes);
@@ -57,14 +65,15 @@ export function StudioGroupFigures({ group, showRunning = true, network = false,
       <DataTable
         caption={PAGE_NAMES.studioVehicles}
         layout="fill"
-        rows={busRows(group, 'current', inService)}
+        rows={design === 'change' ? changeRows(busRows(group, 'current', inService)) : busRows(group, 'current', inService)}
         rowKey={r => r.key}
-        rowCurrent={r => !!r.now}
+        rowCurrent={r => design !== 'change' && !!r.now}
         columns={[
-          { key: 'label', header: network ? N.ifEveryRouteRan : FREQUENCY_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
+          { key: 'label', header: network ? N.ifEveryRouteRan : FREQUENCY_LABEL, rowHeader: true, width: design === 'change' ? 7 : 9, className: 'font-normal', cell: r => r.label },
           // CIV-1925 (Ryan: Fleet's spacing "looks odd"): the full panel width with the figures at its right edge, as Live's
           // and Schedules' tables (layout fill).
-          { key: 'value', header: <span className="block text-right">{network ? N.count : T.needed}</span>, className: 'text-right', cell: r => r.value },
+          { key: 'value', ...(design === 'change' ? { width: 5 } : {}), header: <span className="block text-right">{network ? N.count : T.needed}</span>, className: 'text-right', cell: r => (typeof r.value === 'number' ? countText(r.value) : r.value) },  // #1745: 1,642, as the rest of the app
+          ...(design === 'change' ? [{ key: 'change', width: 4, header: <span className="block text-right">{STUDIO_REDESIGN_TEXT.change}</span>, className: 'text-right text-[var(--text-muted)]', cell: (r: BusRow) => (typeof r.value === 'number' && !r.now && r.key !== 'live' ? signedCountText(r.value - group.implied) : '') }] : []),
         ]}
       />
     </ScrollX>

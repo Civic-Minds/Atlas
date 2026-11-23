@@ -59,6 +59,17 @@ export const STUDIO_CHANGES_TEXT = {
   noDay: 'These two schedules couldn’t be compared.',
 } as const;
 
+/**
+ * CIV-2182 proposals, PENDING RYAN'S OK (review page /_review/studio-redesign/): Fleet's change column, and the Schedules
+ * list's heading for routes whose change is at another time of day.
+ */
+export const STUDIO_REDESIGN_TEXT = {
+  /** Fleet "change" design: the column beside each frequency's vehicles, against the schedule's own row. */
+  change: 'Change',
+  /** Schedules "period" design: the heading over routes that changed only at other times of day. */
+  otherTimes: 'Changed at other times of day',
+} as const;
+
 /** "Trains Needed", "Buses Needed" (the page's name), "Vehicles Needed" when modes mix (CIV-2002: Ryan, "This is a train line so why does it say buses"). */
 export function vehiclesNeededTitle(modes: readonly number[] | undefined): string {
   const word = vehiclesWord(modes);
