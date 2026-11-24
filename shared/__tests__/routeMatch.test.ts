@@ -16,3 +16,14 @@ describe('route text match (CIV-1864)', () => {
     expect(routeTextMatchRank({ shortName: '', longName: null, visibleId: '34504' }, '34504')).toBe(2);
   });
 });
+
+describe('a number written without its spaces (#1774)', () => {
+  it('matches Guelph "50 U" from "50U" exactly, and "52U K" no further than the number', () => {
+    expect(routeTextMatchRank({ shortName: '50 U', longName: 'Scottsdale' }, '50U')).toBe(0);
+    expect(routeTextMatchRank({ shortName: '50 U', longName: 'Scottsdale' }, '50 u')).toBe(0);
+    expect(routeTextMatchRank({ shortName: '52 U', longName: 'Kortright' }, '52')).toBe(1);
+  });
+  it('still ranks a different number as no number match', () => {
+    expect(routeTextMatchRank({ shortName: '50', longName: 'Stone Road' }, '50U')).toBeGreaterThan(1);
+  });
+});
