@@ -7243,6 +7243,94 @@
       "hiddenInProduction": true
     },
     {
+      "slug": "salt-spring",
+      "name": "BC Transit (Salt Spring Island)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Salt Spring Island",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        48.86,
+        -123.509
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=39",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2466/latest.zip",
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "fort-st-john",
+      "name": "BC Transit (Fort St. John)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Fort St. John",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        56.245,
+        -120.842
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=28",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2547/latest.zip",
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "dawson-creek",
+      "name": "BC Transit (Dawson Creek)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Dawson Creek",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        55.758,
+        -120.234
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=27",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-710/latest.zip",
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "sunshine-coast",
+      "name": "BC Transit (Sunshine Coast)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Sunshine Coast",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        49.43,
+        -123.65
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=18",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2567/latest.zip",
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "kingcountymetro",
       "name": "King County Metro (Seattle)",
       "officialName": "King County Metro",

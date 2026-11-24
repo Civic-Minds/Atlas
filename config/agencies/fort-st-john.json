@@ -1,0 +1,21 @@
+{
+  "slug": "fort-st-john",
+  "officialName": "BC Transit",
+  "nameQualifier": "Fort St. John",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    56.245,
+    -120.842
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=28",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2547/latest.zip",
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}
