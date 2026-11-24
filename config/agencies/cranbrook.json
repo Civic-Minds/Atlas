@@ -1,0 +1,27 @@
+{
+  "slug": "cranbrook",
+  "officialName": "BC Transit",
+  "nameQualifier": "Cranbrook/Elk Valley",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    49.514,
+    -115.762
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=21",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2520/latest.zip",
+  "bbox": [
+    49.4895,
+    -116.1352,
+    50.699,
+    -114.8704
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

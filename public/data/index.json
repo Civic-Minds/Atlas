@@ -7143,6 +7143,56 @@
       "hiddenInProduction": true
     },
     {
+      "slug": "cranbrook",
+      "name": "BC Transit (Cranbrook/Elk Valley)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Cranbrook/Elk Valley",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        49.514,
+        -115.762
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=21",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2520/latest.zip",
+      "bbox": [
+        49.4895,
+        -116.1352,
+        50.699,
+        -114.8704
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "prince-rupert",
+      "name": "BC Transit (Prince Rupert)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Prince Rupert",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        54.312,
+        -130.313
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=23",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2543/latest.zip",
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "kingcountymetro",
       "name": "King County Metro (Seattle)",
       "officialName": "King County Metro",
