@@ -1,0 +1,17 @@
+{
+  "slug": "laudergo",
+  "officialName": "City of Fort Lauderdale",
+  "commonName": "LauderGO",
+  "websiteUrl": "https://www.fortlauderdale.gov/government/departments-i-z/transportation-and-mobility/transportation-division/laudergo-mobility-services/laudergo-community-shuttle",
+  "center": [
+    26.1257,
+    -80.1472
+  ],
+  "region": "Florida",
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
+  "cities": [
+    "Fort Lauderdale, Florida"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
