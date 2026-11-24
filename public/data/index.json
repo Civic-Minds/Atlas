@@ -25197,10 +25197,10 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip",
       "region": "Colorado",
-      "lastFeedExpiry": "20261122",
-      "lastFeedVersion": "S1000166",
-      "lastRefreshedAt": "2026-11-16",
-      "lastFeedCheckAt": "20261123",
+      "lastFeedExpiry": "20270418",
+      "lastFeedVersion": "S1000168",
+      "lastRefreshedAt": "2026-11-24",
+      "lastFeedCheckAt": "20261124",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270418",
@@ -25221,26 +25221,23 @@
         }
       },
       "feedQuality": {
-        "status": "degraded",
-        "score": 65,
-        "reasons": [
-          "The schedule dates in this feed have passed."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 82,
-          "feedExpiry": "20261122",
-          "routeCount": 13,
+          "featureCount": 108,
+          "feedExpiry": "20270418",
+          "routeCount": 16,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-22",
-        "scoredAt": "2026-11-23"
+        "checkedAt": "2026-11-24"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -25248,14 +25245,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2278/latest.zip",
-      "lastPeekedExpiry": "20261122",
-      "lastServiceWeek": "97456507a8e34736",
-      "feedObtainedAt": "20260915",
-      "lastFeedStart": "20260921",
-      "lastRawArchiveKey": "20261122-19556f98e4fd099c",
-      "lastFeedContentKey": "f92bf1d4e3834ca2",
-      "heldFeedStart": "20261123",
-      "refusedFeedSha256": "f9ad53cf4abaf57d8f6ff8137cbb9824f8719c34a531fd15eba472bfd876445e"
+      "lastPeekedExpiry": "20270418",
+      "lastServiceWeek": "04cf8dfc7625f94e",
+      "feedObtainedAt": "20261124",
+      "lastFeedStart": "20261123",
+      "lastRawArchiveKey": "20270418-e9d974c42a8f1b8f",
+      "lastFeedContentKey": "19330a637f01b96a"
     },
     {
       "slug": "durango-transit",
