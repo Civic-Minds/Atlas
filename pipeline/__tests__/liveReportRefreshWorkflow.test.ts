@@ -102,12 +102,15 @@ describe('live report refresh workflow contract', () => {
     }
   });
 
-  it('builds no Studio agency: Kingston’s report refreshes on Ryan’s Mac only (CIV-1716)', () => {
-    // The repository is public, so a GitHub run's files and logs would make the Studio report public.
+  it('makes no Studio file public: Kingston’s report refreshes on Ryan’s Mac only (CIV-1716)', () => {
+    // The repository is public, so a GitHub run's files and logs would make the Studio report public. Since CIV-1974
+    // (Ryan's go: the Mac does no Studio builds) the rebuild builds Studio's buses-needed and schedule-change files, but
+    // they go only to the private Live bucket: no workflow names an agency's Live report or keeps tmp/studio as an artifact.
     const dir = resolve('.github/workflows');
     for (const name of readdirSync(dir)) {
-      const text = readFileSync(join(dir, name), 'utf8');
-      expect([name, /--agency|kingston|studio-build/i.test(text.replace(/^\s*#.*$/gm, ''))]).toEqual([name, false]);
+      const text = readFileSync(join(dir, name), 'utf8').replace(/^\s*#.*$/gm, '');
+      expect([name, /--agency|kingston/i.test(text)]).toEqual([name, false]);
+      for (const block of text.split(/uses: actions\/upload-artifact/).slice(1)) expect([name, /tmp\/studio/.test(block.split(/\n\s+- name:/)[0])]).toEqual([name, false]);
     }
     const local = readFileSync(resolve('scripts/studio-report.sh'), 'utf8');
     expect(JSON.parse(readFileSync(resolve('package.json'), 'utf8')).scripts['studio:report']).toBe('bash scripts/studio-report.sh');

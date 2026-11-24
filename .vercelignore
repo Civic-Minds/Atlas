@@ -18,6 +18,8 @@ scripts/*
 !scripts/vercel-ignore-build.sh
 # vite.config.ts imports it to write /flags.json (CIV-1402).
 !scripts/featureFlags.ts
+# local-api/liveFiles.ts (the dev server's Live files, CIV-2186) imports the Live bucket's pointer names; tsc type-checks it.
+!scripts/studioLiveRun.ts
 # src/McpDocsPage.tsx imports the MCP's tool definitions, and tsc type-checks them (CIV-1991 merge).
 !scripts/mcp
 # Imported by shared/agencyPlaces.test.ts, which the build's `tsc` type-checks.
