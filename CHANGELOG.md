@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Studio's Live tab always shows how many routes Live follows**: the number appeared only after Live had been opened for that city, so never on Fleet or Schedules, and switching city could briefly show the last city's number
+- **The top bar stays tidy while Live, History or Compare is open**: the other mode tabs shrink to icons, so the open mode has room
 - **Atlas remembers your settings between visits**: hiding low-quality routes, the map key and Data saver stay as you left them
 - **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
 - **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
