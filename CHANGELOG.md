@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **York Region Transit's On-Request zones are on the map**: all eight service areas, from the shapefiles YRT sent, each with its own hours and trip rules; YRT's card used to say its on-demand service wasn't mapped yet
 - **Studio's Live tab always shows how many routes Live follows**: the number appeared only after Live had been opened for that city, so never on Fleet or Schedules, and switching city could briefly show the last city's number
 - **Settings can hide agencies with data-quality problems**: Atlas lists which agencies have them and why, so you can leave out data that may be wrong
 - **The top bar stays tidy while Live, History or Compare is open**: the other mode tabs shrink to icons, so the open mode has room

@@ -32,8 +32,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'fredericton': { serviceName: 'On-demand service', url: 'https://www.fredericton.ca/node/457593' },
   // Confirmed 2026-10-27 (CIV-1063): https://stlaval.ca/horaire/taxi/info
   'stl': { serviceName: 'Taxi collectif', url: 'https://stlaval.ca/horaire/taxi/info' },
-  // Confirmed 2026-10-27 (CIV-1063): https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx
-  'yrt': { serviceName: 'On-Request', url: 'https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx' },
   'calgary': { serviceName: 'Calgary Transit On Demand' },
   // Hidden again (Ryan's CIV-1479 rule, 2026-11-14): DART's file has 29 GoLink zones but not the four pilot zones
   // (North Dallas, Plano, Eastern, Rylie/Kleberg) that dart.org lists as running. Source in b889d1db2 (config/on-demand/dart.json).
