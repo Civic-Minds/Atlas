@@ -45,7 +45,7 @@ export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'curre
  * time and layover in one line. A shared middle's trips keep the branches' current mix (CIV-1712's choice is gone: its
  * words were never approved and read as nothing to a planner).
  */
-export function StudioGroupFigures({ group, showRunning = true, network = false, modes, inService = null }: { group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): its rows read "If every route ran every 15 min". */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[]; /** CIV-2056: the group's vehicles on the road now, from Live; null leaves the row out. */ inService?: number | null }) {
+export function StudioGroupFigures({ group, showRunning = true, network = false, modes, inService = null }: { group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): only the schedule's row and Live's, no frequency rows (CIV-2198: Ryan doesn't want "If every route ran"). */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[]; /** CIV-2056: the group's vehicles on the road now, from Live; null leaves the row out. */ inService?: number | null }) {
   // CIV-2003: lines in the card are the shared card body text, as the route card's no-data line.
   if (!group) return <CardBodyText className="!mt-0">{noServiceText(modes)}</CardBodyText>;
   const N = fleetNetworkText(group.modes);
@@ -57,11 +57,11 @@ export function StudioGroupFigures({ group, showRunning = true, network = false,
       <DataTable
         caption={PAGE_NAMES.studioVehicles}
         layout="fill"
-        rows={busRows(group, 'current', inService)}
+        rows={network ? busRows(group, 'current', inService).filter(r => r.now || r.key === 'live') : busRows(group, 'current', inService)}
         rowKey={r => r.key}
         rowCurrent={r => !!r.now}
         columns={[
-          { key: 'label', header: network ? N.ifEveryRouteRan : FREQUENCY_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
+          { key: 'label', header: network ? '' : FREQUENCY_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
           // CIV-1925 (Ryan: Fleet's spacing "looks odd"): the full panel width with the figures at its right edge, as Live's
           // and Schedules' tables (layout fill).
           { key: 'value', header: <span className="block text-right">{network ? N.count : T.needed}</span>, className: 'text-right', cell: r => r.value },

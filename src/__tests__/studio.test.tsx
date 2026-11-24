@@ -94,9 +94,11 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
     expect(screen.getByText(/share trains/)).toBeTruthy();
   });
 
-  it('reads the network table as "If every route ran …", with one number for the schedule (CIV-2002)', () => {
-    render(<StudioGroupFigures group={{ ...GROUPS[0], routes: [], modes: [0, 3] }} showRunning={false} network />);
-    expect(screen.getAllByRole('columnheader').map(h => h.textContent)).toEqual(['If every route ran', 'Vehicles']);
+  it('shows the network table with only the schedule and Live, never "If every route ran" (CIV-2002, CIV-2198)', () => {
+    render(<StudioGroupFigures group={{ ...GROUPS[0], routes: [], modes: [0, 3] }} showRunning={false} network inService={7} />);
+    expect(screen.getAllByRole('columnheader').map(h => h.textContent)).toEqual(['', 'Vehicles']);
+    expect(screen.getAllByRole('rowheader').map(h => h.textContent)).toEqual(['As scheduled', 'In service now']);
+    expect(screen.queryByText(/every route ran|every \d+ min/)).toBeNull();
     expect(cells('As scheduled')).toEqual(['As scheduled', String(GROUPS[0].implied)]);
     expect(screen.queryByText(/Needed \d/)).toBeNull();
   });
