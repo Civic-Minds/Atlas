@@ -56,29 +56,37 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
     ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
     period, maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
   });
-  const shown: number[] = [];
-  let color = 0;
-  const worded: Array<{ h: number; words: string }> = [];
-  for (const group of model.groups) {
-    if (typeof group.shared?.headway === 'number') shown.push(group.shared.headway);
-    for (const row of group.rows) {
-      const v = row.display(null).value;
-      // A row with no number (limited, irregular) shows none; a row reading a range ("every 15–54") shows both ends.
-      if (v.isLimited || v.headway == null) continue;
-      // #1684: a row whose words name a time reads their number ("every 16 min from 6:39 AM" is 16), not the period's
-      // typical gap under them (MBTA 65 weekday AM peak: the list read "every 8–14" beside that row).
-      const h = v.edgeText != null && v.shownHeadway != null ? v.shownHeadway : v.headway;
-      shown.push(h);
-      color = Math.max(color, h, v.colorHeadway ?? 0);
-      const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, h);
-      if (range) shown.push(v.trunkHeadway!);
-      else if (v.headwayLabel) worded.push({ h, words: v.headwayLabel });
+  const read = (bare: boolean) => {
+    const shown: number[] = [];
+    let color = 0;
+    const worded: Array<{ h: number; words: string }> = [];
+    for (const group of model.groups) {
+      if (typeof group.shared?.headway === 'number') shown.push(group.shared.headway);
+      for (const row of group.rows) {
+        const v = row.display(null).value;
+        // A row with no number (limited, irregular) shows none; a row reading a range ("every 15–54") shows both ends.
+        if (v.isLimited || v.headway == null) continue;
+        // #1684: a row whose words name a time reads their number ("every 16 min from 6:39 AM" is 16), not the period's
+        // typical gap under them (MBTA 65 weekday AM peak: the list read "every 8–14" beside that row). #1771: where the
+        // list can't show the words and they name a change partway ("every 4 min until 9:17 AM, then every 6 min"), the
+        // number alone is the slower of the two, as a list row is the route's slowest showing, not the first part's (STM 1
+        // weekday midday read "every 4" for a period that runs every 6 from 9:17 AM).
+        const h = v.edgeText != null && v.shownHeadway != null ? (bare && v.shownThen != null ? Math.max(v.shownHeadway, v.shownThen) : v.shownHeadway) : v.headway;
+        shown.push(h);
+        color = Math.max(color, h, v.colorHeadway ?? 0);
+        const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, h);
+        if (range) shown.push(v.trunkHeadway!);
+        else if (v.headwayLabel) worded.push({ h, words: v.headwayLabel });
+      }
     }
-  }
-  if (!shown.length) return undefined;
-  const high = Math.max(...shown);
+    return { shown, color, worded };
+  };
+  const worded = read(false);
+  if (!worded.shown.length) return undefined;
   // Rows at that number saying different things leave the list on the number.
-  const said = new Set(worded.filter(w => w.h === high).map(w => w.words));
+  const said = new Set(worded.worded.filter(w => w.h === Math.max(...worded.shown)).map(w => w.words));
   const words = said.size === 1 ? [...said][0] : undefined;
+  const { shown, color } = words ? worded : read(true);
+  const high = Math.max(...shown);
   return { low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}) };
 }

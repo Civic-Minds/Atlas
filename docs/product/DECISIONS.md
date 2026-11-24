@@ -300,6 +300,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-24 — When a period's service changes partway, the route list's number alone is the slower one (#1771, CIV-2228)
+Ryan, 2026-11-24 (relayed by Atlas Manager): "1", picking option B of the side-by-side test: always the slower number. No new number.
+- The rule: where the route list can't show the card's words and they name a change partway through the period ("every 4 min until 9:17 AM, then every 6 min"), the list's number is the slower of the two. STM 1 weekday midday reads "every 6 min" (was "every 4"), matching its wait and the schedule.
+- Counts (published release, 8 agencies: STM, TTC, MBTA, TransLink, Hamilton, OC Transpo, CTA, YRT): 128 of 19,146 list cells change. CTA 53 Saturday late reads "every 20–31 min" (was "every 7–20").
+
 ### 2026-11-23 — A branch's wait to the period's edge no longer sets the route's value (#1749, CIV-2196; overrides CIV-1241)
 Ryan, 2026-11-23 (relayed by Atlas Manager New): "1", answering "Option 1: a branch whose only long wait is to the period's edge no longer sets the whole route's figure; its own row still says "until 0:53". No new number. [...] Trade-off: overrides CIV-1241 (on the branch after it stops there's no service, but the route reads the trunk's figure). 1. Apply option 1 (Recommended) 2. Keep CIV-1241 as is".
 - The rule: a branch (tail) that starts or stops partway through a period, so its full-period wait is over the coverage cap while no gap between its buses is, is left out of the direction's value and filter. Its own row keeps its reading ("every 10 until 0:53"). A handover tail (#1072) still counts.

@@ -56,6 +56,8 @@ export interface RouteCardRowValue {
   headwayLabel: string | undefined;
   /** The number the row shows: its words' number where its words name one (CIV-1199), else its headway. */
   shownHeadway?: number;
+  /** #1771: the later number of words that name a change partway ("…, then every 6 min"), where they do. */
+  shownThen?: number;
   /** The filter's colour for the row's dot. */
   colorHeadway: number | null | undefined;
   trunkHeadway: number | null | undefined;
@@ -152,6 +154,7 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     displayH,
     headway: rowNoRegular ? undefined : displayH ?? undefined,
     shownHeadway,
+    ...(edgeText != null && !rowNoRegular && trips.partPeriodThen != null ? { shownThen: trips.partPeriodThen } : {}),
     isLimited,
     rowNoRegular,
     edgeText,

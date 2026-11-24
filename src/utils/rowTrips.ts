@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
-import { periodEdgeText, routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeGap, routeCardPeriodShapeText, infrequentRowNoCadence, rowCarriesStretchWords, rowReadsPeriodEdge } from './effectiveHeadway';
+import { periodEdgeText, routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeGap, routeCardPeriodShapeThen, routeCardPeriodShapeText, infrequentRowNoCadence, rowCarriesStretchWords, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
 import { isOneGapRow, rowStretchReading, SHARED_STRETCH_RATIO, type StretchRowReading } from './stretchCard';
 import { pairedTripSafeHeadway } from './pairedTripFloor';
@@ -19,6 +19,8 @@ export interface RowTrips {
   partPeriod: string | undefined;
   /** The number `partPeriod`'s words name ("every 31 min, …" -> 31), so a notice can name the same number (CIV-1199). */
   partPeriodEvery?: number;
+  /** #1771: the later number the words name ("…, then every 6 min"), where they name one. */
+  partPeriodThen?: number;
   /** The headsign runs under three times itself in the period: its value is other headsigns' (CTA 77 Belmont & Octavia). */
   noOwnService: boolean;
   /** #773, as #962: the row's only number was a full-window wait over PERIOD_COVERAGE_MAX_HEADWAY, so it reads no regular service. */
@@ -115,6 +117,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   const readsShape = (d.stretchRole === 'main' || rowReadsPeriodEdge(d, period)) && !isOneGapRow(d, period);
   let partPeriod = readsShape ? routeCardPeriodShapeText(d, period) : undefined;
   let partPeriodEvery = partPeriod != null ? routeCardPeriodShapeEvery(d, period) : undefined;
+  let partPeriodThen = partPeriod != null ? routeCardPeriodShapeThen(d, period) : undefined;
   // CIV-2171: the gap the words name, if any, for the one-hour cap below.
   let partPeriodGap = partPeriod != null ? routeCardPeriodShapeGap(d, period) : undefined;
   // CIV-995 (b): a main or tail row reads its stretch's own values (every trip at the stretch's stop) where the stretch runs
@@ -127,7 +130,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   const filterReading = partPeriod == null && value != null && !opts.ownTrips ? mainFilterReading(d, key) : null;
   if (filterReading) {
     value = filterReading.every;
-    if (filterReading.gap != null) { partPeriod = headwayPeriodShape(filterReading); partPeriodEvery = filterReading.every ?? undefined; partPeriodGap = filterReading.gap; }
+    if (filterReading.gap != null) { partPeriod = headwayPeriodShape(filterReading); partPeriodEvery = filterReading.every ?? undefined; partPeriodThen = undefined; partPeriodGap = filterReading.gap; }
   }
   const slot = stretchSlot(d);
   const slotGap = slot?.maxGap?.[key];
@@ -158,10 +161,10 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // hides the edge. The value stays what it was, so the colour and the filter are unchanged (CIV-1411: card wording only).
   if (opts.branchReadings && !opts.ownTrips && !partPeriod && !filterReading && value != null) {
     const own = d.rowPeriodEdge?.[key];
-    if (own && (own.from != null || own.until != null)) { partPeriod = periodEdgeText(own); partPeriodEvery = own.every; partPeriodGap = undefined; }
+    if (own && (own.from != null || own.until != null)) { partPeriod = periodEdgeText(own); partPeriodEvery = own.every; partPeriodThen = own.then ?? undefined; partPeriodGap = undefined; }
     // D6 (settled): the row's own steady service with one gap in it keeps the card's usual words, "every 28 min, with one 55 min gap".
     const gap = !partPeriod ? d.rowPeriodGap?.[key] : undefined;
-    if (gap && gap.gap >= gap.every * ROW_GAP_WORDS_RATIO) { partPeriod = headwayPeriodShape(gap); partPeriodEvery = gap.every; partPeriodGap = gap.gap; }
+    if (gap && gap.gap >= gap.every * ROW_GAP_WORDS_RATIO) { partPeriod = headwayPeriodShape(gap); partPeriodEvery = gap.every; partPeriodThen = undefined; partPeriodGap = gap.gap; }
   }
   // #773 (Strategy's pick for Ryan, 2026-11-22: gap words): a row the all-day grade called infrequent, with no words of its
   // own, names its one long gap where it is at least ROW_GAP_WORDS_RATIO times its number (#1239), "every 30 min, with one
@@ -170,7 +173,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   if (d.tier === 'infrequent' && !partPeriod && value != null && !stretch && !waitNotCadence) {
     const g = d.maxGapByPeriod?.[key];
     if (typeof g === 'number' && g >= value * ROW_GAP_WORDS_RATIO) {
-      if (g <= PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = headwayPeriodShape({ every: value, gap: g }); partPeriodEvery = value; }
+      if (g <= PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = headwayPeriodShape({ every: value, gap: g }); partPeriodEvery = value; partPeriodThen = undefined; }
       else { value = null; waitNotCadence = true; }
     }
   }
@@ -180,7 +183,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // CIV-2171 (Ryan, 2026-11-23, "1"): no card names a gap over an hour, as #773's gap words: words that would name one
   // (D6's "every 5 min, with one 169 min gap", #1239's) read "Runs irregularly in this period" instead (#962: a wait over
   // PERIOD_COVERAGE_MAX_HEADWAY is no cadence). Card wording only: the colour and the filter are unchanged.
-  if (partPeriodGap != null && partPeriodGap > PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = undefined; partPeriodEvery = undefined; value = null; waitNotCadence = true; }
+  if (partPeriodGap != null && partPeriodGap > PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = undefined; partPeriodEvery = undefined; partPeriodThen = undefined; value = null; waitNotCadence = true; }
   // The stretch's gap goes with the stretch's value: a row with a value of its own, faster (NYCT R late: 13 beside the
   // stretch's 165, CIV-1074 2c) or slower (Phoenix 35: 30 on a shared 15), keeps its own trips' gap. A row with no value of its
   // own, or on data without the slot's period (public tails: it lives in the sections file), takes its stretch's gap.
@@ -191,6 +194,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
     longestGap: stretch ? stretch.longestGap : fromSlot ? slotGap : typeof ownGap === 'number' ? ownGap : null,
     partPeriod,
     ...(partPeriodEvery != null ? { partPeriodEvery } : {}),
+    ...(partPeriodThen != null ? { partPeriodThen } : {}),
     noOwnService: false,
     ...(waitNotCadence ? { waitNotCadence } : {}),
   };

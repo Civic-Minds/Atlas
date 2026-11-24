@@ -224,6 +224,16 @@ export function routeCardPeriodShapeEvery(p: ShapeProperties, period: TimePeriod
   return p.stretchPeriodGap?.[period]?.every ?? undefined;
 }
 
+/** #1771: the later number routeCardPeriodShapeText's words name ("every 4 min until 9:17 AM, then every 6 min" -> 6), or undefined. */
+export function routeCardPeriodShapeThen(p: ShapeProperties, period: TimePeriod): number | undefined {
+  if (period === 'all') return undefined;
+  const own = tailOwnEdge(p, period);
+  if (own) return own.then ?? undefined;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (edge && (edge.from != null || edge.until != null)) return edge.stretch !== undefined && !rowReadsPeriodEdge(p, period) ? undefined : edge.then ?? undefined;
+  return undefined;
+}
+
 /** CIV-2171: the gap routeCardPeriodShapeText's words name (D6's one-gap form), or undefined when they name none. */
 export function routeCardPeriodShapeGap(p: ShapeProperties, period: TimePeriod): number | undefined {
   if (period === 'all' || tailOwnEdge(p, period)) return undefined;
