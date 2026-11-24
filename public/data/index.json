@@ -7087,6 +7087,62 @@
       "hiddenInProduction": true
     },
     {
+      "slug": "terrace",
+      "name": "BC Transit (Terrace/Kitimat/Hazelton)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Terrace/Kitimat/Hazelton",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        54.509,
+        -128.613
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=26",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2462/latest.zip",
+      "bbox": [
+        53.9657,
+        -128.718,
+        55.3526,
+        -127.1648
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "prince-george",
+      "name": "BC Transit (Prince George)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Prince George",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        53.915,
+        -122.783
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=22",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2510/latest.zip",
+      "bbox": [
+        53.8079,
+        -127.1701,
+        54.7855,
+        -122.7379
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "kingcountymetro",
       "name": "King County Metro (Seattle)",
       "officialName": "King County Metro",

@@ -1,0 +1,27 @@
+{
+  "slug": "terrace",
+  "officialName": "BC Transit",
+  "nameQualifier": "Terrace/Kitimat/Hazelton",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    54.509,
+    -128.613
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=26",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2462/latest.zip",
+  "bbox": [
+    53.9657,
+    -128.718,
+    55.3526,
+    -127.1648
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}
