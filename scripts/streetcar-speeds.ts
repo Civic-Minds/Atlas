@@ -1,7 +1,7 @@
 /**
  * Streetcar commercial speed by route and hour, from the position archive.
  *
- * Reads atlas-live/positions/ttc/{date}/{ts}.json snapshots (1-min cadence),
+ * Reads the TTC's recorded snapshots for a day (shared/liveArchiveDay.ts: v2, or v1 before it; 1-min cadence),
  * chains each vehicle's samples into a trajectory, and computes time-weighted
  * speed = haversine distance / elapsed time per consecutive pair. This is the
  * speed riders experience (stops, lights, and dwell time included).
@@ -9,7 +9,9 @@
  * Usage: npx tsx scripts/streetcar-speeds.ts [YYYY-MM-DD]
  * Requires R2_* env vars (.env.local).
  */
-import { S3Client, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import type { S3Client } from '@aws-sdk/client-s3';
+import { mapArchiveDay } from '../shared/liveArchiveDay.js';
+import { s3ArchiveDayStore } from './liveArchiveStore.js';
 import { getR2Client } from '../pipeline/r2.js';
 import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
 import { DEFAULT_LIVE_ARCHIVE_BUCKET } from '../shared/rules/live.js';
@@ -42,35 +44,14 @@ async function main() {
   const date = process.argv[2] ?? new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto' }).format(new Date());
   const client: S3Client = getR2Client();
 
-  // List all snapshot keys for the date
-  const keys: string[] = [];
-  let token: string | undefined;
-  do {
-    const page = await client.send(new ListObjectsV2Command({
-      Bucket: BUCKET, Prefix: `positions/ttc/${date}/`, ContinuationToken: token,
-    }));
-    for (const o of page.Contents ?? []) if (o.Key) keys.push(o.Key);
-    token = page.IsTruncated ? page.NextContinuationToken : undefined;
-  } while (token);
-
-  if (keys.length === 0) {
+  // The day's snapshots: the cloud recorder's v2 once the TTC is on it, the v1 archive before (CIV-2217).
+  const read = await mapArchiveDay('ttc', date, `positions/ttc/${date}/`, s3ArchiveDayStore(client, BUCKET), (snap): Snapshot => snap);
+  const snapshots: Snapshot[] = read.results;
+  if (snapshots.length === 0) {
     console.log(`No snapshots for ${date}`);
     return;
   }
-  console.log(`${keys.length} snapshots for ${date} — fetching...`);
-
-  // Fetch with limited concurrency
-  const snapshots: Snapshot[] = [];
-  let i = 0;
-  await Promise.all(Array.from({ length: 12 }, async () => {
-    while (i < keys.length) {
-      const key = keys[i++];
-      try {
-        const res = await client.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
-        snapshots.push(JSON.parse(await res.Body!.transformToString()));
-      } catch { /* skip bad object */ }
-    }
-  }));
+  console.log(`${snapshots.length} snapshots for ${date}`);
   snapshots.sort((a, b) => a.ts - b.ts);
 
   // Chain per-vehicle trajectories

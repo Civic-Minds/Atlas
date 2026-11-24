@@ -1,7 +1,9 @@
 /**
- * Copy archived vehicle positions from R2 (atlas-live, unless LIVE_ARCHIVE_BUCKET_BY_SLUG gives the agency its own bucket) into the
+ * Copy archived vehicle positions from R2 into the
  * local Live data folder (archive/ for the TTC, archive-<slug>/ for any other agency), one file per route and day,
- * for every route at once. Each snapshot holds the whole network, so keeping every route costs the same download as
+ * for every route at once. An agency on the cloud recorder is read from its v2 snapshots, the v1 archive (atlas-live
+ * positions/, unless LIVE_ARCHIVE_BUCKET_BY_SLUG gives the agency its own bucket) only before them (CIV-2217,
+ * shared/liveArchiveDay.ts). Each snapshot holds the whole network, so keeping every route costs the same download as
  * keeping one (the old one-route fetcher in ../_live-data/fetch-archive.mts dropped the rest).
  *
  *   npx tsx scripts/live-fetch-archive.ts --days 2026-10-01,2026-10-02 [--routes all|504,505] [--agency ttc] [--concurrency 12] [--force]
@@ -27,11 +29,11 @@
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { createHash } from 'crypto';
-import { GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { liveArchiveClient } from '../shared/liveArchive';
 import { localDate, localServiceStart } from '../shared/liveAgencyConfig';
 import { loadLiveAgencyConfig } from './live-agency-config';
-import { mapWithConcurrency } from '../local-api/concurrency';
+import { mapArchiveDay } from '../shared/liveArchiveDay';
+import { s3ArchiveDayStore } from './liveArchiveStore';
 
 /** Toronto calendar date (YYYY-MM-DD) at an instant (the TTC default of localDate). */
 export function torontoDate(ms: number): string {
@@ -138,6 +140,7 @@ async function main() {
   const concurrency = Number(args.concurrency ?? 12);
   const client = liveArchiveClient();
   if (!client) { console.error('live-fetch-archive: no R2 keys in .env.local'); process.exit(1); }
+  const store = s3ArchiveDayStore(client, BUCKET);
   // Each agency gets its own folder: route numbers repeat across agencies (Kingston has a 501 too), and the analysis reads
   // every file in the folder to find feed outages. The TTC keeps the folder it always used.
   const dir = args.out ? resolve(args.out) : resolve(process.env.LIVE_DATA ?? '../_live-data', agency === 'ttc' ? 'archive' : `archive-${agency}`);
@@ -163,27 +166,13 @@ async function main() {
       continue;
     }
     const started = Date.now();
-    const keys: string[] = [];
-    let token: string | undefined;
-    do {
-      const r = await client.send(new ListObjectsV2Command({ Bucket: BUCKET, Prefix: live.positionsPrefix(day), ContinuationToken: token }));
-      for (const o of r.Contents ?? []) keys.push(o.Key!);
-      token = r.IsTruncated ? r.NextContinuationToken : undefined;
-    } while (token);
-    keys.sort();
-    const parts = await mapWithConcurrency(keys, concurrency, async key => {
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          const body = await (await client.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }))).Body!.transformToString();
-          return splitSnapshot(JSON.parse(body), keep, cutBefore, only ?? []);
-        } catch { /* retry */ }
-      }
-      return null;
-    });
+    // CIV-2217: the recorder's v2 snapshots for an agency on it, v1 only before them (shared/liveArchiveDay.ts).
+    const read = await mapArchiveDay(agency, day, live.positionsPrefix(day), store, snap => splitSnapshot(snap, keep, cutBefore, only ?? []), { concurrency });
+    const parts = read.results;
+    const snapshots = read.fromV2 + read.fromV1 + read.failed;
     const lines = new Map<string, string[]>();
-    let failed = 0;
+    const failed = read.failed;
     for (const p of parts) {
-      if (!p) { failed++; continue; }
       for (const [route, line] of p) { const l = lines.get(route) ?? []; l.push(line); lines.set(route, l); }
     }
     // Route ids and the day come from the feed and the command line: keep only safe characters in file names.
@@ -192,8 +181,8 @@ async function main() {
     const complete = cutBefore == null && day < todayUtc && failed === 0;
     if (complete) writeFileSync(marker, new Date().toISOString());
     const note = failed ? `, ${failed} snapshots failed (day not marked done)` : cutBefore != null ? ` (cut at ${live.serviceDayEndHour}:00 ${live.timeZone}, not marked done)` : '';
-    console.log(day, keys.length, 'snapshots,', lines.size, 'routes', note, `${Math.round((Date.now() - started) / 1000)}s`);
-    report.push({ day, snapshots: keys.length, failed, skipped: false, cut: cutBefore != null });
+    console.log(day, snapshots, 'snapshots,', read.fromV2 ? `(${read.fromV2} from the recorder)` : '', lines.size, 'routes', note, `${Math.round((Date.now() - started) / 1000)}s`);
+    report.push({ day, snapshots, failed, skipped: false, cut: cutBefore != null });
   }
   const maxFailedShare = args['max-failed-share'] != null ? Number(args['max-failed-share']) : MAX_FAILED_SHARE;
   const over = daysOverFailedShare(report, maxFailedShare);
