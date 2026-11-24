@@ -25,7 +25,7 @@ import { COVERAGE_COLUMNS as H, COVERAGE_HISTORY as HY, COVERAGE_LIVE_PROGRESS a
 import { agencyNames } from './utils/agencyName';
 
 /** Days recorded per agency and the minimum to be listed on Studio's Live page (local-api/live-studio-agencies.ts). */
-interface LiveDays { minDays: number; days: Record<string, number> }
+export interface LiveDays { minDays: number; days: Record<string, number> }
 
 interface LocalFacts { historyYears?: Record<string, number>; studio: string[]; vehicles: string[]; coverage: Record<string, LiveCoverage> }
 
@@ -37,10 +37,13 @@ const historyPills = (r: CoverageRow): CoveragePill[] => {
   const to = historyAgencyPath(r.slug);
   return r.history ? [{ label: HY.public, to }] : r.historyYears > 0 ? [{ label: HY.years(r.historyYears), to }] : [];
 };
-const livePills = (r: CoverageRow): CoveragePill[] => [
+// CIV-2205: "Lateness" while lateness is recorded and computed for the agency: it has Live route analyses (each carries the
+// on-time figures, LIVE_METHOD.md), the same files as the days-recorded bar; it opens the agency on Studio's Live page.
+export const livePills = (r: CoverageRow, live: LiveDays | null): CoveragePill[] => [
   ...(r.liveRecorded ? [{ label: L.recorded, to: liveMapAgencyPath(r.slug) }] : []),
   ...(r.liveRealtime ? [{ label: L.realtime, to: liveMapAgencyPath(r.slug) }] : []),
   ...(r.liveReport ? [{ label: L.report, to: liveAgencyPath(r.slug) }] : []),
+  ...(live?.days[r.slug] != null ? [{ label: L.lateness, to: studioPath({ page: 'live', agency: r.slug, route: null }) }] : []),
 ];
 const studioPills = (r: CoverageRow): CoveragePill[] => [
   ...(r.studioSchedule ? [{ label: S.schedule, to: studioPath({ page: 'schedules', agency: r.slug, route: null }) }] : []),
@@ -60,7 +63,7 @@ const liveCell = (r: CoverageRow, live: LiveDays | null) => {
   const days = live?.days[r.slug];
   return (
     <>
-      <TagList tags={livePills(r)} />
+      <TagList tags={livePills(r, live)} />
       {live && days != null && <div className="mt-1 flex justify-end"><ProgressBar value={days} max={live.minDays} label={LP.label}>{LP.days(days, live.minDays)}</ProgressBar></div>}
     </>
   );

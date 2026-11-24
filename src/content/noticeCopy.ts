@@ -1114,7 +1114,8 @@ export const COVERAGE_HISTORY = {
 } as const;
 
 /** What a Live cell lists, as small tags in the agencies-page style. */
-export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', realtime: 'Real-time', report: 'Report' } as const;
+/** CIV-2205: `lateness` is Ryan's word (2026-11-24, "add a 'Lateness' pill on the Status page under Live"). */
+export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', realtime: 'Real-time', report: 'Report', lateness: 'Lateness' } as const;
 
 /**
  * CIV-2173: the Live column's recording progress, days recorded against the minimum to be listed on Studio's Live page.
