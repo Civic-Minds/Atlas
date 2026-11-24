@@ -110,10 +110,10 @@ export const routeEndsText = (ends: readonly [string, string]) => `${ends[0]} â€
 /**
  * Fleet's line above its table: network-wide, every route at once (CIV-1922; CIV-2002, Ryan: "is this network-wide?").
  * Proposed words, waiting on his OK: "All 194 TTC routes at once, on the Nov 25, 2026 schedule: the vehicles they need as
- * scheduled, and if every route ran at each frequency."
+ * scheduled." (CIV-2198: the "if every route ran" clause is cut with its rows.)
  */
 export const fleetIntroText = (agency: string, date: string, routes: number, modes?: readonly number[]) =>
-  `All ${routes} ${agency} ${plural(routes, 'route')} at once, on the ${date} schedule: the ${vehiclesWord(modes)} they need as scheduled, and if every route ran at each frequency.`;
+  `All ${routes} ${agency} ${plural(routes, 'route')} at once, on the ${date} schedule: the ${vehiclesWord(modes)} they need as scheduled.`;
 /** Why the figures cover more than the open route: "12, 31, 601 and 602 share buses. These numbers cover all 4." Ryan's pick (CIV-1834, 2026-11-21: "1"), exact. */
 export const groupSharesText = (routes: readonly string[], modes?: readonly number[]) => `${joinList([...routes])} share ${vehiclesWord(modes)}. These numbers cover all ${routes.length}.`;
 /** The buses section's title with the newer schedule's date: "Buses Needed Â· Sep 17" ("Trains Needed" on a train line, CIV-2002). */
