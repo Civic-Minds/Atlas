@@ -27,7 +27,7 @@ export function departuresInPeriod(rows: ReadonlyArray<{ departuresByHour?: Reco
 }
 
 export function routeRuns(
-  rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null; departureSpan?: RouteDepartureSpan | null; stretchMeta?: { main?: StretchHours | null; tails?: StretchHours[] } | null }>,
+  rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null; departureSpan?: RouteDepartureSpan | null; tripStartFirst?: number | null; stretchMeta?: { main?: StretchHours | null; tails?: StretchHours[] } | null }>,
   edge: AgencyPageRoute['edge'],
 ): AgencyPageRoute['runs'] | null {
   // Every list a route's hours are read from: each row's own (departuresByHour with departureSpan) and its stretches'.
@@ -39,12 +39,26 @@ export function routeRuns(
   if (lists.length > 0 && lists.every(s => s.span)) {
     const hoursOf = (s: StretchHours) => new Set(Object.entries(s.departuresByHour ?? {}).filter(([, n]) => n > 0).map(([h]) => Number(h)));
     const listHours = lists.map(hoursOf);
-    const sorted = [...new Set(listHours.flatMap(h => [...h]))].sort((a, b) => a - b);
+    let sorted = [...new Set(listHours.flatMap(h => [...h]))].sort((a, b) => a - b);
     const inHour = (t: number | undefined, h: number) => t != null && Math.floor(t / 60) === h ? t : undefined;
     const firsts = lists.map(s => s.span!.first);
     const lasts = lists.map(s => s.span!.last);
-    const first = firsts.every(t => t != null) ? Math.min(...(firsts as number[])) : undefined;
+    let first = firsts.every(t => t != null) ? Math.min(...(firsts as number[])) : undefined;
     const last = lasts.every(t => t != null) ? Math.max(...(lasts as number[])) : undefined;
+    // CIV-2229 (#1772, Ryan "1"): the first time is read where trips start (each trip's first stop), when a rider can first
+    // board, not at the reference stops; the last time stays at the reference stops for now. Only when every row that gives
+    // the bar a list (its own or a stretch's) has it; a trip before the day window (null) leaves the first out. A reference
+    // stop's departure earlier than every counted start (a list holding trips the starts don't) stays the first.
+    const hasList = (s: StretchHours | null | undefined) => !!s && Object.values(s.departuresByHour ?? {}).some(n => n > 0);
+    const boardings = rows.filter(p => hasList(p) || hasList(p.stretchMeta?.main) || (p.stretchMeta?.tails ?? []).some(hasList)).map(p => p.tripStartFirst);
+    if (boardings.length > 0 && boardings.every(t => t !== undefined)) {
+      const start = boardings.every(t => t != null) ? Math.min(...(boardings as number[])) : undefined;
+      first = start == null ? undefined : first != null ? Math.min(start, first) : start;
+      // The bar starts at the first boarding: the hours before the reference stops' first hour are service on the way
+      // there, not a break.
+      const lo = first != null ? Math.floor(first / 60) : undefined;
+      if (lo != null && sorted.length > 0 && lo < sorted[0]) sorted = [...Array.from({ length: sorted[0] - lo }, (_, i) => lo + i), ...sorted];
+    }
     // One break per run of empty hours: from the latest departure before it to the earliest after it, over every list.
     const gaps: Array<[number, number]> = [];
     for (let i = 1; i < sorted.length; i++) {

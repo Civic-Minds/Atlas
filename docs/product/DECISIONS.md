@@ -300,6 +300,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-24 — A route's first time is read where its trips start; its last time stays at the reference stop for now (#1772, CIV-2229)
+Ryan, 2026-11-24: "1" (option 1 in the Questions chat: read first and last times at the stop where each trip starts), then "1" again (relayed by Atlas Manager): ship the corrected first times now and keep last times exactly as today.
+- The rule: a route's first time, on the agency page's hours bar, in the MCP and in Studio's schedule comparison, is the first time a trip of the direction leaves its first stop on the direction's representative weekday (the trips its reference stops count). A trip before 5 AM, the start of the day window, leaves the exact first out, as before. The last time stays at the reference stops.
+- Counts (cloud dry runs against base 45440847348, 529 agencies, 14,423 weekday agency-page routes): first times move a median 13 min earlier; period figures and the release diff unchanged. STM 1 5:47 → 5:30, 2 → 5:24, 5 → 5:30, 52 → 6:20, 165 → 5:16 (the source's times).
+- Last times are tracked in #1791: reading them where trips start pulled in other weekdays' trips (CapMetro 550) and cut all-night routes at midnight (CTA 9).
+
 ### 2026-11-23 — A branch's wait to the period's edge no longer sets the route's value (#1749, CIV-2196; overrides CIV-1241)
 Ryan, 2026-11-23 (relayed by Atlas Manager New): "1", answering "Option 1: a branch whose only long wait is to the period's edge no longer sets the whole route's figure; its own row still says "until 0:53". No new number. [...] Trade-off: overrides CIV-1241 (on the branch after it stops there's no service, but the route reads the trunk's figure). 1. Apply option 1 (Recommended) 2. Keep CIV-1241 as is".
 - The rule: a branch (tail) that starts or stops partway through a period, so its full-period wait is over the coverage cap while no gap between its buses is, is left out of the direction's value and filter. Its own row keeps its reading ("every 10 until 0:53"). A handover tail (#1072) still counts.

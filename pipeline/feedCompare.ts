@@ -351,7 +351,8 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     const span = p.departureSpan as { first?: number; last?: number } | undefined;
     // The map's hours bar leaves "first" out when a trip leaves before 5 AM (no same-day 4 AM hour, by design for the
     // bar, CIV-1605). The comparison needs it: the trip of this route and direction that opens the day (#1582).
-    const first = span?.first ?? earliestStart(routeId, dir, dayType);
+    // CIV-2229: the first boarding where trips start, as the route's first time is read elsewhere; the last stays the span's.
+    const first = (p.tripStartFirst as number | null | undefined) ?? span?.first ?? earliestStart(routeId, dir, dayType);
     if (first != null) day.first = day.first == null ? first : Math.min(day.first, first);
     if (span?.last != null) day.last = day.last == null ? span.last : Math.max(day.last, span.last);
     if (p.headsign && !(day.headsigns[dir] ??= []).includes(p.headsign)) day.headsigns[dir].push(p.headsign);

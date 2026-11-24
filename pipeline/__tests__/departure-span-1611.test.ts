@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeDepartureSpan, computeHourDepartureCounts, departureBoundsInHour } from '../headway-utils';
+import { computeDepartureSpan, computeHourDepartureCounts, computeTripStartFirst, departureBoundsInHour } from '../headway-utils';
 import { mergedDepartureSpan } from '../process-core';
 import { SPARKLINE_HOURS } from '../../shared/config';
 
@@ -35,5 +35,11 @@ describe('departure span (CIV-1611)', () => {
     expect(mergedDepartureSpan({ 7: 2, 20: 1 }, { 7: true, 20: false }, terminal, { first: 440, last: 1270 })).toEqual({ first: 430, gaps: [[470, 1260]] });
     // A terminal list with a trip before the counted hours gives no first.
     expect(mergedDepartureSpan({ 7: 1 }, { 7: true }, [250, 430], undefined)).toEqual({ last: 430 });
+  });
+
+  it('reads the first trip start with the same day window (CIV-2229)', () => {
+    expect(computeTripStartFirst([330, 600, 1490])).toBe(330);
+    // STM 747: a 4:54 AM start is before the day window, so no first is claimed.
+    expect(computeTripStartFirst([294, 330, 1490])).toBeUndefined();
   });
 });
