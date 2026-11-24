@@ -14,7 +14,7 @@ import { resolve } from 'node:path';
 import './loadEnv.js';
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
-import { effectiveFeedExpiry } from './feedFreshness.js';
+import { calendarWithTrips, effectiveFeedExpiry } from './feedFreshness.js';
 import { type GtfsPreprocess } from './process-core.js';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds } from './agencyFeeds.js';
 import { resolveFeedUrl } from './feedUrl.js';
@@ -93,8 +93,8 @@ async function readFeedInfo(body: Buffer): Promise<FeedInfo> {
       return entry ? parseCsv<Record<string, string>>(await entry.async('text')) : [];
     };
     const feedInfo = (await rows('feed_info.txt'))[0] ?? {};
-    const calendar = await rows('calendar.txt');
-    const calendarDates = await rows('calendar_dates.txt');
+    // #1768: only services some trip runs on, as processing records them.
+    const { calendar, calendarDates } = calendarWithTrips(await rows('calendar.txt'), await rows('calendar_dates.txt'), (await rows('trips.txt')).map(t => t.service_id));
     return {
       expiry: effectiveFeedExpiry({
         feedInfoEnd: feedInfo.feed_end_date,

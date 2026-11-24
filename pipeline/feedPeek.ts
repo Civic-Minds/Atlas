@@ -4,7 +4,7 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import JSZip from 'jszip';
-import { effectiveFeedExpiry } from './feedFreshness.js';
+import { calendarWithTrips, effectiveFeedExpiry } from './feedFreshness.js';
 import type { FeedCandidate } from './feedSourceCandidates.js';
 import { feedZipProblem } from './feedZipCheck.js';
 import { parseCsv } from './parseGtfs.js';
@@ -58,13 +58,13 @@ export async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | 
     };
     const feedInfoRows = await readRows('feed_info.txt');
     const row = feedInfoRows[0] ?? {};
-    const calendarRows = await readRows('calendar.txt');
-    const calendarDateRows = await readRows('calendar_dates.txt');
+    // #1768: only services some trip runs on, as processing records it, so a peek never reads as newer than the same feed.
+    const served = calendarWithTrips(await readRows('calendar.txt'), await readRows('calendar_dates.txt'), (await readRows('trips.txt')).map(t => t.service_id));
     return {
       feedExpiry: effectiveFeedExpiry({
         feedInfoEnd: row.feed_end_date,
-        calendarEnds: calendarRows.map(calendar => calendar.end_date),
-        calendarDates: calendarDateRows,
+        calendarEnds: served.calendar.map(calendar => calendar.end_date),
+        calendarDates: served.calendarDates,
       }),
       feedVersion: row.feed_version || null,
     };

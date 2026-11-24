@@ -9,7 +9,7 @@
  */
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
-import { effectiveFeedExpiry, effectiveFeedStart } from './feedFreshness.js';
+import { calendarWithTrips, effectiveFeedExpiry, effectiveFeedStart } from './feedFreshness.js';
 import { isYmd } from '../shared/feedAvailability.js';
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 import { COUNTRY_LAUNCH_FLAG, isCountryLaunchBlocked, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
@@ -198,15 +198,19 @@ export async function peekFeedDates(buf: Buffer, excludeRouteShortNames?: readon
     const feedInfo = (await readRows('feed_info.txt'))[0] ?? {};
     let calendar = await readRows('calendar.txt');
     let calendarDates = await readRows('calendar_dates.txt');
+    let trips = await readRows('trips.txt');
     if (excludeRouteShortNames?.length) {
       const excluded = new Set(excludeRouteShortNames);
       const excludedRouteIds = new Set((await readRows('routes.txt')).filter(r => excluded.has(r.route_short_name ?? '')).map(r => r.route_id));
       if (excludedRouteIds.size > 0) {
-        const keptServices = new Set((await readRows('trips.txt')).filter(t => !excludedRouteIds.has(t.route_id)).map(t => t.service_id));
+        const keptServices = new Set(trips.filter(t => !excludedRouteIds.has(t.route_id)).map(t => t.service_id));
         calendar = calendar.filter(row => keptServices.has(row.service_id));
         calendarDates = calendarDates.filter(row => keptServices.has(row.service_id));
+        trips = trips.filter(t => !excludedRouteIds.has(t.route_id));
       }
     }
+    // #1768: only services some trip runs on set the archive's dates, as processing records them.
+    ({ calendar, calendarDates } = calendarWithTrips(calendar, calendarDates, trips.map(t => t.service_id)));
     return {
       feedStart: effectiveFeedStart({
         feedInfoStart: feedInfo.feed_start_date,
