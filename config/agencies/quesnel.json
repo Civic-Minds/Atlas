@@ -1,0 +1,27 @@
+{
+  "slug": "quesnel",
+  "officialName": "BC Transit",
+  "nameQualifier": "Quesnel",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    52.976,
+    -122.49
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=32",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2463/latest.zip",
+  "bbox": [
+    52.9386,
+    -123.5838,
+    53.1069,
+    -121.5147
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}
