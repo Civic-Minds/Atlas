@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { dateTimeText } from '../shared/dateText';
-import { MCP_TESTERS_API_URL, MCP_USAGE_DAYS, type McpTester, type McpTesterCall, type McpUsageResponse } from '../shared/mcpTesters';
+import { MCP_TESTERS_API_URL, MCP_TESTERS_CHANGE_HEADER, MCP_USAGE_DAYS, type McpTester, type McpTesterCall, type McpUsageResponse } from '../shared/mcpTesters';
 import LineChart from './components/charts/LineChart';
 import { STORY_CHART_PANEL } from './pageStyles';
 import { countText } from '../shared/numberText';
 import { dateRange } from '../shared/dateText';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PAGE_LEAD } from './components/ui/PageSection';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import { PageTitle, SectionTitle, SubsectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
 import CopyButton from './components/ui/CopyButton';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
@@ -85,13 +85,68 @@ const T = C.testers;
 const when = (iso: string) => dateTimeText(iso) ?? MISSING_VALUE;
 
 /** The hosted pilot's testers and each one's latest calls, read through the local API (local-api/mcp-testers.ts). */
+/** CIV-2202: makes (`make`) or stops (`stop`) a tester's link through the local API; the admin token stays on the Mac. */
+async function changeTester(what: 'make' | 'stop', name: string): Promise<{ ok: boolean; link?: string; error?: string | null }> {
+  try {
+    const res = await fetch(`${MCP_TESTERS_API_URL}?${what}=${encodeURIComponent(name)}`, { method: 'POST', headers: { [MCP_TESTERS_CHANGE_HEADER]: '1' } });
+    const body = await res.json() as { link?: string; revoked?: boolean; error?: string | null };
+    return { ok: res.ok && (what === 'make' ? !!body.link : body.revoked === true), link: body.link, error: body.error };
+  } catch { return { ok: false }; }
+}
+
+const FIELD = 'min-w-0 flex-1 rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] px-3 py-1.5 text-sm text-[var(--text-primary)]';
+const ACTION = 'rounded-md border border-[var(--border-primary)] bg-[var(--bg-primary)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] disabled:opacity-50';
+
+/** CIV-2202: a name and "Make link"; the new link shows once, with the copy button, and is kept nowhere. */
+function NewLink({ onMade }: { onMade: () => void }) {
+  const N = T.newLink;
+  const [name, setName] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [made, setMade] = useState<{ name: string; link: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const make = async () => {
+    const who = name.trim();
+    if (!who) return;
+    setBusy(true); setError(null); setMade(null);
+    const r = await changeTester('make', who);
+    setBusy(false);
+    if (r.ok && r.link) { setMade({ name: who, link: r.link }); setName(''); onMade(); } else setError(r.error || N.failed);
+  };
+  return (
+    <div className="mt-6">
+      <SubsectionTitle>{N.heading}</SubsectionTitle>
+      <form className="mt-2 flex max-w-md items-center gap-2" onSubmit={e => { e.preventDefault(); void make(); }}>
+        <input type="text" value={name} onChange={e => setName(e.target.value)} aria-label={N.name} placeholder={N.name} maxLength={60} className={FIELD} />
+        <button type="submit" className={ACTION} disabled={busy || !name.trim()}>{N.make}</button>
+      </form>
+      {error && <p className={PARAGRAPH} role="alert">{error}</p>}
+      {made && (
+        <>
+          <p className={PARAGRAPH}>{N.shownOnce(made.name)}</p>
+          <CodeBlock text={made.link} />
+        </>
+      )}
+    </div>
+  );
+}
+
 function Testers() {
   const [testers, setTesters] = useState<McpTester[] | null | 'unavailable'>(null);
   const [open, setOpen] = useState<string | null>(null);
   const [calls, setCalls] = useState<McpTesterCall[] | null>(null);
+  const [stopping, setStopping] = useState<string | null>(null);
+  const [stopError, setStopError] = useState(false);
+  const [reload, setReload] = useState(0);
   useEffect(() => {
     fetch(MCP_TESTERS_API_URL).then(r => r.json()).then(d => setTesters(d.available ? d.testers : 'unavailable')).catch(() => setTesters('unavailable'));
-  }, []);
+  }, [reload]);
+  const stop = async (name: string) => {
+    if (!window.confirm(T.confirmStop(name))) return;
+    setStopping(name); setStopError(false);
+    const r = await changeTester('stop', name);
+    setStopping(null);
+    if (r.ok) setReload(n => n + 1); else setStopError(true);
+  };
   useEffect(() => {
     if (!open) return;
     setCalls(null);
@@ -99,7 +154,7 @@ function Testers() {
   }, [open]);
   if (testers === 'unavailable') return <p className={PARAGRAPH}>{T.unavailable}</p>;
   if (testers === null) return <p className={PARAGRAPH}>{T.loading}</p>;
-  if (!testers.length) return <p className={PARAGRAPH}>{T.none}</p>;
+  if (!testers.length) return <><p className={PARAGRAPH}>{T.none}</p><NewLink onMade={() => setReload(n => n + 1)} /></>;
   const testerColumns: DataTableColumn<McpTester>[] = [
     { key: 'name', header: T.name, rowHeader: true, cell: t => <button type="button" className="whitespace-nowrap text-left font-semibold text-[var(--text-primary)] underline" aria-expanded={open === t.name} onClick={() => setOpen(open === t.name ? null : t.name)}>{t.name}</button> },
     { key: 'since', header: T.since, cell: t => when(t.created_at) },
@@ -108,6 +163,7 @@ function Testers() {
     { key: 'questions', header: T.questions, cell: t => t.questions ?? MISSING_VALUE },
     { key: 'questionsLastWeek', header: T.questionsLastWeek, cell: t => t.questions_7d ?? MISSING_VALUE },
     { key: 'status', header: T.status, cell: t => (t.revoked_at ? T.revoked : T.active) },
+    { key: 'link', header: T.link, cell: t => (t.revoked_at ? null : <button type="button" className={`${ACTION} whitespace-nowrap`} disabled={stopping != null} onClick={() => void stop(t.name)}>{T.stop}</button>) },
   ];
   const callColumns: DataTableColumn<McpTesterCall>[] = [
     { key: 'when', header: T.when, cell: c => when(c.at) },
@@ -124,6 +180,8 @@ function Testers() {
             <DataTable variant="ruled" columns={callColumns} rows={calls} rowKey={c => c.id} caption={open} />
           ))} />
       </div>
+      {stopError && <p className={PARAGRAPH} role="alert">{T.stopFailed}</p>}
+      <NewLink onMade={() => setReload(n => n + 1)} />
     </>
   );
 }

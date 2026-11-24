@@ -1,13 +1,15 @@
 /**
  * Local only: the hosted MCP pilot's testers and their calls, for the MCP page's Testers section. Asks the pilot Worker's
  * admin API with the admin token from its credentials file on this Mac (~/Developer/Credentials/Atlas Studio MCP admin for
- * Atlas.env, ADMIN_TOKEN only). Reads only: the list (GET /admin/testers) and one tester's log (GET .../log). Without the
- * token it answers `available: false`. The token never leaves this process.
+ * Atlas.env, ADMIN_TOKEN only). Reads the list (GET /admin/testers) and one tester's log (GET .../log). CIV-2202 (Ryan,
+ * 2026-11-24): also makes a tester's link (POST ?make=<name> → POST /admin/testers) and stops one (POST ?stop=<name> →
+ * POST /admin/testers/<name>/revoke). The new link goes back to the page once and is never logged or kept here. Without
+ * the token it answers `available: false`. The token never leaves this process.
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { fillDays, MCP_PILOT_ORIGIN, MCP_TESTER_CALLS_SHOWN, MCP_USAGE_DAYS, MCP_USAGE_LOG_LIMIT, usageFromCalls, type McpTester, type McpTesterCall, type McpUsageDay, type McpUsageResponse } from '../shared/mcpTesters.js';
+import { fillDays, MCP_PILOT_ORIGIN, MCP_TESTERS_CHANGE_HEADER, MCP_TESTER_CALLS_SHOWN, MCP_USAGE_DAYS, MCP_USAGE_LOG_LIMIT, usageFromCalls, type McpTester, type McpTesterCall, type McpUsageDay, type McpUsageResponse } from '../shared/mcpTesters.js';
 
 const TOKEN_FILE = join(homedir(), 'Developer/Credentials/Atlas Studio MCP admin for Atlas.env');
 
@@ -47,10 +49,32 @@ export async function usage(get: (path: string) => Promise<Response>, today: Dat
   return { available: true, days, complete: logs.every(l => l!.length < MCP_USAGE_LOG_LIMIT) };
 }
 
+/**
+ * Makes or stops a tester's link (CIV-2202). Only a POST from the MCP page itself: it must carry MCP_TESTERS_CHANGE_HEADER
+ * and, when the browser names an origin, a localhost one, so another site open in the browser can't make a link and read it.
+ */
+export async function change(request: Request, post: (path: string, body?: unknown) => Promise<Response>): Promise<Response> {
+  const origin = request.headers.get('origin');
+  if (request.headers.get(MCP_TESTERS_CHANGE_HEADER) !== '1' || (origin && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))) return json({ error: 'Refused' }, 403);
+  const params = new URL(request.url).searchParams;
+  const make = params.get('make'), stop = params.get('stop');
+  const res = make != null ? await post('/admin/testers', { name: make }) : stop ? await post(`/admin/testers/${encodeURIComponent(stop)}/revoke`) : null;
+  if (!res) return json({ error: 'Not found' }, 404);
+  const body = await res.json().catch(() => ({})) as { name?: string; link?: string; revoked?: boolean; error?: string };
+  if (!res.ok) return json({ error: body.error ?? null }, res.status);
+  return json(make != null ? { name: body.name, link: body.link } : { revoked: body.revoked === true });
+}
+
 export default {
   async fetch(request: Request): Promise<Response> {
     const token = adminToken();
     if (!token) return json({ available: false });
+    if (request.method === 'POST') {
+      const post = (path: string, body?: unknown) => fetch(`${MCP_PILOT_ORIGIN}${path}`, {
+        method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(15_000),
+      });
+      try { return await change(request, post); } catch { return json({ error: null }, 502); }
+    }
     const params = new URL(request.url).searchParams;
     if (params.has('usage')) {
       const get = (path: string) => fetch(`${MCP_PILOT_ORIGIN}${path}`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(15_000) });

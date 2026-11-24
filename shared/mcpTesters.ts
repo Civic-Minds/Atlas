@@ -1,6 +1,11 @@
 /** The hosted MCP pilot (workers/atlas-mcp, wrangler.pilot-test.jsonc) and the MCP page's Testers section. */
 export const MCP_PILOT_ORIGIN = 'https://atlas-studio-mcp.rhanna-334.workers.dev';
 export const MCP_TESTERS_API_URL = '/api/mcp-testers';
+/**
+ * CIV-2202: the header the MCP page sends when it makes or stops a tester's link. A page on another site can't send it
+ * without a CORS preflight, which the local API server doesn't allow for it.
+ */
+export const MCP_TESTERS_CHANGE_HEADER = 'x-atlas-mcp-page';
 /** How many of a tester's most recent calls the page shows. */
 export const MCP_TESTER_CALLS_SHOWN = 50;
 
