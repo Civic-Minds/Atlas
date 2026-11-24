@@ -83,20 +83,46 @@ function ScheduleSparklines({ change, period, beforeDate, afterDate }: { change:
  * CIV-2182 "now" design, Fleet's agency card: Live's vehicles on the road now, the vehicles the schedule needs now, and the
  * vehicles it needs at the top bar's time of day, in the shared table. A dash where Live doesn't follow the agency.
  */
-function FleetNowTable({ modes, runningNow, scheduledNow, period, scheduledAt }: { modes: readonly number[] | undefined; runningNow: number | null; scheduledNow: number | null; period: PeriodKey; scheduledAt: number | null }) {
+function FleetNowTable({ modes, runningNow, scheduledNow }: { modes: readonly number[] | undefined; runningNow: number | null; scheduledNow: number | null }) {
   const N = fleetNetworkText(modes);
   const R = STUDIO_REDESIGN_TEXT;
   const value = (n: number | null) => (n == null ? MISSING_VALUE : countText(n));
   const rows = [
     { key: 'live', label: N.inServiceNow, value: value(runningNow) },
     { key: 'now', label: R.scheduledNow, value: value(scheduledNow) },
-    { key: 'at', label: R.scheduledAt(PERIOD_LABELS[period]), value: value(scheduledAt) },
   ];
   return (
     <DataTable caption={PAGE_NAMES.studioVehicles} layout="fill" rows={rows} rowKey={r => r.key} columns={[
       { key: 'label', header: TIME_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
       { key: 'value', header: <span className="block text-right">{N.count}</span>, className: 'text-right', cell: r => r.value },
     ]} />
+  );
+}
+
+/**
+ * CIV-2182 "now" design (Ryan: a sparkline of the vehicles the schedule needs in each period, like the frequency
+ * sparkline): the route card's frequency chart, each hour's bar the whole agency's vehicles for its time of day, the top
+ * bar's time of day lit. Bar heights scale with the count (the chart's height is trips per hour, so 60 / count).
+ */
+function FleetPeriodSparkline({ vehicles, period, modes }: { vehicles: StudioVehiclesFile; period: PeriodKey; modes: readonly number[] | undefined }) {
+  const word = vehiclesWord(modes);
+  const counts = Object.fromEntries(PERIOD_KEYS.map(p => [p, agencyFleet(vehicles, p)?.implied ?? null])) as Record<PeriodKey, number | null>;
+  const byHour: Record<number, number | null> = {};
+  const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
+  for (const h of SPARKLINE_HOURS) {
+    const n = counts[HOUR_TO_PERIOD[h] as PeriodKey] ?? null;
+    byHour[h] = n ? 60 / n : null;
+    if (n) stackedByHour[h] = [{ label: word, headway: 60 / n, color: CHANGE_COLOR.same }];
+  }
+  const hourTitle = (h: number) => {
+    const p = HOUR_TO_PERIOD[h] as PeriodKey;
+    return counts[p] == null ? undefined : `${PERIOD_LABELS[p]}: ${countText(counts[p]!)} ${word}`;
+  };
+  return (
+    <div className="mt-3">
+      <CardSectionLabel className="!mb-0">{STUDIO_REDESIGN_TEXT.scheduledByPeriod}</CardSectionLabel>
+      <HeadwaySparkline byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} period={period} title={STUDIO_REDESIGN_TEXT.scheduledByPeriod} hourTitle={hourTitle} />
+    </div>
   );
 }
 
@@ -385,7 +411,8 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                   {fleet && <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>}
                   {fleetDesign() === 'now' ? (
                     <Widget title={vehiclesNeededTitle(agencyModes)}>
-                      <FleetNowTable modes={agencyModes} runningNow={runningNow} scheduledNow={nowFleet?.implied ?? null} period={period} scheduledAt={fleet?.implied ?? null} />
+                      <FleetNowTable modes={agencyModes} runningNow={runningNow} scheduledNow={nowFleet?.implied ?? null} />
+                      <FleetPeriodSparkline vehicles={vehicles} period={period} modes={agencyModes} />
                     </Widget>
                   ) : (
                     <Widget title={vehiclesNeededTitle(agencyModes)}>

@@ -74,7 +74,8 @@ export const STUDIO_REDESIGN_TEXT = {
   summaryLabel: 'Routes by change',
   /** Fleet "now" design (Ryan: "how many vehcles operating right now how many needed for scheduled service at now or x hour"). */
   scheduledNow: 'Scheduled now',
-  scheduledAt: (period: string) => `Scheduled, ${period}`,
+  /** Fleet "now" design: the sparkline of the vehicles the schedule needs in each time of day. */
+  scheduledByPeriod: 'Scheduled, by time of day',
   /** The way back from one kind's routes to the summary. */
   allChanges: 'All changes',
 } as const;
