@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import StudioChips from './StudioChips';
 import { StudioSettingsProvider, type StudioGeneralSettings } from './StudioSettings';
@@ -17,6 +17,7 @@ import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
 import Live from './Live';
+import { liveRouteCount, useLiveAgency } from '../../LiveAgencyPage';
 import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
 import { STUDIO_NO_SEARCH, StudioSearchProvider, type StudioSearchState } from './StudioSearch';
@@ -104,9 +105,9 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const fullNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).full : s; };
   const cardNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).card : { primary: s }; };
   const agency = nameOf(slug);
-  // CIV-2193 (Ryan: "similar to history we oculd put 9 beside live"): the agency's recorded routes, beside the Live tab's
-  // name as History's count sits beside its own; reported by the Live page once its figures load, kept per agency.
-  const [liveRoutes, setLiveRoutes] = useState<{ slug: string; count: number } | null>(null);
+  // CIV-2193: the agency's recorded routes beside the Live tab's name. Read here, not by the Live page (#1764: the count was
+  // missing until Live had been opened for that agency, so never on Fleet or Schedules); the Live page gets this same answer.
+  const liveState = useLiveAgency(active && slug ? slug : '');
   const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, fullNameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
   const noDataRows = useMemo(() => (withData ?? []).map(s => ({ slug: s, ...cardNameOf(s) })), [agencyCatalog, withData]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new page or agency starts with no route open.
@@ -160,7 +161,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
           const Icon = PAGE_ICONS[k];
           return (
             <Fragment key={k}>
-              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' && liveRoutes?.slug === slug ? liveRoutes.count : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
+              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' ? liveRouteCount(liveState) : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
             </Fragment>
           );
         }),
@@ -181,7 +182,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
             <Fleet key={v.slug} view="schedules" slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
           {!v.noData && v.page === 'live' && v.slug && (
-            <Live key={v.slug} slug={v.slug} route={v.route} setRoute={setRoute} onRouteCount={setLiveRoutes} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+            <Live key={v.slug} slug={v.slug} route={v.route} setRoute={setRoute} state={liveState} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
         </div>
       )}

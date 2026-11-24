@@ -64,18 +64,32 @@ function sortValue(sort: Sort, r: AgencyRouteRow): number {
 }
 
 /** Fetches nothing while `agency` is empty (Live switched off). */
-export function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse } {
-  const [state, setState] = useState<{ kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse }>({ kind: 'loading' });
+/** What useLiveAgency gives: loading, an error, or the agency's answer. */
+export type LiveAgencyState = { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse };
+
+/**
+ * CIV-2193 (Ryan: "similar to history we oculd put 9 beside live"): the agency's recorded routes, beside Studio's Live tab;
+ * none until its figures load, or when Live has none for it.
+ */
+export function liveRouteCount(state: LiveAgencyState): number | undefined {
+  return state.kind === 'done' && state.data.status === 'ready' ? state.data.summary.covered.length : undefined;
+}
+
+export function useLiveAgency(agency: string): LiveAgencyState {
+  // Kept with the agency it is for (#1764): after a switch, the last agency's answer never shows as the new one's.
+  const [held, setHeld] = useState<{ agency: string; state: LiveAgencyState }>({ agency, state: { kind: 'loading' } });
   useEffect(() => {
     if (!agency) return;
     let live = true;
+    const settle = (state: LiveAgencyState) => { if (live) setHeld({ agency, state }); };
     fetch(liveAgencyDataUrl(agency))
       .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: '' } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
       // #1486: an answer for another agency (a local review stub serves TTC's file for any agency) is "no analysis", never shown under this name.
-      .then(data => { if (live) setState({ kind: 'done', data: data.status === 'ready' && data.summary.agency !== agency.toLowerCase() ? { status: 'unknown_agency', reason: '' } : data }); })
-      .catch(() => { if (live) setState({ kind: 'error', reason: devOnly(LIVE_API_NO_ANSWER) }); });
+      .then(data => settle({ kind: 'done', data: data.status === 'ready' && data.summary.agency !== agency.toLowerCase() ? { status: 'unknown_agency', reason: '' } : data }))
+      .catch(() => settle({ kind: 'error', reason: devOnly(LIVE_API_NO_ANSWER) }));
     return () => { live = false; };
   }, [agency]);
+  const state: LiveAgencyState = held.agency === agency ? held.state : { kind: 'loading' };
   // CIV-1160: an agency Live has no analysis for is named by its own short name ("MiWay"), never the address's slug.
   const name = useLiveAgencyName(agency);
   return state.kind === 'done' && state.data.status === 'unknown_agency' ? { kind: 'done', data: { status: 'unknown_agency', reason: liveNoAgencyAnalysis(name) } } : state;
