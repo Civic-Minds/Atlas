@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Live tab always shows how many routes Live follows**: the number appeared only after Live had been opened for that city, so never on Fleet or Schedules, and switching city could briefly show the last city's number
 - **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
 - **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
 - **On the filtered map, one slower stop at the end of a stretch colours only its own end piece**: a single slightly slower end stop was recolouring the whole stretch; the rest now takes the worst of its other stops, and no stop's published value changes
