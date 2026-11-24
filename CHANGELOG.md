@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's Live reports cover the TTC's Ten-Minute Network**: 23 frequent bus routes join the 10 streetcars, once a week of their positions is recorded
 - **Studio's Live tab always shows how many routes Live follows**: the number appeared only after Live had been opened for that city, so never on Fleet or Schedules, and switching city could briefly show the last city's number
 - **The top bar stays tidy while Live, History or Compare is open**: the other mode tabs shrink to icons, so the open mode has room
 - **Atlas remembers your settings between visits**: hiding low-quality routes, the map key and Data saver stay as you left them

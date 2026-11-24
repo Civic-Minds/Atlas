@@ -28,7 +28,7 @@ done
 [[ "$AGENCY" =~ ^[a-z0-9-]+$ ]] || { echo "live:analyze: bad --agency \"$AGENCY\"" >&2; exit 1; }
 if [ "$AGENCY" = "ttc" ]; then
   ARCHIVE="$DATA/archive"
-  [ $ALL = 1 ] && ROUTES=(501 503 504 505 506 507 509 510 511 512)
+  [ $ALL = 1 ] && ROUTES=(501 503 504 505 506 507 509 510 511 512 7 16 22 25 27 36 41 44 45 47 60 63 72 87 89 95 100 116 165 900 927 929 960)
 else
   ARCHIVE="$DATA/archive-$AGENCY"
   # No configured route list for other agencies: every route the archive holds positions for (<route>-<YYYY-MM-DD>.jsonl).

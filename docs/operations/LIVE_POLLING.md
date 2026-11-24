@@ -109,7 +109,7 @@ Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. For the MBTA onl
 
 | Agency | Slug | Filter |
 |--------|------|--------|
-| Toronto Transit Commission | `ttc` | Streetcar route_ids only (`/^5(0[1345679]|1[012])$/`) |
+| Toronto Transit Commission | `ttc` | The routes Live analyses (`LIVE_TTC_ANALYSED_ROUTES`: streetcars and the Ten-Minute Network, CIV-2174) |
 | Burlington Transit | `burlington` | All vehicle positions |
 | Hamilton Street Railway | `hamilton` | All vehicle positions |
 | STM (Montreal) | `stm` | All vehicle positions; requires Worker secret `STM_API_KEY` |
