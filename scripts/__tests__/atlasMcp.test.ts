@@ -225,6 +225,21 @@ describe('Live files in the private bucket (CIV-1860)', () => {
   });
 });
 
+// #1773: routes_near found no stop for STM's hyphenated and accented station names.
+describe('stops a place names (#1773)', () => {
+  it('reads hyphens and accents in stop names the way the place is read', async () => {
+    const { stopsNamed } = await import('../mcp/atlasData');
+    const { placeParts } = await import('../../shared/stopNameText');
+    const stops = [{ name: 'Station Lionel-Groulx' }, { name: 'Station Guy-Concordia' }, { name: 'YUL Aéroport Montréal-Trudeau' }, { name: 'Georges-Vanier / Lionel-Groulx' }];
+    const names = (place: string) => stopsNamed(stops, placeParts(place)).map(s => s.name);
+    expect(names('Station Lionel-Groulx')).toEqual(['Station Lionel-Groulx']);
+    expect(names('Lionel-Groulx')).toEqual(['Station Lionel-Groulx', 'Georges-Vanier / Lionel-Groulx']);
+    expect(names('Station Guy-Concordia')).toEqual(['Station Guy-Concordia']);
+    expect(names('YUL Aeroport Montreal-Trudeau')).toEqual(['YUL Aéroport Montréal-Trudeau']);
+    expect(names('Aéroport Montréal')).toEqual(['YUL Aéroport Montréal-Trudeau']);
+  });
+});
+
 describe('route lookup (CIV-1864)', () => {
   it('uses the map search rule after exact names and lines: leading zeros, numbers, names, rail first', async () => {
     const { findRoute } = await import('../mcp/atlasData');

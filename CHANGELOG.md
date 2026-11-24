@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP finds stops with hyphens or accents in their names**: STM's Lionel-Groulx, Guy-Concordia and the YUL airport stops got "no stop name matches", since the stop names weren't read the way the place was
 - **Atlas Studio MCP finds a route by its route id**: a route with no number, such as TransLink's Expo Line (30053), was found only by name
 - **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
 - **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
