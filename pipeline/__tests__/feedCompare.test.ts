@@ -1,8 +1,12 @@
 import JSZip from 'jszip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  compareFeedSides, comparisonMarkdown, dateInWeek, dateReadProblem, dayCoverage, DateNotReadError, headwayText, readFeedSide, routeLines, servicesListedOn,
+  compareFeedSides, comparisonMarkdown, periodFigures, dateInWeek, dateReadProblem, dayCoverage, DateNotReadError, headwayText, readFeedSide, routeLines, servicesListedOn,
 } from '../feedCompare';
+import { processGtfsBuffer } from '../process-core';
+import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
+import { periodFigure } from '../../scripts/mcp/atlasData';
+import { PERIOD_KEYS } from '../../shared/config';
 
 // CIV-1684: a before/after schedule comparison. Before: A every 30, B, D taking 20 min.
 // After: A every 15, B gone, C new, D taking 30 min. All weekday-only, 06:00-22:00.
@@ -57,6 +61,34 @@ const AFTER: RouteSpec[] = [{ id: 'A', every: 15, minutes: 20 }, { id: 'C', ever
 describe('compare two schedule versions (CIV-1684)', () => {
   beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'], now: RUN }); });
   afterEach(() => { vi.useRealTimers(); });
+
+  it("gives each period the figure route_frequency gives for the same schedule (#1674)", async () => {
+    const buf = await feed(AFTER);
+    const side = await readFeedSide(buf, '20260917', { slug: 'test' });
+    // route_frequency's own reading: the same processed rows, normalized, through periodFigure.
+    const result = await processGtfsBuffer(buf, undefined, { slug: 'test', riderWeek: true, referenceDate: undefined, serviceAnchor: '20260917' });
+    const features = (JSON.parse(result.geojson).features as Array<{ properties: Record<string, unknown> }>).filter(f => f.properties.routeId != null && f.properties.stopId == null);
+    normalizeRouteFilterFeatures(features);
+    for (const route of ['A', 'C', 'D']) {
+      const rows = features.map(f => f.properties).filter(p => p.day === 'Weekday' && p.routeShortName === route);
+      const r = { key: route, name: route, shortName: route, longName: null, mode: 'Bus', rows } as never;
+      for (const k of PERIOD_KEYS) expect(side.routes[route].days.Weekday!.headway[k] ?? null).toBe(periodFigure(r, k).waitMinutes);
+    }
+    expect(side.routes.A.days.Weekday!.headway.midday).toBe(15);
+  });
+
+  it('reads the figure from the rows, not a stamped field a row may lack (#1674: Kingston 2 read "no service")', async () => {
+    const buf = await feed(AFTER);
+    const result = await processGtfsBuffer(buf, undefined, { slug: 'test', riderWeek: true, referenceDate: undefined, serviceAnchor: '20260917' });
+    const rows = (JSON.parse(result.geojson).features as Array<{ properties: Record<string, unknown> }>)
+      .map(f => f.properties).filter(p => p.routeId === 'A' && p.stopId == null && p.day === 'Weekday');
+    for (const p of rows) delete p.routeFilterHeadwayByPeriod;
+    normalizeRouteFilterFeatures(rows.map(properties => ({ properties })));
+    const r = { key: 'A', name: 'A', shortName: 'A', longName: null, mode: 'Bus', rows } as never;
+    const figures = periodFigures([rows as never]);
+    expect(figures.midday).toBe(15);
+    for (const k of PERIOD_KEYS) expect(figures[k] ?? null).toBe(periodFigure(r, k).waitMinutes);
+  });
 
   it('lists added, removed and changed routes with headway, trips and run time', async () => {
     const before = await readFeedSide(await feed(BEFORE), '2026-09-03', { slug: 'test' });

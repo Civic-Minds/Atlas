@@ -20,12 +20,31 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../shared/dayTy
 import type { GtfsData } from '../types/gtfs.js';
 import { gtfsTimeToMinutes } from '../shared/connections.js';
 import { ALL_DAYS, DAYS_SUNDAY_FIRST } from '../shared/rules/days.js';
+import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
+import { routeGroupKey } from '../shared/routeGroupKey.js';
+import { routeListFilterDisplay, routeWaitMinutes } from '../src/utils/effectiveHeadway.js';
+import type { ShapeProperties } from '../src/hooks/useIntervalStats.js';
 
 export type PeriodFigures = Partial<Record<PeriodKey, number | null>>;
 /** A drawn line as [lng, lat] pairs, rounded to ROUTE_LINE_DECIMALS. */
 export type RouteLine = Array<[number, number]>;
 /** About a metre: enough to draw a route, small enough to keep the Studio file light. */
 export const ROUTE_LINE_DECIMALS = 5;
+
+/**
+ * #1674: a route's figure per period on one day, from its rows (normalized, one list per route as the map groups them):
+ * route_frequency's waitMinutes (routeWaitMinutes), never a row field read on its own. A second route with the same
+ * name keeps the shorter.
+ */
+export function periodFigures(groups: Iterable<readonly Props[]>): PeriodFigures {
+  const lists = [...groups];
+  const out: PeriodFigures = {};
+  for (const k of PERIOD_KEYS) {
+    const waits = lists.map(g => routeWaitMinutes(routeListFilterDisplay(g as unknown as ShapeProperties[], k))).filter((v): v is number => v != null);
+    out[k] = waits.length ? Math.min(...waits) : null;
+  }
+  return out;
+}
 
 /** One route on one day type, on one side. */
 export interface RouteDay {
@@ -294,6 +313,9 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
   };
 
   const routes: Record<string, RouteSide> = {};
+  // #1674: the map's and the MCP's reading of the rows (route_frequency reads normalized rows), before any figure is read.
+  normalizeRouteFilterFeatures(routeFeatures as Array<{ properties?: Record<string, unknown> | null }>);
+  const rowsOfRoute = new Map<RouteDay, Map<string, Props[]>>();
   for (const p of rows) {
     const label = String(p.routeShortName || p.routeLongName || p.routeId);
     const side = routes[label] ??= { route: label, longName: p.routeLongName ?? null, routeIds: [], days: {} };
@@ -306,12 +328,12 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
       const key = JSON.stringify(line);
       if (!day.lines!.some(l => JSON.stringify(l) === key)) day.lines!.push(line);
     }
-    // The route figure is the same on every row of the route that day; a second route id with the same name keeps the shorter.
-    for (const k of PERIOD_KEYS) {
-      const v = (p.routeFilterHeadwayByPeriod ?? {})[k] ?? null;
-      const cur = day.headway[k];
-      day.headway[k] = cur == null ? v : v == null ? cur : Math.min(cur, v);
-    }
+    // #1674: the route figure is the MCP's route_frequency waitMinutes for the route that day (routeWaitMinutes over the
+    // route's rows, grouped as the map groups them), read once per route below, never a copy of a row field.
+    if (!rowsOfRoute.has(day)) rowsOfRoute.set(day, new Map());
+    const group = routeGroupKey(p.routeShortName, p.routeId);
+    const groupRows = rowsOfRoute.get(day)!;
+    (groupRows.get(group) ?? groupRows.set(group, []).get(group)!).push(p);
     // The main stretch's edge, as the route card's main-stretch row reads it (rowReadsPeriodEdge): the first one found.
     if (p.stretchRole === 'main') {
       for (const k of PERIOD_KEYS) {
@@ -336,6 +358,8 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     const run = runMinutesOf(parsed.runningTimes?.[`${routeId}::${dir}::${dayType}`]);
     if (run != null && day.runMinutes[dir] == null) day.runMinutes[dir] = run;
   }
+  // #1674: each period's figure, as route_frequency gives it. A second route with the same name keeps the shorter.
+  for (const [day, groups] of rowsOfRoute) day.headway = periodFigures(groups.values());
   // The route's length (CIV-1827): where it has branches, their full patterns (the tails; the main row is the shared
   // stretch alone), else its patterns; short turns left out. The fewest and most stops, and the ends of the longest
   // pattern in the lowest direction id, so both sides of a comparison read the same way round.

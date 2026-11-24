@@ -520,6 +520,15 @@ export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay)
 }
 
 /**
+ * #1674: a route's typical wait in a period, from its list reading: the number the map colours and filters the route by
+ * (its least frequent part), or null when the route has no regular service then. One source for the MCP's route_frequency
+ * (waitMinutes) and schedule_changes (each side's figure), so the two never disagree on one schedule.
+ */
+export function routeWaitMinutes(display: RouteListDisplay): number | null {
+  return display.headway != null && display.headway < HEADWAY_NO_SERVICE_FROM ? display.headway : null;
+}
+
+/**
  * Headway, shared-stretch range and limited flag for one route list row, from the filter's number (the agency pages' bands
  * and summaries). The lists read routeListDisplay, the card's own numbers.
  */

@@ -20,7 +20,7 @@ import { frequencyChange } from '../../shared/frequencyChange';
 import { clockTime, hourRange } from '../../shared/timeText';
 import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
-import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../../src/utils/effectiveHeadway';
+import { routeListCellText, routeListDisplay, routeListFilterDisplay, routeWaitMinutes } from '../../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
 import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
@@ -34,7 +34,7 @@ import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
 import { headwayAboutRange, headwayEvery } from '../../shared/headwayText';
 import { buildStopRoutes, stopRouteLineHeadway, stopRowHeadway, stopRowRangeLow } from '../../src/utils/stopRoutes';
 import { pairChanges } from '../../shared/scheduleChangePairing';
-import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
+import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
@@ -302,7 +302,7 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
 export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
   const filter = routeListFilterDisplay(r.rows, period);
   const shown = routeListCellText(routeListDisplay(r.rows, period), false);
-  const waitMinutes = filter.headway != null && filter.headway < HEADWAY_NO_SERVICE_FROM ? filter.headway : null;
+  const waitMinutes = routeWaitMinutes(filter);
   const trips = departuresInPeriod(r.rows as Array<{ departuresByHour?: Record<string, number> | null }>, period);
   const range = shown ? /every (\d+(?:\.\d+)?)–(\d+(?:\.\d+)?) min/.exec(shown) : null;
   return {

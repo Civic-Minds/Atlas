@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP's schedule changes give the same figures as its route frequencies**: Kingston's route 2 was listed as cut to "no service" though it still runs every 30 minutes, because the change list read its figures another way
 - **Fort Lauderdale's LauderGO shuttles are on the map**: the five community shuttle routes now show as their own agency, apart from Broward County Transit
 - **Route search finds a route number typed without its space**: "50U" found nothing for Guelph's 50 U, in the map's search and in Atlas Studio's answers
 - **A branch with a few trips hours apart reads "Runs irregularly in this period"**: route cards and lists no longer show a wait of over an hour as "every 320 min" (TTC 101 to Wilson at midday)
