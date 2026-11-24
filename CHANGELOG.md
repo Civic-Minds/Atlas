@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **On the filtered map, one slower stop at the end of a stretch colours only its own end piece**: a single slightly slower end stop was recolouring the whole stretch; the rest now takes the worst of its other stops, and no stop's published value changes
 - **History no longer shows six old routes as running in 2026**: AC Transit 20, 21, 79 and 72R and SacRT 195 and 80 carried 2020, 2021 and 2018 schedules dated as this year, because their archive dates were written as year and month only
 - **History shows Cleveland's HealthLine once**: it appeared twice, as "HealthLine" through 2026 and as a separate "HL" from September, after RTA renamed the route in its schedule data
+- **A branch that stops partway through a period no longer makes the whole route look slow**: TTC 501 and 504 read every 66 and 61 min late at night because a short branch's wait to 2 AM set the route's figure; they now read every 10, and the branch's own row still says when it stops
 - **Every Atlas link lists its settings in the same order**: place, then route, then day and time, then filters, so two links for the same view read alike; older links still open as before
 - **Export map image shows only the size you picked as selected**: hovering another size made it look picked too, since hover and selected were nearly the same grey
 - **Every route line on the Live map shows how often it runs right now**: routes without a Live report were drawn grey; they now take the main map's frequency colours for the time of day

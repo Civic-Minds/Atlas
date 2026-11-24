@@ -29,11 +29,12 @@ describe('headline from the trunk (CIV-1959 B1)', () => {
   ]);
 
   it('RTD 15-like: a short tail no longer sets the headline; the trunk does', () => {
+    // #1749: the tail only stops partway (its long wait is to the period's edge), so it sets neither the headline nor the filter.
     const d = rtd15();
     expect(d.tails.length).toBeGreaterThan(0);
     const off = rollupDirection(d)!;
     const onR = rollupDirection(on(d))!;
-    expect(off.period[MIDDAY].filterValue).toBeGreaterThan(60); // today: the tail's wait wins
+    expect(off.period[MIDDAY].filterValue).toBe(15);
     // #1665 (rule 11): the trunk sets the headline only; the filter still reads the slowest piece.
     expect(onR.period[MIDDAY].filterValue).toBe(off.period[MIDDAY].filterValue);
     expect(onR.period[MIDDAY].value).toBe(15);
@@ -42,7 +43,7 @@ describe('headline from the trunk (CIV-1959 B1)', () => {
     expect(onR.period[MIDDAY].trunkFilterValue).toBe(off.period[MIDDAY].trunkFilterValue);
     expect(onR.period[MIDDAY].mainValue).toBe(off.period[MIDDAY].mainValue);
     const route = rollupRoute([onR, rollupDirection(on(rtd15()))]);
-    expect(route.period[MIDDAY].filterValue).toBeGreaterThan(60);
+    expect(route.period[MIDDAY].filterValue).toBe(15);
   });
 
   // TTC 29: the trunk every 8; half the trips (every 16) run on to a branch. At 4 stops the branch is under the
