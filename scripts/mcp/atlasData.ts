@@ -293,6 +293,9 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
 }
 
 
+/** A part of the day with departures but no regular frequency, in route_frequency's words (its periods and its hours, #1788). */
+export const someTripsText = (trips: number) => `some trips (${trips}), but no regular frequency`;
+
 /**
  * One period's figure as the map shows it. `waitMinutes` is the number the map colours and filters the route by: the
  * typical wait on the route's least frequent part (its slowest branch or direction). `shown` is the route list's words,
@@ -309,7 +312,7 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
     period: PERIOD_LABELS[period],
     hours: formatPeriodRange(period),
     waitMinutes,
-    shown: shown ?? (trips > 0 ? `some trips (${trips}), but no regular frequency` : 'no service'),
+    shown: shown ?? (trips > 0 ? someTripsText(trips) : 'no service'),
     ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
     // #1711: a range in shown drops the card's edge words (TTC 501 Sunday Late "every 5–10 min" beside a 47 min wait), so
     // the edge the filter read is named here in the card's own words ("every 5 min until 1:13 AM").
@@ -576,7 +579,10 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
   const byWindow = (row: ShapeProperties) => (dirWindow.get(dirOf(row)) ?? 0) > 0 && windowTrips(row) >= 0.1 * dirWindow.get(dirOf(row))!;
   const order = (a: ShapeProperties, b: ShapeProperties) => String(a.directionId).localeCompare(String(b.directionId)) || trips(b) - trips(a);
   const dayKept = r.rows.filter(byDay).sort(order);
-  const kept = [...dayKept, ...r.rows.filter(row => !byDay(row) && byWindow(row)).sort(order)];
+  // #1788: any other row with a trip in the window keeps its column too, after those, so every branch route_frequency lists
+  // that runs then has a row (RTD 31 weekday 3-7 PM: 106th & Melody, 9 trips a day, had none).
+  const windowKept = r.rows.filter(row => !byDay(row) && byWindow(row)).sort(order);
+  const kept = [...dayKept, ...windowKept, ...r.rows.filter(row => !byDay(row) && !byWindow(row) && windowTrips(row) > 0).sort(order)];
   // Rows that end at the same stop and read the same each hour are one way to the end (TTC 29 northbound, from either
   // loop to Wilson), as route_frequency's branches show it: one column, not one per starting loop.
   const columns: Array<{ row: ShapeProperties; towards: string | null }> = [];
@@ -607,7 +613,8 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
   };
   return columns.filter(({ row }) => runs(row) || !servedByAnother(row)).map(({ row, towards }) => ({
     towards,
-    byHour: hours(row).map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : headwayEvery(v) })),
+    // #1788 (Ryan "1"): an hour with departures but no regular gap says how many, in the periods' own words.
+    byHour: hours(row).map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v != null ? headwayEvery(v) : (hoursOf(row)[String(h)] ?? 0) > 0 ? someTripsText(hoursOf(row)[String(h)]) : 'no regular trips' })),
   }));
 }
 

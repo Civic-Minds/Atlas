@@ -142,6 +142,20 @@ describe('hourly figures by branch (CIV-1840)', () => {
     expect(hourlyFrequency(r501, 23 * 60, 25 * 60).map(c => c.towards)).toEqual(['Humber', 'Long Branch']);
     expect(hourlyFrequency(r501, 8 * 60, 10 * 60).map(c => c.towards)).toEqual(['Humber']);
   });
+  it('gives every branch with a trip in the window a column, and an hour with a lone trip says so (#1788: RTD 31 weekday 3-7 PM)', () => {
+    const allDay = Object.fromEntries(Array.from({ length: 18 }, (_, i) => [String(i + 5), 6]));
+    const tenAll = Object.fromEntries(Array.from({ length: 18 }, (_, i) => [String(i + 5), 10]));
+    const rows = [
+      { directionId: 0, headsign: 'Westminster Stn / 71st Ave', departuresByHour: allDay, headwayByHour: tenAll },
+      { directionId: 0, headsign: 'Front Range Community College', departuresByHour: { '6': 1, '7': 1, '15': 1, '16': 1, '17': 1, '20': 1, '21': 1, '22': 1, '23': 1, '24': 1, '25': 1 }, headwayByHour: { '15': null, '16': null, '17': null, '18': null } },
+      { directionId: 0, headsign: '106th&Melody', departuresByHour: { '6': 1, '7': 1, '8': 1, '9': 1, '10': 1, '11': 1, '12': 1, '17': 1, '18': 1 }, headwayByHour: { '15': null, '16': null, '17': null, '18': null } },
+    ];
+    const r31 = { key: '31', name: '31', shortName: '31', longName: 'Federal Blvd', mode: 'Bus', rows } as unknown as Parameters<typeof hourlyFrequency>[0];
+    const out = hourlyFrequency(r31, 15 * 60, 19 * 60);
+    expect(out.map(c => c.towards)).toEqual(['Westminster Stn / 71st Ave', 'Front Range Community College', '106th&Melody']);
+    expect(out[1].byHour.map(h => h.every)).toEqual(['some trips (1), but no regular frequency', 'some trips (1), but no regular frequency', 'some trips (1), but no regular frequency', 'no regular trips']);
+    expect(out[2].byHour.map(h => h.every)).toEqual(['no regular trips', 'no regular trips', 'some trips (1), but no regular frequency', 'some trips (1), but no regular frequency']);
+  });
   it('leaves out a column with no trips in the window when another passes its end stop then (#1714 part 2)', () => {
     const rows = [
       { directionId: 1, headsign: 'Humber', stopOrder: ['neville', 'yonge', 'humber'], departuresByHour: Object.fromEntries(Array.from({ length: 17 }, (_, i) => [String(i + 6), 14])), headwayByHour: { '20': 10, '23': null, '24': null } },

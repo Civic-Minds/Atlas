@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP's hour-by-hour figures list every branch running then, and count lone trips**: RTD 31's 106th & Melody branch had no row at rush hour, and hours with one trip read "no regular trips"
 - **A route list shows the slower frequency when service changes partway through a period**: STM's Green Line at midday read "every 4 min" though it runs every 6 after 9:17 AM
 - **Seasonal timetables update without waiting for review**: a ski or school-term timetable whose frequencies match the same date last year now goes onto the map at the next refresh, instead of being held as a suspicious change
 - **Atlas Studio MCP's schedule changes give the same figures as its route frequencies**: Kingston's route 2 was listed as cut to "no service" though it still runs every 30 minutes, because the change list read its figures another way

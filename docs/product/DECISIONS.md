@@ -300,6 +300,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-24 — The MCP's hourly rows list every branch running in the window, and an hour with a lone trip says so (#1788, CIV-2890)
+Ryan, 2026-11-24 (relayed by Atlas Manager): "1", picking the periods' existing words for an hour with departures but no regular gap, plus the missing branch columns.
+- The rule: route_frequency's hourly rows give a column to every branch with a trip in the asked window, and an hour with departures but no regular gap reads "some trips (N), but no regular frequency" instead of "no regular trips".
+- Counts (529 agencies × route-days × the 6 period windows, 193,224 answers): 653 gain a column; 88,653 change wording.
+
 ### 2026-11-24 — When a period's service changes partway, the route list's number alone is the slower one (#1771, CIV-2228)
 Ryan, 2026-11-24 (relayed by Atlas Manager): "1", picking option B of the side-by-side test: always the slower number. No new number.
 - The rule: where the route list can't show the card's words and they name a change partway through the period ("every 4 min until 9:17 AM, then every 6 min"), the list's number is the slower of the two. STM 1 weekday midday reads "every 6 min" (was "every 4"), matching its wait and the schedule.
