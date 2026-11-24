@@ -10,6 +10,7 @@
  * R2 lifecycle rules enforce the 30-day retention window.
  */
 
+import { fetchFeed } from './fetchFeed';
 import { LIVE_SNAPSHOT_SCHEMA_VERSION } from '../../../shared/liveContract';
 import { SITE_URL } from '../../../shared/rules/paths';
 import {
@@ -403,10 +404,7 @@ async function archivePositions(
   date: string,
   ts: number,
 ): Promise<string> {
-  const res = await fetch(feed.url, {
-    headers: headersFor(feed.apiKeyHeader, env),
-    signal: AbortSignal.timeout(15_000),
-  });
+  const res = await fetchFeed(feed.url, { headers: headersFor(feed.apiKeyHeader, env) });
   if (!res.ok) throw new Error(`positions/${feed.slug}: HTTP ${res.status}`);
   const buf = await res.arrayBuffer();
 
@@ -438,10 +436,7 @@ async function archiveTrips(
   date: string,
   ts: number,
 ): Promise<string> {
-  const res = await fetch(feed.url, {
-    headers: headersFor(feed.apiKeyHeader, env),
-    signal: AbortSignal.timeout(15_000),
-  });
+  const res = await fetchFeed(feed.url, { headers: headersFor(feed.apiKeyHeader, env) });
   if (!res.ok) throw new Error(`${feed.slug}: HTTP ${res.status}`);
   const buf = await res.arrayBuffer();
 

@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
+import { createPropertyExpression, latest, type StylePropertySpecification } from '@maplibre/maplibre-gl-style-spec';
+import { historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyFeatureKey, historyPeriodValue, historyTileKeyExpression, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
 import { localRouteHeadwayColor } from '../../components/Interval/map/routeStyle';
 
 const snap = (year: number, v2: Record<string, unknown> | undefined, extra: Record<string, unknown> = {}) =>
   ({ label: String(year), year, weekdayHeadwayMin: 30, ...(v2 ? { v2 } : {}), ...extra }) as never;
 const agency: Parameters<typeof historyYearRoutes>[0] = {
   routes: [
-    { routeShortName: '6', snapshots: [snap(2014, { refDate: '20140301', rep: { h: 15 } }), snap(2020, { refDate: '20200301', rep: { h: 60 } })] },
-    { routeShortName: '117', snapshots: [snap(2020, { refDate: '20200301', rep: { lim: true } })] },
-    { routeShortName: '9', snapshots: [snap(2014, { refDate: '20140301', rep: {} })] },
+    { routeShortName: '6', currentRouteType: 3, snapshots: [snap(2014, { refDate: '20140301', rep: { h: 15 } }), snap(2020, { refDate: '20200301', rep: { h: 60 } })] },
+    { routeShortName: '117', currentRouteType: 3, snapshots: [snap(2020, { refDate: '20200301', rep: { lim: true } })] },
+    { routeShortName: '9', currentRouteType: 3, snapshots: [snap(2014, { refDate: '20140301', rep: {} })] },
     { routeShortName: 'OLD', snapshots: [snap(2014, undefined, { geometry: [[9, 9], [8, 8]] })] },
   ],
 };
@@ -47,10 +48,61 @@ describe('historyYearRoutes (#1028 batch A)', () => {
     expect(historyYearRoutes(agency, 2020, 'default', undefined, SHAPES, 2026).find(r => r.routeShortName === '6')?.coordinates).toEqual([[0, 0], [1, 1]]);
   });
 
+  // CIV-2064 (Ryan): a route off today's map is drawn only on its real line from that year's own schedule data.
+  describe("a route that isn't on today's map (CIV-2064)", () => {
+    const GONE_SHAPES = {
+      version: 1, slug: 'x', decimals: 5, toleranceM: 15,
+      shapes: [[[0, 0], [1, 1]], [[2, 2], [3, 3]]],
+      years: { '2018': { GONE: 0, '6': 0 }, '2026': { GONE: 1, '6': 1 } },
+    } as never;
+    const old = (year: number) => snap(year, undefined);
+    const withGone = (gone: Parameters<typeof historyYearRoutes>[0]['routes'][number]): Parameters<typeof historyYearRoutes>[0] =>
+      ({ routes: [{ routeShortName: '6', currentRouteType: 3, snapshots: [old(2018), old(2026)] }, gone] });
+
+    it('in the latest year, draws its own line from that year, while a route on today\'s map keeps today\'s line', () => {
+      const y = historyYearRoutes(withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] }), 2026, 'default', undefined, GONE_SHAPES, 2026);
+      expect(y.find(r => r.routeShortName === 'GONE')?.coordinates).toEqual([[2, 2], [3, 3]]);
+      expect(y.find(r => r.routeShortName === '6')?.coordinates).toBeUndefined();
+    });
+
+    it('in the latest year with no line of its own that year, draws no line (no earlier year\'s line carried in)', () => {
+      const y = historyYearRoutes(withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] }), 2026, 'default', undefined, { ...(GONE_SHAPES as object), years: { '2018': { GONE: 0 } } } as never, 2026);
+      expect(y.find(r => r.routeShortName === 'GONE')).toBeDefined();
+      expect(y.find(r => r.routeShortName === 'GONE')?.coordinates).toBeUndefined();
+    });
+
+    it('in a year it is carried into (#1591), draws no line, where a route on today\'s map keeps the carried line', () => {
+      const agency2 = withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] });
+      const y2022 = historyYearRoutes({ ...agency2, coverageYears: [2018, 2022, 2026] }, 2022, 'default', undefined, GONE_SHAPES, 2026);
+      expect(y2022.find(r => r.routeShortName === 'GONE')?.coordinates).toBeUndefined();
+      expect(y2022.find(r => r.routeShortName === '6')?.coordinates).toEqual([[0, 0], [1, 1]]);
+    });
+
+    it('in a year with its own line, draws that line as before', () => {
+      const y2018 = historyYearRoutes(withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] }), 2018, 'default', undefined, GONE_SHAPES, 2026);
+      expect(y2018.find(r => r.routeShortName === 'GONE')?.coordinates).toEqual([[0, 0], [1, 1]]);
+    });
+  });
+
   it("colours today's lines by route number, with the given fallback", () => {
     const expr = historyYearColorExpression(historyYearRoutes(agency, 2014, 'default'), 'FALLBACK') as unknown[];
-    expect(expr).toEqual(['match', ['to-string', ['get', 'routeShortName']], '6', localRouteHeadwayColor(15, 'default'), '9', localRouteHeadwayColor(null, 'default'), 'OLD', localRouteHeadwayColor(30, 'default'), 'FALLBACK']);
+    expect(expr).toEqual(['match', historyTileKeyExpression(), '6', localRouteHeadwayColor(15, 'default'), '9', localRouteHeadwayColor(null, 'default'), 'OLD', localRouteHeadwayColor(30, 'default'), 'FALLBACK']);
     expect(historyYearColorExpression([], 'FALLBACK')).toBe('FALLBACK');
+  });
+
+  // A route with no short name is keyed by its route id, as the History build keys it (MBTA Red, CTA Red, SkyTrain).
+  it('finds a today\'s line with a blank short name by its route id', () => {
+    const color = (props: Record<string, unknown>) => {
+      const c = createPropertyExpression(['match', historyTileKeyExpression(), 'Red', '#f00', '6', '#0f0', '#999'], 'layers[0].paint.line-color', latest.paint_line['line-color'] as StylePropertySpecification);
+      if (c.result !== 'success') throw new Error(JSON.stringify(c.value));
+      return c.value.evaluate({ zoom: 11 }, { type: 'LineString', properties: props }).toString();
+    };
+    expect(color({ routeShortName: '', routeId: 'Red' })).toBe(color({ routeShortName: 'Red', routeId: 'x' }));
+    expect(color({ routeId: 'Red' })).not.toBe(color({ routeShortName: 'Blue', routeId: 'Red' }));
+    expect(color({ routeShortName: '6', routeId: 'Red' })).toBe(color({ routeShortName: '6' }));
+    expect(historyFeatureKey({ routeShortName: '', routeId: 'Boat-F1' })).toBe('Boat-F1');
+    expect(historyFeatureKey({ routeShortName: ' 6 ', routeId: '1006' })).toBe('6');
+    expect(historyFeatureKey({ routeShortName: null, routeId: 30053 })).toBe('30053');
   });
 });
 

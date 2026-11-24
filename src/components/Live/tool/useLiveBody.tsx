@@ -1,4 +1,8 @@
 import { useMemo, useRef, type ReactNode } from 'react';
+import { useAgencyGeo } from '../../../hooks/useAgencyGeo';
+import { useColorMode } from '../../../hooks/useColorMode';
+import { liveRouteColours } from '../../../utils/liveRouteColours';
+import { agencyHour } from '../LiveRoutePerformance';
 import { LOADING_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION } from '../../../content/noticeCopy';
 import RouteRowName from '../../RouteRowName';
 import { routeLabels } from '../../../utils/format';
@@ -238,7 +242,16 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
     }
     return { directionId: 0, segments, stops: [] };
   }, [v3, shown, band, measure, network, lossData]); // eslint-disable-line react-hooks/exhaustive-deps
-  const model: RouteMapModel = useMemo(() => chosen ? measured : { ...measured, segments: measured.segments.map(x => ({ ...x, value: null, step: null })), stops: measured.stops.map(x => ({ ...x, value: null, step: null })) }, [measured, chosen]);
+  // CIV-2191: with no measure, each route's line takes its main-map frequency colour for the period it is now there.
+  const geo = useAgencyGeo(agency);
+  const colorMode = useColorMode();
+  const hourNow = agencyHour(agency);
+  const colours = useMemo(() => (chosen ? null : liveRouteColours(geo, routes, hourNow, colorMode)), [chosen, geo, routes, hourNow, colorMode]);
+  const model: RouteMapModel = useMemo(() => chosen ? measured : {
+    ...measured,
+    segments: measured.segments.map(x => ({ ...x, value: null, step: null, color: colours?.get(x.route ?? route ?? '') })),
+    stops: measured.stops.map(x => ({ ...x, value: null, step: null })),
+  }, [measured, chosen, colours, route]);
   const heat = useMemo(() => {
     if (measure !== 'delayStarts') return null;
     if (v3 && route) return delayHeatPoints(new Map([[route, v3]]), band, { only: { route, directionId: shown }, uncertain: () => uncertain });
@@ -283,7 +296,12 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   ...(inStudio ? [...s.held].sort((a, b) => a.route.localeCompare(b.route, undefined, { numeric: true })).map(h => routeOption(h.route, h.route, h.longName, h.mode)) : [])], [s, networkV3, chosen, band, inStudio]); // eslint-disable-line react-hooks/exhaustive-deps
   const openRoute = (r: string) => { setRoute(r); setPick(null); };
   const overview = <OverviewList s={s} measure={chosen} band={band} route={route} network={networkV3} onPick={openRoute} />;
-  const onMapPick = (p: MapPick | null) => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); };
+  // #1748: an empty-map click or Escape (a null pick) dismisses the selection as the main map does (dismissMapSelection):
+  // the picked stop or segment and the open route go together, back to the network.
+  const onMapPick = (p: MapPick | null) => {
+    if (!p) { if (route) backToNetwork(); else setPick(null); return; }
+    if (!route && p.kind === 'segment' && p.route) setRoute(p.route); else setPick(p);
+  };
   return {
     routes, held, ready, v3, ids, shown, model, heat, anchor, card, routePanel, routeBody, networkLossWidget, summary, overview, routeOptions,
     networkDates: [...new Set([...networkV3.values()].flatMap(b => b.window.dates))].sort(),

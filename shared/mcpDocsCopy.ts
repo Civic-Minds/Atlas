@@ -63,6 +63,18 @@ export const MCP_DOCS = {
     noQuestion: 'No question given',
     failed: 'failed',
     noCalls: 'No calls yet.',
+    // CIV-2202 (Ryan, 2026-11-24: make and stop tester links on this page). Not asked for: these words.
+    link: 'Link',
+    stop: 'Stop link',
+    confirmStop: (name: string) => `Stop ${name}’s link? It stops working at once and can’t be turned back on.`,
+    stopFailed: 'The link wasn’t stopped.',
+    newLink: {
+      heading: 'New link',
+      name: 'Name',
+      make: 'Make link',
+      shownOnce: (name: string) => `${name}’s link. Copy it now: it is shown only once.`,
+      failed: 'The link wasn’t made.',
+    },
   },
   // Ryan, 2026-11-22: "The MCP page could also have a chart for the usage at the bottom if we wanted too", then "Do both".
   usage: {

@@ -1,6 +1,6 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import Studio from '../apps/studio/Studio';
 import { MODE_EASE_MS } from '../components/ModeTransition';
 
@@ -25,6 +25,18 @@ function setup(url: string) {
   render(<MemoryRouter initialEntries={[url]}><PageMapOverlayProvider><Studio agencyCatalog={[]} tabsPortal={tabs} headerPortal={null} /></PageMapOverlayProvider><Where /></MemoryRouter>);
   return tabs;
 }
+
+// #1747: with no page open, Studio's top bar still holds the Settings gear.
+describe('Studio with no page open (#1747)', () => {
+  it('shows the Settings gear in the top bar, alone', () => {
+    const tabs = document.createElement('div');
+    const header = document.createElement('div');
+    document.body.append(tabs, header);
+    render(<MemoryRouter initialEntries={['/studio']}><PageMapOverlayProvider><Studio agencyCatalog={[]} tabsPortal={tabs} headerPortal={header} settings={{ lightMode: true, setLightMode: () => {}, showMapLegend: true, setShowMapLegend: () => {}, dataSaver: false, setDataSaver: () => {} }} /></PageMapOverlayProvider></MemoryRouter>);
+    expect(screen.queryByText('live panel')).toBeNull();
+    expect(within(header).getAllByRole('button', { name: /settings/i }).length).toBe(1);
+  });
+});
 
 describe('Studio mode tabs toggle their panel (#1588)', () => {
   it('clicking the active tab closes its panel, stays in Studio and keeps the agency', () => {
@@ -116,6 +128,35 @@ describe('Studio carries the route and keeps the map across pages (CIV-1925, CIV
     fireEvent.click(tabs.querySelectorAll('button')[1]);
     // Fleet's frame key is the one the map last framed: PageMapLayer leaves the map where it is.
     expect(screen.getByTestId('frame').textContent).toBe('kingston:route-501|kingston:route-501');
+  });
+});
+
+// #1763 (Ryan: "The map should keep the same position and zoom across Studio's screens unless the user moves it").
+describe('Studio keeps the map where it is between its screens (#1763)', () => {
+  const kingston = { slug: 'kingston', name: 'Kingston Transit', bbox: [44.1, -76.7, 44.4, -76.3] as [number, number, number, number], center: [44.23, -76.49] as [number, number] };
+  function setupWith(url: string) {
+    const tabs = document.createElement('div');
+    document.body.appendChild(tabs);
+    render(<MemoryRouter initialEntries={[url]}><PageMapOverlayProvider><Studio agencyCatalog={[kingston] as never} tabsPortal={tabs} headerPortal={null} /></PageMapOverlayProvider><Where /></MemoryRouter>);
+    return tabs;
+  }
+  afterEach(() => window.history.replaceState(null, '', '/'));
+
+  it('opening a page from the main menu while the map is on that agency needs no new framing', () => {
+    localStorage.clear();
+    window.history.replaceState(null, '', '/studio?lat=44.25&lon=-76.5&z=12');
+    const tabs = setupWith('/studio?lat=44.25&lon=-76.5&z=12');
+    fireEvent.click(tabs.querySelectorAll('button')[1]);
+    expect(screen.getByTestId('frame').textContent).toBe('kingston:network|kingston:network');
+  });
+
+  it('a page switch writes the map\'s position as it is now, not where it was when Studio opened', () => {
+    localStorage.clear();
+    const tabs = setupWith('/studio/live/kingston?lat=44.25&lon=-76.5&z=12');
+    // The map moved: PageMapLayer writes its position with history.replaceState, which the router never sees.
+    window.history.replaceState(null, '', '/studio/live/kingston?lat=44.3&lon=-76.6&z=13');
+    fireEvent.click(tabs.querySelectorAll('button')[1]);
+    expect(screen.getByTestId('where').textContent).toBe('/studio/fleet/kingston?lat=44.3&lon=-76.6&z=13');
   });
 });
 

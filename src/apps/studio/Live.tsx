@@ -46,6 +46,8 @@ export interface LiveProps {
   slug: string;
   route: string | null;
   setRoute: (r: string | null) => void;
+  /** CIV-2193: the agency's recorded routes once its figures load, for the count beside the Live tab's name. */
+  onRouteCount?: (c: { slug: string; count: number }) => void;
   /** The agency menu, the shell's, first in the top bar. */
   agencyMenu: StudioMenu | null;
   headerPortal: Element | null;
@@ -53,9 +55,11 @@ export interface LiveProps {
   frameStyle: CSSProperties;
 }
 
-export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, frameStyle }: LiveProps) {
+export default function Live({ slug, route, setRoute, onRouteCount, agencyMenu, headerPortal, frameStyle }: LiveProps) {
   const agencyName = useLiveAgencyName(slug);
   const state = useLiveAgency(slug);
+  const routeCount = state.kind === 'done' && state.data.status === 'ready' ? state.data.summary.covered.length : null;
+  useEffect(() => { if (routeCount != null) onRouteCount?.({ slug, count: routeCount }); }, [onRouteCount, slug, routeCount]);
   const { agencies } = useAgencies();
   const [band, setBand] = useState<DashboardBand>(() => liveBandNow(agencies.find(a => a.slug === slug)?.timezone));
   if (state.kind !== 'done' || state.data.status !== 'ready') {

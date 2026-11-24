@@ -1,9 +1,8 @@
 name: Studio Live refresh
 
 # Rebuilds Studio's Live files for every Studio city every day (CIV-2077; Ryan picked "Add those two checks and switch on
-# a daily automatic run for every Studio city, matching TTC"). Every agency Live records except the TTC, whose report
-# rebuilds in live-report-refresh.yml. The files go to the PRIVATE archive bucket under studio-live/; this Mac copies them
-# into ../_live-data/out with `npm run studio:sync`.
+# a daily automatic run for every Studio city, matching TTC"). Every agency Live records, the TTC included (CIV-2186). The
+# files go to the PRIVATE Live bucket (atlas-mcp-live) under studio-live/; the Mac's dev server reads them from there.
 #
 #   gh workflow run studio-live-refresh.yml                     dry-run: builds with the read-only keys, uploads nothing
 #   gh workflow run studio-live-refresh.yml -f mode=publish     main only: builds and uploads, then switches the pointer
@@ -25,9 +24,12 @@ on:
         options:
           - dry-run
           - publish
-  # 09:47 UTC, after live-report-refresh (09:17) and off the :00/:30 rush.
+  # 09:47 UTC, after live-report-refresh (09:17) and off the :00/:30 rush. 14:47 and 19:47 UTC are backups (CIV-2177):
+  # they run only when the day's refresh hasn't succeeded yet (the gate job).
   schedule:
     - cron: '47 9 * * *'
+    - cron: '47 14 * * *'
+    - cron: '47 19 * * *'
 
 permissions:
   contents: read
@@ -40,8 +42,45 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # ---------------------------------------------------------------------------------------
+  # Backup check (CIV-2177, #1743): GitHub sometimes drops or delays a scheduled run, so the schedule fires 3 times a day
+  # and a scheduled run goes ahead only when the studio-live job hasn't succeeded since the day's refresh window opened
+  # (08:00 UTC, after the 4 a.m. end of the Toronto service date). A run started by hand always goes ahead.
+  # ---------------------------------------------------------------------------------------
+  gate:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    timeout-minutes: 10
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/ci
+
+      - name: Skip when today's refresh already succeeded
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "schedule" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          start="$(date -u +%F)T08:00:00Z"
+          [ "$(date -u +%H)" -lt 8 ] && start="$(date -u -d yesterday +%F)T08:00:00Z"
+          last="$(bash scripts/ci/refresh-last-success.sh studio-live-refresh.yml studio-live || true)"  # on an API error, run anyway
+          if [ -n "$last" ] && [[ "$last" > "$start" ]]; then
+            echo "Already refreshed today ($last, window opened $start): skipping this scheduled run."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "No refresh since $start (last: ${last:-none in 3 days}): running."
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
   studio-live:
-    if: github.event_name != 'schedule' || vars.STUDIO_LIVE_DAILY == '1'
+    needs: gate
+    if: needs.gate.outputs.run == 'true' && (github.event_name != 'schedule' || vars.STUDIO_LIVE_DAILY == '1')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -51,6 +90,8 @@ jobs:
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
       R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
       R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      # CIV-2186: the files go to the private Live bucket the Mac's read-only key reads (the hosted MCP's bucket, under studio-live/).
+      MCP_LIVE_BUCKET: atlas-mcp-live
       # The write keys only when publishing from main; a dry run never sees them.
       R2_ACCESS_KEY_ID: ${{ (github.event_name == 'schedule' || inputs.mode == 'publish') && github.ref == 'refs/heads/main' && secrets.R2_ACCESS_KEY_ID || secrets.R2_RO_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ (github.event_name == 'schedule' || inputs.mode == 'publish') && github.ref == 'refs/heads/main' && secrets.R2_SECRET_ACCESS_KEY || secrets.R2_RO_SECRET_ACCESS_KEY }}

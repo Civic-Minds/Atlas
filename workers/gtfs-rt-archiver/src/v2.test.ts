@@ -27,7 +27,8 @@ describe('cloud recorder v2 (CIV-2073)', () => {
     expect(v2).toMatchObject({ delay: null, stu: [], stuV: [[['101', FIXTURE_NOW + 600], ['101', FIXTURE_NOW + 1200], ['103', FIXTURE_NOW + 900]]] });
     // v4 stands at its last stop: the stop stays while its departure is ahead, and its next trip's stops come along.
     expect(v4).toMatchObject({ stu: [['103', FIXTURE_NOW - 120, FIXTURE_NOW + 30]], stuV: [[['102', FIXTURE_NOW + 400]]] });
-    expect(snap.headways['01']).toEqual({ gapMin: 10, samples: 1 });
+    // #1753: gaps between successive trips at a stop, ahead of the feed's time.
+    expect(snap.headways['01']).toEqual({ gapMin: 19, samples: 2 });
     expect(snap).toMatchObject({ schemaVersion: 'atlas.live.v2', capturedAt: FIXTURE_NOW, tripsOk: true, sourceTimestamp: FIXTURE_NOW });
   });
 

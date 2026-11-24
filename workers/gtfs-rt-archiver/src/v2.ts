@@ -11,6 +11,7 @@ import { liveSlotKey, slotsInRun } from '../../../shared/liveSlots';
 import { LIVE_SNAPSHOT_V2_SCHEMA_VERSION, type LiveSnapshotV2 } from '../../../shared/liveContract';
 import { liveRouteIdNames } from '../../../shared/livePollingConfig';
 import type { LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
+import { fetchFeed as fetchWithRetry } from './fetchFeed';
 
 export interface V2Env {
   BUCKET: R2Bucket;
@@ -18,7 +19,6 @@ export interface V2Env {
 }
 
 const USER_AGENT = `atlas-live-recorder/1.0 (${SITE_URL})`;
-const FEED_TIMEOUT_MS = 15_000;
 
 type Decoded = Record<string, any>;
 
@@ -29,7 +29,8 @@ async function fetchFeed(url: string, feed: LiveRecorderFeed, env: V2Env): Promi
   if (feed.apiKey && !key) throw new Error(`${feed.slug}: ${feed.apiKey.env} is not set`);
   if (feed.apiKey?.header) headers.apikey = key!;
   else if (feed.apiKey?.param) finalUrl += `${finalUrl.includes('?') ? '&' : '?'}${feed.apiKey.param}=${encodeURIComponent(key!)}`;
-  const res = await fetch(finalUrl, { headers, signal: AbortSignal.timeout(FEED_TIMEOUT_MS) });
+  // #1741: a 5xx (Hamilton's HTTP 530) is retried once a few seconds later, as every v1 shard does.
+  const res = await fetchWithRetry(finalUrl, { headers });
   if (!res.ok) throw new Error(`${feed.slug}: HTTP ${res.status}`);
   const { FeedMessage } = GtfsRealtimeBindings.transit_realtime;
   // The same decoding Live's own polling does (local-api/live-vehicles.ts), so the join reads the same objects.

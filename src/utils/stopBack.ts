@@ -117,7 +117,7 @@ export function resolveStopBack(
  * The back target in the link (CIV-919), so a reload keeps "← Route 504": `from=route:<route key>`,
  * `from=agency:<slug>` or `from=ondemand:<selection>`. The map needs no param.
  */
-export const STOP_BACK_PARAM = 'from';
+export { STOP_BACK_PARAM } from './urlSchema';
 
 export function encodeStopBackTarget(target: StopBackTarget | null): string | null {
   if (!target) return null;

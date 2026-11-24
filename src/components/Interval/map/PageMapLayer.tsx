@@ -1,7 +1,8 @@
 import { FALLBACK_GREY, MAP_HALO } from '../../../../shared/rules/colours';
 import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import { FloatingMapCard, MapHoverTip, type MapCardAt } from '../../Live/MapCard';
+import { FloatingMapCard, type MapCardAt } from '../../Live/MapCard';
+import { pageMapHitPriority, topMapHit } from './mapHitTargets';
 import { stopDotPaint } from './stopStyle';
 import { SELECTED_ROUTE_GLOW_WIDTH_PX, SELECTED_ROUTE_HALO_WIDTH_PX, SELECTED_ROUTE_WIDTH_PX, focusedRouteLineWidth } from './routeStyle';
 import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from '../../Live/routeMapModel';
@@ -70,7 +71,6 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
   };
   const placeRef = useRef(place);
   placeRef.current = place;
-  const [tip, setTip] = useState<{ x: number; y: number; text: string } | null>(null);
   const latestHl = useRef(highlightRoute);
   latestHl.current = highlightRoute;
 
@@ -105,7 +105,7 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
       type: 'FeatureCollection',
       features: m.segments.map(s => ({
         type: 'Feature' as const,
-        properties: { from: s.fromStopId, to: s.toStopId, label: s.label ?? '', route: s.route ?? '', off: s.offset ?? 0, dim: latestHl.current && s.route !== latestHl.current ? 1 : 0, color: stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
+        properties: { from: s.fromStopId, to: s.toStopId, label: s.label ?? '', route: s.route ?? '', off: s.offset ?? 0, dim: latestHl.current && s.route !== latestHl.current ? 1 : 0, color: s.color ?? stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
         geometry: { type: 'LineString' as const, coordinates: s.coordinates },
       })),
     });
@@ -168,23 +168,25 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
     map.addLayer({ id: id('stp-sel'), type: 'circle', source: id('stops'), filter: ['==', ['get', 'sel'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 6, 15, 11], 'circle-stroke-color': pickedStopRing(light), 'circle-stroke-width': 2 } });
     setReady(true);
 
-    const near = (e: maplibregl.MapMouseEvent, layers: string[]) => map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: layers.map(id) });
+    // CIV-2189: the main map's hit rule (topMapHit) and hover (the cursor alone, no name at the pointer), so the
+    // cursor shows exactly where a click picks something.
+    const rules = pageMapHitPriority(id);
     const onClick = (e: maplibregl.MapMouseEvent) => {
-      const stop = near(e, ['stp'])[0];
-      if (stop) { pick.current({ kind: 'stop', stopId: String(stop.properties?.id) }, (stop.geometry as unknown as { coordinates: [number, number] }).coordinates); return; }
-      const seg = near(e, ['seg'])[0];
-      if (seg) { pick.current({ kind: 'segment', fromStopId: String(seg.properties?.from), toStopId: String(seg.properties?.to), route: seg.properties?.route ? String(seg.properties.route) : undefined }, [e.lngLat.lng, e.lngLat.lat]); return; }
-      const line = near(e, ['line', 'line-dash'])[0];
-      if (line) pick.current({ kind: 'line', id: String(line.properties?.id), route: line.properties?.route ? String(line.properties.route) : undefined }, [e.lngLat.lng, e.lngLat.lat]);
-      else pick.current(null, null);
+      const hit = topMapHit(map, e.point, rules);
+      const f = hit?.features[0];
+      if (!hit || !f) { pick.current(null, null); return; }
+      const route = f.properties?.route ? String(f.properties.route) : undefined;
+      if (hit.kind === 'stop') pick.current({ kind: 'stop', stopId: String(f.properties?.id) }, (f.geometry as unknown as { coordinates: [number, number] }).coordinates);
+      else if (hit.kind === 'segment') pick.current({ kind: 'segment', fromStopId: String(f.properties?.from), toStopId: String(f.properties?.to), route }, [e.lngLat.lng, e.lngLat.lat]);
+      else pick.current({ kind: 'line', id: String(f.properties?.id), route }, [e.lngLat.lng, e.lngLat.lat]);
     };
     const onMove = (e: maplibregl.MapMouseEvent) => {
-      const hit = near(e, ['stp', 'heat-dot', 'heat', 'seg', 'line', 'line-dash'])[0];
-      map.getCanvas().style.cursor = hit ? 'pointer' : '';
-      const text = hit ? String(hit.properties?.name ?? hit.properties?.label ?? '') : '';
-      setTip(text ? { x: e.point.x, y: e.point.y, text } : null);
+      map.getCanvas().style.cursor = topMapHit(map, e.point, rules) ? 'pointer' : '';
     };
-    const onOut = () => setTip(null);
+    const onOut = () => { map.getCanvas().style.cursor = ''; };
+    // #1748: Escape dismisses the selection like an empty-map click, as on the main map (Interval's Escape handler).
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') pick.current(null, null); };
+    window.addEventListener('keydown', onKey);
     const onPlace = () => placeRef.current();
     map.on('click', onClick);
     map.on('mousemove', onMove);
@@ -196,6 +198,7 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
       ownFramed.current = null;
       map.off('click', onClick);
       map.off('mousemove', onMove);
+      window.removeEventListener('keydown', onKey);
       map.off('mouseout', onOut);
       map.off('move', onPlace);
       map.off('resize', onPlace);
@@ -226,7 +229,6 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
   return (
     <>
       {at && card && <FloatingMapCard at={at} padding={padding}>{card}</FloatingMapCard>}
-      {tip && !card && <MapHoverTip {...tip} />}
     </>
   );
 }

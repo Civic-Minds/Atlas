@@ -33,8 +33,8 @@ describe('Live from the cloud recorder (CIV-2073): no visible change', () => {
     expect(direct.vehicles[0].upcomingStops.map((s: { name: string }) => s.name)).toEqual(['King at James', 'King at Bay', 'King at Queen']);
     // v2's stops come only from its vehicle's update: a next stop, no pattern stops (CIV-2047 reads the trip's own update).
     expect(direct.vehicles[1]).toMatchObject({ nextStop: 'King at James', upcomingStops: [] });
-    // v4's own trip has nothing ahead; its next trip names the stop (#1673).
-    expect(direct.vehicles[2]).toMatchObject({ nextStop: 'King at Bay' });
+    // v4 stands at its stop (STOPPED_AT): since #1739 the decoded name counts, so it reads "At King at Queen".
+    expect(direct.vehicles[2]).toMatchObject({ nextStop: 'King at Queen', atStop: true });
 
     const snap = await snapshotFor(liveRecorderFeed('hamilton')!, { BUCKET: {} as R2Bucket }, SLOT);
     const stored = new Map([[liveSlotKey('hamilton', SLOT), new Uint8Array(gzipSync(JSON.stringify(snap)))]]);

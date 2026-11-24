@@ -1,5 +1,13 @@
 /** Period-key parsing shared by build-history and its tests (pure; no I/O). */
 
+/** A six-digit YYYYMM key with a real month, or null. */
+function yearMonthKey(key: string): { year: number; month: number } | null {
+  const m = /^(\d{4})(\d{2})$/.exec(key);
+  if (!m) return null;
+  const month = Number(m[2]);
+  return month >= 1 && month <= 12 ? { year: Number(m[1]), month } : null;
+}
+
 export function parsePeriodKey(key: string): { year: number; label: string } {
   // YYYYMMDD
   const compact = key.match(/^(\d{4})(\d{2})(\d{2})$/);
@@ -9,6 +17,10 @@ export function parsePeriodKey(key: string): { year: number; label: string } {
     const month = months[parseInt(compact[2]) - 1] ?? '';
     return { year, label: `${month} ${year}` };
   }
+  // YYYYMM (archive folders such as AC Transit's 202109): without this the key fell through to the
+  // current year (#1761).
+  const yearMonth = yearMonthKey(key);
+  if (yearMonth) return { year: yearMonth.year, label: `${MONTHS[yearMonth.month - 1]} ${yearMonth.year}` };
   // YYYY-MM-DD
   const dashed = key.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (dashed) {
@@ -42,6 +54,9 @@ export function getPeriodKeySortValue(key: string): number {
   if (compact) {
     return parseInt(compact[1]) * 10000 + parseInt(compact[2]) * 100 + parseInt(compact[3]);
   }
+  // YYYYMM: the first of its month
+  const yearMonth = yearMonthKey(key);
+  if (yearMonth) return yearMonth.year * 10000 + yearMonth.month * 100 + 1;
   // YYYY-MM-DD
   const dashed = key.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (dashed) {

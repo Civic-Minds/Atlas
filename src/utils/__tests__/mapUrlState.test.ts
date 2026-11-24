@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAP_URL, readUrlParam, urlParamPresent, urlParamUpdate } from '../urlSchema';
+import { MAP_URL, orderUrlParams, readUrlParam, urlParamPresent, urlParamUpdate } from '../urlSchema';
 import { mergeUrlSearchParams } from '../syncUrlParams';
 
 // CIV-1011 #11: the map view's link parameters read and write through one schema. Old links must
@@ -81,8 +81,9 @@ describe('map view link parameters', () => {
       ...urlParamUpdate(MAP_URL.route, 'ttc::504'), ...urlParamUpdate(MAP_URL.day, 'Sunday'), ...urlParamUpdate(MAP_URL.period, 'late'),
       ...urlParamUpdate(MAP_URL.headway, 15), ...urlParamUpdate(MAP_URL.hideSpan, false), ...urlParamUpdate(MAP_URL.hideLimited, false),
     });
-    // Same parameters in the same order (URLSearchParams writes "::" as %3A%3A, as it always has).
-    expect([...new URLSearchParams(rewritten)]).toEqual([...new URLSearchParams(link)]);
+    // Same parameters, written in the one order (CIV-2179: place, route, day and time, filters; "::" as %3A%3A).
+    expect([...new URLSearchParams(rewritten)]).toEqual([...orderUrlParams(new URLSearchParams(link))]);
+    expect([...new URLSearchParams(rewritten)].map(([k]) => k)).toEqual(['lat', 'lon', 'z', 'route', 'day', 'p', 'h', 'span', 'limited']);
   });
 
   it('a copied address reopens the same period and frequency, 60 min and All included (#1141)', () => {

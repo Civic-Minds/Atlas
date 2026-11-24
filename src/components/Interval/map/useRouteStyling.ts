@@ -30,7 +30,7 @@ import {
   researchOverlayPaint,
   RESEARCH_OVERLAY_LAYERS,
 } from './routeStyle';
-import { historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
+import { historyTileKeyExpression, historyYearColorExpression, onTodaysLines } from '../../../utils/historyYearMap';
 
 export interface RouteStylingInput {
   agencies: Agency[];
@@ -57,6 +57,8 @@ export interface RouteStylingInput {
   nightServiceView: boolean;
   frequentServiceView: boolean;
   historyOverlay: HistoryMapOverlay | null;
+  /** #1744: agencies kept at full strength while every other line is dimmed, as History's open agency is (Studio with no page open). */
+  focusAgencySlugs?: string[] | null;
   frequencySegmentOverlay: ReturnType<typeof computeFrequencySegmentOverlay>;
   frequencySegmentOverlayRef: React.RefObject<{ partialMatches: ReturnType<typeof computeFrequencySegmentOverlay>['partialMatches'] }>;
   colorMode: ColorVisionMode;
@@ -118,7 +120,7 @@ export function useRouteStyling(
     agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
-    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes,
+    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes, focusAgencySlugs,
   }: RouteStylingInput,
 ) {
   // Update Vector Tile Styling & Filters dynamically on parameters change
@@ -204,7 +206,7 @@ export function useRouteStyling(
     if (historyYearAgencyMatch) {
       const names = onTodaysLines(historyOverlay!.yearRoutes!).map(r => r.routeShortName);
       // That day's line only, by the map's own day clause (buildRouteTileFilter); without it every day's copy drew.
-      const yearClause = ['all', historyYearAgencyMatch, ['==', ['get', 'day'], historyOverlay!.day ?? 'Weekday'], ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
+      const yearClause = ['all', historyYearAgencyMatch, ['==', ['get', 'day'], historyOverlay!.day ?? 'Weekday'], ['in', historyTileKeyExpression(), ['literal', names]]];
       routeFilter = ['any', concatFilters(routeFilter, ['!', historyYearAgencyMatch]) ?? true, yearClause];
     }
 
@@ -226,16 +228,22 @@ export function useRouteStyling(
     }
     if (map.getLayer('route-segments-layer')) {
       // With a route selected the other lines' pieces step back like their base lines do.
+      // #1744: Studio's agency focus dims the other agencies' pieces as it dims their lines.
+      // (zoom must stay the top-level interpolate's input, so the agency case sits inside each stop.)
+      const inFocus = focusAgencySlugs?.length && !historyOverlay ? ['in', ['get', 'agencySlug'], ['literal', focusAgencySlugs]] : null;
+      const segmentStop = (o: number) => (inFocus ? ['case', inFocus, o, 0.18] : o);
       map.setPaintProperty('route-segments-layer', 'line-opacity', (selectedRoute
         ? ['case', routeKeyMatchExpression(selectedRoute), 1, 0.2]
-        : ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9]) as any);
+        : ['interpolate', ['linear'], ['zoom'], 8, segmentStop(0.7), 11, segmentStop(0.8), 14, segmentStop(0.9)]) as any);
       // Stop focus narrows it below (CIV-1058); every other state draws the layer's own width.
       map.setPaintProperty('route-segments-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
     }
 
-    // Live's thin context lines step back behind a picked route like every other line.
+    // Live's thin context lines step back behind a picked route like every other line. CIV-2191: they take the main
+    // map's frequency colours for the map's period, as its own lines do (local shapes carry theirs as localHeadwayColor).
     for (const id of LIVE_CONTEXT_LAYER_IDS) {
       if (!map.getLayer(id)) continue;
+      map.setPaintProperty(id, 'line-color', (id === LIVE_CONTEXT_LAYER_IDS[2] ? ['get', 'localHeadwayColor'] : buildEffectiveHeadwayColorExpression(period, colorMode)) as any);
       map.setPaintProperty(id, 'line-opacity', (selectedRoute
         ? buildFocusCase(routeKeyMatchExpression(selectedRoute), LIVE_CONTEXT_OPACITY, FOCUS_DIM_OPACITY)
         : LIVE_CONTEXT_OPACITY) as any);
@@ -309,7 +317,7 @@ export function useRouteStyling(
         // History uses its own route selection state; its route gets the Frequency map's fade.
         const historyRouteMatch: any = ['all',
           ['in', ['get', 'agencySlug'], ['literal', historyOverlaySlugs(historyOverlay)]],
-          ['==', ['get', 'routeShortName'], historyOverlay.routeShortName],
+          ['==', historyTileKeyExpression(), historyOverlay.routeShortName],
         ];
         setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(historyRouteMatch, headwayExpr, colorMode) as any);
         setRouteLayerPaint(map, 'line-width', focusedRouteLineWidth(historyRouteMatch) as any);
@@ -319,10 +327,11 @@ export function useRouteStyling(
           map.setPaintProperty('history-routes-layer', 'line-opacity', buildFocusedRoutePaint(ownShapeMatch, DIM_OPACITY).opacity as any);
           map.setPaintProperty('history-routes-layer', 'line-width', focusedRouteLineWidth(ownShapeMatch) as any);
         }
-      } else if (historyOverlay?.slug) {
+      } else if (historyOverlay?.slug || focusAgencySlugs?.length) {
         // History agency selection keeps the whole agency visible while dimming
-        // the surrounding network, matching route-level focus without hiding context.
-        const historyAgencyMatch: any = ['in', ['get', 'agencySlug'], ['literal', historyOverlaySlugs(historyOverlay)]];
+        // the surrounding network, matching route-level focus without hiding context. Studio with no page open does the
+        // same for its remembered agency (#1744).
+        const historyAgencyMatch: any = ['in', ['get', 'agencySlug'], ['literal', historyOverlay?.slug ? historyOverlaySlugs(historyOverlay) : focusAgencySlugs!]];
         setRouteLayerPaint(map, 'line-opacity', buildFocusCase(historyAgencyMatch, 1.0, DIM_OPACITY) as any);
         // The agency's lines at the regular route widths, the rest dimmed.
         setRouteLayerPaint(map, 'line-width', agencyFocusWidth(historyAgencyMatch) as any);
@@ -445,6 +454,7 @@ export function useRouteStyling(
       // "this part qualifies" line over routes a selection/hover/stop-focus state has already
       // dimmed for an unrelated reason, or fight a route's own full-opacity focused treatment.
       const isDefaultRouteFocusState = !historyOverlay
+        && !focusAgencySlugs?.length
         && !selectedRoute
         && !hoveredSearchRoute
         && !onDemandFocus
@@ -501,7 +511,7 @@ export function useRouteStyling(
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, focusRoutes, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, focusRoutes, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus, focusAgencySlugs]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

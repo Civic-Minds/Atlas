@@ -1,5 +1,7 @@
+import { orderUrlParams } from './urlSchema';
+
 /**
- * Merge query-param updates into the current URL via history.replaceState.
+ * Merge query-param updates into the current URL via history.replaceState, in the one written order (CIV-2179).
  * Always reads window.location at call time so multi-writer effects (day,
  * route, stop, map center) don't clobber each other via stale search strings.
  */
@@ -15,7 +17,7 @@ export function mergeUrlSearchParams(
     if (value == null || value === '') sp.delete(key);
     else sp.set(key, value);
   }
-  return sp.toString();
+  return orderUrlParams(sp).toString();
 }
 
 /** Pure read for tests: a param's value, or null when it is missing or empty (empty is what a sync deletes). */

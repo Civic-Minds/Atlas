@@ -1,5 +1,6 @@
-import { Fragment, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import StudioChips from './StudioChips';
 import { StudioSettingsProvider, type StudioGeneralSettings } from './StudioSettings';
 import { useLocation, useNavigate } from 'react-router';
 import { Activity, Bus, GitCompare } from 'lucide-react';
@@ -56,9 +57,12 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const loc = parseStudioPath(pathname) ?? { page: null, agency: null, route: null };
   // A move inside Studio replaces the entry, as the main map's own address updates do (syncUrlParams), and keeps the
   // address's other parameters (the map's position).
+  // #1763: the address as it is now, not the router's copy: the map writes its position with history.replaceState
+  // (syncUrlParams), which the router never sees, so its `search` still holds where the map was when Studio opened and
+  // a page switch put that old position back in the address.
   const go = (next: Partial<StudioLocation>) => {
     const n = { ...loc, ...next };
-    navigate({ pathname: studioPath({ page: n.page, agency: n.page ? n.agency ?? slug : null, route: n.route }), search }, { replace: true });
+    navigate({ pathname: studioPath({ page: n.page, agency: n.page ? n.agency ?? slug : null, route: n.route }), search: window.location.search }, { replace: true });
   };
   // The old query addresses (?page=live&agency=ttc&route=504, ?panel=closed) open their path (CIV-1924).
   const legacy = studioLegacyLocation(search);
@@ -103,6 +107,9 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const fullNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).full : s; };
   const cardNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).card : { primary: s }; };
   const agency = nameOf(slug);
+  // CIV-2193 (Ryan: "similar to history we oculd put 9 beside live"): the agency's recorded routes, beside the Live tab's
+  // name as History's count sits beside its own; reported by the Live page once its figures load, kept per agency.
+  const [liveRoutes, setLiveRoutes] = useState<{ slug: string; count: number } | null>(null);
   const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, fullNameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
   const noDataRows = useMemo(() => (withData ?? []).map(s => ({ slug: s, ...cardNameOf(s) })), [agencyCatalog, withData]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new page or agency starts with no route open.
@@ -138,7 +145,10 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
     // where it is, as the main map's mode tabs do: the new page's view counts as framed when the map already shows this
     // agency. A new agency (or a first open) still frames.
     const keep = closed ? null : route;
-    if (framedMemory.current?.startsWith(`${slug}:`)) framedMemory.current = studioFrameKey(slug, keep);
+    // #1763 (Ryan: "The map should keep the same position and zoom across Studio's screens unless the user moves it"):
+    // opening a page from Studio's main menu while the map is already on this agency counts as framed too, so the map stays.
+    const onAgency = closed && studioAgencyInView(window.location.search, agencyCatalog, listedAnywhere) === slug;
+    if (onAgency || framedMemory.current?.startsWith(`${slug}:`)) framedMemory.current = studioFrameKey(slug, keep);
     go({ page: k, agency: slug, route: keep });
   };
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
@@ -156,12 +166,15 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
           const Icon = PAGE_ICONS[k];
           return (
             <Fragment key={k}>
-              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} active={!closed && page === k} onClick={() => pickPage(k)} />
+              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' && liveRoutes?.slug === slug ? liveRoutes.count : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
             </Fragment>
           );
         }),
         tabsPortal,
       )}
+      {/* #1747 (Ryan: "Inside Studio why is the settings button hidden on the main page but it appears when you open Schedules
+          app?"): with no page open the top bar still holds the Settings gear, alone; a page's chips bring it with their menus. */}
+      {active && closed && !leaving && <StudioChips container={headerPortal} menus={[]} />}
       {(open || leaving) && (
         <div className={open ? '' : `opacity-0 transition-opacity ${MODE_EASE} pointer-events-none`}>
           {v.noData && (
@@ -174,7 +187,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
             <Fleet key={v.slug} view="schedules" slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
           {!v.noData && v.page === 'live' && v.slug && (
-            <Live key={v.slug} slug={v.slug} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+            <Live key={v.slug} slug={v.slug} route={v.route} setRoute={setRoute} onRouteCount={setLiveRoutes} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
         </div>
       )}

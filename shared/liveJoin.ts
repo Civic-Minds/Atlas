@@ -40,10 +40,42 @@ export interface LiveRecord {
   stuV?: LiveStopTime[][];
 }
 
-/** A route's observed gap between arrivals at a stop, median minutes, from every trip update on the route. */
+/** A route's observed gap between successive trips at a stop, median minutes over its stops (#1753). */
 export type LiveHeadways = Record<string, { gapMin: number; samples: number }>;
 
 type Obj = Record<string, any>;
+
+/** A route's trips' predicted times at each stop: stop id → trip id → epoch seconds. */
+export type RouteArrivals = Map<string, Map<string, number>>;
+export interface RouteHeadway { gapMin: number; samples: number }
+type StopUpdate = { stopId?: string | null; arrival?: { time?: unknown } | null; departure?: { time?: unknown } | null };
+
+/** Adds one trip update's predicted time at each of its stops (its arrival, else its departure). */
+export function addTripArrivals(arrivals: RouteArrivals, tripId: string, stops: readonly StopUpdate[] | null | undefined): void {
+  for (const stop of stops ?? []) {
+    const t = Number(stop.arrival?.time ?? stop.departure?.time);
+    if (!stop.stopId || !Number.isFinite(t) || t <= 0) continue;
+    let byTrip = arrivals.get(String(stop.stopId));
+    if (!byTrip) arrivals.set(String(stop.stopId), byTrip = new Map());
+    byTrip.set(tripId, t);
+  }
+}
+
+/**
+ * #1753: the route's observed headway right now ("Every ~N min" on the Live map): the median gap between successive
+ * trips' predicted times at the same stop, over every stop still ahead of the feed's time. A trip update lists each stop
+ * once, so the gaps are between trips, never within one (which found none). Null when no stop has two trips ahead.
+ */
+export function routeHeadway(arrivals: RouteArrivals, nowSec: number): RouteHeadway | null {
+  const gaps: number[] = [];
+  for (const byTrip of arrivals.values()) {
+    const times = [...byTrip.values()].filter(t => t >= nowSec).sort((a, b) => a - b);
+    for (let i = 1; i < times.length; i += 1) if (times[i] > times[i - 1]) gaps.push((times[i] - times[i - 1]) / 60);
+  }
+  if (!gaps.length) return null;
+  gaps.sort((a, b) => a - b);
+  return { gapMin: Math.round(gaps[Math.floor(gaps.length / 2)] * 10) / 10, samples: gaps.length };
+}
 
 /** A trip update's stops still ahead at `keepFrom` (by arrival or departure), or timeless. */
 function stopTimes(update: Obj | undefined, keepFrom: number): LiveStopTime[] {
@@ -80,7 +112,7 @@ export function joinLiveFeed(
   // and a stop a few seconds "past" by the clock is still ahead in the feed.
   const feedHeaderSec = Number(updates?.header?.timestamp);
   const keepFrom = Number.isFinite(feedHeaderSec) && feedHeaderSec > 0 ? Math.min(feedHeaderSec, capturedAt) : capturedAt;
-  const headwaysByRoute = new Map<string, number[]>();
+  const arrivalsByRoute = new Map<string, RouteArrivals>();
   for (const entity of updates?.entity ?? []) {
     const tripUpdate = entity.tripUpdate;
     const tripId = tripUpdate?.trip?.tripId;
@@ -93,31 +125,17 @@ export function joinLiveFeed(
       if (list) list.push(tripUpdate); else updatesByVehicle.set(key, [tripUpdate]);
     }
 
-    const arrivalsByStop = new Map<string, number[]>();
-    for (const stop of tripUpdate.stopTimeUpdate ?? []) {
-      const timestamp = Number(stop.arrival?.time ?? stop.departure?.time);
-      if (!stop.stopId || !Number.isFinite(timestamp) || timestamp <= 0) continue;
-      const arrivals = arrivalsByStop.get(String(stop.stopId)) ?? [];
-      arrivals.push(timestamp);
-      arrivalsByStop.set(String(stop.stopId), arrivals);
-    }
-    for (const arrivals of arrivalsByStop.values()) {
-      arrivals.sort((a, b) => a - b);
-      for (let index = 1; index < arrivals.length; index += 1) {
-        const gap = (arrivals[index] - arrivals[index - 1]) / 60;
-        if (gap > 0 && gap <= 180) {
-          const gaps = headwaysByRoute.get(route) ?? [];
-          gaps.push(gap);
-          headwaysByRoute.set(route, gaps);
-        }
-      }
-    }
+    let arrivals = arrivalsByRoute.get(route);
+    if (!arrivals) arrivalsByRoute.set(route, arrivals = new Map());
+    addTripArrivals(arrivals, tripId, tripUpdate.stopTimeUpdate);
   }
 
+  // #1753: gaps between successive trips at a stop, read against the feed's own time (#1673), else the capture time.
+  const headwayNow = Number.isFinite(feedHeaderSec) && feedHeaderSec > 0 ? feedHeaderSec : capturedAt;
   const headways: LiveHeadways = {};
-  for (const [route, gaps] of headwaysByRoute) {
-    gaps.sort((a, b) => a - b);
-    headways[route] = { gapMin: Math.round(gaps[Math.floor(gaps.length / 2)] * 10) / 10, samples: gaps.length };
+  for (const [route, arrivals] of arrivalsByRoute) {
+    const headway = routeHeadway(arrivals, headwayNow);
+    if (headway) headways[route] = headway;
   }
 
   const records: LiveRecord[] = [];

@@ -7,7 +7,6 @@ const STAND_IN_FLAGS = [
   'persistedSettings',
   // CIV-98: back on where beta is, off on public, once Ryan picked the analytics prompt's place.
   'slowConnectionPrompt',
-  'updateBanner',
   'mapContext',
   'matchPercentage',
   'feedQuality',

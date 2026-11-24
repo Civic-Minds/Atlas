@@ -18,15 +18,22 @@
 import { AREA_INDEX, AREA_PARAM, areaMatchingSelection, lookupArea, type AreaIndex } from '../../shared/areaIndex';
 import { FEATURES } from '../../shared/config';
 import { filterModeOptions } from '../../shared/modes';
-import { MAP_URL } from './urlSchema';
+import {
+  MAP_URL, AGENCIES_PARAM, HIDE_AGENCIES_PARAM, MODES_PARAM, COMPARE_DAY_PARAM, COMPARE_PERIOD_PARAM, COMPARE_HEADWAY_PARAM,
+  HISTORY_AGENCY_PARAM, HISTORY_ROUTE_PARAM, HISTORY_YEAR_PARAM, HISTORY_REGION_PARAM, HISTORY_ROUTE_QUERY_PARAM,
+  HISTORY_ROUTE_MODE_PARAM, FULL_DAY_OPEN_PARAM, FULL_DAY_DIRECTION_PARAM, ROUTE_CHOOSER_PARAM,
+} from './urlSchema';
+// CIV-2179: the link keys are declared once in urlSchema.ts (with their written order); these names stay importable from here.
+export {
+  AGENCIES_PARAM, HIDE_AGENCIES_PARAM, MODES_PARAM, COMPARE_DAY_PARAM, COMPARE_PERIOD_PARAM, COMPARE_HEADWAY_PARAM,
+  HISTORY_AGENCY_PARAM, HISTORY_ROUTE_PARAM, HISTORY_YEAR_PARAM, HISTORY_REGION_PARAM, HISTORY_ROUTE_QUERY_PARAM,
+  HISTORY_ROUTE_MODE_PARAM, FULL_DAY_OPEN_PARAM, FULL_DAY_DIRECTION_PARAM, ROUTE_CHOOSER_PARAM,
+};
 import { COMPARE_PATH, MAP_PATHS } from './appGate';
 import { mergeUrlSearchParams } from './syncUrlParams';
 import { currentAgencyKey, currentAgencySlug } from './formerSlugs';
 
 export const AGENCY_URL_MAX_SLUGS = 60;
-export const AGENCIES_PARAM = 'agencies';
-export const HIDE_AGENCIES_PARAM = 'hide';
-export const MODES_PARAM = 'm';
 const SEP = '.';
 
 /** Modes offered in the filter UI. On-demand is internal-only. */
@@ -170,9 +177,6 @@ export function encodeModesParam(modes: ReadonlySet<number>): string | null {
  * `day`, B from these). Compare links go through withShareTags like every other share link; the
  * compare params need no special handling and survive tagging untouched.
  */
-export const COMPARE_DAY_PARAM = 'cday';
-export const COMPARE_PERIOD_PARAM = 'cp';
-export const COMPARE_HEADWAY_PARAM = 'ch';
 
 export interface CompareSideParams<Day extends string = string, Period extends string = string> {
   day: Day;
@@ -228,12 +232,6 @@ export function compareAddress(pathname: string, search: string, compareActive: 
  * Defaults (nothing chosen, newest year, no filters) stay out of the URL.
  * Region names can contain spaces and dots, so regions are joined with `,`.
  */
-export const HISTORY_AGENCY_PARAM = 'agency';
-export const HISTORY_ROUTE_PARAM = 'hroute';
-export const HISTORY_YEAR_PARAM = 'year';
-export const HISTORY_REGION_PARAM = 'region';
-export const HISTORY_ROUTE_QUERY_PARAM = 'rq';
-export const HISTORY_ROUTE_MODE_PARAM = 'rmode';
 
 export interface HistoryUrlState {
   agency: string | null;
@@ -282,8 +280,6 @@ export function encodeHistoryUrlState(state: HistoryUrlState, latestYear: number
  * The route card's full-day chart (beta). `fullday=1` opens it; `fdir` is the direction pill,
  * written only when it differs from the default (the slower direction).
  */
-export const FULL_DAY_OPEN_PARAM = 'fullday';
-export const FULL_DAY_DIRECTION_PARAM = 'fdir';
 
 export interface FullDayUrlState {
   open: boolean;
@@ -315,7 +311,6 @@ export function encodeFullDayUrlState(state: FullDayUrlState, defaultDirection: 
  */
 export { AGENCY_CARD_PARAM } from '../../shared/pagePaths';
 import { AGENCY_CARD_PARAM } from '../../shared/pagePaths';
-export const ROUTE_CHOOSER_PARAM = 'routes';
 
 /** The agency card's slug from a link, or null. Slugs are [a-z0-9-]; anything else is ignored. */
 export function parseAgencyCardParam(search: string | URLSearchParams): string | null {

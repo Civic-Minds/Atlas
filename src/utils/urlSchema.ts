@@ -7,6 +7,8 @@ import type { NightServiceFrequency } from '../../shared/nightService';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { MapMeasure } from '../components/Live/routeMapModel';
 import { currentAgencyKey } from './formerSlugs';
+import { AREA_PARAM } from '../../shared/areaIndex';
+import { AGENCY_CARD_PARAM } from '../../shared/rules/paths';
 
 /**
  * Every view's link parameters, declared once (CIV-1011 #11, CIV-1139): each one's key, the older names a shared
@@ -208,6 +210,64 @@ export const LIVE_TOOL_URL = {
 export const LIVE_AGENCY_URL = {
   sort: oneOf<LiveSort>('sort', LIVE_SORT_IDS, 'late'),
 } as const;
+
+// ---- Keys written by the codecs in shareUrlState.ts and the views' own effects (one place for every link key) ----
+
+export const AGENCIES_PARAM = 'agencies';
+export const HIDE_AGENCIES_PARAM = 'hide';
+export const MODES_PARAM = 'm';
+export const COMPARE_DAY_PARAM = 'cday';
+export const COMPARE_PERIOD_PARAM = 'cp';
+export const COMPARE_HEADWAY_PARAM = 'ch';
+export const HISTORY_AGENCY_PARAM = 'agency';
+export const HISTORY_ROUTE_PARAM = 'hroute';
+export const HISTORY_YEAR_PARAM = 'year';
+export const HISTORY_REGION_PARAM = 'region';
+export const HISTORY_ROUTE_QUERY_PARAM = 'rq';
+export const HISTORY_ROUTE_MODE_PARAM = 'rmode';
+export const FULL_DAY_OPEN_PARAM = 'fullday';
+export const FULL_DAY_DIRECTION_PARAM = 'fdir';
+export const ROUTE_CHOOSER_PARAM = 'routes';
+/**
+ * The back target in the link (CIV-919), so a reload keeps "← Route 504": `from=route:<route key>`,
+ * `from=agency:<slug>` or `from=ondemand:<selection>` (stopBack.ts). The map needs no param.
+ */
+export const STOP_BACK_PARAM = 'from';
+/** Bustang's distance choice in its link (?within=800); 400, the default, is left out (bustangConnections.ts). */
+export const BUSTANG_WITHIN_PARAM = 'within';
+
+/**
+ * CIV-2179 (Ryan, 2026-11-23: "Is the order of the URL perameters good?" / "Just in general I meant" → "Yes" to one
+ * fixed order): every link is written place first, then route, then day and time, then filters, so every link reads
+ * the same way. Reading stays order-free, so an old link opens the same view. A key not listed keeps its place after
+ * these, in the order it was written.
+ */
+export const URL_PARAM_ORDER: readonly string[] = [
+  // Place: the agency, the area or selection, and where the map is.
+  AGENCY_CARD_PARAM, HISTORY_AGENCY_PARAM, AREA_PARAM, HISTORY_REGION_PARAM, AGENCIES_PARAM, HIDE_AGENCIES_PARAM,
+  MAP_URL.lat.key, MAP_URL.lon.key, MAP_URL.zoom.key,
+  // Route: what is open on it (route, stop, zone, vehicle), its direction, the part of it and the view of it.
+  MAP_URL.route.key, HISTORY_ROUTE_PARAM, HISTORY_ROUTE_QUERY_PARAM, HISTORY_ROUTE_MODE_PARAM, ROUTE_CHOOSER_PARAM,
+  MAP_URL.stop.key, STOP_BACK_PARAM, MAP_URL.onDemand.key, MAP_URL.highlight.key, LIVE_MAP_URL.vehicle.key, LIVE_MAP_URL.group.key,
+  LIVE_MAP_URL.dir.key, FULL_DAY_OPEN_PARAM, FULL_DAY_DIRECTION_PARAM, LIVE_MAP_URL.stretch.key, LIVE_TOOL_URL.segment.key,
+  LIVE_ROUTE_URL.view.key, LIVE_TOOL_URL.tab.key,
+  // Day and time.
+  MAP_URL.day.key, HISTORY_VIEW_URL.day.key, FREQUENT_URL.days.key, HISTORY_YEAR_PARAM, MAP_URL.period.key, LIVE_ROUTE_URL.band.key,
+  FREQUENT_URL.window.key, COMPARE_DAY_PARAM, COMPARE_PERIOD_PARAM,
+  // Filters and settings.
+  MAP_URL.headway.key, COMPARE_HEADWAY_PARAM, MAP_URL.hideSpan.key, MAP_URL.hideLimited.key, MODES_PARAM, APP_URL.hideLowQuality.key,
+  FREQUENT_URL.frequency.key, NIGHT_URL.frequency.key, BUSTANG_WITHIN_PARAM, LIVE_TOOL_URL.measure.key, LIVE_AGENCY_URL.sort.key,
+  APP_URL.forceSlowConnection.key,
+];
+
+const PARAM_RANK = new Map(URL_PARAM_ORDER.map((key, i) => [key, i]));
+
+/** The params in URL_PARAM_ORDER (stable: an unlisted key, or a key listed twice, keeps its written place). */
+export function orderUrlParams(sp: URLSearchParams): URLSearchParams {
+  const entries = [...sp.entries()].map((e, i) => ({ e, i, rank: PARAM_RANK.get(e[0]) ?? URL_PARAM_ORDER.length }));
+  entries.sort((a, b) => a.rank - b.rank || a.i - b.i);
+  return new URLSearchParams(entries.map(x => x.e));
+}
 
 type AnyUrlParam = Pick<UrlParam<never>, 'key' | 'aliases' | 'presence'>;
 

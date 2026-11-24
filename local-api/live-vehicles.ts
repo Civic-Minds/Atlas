@@ -72,11 +72,7 @@ async function fetchFeed(
       );
       return {
         ok: true,
-        data: GtfsRealtimeBindings.transit_realtime.FeedMessage.toObject(feed, {
-          longs: Number,
-          enums: String,
-          bytes: String,
-        }),
+        data: GtfsRealtimeBindings.transit_realtime.FeedMessage.toObject(feed, FEED_DECODE_OPTIONS),
       };
     } catch {
       return { ok: false, reason: 'decode-error', detail: 'upstream returned unreadable data' };
@@ -115,7 +111,21 @@ function statusForDelay(delayMin: number | null): 'no_data' | 'early' | 'late' |
   return delayStatus(delayMin);
 }
 
-const STOPPED_AT = GtfsRealtimeBindings.transit_realtime.VehiclePosition.VehicleStopStatus.STOPPED_AT;
+/** How a live feed is decoded: enums come out as their names ("STOPPED_AT"), not numbers. */
+export const FEED_DECODE_OPTIONS = { longs: Number, enums: String, bytes: String } as const;
+
+const VehicleStopStatus = GtfsRealtimeBindings.transit_realtime.VehiclePosition.VehicleStopStatus;
+const STOPPED_AT = VehicleStopStatus.STOPPED_AT;
+/** A vehicle's current_status, as a live feed decodes it (the name) or a recording stores it (the number). */
+type StopStatus = string | number | null | undefined;
+/**
+ * #1739: whether a vehicle stands at its stop. A live feed decodes current_status as its name ("STOPPED_AT", see
+ * FEED_DECODE_OPTIONS) while the recorder stores the number (1), so both count; comparing with the number alone was never
+ * true on a live feed.
+ */
+export function isStoppedAt(status: StopStatus): boolean {
+  return status === STOPPED_AT || status === VehicleStopStatus[STOPPED_AT];
+}
 type StopUpdate = { stopId?: string | null; arrival?: { time?: unknown } | null; departure?: { time?: unknown } | null };
 /**
  * The vehicle's next stop by name (CIV-2024, #1653): the first stop in its trip update still ahead of `nowSec` that the
@@ -129,13 +139,13 @@ type StopUpdate = { stopId?: string | null; arrival?: { time?: unknown } | null;
  * carries for the vehicle (at a trip's end, its next trip), the first that still has a stop ahead.
  */
 export function vehicleNextStop(
-  vehicle: { currentStatus?: number | null },
+  vehicle: { currentStatus?: StopStatus },
   tripUpdate: { stopTimeUpdate?: readonly StopUpdate[] | null } | undefined,
   vehicleUpdates: readonly { stopTimeUpdate?: readonly StopUpdate[] | null }[] | undefined,
   names: ReadonlyMap<string, Pick<StopPlace, 'name'>>,
   nowSec: number,
 ): { name: string; at: boolean } | null {
-  const at = vehicle.currentStatus === STOPPED_AT;
+  const at = isStoppedAt(vehicle.currentStatus);
   for (const u of [tripUpdate, ...(vehicleUpdates ?? []).filter(v => v !== tripUpdate)]) {
     const name = !u ? null : at ? stoppedAtName(u.stopTimeUpdate, names, nowSec) : nextStopName(vehicle, u.stopTimeUpdate, names, nowSec);
     if (name) return { name, at };
@@ -158,12 +168,12 @@ export function stoppedAtName(stops: readonly StopUpdate[] | null | undefined, n
 }
 
 export function nextStopName(
-  vehicle: { currentStatus?: number | null },
+  vehicle: { currentStatus?: StopStatus },
   stops: readonly StopUpdate[] | null | undefined,
   places: ReadonlyMap<string, Pick<StopPlace, 'name'>>,
   nowSec: number,
 ): string | null {
-  if (vehicle.currentStatus === STOPPED_AT || !stops?.length) return null;
+  if (isStoppedAt(vehicle.currentStatus) || !stops?.length) return null;
   for (const s of stops) {
     const t = Number(s.arrival?.time ?? s.departure?.time);
     if (!Number.isFinite(t) || t < nowSec || !s.stopId) continue;
@@ -172,6 +182,9 @@ export function nextStopName(
   }
   return null;
 }
+
+// #1753: the route's observed headway is read in the one join (shared/liveJoin.ts), so the recorder stores the same.
+export { addTripArrivals, routeHeadway, type RouteArrivals, type RouteHeadway } from '../shared/liveJoin.js';
 
 /**
  * The stops a trip update lists still ahead of now (CIV-2047), in order, by name and place from the agency's stops file.

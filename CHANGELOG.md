@@ -6,7 +6,22 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
+- **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
+- **On the filtered map, one slower stop at the end of a stretch colours only its own end piece**: a single slightly slower end stop was recolouring the whole stretch; the rest now takes the worst of its other stops, and no stop's published value changes
+- **History no longer shows six old routes as running in 2026**: AC Transit 20, 21, 79 and 72R and SacRT 195 and 80 carried 2020, 2021 and 2018 schedules dated as this year, because their archive dates were written as year and month only
+- **History shows Cleveland's HealthLine once**: it appeared twice, as "HealthLine" through 2026 and as a separate "HL" from September, after RTA renamed the route in its schedule data
+- **A branch that stops partway through a period no longer makes the whole route look slow**: TTC 501 and 504 read every 66 and 61 min late at night because a short branch's wait to 2 AM set the route's figure; they now read every 10, and the branch's own row still says when it stops
+- **History draws a route that has left today's map in its latest year when it has that year's own line**: Seattle's two streetcars and two Cleveland routes had a 2026 frequency but no line; a year without the route's own line still draws none, rather than an older year's path
+- **Every Atlas link lists its settings in the same order**: place, then route, then day and time, then filters, so two links for the same view read alike; older links still open as before
+- **Export map image shows only the size you picked as selected**: hovering another size made it look picked too, since hover and selected were nearly the same grey
+- **Every route line on the Live map shows how often it runs right now**: routes without a Live report were drawn grey; they now take the main map's frequency colours for the time of day
+- **The Live map shows how often the picked route is running right now**: its "Every ~N min" line never appeared, because the gaps were looked for inside one trip instead of between trips at a stop
+- **Hamilton's Live recordings miss fewer minutes**: when Hamilton's feed briefly fails, the recorder tries once more a few seconds later instead of skipping that minute
+- **The Live card says "At <stop>" while a vehicle stands at a stop**: it never did on a real feed, because the stop status was read as text and checked as a number
+- **The internal Status page shows how many days of recordings each Live agency has**: a bar fills until the agency has enough days to be listed on Studio Live, so a new city's progress is visible as it comes online
 - **The Live Full report shows one topic at a time**: a row of topic pills (Along the route, Late departures by hour, Trip time and the rest) replaces one very long page, and every chart and control is still there under its topic
+- **History draws subway, commuter rail and ferry lines in its latest year**: routes with no route number, such as MBTA's Red Line and Hingham ferry, the CTA L, LA Metro Rail and SkyTrain, had no line at all
 - **The Frequent service story lets you pick the weekday hours behind its coverage figures**: 7 AM–7 PM by default, or 7 AM–10 PM, so a route counts by how it runs across the day instead of needing service from 6 AM
 - **Route cards no longer name a gap over an hour**: a row such as "every 5 min, with one 169 min gap" now reads "Runs irregularly in this period", matching how other rows with an hour-plus hole already read
 - **A route that slows down in the evening names one long gap instead of reading it as the slower service**: Brampton 1 read "then every 37" for buses 18 to 25 minutes apart with one 37-minute wait; it now reads "then every 25 min, with one 37 min gap"

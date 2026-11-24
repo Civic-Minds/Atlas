@@ -13,7 +13,9 @@ vehicle positions and the timetable.
 
 The report pages on beta read `atlas/live/ttc/<route>.json`, `agency.json` and `manifest.json` from the public bucket. The
 `live-report-refresh.yml` workflow rebuilds them from the last 15 service dates. It runs and publishes every day at 09:17 UTC
-(CIV-1690), for TTC only, and can also be run by hand:
+(CIV-1690), for TTC only, and can also be run by hand. GitHub sometimes drops a scheduled run, so backups at 14:17 and
+19:17 UTC run only when the day's publish hasn't succeeded yet, and the manager's check-in flags a refresh whose last
+success (`scripts/ci/refresh-last-success.sh`) is over 30 hours old (CIV-2177):
 
 - `gh workflow run live-report-refresh.yml` (mode `no-publish`, the default) builds everything with the read-only R2 keys and
   writes nothing. The run artifact `live-report-files-<run id>` holds the files and `review/summary.md`: the weeks covered, the
@@ -30,12 +32,16 @@ every stored surface zip the window needs into `gtfs/candidates/surface-feeds/`)
 its timetable below 90%, when another stored timetable matches a day better than the one chosen, or when the fetch could not
 read more than 2% of a day's snapshots.
 
-Atlas Studio agencies (every city Live records except the TTC) are rebuilt in the cloud every day (CIV-2077; Ryan picked
-"Add those two checks and switch on a daily automatic run for every Studio city, matching TTC"). The workflow
-`studio-live-refresh.yml` runs Live's route analysis for each of them (`scripts/studio-live-cloud.ts`) and uploads the files
-Studio's Live page reads (`<slug>-<route>-segments.json`, `<slug>-agency.json`) to the PRIVATE archive bucket under
+Atlas Studio's Live files, for every city Live records (the TTC included since CIV-2186), are rebuilt in the cloud every
+day (CIV-2077; Ryan picked "Add those two checks and switch on a daily automatic run for every Studio city, matching TTC").
+The workflow `studio-live-refresh.yml` runs Live's route analysis for each of them (`scripts/studio-live-cloud.ts`; the
+TTC's routes are `LIVE_TTC_ANALYSED_ROUTES`) and uploads the files Studio's Live page reads
+(`<slug>-<route>-segments.json`, `-gaps.json`, `<slug>-agency.json`) to the PRIVATE Live bucket (`atlas-mcp-live`) under
 `studio-live/`. The repository is public (CIV-1716), so the log shows counts only and the job uploads no artifact and saves
-no cache. `npm run studio:sync` copies the current files into `../_live-data/out` on this Mac, one agency at a time, whole.
+no cache. The Mac's dev server reads those files straight from the bucket with the read-only key (`local-api/liveFiles.ts`;
+Ryan, CIV-2186: "the polling happens in the cloud so why is anything happening on my Mac?"): nothing is copied to or built
+on the Mac. Setting `LIVE_SEGMENTS_DIR` points it at a local folder instead, for a same-zip comparison; `npm run
+studio:sync` fills such a folder from the cloud.
 
 - `gh workflow run studio-live-refresh.yml` (mode `dry-run`, the default) builds with the read-only keys and uploads
   nothing; the log gives the counts. `-f mode=publish` uploads, from `main` only.
@@ -45,12 +51,20 @@ no cache. `npm run studio:sync` copies the current files into `../_live-data/out
 - **No thin weeks**: an agency's new files replace its old ones only when each of its two weeks has at least
   `LIVE_MIN_HEALTHY_DAYS_PER_WEEK` good days on any route. Its first build needs only this week. Otherwise it keeps its
   last files.
-- The daily run (09:47 UTC) is off until the repository variable `STUDIO_LIVE_DAILY` is `1`. The first scheduled publish
+- The daily run (09:47 UTC, with backups at 14:47 and 19:47 that run only when the day's hasn't succeeded) is off until the repository variable `STUDIO_LIVE_DAILY` is `1`. The first scheduled publish
   needs a go.
 
-`npm run studio:report` (Kingston, last 15 service dates; `npm run studio:report -- <slug> --days N` for another) still
-builds the same on this Mac, plus a time-loss report per route in `$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to
+Opt-in only: `npm run studio:report` (Kingston, last 15 service dates; `npm run studio:report -- <slug> --days N` for
+another) builds the same on this Mac, for a local comparison, plus a time-loss report per route in `$LIVE_DATA/studio/time-loss/`. `LIVE_DATA` defaults to
 the one shared folder, `Atlas-worktrees/_live-data`, whichever checkout runs it.
+
+Studio's Fleet and Schedules files (`<slug>-vehicles.json`, `<slug>-before-after.json`; CIV-1974) are built in the cloud
+rebuild too (`rebuild-release.yml`: `scripts/studio-builds.ts` from the feeds and dates in `config/studio-builds.json`,
+then `scripts/studio-files-upload.ts`) and go to the same private Live bucket under `studio/files/`; the dev server reads
+them from there (`local-api/studioFiles.ts`), or from a folder when `STUDIO_DIR` is set. An agency marked `dryRunOnly` is
+not built for publishing, so its cloud files stay as uploaded: TTC, Hamilton and Kingston keep the files built on this
+Mac (uploaded once with `npx tsx scripts/studio-files-upload.ts --from <folder> --only ttc,hamilton,kingston`, an R2
+write that needs a go) until #1710, Hamilton 01's late-night line and Kingston's values are cleared.
 
 One exception, for the hosted Atlas Studio MCP only (CIV-1860, Ryan approved 2026-11-18): the `mcp-live` job in
 `live-report-refresh.yml` analyses every recorded agency, Studio agencies included, and writes the MCP's small figure files

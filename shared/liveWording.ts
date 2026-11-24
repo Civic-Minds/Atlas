@@ -318,8 +318,6 @@ export const STUDIO_LIVE_PENDING = {
  * how departures split this week between on time and more than 5½ min late.
  */
 export const STUDIO_GLANCE = {
-  /** After the bold count: "9 routes recorded", alone (Ryan, 2026-11-20, CIV-1966: "The 3 days of data and the Nov 16-18 seems almost not needed"). */
-  routes: 'routes recorded',
   barTitle: 'Departures this week',
   onTime: 'On time',
   late: LATE_THRESHOLD.charAt(0).toUpperCase() + LATE_THRESHOLD.slice(1),

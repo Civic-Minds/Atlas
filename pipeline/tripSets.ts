@@ -1608,6 +1608,12 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
   return isSustainedHeadway(rest, every) ? { every, gap } : null;
 }
 
+/** #1749: a period reading set only by the wait to the window's edge: coverage over the cap with no gap inside over it. */
+function edgeOnlyReading(times: readonly number[], start: number, end: number, p: StretchPeriod): boolean {
+  if (p.coverage == null || p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY) return false;
+  return (innerMaxGapInWindow(times, start, end) ?? 0) <= PERIOD_COVERAGE_MAX_HEADWAY;
+}
+
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
 export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null {
   if (!dIn.main) return null;
@@ -1686,9 +1692,17 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
     // #1665 (rule 11): the filter value always reads every piece, so the slowest decides it, as with B1 off. A shared
     // trunk may set the direction's headline number (B1), never the filter: it never makes the whole route pass.
-    const countingStretches = [d.main, ...d.tails]
+    const pieces = [d.main, ...d.tails]
       .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
       .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
+    // #1749 (Ryan, 2026-11-23, overrides CIV-1241): a tail whose reading is only its wait to the period's edge (it ends or starts partway, so its
+    // coverage is over PERIOD_COVERAGE_MAX_HEADWAY while every gap inside is not) leaves the route's value to the pieces
+    // that run on: 504C's replacement bus ends at 0:53 in Late (to 2 AM) and read 61 for the whole route. A handover tail (#1072)
+    // still counts. Its row keeps its "until 0:53" (edgeOnly, below).
+    const isEdgeOnly = ({ st, stretch, p }: (typeof pieces)[number]) => stretch !== 'main' && !handover[key][stretch] && edgeOnlyReading(st.times, start, end, p);
+    const countingStretches = pieces.filter(c => !isEdgeOnly(c));
+    const edgeOnly = pieces.filter(isEdgeOnly)
+      .reduce<(typeof pieces)[number] | null>((worst, c) => (worst == null || (filterOf(c.p) ?? 0) > (filterOf(worst.p) ?? 0) ? c : worst), null);
     const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
@@ -1717,7 +1731,10 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
     if (uneven) period[key].edge = null;
     else if (runs) {
       const edge = periodEdge((setterAt?.st ?? d.main).times, start, end, period[key].filterValue);
-      period[key].edge = edge && { ...edge, stretch: setterAt?.stretch ?? 'main' };
+      // #1749: where the pieces that set the value have no edge, the slowest tail left out for its wait to the edge still names
+      // when it stops or starts, on its own row (#1276), as it did when it set the value (CIV-1241's words, unchanged).
+      const tailEdge = !edge && edgeOnly ? periodEdge(edgeOnly.st.times, start, end, filterOf(edgeOnly.p)) : null;
+      period[key].edge = edge ? { ...edge, stretch: setterAt?.stretch ?? 'main' } : tailEdge && { ...tailEdge, stretch: edgeOnly!.stretch };
     } else {
       const slowest = partial();
       // CIV-1248 follow-up (Ryan, 2026-11-01): a branch that runs the whole period counts too, so

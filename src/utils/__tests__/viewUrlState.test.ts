@@ -9,7 +9,8 @@ import {
 import { mergeUrlSearchParams } from '../syncUrlParams';
 
 // The frequency map stays mounted under History and writes its own params into the same URL.
-const MAP_PARAMS = 'route=ttc%3A%3A504&agencies=ttc.go&day=Saturday&lat=43.65&lon=-79.38&z=11.00';
+// The map's own params, in the one written order (CIV-2179): place, route, day.
+const MAP_PARAMS = 'agencies=ttc.go&lat=43.65&lon=-79.38&z=11.00&route=ttc%3A%3A504&day=Saturday';
 
 const empty: HistoryUrlState = { agency: null, route: null, year: 0, regions: [], routeQuery: '', routeMode: null };
 

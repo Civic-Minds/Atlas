@@ -4,6 +4,7 @@ import { historyOverlaySlugs, useHistoryMapOverlay } from '../../../context/Hist
 import { isDrawableLineCoordinates, lineCoordinates, type LonLat } from '../../../../shared/routeGeometry';
 import { fitTargetForPoints } from '../../../utils/routeFitTarget';
 import { selectionFramePadding } from './routeFraming';
+import { historyFeatureKey } from '../../../utils/historyYearMap';
 
 /**
  * Fits the camera to History's route lines with the main map's route framing: clear of the card on the
@@ -17,13 +18,13 @@ function fitHistoryLines(map: maplibregl.Map, points: ReadonlyArray<LonLat>, max
 
 const TODAY_LINE_LAYERS = ['overview-routes-layer', 'routes-layer', 'local-routes-layer'];
 
-/** Points of today's drawn lines for one agency, optionally one route (History's key is the line's routeShortName). */
+/** Points of today's drawn lines for one agency, optionally one route (History's key: historyFeatureKey, #1738). */
 function todaysLinePoints(map: maplibregl.Map, slugs: readonly string[], routeShortName?: string): LonLat[] {
   const layers = TODAY_LINE_LAYERS.filter(id => map.getLayer(id));
   if (layers.length === 0) return [];
   return map.queryRenderedFeatures(undefined, { layers })
     .filter(f => slugs.includes(String(f.properties?.agencySlug ?? ''))
-      && (routeShortName === undefined || String(f.properties?.routeShortName ?? '') === routeShortName))
+      && (routeShortName === undefined || historyFeatureKey(f.properties ?? {}) === routeShortName))
     .flatMap(f => lineCoordinates(f.geometry));
 }
 

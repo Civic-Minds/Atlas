@@ -18,4 +18,9 @@ describe("Studio's Live route panel shows main Live's right-now card (CIV-2021)"
     expect(props.direction).toBe(1);
     expect(props.routeShortName).toBe('501');
   });
+
+  it('reads the route even with Live mode off, as it polls the vehicles itself (#1750)', () => {
+    render(<RouteRightNow slug="ttc" routeShortName="506" direction={null} />);
+    expect(card.mock.calls.at(-1)![0].liveEnabled).toBe(true);
+  });
 });

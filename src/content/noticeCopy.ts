@@ -1112,6 +1112,15 @@ export const COVERAGE_HISTORY = {
 export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', realtime: 'Real-time', report: 'Report' } as const;
 
 /**
+ * CIV-2173: the Live column's recording progress, days recorded against the minimum to be listed on Studio's Live page.
+ * PENDING RYAN'S OK.
+ */
+export const COVERAGE_LIVE_PROGRESS = {
+  label: 'Days recorded',
+  days: (days: number, minDays: number) => (days < minDays ? `${days} of ${minDays} days` : `${days} ${plural(days, 'day')}`),
+} as const;
+
+/**
  * Studio's views in the Studio column. Studio's settled menu names (CIV-1834, CIV-1807) are Schedule and Vehicles; the
  * menu doesn't carry them on main yet, so they are named here until it does, and then this reads them from there.
  */
@@ -1133,8 +1142,12 @@ export const COVERAGE_TEXT = {
 /** CIV-1890: the About menu inside Studio, in place of the public atlas's text. Ryan OK'd it as written on 2026-11-21: "1 for now" (provisional). */
 export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: see how routes ran against their schedule, how many vehicles a route needs, and what changed between schedules.';
 
-/** Studio's About panel, Live part (Ryan, 2026-11-19): the heading, and the two explanation lines moved out of the side panel (bunching's is bunchingSplitNote). */
-export const STUDIO_ABOUT_LIVE_HEADING = 'Live';
+/**
+ * #1751 (Ryan, 2026-11-23, "Yes"): the info panel's Measurements page, under its Data heading, holds Live's definitions (the
+ * bunching line and the grey-colour line, which were About's Live part); Live's Learn more opens it. "this notice isnt specific to
+ * an error", so it is a page of its own, not an explainer.
+ */
+export const MEASUREMENTS_TITLE = 'Measurements';
 export const LEARN_MORE_LABEL = 'Learn more';
 
 /** The weekday-to-Sunday story's table columns (#1074; Ryan approved them with the page's words, 2026-11-22). Its agency column is AGENCY_COLUMN. */
