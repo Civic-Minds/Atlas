@@ -59,6 +59,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.23.0 | 2026-11-22 | Every tool asks for the question and a question ID shared by every call made for one question (both required in the schema); the hosted log keeps the ID and the testers list counts questions as well as calls |
 | 0.23.1 | 2026-11-22 | list_agencies finds an agency by its short name ("HSR", #1705); the question_id description asks for 8 random letters and digits with no example to copy (#1707); a blank question_id is logged as none and never counted as a question (#1706) |
 | 0.23.2 | 2026-11-22 | Hosted: the testers list counts a question as a question ID on one UTC day, so the same made-up ID from chats on different days counts twice; the weekly review sheet groups the same way (#1709) |
+| 0.23.4 | 2026-11-24 | route_frequency, route_now and the other route tools find a route by its route id, bare or as "id:…" (TransLink's Expo Line, 30053, has no short name), after every name (#1777). "No route data" for TransLink's lines and MBTA's subway no longer happens on the pilot, on R2 or locally (fixed by the encoded file names, 0367e6c60) |
 
 ## Questions
 
