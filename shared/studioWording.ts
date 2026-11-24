@@ -76,6 +76,8 @@ export const STUDIO_REDESIGN_TEXT = {
   scheduledNow: 'Scheduled now',
   /** Fleet "now" design: the sparkline of the vehicles the schedule needs in each time of day. */
   scheduledByPeriod: 'Scheduled, by time of day',
+  /** Fleet "now" design: the panel's short caption in place of its intro sentence, "194 routes · Nov 18 schedule". */
+  fleetCaption: (routes: number, date: string) => `${routes} ${plural(routes, 'route')} · ${date} schedule`,
   /** The way back from one kind's routes to the summary. */
   allChanges: 'All changes',
 } as const;

@@ -27,6 +27,7 @@ import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/s
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetIntroText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
+import { CARD_NOTE } from '../../styles';
 import SplitBar from '../../components/charts/SplitBar';
 import DataTable from '../../components/ui/DataTable';
 import { MISSING_VALUE } from '../../../shared/missingValue';
@@ -408,7 +409,10 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
             {vehicles === 'missing' ? <PanelEmpty>{C.noData}</PanelEmpty>
               : vehicles ? (
                 <>
-                  {fleet && <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>}
+                  {/* CIV-2182 "now" design (Ryan: the intro shorter and maybe moved): a short grey caption, "194 routes · Nov 18 schedule". */}
+                  {fleet && (fleetDesign() === 'now'
+                    ? <p className={`m-0 mb-1 ${CARD_NOTE}`}>{STUDIO_REDESIGN_TEXT.fleetCaption(agencyRouteCount(vehicles, period), dateRange(file.after.date, file.after.date))}</p>
+                    : <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>)}
                   {fleetDesign() === 'now' ? (
                     // CIV-2182 (Ryan: the card inside a card looks odd): sections of the panel, as Studio's Live route panel (CIV-2021).
                     <PanelSectionsProvider>
