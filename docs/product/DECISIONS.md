@@ -296,6 +296,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-23 — A branch's wait to the period's edge no longer sets the route's value (#1749, CIV-2196; overrides CIV-1241)
+Ryan, 2026-11-23 (relayed by Atlas Manager New): "1", answering "Option 1: a branch whose only long wait is to the period's edge no longer sets the whole route's figure; its own row still says "until 0:53". No new number. [...] Trade-off: overrides CIV-1241 (on the branch after it stops there's no service, but the route reads the trunk's figure). 1. Apply option 1 (Recommended) 2. Keep CIV-1241 as is".
+- The rule: a branch (tail) that starts or stops partway through a period, so its full-period wait is over the coverage cap while no gap between its buses is, is left out of the direction's value and filter. Its own row keeps its reading ("every 10 until 0:53"). A handover tail (#1072) still counts.
+- This overrides the 2026-11-01 CIV-1241 entry below where it let such a branch's full-period wait set the route's value; the row wording from CIV-1241 is unchanged.
+- Cloud dry-run pair (723680b vs 5bb572e): 704 of 160,630 route-periods change, all faster; 495 change public grade, in 467 routes across 141 agencies. TTC 501 Late 66 → 10, 504 Late 61 → 10, 939 Evening 63 → 18.
+
 ### 2026-11-23 — The Frequent service story's coverage section reads a weekday window the reader picks, 7 AM–7 PM by default (CIV-2013)
 Ryan (2026-11-23, relayed by Atlas Manager New): "1", option: the chart uses the 7 AM–7 PM weekday window (window-frequent, run 45115615007), giving Canada 42→48 metros and US 151→169, and the chart label names the window. Then: "Thought we were going to let people choose between 7-7 or 7-10". His OK for this period-window change.
 - The rule: the coverage figures judge a route across one weekday window, read as one period (the map's frequency test, a branched route by its shared middle), instead of each of AM peak, midday and PM peak, so a route need not run from 6 AM. A picker offers 7 AM–7 PM (rule 9's Frequent Service window, the default) and 7 AM–10 PM (the weekday grading window); the bounds come from pipeline/tripSets.ts CHART_WINDOWS.

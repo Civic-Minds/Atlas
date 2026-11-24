@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A branch that stops partway through a period no longer makes the whole route look slow**: TTC 501 and 504 read every 66 and 61 min late at night because a short branch's wait to 2 AM set the route's figure; they now read every 10, and the branch's own row still says when it stops
 - **Every Atlas link lists its settings in the same order**: place, then route, then day and time, then filters, so two links for the same view read alike; older links still open as before
 - **Export map image shows only the size you picked as selected**: hovering another size made it look picked too, since hover and selected were nearly the same grey
 - **Every route line on the Live map shows how often it runs right now**: routes without a Live report were drawn grey; they now take the main map's frequency colours for the time of day

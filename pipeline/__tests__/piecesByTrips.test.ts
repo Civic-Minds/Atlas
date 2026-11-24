@@ -125,7 +125,7 @@ describe('with B1, B2 and B3 on the new pieces', () => {
     expect(headlineTrunk(on) === null).toBe(headlineTrunk(off) === null);
   });
 
-  it('RTD 15 Saturday with B1 + B3 + B4: trunk 15 sets the headline; the tail stays a tail with its 164 wait', () => {
+  it('RTD 15 Saturday with B1 + B3 + B4: trunk 15 sets the headline and the filter; the tail stays a tail with its 164 wait on its own row', () => {
     const t = stopsOf('r', 18, i => [43.6 + i * 0.01, -79.4]);
     const tl = stopsOf('q', 12, i => [43.78 + (i + 1) * 0.004, -79.4]);
     const d = withFlag(() => build('rtd15', [
@@ -133,9 +133,9 @@ describe('with B1, B2 and B3 on the new pieces', () => {
       { times: every(562, 712, 30), stops: [...t, ...tl] } // 586 to 736 at the tail's middle stop,
     ]));
     expect(d.tails).toHaveLength(1);
-    // #1665 (rule 11): the trunk sets the headline (15); the tail's 164 still sets the filter.
+    // #1665 (rule 11) sets the filter from the slowest piece, but #1749 leaves out a tail whose 164 is only its wait to the period's edge.
     expect(rollupDirection({ ...d, headlineFromTrunk: true })!.period[MIDDAY].value).toBe(15);
-    expect(rollupDirection({ ...d, headlineFromTrunk: true })!.period[MIDDAY].filterValue).toBe(164);
+    expect(rollupDirection({ ...d, headlineFromTrunk: true })!.period[MIDDAY].filterValue).toBe(15);
     const r = directionPieceReadings(d, (s, k) => stretchFilterValue(stretchPeriods(s)[k]))!;
     expect(r.pieces[1].periods[MIDDAY]).toEqual({ t: 'tail', v: 164, every: 30, until: 736 });
   });

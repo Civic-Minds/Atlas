@@ -1331,7 +1331,8 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
   it('regression: Wilson until 12:00, then Fiddler\'s Green every 30: midday reads 30, not the branch\'s 170-minute wait', () => {
     const d = build(every(360, 720, 30), every(750, 1380, 30), f);
     expect(d.tails).toHaveLength(2);
-    expect(without(d).period.midday.filterValue).toBeGreaterThan(60);
+    // #1749: without the handover, each branch's long wait is only to the period's edge, so neither sets the value either.
+    expect(without(d).period.midday.filterValue).toBe(30);
     const r = rollupDirection(d)!;
     expect(r.period.midday.filterValue).toBe(30);
     expect(r.period.midday.value).toBe(30);
@@ -1345,18 +1346,19 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
     const wTrips = every(360, 720, 30), fTrips = every(750, 1380, 30);
     const turns = every(375, 1365, 30);
     const d = directionStretches('r::0::Weekday', [...wTrips.map(m => trip(`w${m}`, m, w)), ...fTrips.map(m => trip(`f${m}`, m, f)), ...turns.map(m => trip(`s${m}`, m, []))], id => coords.get(id));
-    expect(without(d).period.midday.filterValue).toBeGreaterThan(60);
+    // #1749: without the handover, both branches stop or start partway and the trunk's 15 is left; taking turns, they read 30.
+    expect(without(d).period.midday.filterValue).toBe(15);
     expect(rollupDirection(d)!.period.midday.filterValue).toBe(30);
   });
 
-  it('legitimate: a branch that stops at 12:00 while only trunk trips run after it keeps its wait', () => {
+  it('#1749 (overrides CIV-1241): a branch that stops at 12:00 while only trunk trips run after it no longer sets the value', () => {
     const d = build(every(360, 720, 30), every(750, 1380, 30), []);
     expect(d.tails).toHaveLength(1);
     expect(rollupDirection(d)).toEqual(without(d));
-    expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
+    expect(rollupDirection(d)!.period.midday.filterValue).toBe(30);
   });
 
-  it('CIV-1241: a branch that runs every 30 and stops at 12:00 reads its stop time as the period edge, and keeps its wait', () => {
+  it('CIV-1241 with #1749: a branch that runs every 30 and stops at 12:00 still reads its stop time on its row, but its wait no longer sets the value', () => {
     const d = build(every(360, 720, 30), every(750, 1380, 30), []);
     const r = rollupDirection(d)!;
     const edge = r.period.midday.edge!;
@@ -1364,12 +1366,28 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
     expect(edge.from).toBeUndefined();
     expect(edge.until).toBeGreaterThanOrEqual(720);
     expect(edge.until).toBeLessThan(750);
-    // The edge explains the filter value: the wait from the branch's last trip to the window's end.
-    expect(r.period.midday.filterValue).toBe(Math.ceil(900 - edge.until!));
+    // #1749: the wait from the branch's last trip to the window's end no longer sets the value; the trunk's 30 does.
+    expect(r.period.midday.filterValue).toBe(30);
     expect(r.period.midday.gap).toBeNull();
     // #1276: the edge names the branch that set it, the index a row standing for it carries.
     expect(d.tails).toHaveLength(1);
     expect(edge.stretch).toBe(0);
+  });
+
+  it('#1749: a branch that starts partway (trunk trips only before it) names its start on its row and leaves the value to the trunk', () => {
+    const d = build(every(690, 1380, 30), every(360, 660, 30), []);
+    expect(d.tails).toHaveLength(1);
+    expect(stretchPeriods(d.tails[0]).midday.coverage).toBeGreaterThan(60);
+    const r = rollupDirection(d)!;
+    expect(r.period.midday.filterValue).toBe(30);
+    expect(r.period.midday.edge).toMatchObject({ every: 30, stretch: 0 });
+    expect(r.period.midday.edge!.from).toBeGreaterThanOrEqual(690);
+  });
+
+  it('#1749 legitimate: a branch that runs through the period every 90 still sets the value (its wait is between buses, not to the edge)', () => {
+    const d = build(every(360, 1380, 90), every(375, 1365, 30), []);
+    expect(d.tails).toHaveLength(1);
+    expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
   });
 
   it('#1276: an edge read on the main stretch names the main stretch', () => {
@@ -1401,14 +1419,16 @@ describe('rule 3: sibling branches that take turns through a period (#1072, HSR 
     ], id => coords.get(id));
     expect(d.tails).toHaveLength(1);
     expect(rollupDirection(d)).toEqual(without(d));
-    expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
+    // #1749: the Wilson branch stops at 12:00, so its wait to the edge no longer sets the value.
+    expect(rollupDirection(d)!.period.midday.filterValue).toBe(30);
   });
 
   it('legitimate: a cut-back or extension to another terminal is not a handover (CTA 28, TransLink 9)', () => {
     const d = build(every(360, 720, 30), every(750, 1380, 30), g);
     expect(d.tails).toHaveLength(2);
     expect(rollupDirection(d)).toEqual(without(d));
-    expect(rollupDirection(d)!.period.midday.filterValue).toBeGreaterThan(60);
+    // #1749: each branch only stops or starts partway, so neither branch's wait to the edge sets the value.
+    expect(rollupDirection(d)!.period.midday.filterValue).toBe(30);
   });
 
   it('legitimate: a sibling that overlaps the branch in time is not a handover', () => {
