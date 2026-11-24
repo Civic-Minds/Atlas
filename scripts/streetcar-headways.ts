@@ -14,7 +14,8 @@
  * Usage: npx tsx scripts/streetcar-headways.ts [YYYY-MM-DD]
  * Requires R2_* env vars (.env.local).
  */
-import { GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { mapArchiveDay } from '../shared/liveArchiveDay.js';
+import { s3ArchiveDayStore } from './liveArchiveStore.js';
 import { getR2Client, r2PublicUrl } from '../pipeline/r2.js';
 import { pickBestShape, projectOntoShape, shapesFromGeometry, type Shape } from '../shared/shapeProjection.js';
 import { DEFAULT_LIVE_ARCHIVE_BUCKET } from '../shared/rules/live.js';
@@ -50,35 +51,17 @@ async function main() {
     candidatesByKey.get(key)!.push(...parts);
   }
 
-  // Archive snapshots
-  const keys: string[] = [];
-  let token: string | undefined;
-  do {
-    const page = await client.send(new ListObjectsV2Command({
-      Bucket: BUCKET, Prefix: `positions/ttc/${date}/`, ContinuationToken: token,
-    }));
-    for (const o of page.Contents ?? []) if (o.Key) keys.push(o.Key);
-    token = page.IsTruncated ? page.NextContinuationToken : undefined;
-  } while (token);
-  console.log(`${keys.length} snapshots, ${candidatesByKey.size} route+direction candidates`);
-
+  // Archive snapshots: the cloud recorder's v2 once the TTC is on it, the v1 archive before (CIV-2217).
   const trajByRouteVehicle = new Map<string, Sample[]>(); // "route::vehId"
-  let i = 0;
-  await Promise.all(Array.from({ length: 12 }, async () => {
-    while (i < keys.length) {
-      const key = keys[i++];
-      try {
-        const res = await client.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
-        const snap = JSON.parse(await res.Body!.transformToString());
-        for (const v of snap.vehicles) {
-          if (!v.id) continue;
-          const k = `${v.r}::${v.id}`;
-          if (!trajByRouteVehicle.has(k)) trajByRouteVehicle.set(k, []);
-          trajByRouteVehicle.get(k)!.push({ ts: snap.ts, lat: v.lat, lon: v.lon });
-        }
-      } catch { /* skip */ }
+  const read = await mapArchiveDay('ttc', date, `positions/ttc/${date}/`, s3ArchiveDayStore(client, BUCKET), snap => {
+    for (const v of snap.vehicles) {
+      if (!v.id) continue;
+      const k = `${v.r}::${v.id}`;
+      if (!trajByRouteVehicle.has(k)) trajByRouteVehicle.set(k, []);
+      trajByRouteVehicle.get(k)!.push({ ts: snap.ts, lat: v.lat, lon: v.lon });
     }
-  }));
+  });
+  console.log(`${read.fromV2 + read.fromV1} snapshots, ${candidatesByKey.size} route+direction candidates`);
 
   // Pick the shape candidate each route+direction's actual samples match best,
   // instead of assuming the geometrically longest candidate is the one used.

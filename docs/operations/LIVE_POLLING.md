@@ -125,6 +125,8 @@ Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. None of the five agencies 
 
 Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. For the MBTA only route ids Green-B to Green-E, Mattapan, the Silver Line 741, 742, 743, 746, 749 and 751, and buses 23, 57, 66 and 111 are kept. Which feeds record now: see Status above. Used for live history and measured headway/speed analysis.
 
+CIV-2217: the readers of this archive (the weekly Live report and Studio Live through `scripts/live-fetch-archive.ts`, the MCP's reliability and bunching data, the streetcar scripts) read an agency on the cloud recorder (`RECORDER_SLUGS`) from its v2 snapshots (`live/{slug}/{date}/{slot}.json`) and this archive only for the part of a day before the first v2 snapshot (`shared/liveArchiveDay.ts`). Checked on Hamilton, 2026-11-23 (v2 from 20:56 UTC): the same 38 routes, 546 vehicles and 3,982 trips as v1 alone, 0.9% fewer position samples (13 of the 184 v2 slots after the switch were missing). The v1 crons keep running until the switch is signed off.
+
 | Agency | Slug | Filter |
 |--------|------|--------|
 | Toronto Transit Commission | `ttc` | Streetcar route_ids only (`/^5(0[1345679]|1[012])$/`) |

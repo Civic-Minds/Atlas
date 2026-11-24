@@ -23,6 +23,8 @@ import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectC
 import { LIVE_ARCHIVE_SLUGS, liveCoverage, liveFiguresReady } from '../../shared/liveCoverage';
 import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_MIN_DAYS_TO_SHOW } from '../../shared/rules/live';
 import { analyseArchivedAgency, LiveBuildFailed } from '../liveArchiveAnalysis';
+import { LIVE_V2_BUCKET, onRecorder, snapshotsPerDay } from '../../shared/liveArchiveDay';
+import { LIVE_V2_PREFIX } from '../../shared/liveSlots';
 import { liveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
 import type { AgencySummary } from '../../shared/liveAgency';
@@ -73,17 +75,17 @@ function run(script: string, args: string[]): boolean {
   return r.status === 0;
 }
 
-/** Snapshots per service date (UTC folder) the agency's archive holds; the recorder writes only snapshots that carry vehicles. */
+/**
+ * Snapshots per service date (UTC folder) the agency's archive holds; the recorder writes only snapshots that carry
+ * vehicles. An agency on the cloud recorder counts its v2 snapshots and, on each day, the v1 ones before them (CIV-2217,
+ * shared/liveArchiveDay.ts), as the analysis reads them.
+ */
 async function archiveDates(slug: string): Promise<Map<string, number> | null> {
   try {
     const bucket = LIVE_ARCHIVE_BUCKET_BY_SLUG[slug] ?? DEFAULT_LIVE_ARCHIVE_BUCKET;
+    const v2 = onRecorder(slug) ? (await listKeys(LIVE_V2_BUCKET, `${LIVE_V2_PREFIX}/${slug}/`)).keys : [];
     const { keys } = await listKeys(bucket, `positions/${slug}/`);
-    const byDate = new Map<string, number>();
-    for (const k of keys) {
-      const d = k.split('/').at(-2)!;
-      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) byDate.set(d, (byDate.get(d) ?? 0) + 1);
-    }
-    return byDate;
+    return snapshotsPerDay(v2, keys);
   } catch { return null; }
 }
 
