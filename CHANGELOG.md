@@ -139,6 +139,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio MCP finds stops with hyphens or accents in their names**: STM's Lionel-Groulx, Guy-Concordia and the YUL airport stops got "no stop name matches", since the stop names weren't read the way the place was
 - **Atlas Studio MCP finds a route by its route id**: a route with no number, such as TransLink's Expo Line (30053), was found only by name
 - **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
+- **A route's first morning buses no longer count as overnight service**: a route that runs nothing between 2 and 3:30 AM gets no Overnight figure from its 5 AM start-up trips (TTC 25 Steeles)
 - **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
 - **On the filtered map, a stretch changes colour where its branches split**: a branch's slower service no longer recolours the shared part, such as TTC 123 from Kipling to North Queen, and one slower end stop still colours only its own end piece
 - **History no longer shows six old routes as running in 2026**: AC Transit 20, 21, 79 and 72R and SacRT 195 and 80 carried 2020, 2021 and 2018 schedules dated as this year, because their archive dates were written as year and month only

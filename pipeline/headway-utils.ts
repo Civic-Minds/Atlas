@@ -5,6 +5,7 @@ import { headwayGradeOn, RANGE_HOLE_MIN_EXTRA_MINUTES, RANGE_HOLE_MIN_RATIO, TIE
 import {
   FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS,
   RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN, RESEARCH_FREQUENT_SERVICE_START_MIN,
+  NIGHT_MIDPOINT_MIN,
   STRETCH_NIGHT_END_MIN,
 } from '../shared/rules/periods.js';
 
@@ -144,6 +145,18 @@ export { HEADLINE_WINDOWS };
 export const HEADLINE_MIN_DEPARTURES = 3;
 
 /**
+ * CIV-1764 (Ryan, 2026-11-24: a service day's own first morning trips are not night service): the Overnight period's
+ * departures, empty when none is before the night midpoint (3:30, NIGHT_MIDPOINT_MIN). A direction with nothing from
+ * 2:00 to 3:30 doesn't run at night, so its 3:30-6:00 trips are the day's start-up (TTC 25 Steeles at 5:36, 5:48, 5:54
+ * and 6:00), and every Overnight reader sees none of them. Any other window, and any direction that runs before 3:30,
+ * is unchanged. `sorted` is the window's departures, ascending.
+ */
+export function withoutStartUpTrips(sorted: number[], start: number, end: number): number[] {
+  if (start !== PERIODS.overnight.start || end !== PERIODS.overnight.end) return sorted;
+  return sorted.length > 0 && sorted[0] < NIGHT_MIDPOINT_MIN ? sorted : [];
+}
+
+/**
  * The distinct departures inside [start, end], sorted, or null when there are fewer than
  * HEADLINE_MIN_DEPARTURES: the one minimum the rider wait reads at midday, at the PM peak and on
  * the all-day fallback's grading window (#1257).
@@ -188,7 +201,7 @@ export function medianHeadwayInWindow(
   minDeps = 2,
   typical = false,
 ): number | null {
-  const times = oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end);
+  const times = withoutStartUpTrips(oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end), start, end);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
@@ -221,8 +234,8 @@ export function forCrossMidnightWindow(departureTimes: number[], windowEnd: numb
  */
 export function departuresInWindow(times: readonly number[], start: number, end: number, includeEnd: boolean): number[] {
   // CIV-1958: membership and one departure per minute by clock minute (clockMinute); exact times are returned.
-  return oncePerClockMinute(forCrossMidnightWindow([...times], end))
-    .filter(t => clockMinute(t) >= start && (includeEnd ? clockMinute(t) <= end : clockMinute(t) < end));
+  return withoutStartUpTrips(oncePerClockMinute(forCrossMidnightWindow([...times], end))
+    .filter(t => clockMinute(t) >= start && (includeEnd ? clockMinute(t) <= end : clockMinute(t) < end)), start, end);
 }
 
 // headwayByHour used a fixed 90-min-wide window ([h*60, h*60+90]) for every hour, because a
@@ -294,7 +307,7 @@ export function sustainedMedianHeadwayInWindow(
   dominantGapRatio: number = DOMINANT_GAP_RATIO,
   typical = false,
 ): number | null {
-  const times = oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end);
+  const times = withoutStartUpTrips(oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end), start, end);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
@@ -586,7 +599,7 @@ export function hasSustainedServiceInWindow(
   /** The longest wait from the window's start to the first departure and from the last to its end; defaults to maxGapMinutes. */
   maxEdgeMinutes: number = maxGapMinutes,
 ): boolean {
-  const times = oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end);
+  const times = withoutStartUpTrips(oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end), start, end);
   if (times.length === 0) return false;
   if (times[0] - start > maxEdgeMinutes) return false;
   if (end - times[times.length - 1] > maxEdgeMinutes) return false;
