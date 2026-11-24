@@ -18,6 +18,11 @@ on:
         required: false
         default: false
         type: boolean
+      dry_run:
+        description: 'Run the full History v2 build with --dry-run (no R2 write) and upload tmp/history-config.dry-run.json, to diff two refs (dispatch with --ref).'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -41,8 +46,29 @@ jobs:
       - name: Test
         run: npm run test
 
+      # A full v2 build that writes nothing to R2: the config goes to an artifact for a before/after diff (#1740).
+      - name: Dry-run History v2 build
+        if: ${{ inputs.dry_run && !inputs.publish }}
+        run: npm run build-history -- --dry-run
+        env:
+          HISTORY_DOWNLOAD_CONCURRENCY: ${{ inputs.concurrency }}
+          ATLAS_HISTORY_V2: '1'
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      - name: Upload the dry-run History config
+        if: ${{ inputs.dry_run && !inputs.publish }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: history-config-dry-run
+          path: tmp/history-config.dry-run.json
+
       - name: Verify history archive
-        if: ${{ !inputs.publish }}
+        if: ${{ !inputs.publish && !inputs.dry_run }}
         run: npm run build-history -- --verify-only
         env:
           HISTORY_DOWNLOAD_CONCURRENCY: ${{ inputs.concurrency }}
