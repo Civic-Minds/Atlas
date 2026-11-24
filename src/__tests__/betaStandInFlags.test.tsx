@@ -8,7 +8,6 @@ const STAND_IN_FLAGS = [
   'slowConnectionPrompt',
   'mapContext',
   'matchPercentage',
-  'feedQuality',
   'outdatedFilter',
   'whatsNewBetaItems',
   'routeVariants',

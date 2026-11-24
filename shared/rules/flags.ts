@@ -114,8 +114,9 @@ export const SLOW_CONNECTION_PROMPT_ENABLED = BETA_BUILD;
 // The map-context readout and the match percentage in the map's status badge.
 export const MAP_CONTEXT_ENABLED = BETA_BUILD;
 export const MATCH_PERCENTAGE_ENABLED = BETA_BUILD;
-// Feed-quality notes on the route and agency cards.
-export const FEED_QUALITY_ENABLED = BETA_BUILD;
+// Feed-quality notes on the route and agency cards. On in every build since Ryan's OK for the public site (CIV-2215,
+// 2026-11-24).
+export const FEED_QUALITY_ENABLED = true;
 // The "Outdated" choice in the agency list filter.
 export const OUTDATED_FILTER_ENABLED = BETA_BUILD;
 // Entries marked beta-only in "What's new".
