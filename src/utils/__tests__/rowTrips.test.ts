@@ -34,9 +34,16 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
   });
 
   it('a period that is not steady, off a stretch, reads its full-window wait, not the median (CIV-1074 2a)', () => {
-    const r = row({ headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 } });
-    expect(rowTrips(r, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
+    const r = row({ headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 45 }, maxGapByPeriod: { midday: 45 } });
+    expect(rowTrips(r, 'midday')).toMatchObject({ value: 45, longestGap: 45 });
     expect(rowTrips({ ...r, headwayByPeriodSustained: { midday: true } } as ShapeProperties, 'midday').value).toBe(13);
+  });
+
+  it('a full-window wait over an hour is no cadence, whatever the all-day grade (#1766: TTC 101 to Wilson midday, "every 320")', () => {
+    const wilson = row({ tier: '60', headwayByPeriod: { midday: 173 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 320 }, maxGapByPeriod: { midday: 320 } });
+    expect(rowTrips(wilson, 'midday')).toMatchObject({ value: null, waitNotCadence: true });
+    // An hour or less is still a wait the card can name.
+    expect(rowTrips({ ...wilson, headwayByPeriod: { midday: 40 }, periodCoverageHeadway: { midday: 60 } } as ShapeProperties, 'midday').value).toBe(60);
   });
 
   it('a row unsteady on its own trips reads its stretch where the stretch runs regularly (CTA 9 Ashland & 95th midday, CIV-1074 2a)', () => {
@@ -50,9 +57,11 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
       },
     });
     expect(rowTrips(main, 'midday')).toMatchObject({ value: 10, longestGap: 10 });
-    // A stretch with no regular cadence in the period leaves the row its own full-window wait.
+    // A stretch with no regular cadence in the period leaves the row its own full-window wait; over an hour that is no
+    // cadence (#1766), so the row reads Runs irregularly.
     const noRegular = { ...main, stretchMeta: { ...main.stretchMeta!, main: { ...main.stretchMeta!.main!, noRegular: ['midday'] } } } as ShapeProperties;
-    expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
+    expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: null, waitNotCadence: true });
+    expect(rowTrips({ ...noRegular, periodCoverageHeadway: { midday: 45 } } as ShapeProperties, 'midday')).toMatchObject({ value: 45 });
   });
 
   it('a short burst never takes the shared stretch\'s number when the rest of the stretch runs less often (SEPTA 66 PM, CIV-1074)', () => {
@@ -236,10 +245,11 @@ describe('a row that starts or stops inside the period says when (CIV-1959 follo
     expect(rowTrips(m, 'late')).toMatchObject({ value: null, partPeriod: undefined, waitNotCadence: true });
   });
   it('with the switch off (or on data without the field) the row reads exactly what it read before', () => {
-    expect(rowTrips(b35, 'amPeak')).toMatchObject({ value: 77, partPeriod: undefined });
+    // #1766: without the start words, its 77-minute full-window wait is no cadence.
+    expect(rowTrips(b35, 'amPeak')).toMatchObject({ value: null, partPeriod: undefined, waitNotCadence: true });
     expect(rowTrips(b35, 'amPeak', { branchReadings: false }).partPeriod).toBeUndefined();
     const noField = row({ ...b35, rowPeriodEdge: undefined } as Partial<ShapeProperties>);
-    expect(rowTrips(noField, 'amPeak', { branchReadings: true })).toMatchObject({ value: 77, partPeriod: undefined });
+    expect(rowTrips(noField, 'amPeak', { branchReadings: true })).toMatchObject({ value: null, partPeriod: undefined, waitNotCadence: true });
   });
 });
 

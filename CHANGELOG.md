@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Fort Lauderdale's LauderGO shuttles are on the map**: the five community shuttle routes now show as their own agency, apart from Broward County Transit
 - **Route search finds a route number typed without its space**: "50U" found nothing for Guelph's 50 U, in the map's search and in Atlas Studio's answers
+- **A branch with a few trips hours apart reads "Runs irregularly in this period"**: route cards and lists no longer show a wait of over an hour as "every 320 min" (TTC 101 to Wilson at midday)
 - **York Region Transit's On-Request zones are on the map**: all eight service areas, from the shapefiles YRT sent, each with its own hours and trip rules; YRT's card used to say its on-demand service wasn't mapped yet
 - **A schedule's end date is the last day anything runs**: Kingston read "valid through November 2027" though nothing runs after January 3, because a calendar entry with no trips counted toward the end
 - **Atlas Studio's Live reports cover the TTC's Ten-Minute Network**: 23 frequent bus routes join the 10 streetcars, once a week of their positions is recorded
