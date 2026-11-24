@@ -6,7 +6,7 @@
  */
 import { delayStatus } from './liveDelayStatus.js';
 import { median, percentile } from './segmentDelay.js';
-import { LIVE_MIN_SAMPLE } from './rules/live.js';
+import { DEFAULT_ON_TIME_WINDOW, LIVE_MIN_SAMPLE, type OnTimeWindow } from './rules/live.js';
 import { latenessCounter, latenessStep, type Steps } from './liveCutoffs.js';
 
 export interface RunStopDelay {
@@ -61,10 +61,10 @@ export interface Adherence {
   notLateShare: number;
 }
 
-function tally(minutes: number[]): Adherence {
+function tally(minutes: number[], window: OnTimeWindow = DEFAULT_ON_TIME_WINDOW): Adherence {
   let early = 0, onTime = 0, late = 0;
   for (const m of minutes) {
-    const s = delayStatus(m);
+    const s = delayStatus(m, window);
     if (s === 'early') early++; else if (s === 'late') late++; else onTime++;
   }
   const n = minutes.length;
@@ -84,7 +84,7 @@ export interface AdherenceReport {
  * B1: how well the route keeps to its timetable. `timepointsOnly` counts only the stops the timetable marks as timepoints:
  * between them the timetable's times are interpolated, so a car running a little fast is not really "early".
  */
-export function adherenceReport(runs: readonly RunDelays[], options: { timepointsOnly?: boolean; tripStartsOnly?: boolean } = {}): AdherenceReport {
+export function adherenceReport(runs: readonly RunDelays[], options: { timepointsOnly?: boolean; tripStartsOnly?: boolean; window?: OnTimeWindow } = {}): AdherenceReport {
   if (options.timepointsOnly) {
     runs = runs.map(r => ({ ...r, stops: r.stops.filter(s => s.timepoint === true) })).filter(r => r.stops.length > 0);
   }
@@ -104,10 +104,10 @@ export function adherenceReport(runs: readonly RunDelays[], options: { timepoint
     }
   }
   return {
-    overall: tally(minutesOf(runs)),
-    byHour: [...byHour].sort((a, b) => a[0] - b[0]).map(([hour, m]) => ({ hour, ...tally(m) })),
-    byDate: [...byDate].sort((a, b) => a[0].localeCompare(b[0])).map(([date, m]) => ({ date, ...tally(m) })),
-    byDirection: Object.fromEntries([...byDir].sort((a, b) => a[0] - b[0]).map(([d, m]) => [String(d), tally(m)])),
+    overall: tally(minutesOf(runs), options.window),
+    byHour: [...byHour].sort((a, b) => a[0] - b[0]).map(([hour, m]) => ({ hour, ...tally(m, options.window) })),
+    byDate: [...byDate].sort((a, b) => a[0].localeCompare(b[0])).map(([date, m]) => ({ date, ...tally(m, options.window) })),
+    byDirection: Object.fromEntries([...byDir].sort((a, b) => a[0] - b[0]).map(([d, m]) => [String(d), tally(m, options.window)])),
   };
 }
 
@@ -131,7 +131,7 @@ export interface StopDelayStat {
 }
 
 /** B2: delay at each stop, per direction. The caller ranks the `ranked` ones by medianMin. */
-export function stopDelayStats(runs: readonly RunDelays[]): StopDelayStat[] {
+export function stopDelayStats(runs: readonly RunDelays[], window: OnTimeWindow = DEFAULT_ON_TIME_WINDOW): StopDelayStat[] {
   const by = new Map<string, number[]>();
   for (const r of runs) for (const s of r.stops) {
     const k = `${s.stopId}|${r.directionId}`;
@@ -139,7 +139,7 @@ export function stopDelayStats(runs: readonly RunDelays[]): StopDelayStat[] {
   }
   return [...by].map(([k, m]) => {
     const [stopId, dir] = k.split('|');
-    const t = tally(m);
+    const t = tally(m, window);
     return { stopId, directionId: Number(dir), n: m.length, medianMin: median(m)!, p90Min: percentile(m, 0.9)!, lateShare: t.lateShare, earlyShare: t.earlyShare, ranked: m.length >= MIN_SAMPLES };
   });
 }

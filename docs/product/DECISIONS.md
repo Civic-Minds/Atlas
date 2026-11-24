@@ -214,7 +214,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: both sidebars show everything at once; if it does not fit, show less rather than cram.
   - Why: Ryan: "I shouldn't need to scroll in the sidebar." (He never asked for collapsible cards.)
   - Source: Linear CIV-293, comments of 2026-10-17 (14:17, 14:20 and 14:27 UTC)
-- **Late has one shared wording and one threshold**
+- **Each agency's on-time figures use its own published on-time window** (CIV-2222, 2026-11-24; narrows the rule below)
+  - What: an agency that publishes an on-time window is rated by it (`AGENCY_ON_TIME_WINDOWS`, shared/rules/live.ts): TTC, 1 min early to 5 min late. An agency that publishes none keeps today's figure (more than 5½ min late, 1½ min or more early), with a note on the card that it doesn't publish its window. No Atlas-wide window and no cross-agency on-time comparison for now. Short-turned runs are never counted as not on time.
+  - Source: Ryan, Linear CIV-2222 (2026-11-24), see the log.
+- **Late has one shared wording and one threshold** (narrowed by 2026-11-24 CIV-2222: per agency where it publishes its own window)
   - What: "Late: more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute."
   - Why: two different numbers had been used for the same threshold.
   - Source: Linear CIV-293, comment of 2026-10-17 (15:00 UTC); [LIVE_METHOD.md](LIVE_METHOD.md) (the 5½ wording is fixed on `feature/live-tool-v2`, commit 30e61431; until it merges, main's LIVE_METHOD.md says "5.5 or more", and the code (`shared/liveDelayStatus.ts`) uses 5.5 or more)
@@ -299,6 +302,13 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-24 — Each agency's on-time figures use its own published window; TTC is 1 min early to 5 min late (CIV-2222, #1765)
+Ryan (2026-11-24, Questions chat, relayed on CIV-2222): asked "Should we be able to change on time performance calculations for each agency?", then "But how would someone sitting in the TTC office looking at on time performance care about some arbritrary "Atlas on time performance marker" lol", then "I think we do 1 but no Atlas one for now". His OK covers TTC's two numbers, 1 min early and 5 min late. On agencies with no published window: "1" = keep what they show today, with a note on the card that the agency doesn't publish its on-time window. On short turns: "if it doesn't stop at all stops and we mark it as missing or not on time when it actually is but ran a different service pattern (for example it started half way along the route) that is an issue on our end", then "1" = do not count short-turned runs as not on time.
+- The rule: `AGENCY_ON_TIME_WINDOWS` in shared/rules/live.ts holds each agency's published window; Live's analysis, the stop and hour figures and the MCP's definitions read it through `onTimeWindow(slug)`. Every other agency keeps Atlas's window (5½ late, 1½ early). Narrows the 2026-10-17 "one threshold" rule.
+- TTC 510 Spadina, local archive 2026-11-02 to 11-16, departures from the end of the line: on time 80.2% → 76.1% (late 16.1% → 18.2%, early 3.7% → 5.7%), 4,833 departures.
+- All ten streetcar routes (501–512), same days: on time 87.2% → 81.8% of 43,173 departures.
+- Short turns (#1789): across the ten routes, 16,314 runs have no departure from their trip's first stop (3,913 first seen at the 4th stop or later); on 510, 1,575 of 6,364 runs have no departure from their trip's first stop (658 first seen at the 4th stop or later). They are not counted as not on time (they are not counted at all, as today); rating them at the first stop they served is investigated, not built (510: 69.4% on time, early 12.4%; all ten: 76.7% of 59,074).
 
 ### 2026-11-23 — A branch's wait to the period's edge no longer sets the route's value (#1749, CIV-2196; overrides CIV-1241)
 Ryan, 2026-11-23 (relayed by Atlas Manager New): "1", answering "Option 1: a branch whose only long wait is to the period's edge no longer sets the whole route's figure; its own row still says "until 0:53". No new number. [...] Trade-off: overrides CIV-1241 (on the branch after it stops there's no service, but the route reads the trunk's figure). 1. Apply option 1 (Recommended) 2. Keep CIV-1241 as is".
