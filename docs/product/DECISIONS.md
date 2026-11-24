@@ -44,7 +44,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: chosen from a census of 1,160 feeds and a review of example routes. Check these before asking.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) (Thresholds), [#567](https://github.com/Civic-Minds/Atlas/issues/567), [#568](https://github.com/Civic-Minds/Atlas/issues/568), [#570](https://github.com/Civic-Minds/Atlas/issues/570), [#571](https://github.com/Civic-Minds/Atlas/issues/571), PR [#584](https://github.com/Civic-Minds/Atlas/pull/584)
 - **A period with no regular cadence reads "Irregular"**
-  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Runs irregularly in this period" on cards, "Irregular" in tight spots (table cells, list values). Both come from src/content/noticeCopy.ts.
+  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Runs irregularly in this period" on cards, "Irregular" in tight spots (table cells, list values). Both come from src/content/noticeCopy.ts. A row whose full-window wait is over 60 minutes reads it too, instead of "every N" (Ryan, 2026-11-24, CIV-2223 / #1766; overrides CIV-1074 2a / #1239 "shown as is").
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
   - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A route with no all-day value stays without one**
@@ -299,6 +299,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-24 — A full-window wait over 60 minutes reads "Runs irregularly in this period" on every route card row (#1766, CIV-2223; overrides CIV-1074 2a / #1239 "shown as is")
+Ryan, 2026-11-24: "1", answering the option that any route-card row whose full-window wait is over 60 minutes reads "Runs irregularly in this period".
+- The rule: a row whose full-window wait is over PERIOD_COVERAGE_MAX_HEADWAY (60 min) reads "Runs irregularly in this period" instead of "every N min", unless its start or end words explain the wait. Card and list wording only: the map colour and the filter are unchanged.
+- Supersedes CIV-1074 2a / #1239, which let such waits print "as is" (313 shown as is); that rule lived in FREQUENCY_RULES.md and style/TEXT.md (both updated), with no log entry of its own to mark. Waits of 60 minutes or less keep their words.
+- Count on the cached release (355,310 row-periods): 676 cards in 123 agencies change from "every N" over 60 to "Runs irregularly" (NJT 57, CTA 42, TTC 38). Example: TTC 101 to Wilson midday, two trips 320 minutes apart, read "every 320 min".
 
 ### 2026-11-23 — A branch's wait to the period's edge no longer sets the route's value (#1749, CIV-2196; overrides CIV-1241)
 Ryan, 2026-11-23 (relayed by Atlas Manager New): "1", answering "Option 1: a branch whose only long wait is to the period's edge no longer sets the whole route's figure; its own row still says "until 0:53". No new number. [...] Trade-off: overrides CIV-1241 (on the branch after it stops there's no service, but the route reads the trunk's figure). 1. Apply option 1 (Recommended) 2. Keep CIV-1241 as is".
