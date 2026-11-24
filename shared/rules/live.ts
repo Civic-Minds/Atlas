@@ -48,11 +48,17 @@ export const LIVE_STUDIO_MIN_RECORDED_DAYS = 7;
 export const LIVE_WINDOW_DAYS = 7;
 
 /**
- * The TTC routes Live analyses (the streetcars, as of 2026-11-23; CIV-2174 will add the Ten-Minute Network routes here).
+ * The TTC routes Live analyses: the streetcars and, since CIV-2174, the Ten-Minute Network routes.
  * The one list: the cloud's Studio build reads it (scripts/studio-live-cloud.ts); live-analyze.sh and
  * live-report-refresh.yml keep shell copies, which liveRules.test.ts checks against it.
  */
-export const LIVE_TTC_ANALYSED_ROUTES: readonly string[] = ['501', '503', '504', '505', '506', '507', '509', '510', '511', '512'];
+export const LIVE_TTC_ANALYSED_ROUTES: readonly string[] = [
+  // The streetcars.
+  '501', '503', '504', '505', '506', '507', '509', '510', '511', '512',
+  // CIV-2174 (Ryan, 2026-11-23, "Yes TTC approved"): the TTC's Ten-Minute Network routes, by its rule (10 min or better
+  // all day on weekdays) applied to Atlas's schedule.
+  '7', '16', '22', '25', '27', '36', '41', '44', '45', '47', '60', '63', '72', '87', '89', '95', '100', '116', '165', '900', '927', '929', '960',
+];
 
 /**
  * Two stop ids are one place when they are under this far apart: the Live analysis ranks a stop listed twice in a row

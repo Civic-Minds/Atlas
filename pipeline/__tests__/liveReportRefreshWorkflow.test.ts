@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { LIVE_TTC_ANALYSED_ROUTES } from '../../shared/rules/live';
 
 describe('live report refresh workflow contract', () => {
   const workflow = readFileSync(resolve('.github/workflows/live-report-refresh.yml'), 'utf8');
@@ -69,7 +70,7 @@ describe('live report refresh workflow contract', () => {
     expect(gtfs).toBeGreaterThan(fetch);
     expect(analyse).toBeGreaterThan(gtfs);
     expect(build).toBeGreaterThan(analyse);
-    expect(buildJob).toContain('--routes 501,503,504,505,506,507,509,510,511,512');
+    expect(buildJob).toContain(`--routes ${LIVE_TTC_ANALYSED_ROUTES.join(',')}`);
     expect(buildJob).toContain('--feeds-dir "$LIVE_DATA/gtfs/candidates/surface-feeds" --surface "$LIVE_DATA/gtfs/candidates/surface"');
     expect(buildJob).toContain('LIVE_SEGMENTS_DIR=$RUNNER_TEMP/live-data/out');
     // The summary gets the fetch report, the timetable match and a copy of what is published now.

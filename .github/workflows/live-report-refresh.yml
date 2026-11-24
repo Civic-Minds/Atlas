@@ -152,7 +152,7 @@ jobs:
       - name: Fetch archived positions (last 15 service dates)
         run: >-
           npx tsx scripts/live-fetch-archive.ts --days 15 --out "$LIVE_DATA/archive" --prune
-          --routes 501,503,504,505,506,507,509,510,511,512 --report "$LIVE_DATA/review/fetch.json"
+          --routes 501,503,504,505,506,507,509,510,511,512,7,16,22,25,27,36,41,44,45,47,60,63,72,87,89,95,100,116,165,900,927,929,960 --report "$LIVE_DATA/review/fetch.json"
 
       # Saved even when a later step fails, so a failed run doesn't throw away the fetched days.
       - name: Save archived positions

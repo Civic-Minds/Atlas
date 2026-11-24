@@ -1,3 +1,4 @@
+import { LIVE_TTC_ANALYSED_ROUTES } from './rules/live.js';
 /**
  * Cloudflare Worker archiver canary feeds (atlas-live).
  *
@@ -122,11 +123,12 @@ export const LIVE_ARCHIVE_TRIP_FEEDS: readonly LiveArchiveTripFeed[] = [
 
 /** Vehicle-position archives → atlas-live/positions/{slug}/{date}/{ts}.json (every 1 min). */
 export const LIVE_ARCHIVE_POSITION_FEEDS: readonly LiveArchivePositionFeed[] = [
-  // Streetcar corridor only — full bus fleet is too large for minute sampling.
+  // The routes Live analyses (CIV-2174: the streetcars and the Ten-Minute Network), not the whole fleet: the weekly Live
+  // report needs each analysed route's positions.
   {
     slug: 'ttc',
     url: 'https://gtfsrt.ttc.ca/vehicles/position?format=binary',
-    routeFilterSource: '^5(0[1345679]|1[012])$',
+    routeFilterSource: `^(${LIVE_TTC_ANALYSED_ROUTES.join('|')})$`,
   },
   {
     slug: 'burlington',
