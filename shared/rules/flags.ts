@@ -60,8 +60,9 @@ export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && (ATLAS_MODE === 'be
 // Shared links and shared map images carry utm tags so analytics can count shared visits.
 // Beta-only until it's been seen working end to end.
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// While a mode (Live, History, Compare) is active, the other mode tabs shrink to icons. Beta-only.
-export const COLLAPSE_MODE_TABS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// While a mode (Live, History, Compare) is active, the other mode tabs shrink to icons. On in every build since Ryan's
+// OK for the public site (CIV-2214, 2026-11-24).
+export const COLLAPSE_MODE_TABS_ENABLED = true;
 // CIV-1567: one gentle transition for entering and leaving a mode (Compare, History): the new view fades in once its
 // map has drawn, and a map's label changes only when the map has redrawn. On in every mode since Ryan's OK on beta
 // (2026-11-17, "Looks pretty good yes ty"); Live stays without it.
