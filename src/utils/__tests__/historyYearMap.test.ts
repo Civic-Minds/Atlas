@@ -7,9 +7,9 @@ const snap = (year: number, v2: Record<string, unknown> | undefined, extra: Reco
   ({ label: String(year), year, weekdayHeadwayMin: 30, ...(v2 ? { v2 } : {}), ...extra }) as never;
 const agency: Parameters<typeof historyYearRoutes>[0] = {
   routes: [
-    { routeShortName: '6', snapshots: [snap(2014, { refDate: '20140301', rep: { h: 15 } }), snap(2020, { refDate: '20200301', rep: { h: 60 } })] },
-    { routeShortName: '117', snapshots: [snap(2020, { refDate: '20200301', rep: { lim: true } })] },
-    { routeShortName: '9', snapshots: [snap(2014, { refDate: '20140301', rep: {} })] },
+    { routeShortName: '6', currentRouteType: 3, snapshots: [snap(2014, { refDate: '20140301', rep: { h: 15 } }), snap(2020, { refDate: '20200301', rep: { h: 60 } })] },
+    { routeShortName: '117', currentRouteType: 3, snapshots: [snap(2020, { refDate: '20200301', rep: { lim: true } })] },
+    { routeShortName: '9', currentRouteType: 3, snapshots: [snap(2014, { refDate: '20140301', rep: {} })] },
     { routeShortName: 'OLD', snapshots: [snap(2014, undefined, { geometry: [[9, 9], [8, 8]] })] },
   ],
 };
@@ -46,6 +46,42 @@ describe('historyYearRoutes (#1028 batch A)', () => {
   it("the latest year uses today's map lines even when it has a shape", () => {
     expect(historyYearRoutes(agency, 2020, 'default', undefined, SHAPES, 2020).every(r => !r.coordinates)).toBe(true);
     expect(historyYearRoutes(agency, 2020, 'default', undefined, SHAPES, 2026).find(r => r.routeShortName === '6')?.coordinates).toEqual([[0, 0], [1, 1]]);
+  });
+
+  // CIV-2064 (Ryan): a route off today's map is drawn only on its real line from that year's own schedule data.
+  describe("a route that isn't on today's map (CIV-2064)", () => {
+    const GONE_SHAPES = {
+      version: 1, slug: 'x', decimals: 5, toleranceM: 15,
+      shapes: [[[0, 0], [1, 1]], [[2, 2], [3, 3]]],
+      years: { '2018': { GONE: 0, '6': 0 }, '2026': { GONE: 1, '6': 1 } },
+    } as never;
+    const old = (year: number) => snap(year, undefined);
+    const withGone = (gone: Parameters<typeof historyYearRoutes>[0]['routes'][number]): Parameters<typeof historyYearRoutes>[0] =>
+      ({ routes: [{ routeShortName: '6', currentRouteType: 3, snapshots: [old(2018), old(2026)] }, gone] });
+
+    it('in the latest year, draws its own line from that year, while a route on today\'s map keeps today\'s line', () => {
+      const y = historyYearRoutes(withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] }), 2026, 'default', undefined, GONE_SHAPES, 2026);
+      expect(y.find(r => r.routeShortName === 'GONE')?.coordinates).toEqual([[2, 2], [3, 3]]);
+      expect(y.find(r => r.routeShortName === '6')?.coordinates).toBeUndefined();
+    });
+
+    it('in the latest year with no line of its own that year, draws no line (no earlier year\'s line carried in)', () => {
+      const y = historyYearRoutes(withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] }), 2026, 'default', undefined, { ...(GONE_SHAPES as object), years: { '2018': { GONE: 0 } } } as never, 2026);
+      expect(y.find(r => r.routeShortName === 'GONE')).toBeDefined();
+      expect(y.find(r => r.routeShortName === 'GONE')?.coordinates).toBeUndefined();
+    });
+
+    it('in a year it is carried into (#1591), draws no line, where a route on today\'s map keeps the carried line', () => {
+      const agency2 = withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] });
+      const y2022 = historyYearRoutes({ ...agency2, coverageYears: [2018, 2022, 2026] }, 2022, 'default', undefined, GONE_SHAPES, 2026);
+      expect(y2022.find(r => r.routeShortName === 'GONE')?.coordinates).toBeUndefined();
+      expect(y2022.find(r => r.routeShortName === '6')?.coordinates).toEqual([[0, 0], [1, 1]]);
+    });
+
+    it('in a year with its own line, draws that line as before', () => {
+      const y2018 = historyYearRoutes(withGone({ routeShortName: 'GONE', snapshots: [old(2018), old(2026)] }), 2018, 'default', undefined, GONE_SHAPES, 2026);
+      expect(y2018.find(r => r.routeShortName === 'GONE')?.coordinates).toEqual([[0, 0], [1, 1]]);
+    });
   });
 
   it("colours today's lines by route number, with the given fallback", () => {
