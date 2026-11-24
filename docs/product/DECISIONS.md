@@ -573,6 +573,10 @@ Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that ru
 
 Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards. This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
 
+### 2026-11-24 — A day's own start-up trips are not overnight service
+
+Ryan, 2026-11-24 (Linear CIV-1764): picked 1, a service day's own first morning trips (TTC 25 Steeles at 5:36, 5:48, 5:54 and 6:00) no longer count as overnight service, with a before-and-after review of every changed overnight figure before it goes live. The rule, built on the night midpoint D8 already uses (3:30): a departure list (a row or a stop) with nothing from 2:00 up to 3:30 doesn't run at night, so its 3:30-6:00 trips are start-up and every Overnight reader (value, coverage, steadiness, the sparse test) sees none of them. A list with a trip before 3:30 is unchanged. No new number. PENDING: Ryan's OK on the review page `/_review/civ-1764/` before merge.
+
 ### 2026-10-31 — The Overnight period reads the Night Service verdict
 
 Ryan, 2026-10-31 (#1267, Linear CIV-1239): the map's Overnight value reads the night verdict's stretch value (rule 10), so Overnight and Night Service never disagree. They were calculated separately (2-6 AM by rules 4-5, 2-5 AM by rule 10) and disagreed on 135 of 646 route-days in 12 agencies: TTC 301 was Night Service every 30 but Overnight "every 71", because the 2-6 AM window took in the gap before day service.

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route's first morning buses no longer count as overnight service**: a route that runs nothing between 2 and 3:30 AM gets no Overnight figure from its 5 AM start-up trips (TTC 25 Steeles)
 - **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
 - **On the filtered map, one slower stop at the end of a stretch colours only its own end piece**: a single slightly slower end stop was recolouring the whole stretch; the rest now takes the worst of its other stops, and no stop's published value changes
 - **Every Atlas link lists its settings in the same order**: place, then route, then day and time, then filters, so two links for the same view read alike; older links still open as before

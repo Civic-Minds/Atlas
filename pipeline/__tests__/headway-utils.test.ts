@@ -297,8 +297,10 @@ describe('computePeriodSustained', () => {
     // TTC Line 1 overnight-style case: 3 departures clustered near the tail of the overnight
     // window [1560,1800], nothing else. Internal gaps alone (5, 5) look clean; the 210-minute
     // void between window start and the first departure is what should fail this.
+    // CIV-1764: with nothing before 3:30 these are the day's start-up trips, so overnight has no reading at all.
     const result = computePeriodSustained([1770, 1775, 1780]);
-    expect(result.overnight).toBe(false);
+    expect(result.overnight ?? false).toBe(false);
+    expect(computePeriodSustained([1570, 1770, 1775, 1780]).overnight).toBe(false);
   });
 
   it('does not flag a period whose service legitimately starts partway through the window', () => {
