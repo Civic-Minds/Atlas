@@ -1,0 +1,252 @@
+{
+  "slug": "psta",
+  "area": {
+    "serviceName": "Snapper",
+    "sourceUrl": "https://psta.net/services/snapper/",
+    "sourceLabel": "PSTA Snapper page and Clearwater zone shapefile (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-24",
+    "bookingInfo": "Book at grouper.psta.net, in the Grouper app, or call 727-540-1900.",
+    "bookingUrl": "https://grouper.psta.net",
+    "tripRules": "Trips can start and end anywhere in the zone, or at Park Street Terminal and Countryside Mall outside it.",
+    "zoneMetadata": {
+      "Clearwater": {
+        "serviceName": "Snapper",
+        "serviceHours": "Monday to Saturday 7 a.m. to 6 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 7,
+              "endHour": 18
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 7,
+              "endHour": 18
+            }
+          ],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://psta.net/services/snapper/",
+          "retrievedAt": "2026-11-24"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "psta",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://psta.net/services/snapper/",
+        "sourceLabel": "PSTA Snapper Clearwater zone shapefile (agency-supplied)",
+        "sourceRetrievedAt": "2026-11-24",
+        "areaName": "Clearwater"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -82.7421308,
+                27.9964622
+              ],
+              [
+                -82.7420853,
+                27.9955932
+              ],
+              [
+                -82.7409429,
+                27.9955824
+              ],
+              [
+                -82.7409183,
+                27.9948123
+              ],
+              [
+                -82.7391371,
+                27.9948991
+              ],
+              [
+                -82.7389529,
+                27.9894213
+              ],
+              [
+                -82.7352593,
+                27.9893635
+              ],
+              [
+                -82.7353091,
+                27.9936168
+              ],
+              [
+                -82.7339112,
+                27.9936356
+              ],
+              [
+                -82.7339108,
+                27.9937146
+              ],
+              [
+                -82.7336999,
+                28.0025716
+              ],
+              [
+                -82.7356988,
+                28.0025912
+              ],
+              [
+                -82.7357127,
+                28.0036575
+              ],
+              [
+                -82.7356572,
+                28.0059127
+              ],
+              [
+                -82.7352241,
+                28.0070108
+              ],
+              [
+                -82.7345023,
+                28.0082854
+              ],
+              [
+                -82.7377783,
+                28.0083246
+              ],
+              [
+                -82.7376562,
+                28.0045498
+              ],
+              [
+                -82.746267,
+                28.0045838
+              ],
+              [
+                -82.7463317,
+                28.0128648
+              ],
+              [
+                -82.7697096,
+                28.0126788
+              ],
+              [
+                -82.769673,
+                27.9931937
+              ],
+              [
+                -82.7768221,
+                27.9930622
+              ],
+              [
+                -82.7766519,
+                27.9835364
+              ],
+              [
+                -82.7584238,
+                27.9833861
+              ],
+              [
+                -82.7585199,
+                27.9753009
+              ],
+              [
+                -82.7514559,
+                27.975274
+              ],
+              [
+                -82.7515929,
+                27.9964622
+              ],
+              [
+                -82.7421308,
+                27.9964622
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                -82.7375595,
+                28.0192498
+              ],
+              [
+                -82.737693,
+                28.0186772
+              ],
+              [
+                -82.7374259,
+                28.0174984
+              ],
+              [
+                -82.7367773,
+                28.0160838
+              ],
+              [
+                -82.7359762,
+                28.0146523
+              ],
+              [
+                -82.7352513,
+                28.0151576
+              ],
+              [
+                -82.7342593,
+                28.0154607
+              ],
+              [
+                -82.7320847,
+                28.0154944
+              ],
+              [
+                -82.7304823,
+                28.0161006
+              ],
+              [
+                -82.7290707,
+                28.0173468
+              ],
+              [
+                -82.7290135,
+                28.0192834
+              ],
+              [
+                -82.7375595,
+                28.0192498
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                -82.7993206,
+                27.9647789
+              ],
+              [
+                -82.7993104,
+                27.9639207
+              ],
+              [
+                -82.7986967,
+                27.9639026
+              ],
+              [
+                -82.7986967,
+                27.9647759
+              ],
+              [
+                -82.7993206,
+                27.9647789
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Zone from the shapefile PSTA sent Atlas Outreach (CIV-2212), 'Clearwater.zip' (saved unchanged in _reports/agency-files/psta/): 'Clearwater Snapper', three shapes in WGS84, kept as one zone. The main shape (3.73 sq mi) is the Clearwater zone; the two small ones sit outside it, at Countryside Mall (0.12 sq mi, by US 19 and SR 580) and Park Street Terminal (0.002 sq mi, downtown Clearwater), the two places the Snapper page names ('You can request a Snapper pick up/drop off to any location within the mall'). The two small shapes were wound the other way in the file; the winding is normalized and the points are unchanged. Hours and booking from the Snapper page; Sunday is not stated, so no Sunday hours. Fares: $2.25 from a transit hub into the zone ($1.10 reduced), $4.50 within the zone ($2.20 reduced). PSTA's Mobility-on-Demand stays out (PSTA Access riders only)."
+}
