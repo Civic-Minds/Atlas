@@ -99,6 +99,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Seasonal timetables update without waiting for review**: a ski or school-term timetable whose frequencies match the same date last year now goes onto the map at the next refresh, instead of being held as a suspicious change
 - **Route cards show regular service over an hour as its range**: a branch every 65–70 minutes reads that instead of "Runs irregularly", while two or three trips, or uneven ones like TTC 101's 320-minute gap, read "Runs irregularly in this period"
 - **Atlas Studio MCP's schedule changes give the same figures as its route frequencies**: Kingston's route 2 was listed as cut to "no service" though it still runs every 30 minutes, because the change list read its figures another way
+- **Route cards show a slower branch again**: RTD 15 read "every 10" though its east branch runs every 30; it now reads "every 10–30", since the trunk's number left the branch out of the range
 - **Fort Lauderdale's LauderGO shuttles are on the map**: the five community shuttle routes now show as their own agency, apart from Broward County Transit
 - **Route search finds a route number typed without its space**: "50U" found nothing for Guelph's 50 U, in the map's search and in Atlas Studio's answers
 - **York Region Transit's On-Request zones are on the map**: all eight service areas, from the shapefiles YRT sent, each with its own hours and trip rules; YRT's card used to say its on-demand service wasn't mapped yet
