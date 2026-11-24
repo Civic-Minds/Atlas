@@ -23,11 +23,12 @@
  */
 import { appendFileSync, readFileSync, writeFileSync, renameSync } from 'fs';
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
+import { serviceAnchor } from './serviceDays.js';
 import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2ListArchiveObjects, rawFeedArchiveKey, rawFeedDigest } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2GetArchiveBuffer, r2ListArchiveObjects, rawFeedArchiveKey, rawFeedDigest } from './r2.js';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { serviceWeekKey } from './serviceWeekKey.js';
@@ -74,22 +75,28 @@ import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
 import { futureFeedHoldUntil, heldFeedSummary } from './futureFeedHold.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 import {
+  acceptSameSeason,
   applyOverrides,
   blockReason,
   buildGateReport,
   evaluateRun,
   formatGateSummary,
   gateRunId,
+  hasRedHeadwayShift,
   parseGateOverrides,
   releaseBaselineReader,
+  sameSeasonMatch,
   summarizeArtifact,
   unknownOverrideSlugs,
   writeGateReport,
   ALLOW_DROP_FLAG,
   type GateFlag,
+  type ArtifactSummary,
   type GatePeer,
   type RegistryAgency,
+  type SameSeasonSource,
 } from './releaseDiff.js';
+import { coversDate, sameDateLastYear, sameSeasonCandidates } from './sameSeasonFeed.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -282,6 +289,11 @@ interface AgencyEntry {
   heldFeedStart?: string | null;
   /** CIV-1223: the zips the release gate last refused, so the daily check doesn't start the same refresh again. */
   refusedFeedSha256?: string | null;
+  /**
+   * CIV-2335: the refresh on `refreshedAt` let a red headway-shift through because the output matched the
+   * feed from the same date last year; publish-data-release accepts that flag while lastRefreshedAt matches.
+   */
+  sameSeasonMatch?: (SameSeasonSource & { refreshedAt: string }) | null;
   /** CIV-1011 stage 4: the picked week's key at the last refresh (serviceWeekKey). */
   lastServiceWeek?: string | null;
   /** When Atlas first obtained the current main feed file (YYYYMMDD). */
@@ -331,6 +343,43 @@ async function newestArchivedRawKey(agency: AgencyEntry, todayYmd: string): Prom
   } catch {
     return null;
   }
+}
+
+/**
+ * CIV-2335: read the agency's archived feed from the same date last year and compare it with the new
+ * output (sameSeasonMatch). Returns the feed it matched, or null (no live output, no archived zip for
+ * that date, or no match). Read-only; any failure leaves the hold as it was.
+ */
+async function sameSeasonCheck(agency: AgencyEntry, next: ArtifactSummary, writeLog: (msg: string) => void): Promise<SameSeasonSource | null> {
+  try {
+    const live = await readRefreshLive(agency.slug);
+    if (!live) return null;
+    const target = sameDateLastYear(serviceAnchor());
+    const keys = sameSeasonCandidates(agency.slug, await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`), target);
+    // Of the zips in force that day, the latest issued (latest first service date): a fall timetable
+    // and the winter one that replaced it can both list the date.
+    let best: { key: string; buf: Buffer; start: string } | null = null;
+    for (const key of keys) {
+      const buf = await r2GetArchiveBuffer(key);
+      if (!buf) continue;
+      const dates = await peekFeedDates(buf, agency.excludeRouteShortNames);
+      if (coversDate(dates, target) && (!best || dates.feedStart! > best.start)) best = { key, buf, start: dates.feedStart! };
+    }
+    if (best) {
+      const { key, buf } = best;
+      // The main feed alone, read at last year's date: supplemental zips are not archived by date.
+      const old = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] }, { serviceAnchor: target, force: false });
+      const match = sameSeasonMatch(live, summarizeArtifact(old.geojson, old.stopsJson, agency.slug), next);
+      writeLog(`\n  [info] same season last year (${key}, read at ${target}): ${match.matched
+        ? `all ${match.checked} shifted cells match`
+        : `${match.unmatched.length} of ${match.checked} shifted cells differ (${match.unmatched.slice(0, 3).join('; ')}${match.unmatched.length > 3 ? '; ...' : ''})`}\n  `);
+      return match.matched ? { feed: key, readAt: target } : null;
+    }
+    writeLog(`\n  [info] same season last year: no archived feed covers ${target}\n  `);
+  } catch (err) {
+    writeLog(`\n  [warn] same season last year: check failed (${err instanceof Error ? err.message : err})\n  `);
+  }
+  return null;
 }
 
 async function refreshAgency(
@@ -589,7 +638,7 @@ async function refreshAgency(
   const { feedStart, feedExpiry: keptCalendarExpiry, calendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
   // The end this refresh records (#1304): an expired feed is refused here and keeps its live file.
   const serviceEnd = refreshedFeedExpiry({ feedExpiry, peekedExpiry, todayYmd: todayUtcYmd(), calendarExpiry: keptCalendarExpiry, calendarOnlyEnd });
-  const agencyFlags = await evaluateRun({
+  let agencyFlags = await evaluateRun({
     candidates: [{ slug: agency.slug, next, service: { start: feedStart, end: serviceEnd, calendarEnd: keptCalendarExpiry, liveFeedExpiry: agencyBeforeRebuild.lastFeedExpiry } }],
     getLive: readRefreshLive,
     registry: gateRegistry,
@@ -597,6 +646,13 @@ async function refreshAgency(
     allowMissingLive: true,
     extraPeers: [...gateRunPeers],
   });
+  // CIV-2335: a red headway-shift that matches the agency's feed from the same date last year is the
+  // season changing (ski, school terms), so it goes through as yellow; with no such feed it stays held.
+  let sameSeason: SameSeasonSource | null = null;
+  if (hasRedHeadwayShift(agencyFlags, agency.slug)) {
+    sameSeason = await sameSeasonCheck(agency, next, writeLog);
+    if (sameSeason) agencyFlags = acceptSameSeason(agencyFlags, agency.slug, sameSeason);
+  }
   gateChecked.push(agency.slug);
   gateFlags.push(...agencyFlags);
   const dropRefusal = blockReason(agency.slug, applyOverrides(agencyFlags, gateOverrides));
@@ -608,6 +664,9 @@ async function refreshAgency(
     return { summary: `refused (${dropRefusal})`, refused: true };
   }
   gateRunPeers.push({ slug: agency.slug, summary: next });
+  // publish-data-release reads this to let the same release through (it has no archive access).
+  if (sameSeason) agency.sameSeasonMatch = { ...sameSeason, refreshedAt: todayUtcYmd() };
+  else delete agency.sameSeasonMatch;
 
   const currentStops = (JSON.parse(stopsMetaJson) as { stops?: AuditedStop[] }).stops ?? [];
   const stopBaselineKey = `stops-meta/${agency.slug}/latest.json`;
