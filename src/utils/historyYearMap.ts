@@ -13,7 +13,9 @@ import { headwayFilterApplies } from '../../shared/routeHeadwayFilter';
  * (Weekday unless History's day picker says otherwise, CIV-1425) in the shared tier colours; a limited
  * or unknown value takes the map's no-value colour (never hidden, per the reader contract). A route with
  * no trips that day is not drawn, as on the main map (CIV-1434, passesHistoryLimit). `coordinates` is that year's own line from the shapes file (CIV-456) when it
- * has one; otherwise, and always for the latest year, the route is drawn on today's map line.
+ * has one; otherwise, and always for the latest year, the route is drawn on today's map line. A route that isn't on today's
+ * map (CIV-2064) is drawn only on its own line from that year's schedule data, the latest year included; a year with none
+ * (a carried year, or no stored line) draws no line for it.
  */
 export interface HistoryYearRoute {
   routeShortName: string;
@@ -120,7 +122,7 @@ export function passesHistoryLimit(value: SnapshotValue, maxHeadway: number, per
 }
 
 export function historyYearRoutes(
-  agency: { routes: Array<HistoryRouteLike<Snapshot>>; coverageYears?: readonly number[] },
+  agency: { routes: Array<HistoryRouteLike<Snapshot> & HistoryRouteOnMap>; coverageYears?: readonly number[] },
   year: number,
   colorMode: ColorVisionMode,
   view: HistoryView = HISTORY_VIEW_ALL,
@@ -133,7 +135,7 @@ export function historyYearRoutes(
   latestYear?: number,
 ): HistoryYearRoute[] {
   const out: HistoryYearRoute[] = [];
-  for (const { route, snapshot, carriedFrom } of routesForYear<Snapshot, HistoryRouteLike<Snapshot>>(agency, year)) {
+  for (const { route, snapshot, carriedFrom } of routesForYear<Snapshot, HistoryRouteLike<Snapshot> & HistoryRouteOnMap>(agency, year)) {
     const value = historyDayPeriodValue(snapshot, view.day, view.period);
     if (!passesHistoryLimit(value, view.maxHeadway, view.period)) continue;
     const headway = value.kind === 'value' ? value.min : null;
@@ -144,10 +146,26 @@ export function historyYearRoutes(
       // The year's own line when it has one (not for the latest year); otherwise today's map line.
       // Snapshots' old v1 `geometry` is not used (reader contract).
       // A route carried into an unchanged year (#1591) is drawn on the line of the year its number comes from.
-      ...yearShape(typeof shapes === 'function' ? shapes((snapshot as { memberSlug?: string }).memberSlug) : shapes, route.routeShortName, carriedFrom ?? year, latestYear),
+      // A route off today's map (CIV-2064, Ryan) only on that year's own line: never a carried line, and in the latest
+      // year its own line too, since today's map has none for it.
+      ...(onTodaysMap(route)
+        ? yearShape(shapeFile(shapes, snapshot), route.routeShortName, carriedFrom ?? year, latestYear)
+        : yearShape(shapeFile(shapes, snapshot), route.routeShortName, year)),
     });
   }
   return out;
+}
+
+/** The build's mark that a route is on today's map: it carries today's route type (pipeline/build-history currentRouteType). */
+interface HistoryRouteOnMap { currentRouteType?: number | string | null }
+
+/** Whether a History route is on today's map (the build resolved it to today's route, so it has today's route type). */
+function onTodaysMap(route: HistoryRouteOnMap): boolean {
+  return route.currentRouteType != null && route.currentRouteType !== '';
+}
+
+function shapeFile(shapes: HistoryShapesFile | null | ((memberSlug: string | undefined) => HistoryShapesFile | null), snapshot: Snapshot): HistoryShapesFile | null {
+  return typeof shapes === 'function' ? shapes((snapshot as { memberSlug?: string }).memberSlug) : shapes;
 }
 
 function yearShape(shapes: HistoryShapesFile | null, routeKey: string, year: number, latestYear?: number): { coordinates?: number[][]; approximate?: boolean } {
