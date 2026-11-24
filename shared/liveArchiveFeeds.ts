@@ -72,7 +72,9 @@ export const LIVE_ARCHIVE_SHARDS = [
   // feeds and paces come from shared/liveRecorderFeeds.ts.
   {
     // Recording since 2026-11-23 (Ryan: "Yes" to the Hamilton canary): atlas-live-recorder, wrangler.recorder.toml.
-    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton'], recording: true,
+    // Step B (Ryan approved 2026-11-24): TTC with its trip updates, Kingston, MBTA, STM, YRT's Viva and DRT's 9XX join. Their v1 shards keep
+    // recording until the readers of positions/ move to v2; Burlington and Halifax stay paused.
+    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton', 'ttc', 'kingston', 'mbta', 'stm', 'yrt', 'drt'], recording: true,
   },
 ] as const;
 
@@ -171,3 +173,18 @@ export const LIVE_MAP_ARCHIVE_FEEDS: readonly LiveArchivePositionFeed[] = LIVE_A
 
 /** The Live agencies whose vehicle locations the map credits to MassDOT while they are on screen. */
 export const MASSDOT_CREDITED_SLUGS: ReadonlySet<string> = new Set(LIVE_MAP_ARCHIVE_FEEDS.filter(f => f.creditMassDot).map(f => f.slug));
+
+/**
+ * CIV-2073 step B (Ryan, 2026-11-24): agencies only the cloud recorder (atlas.live.v2) polls, with no v1 archive shard and
+ * no Live map entry. Route ids from each agency's GTFS routes.txt, 2026-11-24.
+ */
+export interface LiveRecorderOnlyFeed { slug: string; positionsUrl: string; tripsUrl: string; routeFilterSource: string }
+export const LIVE_RECORDER_ONLY_FEEDS: readonly LiveRecorderOnlyFeed[] = [
+  // Durham Region Transit's 9XX routes (PULSE 900, 901, 915, 916 and routes 902, 905, 917, 920, 921), from DRT's open feed.
+  {
+    slug: 'drt',
+    positionsUrl: 'https://drtonline.durhamregiontransit.com/gtfsrealtime/VehiclePositions',
+    tripsUrl: 'https://drtonline.durhamregiontransit.com/gtfsrealtime/TripUpdates',
+    routeFilterSource: '^9\\d\\d$',
+  },
+];

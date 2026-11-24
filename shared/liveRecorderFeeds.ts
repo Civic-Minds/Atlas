@@ -3,9 +3,9 @@
  * the archive feeds (shared/liveArchiveFeeds.ts) where an agency is archived, else its Live polling config
  * (shared/livePollingConfig.ts). Its pace is shared/rules/live.ts's. No URL, filter or pace is typed here.
  */
-import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS } from './liveArchiveFeeds.js';
+import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS, LIVE_RECORDER_ONLY_FEEDS } from './liveArchiveFeeds.js';
 import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from './livePollingConfig.js';
-import { LIVE_POSITIONS_ONLY_SLUGS, livePaceSec } from './rules/live.js';
+import { LIVE_POSITIONS_ONLY_SLUGS, LIVE_RECORDER_ROUTE_IDS, livePaceSec } from './rules/live.js';
 
 export interface LiveRecorderFeed {
   slug: string;
@@ -20,6 +20,7 @@ export interface LiveRecorderFeed {
 }
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const idsFilter = (ids: readonly string[]) => `^(${ids.map(escapeRe).join('|')})$`;
 
 export function liveRecorderFeed(slug: string): LiveRecorderFeed | null {
   const positionsOnly = LIVE_POSITIONS_ONLY_SLUGS.includes(slug);
@@ -30,11 +31,13 @@ export function liveRecorderFeed(slug: string): LiveRecorderFeed | null {
       slug,
       positionsUrl: archived.url,
       tripsUrl: positionsOnly ? null : trips?.url ?? null,
-      routeFilterSource: archived.routeFilterSource,
+      routeFilterSource: LIVE_RECORDER_ROUTE_IDS[slug] ? idsFilter(LIVE_RECORDER_ROUTE_IDS[slug]) : archived.routeFilterSource,
       paceSec: livePaceSec(slug),
       ...(archived.apiKeyHeader ? { apiKey: { env: archived.apiKeyHeader, header: true as const } } : {}),
     };
   }
+  const only = LIVE_RECORDER_ONLY_FEEDS.find(f => f.slug === slug);
+  if (only) return { ...only, tripsUrl: positionsOnly ? null : only.tripsUrl, paceSec: livePaceSec(slug) };
   const routes = LIVE_POLLING_ROUTES.filter(r => r.slug === slug);
   const cfg = routes[0];
   if (!cfg) return null;
@@ -43,7 +46,7 @@ export function liveRecorderFeed(slug: string): LiveRecorderFeed | null {
     slug,
     positionsUrl: cfg.vehiclePositionsUrl,
     tripsUrl: positionsOnly ? null : cfg.tripUpdatesUrl,
-    routeFilterSource: `^(${ids.map(escapeRe).join('|')})$`,
+    routeFilterSource: idsFilter(LIVE_RECORDER_ROUTE_IDS[slug] ?? ids),
     paceSec: livePaceSec(slug),
     ...(cfg.apiKeyParamEnvVar ? { apiKey: { env: cfg.apiKeyParamEnvVar, param: cfg.apiKeyParamName ?? 'apikey' } }
       : cfg.apiKeyHeaderEnvVar ? { apiKey: { env: cfg.apiKeyHeaderEnvVar, header: true as const } } : {}),
