@@ -27,7 +27,7 @@ import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPeriod } from './historyRefQuality.js';
 import { historyV2FromEnv, v1OverV2Refusal } from './historyV2Flag.js';
-import { splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
+import { segmentStarts, splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
 import { compileAgencyShapes, formatShapeGap, shapeGaps, type ShapeRouteYear } from './historyShapes.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { yearsAvailable } from '../shared/historyV2Reader.js';
@@ -614,7 +614,7 @@ async function main() {
         splitCount++;
         for (const sp of splits) console.log(`  identity split ${slug}/${key}: ${sp.fromYear} "${sp.before}" -> ${sp.toYear} "${sp.after}" (${sp.verdict.reason})`);
         // Change files with no sidecar go to the segment their date falls in.
-        const starts = segments.map(seg => Math.min(...seg.periodKeys.map(pk => (pk === TODAY_PERIOD_KEY ? Number.POSITIVE_INFINITY : getPeriodKeySortValue(pk)))));
+        const starts = segmentStarts(segments, getPeriodKeySortValue, TODAY_PERIOD_KEY);
         const segmentOf = (periodKey: string) => {
           const v = getPeriodKeySortValue(periodKey);
           let i = 0;
