@@ -26,7 +26,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - "3 min" for a delay or gap that is not a headway (`delayAmount`)
 - The frequency comes first, then its limit: "every 12 min until 9:40 PM", not "until 9:40 PM, every 12 min" (Ryan, 2026-10-30). #962.
 - Frequencies are always in minutes, never hours ("every 90 min", "every 120 min"), so a column never mixes units. #938. (checked)
-- Waits over 60 minutes print their exact minutes ("every 63 min"), never rounded to the half hour, so the words match the number the filter reads (Ryan, 2026-10-31). #1239. A full-window wait over 60 reads "Runs irregularly in this period" instead (Ryan, 2026-11-24, #1766; see DECISIONS.md).
+- Waits over 60 minutes print their exact minutes ("every 63 min"), never rounded to the half hour, so the words match the number the filter reads (Ryan, 2026-10-31). #1239.
 - The frequency definition is written "every 15 min or better": "No stop on this route has a vehicle every 15 min or better at this time of day." CIV-1160.
 - A route that starts slowly reads "every N from <time>", where N is the longest wait after that time. CIV-1411.
 - Route lists and agency pages use the same words and range as the route card, from the same function. CIV-1300, CIV-1447.
