@@ -1,10 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import handler from '../live-vehicles.js';
+import { useNowSource } from '../../scripts/mcp/liveNowData.js';
 
 describe('local live vehicles API', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    // #1781: no recorder snapshots (R2 or a local folder), so TTC is always polled from the mocked feed.
+    useNowSource(null);
   });
 
   it('rejects unknown agencies without contacting an upstream feed', async () => {
