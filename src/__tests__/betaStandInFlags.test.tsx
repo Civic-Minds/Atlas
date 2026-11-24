@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 // their own. Each now has a named flag so it can graduate alone, and each must give exactly what
 // FEATURES.beta gave in every build until someone changes it on purpose.
 const STAND_IN_FLAGS = [
-  'persistedSettings',
   // CIV-98: back on where beta is, off on public, once Ryan picked the analytics prompt's place.
   'slowConnectionPrompt',
   'mapContext',
