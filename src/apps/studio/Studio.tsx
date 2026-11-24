@@ -57,9 +57,12 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const loc = parseStudioPath(pathname) ?? { page: null, agency: null, route: null };
   // A move inside Studio replaces the entry, as the main map's own address updates do (syncUrlParams), and keeps the
   // address's other parameters (the map's position).
+  // #1763: the address as it is now, not the router's copy: the map writes its position with history.replaceState
+  // (syncUrlParams), which the router never sees, so its `search` still holds where the map was when Studio opened and
+  // a page switch put that old position back in the address.
   const go = (next: Partial<StudioLocation>) => {
     const n = { ...loc, ...next };
-    navigate({ pathname: studioPath({ page: n.page, agency: n.page ? n.agency ?? slug : null, route: n.route }), search }, { replace: true });
+    navigate({ pathname: studioPath({ page: n.page, agency: n.page ? n.agency ?? slug : null, route: n.route }), search: window.location.search }, { replace: true });
   };
   // The old query addresses (?page=live&agency=ttc&route=504, ?panel=closed) open their path (CIV-1924).
   const legacy = studioLegacyLocation(search);
@@ -142,7 +145,10 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
     // where it is, as the main map's mode tabs do: the new page's view counts as framed when the map already shows this
     // agency. A new agency (or a first open) still frames.
     const keep = closed ? null : route;
-    if (framedMemory.current?.startsWith(`${slug}:`)) framedMemory.current = studioFrameKey(slug, keep);
+    // #1763 (Ryan: "The map should keep the same position and zoom across Studio's screens unless the user moves it"):
+    // opening a page from Studio's main menu while the map is already on this agency counts as framed too, so the map stays.
+    const onAgency = closed && studioAgencyInView(window.location.search, agencyCatalog, listedAnywhere) === slug;
+    if (onAgency || framedMemory.current?.startsWith(`${slug}:`)) framedMemory.current = studioFrameKey(slug, keep);
     go({ page: k, agency: slug, route: keep });
   };
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
