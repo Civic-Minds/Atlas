@@ -1,12 +1,16 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import handler from '../live-vehicles.js';
 import { LIVE_POLLING_ROUTES, liveConfigRouteIds } from '../../shared/livePollingConfig.js';
+import { useNowSource } from '../../scripts/mcp/liveNowData.js';
 
 const { FeedMessage } = GtfsRealtimeBindings.transit_realtime;
 const NOW = 1_795_351_163;
 const feed = (entity: object[]) => FeedMessage.encode(FeedMessage.create({ header: { gtfsRealtimeVersion: '2.0', timestamp: NOW }, entity })).finish();
 
+// #1785: Hamilton reads the cloud recorder first, and the module picks the real one when this machine has the MCP's
+// read-only credentials file; with none, the handler polls the mocked feed as in CI.
+beforeEach(() => useNowSource(null));
 afterEach(() => vi.restoreAllMocks());
 
 describe('Live route ids follow the agency\'s current route file (#1696)', () => {

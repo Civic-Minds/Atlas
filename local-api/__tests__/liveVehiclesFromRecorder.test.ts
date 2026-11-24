@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { gzipSync } from 'node:zlib';
 import handler, { fromRecorder } from '../live-vehicles.js';
 import { snapshotFor } from '../../workers/gtfs-rt-archiver/src/v2.js';
@@ -20,6 +20,9 @@ vi.mock('../stopNames.js', () => ({
 const serve = () => vi.spyOn(globalThis, 'fetch').mockImplementation(async (u: unknown) =>
   new Response(new Uint8Array(/Vehicle/i.test(String(u)) ? fixturePositions() : fixtureTrips()).buffer, { status: 200 }));
 
+// #1785: the module picks the real R2 recorder when this machine has the MCP's read-only credentials file, so every
+// test starts with no recorder and sets its own.
+beforeEach(() => useNowSource(null));
 afterEach(() => { vi.restoreAllMocks(); useNowSource(null); });
 
 describe('Live from the cloud recorder (CIV-2073): no visible change', () => {
