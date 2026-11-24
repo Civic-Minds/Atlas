@@ -252,7 +252,7 @@ export async function routeWithRows(agency: CatalogAgency, day: DayType, s: Rout
 }
 
 /**
- * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
+ * A route by short name, long name or id. An exact name wins, then a route id (#1777), then a line named by the words ("Blue" is the Blue Line,
  * not the 60 Blue Island bus), then the map's route-search rule ("1" finds route 01). No mode wins a tie (CIV-2025).
  */
 /**
@@ -276,6 +276,11 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
   const exact = routes.filter(r => names(r).includes(q)).map((r, i) => ({ r, i, short: r.shortName.toLowerCase() === q ? 0 : 1 }))
     .sort((a, b) => a.short - b.short || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
   if (exact) return exact;
+  // #1777: then a route id, bare or as the summary key ("30053" or "id:30053", TransLink's Expo Line, which has no short
+  // name). After every name, so a route's own number always wins over another route's id.
+  const ids = (r: R) => { const x = r as { key?: string; routeIds?: string[] }; return [x.key ?? '', ...(x.routeIds ?? [])].map(n => n.toLowerCase()); };
+  const byId = routes.find(r => ids(r).includes(q) || ids(r).includes(`id:${q}`));
+  if (byId) return byId;
   const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `)));
   if (line.length) return line[0];
   // Otherwise the map's route-search rule (shared/routeMatch.ts): best match first, then, among routes matched only by

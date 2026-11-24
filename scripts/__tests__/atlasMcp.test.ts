@@ -255,6 +255,17 @@ describe('route lookup (CIV-1864)', () => {
     expect(otherExactMatches(routes, 'LW', findRoute(routes, 'LW')!)).toEqual([]);
   });
 
+  // #1777: TransLink's Expo Line has no short name; asked for by its route id, the lookup found nothing.
+  it('finds a route by its id, bare or as its key, after every name', async () => {
+    const { findRoute } = await import('../mcp/atlasData');
+    const r = (key: string, shortName: string, longName: string | null, routeIds: string[]) => ({ key, shortName, name: shortName || longName || key, longName, mode: 'Bus', routeIds });
+    const routes = [r('id:30053', '', 'Expo Line', ['30053']), r('99', '99', 'UBC B-Line', ['6641']), r('6641x', '6641', 'Other', ['777'])];
+    expect(findRoute(routes, '30053')?.longName).toBe('Expo Line');
+    expect(findRoute(routes, 'id:30053')?.longName).toBe('Expo Line');
+    // A route's own number wins over another route's id.
+    expect(findRoute(routes, '6641')?.longName).toBe('Other');
+  });
+
   it('takes a name holding the words typed over one that only contains the letters (Metro Transit "E Line")', async () => {
     const { findRoute } = await import('../mcp/atlasData');
     const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });
