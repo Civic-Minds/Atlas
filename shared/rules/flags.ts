@@ -104,8 +104,8 @@ export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
 // every one of them is exactly BETA_BUILD, so what each build shows has not changed.
 // Saved Settings: hide-low-quality, persistent legend and data saver, remembered between visits.
 export const PERSISTED_SETTINGS_ENABLED = BETA_BUILD;
-// The "a new version is available" banner.
-export const UPDATE_BANNER_ENABLED = BETA_BUILD;
+// The "a new version is available" banner. On in every build since Ryan's OK for the public site (CIV-2180).
+export const UPDATE_BANNER_ENABLED = true;
 // CIV-98: on a slow connection the map loads fewer networks and offers to turn on Data saver for good, in the analytics
 // prompt's place (Ryan, 2026-11-20: "The same lace the analytics one goes right"). Beta, preview and dev; off on public.
 export const SLOW_CONNECTION_PROMPT_ENABLED = BETA_BUILD;
