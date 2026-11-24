@@ -116,8 +116,8 @@
       "slug": "southportlandme",
       "check": "duplicate",
       "firstHeld": "2026-11-02",
-      "lastHeld": "2026-11-23",
-      "runs": 18,
+      "lastHeld": "2026-11-24",
+      "runs": 19,
       "message": "route output is identical to portlandme",
       "outcome": "held",
       "cause": "broken feed: same feed as portlandme, live headways of 840 min"
@@ -126,8 +126,8 @@
       "slug": "southportlandme",
       "check": "headway-shift",
       "firstHeld": "2026-11-02",
-      "lastHeld": "2026-11-23",
-      "runs": 18,
+      "lastHeld": "2026-11-24",
+      "runs": 19,
       "message": "10 of 15 routes' filter headway halves or doubles in some day and period (67%; 1 Weekday amPeak 170->30 min, 2 Weekday all 840->90 min, 24A Weekday all 840->122 min, 3 Weekday amPeak 140->63 min, 4 Weekday all 135->30 min, 5 Weekday all 495->30 min, ...)",
       "outcome": "held",
       "cause": "broken feed: same feed as portlandme, live headways of 840 min"
