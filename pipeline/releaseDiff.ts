@@ -330,6 +330,72 @@ export function headwayShift(live: ArtifactSummary, next: ArtifactSummary): Head
 }
 
 /**
+ * CIV-2335: a headway-shift that is the season changing. `lastYear` is the agency's output read from
+ * its feed of the same date a year earlier. It matches when every day/period/route cell that halves
+ * or doubles against live is also in last year's output and does not halve or double against it:
+ * the new timetable is last year's same-season one coming back. The same halves-or-doubles rule as
+ * headwayShift, so no new threshold. Summaries without filterHeadways compare weekday medians.
+ */
+export function sameSeasonMatch(live: ArtifactSummary, lastYear: ArtifactSummary, next: ArtifactSummary): { matched: boolean; checked: number; unmatched: string[] } {
+  const changed = (before: number, after: number) => after >= before * HEADWAY_SHIFT_RATIO || after * HEADWAY_SHIFT_RATIO <= before;
+  const useCells = !!(live.filterHeadways && next.filterHeadways && lastYear.filterHeadways);
+  const [liveCells, nextCells, lastCells] = useCells
+    ? [live.filterHeadways!, next.filterHeadways!, lastYear.filterHeadways!]
+    : [live.weekdayHeadways, next.weekdayHeadways, lastYear.weekdayHeadways];
+  let checked = 0;
+  const unmatched: string[] = [];
+  for (const [key, before] of Object.entries(liveCells)) {
+    const after = nextCells[key];
+    if (after == null || !changed(before, after)) continue;
+    checked++;
+    const then = lastCells[key];
+    if (then == null) unmatched.push(`${key.replace(/\|/g, ' ')} not in last year's feed`);
+    else if (changed(then, after)) unmatched.push(`${key.replace(/\|/g, ' ')} ${then}->${after} min against last year`);
+  }
+  return { matched: checked > 0 && unmatched.length === 0, checked, unmatched };
+}
+
+/** Where the same-season comparison's last-year output came from, for the flag message. */
+export interface SameSeasonSource {
+  /** The archived zip's key, or another source's name. */
+  feed: string;
+  /** The date last year's output was read at (YYYYMMDD). */
+  readAt: string;
+}
+
+/**
+ * CIV-2335: turn an agency's red headway-shift into a yellow one when the new output matches the
+ * same season last year (sameSeasonMatch), naming the feed it matched. Other flags are unchanged.
+ */
+export function acceptSameSeason(flags: GateFlag[], slug: string, source: SameSeasonSource): GateFlag[] {
+  return flags.map(f => (f.slug === slug && f.flag === 'headway-shift' && f.level === 'red'
+    ? { ...f, level: 'yellow', message: `${f.message}; matches the same season last year (${source.feed}, read at ${source.readAt}), let through as seasonal` }
+    : f));
+}
+
+/**
+ * publish-data-release has no archive access: it lets through the same-season match refresh recorded
+ * on the agency (sameSeasonMatch) while that refresh's artifact is still the agency's current one.
+ */
+export function acceptRecordedSameSeason(
+  flags: GateFlag[],
+  agencies: ReadonlyArray<{ slug: string; lastRefreshedAt?: unknown; sameSeasonMatch?: unknown }>,
+): GateFlag[] {
+  let out = flags;
+  for (const agency of agencies) {
+    const match = agency.sameSeasonMatch as (SameSeasonSource & { refreshedAt?: string }) | null | undefined;
+    if (!match?.feed || !match.readAt || !match.refreshedAt || match.refreshedAt !== agency.lastRefreshedAt) continue;
+    if (hasRedHeadwayShift(out, agency.slug)) out = acceptSameSeason(out, agency.slug, match);
+  }
+  return out;
+}
+
+/** True when the agency has a red headway-shift flag, the one the same-season check can answer. */
+export function hasRedHeadwayShift(flags: GateFlag[], slug: string): boolean {
+  return flags.some(f => f.slug === slug && f.flag === 'headway-shift' && f.level === 'red');
+}
+
+/**
  * Routes whose weekday service changes a lot on their own: the tier moves
  * ROUTE_SHIFT_TIER_STEPS or more, or the headway halves or doubles. Unlike
  * headwayShift's share thresholds this catches one wrong route at a small

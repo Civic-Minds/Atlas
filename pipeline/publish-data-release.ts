@@ -32,6 +32,7 @@ import {
   applyOverrides,
   buildGateReport,
   cachedSummaryReader,
+  acceptRecordedSameSeason,
   evaluateRun,
   formatGateSummary,
   parseGateOverrides,
@@ -144,7 +145,7 @@ const candidates: GateCandidate[] = await runWithConcurrency(includedSlugs.map(s
   next: await readLiveSummary(slug, getPublic, [newPrefix]) ?? summarizeArtifact('{"features":[]}', null),
   service: { end: expiryBySlug.get(slug) ?? null },
 })), 6);
-const gateFlags = await evaluateRun({
+const gateFlags = acceptRecordedSameSeason(await evaluateRun({
   candidates,
   getLive: cachedSummaryReader(slug => readLiveSummary(slug, getPublic, livePrefixes)),
   // Visible peers are the release's own agencies; hidden and staged agencies
@@ -153,7 +154,7 @@ const gateFlags = await evaluateRun({
   getHiddenLive: cachedSummaryReader(slug => readLiveSummary(slug, getPublic, ['atlas'])),
   todayYmd: slug => agencyTodayYmd(indexAgencies.find(a => a.slug === slug) as { timezone?: string } ?? {}),
   allowMissingLive: true,
-});
+}), indexAgencies as Array<{ slug: string; lastRefreshedAt?: unknown; sameSeasonMatch?: unknown }>);
 const gateReport = buildGateReport(manifest.releaseId, 'publish-data-release', includedSlugs, overrides, applyOverrides(gateFlags, overrides));
 console.log(formatGateSummary(gateReport, writeGateReport(gateReport)));
 if (gateReport.blocked.length) {

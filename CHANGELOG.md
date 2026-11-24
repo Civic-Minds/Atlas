@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Seasonal timetables update without waiting for review**: a ski or school-term timetable whose frequencies match the same date last year now goes onto the map at the next refresh, instead of being held as a suspicious change
 - **Atlas Studio MCP's schedule changes give the same figures as its route frequencies**: Kingston's route 2 was listed as cut to "no service" though it still runs every 30 minutes, because the change list read its figures another way
 - **Fort Lauderdale's LauderGO shuttles are on the map**: the five community shuttle routes now show as their own agency, apart from Broward County Transit
 - **Route search finds a route number typed without its space**: "50U" found nothing for Guelph's 50 U, in the map's search and in Atlas Studio's answers
