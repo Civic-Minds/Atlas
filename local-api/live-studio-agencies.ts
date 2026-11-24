@@ -34,7 +34,8 @@ async function handler(): Promise<Response> {
   const files = (await Promise.all(names.map(n => readRouteFile(dir, n).catch(() => null)))).filter((f): f is LiveRouteFile => !!f);
   const minDays = liveStudioMinDays(true);
   const days: Record<string, number> = {};
-  for (const f of files) if (!f.held) days[f.slug] = Math.max(days[f.slug] ?? 0, f.days);
+  // Days recorded per agency, held routes included (CIV-2173: the Status page's progress towards the minimum).
+  for (const f of files) days[f.slug] = Math.max(days[f.slug] ?? 0, f.days);
   return new Response(JSON.stringify({ agencies: liveStudioAgencies(files, minDays), minDays, days }), {
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
