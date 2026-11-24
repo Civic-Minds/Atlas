@@ -26,6 +26,7 @@ import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, type StudioBef
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetIntroText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
+import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
 import SplitBar from '../../components/charts/SplitBar';
 import DataTable from '../../components/ui/DataTable';
 import { MISSING_VALUE } from '../../../shared/missingValue';
@@ -119,10 +120,9 @@ function FleetPeriodSparkline({ vehicles, period, modes }: { vehicles: StudioVeh
     return counts[p] == null ? undefined : `${PERIOD_LABELS[p]}: ${countText(counts[p]!)} ${word}`;
   };
   return (
-    <div className="mt-3">
-      <CardSectionLabel className="!mb-0">{STUDIO_REDESIGN_TEXT.scheduledByPeriod}</CardSectionLabel>
+    <PanelSection label={STUDIO_REDESIGN_TEXT.scheduledByPeriod}>
       <HeadwaySparkline byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} period={period} title={STUDIO_REDESIGN_TEXT.scheduledByPeriod} hourTitle={hourTitle} />
-    </div>
+    </PanelSection>
   );
 }
 
@@ -410,10 +410,13 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                 <>
                   {fleet && <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>}
                   {fleetDesign() === 'now' ? (
-                    <Widget title={vehiclesNeededTitle(agencyModes)}>
-                      <FleetNowTable modes={agencyModes} runningNow={runningNow} scheduledNow={nowFleet?.implied ?? null} />
+                    // CIV-2182 (Ryan: the card inside a card looks odd): sections of the panel, as Studio's Live route panel (CIV-2021).
+                    <PanelSectionsProvider>
+                      <Widget title={vehiclesNeededTitle(agencyModes)}>
+                        <FleetNowTable modes={agencyModes} runningNow={runningNow} scheduledNow={nowFleet?.implied ?? null} />
+                      </Widget>
                       <FleetPeriodSparkline vehicles={vehicles} period={period} modes={agencyModes} />
-                    </Widget>
+                    </PanelSectionsProvider>
                   ) : (
                     <Widget title={vehiclesNeededTitle(agencyModes)}>
                       <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} inService={networkInService} design={fleetDesign() === 'change' ? 'change' : 'today'} />
