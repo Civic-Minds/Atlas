@@ -60,18 +60,17 @@ describe('cloud recorder v2 (CIV-2073)', () => {
 });
 
 describe('cloud recorder step B (CIV-2073)', () => {
-  it('records TTC\'s analysed routes with their trip updates, Kingston, MBTA, STM with its key, YRT Viva and DRT 9XX', async () => {
+  it('records TTC\'s analysed routes with their trip updates, Kingston, MBTA, YRT Viva, DRT 9XX and Brampton 5XX, not STM', async () => {
     const { LIVE_ARCHIVE_SHARDS } = await import('../../../shared/liveArchiveFeeds');
     const { LIVE_TTC_ANALYSED_ROUTES } = await import('../../../shared/rules/live');
     const v2 = LIVE_ARCHIVE_SHARDS.find(s => s.id === 'live-v2')!;
-    expect('v2Slugs' in v2 && [...v2.v2Slugs]).toEqual(['hamilton', 'ttc', 'kingston', 'mbta', 'stm', 'yrt', 'drt']);
+    expect('v2Slugs' in v2 && [...v2.v2Slugs]).toEqual(['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton']);
     const ttc = liveRecorderFeed('ttc')!;
     expect(ttc.tripsUrl).not.toBeNull();
     // Ryan, 2026-11-24: the routes Live analyses (streetcars, then the Ten-Minute Network with CIV-2174), not the whole fleet.
     const keeps = new RegExp(ttc.routeFilterSource);
     expect(LIVE_TTC_ANALYSED_ROUTES.every(r => keeps.test(r))).toBe(true);
     expect(['502', '29', '1', '5011'].some(r => keeps.test(r))).toBe(false);
-    expect(liveRecorderFeed('stm')!.apiKey).toEqual({ env: 'STM_API_KEY', header: true });
     expect(liveRecorderFeed('mbta')!.tripsUrl).toBeNull();
     expect(liveRecorderFeed('kingston')!.tripsUrl).not.toBeNull();
     // YRT: every Viva route (CIV-2176), with trip updates; DRT: its 9XX routes, with trip updates.
@@ -81,9 +80,12 @@ describe('cloud recorder step B (CIV-2073)', () => {
     const nine = new RegExp(drt.routeFilterSource);
     expect([nine.test('900'), nine.test('921'), nine.test('90'), nine.test('9000'), nine.test('401')]).toEqual([true, true, false, false, false]);
     expect(drt.tripsUrl).not.toBeNull();
+    const bt = liveRecorderFeed('brampton')!, zum = new RegExp(bt.routeFilterSource);
+    expect([zum.test('501'), zum.test('561'), zum.test('5'), zum.test('50'), zum.test('1')]).toEqual([true, true, false, false, false]);
+    expect(bt.tripsUrl).not.toBeNull();
   });
 
-  it('a missing STM key fails STM alone; the other agencies in the run still write', async () => {
+  it('a feed whose key is missing fails alone; the other agencies in the run still write', async () => {
     serve();
     const b = bucket();
     const stm = { ...liveRecorderFeed('stm')!, paceSec: 60 };

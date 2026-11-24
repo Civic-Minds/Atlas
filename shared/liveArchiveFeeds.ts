@@ -57,7 +57,7 @@ export const LIVE_ARCHIVE_SHARDS = [
   { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], recording: true },
   { id: 'ttc-trips', positionSlugs: [], tripSlugs: ['ttc'], paused: FIVE_CRON_PAUSE },
   { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'], recording: true },
-  { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'], paused: FIVE_CRON_PAUSE },
+  { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'], paused: { since: '2026-11-24', reason: 'Needs an STM developer key; dropped 2026-11-24' } },
   {
     id: 'burlington-halifax',
     positionSlugs: ['burlington', 'halifax'],
@@ -72,9 +72,10 @@ export const LIVE_ARCHIVE_SHARDS = [
   // feeds and paces come from shared/liveRecorderFeeds.ts.
   {
     // Recording since 2026-11-23 (Ryan: "Yes" to the Hamilton canary): atlas-live-recorder, wrangler.recorder.toml.
-    // Step B (Ryan approved 2026-11-24): TTC with its trip updates, Kingston, MBTA, STM, YRT's Viva and DRT's 9XX join. Their v1 shards keep
+    // Step B (Ryan approved 2026-11-24): TTC with its trip updates, Kingston, MBTA, YRT's Viva, DRT's 9XX and Brampton's 5XX join
+    // (Montréal dropped 2026-11-24). Their v1 shards keep
     // recording until the readers of positions/ move to v2; Burlington and Halifax stay paused.
-    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton', 'ttc', 'kingston', 'mbta', 'stm', 'yrt', 'drt'], recording: true,
+    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton'], recording: true,
   },
 ] as const;
 
@@ -186,5 +187,12 @@ export const LIVE_RECORDER_ONLY_FEEDS: readonly LiveRecorderOnlyFeed[] = [
     positionsUrl: 'https://drtonline.durhamregiontransit.com/gtfsrealtime/VehiclePositions',
     tripsUrl: 'https://drtonline.durhamregiontransit.com/gtfsrealtime/TripUpdates',
     routeFilterSource: '^9\\d\\d$',
+  },
+  // Brampton Transit's 5XX Züm routes (501, 502, 505, 511, 561), from the open feeds on geohub.brampton.ca/pages/brampton-transit.
+  {
+    slug: 'brampton',
+    positionsUrl: 'https://gtfs-rt-merge.prod.bt-cadavl.com/BramptonTransit/GTFS/merged_VehiclePosition.pb',
+    tripsUrl: 'https://gtfs-rt-merge.prod.bt-cadavl.com/BramptonTransit/GTFS/merged_TripUpdate.pb',
+    routeFilterSource: '^5\\d\\d$',
   },
 ];
