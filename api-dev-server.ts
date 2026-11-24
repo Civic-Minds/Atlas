@@ -73,7 +73,10 @@ createServer(async (req, res) => {
   }
 
   try {
-    const request = new Request(`http://localhost:${API_PORT}${req.url}`, { method: req.method ?? 'GET' });
+    // Headers go through (CIV-2202: the MCP page's tester-link changes check Origin and their own header); bodies don't.
+    const headers = new Headers();
+    for (const [name, value] of Object.entries(req.headers)) if (typeof value === 'string') headers.set(name, value);
+    const request = new Request(`http://localhost:${API_PORT}${req.url}`, { method: req.method ?? 'GET', headers });
     const response = await handler(request);
     const body = Buffer.from(await response.arrayBuffer());
     response.headers.forEach((value, name) => res.setHeader(name, value));

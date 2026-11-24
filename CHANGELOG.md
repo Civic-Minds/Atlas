@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
 - **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
 - **On the filtered map, one slower stop at the end of a stretch colours only its own end piece**: a single slightly slower end stop was recolouring the whole stretch; the rest now takes the worst of its other stops, and no stop's published value changes
 - **History no longer shows six old routes as running in 2026**: AC Transit 20, 21, 79 and 72R and SacRT 195 and 80 carried 2020, 2021 and 2018 schedules dated as this year, because their archive dates were written as year and month only
