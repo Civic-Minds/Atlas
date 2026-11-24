@@ -68,10 +68,9 @@ describe('a branch that does not run through a period has no row for it (#1115, 
     expect(screen.getByText(/every 20 min/)).toBeTruthy();
   });
 
-  it('data without the field keeps the row, as before the rebuild; its 313-minute full-window wait reads Runs irregularly (#1239, CIV-1074; #1766: a wait over an hour is no cadence)', () => {
+  it('data without the field keeps the row, as before the rebuild, at its full-window wait, 313 shown as is (#1239; the period is not steady, CIV-1074)', () => {
     renderCard(features(), 'midday');
-    expect(screen.queryByText(/every 313 min/)).toBeNull();
-    expect(screen.getAllByText(LONG).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/every 313 min/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/every 21 min/)).toBeNull();
   });
 

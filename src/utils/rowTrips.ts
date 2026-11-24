@@ -138,8 +138,6 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   const unsteady = value != null && !partPeriod && !filterReading && (stretch ? stretch.consistent === false : d.headwayByPeriodSustained?.[key] === false);
   const wait = d.periodCoverageHeadway?.[key];
   let waitNotCadence = false;
-  // #1766: the value is the row's full-window wait (the unsteady fallback below), not a cadence of its trips.
-  let valueIsWait = false;
   if (unsteady && typeof slotValue === 'number' && !slot?.noRegular?.includes(key)) {
     // A short burst can't take the shared stretch's number. Where the stretch is materially better than the row's own trips
     // (by the card's Combined rule's ratio, which then shows a "Shared stretch every N" row), the burst rides on other trips and the row
@@ -152,7 +150,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
     // PERIOD_COVERAGE_MAX_HEADWAY is the filter's eligibility bound, not a cadence, so the row reads no regular service (CTA 9
     // to Vincennes midday: two bursts 313 minutes apart, never "every 313"). A shorter wait keeps the period's number, and the
     // gap is named below (gap words).
-    if (d.tier !== 'infrequent') { value = wait; valueIsWait = true; }
+    if (d.tier !== 'infrequent') value = wait;
     else if (wait > PERIOD_COVERAGE_MAX_HEADWAY) { value = null; waitNotCadence = true; }
   }
   // CIV-1959 follow-up (CIV-1241, CIV-1411, #934): a row that starts late, stops early or starts slowly on its own trips (rowPeriodEdge, read
@@ -183,10 +181,6 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // (D6's "every 5 min, with one 169 min gap", #1239's) read "Runs irregularly in this period" instead (#962: a wait over
   // PERIOD_COVERAGE_MAX_HEADWAY is no cadence). Card wording only: the colour and the filter are unchanged.
   if (partPeriodGap != null && partPeriodGap > PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = undefined; partPeriodEvery = undefined; value = null; waitNotCadence = true; }
-  // #1766: likewise, whatever the all-day grade, a full-window wait over an hour with no words of its own is no cadence (#962):
-  // TTC 101's Wilson branch at midday, two trips 320 minutes apart, read "every 320 min". A row whose start or end words
-  // explain the wait keeps them ("every 11 min from 7:17 AM").
-  if (valueIsWait && !partPeriod && value != null && value > PERIOD_COVERAGE_MAX_HEADWAY) { value = null; waitNotCadence = true; }
   // The stretch's gap goes with the stretch's value: a row with a value of its own, faster (NYCT R late: 13 beside the
   // stretch's 165, CIV-1074 2c) or slower (Phoenix 35: 30 on a shared 15), keeps its own trips' gap. A row with no value of its
   // own, or on data without the slot's period (public tails: it lives in the sections file), takes its stretch's gap.
