@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route cards show a slower branch again**: RTD 15 read "every 10" though its east branch runs every 30; it now reads "every 10–30", since the trunk's number left the branch out of the range
 - **Fort Lauderdale's LauderGO shuttles are on the map**: the five community shuttle routes now show as their own agency, apart from Broward County Transit
 - **Route search finds a route number typed without its space**: "50U" found nothing for Guelph's 50 U, in the map's search and in Atlas Studio's answers
 - **York Region Transit's On-Request zones are on the map**: all eight service areas, from the shapefiles YRT sent, each with its own hours and trip rules; YRT's card used to say its on-demand service wasn't mapped yet

@@ -300,6 +300,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-24 — A card's range still runs to the slowest branch when the trunk sets the headline (#1775, CIV-2232)
+Ryan (2026-11-24, relayed by the manager) picked option 1 for RTD 15: the card should say "every 10–30" (main stretch every 10, east branch past Colfax & Billings every 30), matching how 15L and 12 already show a branch (frequency rule 3).
+- The rule: where CIV-1959 B1 reads a direction's headline from the trunk alone, the card's range still runs from the main stretch to the slowest branch that counts in the period (rule 3). A branch whose reading is only its wait to the period's edge (#1749) adds no range. The headline number, the filter and the map colour do not change.
+- Why it was missing: B1 took the branches out of the value the range is built from, so the range's two ends were both the trunk's number and no range showed. B1's own guard (a rider never sees a branch hidden behind a faster trunk number) was not met.
+- Counts: from a cloud dry-run pair, before merge.
+
 ### 2026-11-23 — A branch's wait to the period's edge no longer sets the route's value (#1749, CIV-2196; overrides CIV-1241)
 Ryan, 2026-11-23 (relayed by Atlas Manager New): "1", answering "Option 1: a branch whose only long wait is to the period's edge no longer sets the whole route's figure; its own row still says "until 0:53". No new number. [...] Trade-off: overrides CIV-1241 (on the branch after it stops there's no service, but the route reads the trunk's figure). 1. Apply option 1 (Recommended) 2. Keep CIV-1241 as is".
 - The rule: a branch (tail) that starts or stops partway through a period, so its full-period wait is over the coverage cap while no gap between its buses is, is left out of the direction's value and filter. Its own row keeps its reading ("every 10 until 0:53"). A handover tail (#1072) still counts.
