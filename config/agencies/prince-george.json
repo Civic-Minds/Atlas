@@ -1,0 +1,27 @@
+{
+  "slug": "prince-george",
+  "officialName": "BC Transit",
+  "nameQualifier": "Prince George",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    53.915,
+    -122.783
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=22",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2510/latest.zip",
+  "bbox": [
+    53.8079,
+    -127.1701,
+    54.7855,
+    -122.7379
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

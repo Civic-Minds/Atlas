@@ -1,0 +1,21 @@
+{
+  "slug": "prince-rupert",
+  "officialName": "BC Transit",
+  "nameQualifier": "Prince Rupert",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    54.312,
+    -130.313
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=23",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2543/latest.zip",
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}

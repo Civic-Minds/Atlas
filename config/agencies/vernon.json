@@ -1,0 +1,27 @@
+{
+  "slug": "vernon",
+  "officialName": "BC Transit",
+  "nameQualifier": "Vernon/Shuswap",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    50.267,
+    -119.27
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=14",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2508/latest.zip",
+  "bbox": [
+    49.9362,
+    -119.4931,
+    50.933,
+    -118.9623
+  ],
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}
