@@ -66,6 +66,24 @@ product.
 | Miami-Dade Transit | Swiftly — same form as LA Metro. Same key once activated. |
 | RTC Southern Nevada (Vegas) | Swiftly — same key as Miami-Dade once activated. |
 
+### Feed pace (measured 2026-11-21)
+
+How often each Live feed refreshes and how often its vehicles report GPS, measured over 4 minutes at 5 s polling (CIV-2073,
+logged at Ryan's request). Median/p90 in seconds. The recorder polls each feed at the slower of the two medians.
+
+| Agency | Feed refresh | Vehicle GPS | Recorder pace |
+|--------|--------------|-------------|---------------|
+| `ttc` | 30/40 | 31/35 | 30 s |
+| `yrt` | 15/15 | 35/37 | 30 s |
+| `burlington` | 30/30 | 30/31 | 30 s |
+| `halifax` | 15/15 | 30/33 | 30 s |
+| `edmonton` | 30/30 | 30/31 | 30 s |
+| `hamilton` | 60/60 | 61/66 | 60 s |
+| `sfmta` | ~60 (upper bound) | ~61 | 90 s, positions only (511 key limit: about 60 requests an hour; Ryan, 2026-11-21); 60 s with trip updates once 511 raises it (CIV-2074) |
+
+Not measured: `translink`, `stm` and `lacmta`. Their keys are not on the dev Mac, so those cities don't run locally.
+`kingston` and `mbta` are recorded but not in `LIVE_POLLING_ROUTES`, and their pace is not measured yet.
+
 Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues) are tracked in [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) § Feed issues, alongside static-feed quirks — one home for "this agency's feed is weird" rather than splitting live vs. static.
 
 ---

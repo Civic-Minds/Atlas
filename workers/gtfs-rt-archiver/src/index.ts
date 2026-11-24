@@ -18,6 +18,8 @@ import {
   LIVE_ARCHIVE_POSITION_FEEDS,
   LIVE_ARCHIVE_TRIP_FEEDS,
 } from '../../../shared/liveArchiveFeeds';
+import { liveRecorderFeed, type LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
+import { recordRun } from './v2';
 
 interface Env {
   BUCKET: R2Bucket;
@@ -467,34 +469,56 @@ async function archiveTrips(
 // Handler
 // ---------------------------------------------------------------------------
 
+type Shard = (typeof LIVE_ARCHIVE_SHARDS)[number];
+
+/** One shard's run: the v2 recorder at its agencies' pace slots, or the v1 archive (positions each minute, trips each fifth). */
+async function runShard(shard: Shard, env: Env, scheduledTime: number): Promise<PromiseSettledResult<string>[]> {
+  // CIV-2073: the v2 recorder shard polls its agencies at their own pace slots (src/v2.ts).
+  if ('v2Slugs' in shard) {
+    const feeds = shard.v2Slugs.map(liveRecorderFeed).filter((f): f is LiveRecorderFeed => f != null);
+    return recordRun(feeds, env as unknown as Parameters<typeof recordRun>[1], scheduledTime);
+  }
+
+  const now = new Date(scheduledTime);
+  const date = now.toISOString().slice(0, 10);
+  const ts = Math.floor(now.getTime() / 1000);
+  const positionFeeds = shard.positionSlugs
+    .map(slug => POSITION_FEEDS.find(feed => feed.slug === slug))
+    .filter((feed): feed is PositionFeedConfig => feed !== undefined);
+  const tripFeeds = shard.tripSlugs
+    .map(slug => FEEDS.find(feed => feed.slug === slug))
+    .filter((feed): feed is FeedConfig => feed !== undefined);
+
+  const positionResult = await Promise.allSettled([
+    ...positionFeeds.map(feed => archivePositions(feed, env, date, ts)),
+  ]);
+
+  // All shards fire every minute; trip updates keep the original 5-minute cadence.
+  const tripResults = now.getUTCMinutes() % 5 === 0
+    ? await Promise.allSettled(tripFeeds.map(feed => archiveTrips(feed, env, date, ts)))
+    : [];
+  return [...tripResults, ...positionResult];
+}
+
+/**
+ * CIV-2073: the shards one Worker runs. "all" (wrangler.recorder.toml, the one Worker the Workers Paid plan allows) runs
+ * every shard marked recording in shared/liveArchiveFeeds.ts; any other value runs that one shard (the free plan's split).
+ */
+export function shardsToRun(archiveShard: string): Shard[] {
+  if (archiveShard === ALL_SHARDS) return LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording);
+  return LIVE_ARCHIVE_SHARDS.filter(s => s.id === archiveShard);
+}
+export const ALL_SHARDS = 'all';
+
 export default {
   async scheduled(event: ScheduledEvent, env: Env): Promise<void> {
-    const shard = LIVE_ARCHIVE_SHARDS.find(candidate => candidate.id === env.ARCHIVE_SHARD);
-    if (!shard) {
+    const shards = shardsToRun(env.ARCHIVE_SHARD);
+    if (shards.length === 0 && env.ARCHIVE_SHARD !== ALL_SHARDS) {
       console.error(`unknown archive shard: ${env.ARCHIVE_SHARD}`);
       return;
     }
-
-    const now = new Date(event.scheduledTime);
-    const date = now.toISOString().slice(0, 10);
-    const ts = Math.floor(now.getTime() / 1000);
-    const positionFeeds = shard.positionSlugs
-      .map(slug => POSITION_FEEDS.find(feed => feed.slug === slug))
-      .filter((feed): feed is PositionFeedConfig => feed !== undefined);
-    const tripFeeds = shard.tripSlugs
-      .map(slug => FEEDS.find(feed => feed.slug === slug))
-      .filter((feed): feed is FeedConfig => feed !== undefined);
-
-    const positionResult = await Promise.allSettled([
-      ...positionFeeds.map(feed => archivePositions(feed, env, date, ts)),
-    ]);
-
-    // All shards fire every minute; trip updates keep the original 5-minute cadence.
-    const tripResults = now.getUTCMinutes() % 5 === 0
-      ? await Promise.allSettled(tripFeeds.map(feed => archiveTrips(feed, env, date, ts)))
-      : [];
-
-    for (const result of [...tripResults, ...positionResult]) {
+    const results = (await Promise.all(shards.map(shard => runShard(shard, env, event.scheduledTime)))).flat();
+    for (const result of results) {
       if (result.status === 'fulfilled') console.log(result.value);
       else console.error(result.reason);
     }

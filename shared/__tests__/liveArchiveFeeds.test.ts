@@ -80,7 +80,8 @@ describe('recording shards match the archiver Workers', () => {
     return [text.match(/ARCHIVE_SHARD = "([^"]+)"/)![1], /^\s*crons\s*=\s*\[\s*"/m.test(text)] as const;
   }));
   it('marks exactly the shards whose Worker has a cron trigger', () => {
-    for (const s of LIVE_ARCHIVE_SHARDS) expect(crons.get(s.id), s.id).toBe('recording' in s && s.recording === true);
+    // CIV-2073: a shard with no Worker of its own is run by the one recorder Worker (ARCHIVE_SHARD "all").
+    for (const s of LIVE_ARCHIVE_SHARDS) expect(crons.get(s.id) ?? crons.get('all') ?? false, s.id).toBe('recording' in s && s.recording === true);
   });
   it('gives every shard without a cron a pause date and reason, and none to a recording shard', () => {
     for (const s of LIVE_ARCHIVE_SHARDS) {

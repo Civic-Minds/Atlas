@@ -1,3 +1,5 @@
+import type { LiveHeadways, LiveRecord } from './liveJoin.js';
+
 /**
  * Versioned provider contract for Atlas live GTFS-RT snapshots.
  *
@@ -41,4 +43,23 @@ export interface LiveSnapshotEnvelope<T> {
   capturedAt: number;
   sourceTimestamp: number | null;
   records: T[];
+}
+
+/** CIV-2073: the cloud recorder's snapshot, one per agency per pace slot (shared/liveSlots.ts liveSlotKey), gzip-stored. */
+export const LIVE_SNAPSHOT_V2_SCHEMA_VERSION = 'atlas.live.v2';
+
+export interface LiveSnapshotV2 {
+  schemaVersion: typeof LIVE_SNAPSHOT_V2_SCHEMA_VERSION;
+  agency: string;
+  /** The pace slot (unix seconds) the snapshot was taken for: its key time. */
+  capturedAt: number;
+  /** The positions feed's header time, and the trip-updates feed's (null when not read). */
+  sourceTimestamp: number | null;
+  tripsTimestamp: number | null;
+  paceSec: number;
+  /** Whether trip updates were read (false for a positions-only agency or a failed trip feed): Live shows it as degraded. */
+  tripsOk: boolean;
+  /** Observed headways by Live's route short name where Live names the route, else by route_id. */
+  headways: LiveHeadways;
+  records: LiveRecord[];
 }

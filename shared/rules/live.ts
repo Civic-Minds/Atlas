@@ -102,6 +102,22 @@ export const LIVE_POLL_SEC = 15;
 export const LIVE_FEED_PACE_SEC: Readonly<Record<string, number>> = {
   ttc: 30, yrt: 30, burlington: 30, halifax: 30, edmonton: 30, hamilton: 60, sfmta: 90,
 };
+/**
+ * Agencies the recorder reads vehicle positions only for, no trip updates (CIV-2073, Ryan said "1" twice, knowing their
+ * cards then show no delay, destination or next stop): SF, to stay inside 511's ~60 requests an hour at 90 s. Revisit
+ * when 511 raises the limit (CIV-2074).
+ */
+export const LIVE_POSITIONS_ONLY_SLUGS: readonly string[] = ['sfmta'];
+/**
+ * CIV-2073 step B (Ryan, 2026-11-24): the routes the cloud recorder (atlas.live.v2) keeps for an agency, where they differ
+ * from its archive feed's route filter (shared/liveArchiveFeeds.ts). TTC: the routes Live analyses (the streetcars, and the
+ * Ten-Minute Network routes once CIV-2174 adds them to LIVE_TTC_ANALYSED_ROUTES), not the whole fleet; with trip updates.
+ */
+export const LIVE_RECORDER_ROUTE_IDS: Readonly<Record<string, readonly string[]>> = {
+  ttc: LIVE_TTC_ANALYSED_ROUTES,
+  // YRT: every Viva route (CIV-2176), not only the Blue Live shows; route ids from YRT's GTFS routes.txt, 2026-11-24.
+  yrt: ['601', '60102', '603', '60301', '605', '607'],
+};
 export const livePaceSec = (slug: string): number => LIVE_FEED_PACE_SEC[slug] ?? LIVE_POLL_SEC;
 /** Positions older than this many paces read as late (CIV-2084, Ryan: "within 2× the agency's pace"). */
 export const LIVE_STALE_PACES = 2;

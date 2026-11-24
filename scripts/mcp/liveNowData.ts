@@ -17,10 +17,27 @@ import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/clien
 import { datesForWindow } from '../../shared/liveArchive';
 import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG } from '../../shared/rules/live';
 import type { NowSnapshot, NowVehicle } from '../../shared/liveNow';
+import { asNowSnapshot, snapshotsBetween, type LiveStore } from '../../shared/liveSource';
+import { livePaceSec } from '../../shared/rules/live';
 
 export interface NowSource {
   /** Snapshots captured from `fromSec` to `toSec`, oldest first. */
   snapshots(slug: string, fromSec: number, toSec: number): Promise<NowSnapshot[]>;
+  /** CIV-2073: the store the recorder's v2 snapshots are read through (shared/liveSource.ts). */
+  store?: LiveStore;
+}
+
+/**
+ * CIV-2073: the recorder's v2 snapshots first, read by slot; the v1 positions only for the part of the window before the
+ * first v2 snapshot (until v1 data expires, 60 days after the switch).
+ */
+export function withV2(v1: NowSource['snapshots'], store: LiveStore): NowSource['snapshots'] {
+  return async (slug, fromSec, toSec) => {
+    const v2 = (await snapshotsBetween(store, slug, fromSec, toSec, livePaceSec(slug))).map(asNowSnapshot);
+    const firstV2 = v2[0]?.capturedAt ?? toSec + 1;
+    const older = firstV2 > fromSec ? (await v1(slug, fromSec, Math.min(toSec, firstV2 - 1))) : [];
+    return [...older, ...v2];
+  };
 }
 
 type Raw = { capturedAt?: number; ts?: number; records?: NowVehicle[]; vehicles?: NowVehicle[] };
@@ -29,8 +46,13 @@ const keySec = (name: string) => Number(name.match(/(\d+)\.json$/)?.[1] ?? NaN);
 const datesOf = (fromSec: number, toSec: number) => datesForWindow(toSec * 1000, Math.ceil((toSec - fromSec) / 60));
 
 export function folderNowSource(dir: string): NowSource {
+  const store: LiveStore = async key => (existsSync(join(dir, key)) ? new Uint8Array(readFileSync(join(dir, key))) : null);
+  return { store, snapshots: withV2(folderV1(dir), store) };
+}
+
+function folderV1(dir: string): NowSource['snapshots'] {
   return {
-    async snapshots(slug, fromSec, toSec) {
+    async snapshots(slug: string, fromSec: number, toSec: number) {
       const out: NowSnapshot[] = [];
       for (const date of datesOf(fromSec, toSec)) {
         const d = join(dir, 'positions', slug, date);
@@ -42,15 +64,22 @@ export function folderNowSource(dir: string): NowSource {
       }
       return out.sort((a, b) => a.capturedAt - b.capturedAt);
     },
-  };
+  }.snapshots;
 }
 
 export function r2NowSource(env: Record<string, string | undefined>): NowSource | null {
   const accountId = env.ATLAS_MCP_R2_READ_ACCOUNT_ID, accessKeyId = env.ATLAS_MCP_R2_READ_KEY_ID, secretAccessKey = env.ATLAS_MCP_R2_READ_SECRET;
   if (!accountId || !accessKeyId || !secretAccessKey) return null;
   const client = new S3Client({ region: 'auto', endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId, secretAccessKey } });
-  return {
-    async snapshots(slug, fromSec, toSec) {
+  // CIV-2073: v2 snapshots by key (GET only, never LIST); S3 hands back the stored gzip bytes as they are.
+  const store: LiveStore = async key => {
+    try {
+      const bucket = LIVE_ARCHIVE_BUCKET_BY_SLUG[key.split('/')[1]] ?? DEFAULT_LIVE_ARCHIVE_BUCKET;
+      return await (await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }))).Body!.transformToByteArray();
+    } catch { return null; }
+  };
+  const v1 = {
+    async snapshots(slug: string, fromSec: number, toSec: number) {
       const bucket = LIVE_ARCHIVE_BUCKET_BY_SLUG[slug] ?? DEFAULT_LIVE_ARCHIVE_BUCKET;
       const keys: string[] = [];
       for (const date of datesOf(fromSec, toSec)) {
@@ -67,18 +96,24 @@ export function r2NowSource(env: Record<string, string | undefined>): NowSource 
       return snaps.filter((s): s is NowSnapshot => s != null).sort((a, b) => a.capturedAt - b.capturedAt);
     },
   };
+  return { store, snapshots: withV2(v1.snapshots, store) };
 }
 
 /** The few calls route_now needs from an R2 bucket binding (a Worker's R2Bucket fits). */
 export interface NowBucket {
   list(o: { prefix: string; cursor?: string }): Promise<{ objects: Array<{ key: string }>; truncated: boolean; cursor?: string }>;
-  get(key: string): Promise<{ json<T>(): Promise<T> } | null>;
+  get(key: string): Promise<{ json<T>(): Promise<T>; arrayBuffer(): Promise<ArrayBuffer> } | null>;
 }
 
 /** The hosted server's reader (CIV-1870): the Live archive bucket through its Worker binding, read only. */
 export function bucketNowSource(bucket: NowBucket): NowSource {
-  return {
-    async snapshots(slug, fromSec, toSec) {
+  // CIV-2073: v2 snapshots by key through the binding, which hands back the stored gzip bytes as they are.
+  const store: LiveStore = async key => {
+    const obj = await bucket.get(key);
+    return obj ? new Uint8Array(await obj.arrayBuffer()) : null;
+  };
+  const v1 = {
+    async snapshots(slug: string, fromSec: number, toSec: number) {
       const keys: string[] = [];
       for (const date of datesOf(fromSec, toSec)) {
         let cursor: string | undefined;
@@ -94,6 +129,7 @@ export function bucketNowSource(bucket: NowBucket): NowSource {
       return snaps.filter((s): s is NowSnapshot => s != null).sort((a, b) => a.capturedAt - b.capturedAt);
     },
   };
+  return { store, snapshots: withV2(v1.snapshots, store) };
 }
 
 const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};

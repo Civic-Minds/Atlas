@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parseTripUpdates, parseVehiclePositions } from './index';
+import { parseTripUpdates, parseVehiclePositions, shardsToRun } from './index';
+import { LIVE_ARCHIVE_SHARDS } from '../../../shared/liveArchiveFeeds';
 
 function varint(value: number): Uint8Array {
   const bytes: number[] = [];
@@ -102,5 +103,16 @@ describe('gtfs-rt-archiver trip parser', () => {
         t: 1_700_000_000,
       },
     ]);
+  });
+});
+
+describe('one recorder Worker (CIV-2073)', () => {
+  it('runs every recording shard under "all", and one shard by its id', () => {
+    const recording = LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).map(s => s.id);
+    expect(shardsToRun('all').map(s => s.id)).toEqual(recording);
+    // Step A: the canary Worker runs the live-v2 shard alone.
+    expect(shardsToRun('live-v2').map(s => s.id)).toEqual(['live-v2']);
+    expect(shardsToRun('hamilton').map(s => s.id)).toEqual(['hamilton']);
+    expect(shardsToRun('nope')).toEqual([]);
   });
 });

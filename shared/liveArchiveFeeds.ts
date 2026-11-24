@@ -57,7 +57,7 @@ export const LIVE_ARCHIVE_SHARDS = [
   { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], recording: true },
   { id: 'ttc-trips', positionSlugs: [], tripSlugs: ['ttc'], paused: FIVE_CRON_PAUSE },
   { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'], recording: true },
-  { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'], paused: FIVE_CRON_PAUSE },
+  { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'], paused: { since: '2026-11-24', reason: 'Needs an STM developer key; dropped 2026-11-24' } },
   {
     id: 'burlington-halifax',
     positionSlugs: ['burlington', 'halifax'],
@@ -68,6 +68,15 @@ export const LIVE_ARCHIVE_SHARDS = [
   { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
   // Boston's MBTA (CIV-1930, Ryan): positions only, recorded for analysis (not a Live agency yet). Green Line, Silver Line, Mattapan Line and buses 23, 57, 66 and 111.
   { id: 'mbta', positionSlugs: ['mbta'], tripSlugs: [], recording: true },
+  // CIV-2073: the cloud recorder (atlas.live.v2, workers/gtfs-rt-archiver/src/v2.ts, run by wrangler.recorder.toml), Hamilton first as the canary. Its
+  // feeds and paces come from shared/liveRecorderFeeds.ts.
+  {
+    // Recording since 2026-11-23 (Ryan: "Yes" to the Hamilton canary): atlas-live-recorder, wrangler.recorder.toml.
+    // Step B (Ryan approved 2026-11-24): TTC with its trip updates, Kingston, MBTA, YRT's Viva, DRT's 9XX and Brampton's 5XX join
+    // (Montréal dropped 2026-11-24). Their v1 shards keep
+    // recording until the readers of positions/ move to v2; Burlington and Halifax stay paused.
+    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton'], recording: true,
+  },
 ] as const;
 
 /**
@@ -77,6 +86,12 @@ export const LIVE_ARCHIVE_SHARDS = [
 export const RECORDING_SLUGS: readonly string[] = [...new Set(
   LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).flatMap(s => [...s.positionSlugs, ...s.tripSlugs]),
 )];
+
+/**
+ * CIV-2073: the agencies the cloud recorder covers now: in a v2 shard that is recording. Live reads these from the
+ * recorder instead of polling the agency's feed itself.
+ */
+export const RECORDER_SLUGS: readonly string[] = LIVE_ARCHIVE_SHARDS.flatMap(s => ('v2Slugs' in s && 'recording' in s && s.recording ? [...s.v2Slugs] : []));
 
 /** A feed's recording state, from its shards: recording when any shard carrying it records, else paused with the latest pause. */
 export type LiveFeedStatus = { status: 'recording' } | { status: 'paused'; since: string; reason: string } | { status: 'not archived' };
@@ -159,3 +174,25 @@ export const LIVE_MAP_ARCHIVE_FEEDS: readonly LiveArchivePositionFeed[] = LIVE_A
 
 /** The Live agencies whose vehicle locations the map credits to MassDOT while they are on screen. */
 export const MASSDOT_CREDITED_SLUGS: ReadonlySet<string> = new Set(LIVE_MAP_ARCHIVE_FEEDS.filter(f => f.creditMassDot).map(f => f.slug));
+
+/**
+ * CIV-2073 step B (Ryan, 2026-11-24): agencies only the cloud recorder (atlas.live.v2) polls, with no v1 archive shard and
+ * no Live map entry. Route ids from each agency's GTFS routes.txt, 2026-11-24.
+ */
+export interface LiveRecorderOnlyFeed { slug: string; positionsUrl: string; tripsUrl: string; routeFilterSource: string }
+export const LIVE_RECORDER_ONLY_FEEDS: readonly LiveRecorderOnlyFeed[] = [
+  // Durham Region Transit's 9XX routes (PULSE 900, 901, 915, 916 and routes 902, 905, 917, 920, 921), from DRT's open feed.
+  {
+    slug: 'drt',
+    positionsUrl: 'https://drtonline.durhamregiontransit.com/gtfsrealtime/VehiclePositions',
+    tripsUrl: 'https://drtonline.durhamregiontransit.com/gtfsrealtime/TripUpdates',
+    routeFilterSource: '^9\\d\\d$',
+  },
+  // Brampton Transit's 5XX Züm routes (501, 502, 505, 511, 561), from the open feeds on geohub.brampton.ca/pages/brampton-transit.
+  {
+    slug: 'brampton',
+    positionsUrl: 'https://gtfs-rt-merge.prod.bt-cadavl.com/BramptonTransit/GTFS/merged_VehiclePosition.pb',
+    tripsUrl: 'https://gtfs-rt-merge.prod.bt-cadavl.com/BramptonTransit/GTFS/merged_TripUpdate.pb',
+    routeFilterSource: '^5\\d\\d$',
+  },
+];
