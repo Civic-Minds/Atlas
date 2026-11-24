@@ -765,11 +765,19 @@ export function cornerSeeds<S extends { name: string; lat: number; lon: number }
   return { stops: [...new Set(close.flatMap(p => [p.x, p.y]))], apart: Math.round(best) };
 }
 
+/**
+ * The stops whose names hold every part of a place. #1773: each name is read the way the parts are (hyphens and accents
+ * folded), so "Lionel-Groulx" and "YUL Aeroport Montreal-Trudeau" find STM's stations.
+ */
+export function stopsNamed<S extends { name: string }>(stops: S[], parts: string[]): S[] {
+  return stops.filter(s => { const n = stopMatchText(s.name); return parts.every(p => n.includes(p)); });
+}
+
 /** The stops a place names: every stop whose name holds each part, else the closest pair on each street of a corner. routes_near and on_demand_zones both place a corner this way. */
 export async function placeStops(agency: CatalogAgency, place: string) {
   const parts = placeParts(place);
   const stops = await stopsOf(agency);
-  const named = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
+  const named = stopsNamed(stops, parts);
   const corner = named.length ? null : cornerSeeds(stops, parts);
   return { stops, seeds: corner ? corner.stops : named, corner };
 }

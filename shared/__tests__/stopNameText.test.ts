@@ -5,6 +5,9 @@ describe('stop name matching text (CIV-1864)', () => {
   it('reads Stn and St the long way and drops punctuation', () => {
     expect(stopMatchText('Finch Stn - Bay 3')).toBe('finch station bay 3');
     expect(stopMatchText('King St. W')).toBe('king street w');
+    // #1773: accents fold to their letters, hyphens to spaces.
+    expect(stopMatchText('YUL Aéroport Montréal-Trudeau')).toBe('yul aeroport montreal trudeau');
+    expect(stopMatchText('Station Lionel-Groulx')).toBe('station lionel groulx');
   });
   it('splits a corner into its streets', () => {
     expect(placeParts('Bathurst and Bloor')).toEqual(['bathurst', 'bloor']);
