@@ -660,6 +660,11 @@ export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren�
 export const LIVE_UNABLE_TO_LOAD = 'Unable to load';
 export const liveRetryCountdown = (seconds: number) => `Retrying in ${seconds}s`;
 export const liveUnableToLoadPill = (seconds: number) => `${LIVE_UNABLE_TO_LOAD} · ${liveRetryCountdown(seconds)}`;
+/** CIV-2084 (Ryan picked 1): the Live status pill's words, by state. */
+export const LIVE_FEED_STATE_LABEL = { live: 'Live', delayed: 'Delayed', unavailable: 'Unavailable' } as const;
+/** Its hover, one line per agency in view (proposed wording, not yet Ryan's): "TTC: positions last came in at 9:42 PM". */
+export const livePositionsLastText = (agencyName: string, time: string | null) =>
+  time ? `${agencyName}: positions last came in at ${time}` : `${agencyName}: no positions right now`;
 /** Some feeds in view failed while others work: "Live vehicles from TTC and YRT can't be shown right now." (CIV-941 #57; "vehicles", as Live tracks streetcars too). */
 export const liveUnreachableText = (agencyNames: readonly string[]) => `Live vehicles from ${joinList(agencyNames)} can’t be shown right now.`;
 export const LIVE_NO_WEEK_COMPARISON = 'No comparison with last week';

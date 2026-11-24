@@ -189,10 +189,18 @@ export function coveredRoutesText(/** The agency's short name (useLiveAgencyName
  * were last built. It sits in the About panel beside the schedule refresh line (CIV-1814 item 41, Ryan: "put into the about
  * area similar to how the last date GTFS was updated is"; was "Built Oct 16, 6:12 PM" in each page's method section).
  */
-export function figuresUpdatedText(iso: string): string {
+/** "Nov 21, 14:05" in Toronto time: when Live's figures were built. */
+function figuresBuiltAt(iso: string): string {
   const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date(iso));
   const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
-  return `Figures updated ${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
+  return `${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
+}
+export function figuresUpdatedText(iso: string): string {
+  return `Figures updated ${figuresBuiltAt(iso)}`;
+}
+/** CIV-2084 (Ryan's words): the Live status pill's hover line for when Live's figures were built. */
+export function liveFiguresUpdatedText(iso: string): string {
+  return `Live figures updated ${figuresBuiltAt(iso)}`;
 }
 
 /** The heading at the foot of every Live page (MethodFootnote), and the name its draw error uses. */

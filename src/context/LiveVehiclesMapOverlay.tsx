@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import type { LiveAgencyFeed } from '../../shared/liveStatus';
 import type { MapFocus } from '../utils/routeFocus';
 import type { UpcomingStop } from '../../shared/livePatterns';
 
@@ -65,8 +66,14 @@ const LiveVehiclesMapOverlayContext = createContext<ContextValue | null>(null);
  * has failed, the time of Live's next try (epoch ms), for the map's loading pill. Its own context, so a
  * tick doesn't redraw the vehicle layer.
  */
-interface LiveFeedsDownValue { retryAt: number | null; setRetryAt: (at: number | null) => void }
-const LiveFeedsDownContext = createContext<LiveFeedsDownValue>({ retryAt: null, setRetryAt: () => {} });
+interface LiveFeedsDownValue {
+  retryAt: number | null;
+  setRetryAt: (at: number | null) => void;
+  /** CIV-2084: the agencies in view as Live last polled them, for the status pill; null while Live is closed. */
+  feeds: readonly LiveAgencyFeed[] | null;
+  setFeeds: (feeds: readonly LiveAgencyFeed[] | null) => void;
+}
+const LiveFeedsDownContext = createContext<LiveFeedsDownValue>({ retryAt: null, setRetryAt: () => {}, feeds: null, setFeeds: () => {} });
 export const useLiveFeedsDown = () => useContext(LiveFeedsDownContext);
 
 export function LiveVehiclesMapOverlayProvider({ children }: { children: React.ReactNode }) {
@@ -74,7 +81,8 @@ export function LiveVehiclesMapOverlayProvider({ children }: { children: React.R
   const setOverlay = useCallback((o: LiveVehiclesMapOverlay | null) => setOverlayState(o), []);
   const value = useMemo(() => ({ overlay, setOverlay }), [overlay, setOverlay]);
   const [retryAt, setRetryAt] = useState<number | null>(null);
-  const feedsDown = useMemo(() => ({ retryAt, setRetryAt }), [retryAt]);
+  const [feeds, setFeeds] = useState<readonly LiveAgencyFeed[] | null>(null);
+  const feedsDown = useMemo(() => ({ retryAt, setRetryAt, feeds, setFeeds }), [retryAt, feeds]);
   return (
     <LiveVehiclesMapOverlayContext.Provider value={value}>
       <LiveFeedsDownContext.Provider value={feedsDown}>

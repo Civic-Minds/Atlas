@@ -533,10 +533,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>
-              {/* CIV-1814 item 41 (Ryan: "put into the about area similar to how the last date GTFS was updated is"). */}
-              {liveFiguresUpdated && (
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed">{figuresUpdatedText(liveFiguresUpdated)}</p>
-              )}
+              {/* CIV-2084: when Live's figures were built is in the Live status pill's hover now, not here. */}
             </div>
           )}
 
