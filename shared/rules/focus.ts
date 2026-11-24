@@ -15,7 +15,7 @@ export interface FocusArea {
 }
 
 export const FOCUS_AREAS: readonly FocusArea[] = [
-  { slug: 'greater-golden-horseshoe', name: 'Greater Golden Horseshoe', agencies: ['ttc', 'hamilton', 'burlington', 'brampton', 'miway', 'godurham', 'yrt', 'grt', 'go'] },
+  { slug: 'greater-golden-horseshoe', name: 'Greater Golden Horseshoe', agencies: ['ttc', 'hamilton', 'burlington', 'brampton', 'miway', 'drt', 'yrt', 'grt', 'go'] },
   { slug: 'kingston', name: 'Kingston', agencies: ['kingston'] },
   { slug: 'denver', name: 'Denver', agencies: ['rtd-denver'] },
   { slug: 'guelph', name: 'A small Ontario city (Guelph)', agencies: ['guelph'] },

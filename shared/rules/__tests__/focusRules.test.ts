@@ -11,6 +11,15 @@ describe('the focus list (CIV-1866)', () => {
     expect(isFocusAgency('bustang')).toBe(false);
   });
 
+  it("lists the Greater Golden Horseshoe's own agencies, all in Ontario (#1742: GoDurham, North Carolina, stood in for Durham Region Transit)", () => {
+    const ggh = FOCUS_AREAS.find(a => a.slug === 'greater-golden-horseshoe')!;
+    for (const slug of ggh.agencies) {
+      const region = (JSON.parse(readFileSync(`config/agencies/${slug}.json`, 'utf8')) as { region?: string }).region;
+      expect(region, slug).toBe('Ontario');
+    }
+    expect(ggh.agencies).toContain('drt');
+  });
+
   it('holds every product list inside the focus areas', () => {
     for (const [product, slugs] of Object.entries(PRODUCT_FOCUS)) {
       for (const slug of slugs) expect(isFocusAgency(slug), `${product}: ${slug}`).toBe(true);
