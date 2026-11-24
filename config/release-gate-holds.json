@@ -1,0 +1,380 @@
+{
+  "version": 1,
+  "holds": [
+    {
+      "slug": "bustang",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "output would drop sharply against live data (stopPoints 65 -> 47) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "coast-nh",
+      "check": "day-lost",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "no route lines on Sunday now (Sunday 1 -> 0)",
+      "outcome": "held"
+    },
+    {
+      "slug": "coralville",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "output would drop sharply against live data (stopPoints 117 -> 81) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "evansville",
+      "check": "day-lost",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "no route lines on Sunday now (Sunday 6 -> 0)",
+      "outcome": "held"
+    },
+    {
+      "slug": "evansville",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "output would drop sharply against live data (stops 373 -> 0) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "lake-charles",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "5 of 5 routes' filter headway halves or doubles in some day and period (100%; 1 Weekday midday 60->120 min, 2 Weekday midday 60->120 min, 3 Weekday midday 60->120 min, 4 Weekday midday 60->120 min, 5 Weekday midday 60->120 min)",
+      "outcome": "held",
+      "cause": "real change: likely a midday cut, 60 to 120 min on all 5 routes"
+    },
+    {
+      "slug": "max-transit",
+      "check": "expired",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-02",
+      "runs": 1,
+      "message": "service ended 20250531, before today (20261102)",
+      "outcome": "held"
+    },
+    {
+      "slug": "njt",
+      "check": "duplicate",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-03",
+      "runs": 2,
+      "message": "route output is 93% the same as njt-bus (route IDs and shape endpoints)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-03"
+    },
+    {
+      "slug": "scat",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "output would drop sharply against live data (routes 20 -> 15) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "simi-valley",
+      "check": "expired",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 5,
+      "message": "service ended 20230601, before today (20261101)",
+      "outcome": "held"
+    },
+    {
+      "slug": "siskiyou",
+      "check": "headway-lost",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "3 of 4 weekday route/directions with a headway live have none now (75%; 10985 d1, 32882 d0, 32882 d1)",
+      "outcome": "held"
+    },
+    {
+      "slug": "snowmass-village",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-13",
+      "runs": 5,
+      "message": "output would drop sharply against live data (stops 38 -> 27, stopPoints 41 -> 27, routes 2 -> 1) (pass --allow-drop after review)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-13"
+    },
+    {
+      "slug": "southportlandme",
+      "check": "duplicate",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 18,
+      "message": "route output is identical to portlandme",
+      "outcome": "held",
+      "cause": "broken feed: same feed as portlandme, live headways of 840 min"
+    },
+    {
+      "slug": "southportlandme",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 18,
+      "message": "10 of 15 routes' filter headway halves or doubles in some day and period (67%; 1 Weekday amPeak 170->30 min, 2 Weekday all 840->90 min, 24A Weekday all 840->122 min, 3 Weekday amPeak 140->63 min, 4 Weekday all 135->30 min, 5 Weekday all 495->30 min, ...)",
+      "outcome": "held",
+      "cause": "broken feed: same feed as portlandme, live headways of 840 min"
+    },
+    {
+      "slug": "st-george",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-06",
+      "runs": 3,
+      "message": "4 of 8 routes' filter headway halves or doubles in some day and period (50%; 10 Saturday amPeak 80->40 min, 2 Saturday amPeak 80->40 min, 26 Saturday amPeak 95->40 min, 28 Saturday amPeak 94->40 min)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-06",
+      "cause": "real change: service increase, 80 to 40 min"
+    },
+    {
+      "slug": "start",
+      "check": "duplicate",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "route output is identical to modesto",
+      "outcome": "held"
+    },
+    {
+      "slug": "stl",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "output would drop sharply against live data (stopPoints 5689 -> 2845) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "whitehorse",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-02",
+      "runs": 1,
+      "message": "3 of 6 routes' filter headway halves or doubles in some day and period (50%; TL-46 Weekday amPeak 20->76 min, TL-47 Sunday amPeak 180->30 min, TL-51 Weekday midday 30->60 min)",
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-09",
+      "cause": "seasonal: likely a fall/winter schedule change"
+    },
+    {
+      "slug": "wilmington-nc",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-02",
+      "runs": 1,
+      "message": "output would drop sharply against live data (routes 17 -> 10) (pass --allow-drop after review)",
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-02"
+    },
+    {
+      "slug": "wvu-prt",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "output would drop sharply against live data (routes 20 -> 1) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "wvu-prt",
+      "check": "mode-lost",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "loses Tram/Light Rail (live Tram/Light Rail; new Commuter Rail)",
+      "outcome": "held"
+    },
+    {
+      "slug": "ycat",
+      "check": "day-lost",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "no route lines on Sunday now (Sunday 12 -> 0)",
+      "outcome": "held"
+    },
+    {
+      "slug": "ycat",
+      "check": "drop",
+      "firstHeld": "2026-11-02",
+      "lastHeld": "2026-11-23",
+      "runs": 4,
+      "message": "output would drop sharply against live data (stops 174 -> 68) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "carta",
+      "check": "drop",
+      "firstHeld": "2026-11-06",
+      "lastHeld": "2026-11-07",
+      "runs": 3,
+      "message": "output would drop sharply against live data (routes 38 -> 23) (pass --allow-drop after review)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-07"
+    },
+    {
+      "slug": "tulsa-transit",
+      "check": "drop",
+      "firstHeld": "2026-11-06",
+      "lastHeld": "2026-11-07",
+      "runs": 3,
+      "message": "output would drop sharply against live data (stopPoints 1521 -> 1191) (pass --allow-drop after review)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-07"
+    },
+    {
+      "slug": "tank",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-07",
+      "lastHeld": "2026-11-10",
+      "runs": 5,
+      "message": "4 of 12 routes' filter headway halves or doubles in some day and period (33%; 1 Weekday evening 60->30 min, 12 Weekday all 60->30 min, 3 Weekday all 60->30 min, 7 Weekday all 60->30 min)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-10",
+      "cause": "real change: service increase, 60 to 30 min"
+    },
+    {
+      "slug": "jta",
+      "check": "mode-lost",
+      "firstHeld": "2026-11-09",
+      "lastHeld": "2026-11-10",
+      "runs": 3,
+      "message": "loses Ferry, Subway/Metro (live Bus, Ferry, Subway/Metro; new Bus)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-10"
+    },
+    {
+      "slug": "moorpark",
+      "check": "drop",
+      "firstHeld": "2026-11-09",
+      "lastHeld": "2026-11-23",
+      "runs": 2,
+      "message": "output would drop sharply against live data (stopPoints 52 -> 34) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "njt",
+      "check": "duplicate",
+      "firstHeld": "2026-11-09",
+      "lastHeld": "2026-11-10",
+      "runs": 3,
+      "message": "route output is 93% the same as njt-bus (route IDs and shape endpoints)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-10"
+    },
+    {
+      "slug": "njt-bus",
+      "check": "duplicate",
+      "firstHeld": "2026-11-10",
+      "lastHeld": "2026-11-10",
+      "runs": 1,
+      "message": "route output is 93% the same as njt (route IDs and shape endpoints)",
+      "outcome": "let-through",
+      "outcomeOn": "2026-11-10"
+    },
+    {
+      "slug": "whistler",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-16",
+      "lastHeld": "2026-11-16",
+      "runs": 1,
+      "message": "3 of 9 routes' filter headway halves or doubles in some day and period (33%; 31-WHI Weekday all 41->19 min, 5-WHI Weekday all 30->14 min, 7-WHI Weekday evening 30->15 min)",
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-23",
+      "cause": "seasonal: ski season"
+    },
+    {
+      "slug": "ncsu-wolfline",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "5 of 7 routes' filter headway halves or doubles in some day and period (71%; 5639 Weekday evening 25->71 min, 5641 Weekday all 13->26 min, 5644 Weekday pmPeak 8->30 min, 5645 Weekday all 14->28 min, 5646 Weekday all 18->36 min)",
+      "outcome": "held",
+      "cause": "seasonal: likely Thanksgiving break service"
+    },
+    {
+      "slug": "rfta",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "5 of 12 routes' filter headway halves or doubles in some day and period (42%; BRT Weekday all 30->15 min, CM Weekday amPeak 67->20 min, HC Weekday amPeak 72->20 min, MV Weekday amPeak 78->30 min, SM Saturday amPeak 70->32 min)",
+      "outcome": "held",
+      "cause": "seasonal: ski season (allowed in run 45407022151, 2026-11-24)"
+    },
+    {
+      "slug": "rtcsnv",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "12 of 39 routes' filter headway halves or doubles in some day and period (31%; 4743 Weekday amPeak 30->61 min, 4744 Weekday amPeak 15->30 min, 4745 Weekday amPeak 20->97 min, 4751 Weekday amPeak 20->59 min, 4756 Weekday amPeak 15->69 min, 4762 Weekday midday 30->97 min, ...)",
+      "outcome": "held",
+      "cause": "holiday weekday: likely a Thanksgiving-week weekday picked as the reference day"
+    },
+    {
+      "slug": "tarc",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "6 of 12 routes' filter headway halves or doubles in some day and period (50%; 1 Weekday amPeak 15->64 min, 10 Weekday amPeak 15->30 min, 20 Weekday amPeak 30->62 min, 3 Weekday amPeak 15->60 min, 5 Weekday amPeak 30->60 min, 8 Weekday amPeak 30->60 min)",
+      "outcome": "held",
+      "cause": "holiday weekday: likely a Thanksgiving-week weekday picked as the reference day"
+    },
+    {
+      "slug": "unitrans",
+      "check": "drop",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "output would drop sharply against live data (stops 71 -> 49) (pass --allow-drop after review)",
+      "outcome": "held"
+    },
+    {
+      "slug": "unitrans",
+      "check": "headway-lost",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "28 of 34 weekday route/directions with a headway live have none now (82%; A d0, A d1, B d0, B d1, C d0, C d1, D d0, D d1, E d0, E d1, ...)",
+      "outcome": "held"
+    },
+    {
+      "slug": "unitrans",
+      "check": "headway-shift",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "4 of 7 routes' filter headway halves or doubles in some day and period (57%; K Weekday all 30->60 min, M Weekday pmPeak 25->60 min, P Weekday all 30->60 min, Q Weekday all 30->60 min)",
+      "outcome": "held",
+      "cause": "seasonal: likely Thanksgiving break service"
+    },
+    {
+      "slug": "whitman-county",
+      "check": "drop",
+      "firstHeld": "2026-11-23",
+      "lastHeld": "2026-11-23",
+      "runs": 1,
+      "message": "output would drop sharply against live data (routes 8 -> 6) (pass --allow-drop after review)",
+      "outcome": "held"
+    }
+  ]
+}

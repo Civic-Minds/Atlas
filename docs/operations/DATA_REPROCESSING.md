@@ -135,3 +135,7 @@ npm run release-diff -- --new-dir tmp/derived-reprocess --archive-dir <dir of <s
 npm run release-diff -- --new-release <releaseId>   # an uploaded release, before publish-data-release
 ```
 
+
+### Hold log (CIV-2312)
+
+Every red flag a run raises is kept in `config/release-gate-holds.json` (`pipeline/gateHoldLog.ts`), so the checks can be tuned from how often they were right. `refresh` and `reprocess-derived-artifacts --write` update it after each gate run, and their automated pull requests carry it to main; dry runs never touch it. One entry per hold (agency, check, first and last day held, runs, the gate's message), with an outcome that fills in by itself: `let-through` when a run passes `--allow <slug>:<check>` for it (a rerun with the same allow within 7 days is the same hold), `cleared` when a later run gates the agency again and the check no longer fires, `held` until then. The chat that reviews a hold (when it passes `--allow` or files the feed bug) adds `cause`: a kind, a colon, then detail, for example `"seasonal: ski season"`. The kinds are seasonal, holiday weekday, real change, broken feed and pipeline bug. `npx tsx scripts/gate-holds-tally.ts --month YYYY-MM` prints each check's holds, outcomes and cause kinds for a month. The log was seeded from the refresh logs of 2026-11-02 to 11-23.

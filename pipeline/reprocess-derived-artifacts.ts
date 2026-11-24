@@ -53,6 +53,7 @@
  * it was rebuilt from (refresh's placeholder cap applies), so publish and the
  * expired notice read the right date (#837). Commit those files after the run.
  */
+import { logGateRun } from './gateHoldLog.js';
 import { futureFeedHoldUntil, startedArchiveInstead } from './futureFeedHold.js';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -366,6 +367,8 @@ async function gateProcessedRows(rows: ReportRow[], registry: Agency[]): Promise
   const result = applyOverrides(flags, overrides);
   const report = buildGateReport(gateRunId(writeToR2 ? 'reprocess' : 'reprocess-dry'), 'reprocess-derived-artifacts', processed.map(row => row.slug), overrides, result);
   console.log(`\n${formatGateSummary(report, writeGateReport(report))}`);
+  // CIV-2312: a publish's holds go in the committed log its metadata pull request carries; a dry run's never do.
+  if (writeToR2) logGateRun(report);
   for (const row of processed) {
     const reason = blockReason(row.slug, result);
     if (!reason) continue;
