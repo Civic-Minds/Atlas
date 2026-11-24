@@ -241,5 +241,8 @@
     "South Lake Union Streetcar": ["98", "Stcr SLU"],
     "First Hill Streetcar": ["Stcr FHS"],
     "Valley Shuttle": ["629", "SVT"]
+  },
+  "gcrta": {
+    "HL": ["HealthLine"]
   }
 }
