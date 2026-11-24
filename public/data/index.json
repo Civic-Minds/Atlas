@@ -17023,7 +17023,6 @@
         "Fort Lauderdale, Florida"
       ],
       "timezone": "America/New_York",
-      "hiddenInProduction": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
       "lastFeedCheckAt": "20261124",
