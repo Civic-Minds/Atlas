@@ -48,6 +48,13 @@ export const LIVE_STUDIO_MIN_RECORDED_DAYS = 7;
 export const LIVE_WINDOW_DAYS = 7;
 
 /**
+ * The TTC routes Live analyses (the streetcars, as of 2026-11-23; CIV-2174 will add the Ten-Minute Network routes here).
+ * The one list: the cloud's Studio build reads it (scripts/studio-live-cloud.ts); live-analyze.sh and
+ * live-report-refresh.yml keep shell copies, which liveRules.test.ts checks against it.
+ */
+export const LIVE_TTC_ANALYSED_ROUTES: readonly string[] = ['501', '503', '504', '505', '506', '507', '509', '510', '511', '512'];
+
+/**
  * Two stop ids are one place when they are under this far apart: the Live analysis ranks a stop listed twice in a row
  * once (TTC 501 "Queen St East at Parliament St" then "QUEEN ST. E. AT PARLIAMENT AVE.", 16 m apart), and CIV-2047 takes
  * a trip update's stop for an analysis stop of the same name under it (the two key stops differently, GTFS id vs public

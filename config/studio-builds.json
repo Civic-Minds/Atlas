@@ -1,0 +1,106 @@
+{
+  "_comment": "CIV-1974: Atlas Studio's buses-needed and schedule-change files, built in the cloud rebuild (scripts/studio-builds.ts). Each feed is an archived zip (archive: its name under gtfs/archive/<slug>/) or a MobilityDatabase dataset (mdb: its id). anchor is the rider-week anchor for buses needed; before and after are the comparison's two schedules, each read on its date (YYYYMMDD). Today's values are the ones Studio's files were built with on this Mac. dryRunOnly: built in the rebuild's dry run only (its files are reported, never published) until Ryan OKs its values.",
+  "agencies": {
+    "guelph": {
+      "vehicles": {
+        "feed": { "archive": "20270102-e0355092013a310b" },
+        "anchor": "20261121"
+      },
+      "before": {
+        "feed": { "mdb": "mdb-3140-202605111616" },
+        "date": "20260422"
+      },
+      "after": {
+        "feed": { "archive": "20270102-e0355092013a310b" },
+        "date": "20261118"
+      }
+    },
+    "hamilton": {
+      "vehicles": {
+        "feed": { "archive": "20261226-eaf4e760f7d15362" },
+        "anchor": "20261121"
+      },
+      "before": {
+        "feed": { "mdb": "mdb-2618-202606160002" },
+        "date": "20260819"
+      },
+      "after": {
+        "feed": { "archive": "20261226-eaf4e760f7d15362" },
+        "date": "20261118"
+      },
+      "dryRunOnly": true
+    },
+    "kingston": {
+      "vehicles": {
+        "feed": { "archive": "20271115-d9ac3c697d060b79" },
+        "anchor": "20261121"
+      },
+      "before": {
+        "feed": { "archive": "20270913-b395de44f468b779" },
+        "date": "20260923"
+      },
+      "after": {
+        "feed": { "archive": "20271115-d9ac3c697d060b79" },
+        "date": "20261118"
+      },
+      "dryRunOnly": true
+    },
+    "mbta": {
+      "vehicles": {
+        "feed": { "archive": "20261212-0e3f94392f9611e5" },
+        "anchor": "20261121"
+      },
+      "before": {
+        "feed": { "archive": "20261212-a5ffebba72ca444e" },
+        "date": "20260930"
+      },
+      "after": {
+        "feed": { "archive": "20261212-0e3f94392f9611e5" },
+        "date": "20261104"
+      }
+    },
+    "rtd-denver": {
+      "vehicles": {
+        "feed": { "archive": "20270102-c4e8dd19fb780f18" },
+        "anchor": "20261121"
+      },
+      "before": {
+        "feed": { "mdb": "mdb-178-202608200126" },
+        "date": "20260819"
+      },
+      "after": {
+        "feed": { "archive": "20270102-c4e8dd19fb780f18" },
+        "date": "20261118"
+      }
+    },
+    "ttc": {
+      "vehicles": {
+        "feed": { "archive": "20261219-a2c8d495bf7b06fe" },
+        "anchor": "20261121"
+      },
+      "before": {
+        "feed": { "archive": "20261031-79294c53420b9859" },
+        "date": "20261021"
+      },
+      "after": {
+        "feed": { "archive": "20261219-a2c8d495bf7b06fe" },
+        "date": "20261118"
+      },
+      "dryRunOnly": true
+    },
+    "yrt": {
+      "vehicles": {
+        "feed": { "mdb": "mdb-728-202611170126" },
+        "anchor": "20261121"
+      },
+      "before": {
+        "feed": { "mdb": "mdb-728-202610160002" },
+        "date": "20261007"
+      },
+      "after": {
+        "feed": { "mdb": "mdb-728-202611170126" },
+        "date": "20261111"
+      }
+    }
+  }
+}

@@ -1,10 +1,9 @@
 /**
  * Local proof of concept: serves precomputed "where vehicles lose time"
  * stats (scripts/live-segment-delay.ts) for a live route. Data lives on
- * local disk only (LIVE_SEGMENTS_DIR, default ../_live-data/out).
+ * the cloud's published files, or LIVE_SEGMENTS_DIR when set (local-api/liveFiles.ts, CIV-2186).
  */
-import { readFile, readdir } from 'fs/promises';
-import { resolve } from 'path';
+import { liveFiles } from './liveFiles.js';
 import { getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
 
 function json(body: unknown, status = 200): Response {
@@ -21,14 +20,15 @@ async function handler(req: Request): Promise<Response> {
   if (!agency || !route) return json({ error: 'agency and route are required' }, 400);
   // Whitelist: a configured live route, or a route whose analysis file is in the folder listing (CIV-1828: Studio's
   // agencies). Only a name found in the listing reaches the filesystem, never the request's text.
-  const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
+  const files = liveFiles();
   const cfg = getPolledRoute(agency, route);
   const configured = cfg && hasLiveAnalysis(cfg.slug, cfg.displayRouteShortName) ? `${cfg.slug}-${cfg.displayRouteShortName}-segments.json` : null;
-  const listed = (await readdir(dir).catch(() => [] as string[])).find(f => f === `${agency.toLowerCase()}-${route}-segments.json`);
+  const listed = (await files.list()).find(f => f === `${agency.toLowerCase()}-${route}-segments.json`);
   const file = configured ?? listed;
   if (!file) return json({ noData: true });
   try {
-    const raw = await readFile(resolve(dir, file), 'utf8');
+    const raw = await files.read(file);
+    if (raw == null) return json({ noData: true });
     // ?fields=segments: only what the time-loss views read (Studio's Live page loads every route of an agency at once).
     if (params.get('fields') === 'segments') {
       const d = JSON.parse(raw) as Record<string, unknown>;

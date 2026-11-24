@@ -3,8 +3,7 @@
  * The route card asks this before it shows its "Full analysis" link, so the link never leads to an empty page.
  * Always answers with a status; `reason` is a plain sentence (what is missing and what to do).
  */
-import { readFile, readdir } from 'fs/promises';
-import { resolve } from 'path';
+import { liveFiles } from './liveFiles.js';
 import { getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
 import { liveAgencyName } from './agencyName.js';
 import { LIVE_DASHBOARD_NOTES, LIVE_DASHBOARD_UNCERTAIN_START, dashboardUnavailable, gapsOnlyV3, heldRouteLine, qualityHold, type LiveDashboardResponse, type LiveV3 } from '../shared/liveDashboard.js';
@@ -18,11 +17,12 @@ async function handler(req: Request): Promise<Response> {
   const agency = params.get('agency')?.trim();
   const route = params.get('route')?.trim();
   if (!agency || !route) return json({ status: 'unknown_route', reason: 'Give an agency and a route, for example ?agency=ttc&route=505.' }, 400);
-  const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
+  // The cloud's published files, or LIVE_SEGMENTS_DIR when set (CIV-2186).
+  const files = liveFiles();
   // Whitelist: a configured live route, or a route whose analysis file is in the folder listing. Only a name found in the
   // listing reaches the filesystem, never the request's text.
   const cfg = getPolledRoute(agency, route);
-  const listed = (await readdir(dir).catch(() => [] as string[])).find(f => f === `${agency.toLowerCase()}-${route}-segments.json`);
+  const listed = (await files.list()).find(f => f === `${agency.toLowerCase()}-${route}-segments.json`);
   if (!cfg && !listed) return json({ status: 'unknown_route', reason: `Live has no analysis for ${await liveAgencyName(agency)} route ${route}. Build it with "npm run live:analyze -- ${route}".` }, 404);
   const slug = cfg?.slug ?? agency.toLowerCase();
   const name = cfg?.displayRouteShortName ?? route;
@@ -30,15 +30,17 @@ async function handler(req: Request): Promise<Response> {
   if (unavailable) return json(unavailable);
   const file = listed ?? `${slug}-${name}-segments.json`;
   try {
-    const data = JSON.parse(await readFile(resolve(dir, file), 'utf8')) as { generatedAt: string; replacementBuses?: boolean; v3?: LiveV3 };
+    const raw = await files.read(file);
+    if (raw == null) throw new Error('no file');
+    const data = JSON.parse(raw) as { generatedAt: string; replacementBuses?: boolean; v3?: LiveV3 };
     if (!data.v3 || data.v3.schema !== 3) {
       return json({ status: 'no_analysis', reason: `The analysis file for ${name} is from an older version. Rebuild it with "npm run live:analyze -- ${name}".` });
     }
     const quality = qualityHold(data.v3);
     // CIV-2000: held with what can be trusted (gaps and bunching), which Studio shows; the delay figures never leave this file.
     if (quality) return json({ status: 'held', reason: `${await liveAgencyName(slug)} ${name} is held back: ${quality.charAt(0).toLowerCase()}${quality.slice(1)}`, agency: slug, route: name, generatedAt: data.generatedAt, v3: gapsOnlyV3(data.v3), line: heldRouteLine(data.v3) ?? undefined });
-    const routeTitle = await readFile(resolve(dir, `${slug}-agency.json`), 'utf8')
-      .then(t => (JSON.parse(t) as { routes?: Array<{ route: string; titleLabel?: string }> }).routes?.find(r => r.route === name)?.titleLabel ?? null)
+    const routeTitle = await files.read(`${slug}-agency.json`)
+      .then(t => t == null ? null : (JSON.parse(t) as { routes?: Array<{ route: string; titleLabel?: string }> }).routes?.find(r => r.route === name)?.titleLabel ?? null)
       .catch(() => null);
     return json({
       status: 'ready', agency: slug, route: name, routeTitle, generatedAt: data.generatedAt,

@@ -312,6 +312,19 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
 
+      # CIV-1974: Studio's buses-needed and schedule-change files (tmp/studio), built from the feeds config/studio-builds.json
+      # names, so the MCP files below carry them without a run on a laptop. Reads the archive bucket and MobilityDatabase only.
+      # A failure is a warning: the MCP files are then built without them, as before.
+      - name: Build Atlas Studio's buses-needed and schedule-change files (dry run)
+        if: always() && steps.summary.outputs.report == 'true'
+        continue-on-error: true
+        run: nice -n 10 npx tsx scripts/studio-builds.ts --dry-run || { echo "::warning::Some Studio files failed to build; see the log."; exit 1; }
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+
       # Atlas Studio MCP files (CIV-1855): built from this run's agency files exactly as publish builds them; nothing is uploaded.
       # A failure is a warning only: the map's release never waits on the MCP.
       - name: Build the Atlas Studio MCP files (dry run)
@@ -337,6 +350,7 @@ jobs:
             tmp/release-diff/*.md
             tmp/release-diff/*.json
             tmp/mcp-release/report.json
+            tmp/studio/*.json
           if-no-files-found: warn
           retention-days: 30
 
@@ -739,6 +753,32 @@ jobs:
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # CIV-1974: Studio's buses-needed and schedule-change files (tmp/studio), built from the feeds config/studio-builds.json
+      # names, so the MCP files below carry them without a run on a laptop. Reads the archive bucket and MobilityDatabase only.
+      # A failure is a warning: the MCP files are then built without them, as before.
+      - name: Build Atlas Studio's buses-needed and schedule-change files
+        if: inputs.start_at != 'promote'
+        continue-on-error: true
+        run: nice -n 10 npx tsx scripts/studio-builds.ts || { echo "::warning::Some Studio files failed to build; see the log."; exit 1; }
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # CIV-1974: the Studio files just built go to the private Live bucket (studio/files/), where Studio on the Mac reads
+      # them, so nothing is built on a laptop. Agencies held to the dry run aren't built above, so their files stay as they are.
+      - name: Upload Atlas Studio's buses-needed and schedule-change files
+        if: inputs.start_at != 'promote'
+        continue-on-error: true
+        run: npx tsx scripts/studio-files-upload.ts || { echo "::warning::The Studio files were not uploaded; Studio keeps the previous ones."; exit 1; }
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MCP_LIVE_BUCKET: atlas-mcp-live
 
       # Atlas Studio MCP files (CIV-1855): built from this release's agency files and History, uploaded to
       # atlas/releases/<id>/mcp/ before the pointer moves. The hosted MCP keeps answering from the release it has until a
