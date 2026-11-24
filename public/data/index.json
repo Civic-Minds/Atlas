@@ -7031,6 +7031,62 @@
       "lastFeedContentKey": "d86f7423f44394a3"
     },
     {
+      "slug": "west-kootenay",
+      "name": "BC Transit (West Kootenay)",
+      "officialName": "BC Transit",
+      "nameQualifier": "West Kootenay",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        49.334,
+        -117.572
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=20",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2579/latest.zip",
+      "bbox": [
+        49.0709,
+        -118.1447,
+        50.2968,
+        -116.8955
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "vernon",
+      "name": "BC Transit (Vernon/Shuswap)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Vernon/Shuswap",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        50.267,
+        -119.27
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=14",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2508/latest.zip",
+      "bbox": [
+        49.9362,
+        -119.4931,
+        50.933,
+        -118.9623
+      ],
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "kingcountymetro",
       "name": "King County Metro (Seattle)",
       "officialName": "King County Metro",
