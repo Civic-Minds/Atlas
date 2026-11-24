@@ -30,6 +30,7 @@ import { liveScheduledHeadway, liveScheduledRowsNow } from '../utils/liveSchedul
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
+import { newestReportSec, type LiveAgencyFeed } from '../../shared/liveStatus';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
@@ -176,6 +177,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
 
   const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, degradedBySlug, nextPollAt } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
+  // CIV-2084: each agency in view as last polled (its newest vehicle report, or a failed poll), for the map's status pill.
+  // An agency whose first poll hasn't answered yet is left out until it does.
+  const { setFeeds } = useLiveFeedsDown();
+  const statusFeeds = useMemo<LiveAgencyFeed[] | null>(() => (!active ? null : visibleSlugs
+    .filter(slug => vehiclesBySlug[slug] != null || errorBySlug[slug] != null)
+    .map(slug => ({ slug, name: agencyShortNameBySlug(agencies, slug), newestSec: newestReportSec(vehiclesBySlug[slug] ?? []), failed: errorBySlug[slug] != null }))),
+  [active, visibleSlugs, vehiclesBySlug, errorBySlug, agencies]);
+  useEffect(() => { setFeeds(statusFeeds); }, [statusFeeds, setFeeds]);
+  useEffect(() => () => setFeeds(null), [setFeeds]);
 
   // The picked route's vehicles' directions from their trips (the analysis's timetable, via useLiveTripDirections below).
   const [tripDirections, setTripDirections] = useState<ReadonlyMap<string, number> | null>(null);

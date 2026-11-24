@@ -96,8 +96,8 @@ export const LIVE_POLL_SEC = 15;
 
 /**
  * Each Live feed's pace in seconds (CIV-2073, measured 2026-11-21 over 4 min at 5 s polling; docs/operations/LIVE_POLLING.md):
- * the slower of the feed's own refresh and its vehicles' GPS reports, by median; SF 90 s, positions only, inside 511's limit (Ryan, CIV-2074 to revisit). The recorder polls at it; Live reads a
- * snapshot older than LIVE_STALE_PACES paces as late. An agency not measured uses LIVE_POLL_SEC.
+ * the slower of the feed's own refresh and its vehicles' GPS reports, by median; SF 90 s, positions only, inside 511's limit (Ryan, CIV-2074 to revisit). The recorder polls at it, and Live's status
+ * pill calls positions late past twice it (CIV-2084). An agency not measured uses LIVE_POLL_SEC.
  */
 export const LIVE_FEED_PACE_SEC: Readonly<Record<string, number>> = {
   ttc: 30, yrt: 30, burlington: 30, halifax: 30, edmonton: 30, hamilton: 60, sfmta: 90,
