@@ -42,7 +42,7 @@ import { annotateShortTurnVariants, buildShapeSelectionContext, joinsAsLeg } fro
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
-import { effectiveFeedExpiry } from './feedFreshness.js';
+import { calendarWithTrips, effectiveFeedExpiry } from './feedFreshness.js';
 import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
@@ -4344,14 +4344,16 @@ export async function processGtfsBuffer(
   }
 
   const feedInfo = gtfs.feedInfo?.[0];
+  // #1768: only services some trip runs on set the feed's end.
+  const servedCalendar = calendarWithTrips(feedCalendar ?? [], feedCalendarDates ?? [], (gtfs.trips ?? []).map(trip => trip.service_id));
   const calendarExpiry = effectiveFeedExpiry({
     feedInfoEnd: feedInfo?.feed_end_date,
-    calendarEnds: feedCalendar?.map(calendar => calendar.end_date) ?? [],
-    calendarDates: feedCalendarDates,
+    calendarEnds: servedCalendar.calendar.map(calendar => calendar.end_date),
+    calendarDates: servedCalendar.calendarDates,
   });
   const calendarOnlyEnd = effectiveFeedExpiry({
-    calendarEnds: feedCalendar?.map(calendar => calendar.end_date) ?? [],
-    calendarDates: feedCalendarDates,
+    calendarEnds: servedCalendar.calendar.map(calendar => calendar.end_date),
+    calendarDates: servedCalendar.calendarDates,
   });
   const timezone = gtfs.agencies?.[0]?.agency_timezone?.trim() || null;
   // Scheduled running time (CIV-84): card data in its own top-level block of the agency JSON,

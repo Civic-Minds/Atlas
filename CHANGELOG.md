@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A schedule's end date is the last day anything runs**: Kingston read "valid through November 2027" though nothing runs after January 3, because a calendar entry with no trips counted toward the end
 - **Studio's Live tab always shows how many routes Live follows**: the number appeared only after Live had been opened for that city, so never on Fleet or Schedules, and switching city could briefly show the last city's number
 - **Atlas remembers your settings between visits**: hiding low-quality routes, the map key and Data saver stay as you left them
 - **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
