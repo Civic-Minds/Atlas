@@ -4,7 +4,7 @@
  * (shared/livePollingConfig.ts). Its pace is shared/rules/live.ts's. No URL, filter or pace is typed here.
  */
 import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS, LIVE_RECORDER_ONLY_FEEDS } from './liveArchiveFeeds.js';
-import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from './livePollingConfig.js';
+import { LIVE_POLLING_ROUTES } from './livePollingConfig.js';
 import { LIVE_POSITIONS_ONLY_SLUGS, LIVE_RECORDER_ROUTE_IDS, livePaceSec } from './rules/live.js';
 
 export interface LiveRecorderFeed {
@@ -52,8 +52,3 @@ export function liveRecorderFeed(slug: string): LiveRecorderFeed | null {
       : cfg.apiKeyHeaderEnvVar ? { apiKey: { env: cfg.apiKeyHeaderEnvVar, header: true as const } } : {}),
   };
 }
-
-/** Every Live agency the recorder can poll (the Live map's list, shared/livePollingConfig.ts LIVE_AGENCY_SLUGS). */
-export const LIVE_RECORDER_FEEDS: readonly LiveRecorderFeed[] = LIVE_AGENCY_SLUGS
-  .map(liveRecorderFeed)
-  .filter((f): f is LiveRecorderFeed => f != null);
