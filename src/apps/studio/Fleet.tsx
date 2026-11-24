@@ -384,16 +384,9 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
                 <>
                   {fleet && <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>}
                   {fleetDesign() === 'now' ? (
-                    <>
-                      <Widget title={vehiclesNeededTitle(agencyModes)}>
-                        <FleetNowTable modes={agencyModes} runningNow={runningNow} scheduledNow={nowFleet?.implied ?? null} period={period} scheduledAt={fleet?.implied ?? null} />
-                      </Widget>
-                      <div className="mt-4">
-                        <Widget title={STUDIO_REDESIGN_TEXT.whatIf}>
-                          <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} />
-                        </Widget>
-                      </div>
-                    </>
+                    <Widget title={vehiclesNeededTitle(agencyModes)}>
+                      <FleetNowTable modes={agencyModes} runningNow={runningNow} scheduledNow={nowFleet?.implied ?? null} period={period} scheduledAt={fleet?.implied ?? null} />
+                    </Widget>
                   ) : (
                     <Widget title={vehiclesNeededTitle(agencyModes)}>
                       <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} inService={networkInService} design={fleetDesign() === 'change' ? 'change' : 'today'} />

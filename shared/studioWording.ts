@@ -75,8 +75,6 @@ export const STUDIO_REDESIGN_TEXT = {
   /** Fleet "now" design (Ryan: "how many vehcles operating right now how many needed for scheduled service at now or x hour"). */
   scheduledNow: 'Scheduled now',
   scheduledAt: (period: string) => `Scheduled, ${period}`,
-  /** The what-if table's heading, below the figures. */
-  whatIf: 'Every route at one frequency',
   /** The way back from one kind's routes to the summary. */
   allChanges: 'All changes',
 } as const;
