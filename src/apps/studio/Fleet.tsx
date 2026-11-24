@@ -22,7 +22,7 @@ import { capitalizeFirst } from '../../../shared/headwayText';
 import { dateRange, shortDate } from '../../../shared/dateText';
 import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
-import { pairedStudioFile, studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
+import { pairedStudioFile, studioBeforeAfterDevUrl, studioSeason, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
@@ -183,6 +183,9 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
 
   const change = route ? file.changes.find(c => c.route === route) ?? null : null;
   const intro = file.day ? C.intro(agency, dayInSentence(file.day), shortDate(file.before.date) ?? file.before.date, shortDate(file.after.date) ?? file.after.date) : C.noDay;
+  // CIV-2058: when no earlier schedule from the same season exists, the page names the two seasons compared.
+  const seasons = [studioSeason(file.before.date), studioSeason(file.after.date)] as const;
+  const seasonNote = seasons[0] && seasons[1] && seasons[0] !== seasons[1] ? C.seasons(seasons[0], seasons[1]) : '';
   const leftOut = (['after', 'before'] as const).map(side => {
     const days = file.leftOut.filter(l => l.sides.includes(side)).map(l => capitalizeFirst(dayPlural(l.day)));
     return days.length ? C.leftOut(joinList(days), side === 'after') : null;
@@ -244,6 +247,7 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
           <PanelTitleBar title={PAGE_NAMES.studioSchedules} />
           <div className="shrink-0 px-4 pt-2">
             <CardBodyText>{intro}</CardBodyText>
+            {seasonNote && <CardBodyText>{seasonNote}</CardBodyText>}
             {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
           </div>
           <ChangeList file={file} period={period} onPick={setRoute} />
