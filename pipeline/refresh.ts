@@ -46,6 +46,7 @@ import {
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
 } from './overrideAudit.js';
+import { logGateRun } from './gateHoldLog.js';
 import { readFeedReviewHistory, reviewStatusForNewFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
 import { feedContentsChanged, feedFileDate, feedPeriodStart, isNewFeedFile, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
@@ -814,6 +815,8 @@ async function main() {
 
   const gateReport = buildGateReport(gateRunId('refresh'), 'refresh', gateChecked, gateOverrides, applyOverrides(gateFlags, gateOverrides));
   console.log(`\n${formatGateSummary(gateReport, writeGateReport(gateReport))}`);
+  // CIV-2312: every hold, and how it turned out, in the committed log the refresh pull request carries.
+  logGateRun(gateReport);
 
   const refreshResult = writeRefreshRunResult(targets.map(agency => agency.slug), refreshStatuses);
 
