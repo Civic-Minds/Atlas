@@ -350,7 +350,6 @@ jobs:
             tmp/release-diff/*.md
             tmp/release-diff/*.json
             tmp/mcp-release/report.json
-            tmp/studio/*.json
           if-no-files-found: warn
           retention-days: 30
 
