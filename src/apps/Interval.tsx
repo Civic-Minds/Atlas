@@ -70,6 +70,7 @@ import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
 import { AGENCY_NOT_FOUND, frequentNoRoutesNotice, nightNoRoutesNotice, liveUnableToLoadPill, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL, AGENCIES_IN_VIEW_LABEL, ROUTES_IN_VIEW_LABEL, DEFAULT_EXPORT_TITLE } from '../content/noticeCopy';
 import { useLiveFeedsDown } from '../context/LiveVehiclesMapOverlay';
+import { LiveStatusPill } from '../components/Live/LiveStatusPill';
 import { useRetrySeconds } from '../hooks/useRetrySeconds';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
@@ -654,7 +655,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const clearUserLocation = useCallback(() => setUserLocation(null), []);
   const [isTilesLoading, setIsTilesLoading] = useState(false);
   // CIV-1768: Live's next try while every Live feed in view is down, counted down in the loading pill's spot.
-  const liveRetrySeconds = useRetrySeconds(useLiveFeedsDown().retryAt);
+  const { retryAt: liveRetryAt, feeds: liveFeeds } = useLiveFeedsDown();
+  const liveRetrySeconds = useRetrySeconds(liveRetryAt);
+  // CIV-2084: Live's status pill (Live / Delayed / Unavailable) holds the row while Live has agencies in view.
+  const liveStatusOn = !!liveFeeds?.length;
+  const liveRowOn = liveStatusOn || liveRetrySeconds != null;
+  /** CIV-1768's "Unable to load · Retrying" badge, only when no status pill has taken its job. */
+  const liveDownBadge = liveRetrySeconds != null && !liveStatusOn;
   const [isBasemapLoading, setIsBasemapLoading] = useState(false);
 
   // The map draws its routes from the tiles. Agency JSON is fetched first for what is selected or
@@ -1507,21 +1514,22 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
         </div>
       )}
-      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || researchEmptyNotice || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow || liveRetrySeconds != null) && (
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || researchEmptyNotice || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow || liveRowOn) && (
         // An error never fades (CIV-50): with the phone's "Error" pill in the row, or Live's "Unable to load", the row stays.
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRetrySeconds != null ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${pagePill && !(countsRowShown || liveRetrySeconds != null) ? 'hidden' : ''}`}>
-          {/* CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): while every Live feed in view
-              is down, the loading badge reads "Unable to load · Retrying in 12s", counting down to Live's next try. */}
-          {(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
-            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} {...(liveRetrySeconds != null ? { role: 'status' } : {})}>
-              {liveRetrySeconds == null && <Spinner />}
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRowOn ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${pagePill && !(countsRowShown || liveRowOn) ? 'hidden' : ''}`}>
+          {/* CIV-2084 (Ryan picked 1): Live's status pill, where CIV-1768's "Unable to load · Retrying in 12s" was; the
+              countdown is in its hover when the feeds are down. */}
+          {liveStatusOn && <LiveStatusPill feeds={liveFeeds!} retrySeconds={liveRetrySeconds} />}
+          {(isLoading || isTilesLoading || isBasemapLoading || liveDownBadge) && (
+            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} {...(liveDownBadge ? { role: 'status' } : {})}>
+              {!liveDownBadge && <Spinner />}
               <span className={MAP_BADGE_LABEL}>
-                {liveRetrySeconds != null ? liveUnableToLoadPill(liveRetrySeconds) : isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
+                {liveDownBadge ? liveUnableToLoadPill(liveRetrySeconds!) : isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
               </span>
             </div>
           )}
-          {/* Live hides the counts: with Live down, the row shows only the badge above. */}
-          {(countsRowShown || liveRetrySeconds == null) && (<>
+          {/* Live hides the counts: the row shows only Live's pill. */}
+          {(countsRowShown || !liveRowOn) && (<>
           {/* Phones (CIV-1057): right of the loading pill, in its spot when there is none. */}
           {phoneErrorsInRow && (
             <MapErrorsPill
