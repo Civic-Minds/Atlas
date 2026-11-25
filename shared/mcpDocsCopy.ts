@@ -30,12 +30,11 @@ export const MCP_DOCS = {
     // Ryan, 2026-11-22: "For the tools should we group them together at all on the page too"; on the options, "1" (one
     // table, a group label above each set of rows). Group names as proposed: Find, Schedules, Changes, Planning, Live.
     groups: { find: 'Find', schedules: 'Schedules', changes: 'Changes', planning: 'Planning', live: 'Live' },
-    liveNote: 'Tools marked Live answer from Live’s recordings, on this Mac and on the hosted server.',
+    liveNote: 'Tools marked Live answer from Live’s recordings.',
   },
   freshness: {
     heading: 'How fresh the data is',
     items: [
-      'On this Mac, the MCP reads the newest published release saved here, so it is as fresh as the last time that copy was updated.',
       'The hosted server follows each published release by itself, within a minute of it going live.',
       'Every answer gives the hours it covers and the date the agency’s schedule runs to.',
       'Gaps and bunching right now come from the last half hour of Live’s recordings; reliability and bunching history cover past weeks.',
@@ -63,8 +62,8 @@ export const MCP_DOCS = {
     noQuestion: 'No question given',
     failed: 'failed',
     noCalls: 'No calls yet.',
-    // CIV-2202 (Ryan, 2026-11-24: make and stop tester links on this page). Not asked for: these words.
-    link: 'Link',
+    // CIV-2202 (Ryan, 2026-11-24: make and stop tester links on this page). Not asked for: these words. CIV-2944 (Ryan,
+    // 2026-11-25, on a Stop link beside every row: "We don't need this beside every of them"): it sits in the tester's view.
     stop: 'Stop link',
     confirmStop: (name: string) => `Stop ${name}’s link? It stops working at once and can’t be turned back on.`,
     stopFailed: 'The link wasn’t stopped.',
@@ -79,11 +78,16 @@ export const MCP_DOCS = {
   // Ryan, 2026-11-22: "The MCP page could also have a chart for the usage at the bottom if we wanted too", then "Do both".
   usage: {
     heading: 'Usage',
-    intro: (days: number) => `Questions asked of the hosted server each day, every tester together, over the last ${days} days (UTC). Hover a day for its calls.`,
-    chartLabel: (days: number) => `Line chart of questions per day over the last ${days} days`,
-    axis: 'Questions',
-    /** The line's hover sentence for one day. */
+    // CIV-2944 (Ryan, 2026-11-25: "Why not show questions and calls as two different lines"): two lines with a key, so the
+    // intro no longer sends you to hover for calls. Not asked for: "and calls" in the intro and label, and the axis title.
+    intro: (days: number) => `Questions and calls to the hosted server each day, every tester together, over the last ${days} days (UTC).`,
+    chartLabel: (days: number) => `Line chart of questions and calls per day over the last ${days} days`,
+    axis: 'Per day',
+    /** The hover sentence for one day. */
     day: (questions: string, calls: string) => `${questions} questions, ${calls} calls`,
+    // Ryan, 2026-11-25: "do 7 days w a toggle for 14 or 28". Not asked for: these words.
+    daysLabel: 'Days shown',
+    days: (days: number) => `${days} days`,
     partial: 'The earliest days may read low: the server can’t count by day yet, so these come from each tester’s latest calls.',
     none: 'No calls in this period.',
   },
