@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's panel header just says "Live"**: it no longer names one agency while another agency's problem shows under it; problems stay in the bottom-right status pill
 - **Live's route card and Details no longer show a replacement-buses notice**: the warning on 503 Kingston Rd was never approved
 - **Live's panel says which agency can't be shown, each with its own status dot**: a failed agency's message sat under another agency's green "Live" dot
 - **On-demand zones are hidden when you filter by frequency**: on-demand service has no timetable frequency, so it no longer shows up under "every 10 min" or any other frequency filter
