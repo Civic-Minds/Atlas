@@ -5,7 +5,6 @@
     "sourceUrl": "https://www.capmetro.org/pickup",
     "sourceLabel": "CapMetro Pickup page and Pickup service area layer",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://www.capmetro.org/pickup",
     "eligibility": "Children 10 years and younger must be accompanied by someone 12 or older.",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {

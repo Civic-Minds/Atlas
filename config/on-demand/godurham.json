@@ -5,10 +5,8 @@
     "sourceUrl": "https://godurhamaccess.org/godurham-connect",
     "sourceLabel": "GoDurham Connect page and City of Durham GoDurham Microtransit Zones layer",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://godurhamaccess.org/godurham-connect",
     "eligibility": "Open to everyone; riders 13 and older may ride alone.",
     "tripRules": "Trips can start and end anywhere in the North Durham and East Durham zones.",
-    "bookingInfo": "Up to 60 free rides a month.",
     "zoneMetadata": {
       "North Durham": {
         "serviceName": "GoDurham Connect",

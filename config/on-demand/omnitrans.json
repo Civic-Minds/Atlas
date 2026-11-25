@@ -5,7 +5,6 @@
     "sourceUrl": "https://omnitrans.org/promotions/omniride/",
     "sourceLabel": "Omnitrans OmniRide page and its three Google My Maps zone maps",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://omnitrans.org/promotions/omniride/",
     "pickup": {
       "method": "virtual-stops"
     },

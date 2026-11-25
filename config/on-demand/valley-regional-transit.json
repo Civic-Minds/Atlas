@@ -5,8 +5,6 @@
     "sourceUrl": "https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/",
     "sourceLabel": "Route 150 VRT On-Demand page and service-area shapefile (agency-supplied)",
     "sourceRetrievedAt": "2026-11-20",
-    "bookingInfo": "Book in the VRT Booking app, at rideVRT.org/booking or call VRT Customer Service at 208-345-7433.",
-    "bookingUrl": "https://www.valleyregionaltransit.org/booking/",
     "pickup": {
       "method": "virtual-stops"
     },

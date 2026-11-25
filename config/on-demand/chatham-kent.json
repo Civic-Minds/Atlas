@@ -7,8 +7,6 @@
     "sourceRetrievedAt": "2026-11-14",
     "serviceHours": "Chatham: Monday to Friday 7:15 p.m. to 12:45 a.m.; Sunday 9 a.m. to 5 p.m. Wallaceburg: Monday to Saturday 7 a.m. to 7:15 p.m.; Sunday 9 a.m. to 5 p.m.",
     "hoursNote": "No service on holidays. A ride is accepted only if it can be finished by the end of service hours.",
-    "bookingInfo": "Book in the Ride CK OnRequest Transit app, on the online web portal or call 519-436-3233, up to two days ahead.",
-    "bookingUrl": "https://spare-rider-rideck-production.vercel.app/Login",
     "pickup": {
       "method": "fixed-stops"
     },

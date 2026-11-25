@@ -5,9 +5,7 @@
     "sourceUrl": "https://city.ridewithvia.com/via-wrta",
     "sourceLabel": "WRTA Via page, Via-WRTA rider page and Via-WRTA Service Area My Map",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://city.ridewithvia.com/via-wrta",
     "eligibility": "Riders must be 13 or older; under 13 may ride with a parent or guardian.",
-    "bookingInfo": "Credit or debit card only.",
     "pickup": {
       "method": "virtual-stops"
     },

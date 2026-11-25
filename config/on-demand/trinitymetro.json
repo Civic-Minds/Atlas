@@ -5,8 +5,6 @@
     "sourceUrl": "https://ridetrinitymetro.org/zipzone/",
     "sourceLabel": "Trinity Metro On-Demand page and its per-area zone maps",
     "sourceRetrievedAt": "2026-11-14",
-    "bookingInfo": "Book in the Trinity Metro On-Demand app or the GoPass app, or call 817-215-8600.",
-    "bookingUrl": "https://ridetrinitymetro.org/zipzone/",
     "pickup": {
       "method": "virtual-stops"
     },

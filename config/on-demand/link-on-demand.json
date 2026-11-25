@@ -31,8 +31,6 @@
     "sourceUrl": "https://cityoflonetree.com/link-on-demand/",
     "sourceLabel": "City of Lone Tree Link On Demand page and Link on Demand Service Area layer",
     "sourceRetrievedAt": "2026-11-14",
-    "bookingInfo": "Book in the Link On Demand app or call 719-212-2430.",
-    "bookingUrl": "https://cityoflonetree.com/link-on-demand/",
     "pickup": {
       "method": "virtual-stops"
     },

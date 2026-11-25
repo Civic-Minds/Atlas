@@ -7,7 +7,7 @@
  *   "agency": { ... },                     // only for an on-demand-only agency with no catalog entry
  *   "area": {                              // everything the card shows; same fields as the app's onDemandServiceArea
  *     "serviceName", "sourceUrl", "sourceLabel", "sourceRetrievedAt",
- *     "serviceHours"?, "availability"?, "hoursNote"?, "eligibility"?, "bookingInfo"?, "bookingUrl"?,
+ *     "serviceHours"?, "availability"?, "hoursNote"?, "eligibility"?,
  *     "pickup"?, "tripRules"?, "zoneMetadata"?
  *   },
  *   // A zone that changes on a known date (CIV-1753): give the outgoing zone zoneMetadata[name].validUntil

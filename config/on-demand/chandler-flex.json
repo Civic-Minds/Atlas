@@ -29,8 +29,6 @@
     "sourceLabel": "City of Chandler Chandler Flex page and service-area shapefile (agency-supplied)",
     "sourceRetrievedAt": "2026-11-16",
     "eligibility": "Riders 13 and older; younger children ride with a parent or guardian.",
-    "bookingInfo": "Book in the Chandler Flex app or call 602-932-0291.",
-    "bookingUrl": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
     "pickup": {
       "method": "virtual-stops"
     },

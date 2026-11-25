@@ -29,8 +29,6 @@
     "sourceUrl": "https://catchthespot.org/",
     "sourceLabel": "SPOT page and SPOT Southwest GTFS-Flex feed (agency-supplied)",
     "sourceRetrievedAt": "2026-11-14",
-    "bookingInfo": "Book in the SPOT Ride app or call 503-907-7768.",
-    "bookingUrl": "https://catchthespot.org/",
     "tripRules": "Trips can start and end anywhere in Southwest Beaverton and River Terrace, or at Washington Square Transit Center and 13 other stops outside it.",
     "zoneMetadata": {
       "Southwest Beaverton and River Terrace": {

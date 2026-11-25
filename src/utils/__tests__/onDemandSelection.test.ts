@@ -41,7 +41,6 @@ describe('on-demand link targets (#1440)', () => {
   const hamilton = {
     serviceName: 'myRide Waterdown On-Demand',
     serviceHours: 'Mon–Fri 5 AM–1:30 AM',
-    bookingInfo: 'Book in the myRide app.',
     features: [zone('Lower East Stoney Creek'), zone('Lower North Stoney Creek'), zone('West Glanbrook')],
     stopFeatures: [{ properties: { areaName: 'West Glanbrook' } }, { properties: { stopName: 'myRide stop' } }],
     zoneMetadata: {
@@ -78,7 +77,6 @@ describe('on-demand link targets (#1440)', () => {
     expect(transCab.features).toHaveLength(1);
     expect(transCab.stopFeatures).toHaveLength(1);
     expect((transCab as { serviceHours?: string }).serviceHours).toBeUndefined();
-    expect((transCab as { bookingInfo?: string }).bookingInfo).toBeUndefined();
   });
 
   it('lets a zone win when a zone and a service share a name, and names a stop-only service once', () => {

@@ -5,8 +5,6 @@
     "sourceUrl": "https://www.gpmetro.org/metroconnect-on-demand/",
     "sourceLabel": "Metro Connect pages and zone shapefiles (agency-supplied)",
     "sourceRetrievedAt": "2026-11-16",
-    "bookingInfo": "Book in the GPM Connect app, at gpmconnect.app.ridewithvia.com or call 207-774-0351 during service hours, up to two weeks ahead.",
-    "bookingUrl": "https://www.gpmetro.org/metroconnect-on-demand/",
     "pickup": {
       "method": "virtual-stops"
     },

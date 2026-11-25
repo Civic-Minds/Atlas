@@ -41,7 +41,7 @@ const ELIGIBILITY_ONLY = [
 // notes say "wheelchair-accessible vans" and agencies say "mobility" about ordinary service.
 const ELIGIBILITY_ONLY_IN_NAMES = /accessible|mobility/i;
 /** Rider-facing fields that would say who may ride. */
-const ELIGIBILITY_FIELDS = ['serviceName', 'sourceLabel', 'tripRules', 'bookingInfo', 'hoursNote', 'eligibility', 'serviceHours'];
+const ELIGIBILITY_FIELDS = ['serviceName', 'sourceLabel', 'tripRules', 'hoursNote', 'eligibility', 'serviceHours'];
 const NAME_FIELDS = ['serviceName', 'eligibility'];
 
 type Ring = [number, number][];

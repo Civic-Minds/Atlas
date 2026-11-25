@@ -149,8 +149,6 @@ export const CYRIDE_EASE_SERVICE_AREA = {
   sourceLabel: CYRIDE_EASE_SOURCE_LABEL,
   sourceRetrievedAt: '2026-10-10',
   serviceHours: 'Monday–Friday 7 AM–6:30 PM.',
-  bookingInfo: 'Book in the Ride Pingo app or call (515) 239-5600.',
-  bookingUrl: CYRIDE_EASE_SOURCE_URL,
   serviceName: 'East Ames Service Extension (EASE)',
   availability: {
     Weekday: [{ startHour: 7, endHour: 18.5 }],
@@ -188,7 +186,6 @@ export const HAMILTON_MY_RIDE_SERVICE_AREA = {
   sourceLabel: 'HSR myRide service details',
   sourceRetrievedAt: '2026-09-24',
   serviceHours: 'Monday–Friday 5 AM–1:30 AM; Saturday 6 AM–1:30 AM; Sunday 6 AM–12:30 AM.',
-  bookingUrl: 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/hsr-myride-demand',
   serviceName: 'myRide Waterdown On-Demand',
   // hamilton.ca: myRide is "a 'stop-to-stop' service" between its listed stops.
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
@@ -220,7 +217,6 @@ export const GRT_ROUTE_79_SERVICE_AREA = {
   sourceLabel: GRT_ROUTE_79_SOURCE_LABEL,
   sourceRetrievedAt: '2026-09-24',
   serviceHours: 'Monday–Friday: 6–10 AM, 2–6 PM, and 10:45–11:45 PM.',
-  bookingUrl: GRT_ROUTE_79_SOURCE_URL,
   serviceName: 'Route 79 Breslau On-Demand',
   tripRules: 'Trips can start and end anywhere in Breslau, or at the Kitchener connection points outside it.',
   zoneMetadata: Object.fromEntries(
@@ -267,7 +263,6 @@ export const UTA_ON_DEMAND_SERVICE_AREA = {
   serviceName: 'UTA On Demand',
   // Service-wide rule from UTA's On Demand page (checked 2026-10-11).
   eligibility: 'Riders 13 and older; under 13 with a parent or guardian',
-  bookingUrl: UTA_ON_DEMAND_SOURCE_URL,
   zoneMetadata: {
     "Salt Lake City Westside": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Saturday 4 AM\u201312:15 AM; Sunday 6 AM\u20139 PM.", availability: { Weekday: [{ startHour: 4, endHour: 24.25 }], Saturday: [{ startHour: 4, endHour: 24.25 }], Sunday: [{ startHour: 6, endHour: 21 }] } satisfies OnDemandAvailability },
     "South Davis": { serviceName: 'UTA On Demand', serviceHours: "Monday\u2013Friday 6 AM\u20139 PM.", availability: { Weekday: [{ startHour: 6, endHour: 21 }], Saturday: [], Sunday: [] } satisfies OnDemandAvailability },
@@ -290,7 +285,6 @@ export const EDMONTON_ON_DEMAND_SERVICE_AREA = {
   serviceName: 'ETS On Demand',
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
   tripRules: "Trips must start or end at the neighbourhood’s assigned transit hub.",
-  bookingUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
   zoneMetadata: EDMONTON_ON_DEMAND_ZONE_METADATA,
 };
 
@@ -304,7 +298,6 @@ export const COBOURG_ON_DEMAND_SERVICE_AREA = {
   serviceName: 'Cobourg Transit On Demand',
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
   serviceHours: 'Monday–Friday 6:15 AM–9 PM; Saturday 8:15 AM–6:45 PM; Sunday 8:45 AM–3:45 PM.',
-  bookingUrl: 'https://book.cobourgtransit.rideco.com/login',
   availability: {
     Weekday: [{ startHour: 6.25, endHour: 21 }],
     Saturday: [{ startHour: 8.25, endHour: 18.75 }],
@@ -327,9 +320,7 @@ export const GORALEIGH_MICROLINK_SERVICE_AREA = {
   sourceLabel: GORALEIGH_MICROLINK_SOURCE_LABEL,
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'GoRaleigh MicroLink',
-  bookingInfo: 'Same-day booking only, in the MicroLink app or at (919) 996-3459, option 2.',
   pickup: { method: 'curb-to-curb', note: 'Riders may need to walk to a nearby street.' } satisfies OnDemandPickup,
-  bookingUrl: GORALEIGH_MICROLINK_SOURCE_URL,
   zoneMetadata: {
     'Fuquay-Varina': {
       serviceName: 'GoRaleigh MicroLink',
@@ -383,9 +374,7 @@ export const MOUNTAIN_LINE_GO_SERVICE_AREA = {
   // Hours from the Go! page (checked 2026-11-11): "Monday – Friday from 6am – 10pm and weekends and Holidays from 7am – 8pm".
   serviceHours: 'Weekdays 6 AM–10 PM; weekends 7 AM–8 PM.',
   hoursNote: 'Holidays follow Sunday hours.',
-  bookingInfo: 'Book at least 30 minutes and up to 7 days ahead.',
   pickup: { method: 'door-to-door', note: 'Trips can also use 17 nearby bus stops, shown on the map.' } satisfies OnDemandPickup,
-  bookingUrl: MOUNTAIN_LINE_GO_SOURCE_URL,
   availability: {
     Weekday: [{ startHour: 6, endHour: 22 }],
     Saturday: [{ startHour: 7, endHour: 20 }],
@@ -408,7 +397,6 @@ export const MVTA_CONNECT_SERVICE_AREA = {
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'MVTA Connect',
   serviceHours: 'Daily 6 AM–9 PM.',
-  bookingUrl: 'https://www.mvta.com/new-riders/mvta-connect/',
   availability: MVTA_CONNECT_DAILY,
   zoneMetadata: {
     "Main Zone": { serviceName: 'MVTA Connect', serviceHours: 'Daily 6 AM–9 PM.', availability: MVTA_CONNECT_DAILY },
@@ -423,7 +411,6 @@ export const METRO_MICRO_SERVICE_AREA = {
   sourceUrl: 'https://svc.metrotransit.org/mtgtfs/gtfs-flex.zip',
   sourceLabel: 'Metro Transit GTFS-Flex feed',
   sourceRetrievedAt: '2026-09-24',
-  bookingUrl: 'https://www.metrotransit.org/metro-micro/',
   serviceName: 'Metro micro',
   zoneMetadata: GTFS_FLEX_METADATA.zoneMetadata,
 };
@@ -450,7 +437,6 @@ export const C_TRAN_CURRENT_SERVICE_AREA = {
   sourceUrl: 'https://services5.arcgis.com/T6Y1WlK8fKvVXSi3/arcgis/rest/services/The_Current_Service_Areas/FeatureServer/0',
   sourceLabel: 'C-TRAN The Current service-area and virtual-stop layers',
   sourceRetrievedAt: '2026-10-11',
-  bookingUrl: 'https://www.c-tran.com/thecurrent',
   serviceName: 'The Current',
   zoneMetadata: Object.fromEntries(
     ['La Center', 'Ridgefield', 'Camas/Washougal', 'WSU-Vancouver/Salmon Creek', 'Rose Village', 'Battle Ground', 'Port of Vancouver']
@@ -458,7 +444,6 @@ export const C_TRAN_CURRENT_SERVICE_AREA = {
   ) as Record<string, OnDemandZoneDetails>,
 };
 
-const RTD_FLEXRIDE_PAGE = 'https://www.rtd-denver.com/services/flexride';
 const RTD_FLEXRIDE_ZONE_PAGES = 'https://www.rtd-denver.com/routes-services/other-services/flexride/flexride-service-areas';
 /** One zone's hours from its RTD page (checked 2026-10-26). RTD lists Sunday and holidays together. */
 function rtdFlexRideZone(page: string, serviceHours: string, availability: OnDemandAvailability): OnDemandZoneDetails {
@@ -480,8 +465,6 @@ export const RTD_FLEXRIDE_SERVICE_AREA = {
   sourceLabel: 'RTD FlexRide Areas layer (RTD GIS)',
   sourceRetrievedAt: '2026-10-26',
   serviceName: 'FlexRide',
-  bookingInfo: 'Book in the app or online, or call 303-299-6000 (option 2), from 30 days ahead to 10 minutes before pickup.',
-  bookingUrl: RTD_FLEXRIDE_PAGE,
   zoneMetadata: {
     Brighton: rtdFlexRideZone('brighton', 'Monday\u2013Friday 5:30 AM\u20137 PM.', RTD_WEEKDAY_ONLY(5.5, 19)),
     Broomfield: rtdFlexRideZone('broomfield', 'Monday\u2013Friday 5:30 AM\u20139 PM; Saturday 9 AM\u20136 PM; Sunday 9 AM\u20134 PM.', { Weekday: [{ startHour: 5.5, endHour: 21 }], Saturday: [{ startHour: 9, endHour: 18 }], Sunday: [{ startHour: 9, endHour: 16 }] }),
@@ -531,9 +514,7 @@ export const WEX_EXPRESS_ON_DEMAND_AGENCY = {
     // The agency publishes when rides can be requested, not separate service hours (wexexpress.us, 2026-11-22).
     serviceHours: 'Ride requests Monday–Friday 5 AM–6 PM and Saturday 9 AM–noon.',
     hoursNote: 'These are the hours the agency takes ride requests; it doesn’t publish separate service hours.',
-    bookingInfo: 'Book in the WexExpress app or call or text (231) 779-0123. Booking at least 2 hours ahead is recommended.',
     pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
-    bookingUrl: 'https://wexexpress.us/general-services',
     availability: {
       Weekday: [{ startHour: 5, endHour: 18 }],
       Saturday: [{ startHour: 9, endHour: 12 }],
@@ -570,9 +551,7 @@ export const MUSKOKA_DRT_ON_DEMAND_AGENCY = {
     serviceName: 'District DRT',
     serviceHours: 'Monday–Friday 7 AM–7 PM; no service on statutory holidays.',
     hoursNote: 'No service on statutory holidays.',
-    bookingInfo: 'Book in the Blaise Transit app or call 705-645-2100 ext. 4419.',
     pickup: { method: 'curb-to-curb', note: 'There are no fixed stops.' } satisfies OnDemandPickup,
-    bookingUrl: 'https://www.muskoka.on.ca/en/community-services-and-support/district-drt.aspx',
     availability: {
       Weekday: [{ startHour: 7, endHour: 19 }],
       Saturday: [],
@@ -610,9 +589,7 @@ export const WINKLER_ON_DEMAND_AGENCY = {
     serviceName: 'Winkler On-Demand Transit',
     serviceHours: 'Weekdays 6 AM–6 PM; Saturday 9 AM–6 PM.',
     hoursNote: 'No holiday service.',
-    bookingInfo: 'Book 15 minutes to 7 days ahead.',
     pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
-    bookingUrl: WINKLER_SOURCE_URL,
     availability: {
       Weekday: [{ startHour: 6, endHour: 18 }],
       Saturday: [{ startHour: 9, endHour: 18 }],
@@ -650,7 +627,6 @@ export const ST_ALBERT_ON_DEMAND_AGENCY = {
     serviceHours: 'Monday–Friday 6:35 PM–midnight; Saturday 6:30 PM–midnight; Sunday 5:55 AM–7 PM.',
     hoursNote: 'Holidays follow Sunday hours.',
     pickup: { method: 'fixed-stops', note: 'Trips use the St. Albert Transit bus stops inside the shaded area.' } satisfies OnDemandPickup,
-    bookingUrl: ST_ALBERT_SOURCE_URL,
     availability: {
       Weekday: [{ startHour: 18.583, endHour: 24 }],
       Saturday: [{ startHour: 18.5, endHour: 24 }],
@@ -679,9 +655,7 @@ export const LEAMINGTON_LT_GO_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-10-10',
     serviceName: 'LT-Go On-Demand',
     serviceHours: 'Monday–Friday 6 AM–9:30 PM; Saturday 7 AM–9:30 PM; Sunday 8 AM–7 PM.',
-    bookingInfo: 'Book in the Blaise Transit app or call 519-325-5960.',
     pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
-    bookingUrl: 'https://www.leamington.ca/our-community/transit/ltgo-on-demand-transit/',
     availability: {
       Weekday: [{ startHour: 6, endHour: 21.5 }],
       Saturday: [{ startHour: 7, endHour: 21.5 }],
@@ -709,7 +683,6 @@ export const BWG_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 6:30 AM–7:30 PM; Sat 7:30 AM–7:30 PM; no Sunday service',
     hoursNote: 'No service on statutory holidays.',
-    bookingUrl: 'https://www.rideargo.com/cities/bwg#scroll-offset',
     availability: {
       Weekday: [{ startHour: 6.5, endHour: 19.5 }],
       Saturday: [{ startHour: 7.5, endHour: 19.5 }],
@@ -743,7 +716,6 @@ export const CALEDON_ON_DEMAND_AGENCY = {
       method: 'door-to-door',
       note: 'Transfers to Brampton Transit or York Region Transit use designated pickup points at their bus stops, set when you book.',
     } satisfies OnDemandPickup,
-    bookingUrl: CALEDON_SOURCE_URL,
     availability: {
       Weekday: [{ startHour: 5.5, endHour: 20 }],
       Saturday: [{ startHour: 7, endHour: 19 }],
@@ -771,7 +743,6 @@ export const BRAMPTON_ON_DEMAND_AGENCY = {
     sourceRetrievedAt: '2026-09-22',
     serviceHours: 'Mon–Fri 5:30 AM–9:30 PM; no Saturday or Sunday service',
     hoursNote: 'No service on statutory holidays.',
-    bookingUrl: BRAMPTON_SOURCE_URL,
     availability: {
       Weekday: [{ startHour: 5.5, endHour: 21.5 }],
       Saturday: [],
@@ -793,9 +764,7 @@ export const VALLEY_METRO_METROFLX_SERVICE_AREA = {
   serviceName: 'MetroFLX',
   serviceHours: 'Monday–Saturday 8:45 PM–12:45 AM; Sunday 9 AM–6 PM.',
   hoursNote: 'Last trips 12:15 AM (5:30 PM on Sundays). No service on major holidays.',
-  bookingInfo: 'Call 540-343-1721 to schedule.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
-  bookingUrl: 'https://www.valleymetro.com/services/metroflx',
   availability: {
     Weekday: [{ startHour: 20.75, endHour: 24.75 }],
     Saturday: [{ startHour: 20.75, endHour: 24.75 }],
@@ -810,8 +779,6 @@ export const GLTC_FLEX_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'GLTC Flex',
   serviceHours: 'Monday–Saturday 5:15 AM–7:15 PM.',
-  bookingInfo: 'Book in the GLTC Flex app or call GLTC Dispatch at 434-455-5099.',
-  bookingUrl: 'https://gltconline.com/flex/',
   availability: {
     Weekday: [{ startHour: 5.25, endHour: 19.25 }],
     Saturday: [{ startHour: 5.25, endHour: 19.25 }],
@@ -826,10 +793,8 @@ export const SNOQUALMIE_DOOR_TO_DOOR_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'Door-to-Door',
   serviceHours: 'Weekdays 6 AM–8 PM; weekends 6:30 AM–7 PM.',
-  bookingInfo: 'Call 425-888-7001, from 1 day to 1 month ahead (3–5 days recommended).',
   hoursNote: 'Trips in the Carnation, Duvall and Monroe area run shorter hours: weekdays 7:30 AM–4:30 PM, weekends 8 AM–4 PM.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
-  bookingUrl: 'https://svtbus.org/door-to-door/',
   availability: {
     Weekday: [{ startHour: 6, endHour: 20 }],
     Saturday: [{ startHour: 6.5, endHour: 19 }],
@@ -850,9 +815,7 @@ export const ASPEN_DOWNTOWNER_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'Downtowner',
   serviceHours: 'Daily 10 AM–11 PM.',
-  bookingInfo: 'Free. Book in the Ride Roaring Fork app; call (970) 705-4438 for help booking.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
-  bookingUrl: 'https://www.aspen.gov/270/Downtowner',
   availability: ASPEN_DOWNTOWNER_DAILY,
   // Carbondale's Downtowner is its own service; hours aren't confirmed, so it's drawn faded.
   zoneMetadata: {
@@ -873,9 +836,7 @@ export const DURANGO_MICROTRANSIT_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'DuranGO! Microtransit',
   serviceHours: 'Daily 5 PM–midnight',
-  bookingInfo: 'Book in the DuranGO! app; rides cannot be booked by phone.',
   pickup: { method: 'curb-to-curb' } satisfies OnDemandPickup,
-  bookingUrl: 'https://www.durangoco.gov/1724/DuranGO-Microtransit',
   availability: DURANGO_MICROTRANSIT_DAILY,
 };
 
@@ -887,9 +848,7 @@ export const SAM_RIDES_SERVICE_AREA = {
   serviceName: 'SAM rides',
   serviceHours: 'Weekdays 5:30 AM–9 PM; Saturday 10:15 AM–4:30 PM; no Sunday service',
   hoursNote: "No service on New Year’s Day, Memorial Day, Independence Day, Labor Day, Thanksgiving or Christmas.",
-  bookingInfo: 'Call 503-668-3466, up to 2 weeks ahead or by 5 PM the day before.',
   tripRules: 'Trips can start and end anywhere in the area within 3 miles of Sandy.',
-  bookingUrl: 'https://www.ci.sandy.or.us/transit/page/sam-rides-demand-response-dial-ride-service',
   availability: {
     Weekday: [{ startHour: 5.5, endHour: 21 }],
     Saturday: [{ startHour: 10.25, endHour: 16.5 }],
@@ -904,9 +863,7 @@ export const TCTD_DIAL_A_RIDE_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'TCTD Dial-A-Ride',
   serviceHours: 'Weekdays 6 AM–6 PM.',
-  bookingInfo: 'Call 503-815-8283 (weekdays 8 AM–5 PM), up to 2 weeks ahead.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
-  bookingUrl: 'https://nwconnector.org/dial-a-ride-tctd/',
   availability: {
     Weekday: [{ startHour: 6, endHour: 18 }],
     Saturday: [],
@@ -922,8 +879,6 @@ export const CAT_DIAL_A_RIDE_SERVICE_AREA = {
   serviceName: 'CAT Dial-A-Ride',
   serviceHours: 'Weekdays 8:15 AM–4:45 PM.',
   hoursNote: 'No holiday service.',
-  bookingInfo: 'Call (541) 386-4202, ideally the day before.',
-  bookingUrl: 'https://www.ridecatbus.org/dial-a-ride/',
   availability: {
     Weekday: [{ startHour: 8.25, endHour: 16.75 }],
     Saturday: [],
@@ -938,9 +893,7 @@ export const BAY_TRANSIT_EXPRESS_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'Bay Transit Express',
   serviceHours: 'Weekdays 8 AM–5 PM.',
-  bookingInfo: 'Book in the Bay Transit Express app or web portal, or call 804-693-6977.',
   pickup: { method: 'virtual-stops', note: 'Riders meet the vehicle at a nearby corner shown in the app.' } satisfies OnDemandPickup,
-  bookingUrl: 'https://www.baytransit.org/express/',
   availability: {
     Weekday: [{ startHour: 8, endHour: 17 }],
     Saturday: [],
@@ -958,9 +911,7 @@ export const ISLAND_TRANSIT_GO_SERVICE_AREA = {
   serviceHours: 'Weekdays: Zone 3 (Oak Harbor) 8 AM–6 PM; Zone 58 (Clinton) 8 AM–5 PM.',
   // Stops are not tied to drawn zones, so the map uses the shorter Zone 58 day for both.
   hoursNote: 'Zone 3 (Oak Harbor) runs until 6 PM.',
-  bookingInfo: 'Book in the Island Transit GO! app or online, or call 360-678-7771 at least 2 hours ahead.',
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
-  bookingUrl: 'https://www.islandtransit.org/on-demand',
   availability: {
     Weekday: [{ startHour: 8, endHour: 17 }],
     Saturday: [],
@@ -976,9 +927,7 @@ export const ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA = {
   serviceName: 'All Points Dial-A-Ride',
   serviceHours: 'Weekdays 6 AM–4 PM.',
   hoursNote: 'No service on the last Friday of the month.',
-  bookingInfo: 'Call 970-249-0128 (Montrose County and Norwood) or 970-874-7334 (Delta County) by noon the business day before.',
   pickup: { method: 'door-to-door' } satisfies OnDemandPickup,
-  bookingUrl: 'https://www.allpointstransit.com/dial-a-ride/',
   availability: {
     Weekday: [{ startHour: 6, endHour: 16 }],
     Saturday: [],

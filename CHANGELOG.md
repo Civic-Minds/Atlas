@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **On-demand zone cards no longer give booking details**: Atlas shows how often service runs, not how to book a ride, so app names, phone numbers and booking rules are gone from the cards and from Atlas Studio MCP's answers
 - **Atlas Studio MCP's hour-by-hour figures list every branch running then, and count lone trips**: RTD 31's 106th & Melody branch had no row at rush hour, and hours with one trip read "no regular trips"
 - **A route list shows the slower frequency when service changes partway through a period**: STM's Green Line at midday read "every 4 min" though it runs every 6 after 9:17 AM
 - **Seasonal timetables update without waiting for review**: a ski or school-term timetable whose frequencies match the same date last year now goes onto the map at the next refresh, instead of being held as a suspicious change

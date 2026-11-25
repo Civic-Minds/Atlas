@@ -301,10 +301,10 @@ describe('on-demand pickup methods stated by agencies', () => {
     expect(onDemandPickupSentence(LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.onDemandServiceArea, undefined)).toBe('Pickups and drop-offs are at 118 set stops, shown on the map.');
   });
 
-  it('keeps booking details out of the hours text', () => {
+  it('keeps booking details out of the hours text, and holds no booking field', () => {
     for (const service of [CYRIDE_EASE_SERVICE_AREA, MUSKOKA_DRT_ON_DEMAND_AGENCY.onDemandServiceArea, LEAMINGTON_LT_GO_ON_DEMAND_AGENCY.onDemandServiceArea]) {
       expect(service.serviceHours).not.toMatch(/book|call/i);
-      expect(service.bookingInfo).toMatch(/call/);
+      expect(service).not.toHaveProperty('bookingInfo');
     }
   });
 });

@@ -5,7 +5,6 @@
     "sourceUrl": "https://www.golynx.com/news-events/neighborlink.stml",
     "sourceLabel": "LYNX NeighborLink page and LYNX NeighborLink layer",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://www.golynx.com/news-events/neighborlink.stml",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "pickup": {
       "method": "curb-to-curb"
@@ -211,8 +210,7 @@
           "retrievedAt": "2026-10-11"
         }
       }
-    },
-    "bookingInfo": "Same-day bookings only."
+    }
   },
   "features": [
     {

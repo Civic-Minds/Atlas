@@ -5,7 +5,6 @@
     "sourceUrl": "https://nrtransit.ca/microtransit/",
     "sourceLabel": "Niagara Region Transit microtransit page and its embedded interactive zone map",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://nrtransit.ca/microtransit/",
     "zoneMetadata": {
       "Lincoln": {
         "serviceName": "Microtransit",

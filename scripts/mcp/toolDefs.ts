@@ -97,7 +97,7 @@ export const TOOL_SUMMARIES: Record<string, string> = {
   route_bunching: 'How evenly a route\'s vehicles were spaced in past weeks, from Live\'s recordings.',
   // Pending Ryan's word-for-word OK (CIV-1870).
   route_now: 'Where a route\'s vehicles are bunched and where riders have waited longest right now, from Live\'s last half hour.',
-  on_demand_zones: 'An agency\'s on-demand zones, or those covering or near a place, with hours, pickup, trip rules and booking.',
+  on_demand_zones: 'An agency\'s on-demand zones, or those covering or near a place, with hours, pickup and trip rules.',
   night_service: 'An agency\'s routes that run through the night, every 30, 60 or 90 min or better from 2 to 5 AM.',
   frequent_coverage: 'The share of a metro\'s people within a 10 min walk of a route every 15 or 30 min, from Atlas\'s dated coverage table.',
   schedule_changes: 'What changed between an agency\'s two most recent schedules: routes added and removed, and frequency changes.',
@@ -107,7 +107,7 @@ const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHi
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION, question_id: QUESTION_ID }, required: [...(t.inputSchema.required ?? []), 'question', 'question_id'] } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.23.5';
+export const SERVER_VERSION = '0.24.0';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of

@@ -1,6 +1,6 @@
 /**
  * on_demand_zones (CIV-2078): an agency's on-demand zones, or those covering or near a place, with each zone's hours,
- * booking, pickup and trip rules. It reads the published on-demand release the map reads (shared/onDemandData.ts,
+ * pickup and trip rules. No booking details (Atlas is not a trip-planning tool; Ryan, 2026-11-24). It reads the published on-demand release the map reads (shared/onDemandData.ts,
  * beta bucket for now) and words every field as the map's zone card does (resolveOnDemandZone,
  * formatOnDemandHoursLines, onDemandPickupSentence). Local and hosted servers both serve it.
  */
@@ -84,7 +84,6 @@ function zoneText(service: OnDemandServiceDetails, areaName: string | undefined)
     ...(z.eligibility ? { eligibility: z.eligibility } : {}),
     pickup: onDemandPickupSentence(service, areaName),
     tripRules: z.tripRules ?? null,
-    booking: z.bookingInfo ?? null,
   };
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v != null));
 }

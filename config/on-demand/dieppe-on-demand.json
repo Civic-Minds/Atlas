@@ -28,8 +28,6 @@
     "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
     "sourceLabel": "City of Dieppe on-demand transit pages and service zone and transfer point GeoJSON (agency-supplied)",
     "sourceRetrievedAt": "2026-11-14",
-    "bookingInfo": "Book in the Blaise Transit app, at ride.blaisetransit.com or call 506-877-7818, 30 minutes to 7 days ahead.",
-    "bookingUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
     "tripRules": "Trips can start and end anywhere in the on-demand zone, or at the 8 transfer points outside it.",
     "zoneMetadata": {
       "Dieppe": {

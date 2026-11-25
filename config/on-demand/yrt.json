@@ -5,8 +5,6 @@
     "sourceUrl": "https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx",
     "sourceLabel": "YRT On-Request pages and service-area shapefiles (agency-supplied)",
     "sourceRetrievedAt": "2026-11-24",
-    "bookingInfo": "Book in the YRT On-Request app, at mor.app.ridewithvia.com or call 1-888-762-2950, from 45 minutes to one day ahead.",
-    "bookingUrl": "https://mor.app.ridewithvia.com/",
     "pickup": {
       "method": "curb-to-curb"
     },
@@ -35,7 +33,6 @@
       },
       "Kleinburg-Nashville": {
         "serviceHours": "Monday to Friday 5:30 a.m. to 8 p.m.",
-        "bookingInfo": "Book in the YRT On-Request app, at mor.app.ridewithvia.com or call 1-888-762-2950, from 45 minutes to one day ahead. A trip under 500 metres can’t be booked.",
         "availability": {
           "Weekday": [
             {
@@ -76,7 +73,6 @@
       },
       "Markham": {
         "serviceHours": "Monday to Friday 6 a.m. to 8 p.m.",
-        "bookingInfo": "Book in the YRT On-Request app, at mor.app.ridewithvia.com or call 1-888-762-2950, from 45 minutes to one day ahead. A trip under 500 metres can’t be booked.",
         "availability": {
           "Weekday": [
             {
@@ -96,7 +92,6 @@
       "North-Central": {
         "serviceHours": "Monday to Friday 5:30 a.m. to 11 p.m.; Saturday 8 a.m. to 11 p.m.; Sunday and holidays 8 a.m. to 8 p.m.",
         "hoursNote": "Holidays run Sunday hours.",
-        "bookingInfo": "Book in the YRT On-Request app, at mor.app.ridewithvia.com or call 1-888-762-2950, from 45 minutes to one day ahead. A trip under 500 metres can’t be booked.",
         "availability": {
           "Weekday": [
             {
@@ -125,7 +120,6 @@
       },
       "Richmond Hill Local": {
         "serviceHours": "Monday to Friday 7 a.m. to 3 p.m.",
-        "bookingInfo": "Book in the YRT On-Request app, at mor.app.ridewithvia.com or call 1-888-762-2950, from 45 minutes to one day ahead. A trip under 500 metres can’t be booked.",
         "availability": {
           "Weekday": [
             {
@@ -145,7 +139,6 @@
       "Stouffville": {
         "serviceHours": "Monday to Friday 5:30 a.m. to 11 p.m.; Saturday 8 a.m. to 11 p.m.; Sunday and holidays 8 a.m. to 8 p.m.",
         "hoursNote": "Holidays run Sunday hours.",
-        "bookingInfo": "Book in the YRT On-Request app, at mor.app.ridewithvia.com or call 1-888-762-2950, from 45 minutes to one day ahead. A trip under 500 metres can’t be booked.",
         "availability": {
           "Weekday": [
             {
@@ -175,7 +168,6 @@
       "Woodbridge": {
         "serviceHours": "Monday to Friday 10 a.m. to 2 p.m.; weekends and holidays 8 a.m. to 8 p.m.",
         "hoursNote": "Holidays run weekend hours.",
-        "bookingInfo": "Book in the YRT On-Request app, at mor.app.ridewithvia.com or call 1-888-762-2950, from 45 minutes to one day ahead. A trip under 500 metres can’t be booked.",
         "availability": {
           "Weekday": [
             {

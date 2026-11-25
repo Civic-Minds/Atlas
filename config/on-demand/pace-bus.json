@@ -5,7 +5,6 @@
     "sourceUrl": "https://www.pacebus.com/ondemand",
     "sourceLabel": "Pace On Demand page and Pace On_Demand layer",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://www.pacebus.com/ondemand",
     "eligibility": "Open to the general public.",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {

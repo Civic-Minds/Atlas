@@ -7,8 +7,6 @@
     "sourceRetrievedAt": "2026-11-14",
     "serviceHours": "Monday to Saturday 8:30 a.m. to 4:30 p.m. at select stops, connecting to the four transit hubs (Guelph Central Station, University Centre, Woodlawn Smart Centres and Gordon/Clair). Sunday 7:15 to 9 a.m. and 7:15 to 10 p.m. at all stops except those served by 98 Speedvale and 99 Mainline. Statutory holidays 9:15 a.m. to 6:45 p.m.",
     "hoursNote": "Statutory holidays: 9:15 a.m. to 6:45 p.m. Civic Holiday and Boxing Day run Sunday hours; Christmas Eve runs regular hours.",
-    "bookingInfo": "Book in the Guelph Transit On-demand app, at book.ondemandyourway.com or call 519-822-1811. Last-minute rides are possible; booking seven days ahead is recommended.",
-    "bookingUrl": "https://book.ondemandyourway.com/",
     "pickup": {
       "method": "fixed-stops"
     },
