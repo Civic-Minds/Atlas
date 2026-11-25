@@ -1,11 +1,10 @@
 import { stopCardSiblings } from '../../utils/stopStation';
-import { shortDate } from '../../../shared/dateText';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
-import { buildCurrentRoute, routeVariantFamily } from '../../utils/routeCardRoute';
+import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../../utils/routeCardRoute';
 import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
@@ -35,7 +34,6 @@ import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
 import { collectStopHubSiblings, nearbyRouteClosestStops, stopHubCandidates } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
-import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 import type { CompareSide } from '../../utils/compareSides';
 import { FEATURES } from '../../../shared/config';
@@ -797,14 +795,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ? (currentRoute as any).agencySlug as string | undefined
       : undefined;
   const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
-  const routeIsStale = (() => {
-    return routeAgency ? isAgencyFeedExpired(routeAgency) : false;
-  })();
-  const expDateStr = (() => {
-    const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
-    if (!exp || exp.length !== 8) return '';
-    return shortDate(exp) ?? '';
-  })();
+  const { routeIsStale, expDateStr } = routeCardFeedDates(routeAgency);
 
   if (!panelShouldRender) return null;
 

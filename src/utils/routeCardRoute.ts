@@ -1,6 +1,8 @@
 import type { DayType, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { findVariantFamily } from './routeVariants';
 import { branchDisplayPeriodHeadway, buildRouteFacts } from './routeFacts';
+import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../shared/feedAvailability';
+import { shortDate } from '../../shared/dateText';
 
 /** The route card's route for one day and period: its features, lettered variants folded in (CIV-844: each Compare map's card). */
 export function buildCurrentRoute(selectedRoute: string | null, nonCorridorLayers: Record<string, GeoJSON.FeatureCollection>, currentDay: DayType, period: TimePeriod) {
@@ -70,4 +72,14 @@ export function routeVariantFamily(currentRoute: ReturnType<typeof buildCurrentR
     .map(f => f.properties as unknown as ShapeProperties)
     .filter(p => p.routeId && (p.day === undefined || p.day === currentDay));
   return findVariantFamily(feats, currentRoute.routeShortName ?? null, period, slug);
+}
+
+/**
+ * The route card's feed dates for its agency: whether the schedule has ended (routeIsStale) and the date it runs through
+ * (expDateStr, "Dec 21"; empty when unknown). The map's card and Live's (CIV-2901) both read them here.
+ */
+export function routeCardFeedDates(agency: Parameters<typeof effectiveFeedExpiry>[0] & { timezone?: string | null } | undefined): { routeIsStale: boolean; expDateStr: string } {
+  if (!agency) return { routeIsStale: false, expDateStr: '' };
+  const exp = effectiveFeedExpiry(agency);
+  return { routeIsStale: isAgencyFeedExpired(agency), expDateStr: exp && exp.length === 8 ? shortDate(exp) ?? '' : '' };
 }
