@@ -45,6 +45,7 @@ import {
   headlineDeparturesInWindow,
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
+  clockTimes,
 } from './headway-utils.js';
 import { LEGACY_PIECE_MINIMUM } from './pieceParams.js';
 import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadingsFromEnv, directionPieceReadings, headlineTrunk, pieceReadingsForFeature, trunkLongEnough, nameUnnamedPiece, piecePeriodTreatments, busiestStop } from './pieces.js';
@@ -513,7 +514,7 @@ export function directionStretches(
     // spacing (#1072). GO 33's PM at 00296 keeps 15:40, 18:18, 18:58 and its old reading (158).
     const before = stretchPeriods(all), after = stretchPeriods(departing);
     const sparseFaster = PERIOD_WINDOWS.some(({ key, start, end }) => {
-      if (forCrossMidnightWindow([...departing.times], end).filter(t => t >= start && t < end).length > HEADLINE_MIN_DEPARTURES) return false;
+      if (forCrossMidnightWindow(clockTimes(departing.times), end).filter(t => t >= start && t < end).length > HEADLINE_MIN_DEPARTURES) return false;
       const b = before[key], a = after[key];
       const faster = a.value != null && (b.value == null || a.value < b.value);
       const newlySteady = (a.sustained === true && b.sustained !== true) || (a.sustainedMid === true && b.sustainedMid !== true) || (a.counts && !b.counts);
@@ -699,7 +700,7 @@ const READ_WINDOWS: readonly { key: ReadKey; start: number; end: number }[] = [.
 /** D8: sustained AND the first departure in [start, end] is before the midpoint AND the last after it. */
 export function sustainedWithMidpoint(times: readonly number[], sustained: boolean | undefined, start: number, end: number): boolean | null {
   if (sustained == null) return null;
-  const inWindow = times.filter(t => t >= start && t <= end);
+  const inWindow = clockTimes(times).filter(t => t >= start && t <= end);
   const midpoint = (start + end) / 2;
   return sustained && inWindow.length > 0 && inWindow[0] < midpoint && inWindow[inWindow.length - 1] > midpoint;
 }
@@ -727,7 +728,7 @@ export function periodSustainedMid(times: readonly number[]): Partial<Record<Per
 export function isOneGapPeriod(times: readonly number[], start: number, end: number, value: number | null, sustained: boolean | undefined): boolean {
   // Steady periods show their cadence; unsteady ones, and those too thin to judge (two departures), show the wait.
   if (value == null || sustained === true) return false;
-  const all = [...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b);
+  const all = [...new Set(forCrossMidnightWindow(clockTimes(times), end))].sort((a, b) => a - b);
   const inWindow = all.filter(t => t >= start && t <= end);
   if (inWindow.length === 0) return false;
   const before = all.filter(t => t < start);
@@ -761,7 +762,7 @@ export function isOneGapPeriod(times: readonly number[], start: number, end: num
  */
 function unevenWait(times: readonly number[], start: number, end: number, coverage: number | null): number | null {
   if (coverage == null || coverage > PERIOD_COVERAGE_MAX_HEADWAY) return coverage;
-  const all = [...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b);
+  const all = [...new Set(forCrossMidnightWindow(clockTimes(times), end))].sort((a, b) => a - b);
   const t = all.filter(x => x >= start && x < end);
   if (t.length === 0) return coverage;
   let worst = 0;
@@ -1057,7 +1058,7 @@ export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
     // Settled rule 3: a tail that does not run steadily is left out. Only whether the tail counts for
     // the period changes here; its own value, the main stretch, the published steady flag and the
     // all-day branch test (countsSettled) are unchanged.
-    const ordered = [...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b);
+    const ordered = [...new Set(forCrossMidnightWindow(clockTimes(times), end))].sort((a, b) => a - b);
     const inWindow = ordered.filter(t => t >= start && t <= end);
     const windowGaps = inWindow.slice(1).map((t, i) => t - inWindow[i]);
     const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headways[key] ?? 0));
@@ -1158,7 +1159,9 @@ export function nightServicePasses(
 }
 
 /** One night: this evening's departures and one following morning's, as `nightTimes` (nightServicePasses' rules). */
-function oneNightPasses(times: readonly number[], nightTimes: readonly number[], maxGap: number, handover?: NightHandover): boolean | null {
+function oneNightPasses(exactTimes: readonly number[], exactNightTimes: readonly number[], maxGap: number, handover?: NightHandover): boolean | null {
+  // CIV-1958: clock minutes (clockMinute), so a gap of 60 minutes and a few seconds is the timetable's 60 (NYCT Q1 overnight).
+  const times = clockTimes(exactTimes), nightTimes = clockTimes(exactNightTimes);
   const inWindowAt = (t: number) => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN;
   const all = [...new Set(nightTimes)].sort((a, b) => a - b);
   const inWindow = all.filter(inWindowAt);
@@ -1211,7 +1214,7 @@ export const NIGHT_ONLY_DAY_END_MIN = 22 * 60;
 
 /** #1322: the stretch runs only at night: no regular daytime service (at most NIGHT_ONLY_MAX_DAY_DEPARTURES from 9 AM to 10 PM). */
 export function nightOnlyStretch(s: Pick<Stretch, 'times'>): boolean {
-  return s.times.filter(t => t >= NIGHT_ONLY_DAY_START_MIN && t < NIGHT_ONLY_DAY_END_MIN).length <= NIGHT_ONLY_MAX_DAY_DEPARTURES;
+  return clockTimes(s.times).filter(t => t >= NIGHT_ONLY_DAY_START_MIN && t < NIGHT_ONLY_DAY_END_MIN).length <= NIGHT_ONLY_MAX_DAY_DEPARTURES;
 }
 
 /**
@@ -1222,7 +1225,8 @@ export function nightOnlyStretch(s: Pick<Stretch, 'times'>): boolean {
 const NIGHT_MIDPOINT_MIN = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
 export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean {
   const mid = NIGHT_MIDPOINT_MIN;
-  return nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < mid) && nightTimes.some(x => x >= mid && x <= STRETCH_NIGHT_END_MIN);
+  const t = clockTimes(nightTimes);
+  return t.some(x => x >= STRETCH_NIGHT_START_MIN && x < mid) && t.some(x => x >= mid && x <= STRETCH_NIGHT_END_MIN);
 }
 
 /**
