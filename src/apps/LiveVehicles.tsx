@@ -33,7 +33,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { liveAgencyStatus, newestReportSec, worstLiveStatus, type LiveAgencyFeed } from '../../shared/liveStatus';
 import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
+import { compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
 import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -43,7 +43,12 @@ import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
 import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
-import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
+import LiveRoutePerformance, { agencyHour } from '../components/Live/LiveRoutePerformance';
+import { RouteCardHeadway } from '../components/Interval/panels/RouteCardHeadway';
+import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../utils/routeCardRoute';
+import { buildDirectionGroups } from '../utils/routeCardDirectionGroups';
+import type { HoveredBranch, TimePeriod } from '../hooks/useIntervalStats';
+import { NO_HEADWAY_LIMIT } from '../../shared/rules/limits';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
 import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
@@ -554,17 +559,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Direction drill-down within a route
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
-  // The direction picked in "Right now" and the cars it counts there (#1163): the list shows those same cars.
-  const [counted, setCounted] = useState<{ directionId: number; label: string; ids: string[] } | null>(null);
-  const countedDirection = useRef<number | null>(null);
-  useEffect(() => { setSelectedDirection(null); countedDirection.current = null; }, [selectedRoute]);
-  // Switching direction leaves a destination picked in the other one: back to that direction's destinations.
-  useEffect(() => {
-    const d = counted?.directionId ?? null;
-    if (d == null) return;
-    if (countedDirection.current != null && countedDirection.current !== d) setSelectedDirection(null);
-    countedDirection.current = d;
-  }, [counted?.directionId]);
+  useEffect(() => { setSelectedDirection(null); }, [selectedRoute]);
   useLiveViewUrl({
     active, selectedRoute, cardVehicleId: cardVehicle?.id ?? null, selectedDirection, selectedGroup, pendingRouteRef,
     onRestore: (vehicle, group) => {
@@ -573,33 +568,17 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     },
   });
 
-  // The vehicles the list shows: the ones "Right now" counts in the picked direction, so Vehicles and On time count
-  // exactly the cars listed (#1163). Every vehicle where the route has no "Right now" count. All stay on the map.
-  const listVehicles = useMemo(() => {
-    if (!selectedGroup) return [];
-    if (!counted) return selectedGroup.vehicles;
-    const ids = new Set(counted.ids);
-    return selectedGroup.vehicles.filter(v => ids.has(v.id));
-  }, [selectedGroup, counted]);
+  // The vehicles the list shows: every one on the route, as "Right now" shows every direction (CIV-2901 v3).
+  const listVehicles = useMemo(() => selectedGroup?.vehicles ?? [], [selectedGroup]);
 
   // Group vehicles by destination; every listed vehicle lands in a group (see groupVehiclesByDirection).
-  // Within a picked direction a car with no destination of its own is that direction's ("Westbound"), not "Direction unclear".
-  const vehiclesByDirection = useMemo(() => {
-    if (!selectedGroup) return null;
-    const groups = groupVehiclesByDirection(listVehicles, directionLabels);
-    const unclear = groups.get(DIRECTION_UNCLEAR);
-    if (!counted?.label || !unclear) return groups;
-    groups.delete(DIRECTION_UNCLEAR);
-    groups.set(counted.label, [...(groups.get(counted.label) ?? []), ...unclear]);
-    return groups;
-  }, [selectedGroup, listVehicles, directionLabels, counted?.label]);
+  const vehiclesByDirection = useMemo(
+    () => (selectedGroup ? groupVehiclesByDirection(listVehicles, directionLabels) : null),
+    [selectedGroup, listVehicles, directionLabels],
+  );
 
   // Worth showing groups when there is more than one, or the one group has a real destination name.
-  // Where "Right now" counts a direction, the list is that whole direction, in route order, never one destination of it, so
-  // its Vehicles and On time count exactly the cars listed (CIV-1151; 506 read 12 over a High Park list of 10). The
-  // destination step stays for routes "Right now" doesn't count.
-  const destination = counted ? null : selectedDirection;
-  useEffect(() => { if (counted) setSelectedDirection(null); }, [counted]);
+  const destination = selectedDirection;
   const canGroupByDirection = useMemo(() => {
     if (!vehiclesByDirection || vehiclesByDirection.size === 0) return false;
     if (vehiclesByDirection.size > 1) return true;
@@ -663,21 +642,17 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const routeKey = fc ? routeKeyForShortName(selectedGroup.agencySlug, fc.features, selectedGroup.routeShortName, getNowDay()) : null;
     const scheduled = fc && routeKey
       ? liveScheduledHeadway(
-        fc, routeKey, getNowDay(), periodKeyForHour(new Date().getHours()) ?? 'all', counted?.directionId ?? null,
-        routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName), counted?.label ?? null,
+        fc, routeKey, getNowDay(), periodKeyForHour(new Date().getHours()) ?? 'all', null,
+        routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName), null,
       )
       : null;
 
     return scheduled != null
       ? `${capitalizeFirst(headwayAbout(gap))} · scheduled ${headwayEvery(Math.round(scheduled))}`
       : capitalizeFirst(headwayAbout(gap));
-  }, [selectedGroup, headwaysBySlug, routeLayer, counted?.directionId, counted?.label, agencies]);
+  }, [selectedGroup, headwaysBySlug, routeLayer, agencies]);
 
-  // CIV-2045: the card's own Scheduled lines for the picked direction, shown in Live's Right now (no range of its own).
-  const selectedScheduledRows = useMemo(
-    () => (selectedGroup ? liveScheduledRowsNow(routeLayer(selectedGroup.agencySlug), agencies, selectedGroup.agencySlug, selectedGroup.routeShortName, counted) : null),
-    [selectedGroup, routeLayer, counted, agencies],
-  );
+
 
   // A route picked (from a link or the address) that has no card: say why, never show nothing.
   const requestedRouteNote = useMemo((): string | null => {
@@ -744,6 +719,39 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   useEffect(() => { setRetryAt(feedsDownRetryAt); }, [feedsDownRetryAt, setRetryAt]);
   useEffect(() => () => setRetryAt(null), [setRetryAt]);
 
+  // CIV-2901 v3 (Ryan: "why are we not using the same code as in the regular app"): the route view is the map's own route
+  // card (RouteCardHeadway), built by the map's own builders from the agency's route layer for today and the agency's
+  // current period; Live's "Right now" and the vehicle list sit in the card's own section slot.
+  const [cardPeriod, setCardPeriod] = useState<TimePeriod>('all');
+  const [hoveredBranch, setHoveredBranch] = useState<HoveredBranch | null>(null);
+  useEffect(() => {
+    setCardPeriod(selectedGroup ? (periodKeyForHour(agencyHour(selectedGroup.agencySlug)) ?? 'all') : 'all');
+    setHoveredBranch(null);
+  }, [selectedRoute]); // eslint-disable-line react-hooks/exhaustive-deps
+  const routeCard = useMemo(() => {
+    if (!selectedGroup) return null;
+    const slug = selectedGroup.agencySlug;
+    const fc = routeLayer(slug);
+    const day = getNowDay();
+    const key = fc ? routeKeyForShortName(slug, fc.features, selectedGroup.routeShortName, day) : null;
+    if (!fc || !key) return null;
+    const layer = { [slug]: fc };
+    const currentRoute = buildCurrentRoute(key, layer, day, cardPeriod);
+    if (!currentRoute) return null;
+    const { directionLabels: labelOverrides, directionHeadsigns } = routeDirectionOverrides(agencies, slug, selectedGroup.routeShortName);
+    const agency = agencies.find(a => a.slug === slug);
+    return {
+      slug, fc, agency, currentRoute,
+      variantFamily: routeVariantFamily(currentRoute, layer, day, cardPeriod),
+      directionGroups: buildDirectionGroups(currentRoute, cardPeriod, labelOverrides, directionHeadsigns),
+      ...routeCardFeedDates(agency),
+    };
+  }, [selectedGroup, routeLayer, agencies, cardPeriod]);
+  // Each direction's own destination rows for "Right now" (CIV-2045), every direction at once.
+  const scheduledRowsFor = useCallback((directionId: number, label: string) => (
+    selectedGroup ? liveScheduledRowsNow(routeLayer(selectedGroup.agencySlug), agencies, selectedGroup.agencySlug, selectedGroup.routeShortName, { directionId, label }) : null
+  ), [selectedGroup, routeLayer, agencies]);
+
   if (!active) return null;
 
   const hasLiveElsewhere = offScreenOnly && !query;
@@ -809,7 +817,102 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         ))}
       </SidebarCardSection>
     </SidebarCardShell>
+  ) : selectedGroup && routeCard ? (
+    <RouteCardHeadway
+      currentRoute={routeCard.currentRoute}
+      agencyFeatures={routeCard.fc.features}
+      variantFamily={routeCard.variantFamily}
+      routeSlug={routeCard.slug}
+      routeAgency={routeCard.agency}
+      setSelectedAgencySlug={undefined}
+      // A variant link names a map route key, which Live can't open; going back closes the card.
+      setSelectedRoute={r => { if (r == null) { setSelectedRoute(null); setFocusedVehicle(null); } }}
+      back={destination
+        ? { to: agencyShortNameBySlug(agencies, selectedGroup.agencySlug), onClick: () => setSelectedDirection(null) }
+        : { to: LIVE_TAB_LABEL, onClick: () => { setSelectedRoute(null); setFocusedVehicle(null); } }}
+      // Live has no frequency filter, so every row shows as it is and no filter notice applies.
+      maxHeadway={NO_HEADWAY_LIMIT}
+      period={cardPeriod}
+      setPeriod={setCardPeriod}
+      directionGroups={routeCard.directionGroups}
+      hideSpan={false}
+      routeIsStale={routeCard.routeIsStale}
+      selectedRouteOutOfFilter={false}
+      hideFilterNotices
+      expDateStr={routeCard.expDateStr}
+      hoveredBranch={hoveredBranch}
+      setHoveredBranch={setHoveredBranch}
+      onInfoOpen={onInfoOpen}
+      extra={(
+        <>
+          <LiveRoutePerformance
+            key={selectedRoute ?? ''}
+            slug={selectedGroup.agencySlug}
+            routeShortName={selectedGroup.routeShortName}
+            vehicles={selectedGroup.vehicles}
+            feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
+            scheduledRowsFor={scheduledRowsFor}
+          />
+          <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
+            {/* Match static route cards: destinations first, live vehicles second. */}
+            {selectedGroup.vehicles.length === 0 ? (
+              <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
+            ) : canGroupByDirection && !destination ? (
+              orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
+                <CardDirectionRow
+                  key={dirKey}
+                  label={dirKey}
+                  subLabel={directionSummary(vehicles, selectedRouteModeWord)}
+                  onClick={() => setSelectedDirection(dirKey)}
+                  chevron
+                />
+              ))
+            ) : !vehiclesOpen && !destination ? (
+              // CIV-2901 (mock v2): the vehicle list waits behind "N vehicles ›"; the counts per destination are in Right now above.
+              <CardDirectionRow label={countOf(allListed.length, 'vehicle')} labelWeight="regular" chevron onClick={() => setVehiclesOpen(true)} />
+            ) : (
+              <div ref={vehicleListRef} className="space-y-2">
+              {shownVehicles.map((v, i) => {
+                const colors = getVehicleColors(v.status, colorMode);
+                return (
+                  // The route card's direction row (CIV-1117 preview), with the vehicle's delay at the right end.
+                  <CardDirectionRow
+                    key={v.id}
+                    label={vehicleRowName(v, i, selectedRouteModeWord)}
+                    singleLine
+                    onClick={() => {
+                      setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
+                      setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+                      setVehicleCard({ routeKey: buildRouteKey(v.agencySlug, v.routeShortName), id: v.id });
+                    }}
+                    // No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043).
+                    // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
+                    value={(v.speedKmh != null || delayLabel(v)) ? (
+                      <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
+                        {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
+                        {delayLabel(v) && (
+                          <span
+                            style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                            className={`text-xs font-black ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                          >
+                            {delayLabel(v)}
+                          </span>
+                        )}
+                      </span>
+                    ) : undefined}
+                  />
+                );
+              })}
+              {/* The card never scrolls: at the busiest times it lists as many vehicles as fit and counts the rest (all are on the map). */}
+              {hiddenVehicles > 0 && <p className="text-xs font-bold text-[var(--text-dim)] pt-1">{andOthers(hiddenVehicles, 'vehicle')}</p>}
+              </div>
+            )}
+          </SidebarCardSection>
+        </>
+      )}
+    />
   ) : selectedGroup ? (
+    // The route layer hasn't loaded (or has no such route): Live's own header over the same sections.
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
         {/* The same header in the direction list as on the route and vehicle cards; the back link goes up one level.
@@ -840,14 +943,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         routeShortName={selectedGroup.routeShortName}
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
-        onCounted={setCounted}
-        scheduledRows={selectedScheduledRows}
+        scheduledRowsFor={scheduledRowsFor}
       />
       <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (
           <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
-        ) : canGroupByDirection && !counted && !destination ? (
+        ) : canGroupByDirection && !destination ? (
           orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
             <CardDirectionRow
               key={dirKey}
