@@ -43,3 +43,19 @@ describe('fetchFeed', () => {
     expect((1 + FEED_RETRIES) * FEED_TIMEOUT_MS + FEED_RETRIES * FEED_RETRY_DELAY_MS).toBeLessThan(60_000);
   });
 });
+
+describe('open fetches (#1799)', () => {
+  it('holds at most MAX_OPEN_FETCHES connections open at once', async () => {
+    const { fetchFeed, MAX_OPEN_FETCHES } = await import('./fetchFeed');
+    let openNow = 0, most = 0;
+    const release: Array<() => void> = [];
+    const orig = globalThis.fetch;
+    globalThis.fetch = (async () => { openNow++; most = Math.max(most, openNow); await new Promise<void>(r => release.push(r)); openNow--; return new Response('x', { status: 200 }); }) as typeof fetch;
+    try {
+      const all = Promise.all(Array.from({ length: MAX_OPEN_FETCHES + 4 }, () => fetchFeed('https://example.test/feed.pb')));
+      for (let i = 0; i < 40 && release.length + 0 < MAX_OPEN_FETCHES + 4; i++) { await new Promise(r => setTimeout(r, 1)); while (release.length) release.shift()!(); }
+      await all;
+      expect(most).toBeLessThanOrEqual(MAX_OPEN_FETCHES);
+    } finally { globalThis.fetch = orig; }
+  });
+});
