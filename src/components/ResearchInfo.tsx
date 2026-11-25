@@ -5,6 +5,25 @@ import { CARD_HEADER_ONLY, CARD_SUMMARY, CARD_TITLE } from './Interval/cardUi';
 import { CardBackLink } from './CardBack';
 import { SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDTH } from '../styles';
 import { useSidebarFrame } from '../context/SidebarFrame';
+import { useViewport } from '../context/ViewportContext';
+import { shouldLoadAgencyDetails } from '../hooks/useAgencyData';
+import PanelEmpty from './ui/PanelEmpty';
+import { ZOOM_IN_TO_SEE_ROUTES } from '../content/noticeCopy';
+
+/**
+ * #1817: below the detail zoom a research view loads no route data, so it draws no route at all (not just the less
+ * frequent ones); a search loads them at any zoom.
+ */
+export function useResearchZoomedOut(query: string): boolean {
+  const { zoom } = useViewport();
+  return !shouldLoadAgencyDetails(zoom ?? undefined, query);
+}
+
+/** A research view with no list of its own (Frequent Service): a card under the info card saying to zoom in, while zoomed out. */
+export function ResearchZoomInCard({ query }: { query: string }) {
+  if (!useResearchZoomedOut(query)) return null;
+  return <Panel enter sidebarSurface className="shrink-0"><PanelEmpty>{ZOOM_IN_TO_SEE_ROUTES}</PanelEmpty></Panel>;
+}
 
 /**
  * The one info card every research view (Night, Frequent Service, future ones) shows in the same place

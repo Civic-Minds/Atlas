@@ -16,10 +16,10 @@ describe('Night list when the map has no routes', () => {
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  it('says it is zoomed out, not that no routes run (CIV-1337)', async () => {
+  it('says to zoom in, not that no routes run (CIV-1337, #1817)', async () => {
     viewport = { bounds, zoom: 6 };
     renderNight();
-    expect(await screen.findByText('Zoomed out. Some less frequent routes are hidden.')).toBeInTheDocument();
+    expect(await screen.findByText('Zoom in to see the routes.')).toBeInTheDocument();
     expect(screen.queryByText(/No routes here run/)).not.toBeInTheDocument();
   });
 
@@ -27,6 +27,6 @@ describe('Night list when the map has no routes', () => {
     viewport = { bounds, zoom: 12 };
     renderNight();
     await waitFor(() => expect(screen.getByText(/No routes here run every 60 min or better/)).toBeInTheDocument());
-    expect(screen.queryByText(/Zoomed out/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Zoom in to see/)).not.toBeInTheDocument();
   });
 });
