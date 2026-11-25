@@ -30,8 +30,25 @@ describe('viewLayers', () => {
   });
 
   it('draws (and so loads and reports) on-demand areas only with route layers on: never in Studio (#1635)', () => {
-    expect(mapDrawsOnDemand('map', new Set(), true)).toBe(true);
-    expect(mapDrawsOnDemand('map', new Set(), false)).toBe(false);
-    expect(mapDrawsOnDemand('night', new Set(), true)).toBe(false);
+    expect(mapDrawsOnDemand('map', new Set(), true, Infinity)).toBe(true);
+    expect(mapDrawsOnDemand('map', new Set(), false, Infinity)).toBe(false);
+    expect(mapDrawsOnDemand('night', new Set(), true, Infinity)).toBe(false);
+  });
+
+  // CIV-2898 guard. Ryan, 2026-11-24: "on demand doens't have deadways so why do they show up if i select 10 mins lol", "1".
+  it('hides on-demand zones under any frequency filter, and shows them only with none (all service)', async () => {
+    const { PUBLIC_TIER_MAXES } = await import('../rules/frequency');
+    for (const max of PUBLIC_TIER_MAXES) expect(mapDrawsOnDemand('map', new Set(), true, max)).toBe(false);
+    expect(mapDrawsOnDemand('map', new Set([ON_DEMAND_MODE]), true, 30)).toBe(false);
+    expect(mapDrawsOnDemand('map', new Set(), true, Infinity)).toBe(true);
+  });
+
+  it('every caller passes the frequency filter to the one test', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { resolve } = await import('node:path');
+    for (const f of ['src/components/Interval/MapCanvas.tsx', 'src/apps/Interval.tsx']) {
+      const src = readFileSync(resolve(__dirname, '../..', f), 'utf8');
+      for (const call of src.match(/mapDrawsOnDemand\([^;]*;/g) ?? []) expect(call).toMatch(/maxHeadway\);$/);
+    }
   });
 });

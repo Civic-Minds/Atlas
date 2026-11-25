@@ -521,7 +521,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
   // #1635: on-demand areas are part of the route map; a view without route layers (Studio) neither loads nor reports them.
-  const onDemandShown = FEATURES.onDemand && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers);
+  const onDemandShown = FEATURES.onDemand && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers, maxHeadway);
   // Phones: the error notices go to Interval's footer row as one "Error" pill (CIV-1057).
   const phoneErrorsKey = isPhone ? JSON.stringify([
     ...(onDemandStatus === 'error' && onDemandShown ? [ON_DEMAND_AREAS_FAILED] : []),

@@ -518,7 +518,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const onDemandStatus = useOnDemandStatus();
   // #1635: only where the map draws on-demand areas (the same test as MapCanvas's); Studio draws none, so no notice.
   const onDemandFailedInFooter = footerHasNoticeRoom && onDemandStatus === 'error' && FEATURES.onDemand
-    && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers);
+    && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers, maxHeadway);
   const compareAvailable = phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   // Side B from a link's own settings; at /apps/compare without them, B starts from A's settings as the tab does.

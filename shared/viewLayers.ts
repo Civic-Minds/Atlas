@@ -31,11 +31,21 @@ export function viewShowsOnDemand(view: MapViewKind, selectedModes: ReadonlySet<
 }
 
 /**
- * Whether the map draws on-demand areas, the one test for loading them and for saying they failed (#1635): the view
- * shows them and the map draws its route layers. Studio (no route layers) draws none, so never reports them.
+ * Whether on-demand zones show under the frequency filter (CIV-2898). Ryan, 2026-11-24: "on demand doens't have
+ * deadways so why do they show up if i select 10 mins lol", then "1": zones show only with no frequency filter (all
+ * service), and are hidden under any frequency filter.
  */
-export function mapDrawsOnDemand(view: MapViewKind, selectedModes: ReadonlySet<number>, routeLayers: boolean): boolean {
-  return routeLayers && viewShowsOnDemand(view, selectedModes);
+export function onDemandShownUnderFilter(maxHeadway: number): boolean {
+  return maxHeadway === Infinity;
+}
+
+/**
+ * Whether the map draws on-demand areas, the one test for loading them and for saying they failed (#1635): the view
+ * shows them, the map draws its route layers, and no frequency filter is set (CIV-2898). Studio (no route layers)
+ * draws none, so never reports them.
+ */
+export function mapDrawsOnDemand(view: MapViewKind, selectedModes: ReadonlySet<number>, routeLayers: boolean, maxHeadway: number): boolean {
+  return routeLayers && viewShowsOnDemand(view, selectedModes) && onDemandShownUnderFilter(maxHeadway);
 }
 
 /** Mode options a view offers: research views drop On-demand. */

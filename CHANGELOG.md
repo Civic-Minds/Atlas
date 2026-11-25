@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **On-demand zones are hidden when you filter by frequency**: on-demand service has no timetable frequency, so it no longer shows up under "every 10 min" or any other frequency filter
 - **Live follows Hamilton's 2 Barton, 20 A-Line Express and 51 University, and Burlington's 1 and 10 from the cloud**: more of Hamilton's frequent routes, and Burlington without anything running on a computer
 - **Map cards and notes under the top bar line up and no longer overlap it**: a card could open off the search bar's edge, the "History isn't available here" note opened at the window's edge, and in Compare an on-demand zone card sat under map A's filter pill
 - **Live shows vehicles straight from the cloud recording**: the Live map no longer needs anything running on a computer, for the agencies Atlas records (TTC, Hamilton, Kingston, MBTA, YRT, Durham and Brampton)
