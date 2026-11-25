@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The "Official data" Learn more page no longer sends riders to the agency's website**: Atlas shows how often service runs, not where to plan a trip
 - **Live's panel header just says "Live"**: it no longer names one agency while another agency's problem shows under it; problems stay in the bottom-right status pill
 - **Live's route card and Details no longer show a replacement-buses notice**: the warning on 503 Kingston Rd was never approved
 - **Live route cards show their destinations like the map's route cards**: "Right now" counts the vehicles heading to each destination, "Scheduled" uses the map card's own destination rows, and the vehicle list opens from "N vehicles"

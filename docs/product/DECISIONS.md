@@ -308,6 +308,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-24 — E10 (Official data) drops "The agency's website has its current schedule." and its link
+Settled by the no-booking-or-trip-planning rule ("Atlas is not a trip-planning tool; no booking info", 2026-11-24; Ryan: "this isnt for ppl using it like google maps"): Atlas never points riders elsewhere to plan or book. Only E10's paragraph 3 goes; the card lines stay as today (CIV-2896 tabled) and E2's own line is unchanged.
+
 ### 2026-11-24 — The Live route card's row for vehicles with no matched destination reads "No destination" (CIV-2901)
 Ryan, 2026-11-24: "No Destination might be better", then "1" (sentence case). Replaces "Not matched to a destination" on the Live route card's destination rows; the label lives once in noticeCopy.
 
