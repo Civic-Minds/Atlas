@@ -1,5 +1,5 @@
 import MapKey from '../ui/MapKey';
-import { MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
+import { dashedLineSwatch, MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
 import { MAP_STEP_LIMITS, measureLabel, type MapMeasure } from './routeMapModel';
 import { STEP_LABELS, stepColor, type Step } from './routeStripModel';
 import { NOT_MEASURED_LABEL } from '../../../shared/liveWording';
@@ -16,6 +16,9 @@ function stepLabels(measure: MapMeasure): [string, string, string] {
   return [`Under ${minutesText(a)}`, headwayBandLabel(a, b), `${minutesText(b)} or more`];
 }
 
+/** CIV-2912: a not-measured stretch is dashed on the map, so its key is dashed too, never a second grey beside step 0's. */
+const NOT_MEASURED_SWATCH = dashedLineSwatch('var(--strip-delay-0)');
+
 /** Delay starts' definition, after its name in the key (Ryan, 2026-10-26, word for word). */
 export const DELAY_STARTS_NOTE = 'delay added that lasts 3+ stops';
 
@@ -30,14 +33,14 @@ export default function LiveMapKey({ measure, notMeasured = true, variant = 'pil
   const labels = stepLabels(measure);
   const steps = [
     ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),
-    ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
+    ...(notMeasured ? [{ ...NOT_MEASURED_SWATCH, label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
   ];
   if (variant === 'card') return (
     <>
       <p className="m-0 mb-1.5 text-xs font-bold text-[var(--text-muted)]">{measureLabel(measure)}{KEY_DEFINITION[measure] && <span className="font-normal"> · {KEY_DEFINITION[measure]}</span>}</p>
       <MapKey stepsClassName="grid grid-cols-2 gap-x-2 gap-y-0.5" steps={[
         ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: l, className: 'text-xs text-[var(--text-primary)]' })),
-        ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: NOT_MEASURED_LABEL, className: 'text-xs text-[var(--text-primary)]' }] : []),
+        ...(notMeasured ? [{ ...NOT_MEASURED_SWATCH, label: NOT_MEASURED_LABEL, className: 'text-xs text-[var(--text-primary)]' }] : []),
       ]} />
     </>
   );
@@ -55,7 +58,7 @@ export default function LiveMapKey({ measure, notMeasured = true, variant = 'pil
         <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
         <MapKey steps={[
           ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),
-          ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
+          ...(notMeasured ? [{ ...NOT_MEASURED_SWATCH, label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
         ]} />
       </div>
     </div>

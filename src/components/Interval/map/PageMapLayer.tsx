@@ -10,6 +10,9 @@ import { frameRoute, routeFramePadding } from './routeFraming';
 import { FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
 import { usePageMapOverlay, type PageMapOverlay } from '../../../context/PageMapOverlay';
 
+/** The map's one dash pattern, in line widths: dashed route lines and not-measured stretches (CIV-2912). */
+const DASHED_LINE: [number, number] = [1.5, 1.5];
+
 /**
  * A page's drawing on a map it doesn't own (CIV-1828, moved from the Live tool's MapAppMap): with a `segments` layer,
  * each segment between stops drawn along its line and coloured by the chosen measure, with a dot at each stop in the
@@ -34,7 +37,7 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
 const pickedStopRing = (light: boolean) => (light ? '#111827' : '#ffffff');
 
 const SOURCES = ['lines', 'segments', 'stops', 'heat'] as const;
-const LAYERS = ['line', 'line-dash', 'line-sel', 'seg-halo', 'seg', 'seg-sel', 'heat', 'heat-dot', 'stp', 'stp-sel'] as const;
+const LAYERS = ['line', 'line-dash', 'line-sel', 'seg-halo', 'seg', 'seg-nm', 'seg-sel', 'heat', 'heat-dot', 'stp', 'stp-sel'] as const;
 
 interface Props extends PageMapOverlay {
   /** The map to draw on, once its style has loaded; null until then. */
@@ -100,12 +103,13 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
       })),
     });
     // Other routes fade by the map's one fade amount; under Delay starts every line is already at half, so they fade by half of it.
-    map.setPaintProperty(id('seg'), 'line-opacity', me === 'delayStarts' ? ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY / 2, 0.5] : ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1]);
+    const segOpacity: maplibregl.ExpressionSpecification = me === 'delayStarts' ? ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY / 2, 0.5] : ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1];
+    for (const layer of ['seg', 'seg-nm']) map.setPaintProperty(id(layer), 'line-opacity', segOpacity);
     seg.setData({
       type: 'FeatureCollection',
       features: m.segments.map(s => ({
         type: 'Feature' as const,
-        properties: { from: s.fromStopId, to: s.toStopId, label: s.label ?? '', route: s.route ?? '', off: s.offset ?? 0, dim: latestHl.current && s.route !== latestHl.current ? 1 : 0, color: s.color ?? stepColor(me, s.step), sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
+        properties: { from: s.fromStopId, to: s.toStopId, label: s.label ?? '', route: s.route ?? '', off: s.offset ?? 0, dim: latestHl.current && s.route !== latestHl.current ? 1 : 0, color: s.color ?? stepColor(me, s.step), nm: s.step == null && !s.color ? 1 : 0, sel: sel?.kind === 'segment' && sel.fromStopId === s.fromStopId && sel.toStopId === s.toStopId ? 1 : 0 },
         geometry: { type: 'LineString' as const, coordinates: s.coordinates },
       })),
     });
@@ -143,14 +147,16 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
     // its selected route's for the picked one (focusedRouteLineWidth), with no halo, as the main map draws them.
     const lineWidth = focusedRouteLineWidth(['==', ['get', 'hl'], 1]) as unknown as maplibregl.ExpressionSpecification;
     map.addLayer({ id: id('line'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 0], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth, 'line-opacity': ['get', 'op'] } });
-    map.addLayer({ id: id('line-dash'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 1], layout: { 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth, 'line-opacity': ['get', 'op'], 'line-dasharray': [1.5, 1.5] } });
+    map.addLayer({ id: id('line-dash'), type: 'line', source: id('lines'), filter: ['==', ['get', 'dashed'], 1], layout: { 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth, 'line-opacity': ['get', 'op'], 'line-dasharray': DASHED_LINE } });
     map.addLayer({ id: id('line-sel'), type: 'line', source: id('lines'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': SELECTED_ROUTE_GLOW_WIDTH_PX, 'line-opacity': 0.35 } });
     map.addSource(id('segments'), empty);
     map.addSource(id('stops'), empty);
     // #1661: segments are the main map's picked-route width (they were 3 to 8 px, with a 5 to 12 px halo), so
     // Studio Live's lines match regular Live's; the halo adds 1 px each side.
     map.addLayer({ id: id('seg-halo'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': SELECTED_ROUTE_HALO_WIDTH_PX } });
-    map.addLayer({ id: id('seg'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': SELECTED_ROUTE_WIDTH_PX } });
+    map.addLayer({ id: id('seg'), type: 'line', source: id('segments'), filter: ['==', ['get', 'nm'], 0], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': SELECTED_ROUTE_WIDTH_PX } });
+    // CIV-2912: a stretch with no figure is dashed, so it never reads as step 0's grey ("Under 0.5 min").
+    map.addLayer({ id: id('seg-nm'), type: 'line', source: id('segments'), filter: ['==', ['get', 'nm'], 1], layout: { 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': SELECTED_ROUTE_WIDTH_PX, 'line-dasharray': DASHED_LINE } });
     map.addLayer({ id: id('seg-sel'), type: 'line', source: id('segments'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': SELECTED_ROUTE_GLOW_WIDTH_PX, 'line-opacity': 0.35 } });
     // The heat: one soft dot per stop in its own step colour, bigger the more it adds (never summed with its neighbours,
     // so the colour is always the stop's own figure and matches the key). Hottest drawn on top.

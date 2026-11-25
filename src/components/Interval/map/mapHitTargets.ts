@@ -41,7 +41,7 @@ const toleranceOf = (kind: MapHitKind) => MAP_HIT_PRIORITY.find(r => r.kind === 
 export function pageMapHitPriority(layerId: (name: string) => string): MapHitRule<'stop' | 'segment' | 'line'>[] {
   return [
     { kind: 'stop', layers: [layerId('stp')], tolerancePx: toleranceOf('stop') },
-    { kind: 'segment', layers: [layerId('seg')], tolerancePx: toleranceOf('route') },
+    { kind: 'segment', layers: [layerId('seg'), layerId('seg-nm')], tolerancePx: toleranceOf('route') },
     { kind: 'line', layers: [layerId('line'), layerId('line-dash')], tolerancePx: toleranceOf('route') },
   ];
 }
