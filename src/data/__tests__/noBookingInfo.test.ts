@@ -54,6 +54,17 @@ describe('no on-demand booking info (Ryan, 2026-11-24)', () => {
     expect(offenders).toEqual([]);
   });
 
+  // #1798: VIA's Southeast zones showed a raw source citation (booklet page and URLs) as their hours note.
+  // Sources belong in the source fields, never in text a rider reads on the zone card.
+  it('no URLs in any zone text field', () => {
+    const URL_TEXT = /https?:\/\/|www\.|\.pdf\b/i;
+    const offenders = [
+      ...onDemandConfigs.flatMap(f => zoneTexts(JSON.parse(read(f))).map(text => `${f}: ${text}`)),
+      ...zoneTexts(Object.values(Services)),
+    ].filter(text => URL_TEXT.test(text.replace(/^config\/on-demand\/[\w.-]+: /, '')));
+    expect(offenders).toEqual([]);
+  });
+
   it('the zone card has no Booking section', () => {
     expect(read('src/components/Interval/AgencyCard.tsx')).not.toMatch(/>\s*Booking\s*</);
   });
