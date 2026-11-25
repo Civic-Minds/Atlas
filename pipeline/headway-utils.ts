@@ -156,12 +156,19 @@ export function headlineDeparturesInWindow(times: readonly number[], start: numb
 /** Rail's own midday window (09:30 to 14:30); the constant lives in shared/rules/frequency.ts so the Docs page reads it too. */
 
 /**
- * CIV-1958 (#1760): a departure's clock minute, as the timetable prints it (seconds dropped). The yes/no cut-offs (window
- * membership, the 60-minute coverage cap, the 8x boundary ratio, the night and edge-only tests) read clock minutes, so a
- * time a few seconds past the minute never tips one (WMATA D6X's 7:00:38 start is the timetable's 60-minute wait from 6:00);
- * every published number keeps its exact value, rounded up as before. Whole-minute times are unchanged by it.
+ * CIV-1958 (#1760): a departure's clock minute, as the timetable prints it (seconds dropped), once times keep their seconds.
+ * The yes/no cut-offs (window membership, the 60-minute coverage cap, the 8x boundary ratio, the night and edge-only tests)
+ * read clock minutes, so a time a few seconds past the minute never tips one (WMATA D6X's 7:00:38 start is the timetable's
+ * 60-minute wait from 6:00); every published number keeps its exact value, rounded up as before.
  */
-export const clockMinute = (t: number): number => Math.floor(t);
+export const clockMinute = (t: number): number => (clockMinutesOn ? Math.floor(t) : t);
+/**
+ * Whether departure times carry the timetable's seconds (ATLAS_T2M_SECONDS=1, CIV-1958's measure build). Today t2m drops
+ * them, so the only fractional times are interpolated or frequencies.txt times, which every rule reads exactly as before:
+ * clockMinute is then the identity and nothing published changes. Tests switch it with setClockMinutes.
+ */
+let clockMinutesOn = process.env.ATLAS_T2M_SECONDS === '1';
+export function setClockMinutes(on: boolean): void { clockMinutesOn = on; }
 /** clockMinute for a list. */
 export const clockTimes = (times: readonly number[]): number[] => times.map(clockMinute);
 /**

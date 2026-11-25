@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   clockMinute,
   clockTimes,
@@ -6,6 +6,7 @@ import {
   computePeriodInnerMaxGaps,
   computePeriodSustained,
   departuresInWindow,
+  setClockMinutes,
   isUnevenPeriod,
   medianHeadwayInWindow,
 } from '../headway-utils';
@@ -17,6 +18,9 @@ const hm = (h: number, m: number, s = 0) => h * 60 + m + s / 60;
 const floored = (times: number[]) => times.map(clockMinute);
 
 describe('cut-off rules give the same answer with seconds as with whole minutes (#1760)', () => {
+  beforeAll(() => setClockMinutes(true));
+  afterAll(() => setClockMinutes(false));
+
   it('WMATA D6X Saturday AM: a 7:00:38 start passes the 60 cap as the 60-minute wait it prints as; the published wait stays exact', () => {
     const secs = [hm(7, 0, 38), hm(7, 12, 38), hm(7, 24, 38), hm(7, 36, 38), hm(7, 48, 38), hm(8, 0, 38), hm(8, 12, 38), hm(8, 24, 38), hm(8, 36, 38), hm(8, 48, 38)];
     expect(computePeriodCoverageHeadways(secs).amPeak).toBe(61);
@@ -56,5 +60,13 @@ describe('cut-off rules give the same answer with seconds as with whole minutes 
     const f = floored(secs);
     expect(isUnevenPeriod(secs, 9 * 60, 15 * 60, 15)).toBe(isUnevenPeriod(f, 9 * 60, 15 * 60, 15));
     expect(computePeriodSustained(secs).midday).toBe(computePeriodSustained(f).midday);
+  });
+});
+
+describe('while times are whole minutes (today), the clock-minute reading changes nothing (#1760)', () => {
+  it('reads interpolated and frequencies.txt fractions exactly, as before', () => {
+    expect(clockMinute(437.5)).toBe(437.5);
+    const secs = Array.from({ length: 10 }, (_, i) => hm(7, 0, 38) + i * 12);
+    expect(computePeriodCoverageHeadways(clockTimes(secs)).amPeak).toBe(61);
   });
 });
