@@ -53,9 +53,8 @@ const AGENCY = args.agency ?? 'ttc';
 const LIVE = loadLiveAgencyConfig(AGENCY);
 /** CIV-2222: the agency's own on-time window where it publishes one (TTC: 1 min early to 5 min late), else Atlas's. */
 const WINDOW = onTimeWindow(AGENCY);
-/** #1789: runs rated with no departure from their trip's first stop, and those first seen at the 4th stop or later. */
-let partwayRuns = 0, partwayFar = 0;
-const RATE_PARTWAY = process.argv.includes('--rate-partway');
+/** #1789: per service date, runs with no departure from their trip's first stop, rated at the first stop they served. */
+const partwayByDate = new Map<string, { runs: number; far: number; rematched: number }>();
 const TZ = LIVE.timeZone;
 const DAYS = Number(args.days ?? LIVE_WINDOW_DAYS);
 const OBS_OUT = args['obs-out'];
@@ -498,13 +497,17 @@ for (const [key, samples] of runs) {
       };
       let assigned = tripId;
       let rows = delaysFor(tripId);
+      const startedPartway = rows.length > 0 && !rows.some(r => r.tripStart);
       const med = median(rows.map(r => r.delaySec));
       if (rows.length >= 5 && med != null && Math.abs(med) >= SWAP_OFF_SEC) {
         // 15+ min off its own trip: is it really another scheduled trip on the same pattern (a swapped trip number)?
         const services = activeServices(svcDate) ?? [];
         let best: { id: string; share: number } | null = null;
+        // #1789: a run that started partway may be running another pattern in the same direction (a short turn), so it
+        // is matched against every trip in its direction, not only those on its own shape.
         for (const c of trips) {
-          if (c.trip_id === tripId || c.shape_id !== trip.shape_id || !services.includes(c.service_id)) continue;
+          if (c.trip_id === tripId || !services.includes(c.service_id)) continue;
+          if (startedPartway ? c.direction_id !== trip.direction_id : c.shape_id !== trip.shape_id) continue;
           const cr = delaysFor(c.trip_id);
           if (cr.length < 5) continue;
           const share = cr.filter(r => Math.abs(r.delaySec) <= SWAP_FIT_SEC).length / cr.length;
@@ -514,16 +517,20 @@ for (const [key, samples] of runs) {
         else { rows = []; swapLog.push({ date: svcDate, outcome: 'dropped' }); }
       }
       runsWithDelays++;
-      // #1789 (CIV-2222): a run seen first partway along its trip (a short turn re-entering service, or no position at the
-      // terminal) has no departure from the end of the line, so it got no on-time rating. With --rate-partway it is rated at
-      // the first stop it served instead. Investigation only until Ryan picks; off by default.
-      if (rows.length && !rows.some(r => r.tripStart)) {
-        partwayRuns++;
+      // #1789 (CIV-2907): a run seen first partway along its trip (a short turn re-entering service, or no position at the
+      // terminal) has no departure from the end of the line. Ryan: "if it doesn't stop at all stops and we mark it as missing
+      // or not on time when it actually is but ran a different service pattern ... that is an issue on our end". It is rated
+      // at the first stop it served, against the timetable of the trip it was matched to.
+      if (rows.length && startedPartway) {
+        const c = partwayByDate.get(svcDate) ?? { runs: 0, far: 0, rematched: 0 };
+        c.runs++;
+        if (assigned !== tripId) c.rematched++;
         const first = rows.reduce((a, b) => (b.p.t < a.p.t ? b : a));
         const tt = timesByTrip.get(assigned) ?? [];
-        const idx = tt.findIndex(st => st.stopId === first.p.stopId);
-        if (idx >= 3) partwayFar++;
-        if (RATE_PARTWAY) first.tripStart = true;
+        if (tt.findIndex(st => st.stopId === first.p.stopId) >= 3) c.far++;
+        partwayByDate.set(svcDate, c);
+        // Matched to a trip that starts where it was first seen: that stop is already its trip start.
+        if (!rows.some(r => r.tripStart)) first.tripStart = true;
       }
       if (rows.length) {
         const tt = timesByTrip.get(assigned) ?? [];
@@ -952,7 +959,6 @@ const holdStats = [...holdsAt].map(([k, m]) => {
   };
 });
 if (process.env.DEBUG_FIRST) console.log('joined_late at first stop:', firstStopJoinedLate);
-console.log(`#1789: ${partwayRuns} runs with no first-stop departure (${partwayFar} first seen at the 4th stop or later)${RATE_PARTWAY ? ', rated at the first stop they served' : ''}`);
 console.log(`v2: trip instances ${tripInstances} (short pieces left out ${tripsShortExcluded}), not seen ${tripsNotSeen}, unlisted cover ${tripsUnlistedCover}, feed-gap trips ${tripsFeedGap}, turned back ${tripsShortTurned}, stood-still events ${holds.length}, degraded snapshots empty/stale/thin ${degradedEmpty}/${degradedStale}/${degradedThin}, stood-still dropped for degraded feed ${standingStillDegraded}`);
 
 // --- v3: the dashboard analysis over the last DAYS service dates ---
@@ -961,6 +967,12 @@ const lastServiceDate = serviceDateOf(snapshotTimes[snapshotTimes.length - 1]);
 const windowDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d) && d <= lastServiceDate).sort().slice(-DAYS);
 const inWindow = new Set(windowDates);
 const windowRuns = runDelays.filter(r => inWindow.has(r.date));
+{
+  const pw = windowDates.map(d => partwayByDate.get(d)).filter(Boolean) as { runs: number; far: number; rematched: number }[];
+  const sum = (k: 'runs' | 'far' | 'rematched') => pw.reduce((a, x) => a + x[k], 0);
+  const starts = windowRuns.reduce((a, r) => a + r.stops.filter(x => x.tripStart && Math.abs(x.delaySec) <= MAX_DELAY_SEC).length, 0);
+  console.log(`#1789: ${sum('runs')} runs in the window started partway and are rated at the first stop they served, of ${starts} rated trip starts (${sum('far')} first seen at the 4th stop or later, ${sum('rematched')} matched to another trip)`);
+}
 // Which days of the archive are healthy (good recordings). The window keeps all its dates, but the stop lists, run time by hour,
 // delay build-up, bunching, extra wait and each direction's late share count only the good ones (CIV-318), the same set the weekly tiles use.
 // Snapshots count when they carry at least one of this route's vehicles (an empty line and an absent one are the same), once
