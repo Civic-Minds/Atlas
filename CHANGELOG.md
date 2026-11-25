@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Tapping "1 agency couldn't load" says which agency**: the map's pill lists each agency that failed, on phones too, where the names were only a hover you couldn't reach
 - **The cloud recorder saves each recorded agency's whole-network vehicle counts with every snapshot**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network
 - **The overnight and frequent-service maps say to zoom in when zoomed out**: they draw no routes that far out, but the overnight list said only "some less frequent routes are hidden" and the frequent-service map said nothing
 - **The Coverage page's tags line up under their headings**: four Live tags ran over the Studio column, so "Lateness" sat on top of "Schedule"

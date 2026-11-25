@@ -742,7 +742,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [listedMapErrors]);
-  const mapErrorsShown = showUi && !!listedMapErrors && !nearYouCovered;
+  const mapErrorsShown = (showUi || countsRowShown) && !!listedMapErrors && !nearYouCovered;
   const nearYouShown = showUi && !!userLocation && !nearYouCovered && !mapErrorsShown;
   const openNearYouRoute = useCallback((key: string | null) => {
     setNearYouRoute(key);
@@ -822,6 +822,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Routes and stops of agencies not loaded yet, from the release's search index (CIV-1048).
   // The load-error hint's names: short names, told apart where two agencies share one (#1245).
   const hintNames = useMemo(() => distinctAgencyNames(agencies), [agencies]);
+  // CIV-2947: the failed agencies, one line each in the existing words ("TTC couldn't load."), for the pill's list.
+  const failedAgencyLines = useMemo(() => [...failedSlugs].map(slug => networksFailedHint([hintNames.get(slug) ?? slug])), [failedSlugs, hintNames]);
   const catalogAgencyNames = useMemo(() => new Map(agencies.map(a => [a.slug, a.name])), [agencies]);
   const indexSearch = useIndexSearch(searchFocused ? query : '', bounds ?? null, catalogAgencyNames);
   const loadedSearchSlugs = useMemo(() => new Set(Object.keys(layers)), [layers]);
@@ -1541,14 +1543,20 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             />
           )}
           {failedSlugs.size > 0 && (
-            <div
-              className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}
+            // CIV-2947 (Ryan, 2026-11-25: "1"): the short count stays; a tap lists which agencies, one line each in the
+            // map errors card the phone "Error" pill opens (MapErrorsPanel), so phones, which show no hover title, get them too.
+            <button
+              type="button"
+              aria-expanded={!!listedMapErrors && listedMapErrors === failedAgencyLines}
+              onClick={() => setListedMapErrors(listedMapErrors === failedAgencyLines ? null : failedAgencyLines)}
+              data-map-errors-pill
+              className={`${MAP_BADGE} h-8 max-sm:h-[32px] cursor-pointer`}
               title={networksFailedHint([...failedSlugs].map(slug => hintNames.get(slug) ?? slug))}
             >
               <span className={MAP_BADGE_LABEL}>
                 {networksFailedText(failedSlugs.size)}
               </span>
-            </div>
+            </button>
           )}
           {/* Research views (Night, Frequent Service): their own whole-route and agency counts, then the colour key, in the same pills. */}
           {researchCounts && (
