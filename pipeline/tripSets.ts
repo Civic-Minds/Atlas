@@ -45,6 +45,7 @@ import {
   headlineDeparturesInWindow,
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
+  clockTimes,
 } from './headway-utils.js';
 import { LEGACY_PIECE_MINIMUM } from './pieceParams.js';
 import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadingsFromEnv, directionPieceReadings, headlineTrunk, pieceReadingsForFeature, trunkLongEnough, nameUnnamedPiece, piecePeriodTreatments, busiestStop } from './pieces.js';
@@ -671,6 +672,8 @@ export interface StretchPeriod {
   value: number | null;
   headway: number | null;
   coverage: number | null;
+  /** CIV-1958: the same full-window wait in clock minutes (clockTimes), for the coverage cap's yes/no only; absent: `coverage`. */
+  coverageClock?: number | null;
   sustained: boolean | null;
   /** D8 shadow: sustained, and service runs on both sides of the period's midpoint. */
   sustainedMid: boolean | null;
@@ -759,8 +762,8 @@ export function isOneGapPeriod(times: readonly number[], start: number, end: num
  * 59 minutes from 8:01 to 9:00 are a wait the window cuts, so it reads 59. A tail whose service starts
  * inside the window still leaves out that start (the 6's Pelham Bay tail from 19:41 reads 18).
  */
-function unevenWait(times: readonly number[], start: number, end: number, coverage: number | null): number | null {
-  if (coverage == null || coverage > PERIOD_COVERAGE_MAX_HEADWAY) return coverage;
+function unevenWait(times: readonly number[], start: number, end: number, coverage: number | null, coverageClock: number | null = coverage): number | null {
+  if (coverage == null || (coverageClock ?? coverage) > PERIOD_COVERAGE_MAX_HEADWAY) return coverage;
   const all = [...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b);
   const t = all.filter(x => x >= start && x < end);
   if (t.length === 0) return coverage;
@@ -784,7 +787,9 @@ export function stretchFilterValue(p: StretchPeriod): number | null {
   // An uneven period reads its value: its longest wait, leaving out a true start or end of service
   // (unevenWait).
   if (p.uneven) return p.value;
-  return p.sustained === true && !p.uneven && p.coverage != null && p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
+  // CIV-1958: the cap's yes/no reads the wait in clock minutes (coverageClock); the published wait stays exact, rounded up.
+  const capped = p.coverageClock !== undefined ? p.coverageClock : p.coverage;
+  return p.sustained === true && !p.uneven && p.coverage != null && capped != null && capped <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
 }
 
 /**
@@ -1036,19 +1041,24 @@ export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times, true, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
   const coverage = computePeriodCoverageHeadways(times, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
-  const sustained = computePeriodSustained(times, READ_WINDOWS) as Partial<Record<ReadKey, boolean>>;
+  // CIV-1958: every yes/no below (steady, uneven, a tail's two-gap check, the midpoint, one gap, the coverage cap) reads the
+  // departures' clock minutes; the numbers published (headways, coverage, the uneven wait) keep their exact times.
+  const clock = clockTimes(times);
+  const headwaysClock = computePeriodHeadways(clock, true, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
+  const coverageClock = computePeriodCoverageHeadways(clock, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
+  const sustained = computePeriodSustained(clock, READ_WINDOWS) as Partial<Record<ReadKey, boolean>>;
   const out = {} as Record<ReadKey, StretchPeriod>;
   for (const { key, start, end } of READ_WINDOWS) {
     const runs = coverage[key] != null;
     const steady = sustained[key] === true;
-    const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
+    const uneven = runs && steady && isUnevenPeriod(clock, start, end, headwaysClock[key]);
     // An uneven period reads its longest wait, leaving out only a true start or end of its service
     // (CIV-1064, unevenWait): the 6's Pelham Bay tail starts its evening at 19:41, when the <6> express
     // (another route) serves it, and reads 18, not 41. A wait the window cuts counts, for a tail as for
     // a main stretch (CIV-1414: Sherbrooke 1's tail reads 59, not 37).
     const value = !runs ? null
       : steady && !uneven ? (headways[key] ?? null)
-      : uneven ? unevenWait(times, start, end, coverage[key] ?? null)
+      : uneven ? unevenWait(times, start, end, coverage[key] ?? null, coverageClock[key] ?? null)
       : coverage[key] ?? null;
     // CIV-1156 (#1533): a tail with three departures in the period (two gaps) is steady only when its
     // gaps are even (isSteadyPeriodGaps, #1432). computePeriodSustained tests the longer gap against
@@ -1057,10 +1067,10 @@ export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
     // Settled rule 3: a tail that does not run steadily is left out. Only whether the tail counts for
     // the period changes here; its own value, the main stretch, the published steady flag and the
     // all-day branch test (countsSettled) are unchanged.
-    const ordered = [...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b);
+    const ordered = [...new Set(forCrossMidnightWindow(clock, end))].sort((a, b) => a - b);
     const inWindow = ordered.filter(t => t >= start && t <= end);
     const windowGaps = inWindow.slice(1).map((t, i) => t - inWindow[i]);
-    const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headways[key] ?? 0));
+    const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headwaysClock[key] ?? 0));
     // B4: a byTrips tail speaks only in the periods where it is regular (rule D).
     const regularHere = !s.byTrips || (s.activeIn?.includes(key as PeriodKey) ?? false);
     const countsSettled = runs && regularHere && (s.kind === 'main' || (steady && sustainedWithMidpoint(ordered, sustained[key], start, end) === true));
@@ -1071,9 +1081,10 @@ export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
       value,
       headway: headways[key] ?? null,
       coverage: coverage[key] ?? null,
+      ...(coverageClock[key] !== coverage[key] ? { coverageClock: coverageClock[key] ?? null } : {}),
       sustained: sustained[key] ?? null,
-      sustainedMid: sustainedWithMidpoint([...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b), sustained[key], start, end),
-      oneGap: runs && isOneGapPeriod(times, start, end, value, sustained[key]),
+      sustainedMid: sustainedWithMidpoint([...new Set(forCrossMidnightWindow(clock, end))].sort((a, b) => a - b), sustained[key], start, end),
+      oneGap: runs && isOneGapPeriod(clock, start, end, value, sustained[key]),
       uneven,
     };
   }
@@ -1158,7 +1169,9 @@ export function nightServicePasses(
 }
 
 /** One night: this evening's departures and one following morning's, as `nightTimes` (nightServicePasses' rules). */
-function oneNightPasses(times: readonly number[], nightTimes: readonly number[], maxGap: number, handover?: NightHandover): boolean | null {
+function oneNightPasses(exactTimes: readonly number[], exactNightTimes: readonly number[], maxGap: number, handover?: NightHandover): boolean | null {
+  // CIV-1958: a yes/no on clock minutes, so an hourly 2:54:52 bus is the timetable's 60-minute gap (NYCT Q1 overnight).
+  const times = clockTimes(exactTimes), nightTimes = clockTimes(exactNightTimes);
   const inWindowAt = (t: number) => t >= STRETCH_NIGHT_START_MIN && t <= STRETCH_NIGHT_END_MIN;
   const all = [...new Set(nightTimes)].sort((a, b) => a - b);
   const inWindow = all.filter(inWindowAt);
@@ -1610,8 +1623,10 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
 
 /** #1749: a period reading set only by the wait to the window's edge: coverage over the cap with no gap inside over it. */
 function edgeOnlyReading(times: readonly number[], start: number, end: number, p: StretchPeriod): boolean {
-  if (p.coverage == null || p.coverage <= PERIOD_COVERAGE_MAX_HEADWAY) return false;
-  return (innerMaxGapInWindow(times, start, end) ?? 0) <= PERIOD_COVERAGE_MAX_HEADWAY;
+  // CIV-1958: both yes/no tests in clock minutes (JTA 4's 10:36:10 to 11:36:24 is the timetable's hourly gap).
+  const capped = p.coverageClock !== undefined ? p.coverageClock : p.coverage;
+  if (capped == null || capped <= PERIOD_COVERAGE_MAX_HEADWAY) return false;
+  return (innerMaxGapInWindow(clockTimes(times), start, end) ?? 0) <= PERIOD_COVERAGE_MAX_HEADWAY;
 }
 
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
