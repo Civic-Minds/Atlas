@@ -3,6 +3,7 @@ import { MAP_COLOURS_LABEL, TIME_LABEL } from '../../content/noticeCopy';
 import { vehiclesWord } from '../../../shared/modeVehicles';
 import { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
+import { dashedLineSwatch } from '../../styles';
 import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
 import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
 import StudioPanel from '../../components/ui/WidePanel';
@@ -86,7 +87,7 @@ function FleetMapKey({ beforeDate, afterDate }: { beforeDate: string; afterDate:
   const grey = CHANGE_COLOR.same;
   const sides = [
     { color: grey, label: dateRange(afterDate, afterDate), className: 'text-xs text-[var(--text-primary)]', swatchClassName: 'w-5' },
-    { color: `repeating-linear-gradient(90deg, ${grey} 0 4px, transparent 4px 7px)`, label: dateRange(beforeDate, beforeDate), className: 'text-xs text-[var(--text-primary)]', swatchClassName: 'w-5 !rounded-none' },
+    { ...dashedLineSwatch(grey), label: dateRange(beforeDate, beforeDate), className: 'text-xs text-[var(--text-primary)]' },
   ];
   return (
     <MapLegendCard label={MAP_COLOURS_LABEL}>

@@ -312,6 +312,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-25 — Studio Live's map draws "Not measured" dashed, apart from "Under 0.5 min" (CIV-2912)
+Ryan, 2026-11-25, answering the Questions chat after seeing the review page (TTC 504, before and two options), picked "1": "Not measured" drawn dashed on Studio Live's map, so "Under 0.5 min" and "Not measured" look different. The two were the same grey on the map and near-identical greys in the key. A stretch with no figure now draws dashed (the page map's dash pattern for dashed route lines), and the key's swatch is the shared dashed swatch Studio Fleet uses for its earlier schedule. Step colours are unchanged. Option 2 (thinner and faded) and option 3 (keep as is) were not picked.
+
 ### 2026-11-25 — An explainer may skip its third paragraph when the reader has nothing to do; E11 "Late departures" (CIV-2222)
 Ryan, 2026-11-25, on E11's body, word for word: "We check each vehicle's location once per minute. The departure times can be up to 30 seconds off, so we add a 30 second buffer to the limit to allow for this." That is the whole page. Asked whether it needs a third paragraph: "Do we need a third paragraph then", then "1" (no). Title, his pick: "Late departures". E11 opens from N133, line B: "<Agency> doesn't publish its on-time window, so Atlas counts late as more than 5½ min behind schedule.", shown under Live's week figures (Live map and Studio) for an agency with no published on-time window. The explainer layout rule in TEXT.md (Card notices) now says paragraph 3 is left out when the reader has nothing to do.
 

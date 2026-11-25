@@ -250,3 +250,12 @@ export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: 
 
 /** #1187: a sidebar card's narrowest width on sm and up: the search bar's own width, kept 1.5rem inside the window. */
 export const SIDEBAR_CARD_MIN_WIDTH = 'min(18rem, calc(100vw - var(--sidebar-left) - 1.5rem))';
+
+/**
+ * A dashed line's swatch, the key for a line the map draws dashed: its `color` and its `swatchClassName`. One look for every
+ * dashed key (Studio Fleet's earlier schedule, Studio Live's not-measured stretches, CIV-2912).
+ */
+export const dashedLineSwatch = (color: string) => ({
+  color: `repeating-linear-gradient(90deg, ${color} 0 4px, transparent 4px 7px)`,
+  swatchClassName: 'w-5 !rounded-none',
+});
