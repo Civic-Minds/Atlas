@@ -55,6 +55,9 @@ const LIVE = loadLiveAgencyConfig(AGENCY);
 const WINDOW = onTimeWindow(AGENCY);
 /** #1789: per service date, runs with no departure from their trip's first stop, rated at the first stop they served. */
 const partwayByDate = new Map<string, { runs: number; far: number; rematched: number }>();
+/** The trip starts given to runs that started partway: dropped again when the same trip on the same day is already rated. */
+const partwayStarts = new Set<RunStopDelay>();
+let partwayDuplicates = 0;
 const TZ = LIVE.timeZone;
 const DAYS = Number(args.days ?? LIVE_WINDOW_DAYS);
 const OBS_OUT = args['obs-out'];
@@ -551,7 +554,9 @@ for (const [key, samples] of runs) {
       const stopsOut: RunStopDelay[] = [];
       for (const r of rows) {
         if (Math.abs(r.delaySec) > MAX_DELAY_SEC) { delaysExcluded++; continue; }
-        stopsOut.push({ stopId: r.p.stopId, t: r.p.t, hour: hourOf(r.p.t), delaySec: r.delaySec, timepoint: r.timepoint, tripStart: r.tripStart });
+        const row: RunStopDelay = { stopId: r.p.stopId, t: r.p.t, hour: hourOf(r.p.t), delaySec: r.delaySec, timepoint: r.timepoint, tripStart: r.tripStart };
+        if (startedPartway && r.tripStart && r.p.stopId !== (timesByTrip.get(assigned) ?? [])[0]?.stopId) partwayStarts.add(row);
+        stopsOut.push(row);
       }
       if (stopsOut.length) runDelays.push({ date: svcDate, directionId: pattern.directionId, tripId: assigned, stops: stopsOut });
     }
@@ -562,6 +567,22 @@ for (const [key, samples] of runs) {
       l.push({ tripId, t: p.t, date: runDate });
       passagesAt.set(k, l);
     }
+  }
+}
+
+// #1789: one trip start per trip per day. A piece of a trip seen again after a break, or a second car on the same trip
+// number, is not a run of its own: its partway start is dropped when that trip already has a start, or an earlier one.
+{
+  const byTrip = new Map<string, RunStopDelay[]>();
+  for (const r of runDelays) for (const x of r.stops) if (x.tripStart) {
+    const k = `${r.date}|${r.tripId}`;
+    (byTrip.get(k) ?? byTrip.set(k, []).get(k)!).push(x);
+  }
+  for (const starts of byTrip.values()) {
+    if (starts.length < 2) continue;
+    const own = starts.filter(x => !partwayStarts.has(x));
+    const keep = own.length ? null : starts.reduce((a, b) => (b.t < a.t ? b : a));
+    for (const x of starts) if (partwayStarts.has(x) && x !== keep) { x.tripStart = false; partwayDuplicates++; }
   }
 }
 
@@ -971,7 +992,7 @@ const windowRuns = runDelays.filter(r => inWindow.has(r.date));
   const pw = windowDates.map(d => partwayByDate.get(d)).filter(Boolean) as { runs: number; far: number; rematched: number }[];
   const sum = (k: 'runs' | 'far' | 'rematched') => pw.reduce((a, x) => a + x[k], 0);
   const starts = windowRuns.reduce((a, r) => a + r.stops.filter(x => x.tripStart && Math.abs(x.delaySec) <= MAX_DELAY_SEC).length, 0);
-  console.log(`#1789: ${sum('runs')} runs in the window started partway and are rated at the first stop they served, of ${starts} rated trip starts (${sum('far')} first seen at the 4th stop or later, ${sum('rematched')} matched to another trip)`);
+  console.log(`#1789: ${sum('runs')} runs in the window started partway and are rated at the first stop they served, of ${starts} rated trip starts (${sum('far')} first seen at the 4th stop or later, ${sum('rematched')} matched to another trip); ${partwayDuplicates} pieces of trips already rated, over every date, left unrated`);
 }
 // Which days of the archive are healthy (good recordings). The window keeps all its dates, but the stop lists, run time by hour,
 // delay build-up, bunching, extra wait and each direction's late share count only the good ones (CIV-318), the same set the weekly tiles use.
