@@ -1,0 +1,17 @@
+{
+  "releaseId": "release-mwvbser2",
+  "period": "midday",
+  "headways": {
+    "hamilton": {
+      "10": 12,
+      "20": 20,
+      "51": 10,
+      "01": 12,
+      "02": 6
+    },
+    "burlington": {
+      "1": 12,
+      "10": 15
+    }
+  }
+}

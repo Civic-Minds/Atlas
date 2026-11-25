@@ -1,4 +1,13 @@
 import { LIVE_ARCHIVE_TRIP_FEEDS, LIVE_MAP_ARCHIVE_FEEDS } from './liveArchiveFeeds.js';
+import scheduledHeadways from './data/live-scheduled-headways.json';
+
+/**
+ * CIV-2897 (Ryan, 2026-11-24): agencies whose Live routes take their scheduled headway from the published schedule (the
+ * route's midday typical wait, scripts/live-route-setup.ts headways), never a typed number.
+ */
+export const HEADWAY_FROM_SCHEDULE = ['hamilton', 'burlington'] as const;
+const scheduled = (slug: (typeof HEADWAY_FROM_SCHEDULE)[number], route: string): number =>
+  (scheduledHeadways.headways as Record<string, Record<string, number>>)[slug]?.[route] ?? Number.NaN;
 /**
  * Shared GTFS-RT schedule-adherence config for on-demand API, POC scripts, and the UI.
  *
@@ -95,7 +104,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     slug: 'burlington',
     displayRouteShortName: '1',
     routeIds: ['311', '351'],
-    scheduledHeadwayMin: 12,
+    scheduledHeadwayMin: scheduled('burlington', '1'),
     // Plains–Fairview: Appleby GO, Fairview/Brant (both platforms), Plains/Waterdown mid-corridor
     targetStops: {
       '535': 'Appleby GO Station',
@@ -114,7 +123,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     slug: 'burlington',
     displayRouteShortName: '10',
     routeIds: ['3510', '3150', '3151', '3152'],
-    scheduledHeadwayMin: 15,
+    scheduledHeadwayMin: scheduled('burlington', '10'),
     // New–Maple: Burlington GO, Fairview/Brant corridor, Appleby GO
     targetStops: {
       '85': 'Burlington GO Station',
@@ -273,7 +282,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     slug: 'hamilton',
     displayRouteShortName: '01',
     routeIds: ['5677', '5687'],
-    scheduledHeadwayMin: 6,
+    scheduledHeadwayMin: scheduled('hamilton', '01'),
     // King St short-turn: Eastgate, Hamilton GO Centre, Jackson St (one stop per direction)
     targetStops: {
       '1403': 'Eastgate Terminal',
@@ -378,7 +387,7 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     slug: 'hamilton',
     displayRouteShortName: '10',
     routeIds: ['5678', '5696'],
-    scheduledHeadwayMin: 10,
+    scheduledHeadwayMin: scheduled('hamilton', '10'),
     // B-Line: University Plaza, Main/Emerson, Main/Kenilworth, Eastgate
     targetStops: {
       '356299': 'University Plaza',
@@ -391,6 +400,48 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
     scheduleOffsetMin: {
       '0': { '356299': 0, '2137': 6, '1400': 40 },
       '1': { '1400': 0, '2094': 10, '356299': 44 },
+    },
+  },
+  // CIV-2897 (Ryan, 2026-11-24: "Yes to the 2 Barton, 51 University, and the 20"). Route ids, target stops and their
+  // minutes from the trip's start read from HSR's GTFS (2026-11-25 weekday, each direction's longest pattern: first, middle
+  // and last stop) by scripts/live-route-setup.ts stops; later renumbered ids are added from the route file (#1696).
+  {
+    slug: 'hamilton',
+    displayRouteShortName: '02',
+    routeIds: ['5780'],
+    scheduledHeadwayMin: scheduled('hamilton', '02'),
+    targetStops: { '355415': 'Hamilton GO Centre', '1056': 'Barton at Cavell', '356055': 'Bell Manor Loop', '1099': 'Barton at Ottawa' },
+    tripUpdatesUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
+    vehiclePositionsUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb',
+    scheduleOffsetMin: {
+      '0': { '355415': 0, '1056': 21, '356055': 42 },
+      '1': { '356055': 0, '1099': 23, '355415': 49 },
+    },
+  },
+  {
+    slug: 'hamilton',
+    displayRouteShortName: '20',
+    routeIds: ['5793'],
+    scheduledHeadwayMin: scheduled('hamilton', '20'),
+    targetStops: { '356112': 'Haida at Pier 8', '2821': 'Upper James at Mohawk', '356385': 'Airport Passenger Terminal', '355491': 'Upper James opposite Monarch' },
+    tripUpdatesUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
+    vehiclePositionsUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb',
+    scheduleOffsetMin: {
+      '0': { '356112': 0, '2821': 26, '356385': 49 },
+      '1': { '356385': 0, '355491': 27, '356112': 52 },
+    },
+  },
+  {
+    slug: 'hamilton',
+    displayRouteShortName: '51',
+    routeIds: ['5808'],
+    scheduledHeadwayMin: scheduled('hamilton', '51'),
+    targetStops: { '355432': 'Hamilton GO Centre', '1978': 'King at Sterling', '3181': 'West Hamilton Loop', '1973': 'King at Paisley' },
+    tripUpdatesUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb',
+    vehiclePositionsUrl: 'https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb',
+    scheduleOffsetMin: {
+      '0': { '355432': 0, '1978': 17, '3181': 34 },
+      '1': { '3181': 0, '1973': 18, '355432': 35 },
     },
   },
 ];
