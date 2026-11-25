@@ -719,29 +719,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   useEffect(() => { setRetryAt(feedsDownRetryAt); }, [feedsDownRetryAt, setRetryAt]);
   useEffect(() => () => setRetryAt(null), [setRetryAt]);
 
-  if (!active) return null;
-
-  const hasLiveElsewhere = offScreenOnly && !query;
-  const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
-
-  const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
-  // The vehicle card is a few lines: on phones its sheet is only as tall as they are, up to the route card's short height (CIV-1413 D).
-  const vehicleCardOpen = !!(selectedGroup && cardVehicle);
-  // The report flag's title names the agency as the card's back link does (CIV-1795), never the address.
-  const reportAgency = selectedGroup ? agencies.find(a => a.slug === selectedGroup.agencySlug) : undefined;
-  const reportAgencyName = reportAgency ? agencyShortNameBySlug(agencies, reportAgency.slug) : null;
-  // The same title on the vehicle card and the direction list.
-  const routeCardTitle = selectedGroup ? (
-    <RouteCardTitle
-      routeShortName={selectedGroup.routeShortName}
-      routeLongName={selectedRouteLongName}
-      routeType={selectedRouteType}
-      agencySlug={selectedGroup.agencySlug}
-      agencyName={selectedAgencyName}
-      onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-      showAgency={false}
-    />
-  ) : null;
   // CIV-2901 v3 (Ryan: "why are we not using the same code as in the regular app"): the route view is the map's own route
   // card (RouteCardHeadway), built by the map's own builders from the agency's route layer for today and the agency's
   // current period; Live's "Right now" and the vehicle list sit in the card's own section slot.
@@ -775,6 +752,29 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     selectedGroup ? liveScheduledRowsNow(routeLayer(selectedGroup.agencySlug), agencies, selectedGroup.agencySlug, selectedGroup.routeShortName, { directionId, label }) : null
   ), [selectedGroup, routeLayer, agencies]);
 
+  if (!active) return null;
+
+  const hasLiveElsewhere = offScreenOnly && !query;
+  const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
+
+  const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
+  // The vehicle card is a few lines: on phones its sheet is only as tall as they are, up to the route card's short height (CIV-1413 D).
+  const vehicleCardOpen = !!(selectedGroup && cardVehicle);
+  // The report flag's title names the agency as the card's back link does (CIV-1795), never the address.
+  const reportAgency = selectedGroup ? agencies.find(a => a.slug === selectedGroup.agencySlug) : undefined;
+  const reportAgencyName = reportAgency ? agencyShortNameBySlug(agencies, reportAgency.slug) : null;
+  // The same title on the vehicle card and the direction list.
+  const routeCardTitle = selectedGroup ? (
+    <RouteCardTitle
+      routeShortName={selectedGroup.routeShortName}
+      routeLongName={selectedRouteLongName}
+      routeType={selectedRouteType}
+      agencySlug={selectedGroup.agencySlug}
+      agencyName={selectedAgencyName}
+      onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+      showAgency={false}
+    />
+  ) : null;
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
