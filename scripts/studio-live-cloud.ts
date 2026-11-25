@@ -9,8 +9,8 @@
  * files Studio's Live page reads (`<slug>-<route>-segments.json`, `-gaps.json`, `<slug>-agency.json`) to the PRIVATE
  * Live bucket (MCP_LIVE_BUCKET, which the Mac's read-only key can read; CIV-2186). Timetables are read from the private
  * archive bucket. Studio is private and this
- * repository is public, so the log prints counts only: no route or figure, and per agency only a reason code (CIV-2910,
- * as mcp-live's #1801: built / kept: <why> / failed: <stage>). Child output goes to --log (default <work>/private.log),
+ * repository is public, so the log prints counts only: no agency, route or figure (#1811). Each agency's reason
+ * (CIV-2910: rebuilt / kept: <why> / failed: <stage>) and all child output go to --log (default <work>/private.log),
  * which is never uploaded.
  *
  * The two checks from docs/operations/LIVE_ANALYSIS.md:
@@ -123,14 +123,14 @@ function analyseTtc(): { outDir: string; routes: Map<string, { file: string; v3?
 const previous = JSON.parse(await getText(STUDIO_LIVE_POINTER).catch(e => { if (dryRun) return null; throw e; }) ?? 'null') as StudioLivePointer | null;
 const built: Record<string, { files: string[]; thisWeek: number; lastWeek: number }> = {};
 let failed = 0, thin = 0;
-// CIV-2910: why each agency was rebuilt or not, as reason codes and day counts only (public log; never routes or figures).
-// Each line prints as its agency finishes, with the minutes it took, so a slow or cancelled run still shows where it was.
-const reasons = { push: (r: string) => console.log(`  ${r} [${Math.round((Date.now() - agencyStart) / 60000)} min]`) };
-let agencyStart = Date.now();
+// CIV-2910: why each agency was rebuilt or not goes to the private log, with the minutes it took (#1811: agency names
+// never reach the public log). The public log shows only how many agencies are done, so a slow run still shows progress.
+let agencyStart = Date.now(), agenciesDone = 0;
+const minutes = () => Math.round((Date.now() - agencyStart) / 60000);
+const reasons = { push: (r: string) => appendFileSync(log, `\n${r} [${minutes()} min]\n`) };
 // #1810: only agencies recorded now; a paused one (Halifax, Montréal) has no new positions and keeps its last files.
 for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => isRecordingNow(s) && (!only || only.includes(s)))) {
   agencyStart = Date.now();
-  console.log(`  ${slug}: building`);
   try {
     const a = slug === 'ttc' ? analyseTtc() : analyseArchivedAgency(slug, { work, days, run, lastError: () => lastStepError });
     const weeks = goodDaysByWeek([...a.routes.values()].map(r => r.v3));
@@ -150,6 +150,8 @@ for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => isRecordingNow(s) && (!only ||
     failed++;
     reasons.push(`${slug}: failed: ${e instanceof LiveBuildFailed ? e.message : 'analysis'}`);
     appendFileSync(log, `\n${slug}: ${(e as Error).stack ?? e}\n`);
+  } finally {
+    console.log(`  ${++agenciesDone} agencies done [${minutes()} min]`);
   }
 }
 
