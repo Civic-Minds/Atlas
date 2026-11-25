@@ -16,7 +16,7 @@ import { useRouteAnalysis } from '../../hooks/useRouteAnalysisPatterns';
 import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
-import { LIVE_FEED_INCOMPLETE, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
+import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
 import { DIRECTION_LABEL, LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL } from '../../../shared/liveWording';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
@@ -231,10 +231,6 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   if (!data) return settled ? <CardHelpNotice message={unavailableMessage} /> : null;
   if (!line) return null;
 
-  const replacement = (data as { replacementBuses?: boolean }).replacementBuses
-    ? <div className="text-xs font-black text-[var(--status-caution-text)]">{LIVE_REPLACEMENT_BUSES}</div>
-    : null;
-
   const extremes = live && !live.incomplete ? gapExtremes(live) : null;
 
   // On time by the same standard as each vehicle's own label (getVehicleStatus), over the cars counted above.
@@ -251,8 +247,6 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
 
   return (
     <div className="flex flex-col gap-3">
-      {replacement}
-
       {/* The direction pills only steer "Right now", so they show only with it. */}
       {live && !steered && directions.length > 1 && <PillGroup label={DIRECTION_LABEL} options={directions} value={directionId} onChange={setDir} />}
 

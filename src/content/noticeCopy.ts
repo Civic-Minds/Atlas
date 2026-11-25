@@ -657,7 +657,6 @@ export function liveRouteEmptyNotice(agencyName: string, routeShortName: string,
 }
 export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
 export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
-export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe the buses running this route';
 /** CIV-1795: the approved "can’t be shown right now" line (CIV-941). */
 export const LIVE_FEED_INCOMPLETE = 'These figures can’t be shown right now.';
 /** The Live route card when Live has no analysis for the route, so "Right now" can't show (Ryan approved word for word, CIV-1413 B, 2026-11-14). */
