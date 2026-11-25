@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { FLOATING_CARD, Z_MODAL_TOP, CARD_NOTE } from '../styles';
+import { FLOATING_CARD, Z_MODAL_TOP, CARD_NOTE, SIDEBAR_CARD_TOP, sidebarFrameStyle } from '../styles';
 import { agencyNames } from '../utils/agencyName';
 import { loadingText } from '../content/noticeCopy';
 
@@ -9,12 +9,14 @@ type NamedAgency = { slug: string; name: string; cities?: string[]; displayArea?
  * CIV-1861: what a dimmed Live or History tab says when tapped. It names the cities that have the view
  * (the lists come from their shared sources, passed in as slugs) and each one jumps there.
  */
-export default function ModeUnavailableNote({ mode, slugs, agencies, onJump, onClose }: {
+export default function ModeUnavailableNote({ mode, slugs, agencies, onJump, onClose, sidebarLeft }: {
   mode: 'Live' | 'History';
   slugs: readonly string[];
   agencies: readonly NamedAgency[];
   onJump: (slug: string) => void;
   onClose: () => void;
+  /** #1792: opens in the map cards' slot, at the search bar's left edge (useSidebarAnchor), not at the window's edge. */
+  sidebarLeft?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const rows = useMemo(() => {
@@ -40,7 +42,8 @@ export default function ModeUnavailableNote({ mode, slugs, agencies, onJump, onC
       ref={ref}
       role="dialog"
       aria-label={`Where ${mode} is available`}
-      className={`fixed top-16 left-3 right-3 sm:right-auto sm:w-72 ${FLOATING_CARD} p-3 flex flex-col gap-2 ${Z_MODAL_TOP} pointer-events-auto`}
+      className={`fixed ${SIDEBAR_CARD_TOP} left-3 right-3 sm:right-auto sm:left-[var(--sidebar-left)] sm:w-72 ${FLOATING_CARD} p-3 flex flex-col gap-2 ${Z_MODAL_TOP} pointer-events-auto`}
+      style={sidebarFrameStyle(sidebarLeft)}
     >
       <p className="text-xs font-bold text-[var(--text-primary)]">{mode} isn’t available here. These cities have it:</p>
       {rows.length === 0 ? (

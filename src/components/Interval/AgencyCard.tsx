@@ -11,6 +11,7 @@ import type { Agency } from '../../App';
 import type { OpenInfoFn } from '../InfoPanel';
 import type { AgencyLayers } from '../../hooks/useAgencyData';
 import { CARD_NOTICE_FOOTER, CARD_NOTICE_INLINE, sidebarFrameStyle } from '../../styles';
+import { COMPARE_PANEL_LEFT } from '../../utils/format';
 import Panel, { PanelBody } from '../ui/Panel';
 import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
@@ -351,6 +352,8 @@ interface Props {
   onRouteSelect: (key: string) => void;
   sidebarLeft?: number;
   searchBarWidth?: number;
+  /** #1792: Compare's card top (comparePanelTop), so the card opens below map A's filter pill; null outside Compare. */
+  compareTop?: number | null;
   onInfoOpen?: OpenInfoFn;
   onDemandFocus?: boolean;
   onDemandZoneId?: string | null;
@@ -418,6 +421,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onRouteSelect,
   sidebarLeft,
   searchBarWidth,
+  compareTop,
   onInfoOpen,
   onDemandFocus = false,
   onDemandZoneId = null,
@@ -571,7 +575,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         data-report-anchor="true"
         sidebar
         enter
-        style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
+        style={sidebarFrameStyle(sidebarLeft, searchBarWidth, compareTop != null ? { top: compareTop, left: COMPARE_PANEL_LEFT } : null)}
       >
         <div className={CARD_HEADER_BLOCK}>
           {backToAgency ? (
@@ -685,7 +689,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       data-report-anchor="true"
       sidebar
       enter
-      style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
+      style={sidebarFrameStyle(sidebarLeft, searchBarWidth, compareTop != null ? { top: compareTop, left: COMPARE_PANEL_LEFT } : null)}
     >
       <div className={CARD_HEADER_BLOCK}>
         <AgencyCardTop

@@ -54,3 +54,21 @@ describe('no card sets its own left offset (#1792 guard)', () => {
     expect(hits).toEqual([]);
   });
 });
+
+describe('cards and top-bar notes share the card slot (#1792 guard)', () => {
+  const root = resolve(__dirname, '../../..');
+  const read = (p: string) => readFileSync(resolve(root, p), 'utf8');
+  it("the History/Live note opens at the cards' left edge, not the window's", () => {
+    const note = read('src/components/ModeUnavailableNote.tsx');
+    expect(note).toContain('sm:left-[var(--sidebar-left)]');
+    expect(note).toContain('sidebarFrameStyle(sidebarLeft)');
+  });
+  it("in Compare every card frame takes the shared compare placement, below map A's filter pill", async () => {
+    const { sidebarFrameStyle } = await import('../../styles');
+    const { COMPARE_PANEL_TOP, COMPARE_PANEL_LEFT } = await import('../../utils/format');
+    expect(sidebarFrameStyle(149, 252, { top: COMPARE_PANEL_TOP, left: COMPARE_PANEL_LEFT })).toMatchObject({ top: `${COMPARE_PANEL_TOP}px`, '--sidebar-left': `${COMPARE_PANEL_LEFT}px` });
+    for (const f of ['src/components/Interval/AgencyCard.tsx', 'src/components/Interval/SidebarControls.tsx']) {
+      expect(read(f)).toMatch(/sidebarFrameStyle\([^)]*compareTop != null \? \{ top: compareTop, left: COMPARE_PANEL_LEFT \}/);
+    }
+  });
+});

@@ -673,6 +673,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         agencies={agencies}
         onJump={slug => { setModeNote(null); handleLiveAgencyClick(slug); }}
         onClose={closeModeNote}
+        sidebarLeft={sidebarLeft}
       />
     )}
     <HistoryMapOverlayProvider>
