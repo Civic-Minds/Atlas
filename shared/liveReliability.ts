@@ -12,6 +12,7 @@ import { DAYTIME_PERIOD_KEYS } from './rules/periods';
 import { BUNCHED_GAP_SEC, EARLY_AT_OR_BELOW_MIN, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow } from './rules/live';
 import { onTimeWindowText } from './liveWording';
 import { LIVE_AGENCY_EXTRAS } from './liveAgencyConfig';
+import { countOf } from './overflowText';
 import { DEFAULT_CUTOFFS, bunchedText, earlyText, gappedText, lateText, type CutoffCounts } from './liveCutoffs';
 
 /** The time-of-day keys a reliability answer covers: the whole day, then the map's daytime periods. */
@@ -41,7 +42,7 @@ export function reliabilityDefinitionText(slug: string | null | undefined): Reco
   const w = onTimeWindow(slug);
   // The MCP answer names the agency once, so the agency's own window is named with it (Ryan's words, CIV-2222).
   return w.published
-    ? { ...RELIABILITY_DEFINITION_TEXT, late: `More than ${w.lateAboveMin} minutes after the scheduled time.`, early: `More than ${Math.abs(w.earlyAtOrBelowMin)} ${Math.abs(w.earlyAtOrBelowMin) === 1 ? 'minute' : 'minutes'} before the scheduled time.`, onTimeWindow: `${slug ? LIVE_AGENCY_EXTRAS[slug]?.shortName ?? slug : ''}'s own on-time window: ${onTimeWindowText(w)}.` }
+    ? { ...RELIABILITY_DEFINITION_TEXT, late: lateText(w.lateAboveMin), early: `More than ${countOf(Math.abs(w.earlyAtOrBelowMin), 'minute')} before the scheduled time.`, onTimeWindow: `${slug ? LIVE_AGENCY_EXTRAS[slug]?.shortName ?? slug : ''}’s own on-time window: ${onTimeWindowText(w)}.` }
     : { ...RELIABILITY_DEFINITION_TEXT };
 }
 
