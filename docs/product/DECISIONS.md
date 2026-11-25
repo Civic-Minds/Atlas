@@ -312,6 +312,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-25 — Zoomed out, the overnight and frequent-service views say "Zoom in to see the routes." (#1817, CIV-2946)
+Ryan, 2026-11-25, on the overnight view's "Zoomed out. Some less frequent routes are hidden." ("feels funny here lol"), then "1". Below the detail zoom these views load no route data and draw no route at all, so both show "Zoom in to see the routes." (one line in noticeCopy). The overnight list had reused the frequency map's note (CIV-1337: "reuse this exact string"), which now stays only in the frequency map's export. The frequent-service view, which had shown nothing, gets the same line in a card under its info card.
+
 ### 2026-11-25 — Studio Fleet leads with right now (CIV-2182)
 Ryan, 2026-11-25, after the review page: "That not is way the fuck too long but 1", then "Approved". Fleet's agency panel is the right-now design for everyone: "In service now" (the cloud recorder's whole-network count, CIV-2939; the row is left out where there is no count), "Scheduled now" (the vehicles the schedule runs, not those its frequencies would need: 1,790, not 1,819, for the TTC at the evening rush), then a chart of each time of day with the route card's hover. The caption is the route count with no date (Ryan: "the question was why the fuck is this date here at all"). A row with no figure is left out, never a dash; "Scheduled now" is left out on a Saturday or Sunday (the fleet file is weekday only, CIV-2941). Next, once Data counts only vehicles on a trip: "In service now" becomes vehicles on a trip, with a quieter "Not on a trip <n>" row only where the feed reports trip-less vehicles (manager, relaying Ryan).
 

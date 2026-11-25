@@ -50,7 +50,7 @@ import { openingDay, saveDayPref } from './utils/openingDay';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
-import ResearchInfo from './components/ResearchInfo';
+import ResearchInfo, { ResearchZoomInCard } from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
 import { type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
@@ -976,7 +976,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               </React.Suspense>
             )}
             {inFrequentService && (
-              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} hidden={intervalSelectionActive}>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} hidden={intervalSelectionActive} below={<ResearchZoomInCard query={deferredQuery} />}>
                 {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
               </ResearchInfo>
             )}

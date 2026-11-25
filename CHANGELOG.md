@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The overnight and frequent-service maps say to zoom in when zoomed out**: they draw no routes that far out, but the overnight list said only "some less frequent routes are hidden" and the frequent-service map said nothing
 - **Atlas Studio's Fleet leads with right now**: every vehicle on the road now and the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
 - **The internal MCP page's usage chart shows questions and calls as two lines, over 7, 14 or 28 days**: calls were only in the hover, and it opens on the last week
 - **The internal MCP page's Stop link sits in a tester's own view**: a button on every row of the Testers table was too much
