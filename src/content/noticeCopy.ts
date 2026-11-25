@@ -815,7 +815,8 @@ export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly Explain
   'edge-gap-allowance': { p2: ['MIDDAY_GAPS'] },
   'weekday-variation': { p2: ['WEEKDAYS_SEPARATE'], p3: 'AGENCY_WEBSITE_EACH_DAY' },
   'route-rating': { p2: ['STRETCH_AND_BRANCHES_SEPARATE'], p3: 'REPORT_WITH_FLAG' },
-  'official-data': { p2: ['OFFICIAL_DATA_AS_PUBLISHED'], p3: 'AGENCY_WEBSITE_CURRENT' },
+  // E10: no "agency's website has its current schedule" line or link: Atlas never points riders elsewhere to plan or book (DECISIONS 2026-11-24).
+  'official-data': { p2: ['OFFICIAL_DATA_AS_PUBLISHED'] },
 };
 
 /**
