@@ -14,6 +14,7 @@ import {
   getPooledStop,
   oppositeSharedStops,
   pairOppositeStop,
+  sharedStretchStopIds,
   type SharedStopIndex,
 } from '../../shared/sharedStops';
 
@@ -339,6 +340,12 @@ export interface SharedStretchPassResult {
   values: Map<number, number>;
   /** This direction's own filter value at each qualifying stop index (the route card's N). */
   ownValues: Map<number, number>;
+  /** The map colour's value at each qualifying stop index: `values`, except a range end whose matched opposite stop is
+   *  past the opposite direction's branch split takes its inner neighbour's opposite value (CIV-1565). */
+  colourValues: Map<number, number>;
+  /** Stop indices after which the patterns pooled at the stop change: a branch split or short turn (CIV-1565). A range
+   *  end matched with an opposite shared stretch's end stop counts too (the opposite direction splits there). */
+  splitsAfter: Set<number>;
 }
 
 /**
@@ -416,6 +423,7 @@ export function sharedStretchStopPass(
     if (stretchIndices) for (const st of p.sharedStretches!) for (let i = st.from; i <= st.to; i++) stretchIndices.add(i);
     const values = new Map<number, number>();
     const ownValues = new Map<number, number>();
+    const pairedAt = new Map<number, { stop: string; best: number }>();
     const qualifying: boolean[] = p.stopOrder.map((stopId, i) => {
       if (stretchIndices && !stretchIndices.has(i)) return false;
       const own = stopFilterValue(ctx, p, stopId, period);
@@ -436,13 +444,43 @@ export function sharedStretchStopPass(
       if (best == null) return false;
       values.set(i, Math.max(own, best));
       ownValues.set(i, own);
+      pairedAt.set(i, { stop: o, best });
       return true;
     });
     const ranges = findQualifyingStopRanges(p.stopOrder.map((_, i) => String(i)), i => (qualifying[Number(i)] ? 0 : null), 0);
-    if (ranges.length > 0) out.push({ feature: f, ranges, values, ownValues });
+    if (ranges.length === 0) continue;
+    const colourValues = new Map(values);
+    // CIV-1565: a range end whose matched opposite stop is served by fewer of the opposite direction's pooled patterns than
+    // the stop matched with its inner neighbour sits past the opposite split (the nearest opposite stop is on a branch street,
+    // e.g. TTC 123 at North Queen / The East Mall). Its colour reads the opposite trunk instead; never better than its own value.
+    for (const [from, to] of ranges) {
+      for (const [end, inner] of [[from, from + 1], [to, to - 1]] as const) {
+        const a = pairedAt.get(end), b = pairedAt.get(inner);
+        if (!a || !b || a.stop === b.stop) continue;
+        const atEnd = patternsAt(opposite, a.stop), atInner = patternsAt(opposite, b.stop);
+        if (atEnd.size < atInner.size && [...atEnd].every(q => atInner.has(q))) {
+          colourValues.set(end, Math.max(ownValues.get(end)!, b.best));
+        }
+      }
+    }
+    const splitsAfter = single ? new Set<number>() : serviceSplitsAfter(p, byDir.get(dir) ?? [p]);
+    // A range end matched with the first or last stop of an opposite shared stretch sits where the opposite direction's
+    // patterns split, so it is a split point too (marked just outside the range, where branchSplitPieces reads it).
+    const oppositeStretchEnds = new Set<string>();
+    for (const q of opposite) for (const st of q.sharedStretches ?? []) {
+      if (q.stopOrder?.[st.from] != null) oppositeStretchEnds.add(q.stopOrder[st.from]);
+      if (q.stopOrder?.[st.to] != null) oppositeStretchEnds.add(q.stopOrder[st.to]);
+    }
+    for (const [from, to] of ranges) {
+      if (oppositeStretchEnds.has(pairedAt.get(from)!.stop)) splitsAfter.add(from - 1);
+      if (oppositeStretchEnds.has(pairedAt.get(to)!.stop)) splitsAfter.add(to);
+    }
+    out.push({ feature: f, ranges, values, ownValues, colourValues, splitsAfter });
   }
   return out;
 }
+
+export interface StretchPiece { from: number; to: number; headway: number }
 
 /** A headway's public tier as an index, fastest first; past the last public tier is one more. */
 const publicTierIndex = (h: number): number => {
@@ -450,42 +488,97 @@ const publicTierIndex = (h: number): number => {
   return i < 0 ? PUBLIC_TIER_MAXES.length : i;
 };
 
-export interface StretchPiece { from: number; to: number; headway: number }
+/** The same-direction patterns whose shared stretches pool at a stop (empty off every shared stretch). */
+function patternsAt(features: readonly StretchProps[], stopId: string): Set<StretchProps> {
+  return new Set(features.filter(q => sharedStretchStopIds(q).has(stopId)));
+}
 
 /**
- * The pieces a drawn stretch (stops `from` to `to`) is coloured in. Normally one piece in the worst stop's value. #1093 V0
- * (display only): an end stop that is a public tier worse than every other stop on the stretch colours only its own end
- * piece (that stop and its neighbour); the rest of the stretch takes the worst of the remaining stops. Each piece stays at
- * least as bad as the worse of its own two stops, so no piece shows better service than its stops' published values.
- * Needs 3 or more valued stops; map periods only (the all-day value keeps the one-colour rule). No published value changes.
+ * CIV-1565: stop indices i of a feature where the patterns pooled at stop i differ from those at stop i + 1: a branch
+ * split, a merge or a short turn. Off the feature's own shared stretches no pattern pools, so a stretch's first and last
+ * stops are always split points. A feature with no shared stretches has none.
  */
-export function stretchPieces(
+export function serviceSplitsAfter(p: StretchProps, sameDirection: readonly StretchProps[]): Set<number> {
+  const out = new Set<number>();
+  const order = p.stopOrder ?? [];
+  if (!p.sharedStretches?.length) return out;
+  const own = sharedStretchStopIds(p);
+  const key = (stopId: string) => (own.has(stopId)
+    ? sameDirection.map((q, k) => (sharedStretchStopIds(q).has(stopId) ? k : -1)).filter(k => k >= 0).join(',')
+    : '');
+  let prev = order.length > 0 ? key(order[0]) : '';
+  for (let i = 0; i + 1 < order.length; i++) {
+    const next = key(order[i + 1]);
+    if (next !== prev) out.add(i);
+    prev = next;
+  }
+  return out;
+}
+
+/**
+ * The pieces a drawn stretch (stops `from` to `to`) is coloured in (CIV-1565, replacing #1093 V0). The colour changes
+ * only where the route's branches split or a short turn ends (`splitsAfter`): the stretch is cut at each split inside it,
+ * and an end stop that is itself a split stop is a section of its own. Each section takes its worst stop's value, and the
+ * piece joining two sections takes the worse of the two. So a slower stop away from any split still colours its whole
+ * section (no one-segment stub), and no piece is ever better than the worse of its own two stops. Neighbouring pieces in
+ * the same colour are joined. Map periods only: the all-day value keeps one colour per stretch. No published value changes.
+ */
+export function branchSplitPieces(
   period: TimePeriod,
   from: number,
   to: number,
   valueAt: (i: number) => number | null | undefined,
+  splitsAfter: ReadonlySet<number>,
 ): StretchPiece[] {
-  const vals: Array<{ i: number; v: number }> = [];
-  for (let i = from; i <= to; i++) { const v = valueAt(i); if (v != null) vals.push({ i, v }); }
-  if (vals.length === 0) return [];
-  const whole = (): StretchPiece[] => [{ from, to, headway: Math.max(...vals.map(x => x.v)) }];
-  if (period === 'all' || vals.length < 3 || to - from < 2) return whole();
-  const tierOf = (i: number) => { const v = valueAt(i); return v == null ? null : publicTierIndex(v); };
-  const peels = (end: number, others: number[]): boolean => {
-    const t = tierOf(end);
-    if (t == null) return false;
-    return others.every(i => { const o = tierOf(i); return o == null || t > o; });
+  const worst = (a: number, b: number): number | null => {
+    let w: number | null = null;
+    for (let i = a; i <= b; i++) { const v = valueAt(i); if (v != null && (w == null || v > w)) w = v; }
+    return w;
   };
-  const all = vals.map(x => x.i);
-  const startPeels = peels(from, all.filter(i => i !== from));
-  const endPeels = peels(to, all.filter(i => i !== to));
-  if (!startPeels && !endPeels) return whole();
-  const inner = { from: startPeels ? from + 1 : from, to: endPeels ? to - 1 : to };
-  const innerVals = vals.filter(x => x.i >= inner.from && x.i <= inner.to).map(x => x.v);
+  const whole = worst(from, to);
+  if (whole == null) return [];
+  if (period === 'all' || to - from < 2) return [{ from, to, headway: whole }];
+  const cuts = new Set<number>();
+  for (let i = from; i < to; i++) if (splitsAfter.has(i)) cuts.add(i);
+  if (splitsAfter.has(from - 1)) cuts.add(from);
+  if (splitsAfter.has(to)) cuts.add(to - 1);
+  // CIV-1565 attempt 2 (keeps #1093 V0): within the end section, a range end stop a public tier worse than every other
+  // stop of that section colours only its own end piece, so one slow end stop (a thinner pattern there, SEPTA 26 at
+  // Battersby St) never paints the whole section. Sections of 3 or more stops only.
+  const tier = (i: number) => { const v = valueAt(i); return v == null ? null : publicTierIndex(v); };
+  const endPeels = (end: number, lo: number, hi: number): boolean => {
+    if (hi - lo < 2) return false;
+    const t = tier(end);
+    if (t == null) return false;
+    for (let i = lo; i <= hi; i++) { if (i === end) continue; const o = tier(i); if (o != null && o >= t) return false; }
+    return true;
+  };
+  const sorted = [...cuts].sort((a, b) => a - b);
+  const firstEnd = sorted.find(c => c >= from) ?? to;
+  const lastStart = (sorted.filter(c => c < to).pop() ?? from - 1) + 1;
+  if (endPeels(from, from, firstEnd)) cuts.add(from);
+  if (endPeels(to, lastStart, to)) cuts.add(to - 1);
+  const sections: Array<{ from: number; to: number; w: number }> = [];
+  let s0 = from;
+  for (let i = from; i <= to; i++) {
+    if (i === to || cuts.has(i)) {
+      const w = worst(s0, i);
+      sections.push({ from: s0, to: i, w: w ?? whole });
+      s0 = i + 1;
+    }
+  }
   const pieces: StretchPiece[] = [];
-  if (startPeels) pieces.push({ from, to: from + 1, headway: Math.max(valueAt(from)!, valueAt(from + 1) ?? 0) });
-  if (innerVals.length > 0 && inner.to > inner.from) pieces.push({ from: inner.from, to: inner.to, headway: Math.max(...innerVals) });
-  if (endPeels) pieces.push({ from: to - 1, to, headway: Math.max(valueAt(to)!, valueAt(to - 1) ?? 0) });
+  const add = (a: number, b: number, headway: number) => {
+    const last = pieces.at(-1);
+    if (last && last.to === a && headwayToTierColor(last.headway) === headwayToTierColor(headway)) {
+      last.to = b; last.headway = Math.max(last.headway, headway);
+    } else pieces.push({ from: a, to: b, headway });
+  };
+  sections.forEach((sec, k) => {
+    if (sec.to > sec.from) add(sec.from, sec.to, sec.w);
+    const next = sections[k + 1];
+    if (next) add(sec.to, next.from, Math.max(sec.w, next.w));
+  });
   return pieces;
 }
 
@@ -509,17 +602,17 @@ function addFailingRouteSharedStretches(
   colorMode: ColorVisionMode,
   segments: GeoJSON.Feature<GeoJSON.LineString, FrequencySegmentProperties>[],
 ): void {
-  for (const { feature, ranges, values } of failingRouteSharedRanges(routeFeatures, allFeatures, period, maxHeadway)) {
+  for (const { feature, ranges, colourValues, splitsAfter } of failingRouteSharedRanges(routeFeatures, allFeatures, period, maxHeadway)) {
     const p = feature.properties as unknown as ShapeProperties;
     for (const [from, to] of ranges) {
-      for (const piece of stretchPieces(period, from, to, i => values.get(i) ?? maxHeadway)) {
+      for (const piece of branchSplitPieces(period, from, to, i => colourValues.get(i) ?? maxHeadway, splitsAfter)) {
         const clipped = clipBetweenStopIndices((feature.geometry as GeoJSON.LineString).coordinates, p.stopPositions!, piece.from, piece.to);
         if (!clipped) continue;
         segments.push({
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: clipped },
           properties: {
-            // Same tier palette as every route line; an end stop a tier worse colours only its own piece (#1093).
+            // Same tier palette as every route line; the colour changes only at a branch split or short turn (CIV-1565).
             color: headwayToTierColor(piece.headway || maxHeadway, colorMode),
             agencySlug: p.agencySlug ?? slug,
             routeId: p.routeId,
@@ -602,8 +695,11 @@ export function computeFrequencySegmentOverlay(
       if (fullyQualifies) continue; // whole route already qualifies -- base rendering is already correct
 
       const coords = f.geometry.coordinates;
+      // CIV-1565: the colour changes only where this direction's pooled patterns change (a branch split or short turn).
+      const sameDirection = sharedPassContext((allLayers[slug] ?? fc).features).groups.get(`${p.routeId}|${p.day ?? ''}`)?.get(directionOf(p)) ?? [];
+      const splitsAfter = serviceSplitsAfter(p as StretchProps, sameDirection.length ? sameDirection : [p as StretchProps]);
       for (const [from, to] of ranges) {
-        for (const piece of stretchPieces(period, from, to, i => lineValues[i])) {
+        for (const piece of branchSplitPieces(period, from, to, i => lineValues[i], splitsAfter)) {
           const clipped = clipBetweenStopIndices(coords, stopPositions, piece.from, piece.to);
           if (!clipped) continue;
           segments.push({
