@@ -7,7 +7,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "r2_buckets": [
-    { "binding": "LIVE_ARCHIVE", "bucket_name": "atlas-live" }
+    { "binding": "LIVE_ARCHIVE", "bucket_name": "atlas-live" },
+    // CIV-2914 (manager approved, read only): the daily Live analysis files, studio-live/ (segments, dashboard).
+    { "binding": "MCP_LIVE", "bucket_name": "atlas-mcp-live" }
   ],
   "observability": { "enabled": true }
 }
