@@ -52,10 +52,58 @@ describe('pointer and runs', () => {
 describe('the cloud script (public repository)', () => {
   const src = readFileSync(resolve(__dirname, '../studio-live-cloud.ts'), 'utf8');
 
-  it('prints counts only: no agency, route or figure in its log lines', () => {
-    const logs = src.match(/console\.(log|error|warn)\([^;]*\);/g) ?? [];
-    expect(logs.length).toBeGreaterThan(0);
-    for (const line of logs) expect(line).not.toMatch(/\$\{(slug|route|a|b|f|e|weeks|built|pointer)\b/);
+  // #1811: every printing call, and every helper that wraps one (such as CIV-2910's reasons.push), may interpolate
+  // only these counts; anything else (a slug, route, reason or error message) must go to the private log.
+  const COUNTS = new Set(['++agenciesDone', 'minutes()', 'fileCount', 'thin', 'failed', 'stale.length',
+    'Object.keys(built).length', 'Object.keys(pointer.agencies).length']);
+  const callArgs = (from: number) => {
+    let depth = 0;
+    for (let i = from; i < src.length; i++) {
+      if (src[i] === '(') depth++;
+      else if (src[i] === ')' && --depth === 0) return src.slice(from, i + 1);
+    }
+    return src.slice(from);
+  };
+  const printers = /console\.\w+\(|process\.(stdout|stderr)\.write\(/g;
+  // A helper prints if its declaration (`const x = …;` or `function x(…) {…}`, brackets balanced) calls a printer.
+  const declaration = (from: number) => {
+    let depth = 0;
+    for (let i = from; i < src.length; i++) {
+      const c = src[i];
+      if ('([{'.includes(c)) depth++;
+      else if (')]}'.includes(c) && --depth === 0 && c === '}' && src.slice(from, from + 8) === 'function') return src.slice(from, i + 1);
+      else if (c === ';' && depth === 0) return src.slice(from, i);
+    }
+    return src.slice(from);
+  };
+  const declared = [...src.matchAll(/^\s*(?:export\s+)?(?:const|let|async function|function)\s+(\w+)/gm)]
+    .map(m => ({ name: m[1], body: declaration(m.index! + m[0].indexOf(m[0].trim())) }));
+  // Transitively: a helper that calls a printing helper prints too.
+  const helpers: string[] = [];
+  for (let grew = true; grew;) {
+    grew = false;
+    for (const d of declared) {
+      if (helpers.includes(d.name)) continue;
+      if (/console\.\w+\(|process\.std(?:out|err)\.write\(/.test(d.body) || helpers.some(h => new RegExp(`\\b${h}\\b`).test(d.body))) { helpers.push(d.name); grew = true; }
+    }
+  }
+  const calls = [
+    ...[...src.matchAll(printers)].map(m => callArgs(m.index! + m[0].length - 1)),
+    ...helpers.flatMap(h => [...src.matchAll(new RegExp(`\\b${h}(?:\\.\\w+)?\\(`, 'g'))].map(m => callArgs(m.index! + m[0].length - 1))),
+  ];
+
+  it('prints counts only: no agency, route, reason or figure in its log lines (#1811)', () => {
+    // The reasons name agencies, so they go only to the private log.
+    expect(src).toMatch(/const reasons = \{ push: \(r: string\) => appendFileSync\(log,/);
+    expect(helpers).not.toContain('reasons');
+    expect(calls.length).toBeGreaterThan(5);
+    for (const call of calls) {
+      // A helper's own definition is checked through the printing calls inside it.
+      if (/=>|\{\n/.test(call)) continue;
+      for (const [, expr] of call.matchAll(/\$\{([^}]*)\}/g)) expect(COUNTS.has(expr.trim()) || /^Math\.round\(/.test(expr.trim()), `${expr} in ${call}`).toBe(true);
+      // A plain variable passed to a printer could be anything.
+      expect(call, call).not.toMatch(/^\(\s*[a-zA-Z_][\w.]*\s*[,)]/);
+    }
     expect(src).not.toMatch(/stdio:\s*'inherit'/);
   });
 
