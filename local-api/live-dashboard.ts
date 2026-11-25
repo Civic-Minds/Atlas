@@ -4,7 +4,8 @@
  * Always answers with a status; `reason` is a plain sentence (what is missing and what to do).
  */
 import { liveFiles } from './liveFiles.js';
-import { getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
+import { LIVE_POLLING_ROUTES, getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
+import { LIVE_ARCHIVE_SLUGS } from '../shared/liveCoverage.js';
 import { liveAgencyName } from './agencyName.js';
 import { LIVE_DASHBOARD_NOTES, LIVE_DASHBOARD_UNCERTAIN_START, dashboardUnavailable, gapsOnlyV3, heldRouteLine, qualityHold, type LiveDashboardResponse, type LiveV3 } from '../shared/liveDashboard.js';
 
@@ -17,13 +18,18 @@ async function handler(req: Request): Promise<Response> {
   const agency = params.get('agency')?.trim();
   const route = params.get('route')?.trim();
   if (!agency || !route) return json({ status: 'unknown_route', reason: 'Give an agency and a route, for example ?agency=ttc&route=505.' }, 400);
+  const cfg = getPolledRoute(agency, route);
+  const unknown = async () => json({ status: 'unknown_route', reason: `Live has no analysis for ${await liveAgencyName(agency)} route ${route}. Build it with "npm run live:analyze -- ${route}".` }, 404);
+  // An agency Live doesn't record, or a route name no file can have, is unknown without asking the files (CIV-2914: the
+  // cloud source needs the read-only keys, so CI and a request for nonsense never reach it).
+  const slugLower = agency.toLowerCase();
+  if (!cfg && (!/^[A-Za-z0-9-]+$/.test(route) || !(LIVE_ARCHIVE_SLUGS.includes(slugLower) || LIVE_POLLING_ROUTES.some(r => r.slug === slugLower)))) return unknown();
   // The cloud's published files, or LIVE_SEGMENTS_DIR when set (CIV-2186).
   const files = liveFiles();
   // Whitelist: a configured live route, or a route whose analysis file is in the folder listing. Only a name found in the
   // listing reaches the filesystem, never the request's text.
-  const cfg = getPolledRoute(agency, route);
-  const listed = (await files.list()).find(f => f === `${agency.toLowerCase()}-${route}-segments.json`);
-  if (!cfg && !listed) return json({ status: 'unknown_route', reason: `Live has no analysis for ${await liveAgencyName(agency)} route ${route}. Build it with "npm run live:analyze -- ${route}".` }, 404);
+  const listed = (await files.list()).find(f => f === `${slugLower}-${route}-segments.json`);
+  if (!cfg && !listed) return unknown();
   const slug = cfg?.slug ?? agency.toLowerCase();
   const name = cfg?.displayRouteShortName ?? route;
   const unavailable = dashboardUnavailable(slug, name, !!listed || hasLiveAnalysis(slug, name));
