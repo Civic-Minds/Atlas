@@ -325,10 +325,10 @@ describe('HeadwaySparkline', () => {
     ]);
     // Each chart shows its own number for that hour above it; a chart with no value there shows nothing.
     const values = within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent);
-    expect(values).toEqual(['every 25 min', 'about 52 min', 'every 35 min', 'about 50 min']);
-    // The same hour is lit in all four charts, and each title line names its period, as the card's chart does (CIV-1094).
+    expect(values).toEqual(['5 PM: every 25 min', '5 PM: about 52 min', '5 PM: every 35 min', '5 PM: about 50 min']);
+    // The same hour is lit in all four charts; each title line names the hour, never its period (#1820).
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(2);
-    expect(within(dialog).getAllByTestId('hovered-period-name').map(el => el.textContent)).toEqual(['PM peak', 'PM peak', 'PM peak', 'PM peak']);
+    expect(within(dialog).queryAllByTestId('hovered-period-name')).toHaveLength(0);
     const lit = (strip: HTMLElement) => within(strip).getAllByTestId('trip-time-bar').filter(bar => bar.className.includes('opacity-75') || bar.className.includes('opacity-100'));
     expect(lit(strips[1])).toHaveLength(1);
     fireEvent.mouseLeave(strips[0].querySelector(".items-end")!);
@@ -382,7 +382,7 @@ describe('HeadwaySparkline', () => {
     expect(dialog.querySelector<HTMLElement>('.relative.z-10.flex > div > div')!.style.height).toBe('96px');
     // Hovering a trip-time bar: each chart's own number above it, and the screen-reader line.
     fireEvent.mouseEnter(within(dialog).getAllByTestId('trip-time-bar')[1].parentElement!);
-    expect(within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent)).toEqual(['every 25 min', 'about 52 min']);
+    expect(within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent)).toEqual(['5 PM: every 25 min', '5 PM: about 52 min']);
     expect(Array.from(within(dialog).getByTestId('full-day-readout').children).map(line => line.textContent)).toEqual(['5 PM', 'every 25 min; about 52 min']);
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(1);
     fireEvent.mouseLeave(within(dialog).getAllByTestId('trip-time-strip')[0].querySelector('.items-end')!);
@@ -551,4 +551,5 @@ describe('HeadwaySparkline full-day link', () => {
     expect(window.location.search).toBe('?route=ttc%3A%3A14');
     window.history.replaceState(null, '', '/');
   });
+
 });

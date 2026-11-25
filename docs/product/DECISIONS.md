@@ -312,6 +312,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-25 — The full-day chart's title line names the hovered hour, "5 AM: every 15 min" (#1820, CIV-2950)
+Ryan, 2026-11-25, on CapMetro 801 Southbound's "Overnight every 15 min" ("Is this overnigth every 15 not wrong and/or bad"): "Actually 1" (the title names the hour, not its period), then "1" to "5 AM: every 15 min", with the colon, as the hourly hover reads ("2 PM: every 30 min"). The 801 has no overnight service; the 5 AM hour's 15 came from its one trip at 5:57 and the next at 6:12, and the title put the period's name beside it. The title is built by the hover's own function (formatHourTitle; trip time by formatTripTimeTitle), so the two can't drift. Across all published agencies 1,854 routes showed an overnight hour's figure in a period with none.
+
 ### 2026-11-25 — Zoomed out, the overnight and frequent-service views say "Zoom in to see the routes." (#1817, CIV-2946)
 Ryan, 2026-11-25, on the overnight view's "Zoomed out. Some less frequent routes are hidden." ("feels funny here lol"), then "1". Below the detail zoom these views load no route data and draw no route at all, so both show "Zoom in to see the routes." (one line in noticeCopy). The overnight list had reused the frequency map's note (CIV-1337: "reuse this exact string"), which now stays only in the frequency map's export. The frequent-service view, which had shown nothing, gets the same line in a card under its info card.
 
