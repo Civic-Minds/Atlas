@@ -29,8 +29,6 @@
     "sourceUrl": "https://www.moover.com/",
     "sourceLabel": "MOOver MicroMOO pages and Southeast Vermont Transit GTFS-Flex feed",
     "sourceRetrievedAt": "2026-11-14",
-    "bookingInfo": "Book in the QRyde app, at cp-micromoo.qryde.com/cp/ or call 1-888-869-6287 (option 6), Monday to Friday 7:45 a.m. to 5 p.m.",
-    "bookingUrl": "https://cp-micromoo.qryde.com/cp/",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Windsor": {

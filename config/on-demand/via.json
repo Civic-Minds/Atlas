@@ -5,7 +5,6 @@
     "sourceUrl": "https://www.viainfo.net/link/",
     "sourceLabel": "VIA Link page and its six embedded zone maps (Google My Maps)",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://www.viainfo.net/link/",
     "eligibility": "Riders must be 12 or older to ride alone.",
     "pickup": {
       "method": "fixed-stops"

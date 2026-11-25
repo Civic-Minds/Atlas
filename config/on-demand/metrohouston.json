@@ -5,8 +5,6 @@
     "sourceUrl": "https://www.ridemetro.org/riding-metro/transit-services/curb2curb",
     "sourceLabel": "METRO curb2curb pages and zone shapefile (agency-supplied)",
     "sourceRetrievedAt": "2026-11-13",
-    "bookingInfo": "Book in the METRO On Demand app or call 713-739-7433, up to 7 days ahead.",
-    "bookingUrl": "https://www.ridemetro.org/riding-metro/apps/curb2curb-app",
     "pickup": {
       "method": "curb-to-curb"
     },

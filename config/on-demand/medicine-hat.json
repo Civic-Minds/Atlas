@@ -5,7 +5,6 @@
     "sourceUrl": "https://www.medicinehat.ca/roads-parking-transportation/transit/mhtnow/",
     "sourceLabel": "MHTnow page and zone GeoJSON (agency-supplied)",
     "sourceRetrievedAt": "2026-11-14",
-    "bookingUrl": "https://www.medicinehat.ca/roads-parking-transportation/transit/mhtnow/",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Central": {

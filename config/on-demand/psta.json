@@ -5,8 +5,6 @@
     "sourceUrl": "https://psta.net/services/snapper/",
     "sourceLabel": "PSTA Snapper page and Clearwater zone shapefile (agency-supplied)",
     "sourceRetrievedAt": "2026-11-24",
-    "bookingInfo": "Book at grouper.psta.net, in the Grouper app, or call 727-540-1900.",
-    "bookingUrl": "https://grouper.psta.net",
     "tripRules": "Trips can start and end anywhere in the zone, or at Park Street Terminal and Countryside Mall outside it.",
     "zoneMetadata": {
       "Clearwater": {

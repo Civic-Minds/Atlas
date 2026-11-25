@@ -32,8 +32,6 @@
     "sourceRetrievedAt": "2026-11-14",
     "serviceHours": "Spruce Grove: Monday to Friday 5 a.m. to 7 p.m.; Saturday 8 a.m. to 10 p.m.; Sunday 8 a.m. to 6 p.m. Stony Plain: Monday to Friday 5 a.m. to 7 p.m.; Saturday 8 a.m. to 10 p.m. Parkland Village and Acheson: Monday to Friday 5 to 9 a.m. and 2:15 to 6:15 p.m.",
     "hoursNote": "No service on general holidays (the City lists them on its on-demand page).",
-    "bookingInfo": "Book in the Book My Bus app, at book.mybus.rideco.com or call 780-962-8747, right away or up to one week ahead.",
-    "bookingUrl": "https://book.mybus.rideco.com",
     "pickup": {
       "method": "fixed-stops"
     },

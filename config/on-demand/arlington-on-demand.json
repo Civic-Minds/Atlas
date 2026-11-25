@@ -28,8 +28,6 @@
     "sourceUrl": "https://www.arlingtontx.gov/City-Services/Transportation-Streets-Traffic/Arlington-On-Demand",
     "sourceLabel": "Arlington On-Demand page and service area shapefile (agency-supplied)",
     "sourceRetrievedAt": "2026-11-24",
-    "bookingInfo": "Book in the Arlington Transportation app or call 817-784-7382.",
-    "bookingUrl": "https://www.arlingtontx.gov/City-Services/Transportation-Streets-Traffic/Arlington-On-Demand",
     "tripRules": "Trips can start and end anywhere in the zone, or at TRE CentrePort Station outside it.",
     "zoneMetadata": {
       "Arlington": {

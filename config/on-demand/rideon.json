@@ -5,9 +5,7 @@
     "sourceUrl": "https://www.montgomerycountymd.gov/dot-transit/flex/",
     "sourceLabel": "Ride On Flex page and Montgomery County Flex Zone layer",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://www.montgomerycountymd.gov/dot-transit/flex/",
     "eligibility": "Children under 5 must be accompanied by a parent or guardian.",
-    "bookingInfo": "Same-day booking only, in the Ride On Flex app or by phone. No boarding without a booked reservation.",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "pickup": {
       "method": "fixed-stops"

@@ -5,10 +5,8 @@
     "sourceUrl": "https://www.cota.com/services/cota-plus/",
     "sourceLabel": "COTA//Plus page and COTA_Plus_Zones layer",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://www.cota.com/services/cota-plus/",
     "eligibility": "Children under 12 ride free and must ride with a COTA//Plus account holder 12 or older.",
     "tripRules": "Trips can start and end anywhere in the service zones.",
-    "bookingInfo": "Book in the COTA//Plus app or by phone at 614-308-4400. COTA//Plus accepts only credit or debit cards.",
     "zoneMetadata": {
       "Grove City": {
         "serviceName": "COTA//Plus",

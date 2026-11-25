@@ -34,8 +34,6 @@
     "sourceUrl": "https://www.riderct.org/rctrides/",
     "sourceLabel": "RCT Rides page and Rural Community Transportation GTFS-Flex feed",
     "sourceRetrievedAt": "2026-11-14",
-    "bookingInfo": "Book in the RCT Rides app or call 866-961-8723 or 802-888-1004.",
-    "bookingUrl": "https://www.riderct.org/rctrides/",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Lamoille": {

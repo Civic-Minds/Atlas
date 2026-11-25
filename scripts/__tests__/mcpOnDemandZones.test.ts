@@ -49,7 +49,10 @@ describe('on_demand_zones', () => {
     const r = await call({ agency: 'Hamilton' });
     expect(r.beta).toMatch(/beta/i);
     expect(r.zones).toHaveLength(1);
-    expect(r.zones[0]).toMatchObject({ zone: 'East', service: 'Trans-Cab', booking: 'Call to book.', tripRules: 'Trips can start and end anywhere in the zone.' });
+    expect(r.zones[0]).toMatchObject({ zone: 'East', service: 'Trans-Cab', tripRules: 'Trips can start and end anywhere in the zone.' });
+    // Ryan, 2026-11-24: no booking info. A release published before the removal still carries bookingInfo; the answer drops it.
+    expect(r.zones[0]).not.toHaveProperty('booking');
+    expect(JSON.stringify(r)).not.toContain('Call to book');
     expect(r.zones[0].serviceHours[0]).toMatch(/^Mon–Fri 6 AM–10 PM$/);
   });
 

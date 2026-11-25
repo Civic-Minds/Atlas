@@ -19,6 +19,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How a route's frequency is decided
 
+- **Atlas is not a trip-planning tool; no booking info**
+  - What: no on-demand booking info anywhere: no app names, booking links, phone numbers, call-centre hours or booking-ahead rules on zone cards, other UI or the MCP's on_demand_zones answer. The bookingInfo and bookingUrl fields are deleted from the data, and a guard test (noBookingInfo.test.ts) fails if a booking field or booking text comes back.
+  - Why: Atlas shows how often service runs, not how to ride it.
+  - Source: Ryan, 2026-11-24: "THis is like the 6th time i have said to remove the on demand booking info i fucking swear to god"; earlier (CIV-1784): "this isnt for ppl using it like google maps"
 - **One frequency scale for every mode**
   - What: bus, rail and streetcar are all graded on one scale, 5, 8, 10, 15, 20, 30 and 60 minutes; no mode has bands of its own. Riders see 10, 15, 20, 30 and 60: the internal 5 and 8 count as 10.
   - Why: Ryan, "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". Rail had no 20 and graded a train every 16-20 minutes 30.
@@ -299,6 +303,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-24 — Atlas is not a trip-planning tool; no booking info (supersedes CIV-1784's partial removal)
+Ryan, 2026-11-24: "THis is like the 6th time i have said to remove the on demand booking info i fucking swear to god". Earlier, CIV-1784: "this isnt for ppl using it like google maps". CIV-1784 (8e84819) removed only the booking link and kept the booking text. Now every booking field is deleted from config/on-demand (81 fields in 44 files) and src/data, the zone card's Booking section and the MCP's booking field are gone (MCP 0.24.0), and a guard test fails if a booking field or booking text (app names, phone numbers, booking-ahead wording) reappears in zone text.
 
 ### 2026-11-24 — The MCP's hourly rows list every branch running in the window, and an hour with a lone trip says so (#1788, CIV-2890)
 Ryan, 2026-11-24 (relayed by Atlas Manager): "1", picking the periods' existing words for an hour with departures but no regular gap, plus the missing branch columns.

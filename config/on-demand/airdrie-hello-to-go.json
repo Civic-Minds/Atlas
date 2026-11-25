@@ -28,8 +28,6 @@
     "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651",
     "sourceLabel": "City of Airdrie Hello To Go page and the City's Hello To Go stop network (agency-supplied)",
     "sourceRetrievedAt": "2026-11-20",
-    "bookingInfo": "Book in the Hello To Go app, at book.hellotogo.rideco.com or call 403-948-8875 (Monday to Friday 8:30 a.m. to 4:30 p.m.), up to seven days ahead.",
-    "bookingUrl": "https://book.hellotogo.rideco.com",
     "pickup": {
       "method": "fixed-stops"
     },

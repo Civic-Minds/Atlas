@@ -665,12 +665,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               </>
             )}
           </div>
-          {zone.bookingInfo && (
-            <div>
-              <CardSectionLabel>Booking</CardSectionLabel>
-              <CardBodyText>{zone.bookingInfo}</CardBodyText>
-            </div>
-          )}
           {/* N131 (CIV-1978): stops from the agency's official data only, at the card's foot like the other card notices. */}
           {ON_DEMAND_OFFICIAL_DATA_ONLY.has(agency.slug) && (
             <div className={CARD_NOTICE_FOOTER}>

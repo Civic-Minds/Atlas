@@ -5,7 +5,6 @@
     "sourceUrl": "https://kingcounty.gov/en/dept/metro/travel-options/metro-flex",
     "sourceLabel": "King County Metro Flex page and Metro Flex service map data",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://kingcounty.gov/en/dept/metro/travel-options/metro-flex",
     "eligibility": "Each rider must be at least 13 years old to ride alone.",
     "tripRules": "Trips can start and end anywhere in the service area.",
     "pickup": {

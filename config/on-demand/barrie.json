@@ -6,8 +6,6 @@
     "sourceLabel": "Barrie Transit ON Demand page and the City's zone stop list (agency-supplied)",
     "sourceRetrievedAt": "2026-11-20",
     "serviceHours": "Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.",
-    "bookingInfo": "Book in the free Barrie ToD app, at book.barrietod.rideco.com or call 705-726-4242 (Monday to Friday 7:30 a.m. to 5:30 p.m., weekends 9 a.m. to 5 p.m.). Trips can be booked up to 7 days ahead.",
-    "bookingUrl": "https://book.barrietod.rideco.com/",
     "pickup": {
       "method": "fixed-stops"
     },

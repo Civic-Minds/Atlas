@@ -5,8 +5,6 @@
     "sourceUrl": "https://cdta.org/flex",
     "sourceLabel": "CDTA FLEX page and FLEX zone layers (Guilderland, Southern Saratoga, Saratoga Springs)",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://cdta.org/flex",
-    "bookingInfo": "An account is required to book. Walk-up rides are discontinued.",
     "pickup": {
       "method": "fixed-stops"
     },

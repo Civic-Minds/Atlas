@@ -5,7 +5,6 @@
     "sourceUrl": "https://www.go-metro.com/riding-metro/metronow/",
     "sourceLabel": "Metro MetroNow! page and MetroNow2025 zone layer",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://www.go-metro.com/riding-metro/metronow/",
     "eligibility": "Open to everyone; riders under 12 must ride with someone older.",
     "zoneMetadata": {
       "Springdale/Sharonville": {
@@ -153,8 +152,7 @@
           "retrievedAt": "2026-10-11"
         }
       }
-    },
-    "bookingInfo": "Book trips in advance."
+    }
   },
   "features": [
     {

@@ -5,7 +5,6 @@
     "sourceUrl": "https://trideltatransit.com/tri-myride/",
     "sourceLabel": "Tri MyRide page and service-area GeoJSON",
     "sourceRetrievedAt": "2026-10-11",
-    "bookingUrl": "https://trideltatransit.com/tri-myride/",
     "tripRules": "Trips can start and end anywhere in your zone.",
     "zoneMetadata": {
       "Brentwood": {

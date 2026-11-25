@@ -111,11 +111,9 @@ export interface Agency extends Omit<AgencyCatalogEntry, 'url' | 'feedQuality'> 
     serviceHours?: string;
     /** Qualifiers structured hours can't express, e.g. holidays. */
     hoursNote?: string;
-    /** How to book (app, phone), kept apart from the hours. */
-    bookingInfo?: string;
-    bookingUrl?: string;
+    /** The service's own name. */
     serviceName?: string;
-    /** Agency booking restriction riders must know, e.g. which trips a zone can serve. */
+    /** A trip restriction riders must know, e.g. which trips a zone can serve. */
     tripRules?: string;
     /** Who may ride, when the agency limits it, e.g. "Riders 13 and older." */
     eligibility?: string;
