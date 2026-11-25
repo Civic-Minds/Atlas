@@ -8,7 +8,7 @@ import { FIXED_NOISE, dailyNoise, weekForBand, type DashboardBand } from '../../
 import { runTimeOver, type AgencySummary } from '../../shared/liveAgency';
 import { kpiDelta, kpiTiles, type Kpi } from './liveKpi';
 
-import { runTimeShareText, TRIP_TIME_LABEL } from '../../shared/liveWording';
+import { onTimeWindowWords, runTimeShareText, TRIP_TIME_LABEL } from '../../shared/liveWording';
 export { runTimeShareText };
 /** The row's name on All routes, so the share reads against the timetable (wording to confirm, CIV-945). */
 export const NETWORK_RUN_TIME_LABEL = `${TRIP_TIME_LABEL} vs schedule`;
@@ -21,7 +21,7 @@ export function agencyKpiTiles(s: AgencySummary, band: DashboardBand = 'all'): K
   if (!w) return [];
   // The daily values behind the noise are the whole day's: a time of day uses the fixed stand-in.
   const daily = band === 'all' ? s.daily : { late: [], delivered: [], tripTime: [], extraWait: [], bunching: [] };
-  const tiles = kpiTiles({ ...w, health: [] }, daily);
+  const tiles = kpiTiles({ ...w, health: [] }, daily, undefined, { window: onTimeWindowWords(s.agency) });
   const t = w.thisWeek.tripTime, l = w.lastWeek.tripTime;
   const now = runTimeOver(t), before = runTimeOver(l);
   if (now == null) return tiles;

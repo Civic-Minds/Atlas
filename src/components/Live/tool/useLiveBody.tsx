@@ -93,7 +93,7 @@ const BOTH_DIRECTIONS = 'both directions';
  */
 // Run time is already the main pattern's (fetchLiveDashboard, #1149).
 // CIV-1459: the picked time of day's two weeks; none when the file has no figures for it (never the whole day's in their place).
-const weekly = (v3: LiveV3, band: DashboardBand, inStudio = false) => { const w = weekForBand(v3.weekly, band); return w ? kpiTiles(w, band === 'all' ? weekDailyValues(v3) : {}, undefined, { oneBunchingFigure: inStudio }) : []; };
+const weekly = (v3: LiveV3, band: DashboardBand, inStudio = false) => { const w = weekForBand(v3.weekly, band); return w ? kpiTiles(w, band === 'all' ? weekDailyValues(v3) : {}, undefined, { oneBunchingFigure: inStudio, window: v3.thresholds }) : []; };
 
 /** The network's summary, on the left with no route picked: the week's figures as one-line rows, (late departures by hour show for a picked route only). */
 /** The week table's grey-colour line and the bunching note: the Live tool page shows both under the table; Studio has them in About. */

@@ -9,7 +9,9 @@
  */
 import { weekForBand, type DashboardBand, type LiveV3, type WeekMetrics } from './liveDashboard';
 import { DAYTIME_PERIOD_KEYS } from './rules/periods';
-import { BUNCHED_GAP_SEC, EARLY_AT_OR_BELOW_MIN, GAPPED_FACTOR, LATE_ABOVE_MIN } from './rules/live';
+import { BUNCHED_GAP_SEC, EARLY_AT_OR_BELOW_MIN, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow } from './rules/live';
+import { onTimeWindowText } from './liveWording';
+import { LIVE_AGENCY_EXTRAS } from './liveAgencyConfig';
 import { DEFAULT_CUTOFFS, bunchedText, earlyText, gappedText, lateText, type CutoffCounts } from './liveCutoffs';
 
 /** The time-of-day keys a reliability answer covers: the whole day, then the map's daytime periods. */
@@ -30,6 +32,18 @@ export const RELIABILITY_DEFINITION_TEXT = {
   bunched: bunchedText(DEFAULT_CUTOFFS.bunchedWithinMin),
   gapped: gappedText(DEFAULT_CUTOFFS.gappedFactor),
 } as const;
+
+/**
+ * CIV-2222: the late and early definitions for one agency, at its own published on-time window (TTC: more than 5 minutes
+ * late, 1 minute or more early) or Atlas's where it publishes none. Bunched and gapped are Atlas's for every agency.
+ */
+export function reliabilityDefinitionText(slug: string | null | undefined): Record<keyof typeof RELIABILITY_DEFINITION_TEXT, string> & { onTimeWindow?: string } {
+  const w = onTimeWindow(slug);
+  // The MCP answer names the agency once, so the agency's own window is named with it (Ryan's words, CIV-2222).
+  return w.published
+    ? { ...RELIABILITY_DEFINITION_TEXT, late: `More than ${w.lateAboveMin} minutes after the scheduled time.`, early: `More than ${Math.abs(w.earlyAtOrBelowMin)} ${Math.abs(w.earlyAtOrBelowMin) === 1 ? 'minute' : 'minutes'} before the scheduled time.`, onTimeWindow: `${slug ? LIVE_AGENCY_EXTRAS[slug]?.shortName ?? slug : ''}'s own on-time window: ${onTimeWindowText(w)}.` }
+    : { ...RELIABILITY_DEFINITION_TEXT };
+}
 
 /** One week's figures for one time of day. Null where nothing was measured. */
 export interface WeekFigures {

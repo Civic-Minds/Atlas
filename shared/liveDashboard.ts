@@ -140,7 +140,7 @@ export interface LiveV3 {
   schema: 3;
   /** goodDates: the window's days with good recordings, the days every figure counts (older files lack it). */
   window: { days: number; dates: string[]; requestedDays: number; goodDates?: string[] };
-  thresholds: { earlyAtOrBelowMin: number; lateAtOrAboveMin: number; bunchedGapSec: number };
+  thresholds: { earlyAtOrBelowMin: number; lateAtOrAboveMin: number; bunchedGapSec: number; /** CIV-2222: the agency's own published on-time window (older files: absent, Atlas's). */ onTimeWindowPublished?: boolean };
   method: string;
   /** The good-prefixed fields count the good days (window.goodDates) only; older files lack them (CIV-910). */
   swaps: { reassigned: number; dropped: number; rate: number; goodReassigned?: number; goodDropped?: number; goodRate?: number };

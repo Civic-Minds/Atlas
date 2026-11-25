@@ -27,7 +27,8 @@ import {
 import { adherenceReport, delayBuildup, stopDelayStats, tripStartLateness, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
 import { gapCounter, gapRatioCounter } from '../shared/liveCutoffs.js';
 import { addGapCounts, BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
-import { delayStatus, EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN } from '../shared/liveDelayStatus.js';
+import { delayStatus } from '../shared/liveDelayStatus.js';
+import { onTimeWindow } from '../shared/rules/live.js';
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
 import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCounts, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
@@ -49,6 +50,11 @@ const ROUTE = args.route ?? '504';
 const OUT = args.out;
 const AGENCY = args.agency ?? 'ttc';
 const LIVE = loadLiveAgencyConfig(AGENCY);
+/** CIV-2222: the agency's own on-time window where it publishes one (TTC: 1 min early to 5 min late), else Atlas's. */
+const WINDOW = onTimeWindow(AGENCY);
+/** #1789: runs rated with no departure from their trip's first stop, and those first seen at the 4th stop or later. */
+let partwayRuns = 0, partwayFar = 0;
+const RATE_PARTWAY = process.argv.includes('--rate-partway');
 const TZ = LIVE.timeZone;
 const DAYS = Number(args.days ?? LIVE_WINDOW_DAYS);
 const OBS_OUT = args['obs-out'];
@@ -481,6 +487,17 @@ for (const [key, samples] of runs) {
         else { rows = []; swapLog.push({ date: svcDate, outcome: 'dropped' }); }
       }
       runsWithDelays++;
+      // #1789 (CIV-2222): a run seen first partway along its trip (a short turn re-entering service, or no position at the
+      // terminal) has no departure from the end of the line, so it got no on-time rating. With --rate-partway it is rated at
+      // the first stop it served instead. Investigation only until Ryan picks; off by default.
+      if (rows.length && !rows.some(r => r.tripStart)) {
+        partwayRuns++;
+        const first = rows.reduce((a, b) => (b.p.t < a.p.t ? b : a));
+        const tt = timesByTrip.get(assigned) ?? [];
+        const idx = tt.findIndex(st => st.stopId === first.p.stopId);
+        if (idx >= 3) partwayFar++;
+        if (RATE_PARTWAY) first.tripStart = true;
+      }
       if (rows.length) {
         const tt = timesByTrip.get(assigned) ?? [];
         const firstSt = pattern.stops[0], lastSt = pattern.stops[pattern.stops.length - 1];
@@ -908,6 +925,7 @@ const holdStats = [...holdsAt].map(([k, m]) => {
   };
 });
 if (process.env.DEBUG_FIRST) console.log('joined_late at first stop:', firstStopJoinedLate);
+console.log(`#1789: ${partwayRuns} runs with no first-stop departure (${partwayFar} first seen at the 4th stop or later)${RATE_PARTWAY ? ', rated at the first stop they served' : ''}`);
 console.log(`v2: trip instances ${tripInstances} (short pieces left out ${tripsShortExcluded}), not seen ${tripsNotSeen}, unlisted cover ${tripsUnlistedCover}, feed-gap trips ${tripsFeedGap}, turned back ${tripsShortTurned}, stood-still events ${holds.length}, degraded snapshots empty/stale/thin ${degradedEmpty}/${degradedStale}/${degradedThin}, stood-still dropped for degraded feed ${standingStillDegraded}`);
 
 // --- v3: the dashboard analysis over the last DAYS service dates ---
@@ -935,7 +953,7 @@ const r3 = (x: number | null) => (x == null ? null : Math.round(x * 1000) / 1000
 // The Limits counts (unscheduled trips, mismatched trip numbers, near a limit) over the whole window, and over the good days
 // only, which the pages show so these shares leave out a bad-recording day like every other figure (CIV-910).
 const limitInput = { leftOut: leftOutRuns, kept: keptRuns, swaps: swapLog, runs: windowRuns };
-const limitCutoffs = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_ABOVE_MIN, withinMin: 0.75 };
+const limitCutoffs = { earlyAtOrBelowMin: WINDOW.earlyAtOrBelowMin, lateAtOrAboveMin: WINDOW.lateAboveMin, withinMin: 0.75 };
 const windowLimits = limitCounts(limitInput, inWindow, limitCutoffs);
 const goodLimits = limitCounts(limitInput, inGoodDays, limitCutoffs);
 const nearCutoffShare = windowLimits.nearCutoffShare;
@@ -966,7 +984,7 @@ function stopsAndBuildup(rs: readonly RunDelays[]) {
   for (const r of rs) for (const st of r.stops) { const k = `${r.directionId}|${st.stopId}`; const c = tpCount.get(k) ?? [0, 0]; c[1]++; if (st.timepoint) c[0]++; tpCount.set(k, c); }
   const tpShare = new Map([...tpCount].map(([k, [tp, all]]) => [k, all ? tp / all : 0]));
   const covered = (dir: number, stopId: string, n: number) => n >= RELIABLE_STOP_MIN_SHARE * (due.get(`${dir}|${stopId}`) ?? Infinity);
-  const stops = stopDelayStats(rs).map(s => ({
+  const stops = stopDelayStats(rs, WINDOW).map(s => ({
     ...stopInfo(s.stopId), directionId: s.directionId, order: orderIndex(s.directionId, s.stopId), n: s.n,
     medianMin: r1(s.medianMin), p90Min: r1(s.p90Min), lateShare: r3(s.lateShare), earlyShare: r3(s.earlyShare),
     ranked: s.ranked && regularStops.has(`${s.directionId}|${s.stopId}`) && !repeatedStops.has(`${s.directionId}|${s.stopId}`) && covered(s.directionId, s.stopId, s.n),
@@ -986,14 +1004,14 @@ function stopsAndBuildup(rs: readonly RunDelays[]) {
 }
 const adherenceFor = (rs: readonly RunDelays[]) => ({
   timepoints: {
-    all: adherenceReport(rs, { tripStartsOnly: true }),
-    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date)), { tripStartsOnly: true }),
-    weekend: adherenceReport(rs.filter(r => isWeekend(r.date)), { tripStartsOnly: true }),
+    all: adherenceReport(rs, { tripStartsOnly: true, window: WINDOW }),
+    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date)), { tripStartsOnly: true, window: WINDOW }),
+    weekend: adherenceReport(rs.filter(r => isWeekend(r.date)), { tripStartsOnly: true, window: WINDOW }),
   },
   allStops: {
-    all: adherenceReport(rs),
-    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date))),
-    weekend: adherenceReport(rs.filter(r => isWeekend(r.date))),
+    all: adherenceReport(rs, { window: WINDOW }),
+    weekday: adherenceReport(rs.filter(r => !isWeekend(r.date)), { window: WINDOW }),
+    weekend: adherenceReport(rs.filter(r => isWeekend(r.date)), { window: WINDOW }),
   },
 });
 // Every section can be filtered by time of day: the same analysis on the departures that fall in each period.
@@ -1227,7 +1245,7 @@ function weekMetrics(days: readonly string[], band: TimeBand | 'all' = 'all', ke
   const ds = new Set(days);
   const inBand = (hour: number) => band === 'all' || bandForHour(hour) === band;
   const runs = runDelays.filter(r => ds.has(r.date)).map(r => (band === 'all' ? r : { ...r, stops: r.stops.filter(x => inBand(x.hour)) })).filter(r => r.stops.length > 0);
-  const tp = adherenceReport(runs, { tripStartsOnly: true }).overall;
+  const tp = adherenceReport(runs, { tripStartsOnly: true, window: WINDOW }).overall;
   let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0, close = 0, far = 0;
   const gapSteps = gapCounter(), ratioSteps = gapRatioCounter();
   for (const [key, m] of headwayByStop) {
@@ -1270,7 +1288,7 @@ const serviceDeliveredV3 = {
 // whether it was a good day and its late share by the hour trips start.
 const dailyV3 = Object.fromEntries(allValidDates.map(date => {
   const h = healthV3.find(x => x.date === date);
-  const hours = adherenceReport(runDelays.filter(r => r.date === date), { tripStartsOnly: true }).byHour;
+  const hours = adherenceReport(runDelays.filter(r => r.date === date), { tripStartsOnly: true, window: WINDOW }).byHour;
   return [date, { healthy: !!h?.healthy, ...weekMetrics([date]), lateByHour: hours.map(x => ({ hour: x.hour, n: x.n, lateShare: r3(x.lateShare) })) }];
 }));
 const weeklyV3 = {
@@ -1303,7 +1321,7 @@ const lateByStopHour = new Map<string, { n: number; late: number }>();
 for (const r of goodRuns) for (const st of r.stops) {
   const k = `${r.directionId}|${st.stopId}|${st.hour % 24}`;
   const c = lateByStopHour.get(k) ?? { n: 0, late: 0 };
-  c.n++; if (delayStatus(st.delaySec / 60) === 'late') c.late++;
+  c.n++; if (delayStatus(st.delaySec / 60, WINDOW) === 'late') c.late++;
   lateByStopHour.set(k, c);
 }
 const stopHoursV3: Record<string, Record<string, Array<[number, number | null, number, number | null, number | null, number | null] | null>>> = {};
@@ -1341,7 +1359,7 @@ for (const [d, ps] of Object.entries(patternsV3)) {
 const v3 = {
   schema: 3,
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS, goodDates: goodWindowDates },
-  thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
+  thresholds: { earlyAtOrBelowMin: WINDOW.earlyAtOrBelowMin, lateAtOrAboveMin: WINDOW.lateAboveMin, onTimeWindowPublished: WINDOW.published, bunchedGapSec: BUNCHED_GAP_SEC },
   method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the ' + LIVE.shortName + ' feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
   leftOut: {
     /** Runs seen in the window under a trip number that is not in the timetable (unscheduled buses, extra moves). */

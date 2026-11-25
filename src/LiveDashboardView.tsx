@@ -49,7 +49,7 @@ function Delta({ k }: { k: Kpi }) {
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
   if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">{LIVE_NO_WEEK_COMPARISON}</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
-  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), 'both directions')} caption={weekNotComparableLine(w)} />;
+  return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), 'both directions', { window: v3.thresholds })} caption={weekNotComparableLine(w)} />;
 }
 
 /** One figure tile: title, big number, caption and the change line. The base look of every Live card. */

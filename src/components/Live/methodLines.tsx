@@ -5,12 +5,17 @@
  */
 import { AGENCY_FIGURES_TEXT, COLOURED_CHANGES_TERM, PHONE_METHOD_TEXT, EXTRA_WAIT_TEXT, POSITIONS_TERM, POSITIONS_TEXT, RECORDING_GAPS_TERM, STOPS_TERM, STOPS_TEXT, TRIP_MATCH_TERM, bunchingText, deliveredText, tripMatchText, tripTimeText } from '../../../shared/liveGlossary';
 import { COLOURED_CHANGES } from '../../../shared/liveDashboard';
-import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELIVERED_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from '../../../shared/liveWording';
+import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELIVERED_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL, lateDefinition, type OnTimeWords } from '../../../shared/liveWording';
 import { Term } from './MethodFootnote';
 
 // E9–E23 as Ryan approved them (CIV-1075): each line is the bold term, then the rest of its sentence, no colon.
 
 export const lateLine = <Term t={LATE_LABEL}>{LATE_DEFINITION}</Term>;
+/**
+ * CIV-2222: the Late line at a page's window. An agency's own published window reads in Ryan's words after a colon
+ * ("Late: >1 min early or >5 min late", TTC); Atlas's window keeps lateLine.
+ */
+export const lateLineFor = (t?: OnTimeWords | null) => (t?.onTimeWindowPublished ? <Term t={LATE_LABEL} colon>{lateDefinition(t)}</Term> : lateLine);
 /** What "ahead" means, its own line after the Late definition. */
 export const aheadLine = (aheadMin: number) => <Term t="Ahead">is {aheadMin} min or more ahead of schedule.</Term>;
 export const runTimeLine = (shortTurns = false) => (
@@ -38,10 +43,10 @@ export const stopsLine = <Term t={STOPS_TERM}>{STOPS_TEXT}</Term>;
  * Phones (Ryan, 2026-11-22, #1151 option 1): "How this is measured" is one short line per figure, "**Late**: …". `aheadMin`
  * adds the route page's Ahead line; `underMin` is the route's bunching gap.
  */
-export function phoneMethodLines({ aheadMin, underMin }: { aheadMin?: number; underMin?: number } = {}) {
+export function phoneMethodLines({ aheadMin, underMin, window }: { aheadMin?: number; underMin?: number; window?: OnTimeWords | null } = {}) {
   const t = PHONE_METHOD_TEXT;
   return [
-    <Term t={LATE_LABEL} colon>{t.late}</Term>,
+    <Term t={LATE_LABEL} colon>{window?.onTimeWindowPublished ? lateDefinition(window) : t.late}</Term>,
     aheadMin != null && <Term t="Ahead" colon>{t.ahead(aheadMin)}</Term>,
     <Term t={TRIP_TIME_LABEL} colon>{t.tripTime}</Term>,
     <Term t={EXTRA_WAIT_LABEL} colon>{t.extraWait}</Term>,

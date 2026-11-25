@@ -54,6 +54,12 @@ export function getVehicleStatus(delayMin: number | null): 'no_data' | 'early' |
   return delayStatus(delayMin);
 }
 
+/** CIV-2222: a vehicle's status as the server set it, at its agency's own on-time window; older payloads read Atlas's. */
+export function vehicleStatus(v: { delayMin: number | null; status?: string | null }): 'no_data' | 'early' | 'late' | 'on_time' {
+  if (v.delayMin == null) return 'no_data';
+  return v.status === 'early' || v.status === 'late' || v.status === 'on_time' ? v.status : getVehicleStatus(v.delayMin);
+}
+
 export function getVehicleColors(status: 'early' | 'late' | 'on_time' | 'no_data', mode: ColorVisionMode = 'default'): StatusColor {
   return statusPalette(mode)[status];
 }

@@ -15,6 +15,31 @@ export const EARLY_AT_OR_BELOW_MIN = -1.5;
  */
 export const LATE_ABOVE_MIN = 5.5;
 
+/** On time is between these: early at or below `earlyAtOrBelowMin` (negative: ahead), late above `lateAboveMin`. */
+export interface OnTimeWindow {
+  earlyAtOrBelowMin: number;
+  lateAboveMin: number;
+  /** Early only when MORE than |earlyAtOrBelowMin| ahead (TTC: ">1 min early", Ryan's words), not at it. */
+  earlyStrict?: boolean;
+}
+
+/** Atlas's window, kept for every agency that publishes none of its own. */
+export const DEFAULT_ON_TIME_WINDOW: OnTimeWindow = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAboveMin: LATE_ABOVE_MIN };
+
+/**
+ * CIV-2222 (Ryan, 2026-11-24: "I think we do 1 but no Atlas one for now"): an agency's figures use its own published on-time
+ * window. TTC: 1 min early to 5 min late (his OK for those two numbers). Add an agency only with its published definition.
+ */
+export const AGENCY_ON_TIME_WINDOWS: Readonly<Record<string, OnTimeWindow>> = {
+  ttc: { earlyAtOrBelowMin: -1, lateAboveMin: 5, earlyStrict: true },
+};
+
+/** The window an agency's figures use, and whether it is the agency's own (published) or Atlas's default. */
+export function onTimeWindow(slug: string | null | undefined): OnTimeWindow & { published: boolean } {
+  const own = slug ? AGENCY_ON_TIME_WINDOWS[slug] : undefined;
+  return own ? { ...own, published: true } : { ...DEFAULT_ON_TIME_WINDOW, published: false };
+}
+
 // ---- Minimum sample ----
 
 /** A stop, stretch, hour or route needs at least this many departures, gaps or trips before Live states a figure for it. */

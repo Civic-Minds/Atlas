@@ -14,6 +14,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio MCP's hour-by-hour figures list every branch running then, and count lone trips**: RTD 31's 106th & Melody branch had no row at rush hour, and hours with one trip read "no regular trips"
 - **A route list shows the slower frequency when service changes partway through a period**: STM's Green Line at midday read "every 4 min" though it runs every 6 after 9:17 AM
 - **History shows 2026 on today's route after a renumbering**: TriMet 96, 10 and 29 and NFTA's Metro Rail kept their 2026 figure on the old route, which has no line on today's map
+- **TTC on-time figures use the TTC's own standard**: Live counts a departure on time from 1 minute early to 5 minutes late, as the TTC does, so Atlas's figures can be read beside the TTC's own
 - **Seasonal timetables update without waiting for review**: a ski or school-term timetable whose frequencies match the same date last year now goes onto the map at the next refresh, instead of being held as a suspicious change
 - **Atlas Studio MCP's schedule changes give the same figures as its route frequencies**: Kingston's route 2 was listed as cut to "no service" though it still runs every 30 minutes, because the change list read its figures another way
 - **Fort Lauderdale's LauderGO shuttles are on the map**: the five community shuttle routes now show as their own agency, apart from Broward County Transit

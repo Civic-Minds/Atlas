@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { MISSING_VALUE } from '../../../../shared/missingValue';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
-import { LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_THRESHOLD, excludingText, fadedNoteText, lateCount, lateHourLine } from '../../../../shared/liveWording';
+import { LATE_BY_HOUR_TITLE, LATE_LABEL, lateThreshold, excludingText, fadedNoteText, lateCount, lateHourLine } from '../../../../shared/liveWording';
 import { KPI_TILE } from '../kpiTileStyle';
 import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
@@ -140,7 +140,7 @@ function Spark({ v3, data, band, dir, allOnly = false, title }: Props & { title:
     return { kind, label, late, hours: m.sparkHours(kind, band), thin: isThin(late?.days), leftOut: leftOutDays(v3, kind) };
   });
   return (
-    <Section id="dash-days" title={title} intro={<>How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.{dir != null && ' Both directions: this view is not split by direction yet.'}</>}>
+    <Section id="dash-days" title={title} intro={<>How often trips leave the end of the line {lateThreshold(v3.thresholds)}, by kind of day and the hour they start.{dir != null && ' Both directions: this view is not split by direction yet.'}</>}>
       <ChartRow cols={cols} tall={allOnly} showNote={!allOnly} />
     </Section>
   );
@@ -169,7 +169,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
   });
   return (
     <>
-      <p className="mt-2 text-sm text-[var(--text-muted)]">Share of trips that left the end of the line {LATE_THRESHOLD}.</p>
+      <p className="mt-2 text-sm text-[var(--text-muted)]">Share of trips that left the end of the line {lateThreshold(v3.thresholds)}.</p>
       <div className="mt-3 grid max-w-2xl grid-cols-3 gap-2">
         {DAYS.map(([k, label]) => {
           const c = m.countsFor(k);
@@ -197,7 +197,7 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
         <div className={KPI_TILE.label}>{label}</div>
         <div className={KPI_TILE.value}>{percentText(c.lateShare)}</div>
         <div className={KPI_TILE.line}>late, of {countText(c.n)} · {percentText(c.earlyShare)} ahead</div>
-        <div className={KPI_TILE.line}>{LATE_THRESHOLD}</div>
+        <div className={KPI_TILE.line}>{lateThreshold(v3.thresholds)}</div>
         {isThin(c.days) && <div className={KPI_TILE.line}>{THIN_HINT}</div>}
       </div>
       <div className="min-w-0"><ChartRow cols={[col]} withLabels={false} showNote /></div>
