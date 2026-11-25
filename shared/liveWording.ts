@@ -13,10 +13,11 @@ import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow, type OnTi
  */
 
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
-/** The route strip's delay legend (E22, Ryan, CIV-1075): "Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind". The early step shows only when a stop is ahead. */
+/** The route strip's delay legend (E22, Ryan, CIV-1075; CIV-2924 title): "Typical deviation: 1+ min ahead · On time · 1–3 min · 3+ min behind". The early step shows only when a stop is ahead. */
 /** The name of how long a trip takes end to end, on Live and the map alike (Ryan, CIV-1160 question 6, 2026-11-13: "Trip time", not "Run time"). */
 export const TRIP_TIME_LABEL = 'Trip time';
-export const DELAY_LEGEND_TITLE = 'Typical delay';
+/** CIV-2924 (Ryan, 2026-11-25: "Typical delay" becomes "Typical deviation"; "Delay" is kept for the new clear-street measure). */
+export const DELAY_LEGEND_TITLE = 'Typical deviation';
 
 // The names of Live's measures and sections, each written once (CIV-1596). Every page, panel, table and glossary reads
 // these; the style guard fails on a copy typed by hand in Live code.
@@ -131,15 +132,20 @@ export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
 export const LATE_THRESHOLD = `${LATE_LIMIT_TEXT} late`;
 
-/** The title of every "Where delays start" section and the name of the stretch it marks (one name, CIV-1448). */
-export const DELAY_STARTS_TITLE = 'Where delays start';
+/**
+ * CIV-2924 (Ryan, 2026-11-25, picking "1"; supersedes CIV-1602's "Delays start"): the timetable measure and its Live section
+ * are one name, "Schedule adherence" ("Why not just Schedule adherence wtf does by stretch mean"). Written once, here.
+ */
+export const SCHEDULE_ADHERENCE_LABEL = 'Schedule adherence';
+/** The title of every Schedule adherence section (was "Where delays start") and the name of the stretch it marks (one name, CIV-1448). */
+export const DELAY_STARTS_TITLE = SCHEDULE_ADHERENCE_LABEL;
 /** The column and figure label for the typical minutes a stretch adds (CIV-1448; CIV-1795: "Usually", as the Live column; was "Typical added"). */
 export const TYPICAL_ADDED = 'Usually adds';
 /** Delays start: the minutes added on the way into a stop that aren't made back over the next 3 stops, on the Live map's stop and stretch cards (Ryan, CIV-1795 question 9: "Time lost: 2 min"). */
 export const TIME_LOST_LABEL = 'Time lost';
 export const timeLostLine = (min: number): string => `${TIME_LOST_LABEL}: ${minutesText(min)}`;
-/** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (Ryan, CIV-1602: "Delays start" everywhere). */
-export const DELAY_STARTS_LABEL = 'Delays start';
+/** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (CIV-2924: "Schedule adherence"; was CIV-1602's "Delays start"). */
+export const DELAY_STARTS_LABEL = SCHEDULE_ADHERENCE_LABEL;
 /** The Live map's name: its page title and the title on a saved image of it (Ryan, CIV-1602; "Live", not "Live vehicles", 2026-11-17). */
 export const LIVE_MAP_TITLE = 'Live';
 

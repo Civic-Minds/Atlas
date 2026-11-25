@@ -29,7 +29,7 @@ describe('Live agency page', () => {
     expect(bunching.getByRole('columnheader', { name: /Increase/ })).toBeTruthy();
     expect(bunching.getByText('10% → 41%')).toBeTruthy();
     expect(bunching.queryByText('+33 pt')).toBeNull();
-    const delays = within(screen.getByRole('region', { name: 'Where Delays Start' }));
+    const delays = within(screen.getByRole('region', { name: 'Schedule Adherence' }));
     expect(delays.getByText('2.4 min')).toBeTruthy();
   });
   it('keeps how this is measured open, with no disclosure to click', async () => {

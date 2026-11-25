@@ -36,7 +36,7 @@ describe('CIV-1160: same words after moving Live copy to shared definitions', ()
   it('route strip and branch strip words', () => {
     expect(TRACK_NAME).toEqual({ delay: 'Delay', bunching: 'Bunching' });
     expect(stripTableCaption('Eastbound')).toBe('Eastbound: delay and bunching at each stop');
-    expect(STRIP_COLUMNS).toEqual({ stop: 'Stop', delay: 'Typical delay', late: 'Late', bunch: 'Gaps off', n: 'Departures' });
+    expect(STRIP_COLUMNS).toEqual({ stop: 'Stop', delay: 'Typical deviation', late: 'Late', bunch: 'Gaps off', n: 'Departures' });
     expect(NOT_MEASURED_CELL).toBe('not measured');
     expect(SHOW_KEY_STOPS).toBe('Show key stops only');
     expect(showAllStopsText(24)).toBe('Show all 24 stops');
