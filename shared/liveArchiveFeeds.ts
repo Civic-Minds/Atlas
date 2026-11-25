@@ -95,6 +95,9 @@ export const RECORDING_SLUGS: readonly string[] = [...new Set(
  */
 export const RECORDER_SLUGS: readonly string[] = LIVE_ARCHIVE_SHARDS.flatMap(s => ('v2Slugs' in s && 'recording' in s && s.recording ? [...s.v2Slugs] : []));
 
+/** #1810: recorded now by either recorder: a recording v1 shard (RECORDING_SLUGS) or the cloud recorder (RECORDER_SLUGS). */
+export const isRecordingNow = (slug: string): boolean => RECORDING_SLUGS.includes(slug) || RECORDER_SLUGS.includes(slug);
+
 /** A feed's recording state, from its shards: recording when any shard carrying it records, else paused with the latest pause. */
 export type LiveFeedStatus = { status: 'recording' } | { status: 'paused'; since: string; reason: string } | { status: 'not archived' };
 export function liveFeedStatus(slug: string): LiveFeedStatus {

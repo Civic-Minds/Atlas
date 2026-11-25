@@ -30,6 +30,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { basename, join, resolve } from 'path';
 import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_ARCHIVE_SLUGS } from '../shared/liveCoverage';
+import { isRecordingNow } from '../shared/liveArchiveFeeds';
 import { LIVE_TTC_ANALYSED_ROUTES } from '../shared/rules/live';
 import type { LiveV3 } from '../shared/liveDashboard';
 import { analyseArchivedAgency, LiveBuildFailed } from './liveArchiveAnalysis';
@@ -126,7 +127,8 @@ let failed = 0, thin = 0;
 // Each line prints as its agency finishes, with the minutes it took, so a slow or cancelled run still shows where it was.
 const reasons = { push: (r: string) => console.log(`  ${r} [${Math.round((Date.now() - agencyStart) / 60000)} min]`) };
 let agencyStart = Date.now();
-for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
+// #1810: only agencies recorded now; a paused one (Halifax, Montréal) has no new positions and keeps its last files.
+for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => isRecordingNow(s) && (!only || only.includes(s)))) {
   agencyStart = Date.now();
   console.log(`  ${slug}: building`);
   try {
