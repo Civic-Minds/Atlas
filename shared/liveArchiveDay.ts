@@ -14,6 +14,7 @@ import { RECORDER_SLUGS } from './liveArchiveFeeds.js';
 import { liveSlotKey, slotsBack } from './liveSlots.js';
 import { parseSnapshot } from './liveSource.js';
 import type { LiveSnapshotV2 } from './liveContract.js';
+import { dayHours, hourSlotKeys, livePackKey, unpackFrames } from './liveArchivePack.js';
 
 /** Where the cloud recorder writes its v2 snapshots (workers/gtfs-rt-archiver/wrangler.recorder.toml binds it). */
 export const LIVE_V2_BUCKET = DEFAULT_LIVE_ARCHIVE_BUCKET;
@@ -59,6 +60,8 @@ export interface ArchiveDayStore {
   listV1(prefix: string): Promise<string[]>;
   /** A v1 snapshot's text. */
   getV1(key: string): Promise<string>;
+  /** #1815: an hour's pack (shared/liveArchivePack.ts), or null when there is none; absent, every hour reads its single snapshots. */
+  getPack?(key: string): Promise<Uint8Array | null>;
 }
 
 export interface ArchiveDayResult<T> {
@@ -99,17 +102,36 @@ export async function mapArchiveDay<T>(
   const read: { at: number; value: T }[] = [];
   let failed = 0, fromV2 = 0, fromV1 = 0;
   let firstV2 = Infinity;
+  const take = (snap: LiveSnapshotV2 | null) => {
+    if (!snap) return;
+    firstV2 = Math.min(firstV2, snap.capturedAt);
+    fromV2++;
+    read.push({ at: snap.capturedAt, value: use(archiveSnapshotFromV2(snap)) });
+  };
   if (onRecorder(slug)) {
-    await inBatches(v2DayKeys(slug, day), concurrency, async key => {
+    // #1815: an hour with a pack is read from it (one read instead of up to 120); its snapshots are the same stored bytes,
+    // read the same way. An hour with no pack, or one that can't be read, reads its single snapshots as before.
+    const paceSec = livePaceSec(slug);
+    const singles: string[] = [];
+    await inBatches(dayHours(day), concurrency, async hour => {
+      let bodies: Uint8Array[] | null = null;
+      if (store.getPack) {
+        try { const pack = await retry(tries, () => store.getPack!(livePackKey(slug, hour))); bodies = pack ? unpackFrames(pack) : null; } catch { bodies = null; }
+      }
+      if (!bodies) { singles.push(...hourSlotKeys(slug, hour, paceSec)); return; }
+      for (const body of bodies) {
+        let snap: LiveSnapshotV2 | null;
+        try { snap = await parseSnapshot(body); } catch { failed++; continue; }
+        take(snap);
+      }
+    });
+    await inBatches(singles, concurrency, async key => {
       let snap: LiveSnapshotV2 | null;
       try {
         const body = await retry(tries, () => store.getV2(key));
         snap = body == null ? null : await parseSnapshot(body);
       } catch { failed++; return; }
-      if (!snap) return;
-      firstV2 = Math.min(firstV2, snap.capturedAt);
-      fromV2++;
-      read.push({ at: snap.capturedAt, value: use(archiveSnapshotFromV2(snap)) });
+      take(snap);
     });
   }
   // v1 only before the first v2 snapshot: the whole day for an agency not on the recorder, or a day before it started.

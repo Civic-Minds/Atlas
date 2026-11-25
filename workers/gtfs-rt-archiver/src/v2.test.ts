@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { recordRun, snapshotFor, writeCount, writeSnapshot } from './v2';
+import { PACK_FIRST_MINUTE, packRun, recordRun, snapshotFor, writeCount, writeSnapshot } from './v2';
+import { livePackKey } from '../../../shared/liveArchivePack';
 import { liveCountKey } from '../../../shared/liveNetworkCount';
 import { fixturePositions, fixtureTrips, FIXTURE_NOW } from '../../../shared/__tests__/fixtures/liveFeeds';
 import type { LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
@@ -129,5 +130,32 @@ describe('whole-network vehicle count (CIV-2939)', () => {
     await writeCount({ BUCKET: s.BUCKET }, 'hamilton', t0 + 60, 12);
     await writeCount({ BUCKET: s.BUCKET }, 'hamilton', t0 + 60, 13);
     expect(JSON.parse(s.objects.get(liveCountKey('hamilton', t0))!).counts).toEqual([[t0, 10], [t0 + 60, 13]]);
+  });
+});
+
+describe('hourly packs (#1815)', () => {
+  const feeds: LiveRecorderFeed[] = [{ ...feed, slug: 'hamilton' }, { ...feed, slug: 'ttc', paceSec: 30 }];
+  const hourStart = Math.floor(FIXTURE_NOW / 3600) * 3600;
+  function packBucket(fail = false) {
+    const puts: string[] = [];
+    const BUCKET = {
+      get: async (key: string) => { if (fail) throw new Error('500'); return key.endsWith('0.json') ? { arrayBuffer: async () => new Uint8Array([7]).buffer } : null; },
+      put: async (key: string) => { puts.push(key); },
+    } as unknown as R2Bucket;
+    return { puts, BUCKET };
+  }
+  it('packs the hour before for one agency a minute, from minute 3', async () => {
+    const b = packBucket();
+    expect(await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + 2 * 60) * 1000)).toEqual([]);
+    await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + PACK_FIRST_MINUTE * 60) * 1000);
+    await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + (PACK_FIRST_MINUTE + 1) * 60) * 1000);
+    expect(await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + (PACK_FIRST_MINUTE + 2) * 60) * 1000)).toEqual([]);
+    expect(b.puts).toEqual([livePackKey('hamilton', hourStart - 3600), livePackKey('ttc', hourStart - 3600)]);
+  });
+  it('writes nothing when a read fails', async () => {
+    const b = packBucket(true);
+    const [r] = await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + PACK_FIRST_MINUTE * 60) * 1000);
+    expect(r.status).toBe('rejected');
+    expect(b.puts).toEqual([]);
   });
 });

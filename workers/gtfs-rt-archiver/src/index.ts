@@ -19,7 +19,7 @@ import {
   LIVE_ARCHIVE_TRIP_FEEDS,
 } from '../../../shared/liveArchiveFeeds';
 import { liveRecorderFeed, type LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
-import { recordRun } from './v2';
+import { packRun, recordRun } from './v2';
 
 interface Env {
   BUCKET: R2Bucket;
@@ -476,7 +476,10 @@ async function runShard(shard: Shard, env: Env, scheduledTime: number): Promise<
   // CIV-2073: the v2 recorder shard polls its agencies at their own pace slots (src/v2.ts).
   if ('v2Slugs' in shard) {
     const feeds = shard.v2Slugs.map(liveRecorderFeed).filter((f): f is LiveRecorderFeed => f != null);
-    return recordRun(feeds, env as unknown as Parameters<typeof recordRun>[1], scheduledTime);
+    const v2Env = env as unknown as Parameters<typeof recordRun>[1];
+    // #1815: and the hour before's pack for one agency, in the first minutes of each hour.
+    const [recorded, packed] = await Promise.all([recordRun(feeds, v2Env, scheduledTime), packRun(feeds, v2Env, scheduledTime)]);
+    return [...recorded, ...packed];
   }
 
   const now = new Date(scheduledTime);
