@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **The "Official data" Learn more page no longer sends riders to the agency's website**: Atlas shows how often service runs, not where to plan a trip
 - **Live's panel header just says "Live"**: it no longer names one agency while another agency's problem shows under it; problems stay in the bottom-right status pill
+- **Destinations read in normal case on Live and in Atlas Studio MCP's answers**: Hamilton's "HAMILTON GO CENTRE" now reads "Hamilton GO Centre", as it already did on the map, with short forms like GO, TTC and LRT kept in capitals
 - **Live's route card and Details no longer show a replacement-buses notice**: the warning on 503 Kingston Rd was never approved
 - **Live route cards show their destinations like the map's route cards**: "Right now" counts the vehicles heading to each destination, "Scheduled" uses the map card's own destination rows, and the vehicle list opens from "N vehicles"
 - **Live's panel says which agency can't be shown, each with its own status dot**: a failed agency's message sat under another agency's green "Live" dot

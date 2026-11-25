@@ -1,6 +1,7 @@
 import { withMainPatternTrip, type LiveDashboardResponse } from '../../shared/liveDashboard';
 import { liveDashboardDataUrl, liveDataMissing } from './liveReportData';
 import { liveNoRoute } from '../content/noticeCopy';
+import { feedPlaceName } from '../utils/nameCase';
 
 /** How long a route's file is reused without asking again (the files change when an analysis is rebuilt, not by the minute). */
 const KEEP_MS = 2 * 60 * 1000;
@@ -25,7 +26,13 @@ export function fetchLiveDashboard(agency: string, route: string): Promise<LiveD
 /** Forget every kept file (tests). */
 export const clearLiveDashboardCache = () => cache.clear();
 
-/** A ready file's run time over each direction's main pattern (withMainPatternTrip); other answers as they are. */
+/**
+ * A ready file's run time over each direction's main pattern (withMainPatternTrip), and its direction names cased like every
+ * other destination (CIV-2915: "To HAMILTON GO CENTRE" reads "To Hamilton GO Centre"); other answers as they are.
+ */
 function mainPatternRunTime(data: LiveDashboardResponse): LiveDashboardResponse {
-  return data.status === 'ready' ? { ...data, v3: withMainPatternTrip(data.v3) } : data;
+  if (data.status !== 'ready') return data;
+  const v3 = withMainPatternTrip(data.v3);
+  const directionLabels = Object.fromEntries(Object.entries(v3.directionLabels ?? {}).map(([d, label]) => [d, feedPlaceName(label)]));
+  return { ...data, v3: { ...v3, directionLabels } };
 }

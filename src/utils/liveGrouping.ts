@@ -2,6 +2,7 @@ import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { compareRouteNumber } from '../../shared/sortCompare';
 import { projectOntoSegment } from '../../shared/geoDistance';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
+import { feedPlaceName } from './nameCase';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -78,7 +79,8 @@ export function riderHeadsign(headsign: string | null | undefined, routeShortNam
   const own = raw.split(' ')[0];
   // The route number may carry one letter ("88S South Leaside Short Turn" on route 88).
   const number = own === routeShortName.toLowerCase() || (own.slice(0, -1) === routeShortName.toLowerCase() && /[a-z]$/.test(own));
-  return number && raw.endsWith(' short turn') ? null : headsign;
+  // CIV-2915: a destination the feed sends in capitals reads in normal case ("HAMILTON GO CENTRE" -> "Hamilton GO Centre").
+  return number && raw.endsWith(' short turn') ? null : feedPlaceName(headsign);
 }
 
 /** Each direction named by its longest shape's headsign (a short turn never names a direction). */
@@ -91,7 +93,7 @@ export function routeDirectionLabels(features: readonly GeoJSON.Feature[], route
     if (p.directionId == null || !p.headsign) continue;
     const dir = Number(p.directionId);
     const len = featureSpan(f);
-    if (len > (span.get(dir) ?? -1)) { span.set(dir, len); labels.set(dir, String(p.headsign)); }
+    if (len > (span.get(dir) ?? -1)) { span.set(dir, len); labels.set(dir, feedPlaceName(String(p.headsign))); }
   }
   return labels;
 }
