@@ -3,7 +3,7 @@ import { useAgencyGeo } from '../../../hooks/useAgencyGeo';
 import { useColorMode } from '../../../hooks/useColorMode';
 import { liveRouteColours } from '../../../utils/liveRouteColours';
 import { agencyHour } from '../LiveRoutePerformance';
-import { LOADING_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION } from '../../../content/noticeCopy';
+import { LOADING_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION, noPublishedWindowNotice } from '../../../content/noticeCopy';
 import RouteRowName from '../../RouteRowName';
 import { routeLabels } from '../../../utils/format';
 import { liveRouteNumber, type AgencySummary } from '../../../../shared/liveAgency';
@@ -12,7 +12,7 @@ import { useLiveDashboard } from '../../../hooks/useLiveDashboard';
 import { excludingDays, kpiTiles } from '../../../utils/liveKpi';
 import { agencyKpiTiles } from '../../../utils/liveAgencyKpi';
 import { stretchLabel } from '../../../utils/stopLabel';
-import { TYPICAL_ADDED, GROWS_LABEL, LATE_STOPS_TITLE, excludingText, timeLostLine, STUDIO_LIVE_PENDING, STUDIO_ROUTE_PANEL_PENDING } from '../../../../shared/liveWording';
+import { TYPICAL_ADDED, GROWS_LABEL, LATE_STOPS_TITLE, excludingText, timeLostLine, STUDIO_LIVE_PENDING, STUDIO_ROUTE_PANEL_PENDING, onTimeWindowWords } from '../../../../shared/liveWording';
 import { measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from '../routeMapModel';
 import { delayHeatPoints } from '../delayHeatModel';
 import { stopCardGroups, type CardGroup } from '../stopCardModel';
@@ -99,20 +99,22 @@ const weekly = (v3: LiveV3, band: DashboardBand, inStudio = false) => { const w 
 /** The week table's grey-colour line and the bunching note: the Live tool page shows both under the table; Studio has them in About. */
 const weekCaptions = (inStudio: boolean) => inStudio ? { aboutLive: true } : { caption: LIVE_NOISE_CAPTION, captionTitle: NOISE_RULE };
 
-function summaryWidgets(s: AgencySummary, band: DashboardBand, inStudio: boolean): PanelWidget[] {
+function summaryWidgets(s: AgencySummary, band: DashboardBand, inStudio: boolean, lateNote: string | null): PanelWidget[] {
   const weekLeft = excludingDays(s.weekly);
   const tiles = agencyKpiTiles(s, band);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={ALL_ROUTES_LABEL} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={ALL_ROUTES_LABEL} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lateNote={lateNote} /> }] : []),
   ];
 }
 
 
 /** The figures for a route, in the one left panel: the week's figures in the same table as the network's, then the run time strip, late by hour and the worst stops. A picked stop or segment shows in the map popover only. */
-function routeWidgets({ data, v3, dir, band, setPick, route, inStudio, held }: {
+function routeWidgets({ data, v3, dir, band, setPick, route, inStudio, held, lateNote }: {
   data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void; route: string; inStudio: boolean;
   /** CIV-2021: a held route's line, read at the top of the week's figures (it says which of them are hidden). */
   held?: string | null;
+  /** CIV-2222 line B (N133), for an agency with no published on-time window. */
+  lateNote: string | null;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
@@ -125,7 +127,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route, inStudio, held }: {
   const hourLeftShown = excludingText(hourLeft) === weekLeft.text ? undefined : hourLeft;
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={inStudio ? BOTH_DIRECTIONS : `${route} · ${BOTH_DIRECTIONS}`} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lead={held} label={inStudio ? STUDIO_ROUTE_PANEL_PENDING.weekRecorded : undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={inStudio ? BOTH_DIRECTIONS : `${route} · ${BOTH_DIRECTIONS}`} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lead={held} label={inStudio ? STUDIO_ROUTE_PANEL_PENDING.weekRecorded : undefined} lateNote={lateNote} /> }] : []),
     ...(!tiles.length && held ? [{ key: 'held', size: 'medium' as const, node: <CardHelpNotice message={held} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
@@ -267,7 +269,9 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={fallsBehind ? fallsBehindLines(route ? lossReports.get(route) : undefined, band, shown, pick.fromStopId, pick.toStopId) : [...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null, [v3, bandData, pick, picked, stops, band, shown, measure, uncertain, fallsBehind, route, lossReports]); // eslint-disable-line react-hooks/exhaustive-deps
-  const summary = useMemo(() => summaryWidgets(s, band, inStudio), [s, band, inStudio]);
+  // CIV-2222 line B: an agency that publishes no on-time window says which limit Late uses (N133), with Learn more (E11).
+  const lateNote = useMemo(() => (onTimeWindowWords(agency).onTimeWindowPublished ? null : noPublishedWindowNotice(agencyName)), [agency, agencyName]);
+  const summary = useMemo(() => summaryWidgets(s, band, inStudio, lateNote), [s, band, inStudio, lateNote]);
   // CIV-1828: a "Falls behind" row opens its route, direction and stop pair.
   const openLossRow = (x: TimeLossListRow) => { setRoute(x.route); setDir(x.directionId); setPick({ kind: 'segment', fromStopId: x.row.fromStopId, toStopId: x.row.toStopId }); };
   const lossDates = (r?: string) => { const ds = r ? lossData.get(r)?.dates : [...lossData.values()].flatMap(d => d.dates); return [...new Set(ds ?? [])].sort(); };
@@ -280,7 +284,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
   const back: PanelWidget = { key: 'back', size: 'medium', node: <CardBackLink onClick={backToNetwork}>{agencyName}</CardBackLink> };
   const routeBody: PanelWidget[] | null = !route ? null
-    : v3 && ready ? [...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route, inStudio, held: ready.held })]
+    : v3 && ready ? [...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route, inStudio, held: ready.held, lateNote })]
     : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   const routePanel = routeBody && [back, ...routeBody];
 

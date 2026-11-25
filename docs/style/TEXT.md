@@ -145,6 +145,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   1. The issue in plain English. This can be the notice itself.
   2. What we are doing about it, in the "We…" voice ("We show this data as the agency published it.").
   3. What the reader can do.
+     - Left out when the reader has nothing to do (Ryan, 2026-11-25, CIV-2222, on E11 "Late departures": "Do we need a third paragraph then", then "1").
   - Notices themselves stay without first person.
 - No "so" joining two clauses in a notice or error (Ryan, 2026-10-26).
   - State what happened, then what it means, as two short sentences if needed.

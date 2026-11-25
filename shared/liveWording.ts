@@ -298,6 +298,8 @@ export const bunchingShortNote = (): string =>
 
 /** The window event the Learn more link fires; the app opens the About panel at its Live part. */
 export const OPEN_ABOUT_LIVE_EVENT = 'atlas:open-about-live';
+/** CIV-2222 line B: Learn more on the no-published-window note opens E11 (Late departures) in the info panel. */
+export const OPEN_LATE_LIMIT_EVENT = 'atlas:open-late-limit';
 
 /** "14% · 8%": the two parts, adding up to the total shown anywhere else. */
 export const bunchPartsText = (share: number, bunched: number, gapped: number): string => { const p = bunchTotalParts(share, bunched, gapped); return `${p.bunched}% · ${p.tooLong}%`; };

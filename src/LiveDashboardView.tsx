@@ -20,7 +20,7 @@ import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL, bunchingShortNote, bunchingSplitNote, OPEN_ABOUT_LIVE_EVENT } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL, bunchingShortNote, bunchingSplitNote, OPEN_ABOUT_LIVE_EVENT, OPEN_LATE_LIMIT_EVENT } from '../shared/liveWording';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE, LEARN_MORE_LABEL } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
@@ -73,7 +73,7 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
  * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
  * the table. One component for any surface that wants it; the planner's left panel uses it today.
  */
-export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle, aboutLive, lead, label }: {
+export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle, aboutLive, lead, label, lateNote }: {
   tiles: Kpi[];
   /** The lines that explain how the figures are worked out, in order, under the table. */
   notes?: readonly string[];
@@ -91,6 +91,8 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   lead?: string | null;
   /** A short line over the table saying what its figures are (CIV-2021: Studio's route panel, recorded past service). */
   label?: string;
+  /** CIV-2222 line B (N133): the agency publishes no on-time window; the note says which limit Late uses, with Learn more (E11). */
+  lateNote?: string | null;
 }) {
   const sections = usePanelSections();
   // A Bunching row with two figures says what each is, under the table (Ryan: numbers are explained, never decoded).
@@ -123,6 +125,10 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
       {excluding && <FigureFootnote ruled title={excludingTitle}>{excluding}</FigureFootnote>}
       {notes && notes.length > 0 && <FigureNotes lines={notes} ruled={!excluding} />}
       {caption && <FigureFootnote title={captionTitle}>{caption}</FigureFootnote>}
+      {lateNote && tiles.some(k => k.key === 'late') && (
+        <CardHelpNotice message={lateNote} actionLabel={LEARN_MORE_LABEL} onLearnMore={() => window.dispatchEvent(new Event(OPEN_LATE_LIMIT_EVENT))}
+          className={`m-0 ${notes?.length || excluding || caption ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
+      )}
       {aboutLive && hasBunching && (
         // The main map's notice and Learn more link (CardHelpNotice: its text size and its arrow), not a look of Studio's own.
         <CardHelpNotice message={bunchingShortNote()} actionLabel={LEARN_MORE_LABEL} onLearnMore={() => window.dispatchEvent(new Event(OPEN_ABOUT_LIVE_EVENT))}
