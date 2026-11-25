@@ -10,9 +10,9 @@
   "region": "California",
   "bbox": [
     37.39,
-    -122.23,
-    37.57,
-    -121.98
+    -122.24,
+    37.58,
+    -121.97
   ],
   "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-59/latest.zip",

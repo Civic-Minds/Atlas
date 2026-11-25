@@ -13,10 +13,10 @@
   ],
   "region": "Quebec",
   "bbox": [
-    45.31,
-    -72.08,
-    45.48,
-    -71.82
+    45.3,
+    -72.09,
+    45.49,
+    -71.81
   ],
   "feedUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1996/latest.zip",

@@ -77,10 +77,10 @@
         -77.383
       ],
       "bbox": [
-        44.141,
-        -77.437,
-        44.199,
-        -77.342
+        44.13,
+        -77.44,
+        44.21,
+        -77.34
       ],
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-belleville.zip",
       "lastFeedExpiry": "20261231",
@@ -444,9 +444,9 @@
       ],
       "bbox": [
         45.01,
-        -74.771,
-        45.063,
-        -74.674
+        -74.78,
+        45.07,
+        -74.67
       ],
       "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
       "lastFeedExpiry": "20261231",
@@ -2766,10 +2766,10 @@
         -75.641
       ],
       "bbox": [
-        45.381,
-        -75.89,
-        45.593,
-        -75.391
+        45.38,
+        -75.9,
+        45.6,
+        -75.39
       ],
       "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
       "lastFeedExpiry": "20270114",
@@ -7863,10 +7863,10 @@
       ],
       "region": "Washington",
       "bbox": [
-        48.2,
-        -122.6,
-        48.7,
-        -121.9
+        47.97,
+        -122.69,
+        48.76,
+        -121.73
       ],
       "feedUrl": "https://strweb.skagittransit.org/GTFS/google_transit.zip",
       "lastFeedExpiry": "20270103",
@@ -8497,8 +8497,8 @@
       ],
       "region": "Washington",
       "bbox": [
-        47.31,
-        -123.01,
+        47.3,
+        -123.04,
         48.6,
         -122.3
       ],
@@ -8557,10 +8557,10 @@
         -127.569881
       ],
       "bbox": [
-        48.57721,
-        -132.010339,
-        54.297785,
-        -123.129422
+        48.57,
+        -132.02,
+        54.31,
+        -123.12
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-690/latest.zip",
       "timezone": "America/Los_Angeles",
@@ -8618,10 +8618,10 @@
         -122.640309
       ],
       "bbox": [
-        47.162254,
-        -122.677279,
-        47.178544,
-        -122.60334
+        47.16,
+        -122.68,
+        47.19,
+        -122.6
       ],
       "feedUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
       "timezone": "America/Los_Angeles",
@@ -8682,10 +8682,10 @@
       ],
       "region": "Quebec",
       "bbox": [
-        45.31,
-        -72.08,
-        45.48,
-        -71.82
+        45.3,
+        -72.09,
+        45.49,
+        -71.81
       ],
       "feedUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1996/latest.zip",
@@ -8745,7 +8745,7 @@
       "region": "Oregon",
       "mergeIdenticalShapeIds": true,
       "bbox": [
-        45.29,
+        45.28,
         -123.12,
         45.64,
         -122.33
@@ -8849,10 +8849,10 @@
       ],
       "region": "Washington",
       "bbox": [
-        45.5,
-        -122.71,
-        45.87,
-        -122.32
+        45.49,
+        -122.76,
+        45.88,
+        -122.3
       ],
       "feedUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-258/latest.zip",
@@ -8913,10 +8913,10 @@
       ],
       "region": "Washington",
       "bbox": [
-        47.48,
+        47.47,
         -117.71,
         47.77,
-        -117.08
+        -117.07
       ],
       "feedUrl": "https://www.spokanetransit.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-290/latest.zip",
@@ -8977,8 +8977,8 @@
       "bbox": [
         43.78,
         -123.36,
-        44.22,
-        -122.12
+        44.23,
+        -122.11
       ],
       "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
       "preprocess": "eugene-emx-patterns",
@@ -9116,8 +9116,8 @@
       "region": "Oregon",
       "bbox": [
         44.53,
-        -123.32,
-        44.61,
+        -123.33,
+        44.62,
         -123.23
       ],
       "feedUrl": "http://www.corvallistransit.com/rtt/public/resource/gtfs.zip",
@@ -9630,10 +9630,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.71,
-        -122.51,
+        37.7,
+        -122.52,
         37.83,
-        -122.37
+        -122.36
       ],
       "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SF",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2886/latest.zip",
@@ -9739,9 +9739,9 @@
       ],
       "region": "California",
       "bbox": [
-        37.37,
-        -122.47,
-        38.02,
+        37.36,
+        -122.48,
+        38.03,
         -121.78
       ],
       "feedUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
@@ -9812,9 +9812,9 @@
       "region": "California",
       "bbox": [
         37,
-        -122.41,
+        -122.42,
         37.78,
-        -121.57
+        -121.56
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-54/latest.zip",
@@ -9883,10 +9883,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.41,
-        -122.42,
-        38.02,
-        -121.89
+        37.4,
+        -122.43,
+        38.03,
+        -121.88
       ],
       "feedUrl": "https://api.actransit.org/transit/gtfs/download",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2455/latest.zip",
@@ -9963,9 +9963,9 @@
       "region": "California",
       "bbox": [
         36.97,
-        -122.17,
+        -122.18,
         37.46,
-        -121.55
+        -121.54
       ],
       "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
       "excludeTripHeadsigns": [
@@ -10068,10 +10068,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.37,
+        37.36,
         -122.52,
-        37.79,
-        -122.13
+        37.8,
+        -122.12
       ],
       "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SM",
       "feedApiKeyEnvVar": "MUNI_511_API_KEY",
@@ -10139,10 +10139,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.78,
-        -122.74,
-        38.47,
-        -122.32
+        37.77,
+        -122.75,
+        38.48,
+        -122.29
       ],
       "feedUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-67/latest.zip",
@@ -10284,10 +10284,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.66,
-        -122.19,
+        37.65,
+        -122.2,
         38.02,
-        -121.78
+        -121.77
       ],
       "feedUrl": "https://countyconnection.com/GTFS/google_transit.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2421/latest.zip",
@@ -10353,7 +10353,7 @@
       ],
       "region": "California",
       "bbox": [
-        37.79,
+        37.78,
         -122.4,
         38.06,
         -122.11
@@ -10499,10 +10499,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.86,
-        -122.85,
-        38.12,
-        -122.46
+        37.85,
+        -122.86,
+        38.13,
+        -122.45
       ],
       "feedUrl": "https://marintransit.gov/data/google_transit.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2937/latest.zip",
@@ -10572,10 +10572,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.95,
+        37.94,
         -122.82,
         38.55,
-        -122.51
+        -122.5
       ],
       "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SA",
       "feedApiKeyEnvVar": "MUNI_511_API_KEY",
@@ -10683,10 +10683,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.93,
-        -122.58,
-        38.58,
-        -122.04
+        37.92,
+        -122.59,
+        38.59,
+        -122.03
       ],
       "feedUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1288/latest.zip",
@@ -10747,10 +10747,10 @@
       ],
       "region": "California",
       "bbox": [
-        37.83,
-        -122.31,
-        37.85,
-        -122.27
+        37.82,
+        -122.32,
+        37.86,
+        -122.26
       ],
       "feedUrl": "https://emerygoround.com/data/emerygoround-ca-us.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2224/latest.zip",
@@ -10806,9 +10806,9 @@
       "region": "California",
       "bbox": [
         37.39,
-        -122.23,
-        37.57,
-        -121.98
+        -122.24,
+        37.58,
+        -121.97
       ],
       "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-59/latest.zip",
@@ -11001,9 +11001,9 @@
       ],
       "region": "California",
       "bbox": [
-        37.57,
-        -122.08,
-        37.61,
+        37.56,
+        -122.09,
+        37.62,
         -122
       ],
       "feedUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",
@@ -11099,10 +11099,10 @@
       ],
       "region": "California",
       "bbox": [
-        38.22,
+        38.21,
         -122.67,
         38.28,
-        -122.59
+        -122.58
       ],
       "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=PE",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2947/latest.zip",
@@ -11174,9 +11174,9 @@
       "region": "California",
       "bbox": [
         38.4,
-        -122.77,
+        -122.78,
         38.49,
-        -122.65
+        -122.57
       ],
       "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=SR",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2948/latest.zip",
@@ -11662,9 +11662,9 @@
       "region": "California",
       "bbox": [
         39.15,
-        -124.22,
-        41.06,
-        -123.2
+        -124.23,
+        41.07,
+        -123.19
       ],
       "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3032/latest.zip",
@@ -11719,9 +11719,9 @@
       ],
       "region": "California",
       "bbox": [
-        38.32,
+        38.31,
         -123.82,
-        39.45,
+        39.46,
         -122.71
       ],
       "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
@@ -11782,10 +11782,10 @@
       ],
       "region": "California",
       "bbox": [
-        39.72,
+        38.58,
         -122.41,
         40.94,
-        -121.61
+        -121.49
       ],
       "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3031/latest.zip",
@@ -11899,9 +11899,9 @@
       "region": "California",
       "bbox": [
         40.55,
-        -123.63,
-        40.94,
-        -122.32
+        -123.64,
+        40.95,
+        -122.31
       ],
       "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2709/latest.zip",
@@ -12014,8 +12014,8 @@
       "region": "California",
       "bbox": [
         38.39,
-        -121.76,
-        38.72,
+        -121.77,
+        38.73,
         -121.09
       ],
       "feedUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",
@@ -12112,8 +12112,8 @@
       ],
       "region": "California",
       "bbox": [
-        38.53,
-        -122.14,
+        38.52,
+        -122.15,
         38.74,
         -121.45
       ],
@@ -12321,10 +12321,10 @@
       ],
       "region": "Oregon",
       "bbox": [
-        44.94,
+        44.93,
         -123.04,
-        45.39,
-        -122.69
+        45.44,
+        -122.56
       ],
       "feedUrl": "https://mysmartbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
@@ -12387,10 +12387,10 @@
       ],
       "region": "Oregon",
       "bbox": [
-        45.29,
-        -122.57,
-        45.5,
-        -121.71
+        45.28,
+        -122.58,
+        45.51,
+        -121.7
       ],
       "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-261/latest.zip",
@@ -12446,8 +12446,8 @@
       "region": "Oregon",
       "bbox": [
         45.15,
-        -122.83,
-        45.36,
+        -122.84,
+        45.37,
         -122.6
       ],
       "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip",
@@ -12505,8 +12505,8 @@
       "bbox": [
         44.95,
         -123.62,
-        45.52,
-        -122.77
+        45.53,
+        -122.76
       ],
       "feedUrl": "http://ycta.connexionz.net/rtt/public/resource/gtfs.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-250/latest.zip",
@@ -17442,10 +17442,10 @@
         -75.1652
       ],
       "bbox": [
-        39.8036,
-        -75.8351,
-        40.3349,
-        -74.7521
+        39.66,
+        -75.84,
+        40.34,
+        -74.75
       ],
       "feedUrl": "https://www3.septa.org/developer/google_bus.zip",
       "supplementalFeedUrls": [
@@ -17575,10 +17575,10 @@
         -77.0369
       ],
       "bbox": [
-        38.6915,
-        -77.3663,
-        39.1562,
-        -76.7167
+        38.69,
+        -77.5,
+        39.16,
+        -76.71
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
       "supplementalFeedUrls": [
@@ -17824,10 +17824,10 @@
         -77.2
       ],
       "bbox": [
-        38.9357,
-        -77.4187,
-        39.2885,
-        -76.9286
+        38.93,
+        -77.42,
+        39.29,
+        -76.85
       ],
       "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
       "lastFeedExpiry": "20270109",
@@ -17890,10 +17890,10 @@
         -77.3
       ],
       "bbox": [
-        38.687,
-        -77.4653,
-        39.0291,
-        -77.0219
+        38.68,
+        -77.47,
+        39.03,
+        -77.02
       ],
       "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
       "excludeTripHeadsigns": [
@@ -18036,10 +18036,10 @@
         -77.05
       ],
       "bbox": [
-        38.7977,
-        -77.1433,
-        38.8697,
-        -77.0406
+        38.79,
+        -77.15,
+        38.87,
+        -77.04
       ],
       "feedUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
       "lastFeedExpiry": "20271114",
@@ -18102,10 +18102,10 @@
         -74.01
       ],
       "bbox": [
-        40.5128,
-        -74.252,
-        40.9031,
-        -73.7554
+        40.51,
+        -74.26,
+        40.91,
+        -73.75
       ],
       "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
       "sameNameRoutes": [
@@ -18502,10 +18502,10 @@
         -74.11
       ],
       "bbox": [
-        40.503,
-        -74.252,
-        40.766,
-        -73.969
+        40.5,
+        -74.26,
+        40.79,
+        -73.96
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
       "region": "New York",
@@ -19018,10 +19018,10 @@
         -73.8
       ],
       "bbox": [
-        40.741,
-        -73.99,
-        41.4222,
-        -73.6597
+        40.74,
+        -74,
+        41.43,
+        -73.65
       ],
       "feedUrl": "https://westchester-win.gmv.com:8443/repository/gtfs-public/GTFS_GMV_WCDOT.zip",
       "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
@@ -19099,10 +19099,10 @@
         -73.6
       ],
       "bbox": [
-        40.586,
-        -73.8302,
-        40.8642,
-        -73.4087
+        40.58,
+        -73.84,
+        40.87,
+        -73.4
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-521/latest.zip",
       "lastFeedExpiry": "20270109",
@@ -20468,10 +20468,10 @@
         -84.93
       ],
       "bbox": [
-        32.363111,
-        -84.990535,
-        32.562217,
-        -84.869212
+        32.36,
+        -85,
+        32.57,
+        -84.86
       ],
       "feedUrl": "https://metracolumbus.com/gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40024/latest.zip",
@@ -22922,9 +22922,9 @@
         -76.34
       ],
       "bbox": [
-        36.71,
+        36.7,
         -76.71,
-        37.29,
+        37.31,
         -75.97
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-473/latest.zip",
@@ -23054,9 +23054,9 @@
       ],
       "bbox": [
         37.19,
-        -76.82,
-        37.41,
-        -76.52
+        -76.83,
+        37.42,
+        -76.51
       ],
       "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
       "region": "Virginia",
@@ -23176,10 +23176,10 @@
         -84.2889
       ],
       "bbox": [
-        30.376,
-        -84.364,
-        30.543,
-        -84.202
+        30.37,
+        -84.37,
+        30.55,
+        -84.2
       ],
       "feedUrl": "https://www.talgov.com/Uploads/Public/documents/starmetro/GTFS.zip",
       "region": "Florida",
@@ -23362,10 +23362,10 @@
         -79.93
       ],
       "bbox": [
-        32.6854,
-        -80.1692,
-        32.9774,
-        -79.7613
+        32.68,
+        -80.17,
+        32.98,
+        -79.76
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
       "region": "South Carolina",
@@ -24324,10 +24324,10 @@
         -77.474
       ],
       "bbox": [
-        37.226,
-        -77.645,
-        37.664,
-        -77.303
+        37.22,
+        -77.66,
+        37.68,
+        -77.3
       ],
       "feedUrl": "https://www.ridegrtc.com/wp-content/uploads/2025/02/gtfs.zip",
       "region": "Virginia",
@@ -24385,10 +24385,10 @@
         -80.154
       ],
       "bbox": [
-        37.133,
-        -80.425,
-        37.324,
-        -79.882
+        37.13,
+        -80.45,
+        37.35,
+        -79.87
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2274/latest.zip",
       "region": "Virginia",
@@ -24448,10 +24448,10 @@
         -79.169
       ],
       "bbox": [
-        37.33,
-        -79.253,
-        37.467,
-        -79.085
+        37.31,
+        -79.27,
+        37.47,
+        -79.08
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-381/latest.zip",
       "region": "Virginia",
@@ -24825,9 +24825,9 @@
         -101.8485
       ],
       "bbox": [
-        35.15,
+        35.14,
         -101.94,
-        35.25,
+        35.26,
         -101.76
       ],
       "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12076/ACT_GTFS_24.zip",
@@ -24889,10 +24889,10 @@
         -114.03
       ],
       "bbox": [
-        46.82,
+        46.81,
         -114.09,
-        46.92,
-        -113.87
+        46.93,
+        -113.86
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-292/latest.zip",
       "region": "Montana",
@@ -25017,8 +25017,8 @@
       "bbox": [
         45.73,
         -108.63,
-        45.84,
-        -108.45
+        45.85,
+        -108.44
       ],
       "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
       "region": "Montana",
@@ -38819,10 +38819,10 @@
       "region": "Colorado",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-801/latest.zip",
       "bbox": [
-        40.6106,
-        -103.2376,
-        40.6432,
-        -103.1607
+        40.61,
+        -103.24,
+        40.65,
+        -103.16
       ],
       "cities": [
         "Sterling, Colorado"

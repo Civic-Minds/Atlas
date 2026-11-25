@@ -9,9 +9,9 @@
   "region": "California",
   "bbox": [
     39.15,
-    -124.22,
-    41.06,
-    -123.2
+    -124.23,
+    41.07,
+    -123.19
   ],
   "feedUrl": "https://hta.optibus.co/public_api/v1/feeds/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3032/latest.zip",

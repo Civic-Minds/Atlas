@@ -14,10 +14,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    45.5,
-    -122.71,
-    45.87,
-    -122.32
+    45.49,
+    -122.76,
+    45.88,
+    -122.3
   ],
   "feedUrl": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-258/latest.zip",

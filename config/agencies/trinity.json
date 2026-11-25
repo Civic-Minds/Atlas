@@ -9,9 +9,9 @@
   "region": "California",
   "bbox": [
     40.55,
-    -123.63,
-    40.94,
-    -122.32
+    -123.64,
+    40.95,
+    -122.31
   ],
   "feedUrl": "https://gtfs.remix.com/trinity_county_ca.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2709/latest.zip",

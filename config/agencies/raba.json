@@ -13,10 +13,10 @@
   ],
   "region": "California",
   "bbox": [
-    39.72,
+    38.58,
     -122.41,
     40.94,
-    -121.61
+    -121.49
   ],
   "feedUrl": "https://gtfs.remix.com/redding_area_bus_authority.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3031/latest.zip",

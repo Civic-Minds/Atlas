@@ -9,10 +9,10 @@
     -77.3
   ],
   "bbox": [
-    38.687,
-    -77.4653,
-    39.0291,
-    -77.0219
+    38.68,
+    -77.47,
+    39.03,
+    -77.02
   ],
   "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
   "excludeTripHeadsigns": [

@@ -25,6 +25,13 @@ describe('summarizeCurrentFeed', () => {
     expect(finding.agencyNames).toEqual(['Example Transit']);
     expect(finding.expiryMismatch).toBe(false);
     expect(finding.geographyMismatch).toBe(true);
+    expect(finding.bboxUndersized).toBe(true);
+  });
+
+  it('flags a configured bbox smaller than its own stops, and not one that holds them (#1794)', () => {
+    const agency = { slug: 'example', name: 'Example Transit', lastFeedExpiry: '20261231' };
+    expect(summarizeCurrentFeed({ ...agency, bbox: [43.6, -79.5, 43.64, -79.3] }, Buffer.from('zip'), gtfs).bboxUndersized).toBe(true);
+    expect(summarizeCurrentFeed({ ...agency, bbox: [43.65, -79.38, 43.65, -79.38] }, Buffer.from('zip'), gtfs).bboxUndersized).toBe(false);
   });
 });
 

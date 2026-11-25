@@ -9,10 +9,10 @@
   ],
   "region": "Oregon",
   "bbox": [
-    45.29,
-    -122.57,
-    45.5,
-    -121.71
+    45.28,
+    -122.58,
+    45.51,
+    -121.7
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/sandy-or-us/sandy-or-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-261/latest.zip",

@@ -10,9 +10,9 @@
   "region": "California",
   "bbox": [
     37,
-    -122.41,
+    -122.42,
     37.78,
-    -121.57
+    -121.56
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-54/latest.zip",
