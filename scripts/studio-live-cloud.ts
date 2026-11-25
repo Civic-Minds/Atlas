@@ -123,8 +123,12 @@ const previous = JSON.parse(await getText(STUDIO_LIVE_POINTER).catch(e => { if (
 const built: Record<string, { files: string[]; thisWeek: number; lastWeek: number }> = {};
 let failed = 0, thin = 0;
 // CIV-2910: why each agency was rebuilt or not, as reason codes and day counts only (public log; never routes or figures).
-const reasons: string[] = [];
+// Each line prints as its agency finishes, with the minutes it took, so a slow or cancelled run still shows where it was.
+const reasons = { push: (r: string) => console.log(`  ${r} [${Math.round((Date.now() - agencyStart) / 60000)} min]`) };
+let agencyStart = Date.now();
 for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
+  agencyStart = Date.now();
+  console.log(`  ${slug}: building`);
   try {
     const a = slug === 'ttc' ? analyseTtc() : analyseArchivedAgency(slug, { work, days, run, lastError: () => lastStepError });
     const weeks = goodDaysByWeek([...a.routes.values()].map(r => r.v3));
@@ -146,7 +150,6 @@ for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
     appendFileSync(log, `\n${slug}: ${(e as Error).stack ?? e}\n`);
   }
 }
-for (const r of reasons) console.log(`  ${r}`);
 
 const pointer = nextStudioLivePointer(previous, runId, new Date().toISOString(),
   Object.fromEntries(Object.entries(built).map(([slug, b]) => [slug, { files: b.files.map(f => basename(f)), thisWeekGoodDays: b.thisWeek, lastWeekGoodDays: b.lastWeek }])));
