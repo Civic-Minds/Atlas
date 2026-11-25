@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live rates cars that start partway along the route**: a car that joined its trip at a middle stop, such as a short-turned streetcar, got no on-time rating; it is now rated at the first stop it served
 - **Live's panel says which agency can't be shown, each with its own status dot**: a failed agency's message sat under another agency's green "Live" dot
 - **On-demand zones are hidden when you filter by frequency**: on-demand service has no timetable frequency, so it no longer shows up under "every 10 min" or any other frequency filter
 - **Live follows Hamilton's 2 Barton, 20 A-Line Express and 51 University, and Burlington's 1 and 10 from the cloud**: more of Hamilton's frequent routes, and Burlington without anything running on a computer
