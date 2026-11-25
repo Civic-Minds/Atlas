@@ -75,8 +75,9 @@ export const LIVE_ARCHIVE_SHARDS = [
     // Recording since 2026-11-23 (Ryan: "Yes" to the Hamilton canary): atlas-live-recorder, wrangler.recorder.toml.
     // Step B (Ryan approved 2026-11-24): TTC with its trip updates, Kingston, MBTA, YRT's Viva, DRT's 9XX and Brampton's 5XX join
     // (Montréal dropped 2026-11-24). Their v1 shards keep
-    // recording until the readers of positions/ move to v2; Burlington and Halifax stay paused.
-    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton'], recording: true,
+    // recording until the readers of positions/ move to v2. CIV-2897 (Ryan, 2026-11-24, "1"): Burlington joins (routes 1
+    // and 10 on Live); its v1 shard and Halifax stay paused.
+    id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton', 'burlington'], recording: true,
   },
 ] as const;
 

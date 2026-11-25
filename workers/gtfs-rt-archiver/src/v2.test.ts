@@ -64,7 +64,9 @@ describe('cloud recorder step B (CIV-2073)', () => {
     const { LIVE_ARCHIVE_SHARDS } = await import('../../../shared/liveArchiveFeeds');
     const { LIVE_TTC_ANALYSED_ROUTES } = await import('../../../shared/rules/live');
     const v2 = LIVE_ARCHIVE_SHARDS.find(s => s.id === 'live-v2')!;
-    expect('v2Slugs' in v2 && [...v2.v2Slugs]).toEqual(['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton']);
+    // CIV-2897 (Ryan, 2026-11-24): Burlington joins, with its trip updates.
+    expect('v2Slugs' in v2 && [...v2.v2Slugs]).toEqual(['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton', 'burlington']);
+    expect(liveRecorderFeed('burlington')!.tripsUrl).not.toBeNull();
     const ttc = liveRecorderFeed('ttc')!;
     expect(ttc.tripsUrl).not.toBeNull();
     // Ryan, 2026-11-24: the routes Live analyses (streetcars, then the Ten-Minute Network with CIV-2174), not the whole fleet.
