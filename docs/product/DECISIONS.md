@@ -312,6 +312,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-25 — Studio Fleet leads with right now (CIV-2182)
+Ryan, 2026-11-25, after the review page: "That not is way the fuck too long but 1", then "Approved". Fleet's agency panel is the right-now design for everyone: "In service now" (the cloud recorder's whole-network count, CIV-2939; the row is left out where there is no count), "Scheduled now" (the vehicles the schedule runs, not those its frequencies would need: 1,790, not 1,819, for the TTC at the evening rush), then a chart of each time of day with the route card's hover. The caption is the route count with no date (Ryan: "the question was why the fuck is this date here at all"). A row with no figure is left out, never a dash; "Scheduled now" is left out on a Saturday or Sunday (the fleet file is weekday only, CIV-2941). Next, once Data counts only vehicles on a trip: "In service now" becomes vehicles on a trip, with a quieter "Not on a trip <n>" row only where the feed reports trip-less vehicles (manager, relaying Ryan).
+
 ### 2026-11-25 — Studio Live's map draws "Not measured" dashed, apart from "Under 0.5 min" (CIV-2912)
 Ryan, 2026-11-25, answering the Questions chat after seeing the review page (TTC 504, before and two options), picked "1": "Not measured" drawn dashed on Studio Live's map, so "Under 0.5 min" and "Not measured" look different. The two were the same grey on the map and near-identical greys in the key. A stretch with no figure now draws dashed (the page map's dash pattern for dashed route lines), and the key's swatch is the shared dashed swatch Studio Fleet uses for its earlier schedule. Step colours are unchanged. Option 2 (thinner and faded) and option 3 (keep as is) were not picked.
 

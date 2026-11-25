@@ -34,12 +34,6 @@ export const percentTenthText = (share: number): string => {
   return t >= 100 ? '100%' : `${decimalText(t, 1)}%`;
 };
 
-/** "+289", "−235", "0": a change in a count, with a comma every three digits; no change has no sign (CIV-2182). */
-export const signedCountText = (change: number): string => {
-  const r = Math.round(change);
-  return `${r > 0 ? '+' : r < 0 ? '−' : ''}${countText(Math.abs(r))}`;
-};
-
 /** "+12%", "−4%", "0%": a change in share; a change that rounds to 0 has no sign. */
 export const signedPercentText = (change: number): string => {
   const r = Math.round(change * 100);
