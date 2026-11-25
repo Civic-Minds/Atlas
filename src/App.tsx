@@ -7,7 +7,7 @@ import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import ModeUnavailableNote from './components/ModeUnavailableNote';
 import SearchClearButton from './components/ui/SearchClearButton';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, SEARCH_ICON, CARD_NOTE } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
@@ -34,6 +34,7 @@ import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { PageMapOverlayProvider } from './context/PageMapOverlay';
+import { useSidebarAnchor } from './hooks/useSidebarAnchor';
 import { SidebarFrameProvider } from './context/SidebarFrame';
 import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
@@ -294,7 +295,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const headerLeftRef = useRef<HTMLDivElement>(null);
   const appLinksRef = useRef<HTMLDivElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
-  const [searchBarWidth, setSearchBarWidth] = useState<number>();
   const searchEnterRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -305,7 +305,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [appLinksOpen]);
-  const [sidebarLeft, setSidebarLeft] = useState<number>(SIDEBAR_LEFT_FALLBACK);
+  // #1792: every card under the search bar takes its left edge from one measurement (useSidebarAnchor).
+  const { sidebarLeft, searchBarWidth } = useSidebarAnchor(searchBarRef, headerLeftRef);
   const handleAgencySelect = useCallback((slug: string) => {
     trackEvent('agency_selected', { app: activeApp, agency_slug: slug });
     setSelectedAgencySlug(slug);
@@ -570,30 +571,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     setQuery('');
   }
 
-  useEffect(() => {
-    const measure = () => {
-      const search = searchBarRef.current?.getBoundingClientRect();
-      // A hidden box (Studio) measures zero: the cards keep their own width, left where the box would start.
-      if (search && search.width > 0) {
-        setSidebarLeft(search.left);
-        setSearchBarWidth(search.width);
-        return;
-      }
-      setSearchBarWidth(undefined);
-      // Where the search box would start: just right of the logo, by the row's own gap.
-      const row = headerLeftRef.current;
-      const logo = row?.firstElementChild?.getBoundingClientRect();
-      if (row && logo && logo.width > 0) { setSidebarLeft(logo.right + (parseFloat(getComputedStyle(row).columnGap) || 0)); return; }
-      const header = row?.getBoundingClientRect();
-      if (header) setSidebarLeft(header.left + 138);
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(document.documentElement);
-    // The search box also changes size on its own when it expands on phones.
-    if (searchBarRef.current) ro.observe(searchBarRef.current);
-    return () => ro.disconnect();
-  }, []);
 
   useEffect(() => {
     if (activeApp === 'live') setLiveMounted(true);
@@ -696,6 +673,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         agencies={agencies}
         onJump={slug => { setModeNote(null); handleLiveAgencyClick(slug); }}
         onClose={closeModeNote}
+        sidebarLeft={sidebarLeft}
       />
     )}
     <HistoryMapOverlayProvider>

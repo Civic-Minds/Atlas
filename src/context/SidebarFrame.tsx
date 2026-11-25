@@ -16,6 +16,16 @@ export function SidebarFrameProvider({ sidebarLeft, searchBarWidth, children }: 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
+/**
+ * #1792: Compare's card top (comparePanelTop), below map A's filter pill, or null outside Compare. The main map provides
+ * it; every sidebar Panel reads it, so no card can sit under the pill and none needs it passed in.
+ */
+const CompareTopCtx = createContext<number | null>(null);
+export function CompareCardTopProvider({ top, children }: { top: number | null; children: ReactNode }) {
+  return <CompareTopCtx.Provider value={top}>{children}</CompareTopCtx.Provider>;
+}
+export const useCompareCardTop = (): number | null => useContext(CompareTopCtx);
+
 /** The sidebar card's place (sidebarFrameStyle) and the numbers it came from. */
 export function useSidebarFrame(): SidebarFrame & { style: CSSProperties } {
   const f = useContext(Ctx);

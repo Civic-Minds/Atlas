@@ -51,7 +51,8 @@ import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
 import { DAY_PREF_KEY } from '../utils/openingDay';
 import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
-import { searchOverlayHidesPanel } from '../utils/format';
+import { comparePanelTop, searchOverlayHidesPanel } from '../utils/format';
+import { CompareCardTopProvider } from '../context/SidebarFrame';
 import { trackEvent } from '../lib/analytics';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
@@ -1395,6 +1396,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onClearSelection: clearMapSelection,
   };
   return (
+    // #1792: in Compare every sidebar card opens below map A's filter pill (Panel reads this).
+    <CompareCardTopProvider top={comparePanelTop(compareActive, searchFocused, query)}>
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`} style={mapFooterStyle(footerHeight)}>
 
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
@@ -1852,5 +1855,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       />
       </div>
     </div>
+    </CompareCardTopProvider>
   );
 }

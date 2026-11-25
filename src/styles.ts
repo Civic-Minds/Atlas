@@ -235,13 +235,16 @@ export const SIDEBAR_LEFT_FALLBACK = 182;
  * Inline placement every sidebar card shares: its left edge (--sidebar-left, the fallback until the
  * real position is measured) and, on desktop, the search bar's width. Callers pass no width on phones.
  */
-export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: number): CSSProperties {
+export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: number, compare?: { top: number } | null): CSSProperties {
   return {
     '--sidebar-left': `${sidebarLeft ?? SIDEBAR_LEFT_FALLBACK}px`,
     // #1187: on a narrow desktop window (640px, or 200% zoom) the search bar shrinks for the top-bar buttons, and a
     // card that copied it was 153px wide: rows and hour labels ran into each other. The card keeps the bar's own
     // width (sm:w-72, 18rem) at least, and never runs past the window's right edge.
     ...(searchBarWidth ? { width: `${searchBarWidth}px`, maxWidth: 'none', minWidth: SIDEBAR_CARD_MIN_WIDTH } : {}),
+    // Compare (CIV-844, #1792): every card opens below map A's filter pill, still at the search bar's left edge, so the
+    // pill never sits over the card's top (the zone card used to keep the search bar's slot under the pill).
+    ...(compare ? { top: `${compare.top}px`, maxHeight: `calc(100vh - ${compare.top + 64}px)` } : {}),
   } as CSSProperties;
 }
 
