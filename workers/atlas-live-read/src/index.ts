@@ -14,6 +14,22 @@ import liveStop from '../../../local-api/live-stop';
 import { cloudLiveFiles, setLiveFilesSource } from '../../../local-api/liveFiles';
 import { liveCloudServes, liveCloudServesVehicles, liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
 import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
+import { setAgencyNameLookup } from '../../../local-api/agencyName';
+import { checkMcpRelease } from '../../../shared/mcpRelease';
+import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
+import { R2_PUBLIC_URL } from '../../../shared/config';
+
+// Agency names for the handlers' sentences ("TTC 7 is held back"), from the current release's catalog, the one the MCP
+// reads: the Worker has no config/agencies folder. Read once per isolate; a failed read is tried again next time.
+let catalogNames: Promise<Map<string, string>> | null = null;
+setAgencyNameLookup(async slug => {
+  catalogNames ??= (async () => {
+    const check = await checkMcpRelease(R2_PUBLIC_URL);
+    if (check.kind !== 'ready') throw new Error('no release');
+    return new Map((await splitStore(urlReader(check.base)).catalog()).map(a => [a.slug, a.name]));
+  })().catch(e => { catalogNames = null; throw e; });
+  return (await catalogNames).get(slug) ?? null;
+});
 
 /** LIVE_ARCHIVE: the recorder (atlas-live). MCP_LIVE: the daily Live analysis files (atlas-mcp-live, studio-live/). Both read only. */
 interface Env { LIVE_ARCHIVE: R2Bucket; MCP_LIVE: R2Bucket }

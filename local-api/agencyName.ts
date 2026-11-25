@@ -8,7 +8,15 @@ import { resolve } from 'path';
 import { agencyNames } from '../src/utils/agencyName';
 import { configAgencyName } from '../shared/agencyRegistryName';
 
+/** CIV-2914: where a server without the registry on disk (the cloud reader, atlas-live-read) finds an agency's full name. */
+let nameLookup: ((slug: string) => Promise<string | null>) | null = null;
+export function setAgencyNameLookup(lookup: ((slug: string) => Promise<string | null>) | null): void { nameLookup = lookup; }
+
 export async function liveAgencyName(slug: string): Promise<string> {
+  if (nameLookup) {
+    const name = await nameLookup(slug).catch(() => null);
+    return name ? agencyNames(name).name : slug;
+  }
   const dir = resolve('config/agencies');
   // Only a file found in the registry listing is read, never a path built from the request's text.
   const file = (await readdir(dir).catch(() => [] as string[])).find(f => f === `${slug.toLowerCase()}.json`);
