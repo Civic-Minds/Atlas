@@ -25,15 +25,20 @@ import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, ty
 import { DAY_TYPES, dayInSentence, dayPlural, isDayType, type DayType } from '../../shared/dayTypes';
 import { LIVE_PATH } from '../../shared/pagePaths';
 import { OVERNIGHT_STORY } from '../../shared/researchStories';
+import { listingEndedNotice } from '../../shared/agencyPages';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
-export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
+// CIV-2896: the full sentence belongs to E1's page; the card shows it too until Ryan picks its short line (CARD_LINE_DRAFTS).
+const expiredFeedSentence = (agencyName: string, expDateStr?: string): string => {
   const { primary } = agencyNames(agencyName).card;
   const ended = `${agencyPossessiveSentenceStart(primary)} schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
+  return `${ended} Times shown may be out of date.`;
+};
+export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED piece, N76), not the notice.
   void manualFeedSource;
-  return `${ended} Times shown may be out of date.`;
+  return expiredFeedSentence(agencyName, expDateStr);
 }
 
 /**
@@ -88,8 +93,9 @@ export function unevenServiceNotice(longestGap: number): string {
   return `Gaps between trips can be up to ${delayAmount(longestGap)}.`;
 }
 
-// N7 no-route-line
-export const NO_ROUTE_SHAPE_NOTICE = "This route’s line can’t be shown on the map because it’s missing from the agency’s data.";
+// N7 no-route-line. CIV-2896: the full sentence is E6's lead; the card shows it too until Ryan picks its short line.
+const NO_ROUTE_SHAPE_SENTENCE = "This route’s line can’t be shown on the map because it’s missing from the agency’s data.";
+export const NO_ROUTE_SHAPE_NOTICE = NO_ROUTE_SHAPE_SENTENCE;
 
 // N16 booked-ahead
 /** CIV-1006: a route riders must book ahead (Ryan's wording). */
@@ -413,14 +419,17 @@ export const CONTEXT_NO_INCOME = 'No income figure for this area.';
 export const contextUncertainLine = (pct: string) => `Too uncertain to show. It could be off by about ${pct}.`;
 
 // ---- Route card ----
-// N1 weekday-variation
-export const WEEKDAY_VARIATION_NOTICE = "This route’s weekday schedules vary by day.";
+// N1 weekday-variation. CIV-2896: the full sentence opens E8; the card shows it too until Ryan picks its short line.
+const WEEKDAY_VARIATION_SENTENCE = "This route’s weekday schedules vary by day.";
+export const WEEKDAY_VARIATION_NOTICE = WEEKDAY_VARIATION_SENTENCE;
 // N15 variants
 /** "Includes variants 51A, 51B" (beta route variants). */
 export const variantsIncludedNotice = (shortNames: string) => `Includes variants ${shortNames}`;
 // N14 first-last-allowance
 /** The route card's notice when a row's frequency allows a longer first or last trip (CIV-1916: said once, never on the row). */
-export const FIRST_LAST_TRIP_ALLOWANCE_HINT = "This route’s frequency allows a slightly longer wait for the first or last trip of the day.";
+// CIV-2896: the full sentence opens E7; the card shows it too until Ryan picks its short line.
+const FIRST_LAST_TRIP_ALLOWANCE_SENTENCE = "This route’s frequency allows a slightly longer wait for the first or last trip of the day.";
+export const FIRST_LAST_TRIP_ALLOWANCE_HINT = FIRST_LAST_TRIP_ALLOWANCE_SENTENCE;
 
 // ---- Route and agency cards ----
 // N6 route-shape-problem
@@ -730,6 +739,9 @@ export type HelpTopic = keyof typeof EXPLAINERS;
 // ---- Explainer paragraph 1, one per explainer (Ryan's approved text, CIV-1051) ----
 // Paragraphs 2 and 3 are shared pieces, below. E1's lead is the notice plus EXPIRED_FEED_EXPLANATION;
 // E3's is the agency's correction note; E6's is N7 itself.
+// E1, N2 and N3 version: the full sentence, then why it's still shown.
+export const expiredFeedPanelLead = (agencyName: string, expDateStr?: string): string =>
+  `${expiredFeedSentence(agencyName, expDateStr)} ${EXPIRED_FEED_EXPLANATION}`;
 // E1, N25 version (CIV-1051): "ends" before the listing-end date, "ended" from it on. Paragraphs 2 and 3 are N2's.
 export function listingEndedPanelLead(agencyName: string, date: string, ended: boolean): string {
   const { primary } = agencyNames(agencyName).card;
@@ -742,11 +754,14 @@ export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null)
 export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencySentenceStart(agencyNames(agencyName).card.primary));
 // E5
 export const ROUTE_DATA_QUALITY_LEAD = "Part of this route’s line on the map may be missing or drawn in the wrong place.";
-// E7: N14 itself, then the allowance (CIV-1077); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
-export const EDGE_GAP_ALLOWANCE_LEAD = `${FIRST_LAST_TRIP_ALLOWANCE_HINT} That trip can come up to 10 minutes later than usual.`;
-// E8: N1 itself, then one more sentence.
-export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_NOTICE} Some weekdays run more or less often than others.`;
-// E9 (CIV-1199, Ryan 2026-11-14, word for word): N12 with its live values, then one more sentence.
+// E6: N7's full sentence (CIV-2896: its own, not the card line).
+export const NO_ROUTE_SHAPE_LEAD = NO_ROUTE_SHAPE_SENTENCE;
+// E7: N14's full sentence, then the allowance (CIV-1077); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
+export const EDGE_GAP_ALLOWANCE_LEAD = `${FIRST_LAST_TRIP_ALLOWANCE_SENTENCE} That trip can come up to 10 minutes later than usual.`;
+// E8: N1's full sentence, then one more sentence.
+export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_SENTENCE} Some weekdays run more or less often than others.`;
+// E9 (CIV-1199, Ryan 2026-11-14, word for word): N12's full sentence with its live values, then one more sentence.
+// CIV-2896: the card passes the full sentence (CardNotice.pageText), never its own card line.
 export const routeRatingLead = (filterNotice: string) => `${filterNotice} A part of the route runs less often than the rest.`;
 
 // ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
@@ -839,8 +854,59 @@ export const ON_DEMAND_PARTIAL_COVERAGE = 'Some on-demand zones aren\u2019t on t
 // N131 official-data-only (CIV-1978; Ryan, 2026-11-20, word for word: "Actually 2 but as one sentence with a comma and the
 // Learn More link"): an on-demand service whose stops come only from the agency's official data, which can't be checked
 // against another source. Shown at the foot of the on-demand card for the services in ON_DEMAND_OFFICIAL_DATA_ONLY.
-export const officialDataOnlyNotice = (agencyName: string): string =>
+// CIV-2896: the full sentence is E10's lead; the card shows it too until Ryan picks its short line.
+const officialDataOnlySentence = (agencyName: string): string =>
   `This on-demand service’s stops are from ${agencyPossessive(agencyNames(agencyName).card.primary)} official data, and their accuracy can’t be confirmed.`;
+export const officialDataOnlyNotice = officialDataOnlySentence;
+// E10's lead: N131's full sentence.
+export const officialDataLead = officialDataOnlySentence;
+
+// ---- CIV-2896: each Learn-more notice's two parts ----
+// Ryan (2026-11-24) picked "1": the card gets a short line, and its Learn more page keeps the full sentence and adds
+// what's new. "card" is what the card shows; "page" is the opening of its Learn more panel (E1 to E10), as InfoPanel shows it.
+/** Example values a notice is filled with, for the repeat guard and the review page. */
+export interface NoticeSample { agencyName: string; date: string; ended: boolean; maxHeadway: number; periodRange: string; overrideNote: string }
+type NoticeParts = { card: (s: NoticeSample) => string; page: (s: NoticeSample) => string };
+/** N19 is left out: its card line is an agency's own rollout note from its config, and none is set. */
+export const NOTICE_PARTS: Record<Exclude<LearnMoreCode, 'N19'>, NoticeParts> = {
+  N1: { card: () => WEEKDAY_VARIATION_NOTICE, page: () => WEEKDAY_VARIATION_LEAD },
+  N2: { card: s => expiredFeedNotice(s.agencyName, s.date), page: s => expiredFeedPanelLead(s.agencyName, s.date) },
+  N3: { card: s => expiredFeedNotice(s.agencyName, s.date, true), page: s => expiredFeedPanelLead(s.agencyName, s.date) },
+  N4: { card: () => NEW_SCHEDULE_DATA_NOTICE.route, page: s => newScheduleDataLead(s.agencyName, s.date) },
+  N21: { card: () => NEW_SCHEDULE_DATA_NOTICE.agency, page: s => newScheduleDataLead(s.agencyName, s.date) },
+  N5: { card: () => CORRECTED_DATA_NOTICE.route, page: s => s.overrideNote },
+  N22: { card: () => CORRECTED_DATA_NOTICE.agency, page: s => s.overrideNote },
+  N6: { card: () => ROUTE_DATA_QUALITY_WARNING_MESSAGE, page: () => ROUTE_DATA_QUALITY_LEAD },
+  N7: { card: () => NO_ROUTE_SHAPE_NOTICE, page: () => NO_ROUTE_SHAPE_LEAD },
+  N12: {
+    card: s => selectedRouteOutsideFilterNotice(s.maxHeadway, s.periodRange),
+    page: s => routeRatingLead(selectedRouteOutsideFilterNotice(s.maxHeadway, s.periodRange)),
+  },
+  N14: { card: () => FIRST_LAST_TRIP_ALLOWANCE_HINT, page: () => EDGE_GAP_ALLOWANCE_LEAD },
+  N25: { card: s => listingEndedNotice(s.date, s.ended), page: s => listingEndedPanelLead(s.agencyName, s.date, s.ended) },
+  N131: { card: s => officialDataOnlyNotice(s.agencyName), page: s => officialDataLead(s.agencyName) },
+};
+
+/**
+ * Notices whose card still shows its page's full sentence: each waits for Ryan's word-for-word OK of its short line
+ * (CIV-2896). When he approves one, its card part takes the approved line and its code leaves this list; the guard test
+ * (noticeParts.test.ts) fails while a listed card stops repeating its page, or an unlisted one starts.
+ */
+export const CARD_LINE_PENDING = ['N1', 'N2', 'N3', 'N7', 'N12', 'N14', 'N25', 'N131'] as const satisfies readonly (keyof typeof NOTICE_PARTS)[];
+
+/** Drafts for Ryan's review, not shown anywhere in the app: the short card line proposed for each pending notice (N4 and N21 optional). */
+export const CARD_LINE_DRAFTS: Partial<Record<keyof typeof NOTICE_PARTS, (s: NoticeSample) => string>> = {
+  N1: () => 'Weekdays run different schedules.',
+  N2: s => `Schedule ended ${s.date}; times may be out of date.`,
+  N3: s => `Schedule ended ${s.date}; times may be out of date.`,
+  N4: () => 'New schedule, still being verified.',
+  N21: () => 'New schedule, still being verified.',
+  N7: () => 'Route line missing from the agency’s data.',
+  N12: s => `Not ${headwayOrBetter(s.maxHeadway)} for all of ${keepRangeTogether(s.periodRange)}.`,
+  N14: () => 'First and last trips can have a longer wait.',
+  N25: s => `Most routes’ schedules ${s.ended ? 'ended' : 'end'} ${s.date}.`,
+  N131: s => `Stops from ${agencyPossessive(agencyNames(s.agencyName).card.primary)} official data, not checked.`,
+};
 
 // N125 on-demand-pickup: how riders board an on-demand zone (CIV-941, moved here from shared/onDemandAvailability.ts unchanged).
 /**

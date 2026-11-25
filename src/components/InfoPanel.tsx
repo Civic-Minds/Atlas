@@ -23,7 +23,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
 import { figuresUpdatedText, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import { useLiveFiguresUpdated } from '../hooks/useLiveFiguresUpdated';
 import RegionFilterPills from './RegionFilterPills';
@@ -60,7 +60,7 @@ type HelpDetails = {
   expiredFeedCheckSince?: string;
   websiteUrl?: string;
   overrideNote?: string;
-  /** E9 (CIV-1199): the card's N12 notice, with its live values, as paragraph 1. */
+  /** E9 (CIV-1199): N12's full sentence, with its live values, as paragraph 1 (CIV-2896: never the card's short line). */
   filterNotice?: string;
   rolloutNotice?: string;
 };
@@ -549,7 +549,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 layout={!helpContext?.listingEndedDate && helpContext?.manualFeedSource ? 'outdated-schedule-manual' : 'outdated-schedule'}
                 lead={helpContext?.listingEndedDate
                   ? listingEndedPanelLead(helpContext.agencyName ?? 'This agency', helpContext.listingEndedDate, helpContext.listingEnded ?? true)
-                  : `${helpContext?.agencyName ? `${expiredFeedNotice(helpContext.agencyName, helpContext.expDateStr, helpContext.manualFeedSource)} ` : ''}${EXPIRED_FEED_EXPLANATION}`}
+                  : helpContext?.agencyName ? expiredFeedPanelLead(helpContext.agencyName, helpContext.expDateStr) : EXPIRED_FEED_EXPLANATION}
                 p2After={helpContext?.agencyName || helpContext?.listingEndedDate ? checkHistory : ''}
                 helpContext={helpContext}
               />
@@ -570,10 +570,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <ExplainerBody layout="beta-rollout" helpContext={helpContext} lead={helpContext?.agencyName ? betaRolloutLead(helpContext.agencyName) : ''} />
           )}
           {view === 'official-data' && (
-            <ExplainerBody layout="official-data" helpContext={helpContext} lead={helpContext?.agencyName ? officialDataOnlyNotice(helpContext.agencyName) : ''} />
+            <ExplainerBody layout="official-data" helpContext={helpContext} lead={helpContext?.agencyName ? officialDataLead(helpContext.agencyName) : ''} />
           )}
           {view === 'route-data-quality' && <ExplainerBody layout="route-data-quality" lead={ROUTE_DATA_QUALITY_LEAD} helpContext={helpContext} />}
-          {view === 'no-route-shape' && <ExplainerBody layout="no-route-shape" lead={NO_ROUTE_SHAPE_NOTICE} helpContext={helpContext} />}
+          {view === 'no-route-shape' && <ExplainerBody layout="no-route-shape" lead={NO_ROUTE_SHAPE_LEAD} helpContext={helpContext} />}
 
           {view === 'agency-detail' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
