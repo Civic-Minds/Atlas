@@ -10,7 +10,7 @@ import { frameRoute, routeFramePadding } from './routeFraming';
 import { FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
 import { usePageMapOverlay, type PageMapOverlay } from '../../../context/PageMapOverlay';
 
-/** The map's one dash pattern, in line widths: dashed route lines and not-measured stretches (CIV-2912). */
+/** This map's one dash pattern, in line widths: dashed route lines and not-measured stretches (CIV-2912). */
 const DASHED_LINE: [number, number] = [1.5, 1.5];
 
 /**
