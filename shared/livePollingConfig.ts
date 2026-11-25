@@ -90,6 +90,9 @@ export const LIVE_AGENCY_TIMEZONES: Record<string, string> = {
   hamilton: 'America/Toronto',
   kingston: 'America/Toronto',
   yrt: 'America/Toronto',
+  // #1801: on the cloud recorder only; the zones their agency configs carry.
+  drt: 'America/Toronto',
+  brampton: 'America/Toronto',
   translink: 'America/Vancouver',
   stm: 'America/Montreal',
   sfmta: 'America/Los_Angeles',
