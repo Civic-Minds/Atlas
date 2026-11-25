@@ -275,7 +275,9 @@ export async function fromRecorder(agency: string): Promise<Response | null> {
   }
   const routeOf = (routeId: string) => routeById.get(routeId);
   // Headways the recorder keyed by route_id (a route Live names only from the GTFS) are given Live's short name here.
-  const headways = Object.fromEntries(Object.entries(snap.headways).map(([k, v]) => [routeOf(k)?.shortName ?? k, v]));
+  // CIV-2939: the recorder keeps every TTC route now; Live keeps the headways of the routes it shows, as before.
+  const shown = new Set([...routeById.values()].map(r => r.shortName));
+  const headways = Object.fromEntries(Object.entries(snap.headways).map(([k, v]) => [routeOf(k)?.shortName ?? k, v] as const).filter(([k]) => shown.has(k)));
   return json({
     // #1673: the next stop is read against the trip updates' own timestamp.
     vehicles: vehiclesFromRecords(agency, snap.records, routeOf, places, now, snap.tripsTimestamp ?? now),

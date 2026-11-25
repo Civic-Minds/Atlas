@@ -62,7 +62,7 @@ describe('cloud recorder v2 (CIV-2073)', () => {
 });
 
 describe('cloud recorder step B (CIV-2073)', () => {
-  it('records TTC\'s analysed routes with their trip updates, Kingston, MBTA, YRT Viva, DRT 9XX and Brampton 5XX, not STM', async () => {
+  it('records every TTC route with its trip updates, Kingston, MBTA, YRT Viva, DRT 9XX and Brampton 5XX, not STM', async () => {
     const { LIVE_ARCHIVE_SHARDS } = await import('../../../shared/liveArchiveFeeds');
     const { LIVE_TTC_ANALYSED_ROUTES } = await import('../../../shared/rules/live');
     const v2 = LIVE_ARCHIVE_SHARDS.find(s => s.id === 'live-v2')!;
@@ -71,10 +71,11 @@ describe('cloud recorder step B (CIV-2073)', () => {
     expect(liveRecorderFeed('burlington')!.tripsUrl).not.toBeNull();
     const ttc = liveRecorderFeed('ttc')!;
     expect(ttc.tripsUrl).not.toBeNull();
-    // Ryan, 2026-11-24: the routes Live analyses (streetcars, then the Ten-Minute Network with CIV-2174), not the whole fleet.
+    // CIV-2939 option 2 (Ryan, 2026-11-25, "1"): every TTC route is kept now, the analysed ones among them; a vehicle with no route is not.
     const keeps = new RegExp(ttc.routeFilterSource);
     expect(LIVE_TTC_ANALYSED_ROUTES.every(r => keeps.test(r))).toBe(true);
-    expect(['502', '29', '1', '5011'].some(r => keeps.test(r))).toBe(false);
+    expect(['502', '29', '1', '5011'].every(r => keeps.test(r))).toBe(true);
+    expect(keeps.test('')).toBe(false);
     expect(liveRecorderFeed('mbta')!.tripsUrl).toBeNull();
     expect(liveRecorderFeed('kingston')!.tripsUrl).not.toBeNull();
     // YRT: every Viva route (CIV-2176), with trip updates; DRT: its 9XX routes, with trip updates.

@@ -145,10 +145,15 @@ export const LIVE_POSITIONS_ONLY_SLUGS: readonly string[] = ['sfmta'];
  * Ten-Minute Network routes once CIV-2174 adds them to LIVE_TTC_ANALYSED_ROUTES), not the whole fleet; with trip updates.
  */
 export const LIVE_RECORDER_ROUTE_IDS: Readonly<Record<string, readonly string[]>> = {
-  ttc: LIVE_TTC_ANALYSED_ROUTES,
   // YRT: every Viva route (CIV-2176), not only the Blue Live shows; route ids from YRT's GTFS routes.txt, 2026-11-24.
   yrt: ['601', '60102', '603', '60301', '605', '607'],
 };
+/**
+ * CIV-2939 option 2 (Ryan, 2026-11-25, "1": keep every TTC route's positions, 60 days like everything else): agencies the
+ * cloud recorder keeps whole, every vehicle on a route. Live, the Live report and Studio Live still read only the routes
+ * they analyse (LIVE_TTC_ANALYSED_ROUTES), so nothing anyone sees changes.
+ */
+export const LIVE_RECORDER_ALL_ROUTES: readonly string[] = ['ttc'];
 export const livePaceSec = (slug: string): number => LIVE_FEED_PACE_SEC[slug] ?? LIVE_POLL_SEC;
 /** Positions older than this many paces read as late (CIV-2084, Ryan: "within 2× the agency's pace"). */
 export const LIVE_STALE_PACES = 2;

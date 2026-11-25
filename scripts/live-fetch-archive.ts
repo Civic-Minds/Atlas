@@ -34,6 +34,7 @@ import { localDate, localServiceStart } from '../shared/liveAgencyConfig';
 import { loadLiveAgencyConfig } from './live-agency-config';
 import { mapArchiveDay } from '../shared/liveArchiveDay';
 import { s3ArchiveDayStore } from './liveArchiveStore';
+import { LIVE_TTC_ANALYSED_ROUTES } from '../shared/rules/live';
 
 /** Toronto calendar date (YYYY-MM-DD) at an instant (the TTC default of localDate). */
 export function torontoDate(ms: number): string {
@@ -135,7 +136,9 @@ async function main() {
   const folders = windowed ? serviceWindowFolders(Number(args.days), now, live) : datesFromArgs(args, live).map(day => ({ day, cutBefore: null as number | null }));
   const days = folders.map(f => f.day);
   if (!days.length) { console.error('live-fetch-archive: give --days d1,d2 or --from d --to d'); process.exit(1); }
-  const only = !args.routes || args.routes === 'all' ? null : new Set(args.routes.split(','));
+  // CIV-2939: the recorder keeps every TTC route now; with no --routes the TTC still fetches only the routes Live analyses, so
+  // the folder (and the outage check that reads all of it) holds what it held before. --routes all asks for every route.
+  const only = args.routes === 'all' ? null : args.routes ? new Set(args.routes.split(',')) : agency === 'ttc' ? new Set(LIVE_TTC_ANALYSED_ROUTES) : null;
   const keep = (r: string) => !only || only.has(r);
   const concurrency = Number(args.concurrency ?? 12);
   const client = liveArchiveClient();
