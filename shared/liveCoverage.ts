@@ -3,7 +3,8 @@
  * 2026-11-18: "Then just have it mention the limits right now if applicable for each one"). Pure: the caller passes the
  * service dates found in the archive; the release step lists them, and the MCP's Live tools read the result.
  */
-import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS } from './liveArchiveFeeds';
+import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS, RECORDER_SLUGS } from './liveArchiveFeeds';
+import { liveRecorderFeed } from './liveRecorderFeeds';
 import { LIVE_MIN_DAYS_TO_SHOW } from './rules/live';
 import { HEALTHY_DAY_SHARE, dayHealth } from './routeMetrics';
 import { dayTypeOfDow } from './rules/days';
@@ -44,9 +45,10 @@ export function routesRecorded(filterSource: string): 'every route' | string[] {
  * ids are any of the recorded ones counts as recorded; an agency with no position feed records none.
  */
 export function routeIsRecorded(slug: string, routeIds: readonly string[]): boolean {
-  const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === slug);
-  if (!pos) return false;
-  const re = new RegExp(pos.routeFilterSource);
+  // #1801: an agency only on the cloud recorder (YRT, DRT, Brampton) records the routes its recorder feed keeps.
+  const filter = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === slug)?.routeFilterSource ?? (RECORDER_SLUGS.includes(slug) ? liveRecorderFeed(slug)?.routeFilterSource : undefined);
+  if (!filter) return false;
+  const re = new RegExp(filter);
   return routeIds.some(id => re.test(id));
 }
 
@@ -60,8 +62,10 @@ const dayTypeOfDate = (ymd: string) => dayTypeOfDow(new Date(`${ymd}T12:00:00Z`)
  * be listed. Days recorded counts only near-full days, by the same rule Live's analysis uses for a good day (dayHealth).
  */
 export function liveCoverage(slug: string, snapshotsByDate: ReadonlyMap<string, number> | null, today: string): LiveCoverage {
-  const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === slug);
-  const trip = LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === slug);
+  // #1801: an agency only on the cloud recorder takes its feeds and routes from its recorder feed.
+  const recorder = RECORDER_SLUGS.includes(slug) ? liveRecorderFeed(slug) : null;
+  const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === slug) ?? (recorder ? { routeFilterSource: recorder.routeFilterSource, archiveOnly: undefined } : undefined);
+  const trip = LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === slug) ?? (recorder?.tripsUrl ? { archiveOnly: undefined } : undefined);
   const sorted = snapshotsByDate ? [...snapshotsByDate.keys()].sort() : null;
   const last = sorted?.at(-1) ?? null;
   return {
@@ -76,8 +80,9 @@ export function liveCoverage(slug: string, snapshotsByDate: ReadonlyMap<string, 
   };
 }
 
-/** Every agency Live's archivers know, each once. */
-export const LIVE_ARCHIVE_SLUGS: readonly string[] = [...new Set([...LIVE_ARCHIVE_POSITION_FEEDS, ...LIVE_ARCHIVE_TRIP_FEEDS].map(f => f.slug))];
+/** Every agency Live's archivers know, each once: the v1 archive feeds and the cloud recorder (#1801: YRT, DRT and
+ *  Brampton record only there, and read as "not recorded" without it). */
+export const LIVE_ARCHIVE_SLUGS: readonly string[] = [...new Set([...LIVE_ARCHIVE_POSITION_FEEDS.map(f => f.slug), ...LIVE_ARCHIVE_TRIP_FEEDS.map(f => f.slug), ...RECORDER_SLUGS])];
 
 /**
  * Whether a route's Live analysis has enough to state figures: this week has at least LIVE_MIN_DAYS_TO_SHOW good
