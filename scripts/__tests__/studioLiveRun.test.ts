@@ -74,7 +74,9 @@ describe('the cloud script (public repository)', () => {
   it('a backup schedule runs only when the day\'s refresh hasn\'t succeeded yet (CIV-2177)', () => {
     const wf = readFileSync(resolve(__dirname, '../../.github/workflows/studio-live-refresh.yml'), 'utf8');
     expect([...wf.matchAll(/^\s+- cron: '([^']+)'/gm)].map(m => m[1])).toEqual(['47 9 * * *', '47 14 * * *', '47 19 * * *']);
-    expect(wf).toContain('scripts/ci/refresh-last-success.sh studio-live-refresh.yml studio-live || true');
+    // #1807: a dry run runs the same job, so only a run titled as a publish counts.
+    expect(wf).toContain("scripts/ci/refresh-last-success.sh studio-live-refresh.yml studio-live '(publish)' || true");
+    expect(wf).toContain("run-name: Studio Live refresh (${{ github.event_name == 'schedule' && 'publish' || inputs.mode }})");
     expect(wf).toMatch(/  studio-live:\n    needs: gate\n    if: needs\.gate\.outputs\.run == 'true' && /);
   });
 });
