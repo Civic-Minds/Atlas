@@ -1,3 +1,4 @@
+import { onTimeWindow } from '../shared/rules/live.js';
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
   LIVE_POLLING_ROUTES,
@@ -106,9 +107,10 @@ function failureMessage(reason: FeedFailure): string {
   }
 }
 
-function statusForDelay(delayMin: number | null): 'no_data' | 'early' | 'late' | 'on_time' {
+/** CIV-2222: each agency's own on-time window (TTC: >1 min early or >5 min late), as its Live figures use. */
+function statusForDelay(delayMin: number | null, agency: string): 'no_data' | 'early' | 'late' | 'on_time' {
   if (delayMin == null) return 'no_data';
-  return delayStatus(delayMin);
+  return delayStatus(delayMin, onTimeWindow(agency));
 }
 
 /** How a live feed is decoded: enums come out as their names ("STOPPED_AT"), not numbers. */
@@ -247,7 +249,7 @@ export function vehiclesFromRecords(
       ...(stop?.at ? { atStop: true } : {}),
       // CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern.
       upcomingStops: rec.tripId ? upcomingStops(own?.stopTimeUpdate, places, nowSec) : [],
-      status: statusForDelay(delayMin),
+      status: statusForDelay(delayMin, agency),
       statusLabel: null,
       headwayGapMin: null,
     });

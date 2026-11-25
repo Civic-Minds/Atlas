@@ -21,7 +21,7 @@ import ArrowLink from '../components/ui/ArrowLink';
 import { AgencyList, AgencyListRow } from '../components/ui/AgencyList';
 import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
-import { getVehicleColors, getVehicleStatus } from '../utils/colors';
+import { getVehicleColors, vehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { effectiveMode, knownModeLabel, type EffectiveModeInput } from '../../shared/modes';
 import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel, GENERIC_VEHICLE } from '../utils/format';
@@ -84,7 +84,7 @@ const ELIGIBLE_SLUGS = new Set(LIVE_AGENCY_SLUGS);
 /** One-line summary of a destination's vehicles: "10 vehicles · 2 late" (a streetcar route), "3 buses". */
 function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
   const count = vehicleModeCount(vehicles.length, modeWord);
-  const late = vehicles.filter(v => getVehicleStatus(v.delayMin) === 'late').length;
+  const late = vehicles.filter(v => vehicleStatus(v) === 'late').length;
   return late > 0 ? `${count} · ${late} late` : count;
 }
 

@@ -15,7 +15,7 @@ import { gapText } from '../../../shared/liveFormat';
 import { useRouteAnalysis } from '../../hooks/useRouteAnalysisPatterns';
 import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { getVehicleStatus } from '../../utils/colors';
+import { vehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
 import { DIRECTION_LABEL, LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL } from '../../../shared/liveWording';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
@@ -241,7 +241,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   // Left out where none of them reports how late it is (TTC streetcars today): the count would only say 0.
   const counted = new Set(live?.carIds ?? []);
   const reporting = vehicles.filter(v => counted.has(v.id) && v.delayMin != null);
-  const onTime = reporting.length ? reporting.filter(v => getVehicleStatus(v.delayMin) === 'on_time').length : null;
+  const onTime = reporting.length ? reporting.filter(v => vehicleStatus(v) === 'on_time').length : null;
 
   // Fresh data needs no time; stale data says when it was last updated (by the newest vehicle report).
   const newest = Math.max(0, ...vehicles.map(v => v.tsEpoch ?? 0));
