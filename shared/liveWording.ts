@@ -126,8 +126,6 @@ export const lateDefinition = (t?: OnTimeWords | null): string =>
   t?.onTimeWindowPublished && t.lateAtOrAboveMin != null && t.earlyAtOrBelowMin != null
     ? onTimeWindowText({ earlyAtOrBelowMin: t.earlyAtOrBelowMin, lateAboveMin: t.lateAtOrAboveMin })
     : LATE_DEFINITION;
-/** CIV-2222 line B, the card note for an agency that publishes no on-time window: wording still to be asked (Ryan). Null shows nothing. */
-export const NO_PUBLISHED_WINDOW_NOTE: string | null = null;
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
@@ -159,8 +157,7 @@ export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; da
 /** Which stops a route's late-stops list ranks, after the sentence it ends. */
 const RANKED_STOPS_NOTE = '(stops with 30+ departures)';
 /** The route's late-stops intro when no map is shown. */
-export const STOPS_RANKED_LATE_TEXT = `Stops ranked by how often vehicles leave ${LATE_THRESHOLD} ${RANKED_STOPS_NOTE}.`;
-/** STOPS_RANKED_LATE_TEXT at a page's window (CIV-2222). */
+/** How the route's late-stops list is ranked when no map is shown, at the page's window (CIV-2222). */
 export const stopsRankedLateText = (t?: OnTimeWords | null): string => `Stops ranked by how often vehicles leave ${lateThreshold(t)} ${RANKED_STOPS_NOTE}.`;
 
 /** The faded-mark note under a chart, one sentence everywhere (CIV-1448): "Paler bars rest on fewer than 30 trips." */
