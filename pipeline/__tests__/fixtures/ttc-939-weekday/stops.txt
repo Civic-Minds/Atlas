@@ -1,0 +1,79 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding,level_id,tts_stop_name
+1055,1055,Finch Ave East at McCowan Rd,,43.807895,-79.266729,,,0,,,1,,Finch Avenue East at McCowan Road
+1317,1317,McCowan Rd at Sheppard Ave East,,43.789465,-79.258561,,,0,,,1,,23 95 McCowan Road
+1318,1318,McCowan Rd at Sheppard Ave East,,43.789787,-79.259086,,,0,,,1,,McCowan Road at Sheppard Avenue East
+2488,2488,Finch Ave East at Bayview Ave,,43.784766,-79.392606,,,0,,,1,,Finch Avenue East at Bayview Avenue
+2490,2490,Finch Ave East at Birchmount Rd,,43.798848,-79.306209,,,0,,,1,,Finch Avenue East at Birchmount Road
+2491,2491,Finch Ave East at Birchmount Rd,,43.799172,-79.305756,,,0,,,1,,Finch Avenue East at Birchmount Road
+2497,2497,Finch Ave East at Brimley Rd,,43.805534,-79.277614,,,0,,,1,,Finch Avenue East at Brimley Road
+2498,2498,Finch Ave East at Brimley Rd,,43.805846,-79.277127,,,0,,,1,,Finch Avenue East at Brimley Road
+2506,2506,Finch Ave East at Don Mills Rd East Side,,43.792619,-79.354183,,,0,,,1,,"Finch Avenue East at Don Mills Road East Side, This Is An Express Vehicle"
+2514,2514,Finch Ave East at Kennedy Rd,,43.801119,-79.29674,,,0,,,1,,Finch Avenue East at Kennedy Road
+2515,2515,Finch Ave East at Kennedy Rd,,43.801487,-79.29616,,,0,,,1,,Finch Avenue East at Kennedy Road
+2518,2518,Finch Ave East at Leslie St East Side,,43.789921,-79.367098,,,0,,,1,,Finch Avenue East at Leslie Street East Side
+2519,2519,Finch Ave East at Leslie St - Old Cummer GO Station,,43.790162,-79.369075,,,0,,,1,,"Finch Avenue East at Leslie Street, Old Cummer GO Station"
+2525,2525,Finch Ave East at Markham Rd,,43.812793,-79.243437,,,0,,,1,,Finch Avenue East at Markham Road
+2526,2526,Finch Ave East at Markham Rd,,43.813199,-79.242764,,,0,,,1,,Finch Avenue East at Markham Road
+2532,2532,Finch Ave East at Middlefield Rd,,43.809776,-79.257945,,,0,,,1,,Finch Avenue East at Middlefield Road
+2533,2533,Finch Ave East at Middlefield Rd,,43.810081,-79.257463,,,0,,,1,,Finch Avenue East at Middlefield Road
+2534,2534,Finch Ave East at Midland Ave,,43.803604,-79.286527,,,0,,,1,,Finch Avenue East at Midland Avenue
+2535,2535,Finch Ave East at Midland Ave,,43.803931,-79.286077,,,0,,,1,,Finch Avenue East at Midland Avenue
+2538,2538,Finch Ave East at Pharmacy Ave,,43.794186,-79.326201,,,0,,,1,,Finch Avenue East at Pharmacy Avenue
+2539,2539,Finch Ave East at Pharmacy Ave,,43.794498,-79.325792,,,0,,,1,,Finch Avenue East at Pharmacy Avenue
+2545,2545,Finch Ave East at Sandhurst Cir (East),,43.809001,-79.262558,,,0,,,1,,Finch Avenue East at Sandhurst Circle East
+2546,2546,Finch Ave East at Sandhurst Cir (East),,43.808701,-79.263003,,,0,,,1,,Finch Avenue East at Sandhurst Circle East
+2549,2549,Finch Ave East at Au Large Blvd - Seneca College,,43.793985,-79.349573,,,0,,,1,,"Finch Avenue East at Au Large Boulevard, Seneca Polytechnic Loop"
+2550,2550,Finch Ave East at Seneca Hill Dr - Opposite Seneca College,,43.793477,-79.350685,,,0,,,1,,"Finch Avenue East at Seneca Hill Drive, Seneca Polytechnic"
+2559,2559,Finch Ave East at Scottfield Dr,,43.810745,-79.253211,,,0,,,1,,Finch Avenue East at Scottfield Drive
+2560,2560,Finch Ave East at Tiffield Rd,,43.811034,-79.252622,,,0,,,1,,Finch Avenue East at Tiffield Road
+2561,2561,Opposite 5600 Finch Ave East,,43.813595,-79.239995,,,0,,,1,,56 21 Finch Avenue East
+2562,2562,5600 Finch Ave East,,43.813673,-79.240113,,,0,,,1,,56 hundred Finch Avenue East
+2565,2565,Finch Ave East at Victoria Park Ave,,43.792902,-79.331671,,,0,,,1,,Finch Avenue East at Victoria Park Avenue
+2566,2566,Finch Ave East at Victoria Park Ave,,43.793308,-79.331145,,,0,,,1,,Finch Avenue East at Victoria Park Avenue
+2569,2569,Finch Ave East at Warden Ave,,43.796616,-79.316027,,,0,,,1,,Finch Avenue East at Warden Avenue
+2570,2570,Finch Ave East at Warden Ave,,43.79697,-79.315476,,,0,,,1,,Finch Avenue East at Warden Avenue
+2574,2574,Finch Ave East at Willowdale Ave,,43.781498,-79.407257,,,0,,,1,,Finch Avenue East at Willowdale Avenue
+2575,2575,Finch Ave East at Willowdale Ave,,43.781737,-79.406965,,,0,,,1,,Finch Avenue East at Willowdale Avenue
+3587,3587,Finch Ave West at Dufferin St,,43.768624,-79.467298,,,0,,,1,,Finch Avenue West at Duffrin Street
+3588,3588,Finch Ave West at Dufferin St,,43.769131,-79.466342,,,0,,,1,,Finch Avenue West at Duffrin Street
+3593,3593,Finch Ave West at Goldfinch Crt East Side,,43.772257,-79.450489,,,0,,,1,,Finch Avenue West at Goldfinch Court East Side
+3594,3594,Finch Ave West at Grantbrook St West Side,,43.776224,-79.432093,,,0,,,1,,Finch Avenue West at Grantbrook Street West Side
+3613,3613,Finch Ave West at Senlac Rd,,43.776326,-79.430344,,,0,,,1,,Finch Avenue West at Senlac Road
+3618,3618,Finch Ave West at Torresdale Ave West Side,,43.772336,-79.451367,,,0,,,1,,Finch Avenue West at Torresdale Avenue West Side
+9127,9127,Finch Ave East at Bayview Ave,,43.785219,-79.391751,,,0,,,1,,Finch Avenue East at Bayview Avenue
+9617,9617,Finch Ave East at Don Mills Rd  West Side,,43.792602,-79.355799,,,0,,,1,,Finch Avenue East at Don Mills Road
+11344,11344,5373 Finch Ave East,,43.811225,-79.250996,,,0,,,1,,53 73 Finch Avenue East
+11345,11345,5310 Finch Ave East,,43.811532,-79.250495,,,0,,,2,,53 10 Finch Avenue East
+13906,13906,Nightstar Rd at Morningside Ave North Side,,43.823402,-79.230475,,,0,,,1,,Nightstar Road at Morningside Avenue
+13907,13907,Oasis Blvd at Seasons Dr,,43.829031,-79.233701,,,0,,,1,,Oasis Boulevard at Seasons Drive
+14081,14081,Mantis Rd at Poppy Pl (North),,43.82401,-79.222705,,,0,,,1,,Mantis Road at Poppy Place
+14082,14082,Nightstar Rd at Cranberry Dr,,43.825574,-79.224469,,,0,,,1,,Nightstar Road at Cranberry Drive
+14083,14083,Nightstar Rd at Pogonia St,,43.824774,-79.226653,,,0,,,1,,Nightstar Road at Pogonia Street
+14086,14086,Staines Rd at Mantis Rd,,43.821587,-79.220303,,,0,,,1,,Staines Road at Mantis Road
+14104,14104,Morningside Ave at Walkway to Raponi Cir,,43.826549,-79.232874,,,0,,,1,,Morningside Avenue at Walkway to Raponi Circle
+14105,14105,Seasons Dr at Canoe Cres (West),,43.829267,-79.228259,,,0,,,1,,Seasons Drive at Canoe Crescent
+14107,14107,Staines Rd at Warbler Cir,,43.82671,-79.221682,,,0,,,1,,Staines Road at Warbler Circle
+14264,14264,150 Staines Rd West Side,,43.822964,-79.219024,,,0,,,1,,1 50 Staines Road
+14266,14266,Staines Rd at Seasons Dr South Side,,43.830149,-79.223612,,,0,,,1,,Staines Road at Seasons Drive
+14442,14442,Finch Ave East at Blackbird Gate,,43.816771,-79.224426,,,0,,,1,,Finch Avenue East at Blackbird Gate
+14443,14443,5910 Finch Ave East,,43.81708,-79.224083,,,0,,,1,,59 10 Finch Avenue East
+14444,14444,Finch Ave East at Morningside Ave,,43.81923,-79.220758,,,0,,,1,,Finch Avenue East at Morningside Avenue
+14445,14445,Finch Ave East at Morningside Ave West Side,,43.81918,-79.221189,,,0,,,1,,Finch Avenue East at Morningside Avenue
+14446,14446,Staines Rd at Jacques Rd,,43.82082,-79.2207,,,0,,,1,,Staines Road at Jacques Road
+14549,14549,Finch Ave East at Neilson Rd,,43.816137,-79.227758,,,0,,,2,,Finch Avenue East at Neilson Road
+14550,14550,Finch Ave East at Neilson Rd,,43.816521,-79.227338,,,0,,,2,,Finch Avenue East at Neilson Road
+14557,14557,Nightstar Rd at Wharnsby Dr,,43.823871,-79.229293,,,0,,,1,,Nightstar Road at Wharnsby Drive
+14685,14685,Finch Station at Bus Bay 12,,43.780467,-79.414636,,,0,43291,,1,,"Finch Subway Station, This Is An Express Vehicle"
+14692,14692,Finch Station at Bus Bay 7,,43.78143,-79.415193,,,0,43291,,1,,"Finch Subway Station, This Is An Express Vehicle"
+14763,14763,Scarborough Centre Station at Bus Bay 4,,43.774515,-79.257894,,,0,,,1,,"Scarborough Centre Station, This Is An Express Vehicle"
+14968,14968,Finch Ave East at McCowan Rd West Side,,43.807918,-79.267454,,,0,,,1,,"Finch Avenue East at McCowan Road, This Is An Express Vehicle"
+14982,14982,Staines Rd at Point Rouge Trail,,43.825562,-79.220539,,,0,,,1,,Staines Road at Point Rouge Trail
+15567,15567,Finch West Station Bus Bay 4,,43.764919,-79.490859,,,0,15205,,1,,"Finch West Subway Station, This Is An Express Vehicle"
+16061,16061,Finch Ave West at Bathurst St,,43.773842,-79.442282,,,0,,,1,,Finch Avenue West at Bathurst Street
+16062,16062,Finch Ave West at Bathurst St,,43.773841,-79.443841,,,0,,,1,,Finch Avenue West at Bathurst Street
+16368,16368,Finch Ave East at Tapscott Rd West Side,,43.81414,-79.23788,,,0,,,1,,Finch Avenue East at Tapscott Road
+16369,16369,Finch Ave East at Tapscott Rd East Side,,43.814291,-79.236357,,,0,,,1,,Finch Avenue East at Tapscott Road
+16699,16699,Finch Ave East at Finchdene Sq,,43.815317,-79.231676,,,0,,,1,,Finch Avenue East at Finchdene Square
+16700,16700,Finch Ave East at Finchdene Sq,,43.815531,-79.231326,,,0,,,1,,Finch Avenue East at Finchdene Square
+15205,15205,Finch West,Parent station node for Finch West,43.76535,-79.490807,,,1,,,1,,
+43291,7758,Finch,Parent station node for Finch,43.780846,-79.415291,,,1,,,1,,
