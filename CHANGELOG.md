@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The cloud recorder saves each recorded agency's whole-network vehicle counts with every snapshot**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network
 - **The overnight and frequent-service maps say to zoom in when zoomed out**: they draw no routes that far out, but the overnight list said only "some less frequent routes are hidden" and the frequent-service map said nothing
 - **The Coverage page's tags line up under their headings**: four Live tags ran over the Studio column, so "Lateness" sat on top of "Schedule"
+- **Route cards that include lettered variants show every variant's destinations**: GRTC 1A's card said it included 1B and 1C but listed only 1A's rows, because the card kept one route's rows for the whole family
 - **Atlas Studio's Fleet leads with right now**: every vehicle on the road now and the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
 - **The internal MCP page's usage chart shows questions and calls as two lines, over 7, 14 or 28 days**: calls were only in the hover, and it opens on the last week
 - **The internal MCP page's Stop link sits in a tester's own view**: a button on every row of the Testers table was too much
