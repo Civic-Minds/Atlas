@@ -39,9 +39,13 @@ import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { mayRedistribute, redistributionExclusion } from '../../shared/rules/redistribution';
+import { feedPlaceName } from '../../src/utils/nameCase';
 import { FEED_CREDITS, type FeedCreditKey } from '../../shared/feedCredits';
 import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
+
+/** CIV-2915: a destination or stop name the feed sent in capitals, in normal case, as the map and Live show it. */
+const placeOrNull = (name: string | null | undefined): string | null => (name?.trim() ? feedPlaceName(name) : null);
 
 
 type Feature = McpFeature;
@@ -569,7 +573,7 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
   const windowTrips = (row: ShapeProperties) => Object.entries(hoursOf(row)).reduce((a, [h, n]) => a + (inWindow(+h) ? n : 0), 0);
   const trips = (row: ShapeProperties) => Object.values(hoursOf(row)).reduce((a, b) => a + b, 0);
   const dirOf = (row: ShapeProperties) => String(row.directionId ?? '0');
-  const towardsOf = (row: ShapeProperties) => [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
+  const towardsOf = (row: ShapeProperties) => placeOrNull([row.headsign, row.routeVariant].filter(Boolean).join(' '));
   const dirTrips = new Map<string, number>(), dirWindow = new Map<string, number>();
   for (const row of r.rows) {
     dirTrips.set(dirOf(row), (dirTrips.get(dirOf(row)) ?? 0) + trips(row));
@@ -594,7 +598,7 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
     if (at != null) {
       const first = columns[at];
       const heads = new Set(kept.filter(k => String(k.directionId ?? '0') === String(row.directionId ?? '0') && endOf?.(k) === end).map(k => String(k.headsign ?? '')).filter(Boolean));
-      first.towards = heads.size === 1 ? [...heads][0] : first.towards;
+      first.towards = heads.size === 1 ? placeOrNull([...heads][0]) : first.towards;
       continue;
     }
     if (sig != null) seen.set(sig, columns.length);
@@ -737,11 +741,17 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
   }
   return [...groups.values()].map(g => {
     const merged = g.rows.length > 1 && g.from.length > 1;
-    return {
+    const b = {
       ...g.branch,
       trips: [...g.hours.values()].reduce((a, b) => a + b, 0),
       // Rows that start at different stops but end at the same one are a single way to the end.
       ...(merged ? { towards: g.headsigns.size === 1 ? [...g.headsigns][0] : g.branch.towards, from: g.from.join(' or '), startsAt: g.from } : {}),
+    };
+    // CIV-2915: where it goes and its end stops in normal case, as the map shows them ("HAMILTON GO CENTRE" -> "Hamilton GO Centre").
+    return {
+      ...b, towards: placeOrNull(b.towards),
+      ...('from' in b ? { from: b.startsAt ? b.startsAt.map(feedPlaceName).join(' or ') : placeOrNull(b.from), to: placeOrNull(b.to) } : {}),
+      ...(b.startsAt ? { startsAt: b.startsAt.map(feedPlaceName) } : {}),
     };
   }).filter(b => b.trips > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
@@ -836,7 +846,7 @@ export async function stopFrequency(agency: CatalogAgency, place: string, day: D
       if (line != null) r.allDestinations[label] = headwayEvery(line);
       for (const b of sr.branches) {
         const key = `${b.directionId}::${b.headsign ?? ''}`;
-        const d = r.destinations.get(key) ?? r.destinations.set(key, { towards: b.headsign, direction: b.directionId, periods: {} }).get(key)!;
+        const d = r.destinations.get(key) ?? r.destinations.set(key, { towards: placeOrNull(b.headsign), direction: b.directionId, periods: {} }).get(key)!;
         const hw = stopRowHeadway(b, period);
         // #1667: a shared stop whose combined trips aren't even reads as a range, its sparse low end to the longest gap.
         const low = hw != null ? stopRowRangeLow(b, period) : null;

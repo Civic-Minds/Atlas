@@ -12,6 +12,7 @@ import { isoDate } from '../../shared/dateText';
 import { handlers as sharedHandlers } from './tools';
 import { TIME_PERIODS } from '../../shared/rules/periods';
 import type { DayType } from '../../shared/rules/days';
+import { feedPlaceName } from '../../src/utils/nameCase';
 
 export const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   // CIV-2089: stop_frequency plus how often any route leaves the stop, from this Mac's schedule files (the hosted
@@ -24,7 +25,8 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     try { stops = await local.departuresAtStop(a.slug, res.matched, res.day); } catch { /* no schedule file on this Mac */ }
     if (!stops?.length) return res;
     const byStop = stops.map(s => ({
-      towards: s.towards,
+      // CIV-2915: destinations in normal case, as everywhere else.
+      towards: s.towards.map(feedPlaceName),
       periods: Object.fromEntries(TIME_PERIODS.map(p => [`${p.label} (${formatPeriodRange(p.key)})`, local.combinedReading(s.starts, p.startHour * 60, p.endHour * 60)]).filter(([, r]) => (r as { departures: number }).departures > 0)),
     }));
     return { ...res, allRoutes: { stops: byStop, rule: `Every route leaving this stop together, the way combined_frequency counts them: two departures ${local.BUNCHED_MINUTES} minute or less apart count as one, so the combined wait can read longer than the trips listed. One entry per side of the street or platform (towards: its most common destinations), since a rider waits at one.` } };
