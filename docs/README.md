@@ -28,6 +28,7 @@ Read first: [Decisions](product/DECISIONS.md), then [Frequency filter rules](pro
 | [Pipeline fix validation](engineering/FIXING_PIPELINE_ISSUES.md) | Open when your fix changes shared pipeline code or data, before you commit. |
 | [Pipeline methodology](data/PIPELINE.md) | Open when you need to understand how raw GTFS turns into frequency tiers. |
 | [Route service metrics](data/ROUTE_SERVICE_METRICS.md) | Open when you add or read a route service field and need its exact meaning. |
+| [Frequency reading map](engineering/FREQUENCY_READING_MAP.md) | Open before you change how a route's "every N" is worked out anywhere: every place it is computed, and how often they disagree (CIV-2951). |
 | [Frequency-tier study](engineering/pipeline-studies/frequency-tier-methodology-2026-10/INDEX.md) | Open when you need the evidence behind a frequency-tier rule. |
 | [Frequency-tier decision trail](engineering/pipeline-studies/frequency-tier-methodology-2026-10/EXPERIMENT-LOG.md) | Open when you need to trace which commit made a frequency-tier change (FREQ-001 to FREQ-006). |
 | [Frequency-tier proposal](engineering/pipeline-studies/frequency-tier-methodology-2026-10/PROPOSAL.md) | Open only for history; this proposal was superseded. |
