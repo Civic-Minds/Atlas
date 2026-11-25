@@ -85,6 +85,11 @@ export function edgeWaitBit(grade: number): number | null {
 
 /** #720: three repeated departures are the minimum evidence for a schedule; one or two trips are one-off. */
 export const MIN_SCHEDULE_DEPARTURES = 3;
+/**
+ * CIV-2232 (Ryan, 2026-11-24, "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular"): a route
+ * card row read from its own trips shows a number only with at least this many of them in the period. Card wording only.
+ */
+export const MIN_CARD_ROW_DEPARTURES = 4;
 /** CIV-1411: a slow start's steady run must cover at least this many departures (#571: 4 after an allowance). */
 export const SLOW_START_MIN_DEPARTURES = 4;
 /** CIV-1411: no gap in a steady run is over this many times its typical gap. */

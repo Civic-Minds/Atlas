@@ -240,7 +240,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const noFilterValue = contract != null && contract.filterValue == null && !contract.runs;
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
-      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period, { stretch: stretchValues, branchReadings }).partPeriod != null), span: [] }))
+      // CIV-2232: a row whose start or end words gave way to "Runs irregularly" (too few or uneven trips) still runs part of the period.
+      .map(group => ({ ...group, realTier: group.realTier.filter(direction => { const t = rowTrips(direction, period, { stretch: stretchValues, branchReadings }); return t.partPeriod != null || t.irregularPastHour === true; }), span: [] }))
       .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;

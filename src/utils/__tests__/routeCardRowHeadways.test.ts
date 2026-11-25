@@ -19,7 +19,8 @@ describe('CIV-1199: the part-period notice reads the numbers the rows show (one 
   it("the notice's number is the one the row shows (Metro Transit 10 Saturday late: every 31, not the row's internal 26)", () => {
     const m = card('late');
     const rows = m.groups.flatMap(g => g.rows);
-    expect(rows.map(r => `${r.label}: ${reportRowValueText(r)}`)).toEqual(['to Central / 53Ave-Target: every 31 min, with one 56 min gap']);
-    expect(m.rowHeadways).toEqual([31]);
+    // CIV-2232 (Ryan, 2026-11-24): under 4 of its own trips in a late period whose wait is over an hour: no number.
+    expect(rows.map(r => `${r.label}: ${reportRowValueText(r)}`)).toEqual(['to Central / 53Ave-Target: Runs irregularly in this period']);
+    expect(m.rowHeadways).toEqual([]);
   });
 });

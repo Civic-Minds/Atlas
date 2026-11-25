@@ -18,7 +18,8 @@ describe('route lists show a range where alternating branches share a stretch', 
     expect(routeListHeadwayText(60, 30)).toBe('every 30–60 min');
     expect(routeListHeadwayText(60, 30, true)).toBe('30–60 min');
     // CIV-1447: the list reads the card's own numbers, 30 toward Union and 60 and 71 on the branches (the map's number is 64).
-    expect(routeListDisplay(lw, 'pmPeak')).toEqual({ headway: 71, limited: false, sharedHeadway: 30 });
+    // CIV-2232: the branch with under 4 trips in the PM peak reads Irregular on the card, so the list's range ends at 60.
+    expect(routeListDisplay(lw, 'pmPeak')).toMatchObject({ headway: 60, limited: false });
     // Limited stays limited, never a range.
     expect(routeListDisplay(lw, 'amPeak')).toEqual({ headway: null, limited: true, noRegular: true });
   });

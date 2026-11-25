@@ -35,7 +35,8 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
 
   it('a period that is not steady, off a stretch, reads its full-window wait, not the median (CIV-1074 2a)', () => {
     const r = row({ headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 } });
-    expect(rowTrips(r, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
+    // CIV-2232: a wait over an hour from uneven trips is no number (Ryan, 2026-11-24): Runs irregularly in this period.
+    expect(rowTrips(r, 'midday')).toMatchObject({ value: null, longestGap: 256, waitNotCadence: true });
     expect(rowTrips({ ...r, headwayByPeriodSustained: { midday: true } } as ShapeProperties, 'midday').value).toBe(13);
   });
 
@@ -52,7 +53,8 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
     expect(rowTrips(main, 'midday')).toMatchObject({ value: 10, longestGap: 10 });
     // A stretch with no regular cadence in the period leaves the row its own full-window wait.
     const noRegular = { ...main, stretchMeta: { ...main.stretchMeta!, main: { ...main.stretchMeta!.main!, noRegular: ['midday'] } } } as ShapeProperties;
-    expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: 256, longestGap: 256 });
+    // CIV-2232: over an hour from uneven trips, it reads Runs irregularly in this period.
+    expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: null, waitNotCadence: true });
   });
 
   it('a short burst never takes the shared stretch\'s number when the rest of the stretch runs less often (SEPTA 66 PM, CIV-1074)', () => {
@@ -107,13 +109,15 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
     // PERIOD_COVERAGE_MAX_HEADWAY), so the row reads Runs irregularly instead of naming it.
     it('a gap at exactly 1.5 times the spacing would go into the words, so the row reads Runs irregularly; just under it, the filter\'s value', () => {
       const at = (gap: number) => main({ stretchPeriodHeadway: { amPeak: 44 }, directionFilterHeadwayByPeriod: { amPeak: gap }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: gap }, maxGap: { amPeak: gap } }, tails: [] } });
-      expect(rowTrips(at(66), 'amPeak')).toMatchObject({ value: null, partPeriod: undefined, waitNotCadence: true });
+      // CIV-2232 (Ryan, 2026-11-24): evenly spaced trips past an hour read their gaps' range, so the row has a number again.
+      expect(rowTrips(at(66), 'amPeak')).toMatchObject({ value: 66, partPeriod: undefined });
       expect(rowTrips(at(65), 'amPeak')).toMatchObject({ value: 65, partPeriod: undefined });
     });
 
     it('a gap at least 1.5 times the spacing and over an hour is never named: Runs irregularly', () => {
       const r = main({ stretchPeriodHeadway: { amPeak: 42 }, directionFilterHeadwayByPeriod: { amPeak: 65 }, stretchMeta: { main: { stops: 30, refStop: 's', trips: 4, period: { amPeak: 65 }, maxGap: { amPeak: 65 } }, tails: [] } });
-      expect(rowTrips(r, 'amPeak')).toMatchObject({ value: null, partPeriod: undefined, waitNotCadence: true });
+      // CIV-2232: its trips are evenly spaced (rule D), so it reads their range up to the longest gap, not Irregular.
+      expect(rowTrips(r, 'amPeak')).toMatchObject({ value: 66, partPeriod: undefined });
     });
 
     it('the direction\'s filter value, not the stretch\'s pooled one (AC Transit 40 AM: 20 at the filter, the stretch 11)', () => {
@@ -236,10 +240,11 @@ describe('a row that starts or stops inside the period says when (CIV-1959 follo
     expect(rowTrips(m, 'late')).toMatchObject({ value: null, partPeriod: undefined, waitNotCadence: true });
   });
   it('with the switch off (or on data without the field) the row reads exactly what it read before', () => {
-    expect(rowTrips(b35, 'amPeak')).toMatchObject({ value: 77, partPeriod: undefined });
+    // CIV-2232: under 4 of its own trips in a period whose wait is over an hour, no number.
+    expect(rowTrips(b35, 'amPeak')).toMatchObject({ value: null, partPeriod: undefined });
     expect(rowTrips(b35, 'amPeak', { branchReadings: false }).partPeriod).toBeUndefined();
     const noField = row({ ...b35, rowPeriodEdge: undefined } as Partial<ShapeProperties>);
-    expect(rowTrips(noField, 'amPeak', { branchReadings: true })).toMatchObject({ value: 77, partPeriod: undefined });
+    expect(rowTrips(noField, 'amPeak', { branchReadings: true })).toMatchObject({ value: null, partPeriod: undefined });
   });
 });
 

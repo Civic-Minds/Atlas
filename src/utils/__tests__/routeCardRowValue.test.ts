@@ -122,10 +122,12 @@ describe('row dot with section colours (#1506)', () => {
   const midday = { ...ctx, stretchMode: true };
 
   it('public keeps the filter colour; with section colours the dot is never better than the row\'s number', () => {
+    // CIV-2232 (Ryan, 2026-11-24): three trips two hours apart are under 4 in the period, so the row has no number and no dot,
+    // with or without section colours, and can never read better than it runs.
     const pub = routeCardRowValue(kitchener, midday);
-    expect(pub.shownHeadway).toBe(120);
-    expect(pub.colorHeadway).toBe(30);
-    expect(routeCardRowValue(kitchener, { ...midday, sectionColours: true }).colorHeadway).toBe(120);
+    expect(pub.shownHeadway).toBeUndefined();
+    expect(pub.isLimited).toBe(true);
+    expect(routeCardRowValue(kitchener, { ...midday, sectionColours: true }).colorHeadway).toBeUndefined();
   });
 
   it('the map draws that stretch in the same (infrequent) colour as the dot', () => {

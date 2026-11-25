@@ -159,7 +159,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     rowNoRegular,
     edgeText,
     headwayLabel: !nightRow && hoveredHour == null && variantH === undefined
-      ? (edgeText ?? (uneven ? headwayAboutRange(uneven.typical, uneven.worst) : undefined))
+      ? (edgeText ?? (uneven ? headwayAboutRange(uneven.typical, uneven.worst)
+        // CIV-2232: evenly spaced trips over an hour apart read shortest to longest gap ("every 58–71 min").
+        : trips.range && displayH === trips.value && !rowNoRegular ? headwayAboutRange(trips.range.low, trips.range.high) : undefined))
       : undefined,
     colorHeadway: hoveredHour == null && !rowNoRegular ? dotHeadway : undefined,
     trunkHeadway: rangeLow,

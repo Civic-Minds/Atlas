@@ -187,8 +187,13 @@ export function stretchSharedHeadway(
   const meta = group.directionFeatures.find(d => d.stretchRole === 'main') ?? group.directionFeatures.find(d => d.stretchMeta?.main);
   const shared = meta ? stretchRowsFromMeta(meta, period).find(r => r.role === 'main') : undefined;
   if (shared?.value == null || shared.noRegular) return null;
-  const rowValues = rows.map(d => rowTrips(d, period, { ownTrips: true }).value);
-  if (rowValues.some(v => v == null)) return null;
+  // CIV-2232 (Ryan, 2026-11-24, "1": keep the shared-stretch row when a branch turns Irregular): a row that reads Runs
+  // irregularly only under CIV-2232 (uneven or too few trips past an hour) is no reason to drop the row.
+  const trips = rows.map(d => rowTrips(d, period, { ownTrips: true }));
+  // Its full-period wait stands in for its number in the comparison (King County 7 Saturday AM: Prentice St, gaps up to 62).
+  const key = period as Exclude<TimePeriod, 'all'>;
+  const rowValues = trips.map((t, i) => (t.irregularPastHour ? rows[i].periodCoverageHeadway?.[key] ?? t.longestGap : t.value));
+  if (rowValues.length === 0 || rowValues.some(v => v == null)) return null;
   // CIV-1143: no 4x limit here. This row names the shared stretch itself and the rows keep their own waits, so a slow
   // branch never makes it read faster than it is (TTC 52, SEPTA 63).
   return shared.value <= medianHeadway(rowValues as number[]) * SHARED_STRETCH_RATIO ? shared.value : null;
