@@ -9,10 +9,12 @@ const catalog = [
   { slug: 'nyct-subway', name: 'MTA NYCT Subway' }, { slug: 'nyct-bus-bronx', name: 'MTA NYCT Bus (Bronx)' },
   { slug: 'go', name: 'GO Transit' }, { slug: 'upexpress', name: 'UP Express (Toronto)' },
   { slug: 'cta', name: 'Chicago Transit Authority (CTA)' }, { slug: 'durango', name: 'Durango Transit' },
+  { slug: 'exo', name: 'exo (Trains)' }, { slug: 'exo-laurentides', name: 'exo (Laurentides)' },
 ];
+const parentOf = (slug: string) => (slug.startsWith('nyct') ? 'MTA New York' : slug.startsWith('exo') ? 'exo' : null);
 const store = {
   catalog: async () => catalog, available: async () => new Set(catalog.map(a => a.slug)),
-  meta: async () => new Map(catalog.map(a => [a.slug, { shortName: '', parentAgency: a.slug.startsWith('nyct') ? 'MTA New York' : null }])),
+  meta: async () => new Map(catalog.map(a => [a.slug, { shortName: '', parentAgency: parentOf(a.slug) }])),
 } as unknown as AtlasStore;
 
 describe('agency lookup', () => {
@@ -56,5 +58,25 @@ describe('agency lookup', () => {
     expect((await data.agenciesWithRouteName('viva')).map(a => a.agency)).toEqual(['York Region Transit']);
     expect(data.hasWholeWords('Largo Transit', 'transit')).toBe(true);
     expect(data.hasWholeWords('Viva Blue', 'viv')).toBe(false);
+  });
+
+  it('finds a parent agency by its name or slug, never one of its feeds silently (#1806)', async () => {
+    data.useStore(store);
+    await expect(data.findAgency('MTA New York')).rejects.toThrow(/MTA New York is split across several feeds here: MTA NYCT Subway; MTA NYCT Bus \(Bronx\)/);
+    await expect(data.findAgency('exo')).rejects.toThrow(/exo is split across several feeds here: exo \(Trains\); exo \(Laurentides\)/);
+    await expect(data.findAgency('mta-new-york')).rejects.toThrow(/MTA New York is split/);
+    expect((await data.findAgency('exo (Trains)'))?.slug).toBe('exo');
+    expect((await data.findAgency('MTA NYCT Subway'))?.slug).toBe('nyct-subway');
+    expect((await data.findAgency('exo', catalog.filter(a => a.slug === 'exo')))?.slug).toBe('exo');
+    expect((await data.findAgencyEntry('exo'))?.members.map(m => m.slug)).toEqual(['exo', 'exo-laurentides']);
+  });
+
+  it('says a parent agency is in Atlas when this server has none of its feeds (#1806)', async () => {
+    data.useStore({ ...store, available: async () => new Set(['go', 'cta']) } as unknown as AtlasStore);
+    expect(await data.agencyNotOnThisServer('MTA New York')).toEqual({ name: 'MTA New York' });
+    expect(await data.agencyNotOnThisServer('GO Transit')).toBeNull();
+    data.useStore({ ...store, available: async () => new Set(['nyct-subway']) } as unknown as AtlasStore);
+    expect(await data.agencyNotOnThisServer('MTA New York')).toBeNull();
+    expect((await data.findAgency('MTA New York'))?.slug).toBe('nyct-subway');
   });
 });

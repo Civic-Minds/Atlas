@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP knows agencies split across feeds by their own name**: asked about "MTA New York" it said no agency matched, and "exo" or "Bustang" answered for one feed as if it were the whole agency; it now names the feeds to pick from
 - **The "Official data" Learn more page no longer sends riders to the agency's website**: Atlas shows how often service runs, not where to plan a trip
 - **Live's panel header just says "Live"**: it no longer names one agency while another agency's problem shows under it; problems stay in the bottom-right status pill
 - **Live's route card and Details no longer show a replacement-buses notice**: the warning on 503 Kingston Rd was never approved

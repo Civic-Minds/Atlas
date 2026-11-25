@@ -109,6 +109,18 @@ export function hasWholeWords(text: string, query: string): boolean {
  */
 export const SERVICE_OPERATORS: ReadonlyArray<{ name: string; slugs: readonly string[] }> = [{ name: 'Metrolinx', slugs: ['go', 'upexpress'] }];
 
+/**
+ * #1806: the parent agency named (its name or slug, any case: "MTA New York", "exo") and its feeds in the list, or null.
+ * Every tool resolves a parent's name through this, so none answers for one feed as if it were the whole agency.
+ */
+export function parentNamed(query: string, list: CatalogAgency[]): { name: string; slug: string; members: CatalogAgency[] } | null {
+  const q = query.trim().toLowerCase();
+  const g = groupAgencies(list).find(x => x.parent && (x.parent.slug === q || x.parent.name.toLowerCase() === q));
+  if (g?.parent) return { name: g.parent.name, slug: g.parent.slug, members: g.members };
+  const p = PARENT_AGENCIES.find(x => x.slug === q || x.name.toLowerCase() === q);
+  return p ? { name: p.name, slug: p.slug, members: [] } : null;
+}
+
 /** The operator named (its full name, any case) and its agencies that have data here, or null. */
 export function operatorNamed(query: string, list: CatalogAgency[]): { name: string; members: CatalogAgency[] } | null {
   const q = query.trim().toLowerCase();
@@ -151,6 +163,10 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   list ??= await availableAgencies();
   const meta = await store.meta();
   const q = query.trim().toLowerCase();
+  // #1806: a parent agency's name finds the parent, never one of its feeds silently ("exo" is not exo's trains alone).
+  const parent = parentNamed(query, list);
+  if (parent?.members.length === 1) return parent.members[0];
+  if (parent && parent.members.length > 1) throw new Error(`${parent.name} is split across several feeds here: ${parent.members.map(a => a.name).join('; ')}. Call again with one of them.`);
   const byShort = list.filter(a => (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q);
   if (byShort.length === 1) return byShort[0];
   const exact = list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q);
@@ -435,9 +451,11 @@ export async function notOnThisServerNote(names: string[], more = 0): Promise<st
   const named = more > 0 ? `${names.join(', ')} ${andOthers(more, 'agency', 'agencies')}` : joinList(names);
   return `${named} ${them ? 'are' : 'is'} in Atlas, but this server has schedules for only ${have.length} agencies${list}. Say this server can't answer for ${them ? 'them' : 'it'}; don't answer from memory.`;
 }
-/** The agency a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */
-export async function agencyNotOnThisServer(query: string): Promise<CatalogAgency | null> {
+/** The agency (or parent agency, #1806) a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */
+export async function agencyNotOnThisServer(query: string): Promise<{ name: string } | null> {
   const have = new Set((await availableAgencies()).map(a => a.slug));
+  const parent = parentNamed(query, await publicAgencies());
+  if (parent) return parent.members.some(m => have.has(m.slug)) ? null : { name: parent.name };
   try {
     const a = await findAgency(query, await publicAgencies());
     return a && !have.has(a.slug) ? a : null;
@@ -481,9 +499,8 @@ export async function routesMeeting(agency: CatalogAgency, day: DayType, period:
 export interface AgencyEntry { slug: string; name: string; members: CatalogAgency[] }
 export async function findAgencyEntry(query: string, list?: CatalogAgency[]): Promise<AgencyEntry | null> {
   list ??= await availableAgencies();
-  const q = query.trim().toLowerCase();
-  const parent = groupAgencies(list).find(g => g.parent && (g.parent.slug === q || g.parent.name.toLowerCase() === q));
-  if (parent) return { slug: parent.slug, name: parent.parent!.name, members: parent.members };
+  const parent = parentNamed(query, list);
+  if (parent?.members.length) return { slug: parent.slug, name: parent.name, members: parent.members };
   // #1681: an operator's agencies together, named with them ("Metrolinx (GO Transit, UP Express)").
   const op = operatorNamed(query, list);
   if (op && op.members.length > 1) return { slug: op.name.toLowerCase(), name: `${op.name} (${op.members.map(a => a.name).join(', ')})`, members: op.members };
