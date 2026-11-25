@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { normalizeRouteName, splitKey, splitRouteHistory, terminiOf, type IdentityPeriod } from '../historyRouteIdentity';
+import { normalizeRouteName, segmentStarts, splitKey, splitRouteHistory, terminiOf, type IdentityPeriod } from '../historyRouteIdentity';
 
 // CIV-422. Lines are [lon, lat]; Indianapolis-like coordinates.
 const DOWNTOWN: [number, number] = [-86.158, 39.768];
@@ -129,5 +129,24 @@ describe('route identity on the archive (CIV-422, Ryan\'s pick 2026-10-29)', () 
       expect(splits[0]).toMatchObject({ fromYear: 2024, toYear: 2025 });
       expect(splits[0].verdict.shared).toBeLessThan(0.7);
     }
+  });
+});
+
+describe('segmentStarts (#1740)', () => {
+  const sortValue = (pk: string) => Number(pk);
+  it("files a change dated after the old route's last period under today's route (TriMet 96, Oct 2026)", () => {
+    const segments = [
+      { periodKeys: ['20130901', '20250824'], firstYear: 2013, lastYear: 2025 },
+      { periodKeys: ['today'], firstYear: 2026, lastYear: 2026 },
+    ];
+    expect(segmentStarts(segments, sortValue, 'today')).toEqual([20130901, 20250825]);
+  });
+
+  it("starts a segment with archived periods at its first one, and a lone today segment never", () => {
+    expect(segmentStarts([
+      { periodKeys: ['20130901'], firstYear: 2013, lastYear: 2013 },
+      { periodKeys: ['20190901', 'today'], firstYear: 2019, lastYear: 2026 },
+    ], sortValue, 'today')).toEqual([20130901, 20190901]);
+    expect(segmentStarts([{ periodKeys: ['today'], firstYear: 2026, lastYear: 2026 }], sortValue, 'today')).toEqual([Number.POSITIVE_INFINITY]);
   });
 });

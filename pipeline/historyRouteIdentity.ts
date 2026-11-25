@@ -212,3 +212,18 @@ export function splitRouteHistory(periods: readonly IdentityPeriod[], routeKey?:
 export function splitKey(routeKey: string, segment: IdentitySegment): string {
   return `${routeKey} (${segment.firstYear}${segment.lastYear !== segment.firstYear ? `-${segment.lastYear}` : ''})`;
 }
+
+/**
+ * #1740: where each segment starts, for filing change files that have no sidecar entry. An archived period starts its
+ * segment at its own date. A segment that is only today's map (`todayKey`) starts right after the previous segment's last
+ * period, so a change file dated after the old route's last period (the weekly refresh's Oct and Nov 2026 snapshots of
+ * TriMet 96) goes to today's route, not to the retired "96 (2013-2025)".
+ */
+export function segmentStarts(segments: readonly IdentitySegment[], sortValue: (periodKey: string) => number, todayKey: string): number[] {
+  return segments.map((seg, i) => {
+    const archived = seg.periodKeys.filter(pk => pk !== todayKey).map(sortValue);
+    if (archived.length) return Math.min(...archived);
+    const before = i > 0 ? segments[i - 1].periodKeys.filter(pk => pk !== todayKey).map(sortValue) : [];
+    return before.length ? Math.max(...before) + 1 : Number.POSITIVE_INFINITY;
+  });
+}
