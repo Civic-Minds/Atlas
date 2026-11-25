@@ -9,7 +9,8 @@
  * The TTC's figures come from Live's published summaries; every other agency is analysed here with Live's own scripts.
  * live/index.json goes up last and names what each agency has; keys this run did not write are deleted.
  *
- * Runs in a public repo's Actions logs, so it prints counts only: no agency names, routes or figures. Child output goes
+ * Runs in a public repo's Actions logs, so it prints counts only: no routes or figures, and per agency only a reason code
+ * (#1801: built / too few days / no route ready / failed: <stage>). Child output goes
  * to --log (default <work>/private.log), which is never uploaded.
  *
  *   npx tsx scripts/mcp/releaseLivePrivate.ts [--dry-run] [--days 15] [--work <dir>] [--only <slug,...>]
@@ -140,6 +141,8 @@ const index: LiveIndex = { generatedAt: new Date().toISOString(), agencies: {} }
 const written = new Map<string, unknown>();
 const kept: string[] = []; // agencies whose old files stay (build failed)
 let failed = 0;
+// #1801: why each agency has figures or not, as reason codes and counts only (public log; never routes or figures).
+const reasons: string[] = [];
 for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
   try {
     const coverage = liveCoverage(slug, await archiveDates(slug), today);
@@ -150,8 +153,10 @@ for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
     written.set(liveSplitPaths.coverage(slug), coverage);
     if (built.manifest) { written.set(liveSplitPaths.manifest(slug), built.manifest); for (const [k, v] of built.files) written.set(k, v); }
     index.agencies[slug] = { figures: built.routes.length > 0, routes: built.routes.length };
+    reasons.push(`${slug}: ${slug !== 'ttc' && coverage.daysRecorded <= LIVE_MIN_DAYS_TO_SHOW ? `too few days (${coverage.daysRecorded} good)` : built.routes.length ? `built (${built.routes.length} routes)` : `analysed, no route with enough good days (${coverage.daysRecorded} good days recorded)`}`);
   } catch (e) {
     failed++;
+    reasons.push(`${slug}: failed: ${e instanceof LiveBuildFailed ? e.message : 'analysis'}`);
     appendFileSync(log, `\n${slug}: ${(e as Error).stack ?? e}\n`);
     kept.push(slug);
     if (previous?.agencies[slug]) index.agencies[slug] = { ...previous.agencies[slug], refreshFailed: true };
@@ -160,6 +165,7 @@ for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
 
 const withFigures = Object.values(index.agencies).filter(a => a.figures).length;
 const routeFiles = Object.values(index.agencies).reduce((n, a) => n + a.routes, 0);
+for (const r of reasons) console.log(`  ${r}`);
 console.log(`Live MCP files: ${Object.keys(index.agencies).length} agencies, ${withFigures} with figures, ${routeFiles} route files${failed ? `, ${failed} could not be built (see the private log)` : ''}.`);
 
 if (dryRun) {
