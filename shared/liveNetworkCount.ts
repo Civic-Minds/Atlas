@@ -6,6 +6,8 @@
  * The atlas-live-read Worker serves the latest. Positions storage is unchanged.
  */
 export const LIVE_COUNT_PREFIX = 'counts';
+/** How often a count is saved: one a minute. */
+export const LIVE_COUNT_STEP_SEC = 60;
 
 /** One agency's counts for one UTC day: [unix second of the minute, vehicles in the whole feed]. */
 export interface LiveNetworkCountDay {
@@ -38,7 +40,7 @@ export function parseCountDay(text: string | null, slug: string, sec: number): L
 
 /** The day with this minute's count added (a minute already there is replaced), in time order. */
 export function addCount(day: LiveNetworkCountDay, sec: number, vehicles: number): LiveNetworkCountDay {
-  const minute = sec - (sec % 60);
+  const minute = sec - (sec % LIVE_COUNT_STEP_SEC);
   const counts = day.counts.filter(([t]) => t !== minute);
   counts.push([minute, vehicles]);
   counts.sort((a, b) => a[0] - b[0]);

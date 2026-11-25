@@ -9,6 +9,11 @@ import { RECORDER_SLUGS } from './liveArchiveFeeds.js';
 /** The Worker's address (workers.dev). */
 export const LIVE_CLOUD_ORIGIN = 'https://atlas-live-read.rhanna-334.workers.dev';
 
+/** CIV-2939: the cloud reader's path for an agency's latest whole-network vehicle count (Fleet's "In service now"). */
+export const LIVE_NETWORK_COUNT_PATH = '/live/network-count';
+/** Its URL for an agency. */
+export const liveCloudNetworkCountUrl = (slug: string) => `${LIVE_CLOUD_ORIGIN}${LIVE_NETWORK_COUNT_PATH}?agency=${encodeURIComponent(slug)}`;
+
 /** The cloud reader's URL for an agency's vehicles. */
 export const liveCloudVehiclesUrl = (slug: string) => `${LIVE_CLOUD_ORIGIN}/live/vehicles?agency=${encodeURIComponent(slug)}`;
 

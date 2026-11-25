@@ -147,9 +147,11 @@ interface HourlySparklineProps {
   onSharedHour?: (hour: number | null) => void;
   /** Y-axis ticks (full-day, both directions): drawn over the bars, labels in a gutter the parent leaves. */
   yAxis?: AxisTick[];
+  /** The card chart's hover text for an hour, for a series that isn't a frequency (CIV-2182: Fleet's vehicles by time of day). */
+  hourTitle?: (hour: number) => string | undefined;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', titleLabel, seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', titleLabel, seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -312,7 +314,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
                 title={hasValue && !expanded
-                  ? `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${delayAmount(maxGap)}` : ''}`
+                  ? hourTitle ? hourTitle(h) : `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${delayAmount(maxGap)}` : ''}`
                   : undefined}
               >
                 <div style={{ height: H }} className="relative flex items-end justify-center w-full">

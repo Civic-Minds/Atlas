@@ -12,7 +12,7 @@ import liveAgency from '../../../local-api/live-agency';
 import liveGaps from '../../../local-api/live-gaps';
 import liveStop from '../../../local-api/live-stop';
 import { cloudLiveFiles, setLiveFilesSource } from '../../../local-api/liveFiles';
-import { liveCloudServes, liveCloudServesVehicles, liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
+import { LIVE_NETWORK_COUNT_PATH, liveCloudServes, liveCloudServesVehicles, liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
 import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
 import { setAgencyNameLookup } from '../../../local-api/agencyName';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
@@ -53,7 +53,7 @@ let boundFiles: R2Bucket | undefined;
  * UTC day file, else yesterday's (just after midnight UTC). Read only. Served for agencies Live shows (CIV-1716, as every
  * route here): Kingston's count is saved too, but this public reader never serves an analysis-only agency.
  */
-export const NETWORK_COUNT_PATH = '/live/network-count';
+export const NETWORK_COUNT_PATH = LIVE_NETWORK_COUNT_PATH;
 async function networkCount(bucket: R2Bucket, agency: string, cors: Record<string, string>, nowSec = Math.floor(Date.now() / 1000)): Promise<Response> {
   if (!RECORDER_SLUGS.includes(agency) || !liveCloudServesVehicles(agency)) return json({ error: 'Atlas does not record this agency.' }, 404, cors);
   for (const sec of [nowSec, nowSec - 86_400]) {
