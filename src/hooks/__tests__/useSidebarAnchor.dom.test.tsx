@@ -65,10 +65,12 @@ describe('cards and top-bar notes share the card slot (#1792 guard)', () => {
   });
   it("in Compare every card frame takes the shared compare placement, below map A's filter pill", async () => {
     const { sidebarFrameStyle } = await import('../../styles');
-    const { COMPARE_PANEL_TOP, COMPARE_PANEL_LEFT } = await import('../../utils/format');
-    expect(sidebarFrameStyle(149, 252, { top: COMPARE_PANEL_TOP, left: COMPARE_PANEL_LEFT })).toMatchObject({ top: `${COMPARE_PANEL_TOP}px`, '--sidebar-left': `${COMPARE_PANEL_LEFT}px` });
-    for (const f of ['src/components/Interval/AgencyCard.tsx', 'src/components/Interval/SidebarControls.tsx']) {
-      expect(read(f)).toMatch(/sidebarFrameStyle\([^)]*compareTop != null \? \{ top: compareTop, left: COMPARE_PANEL_LEFT \}/);
-    }
+    const { COMPARE_PANEL_TOP } = await import('../../utils/format');
+    // Below map A's pill row, at the same search-bar edge as everywhere else.
+    expect(sidebarFrameStyle(149, 252, { top: COMPARE_PANEL_TOP })).toMatchObject({ top: `${COMPARE_PANEL_TOP}px`, '--sidebar-left': '149px' });
+    // The route card frame passes it; every other sidebar card is a Panel, which reads the main map's compare top.
+    expect(read('src/components/Interval/SidebarControls.tsx')).toMatch(/sidebarFrameStyle\([^)]*compareTop != null \? \{ top: compareTop \}/);
+    expect(read('src/components/ui/Panel.tsx')).toContain('useCompareCardTop()');
+    expect(read('src/apps/Interval.tsx')).toContain('<CompareCardTopProvider top={comparePanelTop(compareActive, searchFocused, query)}>');
   });
 });

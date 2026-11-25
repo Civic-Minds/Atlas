@@ -821,7 +821,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         ? bottomSheetFrameClass(panelVisible)
         : sidebarCardFrame(panelVisible, { z: searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL, extra: phonePanelWidth })}
       style={sheetMode ? undefined : {
-        ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined, compareTop != null ? { top: compareTop, left: COMPARE_PANEL_LEFT } : null),
+        ...sidebarFrameStyle(sidebarLeft, matchSearchBarWidth ? searchBarWidth : undefined, compareTop != null ? { top: compareTop } : null),
         // Compare: search results open under the search box, which stops short of the divider; so do they (CIV-844).
         ...(compareActive && compareTop == null && matchSearchBarWidth ? { maxWidth: compareSearchMaxWidth(sidebarLeft ?? 0) } : {}),
       }}

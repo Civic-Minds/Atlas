@@ -52,6 +52,7 @@ import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
 import { DAY_PREF_KEY } from '../utils/openingDay';
 import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { comparePanelTop, searchOverlayHidesPanel } from '../utils/format';
+import { CompareCardTopProvider } from '../context/SidebarFrame';
 import { trackEvent } from '../lib/analytics';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
@@ -1366,7 +1367,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   // CIV-2083: props a component gets the same way in two places, passed once.
   // The agency card's, in its on-demand and agency views.
-  const agencyCardProps = { layers, day, period, maxHeadway, selectedModes, hideSpan, hideLimitedService, sidebarLeft, searchBarWidth, compareTop: comparePanelTop(compareActive, searchFocused, query), onInfoOpen, onClose: closeAgencyCard };
+  const agencyCardProps = { layers, day, period, maxHeadway, selectedModes, hideSpan, hideLimitedService, sidebarLeft, searchBarWidth, onInfoOpen, onClose: closeAgencyCard };
   // The settings panel's, in its two places.
   const filterPanelProps = {
     lightMode, setLightMode, hideSpan, hideLimitedService, setHideSpan, setHideLimitedService, livePollingOnly,
@@ -1395,6 +1396,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     onClearSelection: clearMapSelection,
   };
   return (
+    // #1792: in Compare every sidebar card opens below map A's filter pill (Panel reads this).
+    <CompareCardTopProvider top={comparePanelTop(compareActive, searchFocused, query)}>
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`} style={mapFooterStyle(footerHeight)}>
 
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
@@ -1852,5 +1855,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       />
       </div>
     </div>
+    </CompareCardTopProvider>
   );
 }

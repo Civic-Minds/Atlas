@@ -1,5 +1,6 @@
 import type { ComponentProps, HTMLAttributes, ReactNode } from 'react';
-import { FLOATING_CARD, PANEL_BODY, SIDEBAR_CARD_SURFACE, PANEL_ENTER, PANEL_TITLE, PANEL_TITLE_BAR, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDE_WIDTH, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { useCompareCardTop } from '../../context/SidebarFrame';
+import { FLOATING_CARD, PANEL_BODY, SIDEBAR_CARD_SURFACE, PANEL_ENTER, PANEL_TITLE, PANEL_TITLE_BAR, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, SIDEBAR_PANEL_WIDE_WIDTH, SIDEBAR_PANEL_WIDTH, sidebarFrameStyle } from '../../styles';
 
 interface PanelProps extends ComponentProps<'div'> {
   /** Anchor below the search bar on the left, at the shared sidebar card width and height (needs --sidebar-left). */
@@ -13,7 +14,8 @@ interface PanelProps extends ComponentProps<'div'> {
 }
 
 /** Floating glass card that clips its children and stacks them in a column. Title bar and body are the shared sections. */
-export default function Panel({ sidebar = false, wide = false, sidebarSurface = false, enter = false, className = '', ...rest }: PanelProps) {
+export default function Panel({ sidebar = false, wide = false, sidebarSurface = false, enter = false, className = '', style, ...rest }: PanelProps) {
+  const compareTop = useCompareCardTop();
   const classes = [
     sidebar ? `${SIDEBAR_CARD} ${wide ? SIDEBAR_PANEL_WIDE_WIDTH : SIDEBAR_PANEL_WIDTH} ${SIDEBAR_CARD_MAX_H}` : '',
     sidebar || sidebarSurface ? SIDEBAR_CARD_SURFACE : FLOATING_CARD,
@@ -21,7 +23,13 @@ export default function Panel({ sidebar = false, wide = false, sidebarSurface = 
     enter ? PANEL_ENTER : '',
     className,
   ].filter(Boolean).join(' ');
-  return <div className={classes} {...rest} />;
+  // #1792: in Compare a sidebar card opens below map A's filter pill, at the same left edge.
+  let placed = style;
+  if (sidebar && compareTop != null) {
+    const { top, maxHeight } = sidebarFrameStyle(null, undefined, { top: compareTop });
+    placed = { ...style, top, maxHeight };
+  }
+  return <div className={classes} style={placed} {...rest} />;
 }
 
 /** The panel's top bar. With `title` it draws the shared heading: an optional icon, the title, and an action (a report flag) at the right end. */
