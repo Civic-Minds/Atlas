@@ -19,7 +19,9 @@ import { checkMcpRelease } from '../../../shared/mcpRelease';
 import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
 import { R2_PUBLIC_URL } from '../../../shared/config';
 import { RECORDER_SLUGS } from '../../../shared/liveArchiveFeeds';
-import { latestCount, liveCountKey, parseCountDay } from '../../../shared/liveNetworkCount';
+import { networkCountAnswer } from '../../../shared/liveNetworkCount';
+import { latestSnapshot } from '../../../shared/liveSource';
+import { liveRecorderFeed } from '../../../shared/liveRecorderFeeds';
 
 // Agency names for the handlers' sentences ("TTC 7 is held back"), from the current release's catalog, the one the MCP
 // reads: the Worker has no config/agencies folder. Read once per isolate; a failed read is tried again next time.
@@ -49,19 +51,18 @@ const ROUTE_HANDLERS: Record<string, { fetch: (req: Request) => Promise<Response
 let boundFiles: R2Bucket | undefined;
 
 /**
- * CIV-2939: the latest whole-network vehicle count the recorder saved for an agency (Fleet's "In service now"), from today's
- * UTC day file, else yesterday's (just after midnight UTC). Read only. Served for agencies Live shows (CIV-1716, as every
- * route here): Kingston's count is saved too, but this public reader never serves an analysis-only agency.
+ * CIV-2939: the latest whole-network vehicle count the recorder saved for an agency (Fleet's "In service now"), from its
+ * newest snapshot (LiveSnapshotV2.networkVehicles). Read only. Served for agencies Live shows (CIV-1716, as every route
+ * here): Kingston's count is recorded too, but this public reader never serves an analysis-only agency.
  */
 export const NETWORK_COUNT_PATH = '/live/network-count';
 async function networkCount(bucket: R2Bucket, agency: string, cors: Record<string, string>, nowSec = Math.floor(Date.now() / 1000)): Promise<Response> {
-  if (!RECORDER_SLUGS.includes(agency) || !liveCloudServesVehicles(agency)) return json({ error: 'Atlas does not record this agency.' }, 404, cors);
-  for (const sec of [nowSec, nowSec - 86_400]) {
-    const obj = await bucket.get(liveCountKey(agency, sec));
-    const latest = obj ? latestCount(parseCountDay(await obj.text(), agency, sec)) : null;
-    if (latest) return json({ agency, at: latest.at, vehicles: latest.vehicles, ageSec: Math.max(0, nowSec - latest.at) }, 200, { ...cors, 'Cache-Control': 'public, max-age=0, s-maxage=30' });
-  }
-  return json({ error: 'The recorder has no recent count for this agency.' }, 404, { ...cors, 'Cache-Control': 'public, max-age=0, s-maxage=30' });
+  const feed = RECORDER_SLUGS.includes(agency) && liveCloudServesVehicles(agency) ? liveRecorderFeed(agency) : null;
+  if (!feed) return json({ error: 'Atlas does not record this agency.' }, 404, cors);
+  const cache = { ...cors, 'Cache-Control': 'public, max-age=0, s-maxage=30' };
+  const store = async (key: string) => { const obj = await bucket.get(key); return obj ? new Uint8Array(await obj.arrayBuffer()) : null; };
+  const answer = networkCountAnswer(await latestSnapshot(store, agency, nowSec, feed.paceSec), nowSec);
+  return answer ? json(answer, 200, cache) : json({ error: 'The recorder has no recent count for this agency.' }, 404, cache);
 }
 
 let bound: R2Bucket | undefined;
