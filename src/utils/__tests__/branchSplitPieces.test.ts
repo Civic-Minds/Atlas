@@ -13,13 +13,16 @@ const run = (vals: Array<number | null>, splits: number[] = [], period: any = 'm
   branchSplitPieces(period, from, vals.length - 1, at(vals), new Set(splits));
 
 describe('branchSplitPieces (CIV-1565)', () => {
-  it('a slower end stop away from any split colours the whole stretch (no one-segment stub)', () => {
-    expect(run([15, 14, 15, 30])).toEqual([{ from: 0, to: 3, headway: 30 }]);
-    expect(run([30, 15, 14, 15])).toEqual([{ from: 0, to: 3, headway: 30 }]);
+  // Attempt 2 (sample check on #1093: whole stretches painted by one slow end stop, SEPTA 26 every 13-25 drawn as 51):
+  // an end stop a public tier worse than the rest of its section colours only its own end piece, as V0 did.
+  it('a slower end stop colours only its own end piece, never the whole stretch', () => {
+    expect(run([15, 14, 15, 30])).toEqual([{ from: 0, to: 2, headway: 15 }, { from: 2, to: 3, headway: 30 }]);
+    expect(run([30, 15, 14, 15])).toEqual([{ from: 0, to: 1, headway: 30 }, { from: 1, to: 3, headway: 15 }]);
+    expect(run([15, 15, 15, 16])).toEqual([{ from: 0, to: 2, headway: 15 }, { from: 2, to: 3, headway: 16 }]);
   });
 
-  it('one-minute tier-edge differences keep worst-stop colouring', () => {
-    expect(run([15, 15, 15, 16])).toEqual([{ from: 0, to: 3, headway: 16 }]);
+  it('a slower stop in the middle of a section still colours the section', () => {
+    expect(run([15, 30, 15, 15])).toEqual([{ from: 0, to: 3, headway: 30 }]);
   });
 
   it('the colour changes exactly at a branch split inside the stretch; the joining piece takes the worse side', () => {
@@ -67,8 +70,8 @@ describe('branchSplitPieces (CIV-1565)', () => {
         // A colour change at stop b sits at a split: a split after stop b - 1 or b, or a range end that is a split stop
         // (split after the stop before the range, or after its last stop) one stop away.
         const b = pieces[k].from;
-        const atSplit = splits.includes(b - 1) || splits.includes(b)
-          || (b === 1 && splits.includes(-1)) || (b === len - 2 && splits.includes(len - 1));
+        // ...or one stop in from a range end (an end stop's own piece).
+        const atSplit = splits.includes(b - 1) || splits.includes(b) || b === 1 || b === len - 2;
         expect(atSplit).toBe(true);
       }
       for (const piece of pieces) {
@@ -82,7 +85,7 @@ describe('branchSplitPieces (CIV-1565)', () => {
 });
 
 describe('overlay colours (CIV-1565)', () => {
-  it('a route with no branches draws a slower end stop in the stretch colour, not as its own piece', () => {
+  it('a route with no branches draws a slower end stop as its own end piece, the rest in its own colour', () => {
     // s1..s4 qualify at a 20-minute filter (15, 14, 15, 18); s5 (30) fails and breaks the range.
     const stopIds = ['s1', 's2', 's3', 's4', 's5'];
     const heads: Record<string, number> = { s1: 15, s2: 14, s3: 15, s4: 18, s5: 30 };
@@ -98,8 +101,7 @@ describe('overlay colours (CIV-1565)', () => {
     };
     const layers: AgencyLayers = { drt: { type: 'FeatureCollection', features: [feature] } };
     const overlay = computeFrequencySegmentOverlay(layers, 'evening', 20);
-    expect(overlay.segments).toHaveLength(1);
-    expect(overlay.segments[0].properties.color).toBe(headwayToTierColor(18));
+    expect(overlay.segments.map(x => x.properties.color)).toEqual([headwayToTierColor(15), headwayToTierColor(18)]);
   });
 
   // Real TTC 123 weekday data (trimmed fixture). Toward Kipling the North Queen and East Mall branches merge at

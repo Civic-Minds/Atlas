@@ -5,6 +5,7 @@ import { clipBetweenStopIndices, clipLinestring } from './lineClip';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { PERIOD_KEYS } from '../../shared/config';
+import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { splitRouteKey } from './routeKey';
 import { rowIrregularInPeriod } from './effectiveHeadway';
 import {
@@ -481,6 +482,12 @@ export function sharedStretchStopPass(
 
 export interface StretchPiece { from: number; to: number; headway: number }
 
+/** A headway's public tier as an index, fastest first; past the last public tier is one more. */
+const publicTierIndex = (h: number): number => {
+  const i = PUBLIC_TIER_MAXES.findIndex(m => h <= m);
+  return i < 0 ? PUBLIC_TIER_MAXES.length : i;
+};
+
 /** The same-direction patterns whose shared stretches pool at a stop (empty off every shared stretch). */
 function patternsAt(features: readonly StretchProps[], stopId: string): Set<StretchProps> {
   return new Set(features.filter(q => sharedStretchStopIds(q).has(stopId)));
@@ -535,6 +542,22 @@ export function branchSplitPieces(
   for (let i = from; i < to; i++) if (splitsAfter.has(i)) cuts.add(i);
   if (splitsAfter.has(from - 1)) cuts.add(from);
   if (splitsAfter.has(to)) cuts.add(to - 1);
+  // CIV-1565 attempt 2 (keeps #1093 V0): within the end section, a range end stop a public tier worse than every other
+  // stop of that section colours only its own end piece, so one slow end stop (a thinner pattern there, SEPTA 26 at
+  // Battersby St) never paints the whole section. Sections of 3 or more stops only.
+  const tier = (i: number) => { const v = valueAt(i); return v == null ? null : publicTierIndex(v); };
+  const endPeels = (end: number, lo: number, hi: number): boolean => {
+    if (hi - lo < 2) return false;
+    const t = tier(end);
+    if (t == null) return false;
+    for (let i = lo; i <= hi; i++) { if (i === end) continue; const o = tier(i); if (o != null && o >= t) return false; }
+    return true;
+  };
+  const sorted = [...cuts].sort((a, b) => a - b);
+  const firstEnd = sorted.find(c => c >= from) ?? to;
+  const lastStart = (sorted.filter(c => c < to).pop() ?? from - 1) + 1;
+  if (endPeels(from, from, firstEnd)) cuts.add(from);
+  if (endPeels(to, lastStart, to)) cuts.add(to - 1);
   const sections: Array<{ from: number; to: number; w: number }> = [];
   let s0 = from;
   for (let i = from; i <= to; i++) {
