@@ -62,4 +62,6 @@ export interface LiveSnapshotV2 {
   /** Observed headways by Live's route short name where Live names the route, else by route_id. */
   headways: LiveHeadways;
   records: LiveRecord[];
+  /** CIV-2939: the agency's whole feed, before the route filter: vehicles on a trip, and with a position but no trip. Absent in older snapshots. */
+  network?: { onTrip: number; noTrip: number };
 }

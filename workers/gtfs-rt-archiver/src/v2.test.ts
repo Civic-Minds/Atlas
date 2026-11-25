@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { PACK_FIRST_MINUTE, packRun, recordRun, snapshotFor, writeCount, writeSnapshot } from './v2';
+import { PACK_FIRST_MINUTE, packRun, recordRun, snapshotFor, writeSnapshot } from './v2';
 import { livePackKey } from '../../../shared/liveArchivePack';
-import { liveCountKey } from '../../../shared/liveNetworkCount';
 import { fixturePositions, fixtureTrips, FIXTURE_NOW } from '../../../shared/__tests__/fixtures/liveFeeds';
 import type { LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
 import { liveRecorderFeed } from '../../../shared/liveRecorderFeeds';
@@ -62,7 +61,7 @@ describe('cloud recorder v2 (CIV-2073)', () => {
 });
 
 describe('cloud recorder step B (CIV-2073)', () => {
-  it('records TTC\'s analysed routes with their trip updates, Kingston, MBTA, YRT Viva, DRT 9XX and Brampton 5XX, not STM', async () => {
+  it('records every TTC route with its trip updates, Kingston, MBTA, YRT Viva, DRT 9XX and Brampton 5XX, not STM', async () => {
     const { LIVE_ARCHIVE_SHARDS } = await import('../../../shared/liveArchiveFeeds');
     const { LIVE_TTC_ANALYSED_ROUTES } = await import('../../../shared/rules/live');
     const v2 = LIVE_ARCHIVE_SHARDS.find(s => s.id === 'live-v2')!;
@@ -71,10 +70,11 @@ describe('cloud recorder step B (CIV-2073)', () => {
     expect(liveRecorderFeed('burlington')!.tripsUrl).not.toBeNull();
     const ttc = liveRecorderFeed('ttc')!;
     expect(ttc.tripsUrl).not.toBeNull();
-    // Ryan, 2026-11-24: the routes Live analyses (streetcars, then the Ten-Minute Network with CIV-2174), not the whole fleet.
+    // CIV-2939 option 2 (Ryan, 2026-11-25, "1"): every TTC route is kept now, the analysed ones among them; a vehicle with no route is not.
     const keeps = new RegExp(ttc.routeFilterSource);
     expect(LIVE_TTC_ANALYSED_ROUTES.every(r => keeps.test(r))).toBe(true);
-    expect(['502', '29', '1', '5011'].some(r => keeps.test(r))).toBe(false);
+    expect(['502', '29', '1', '5011'].every(r => keeps.test(r))).toBe(true);
+    expect(keeps.test('')).toBe(false);
     expect(liveRecorderFeed('mbta')!.tripsUrl).toBeNull();
     expect(liveRecorderFeed('kingston')!.tripsUrl).not.toBeNull();
     // YRT: every Viva route (CIV-2176), with trip updates; DRT: its 9XX routes, with trip updates.
@@ -99,37 +99,17 @@ describe('cloud recorder step B (CIV-2073)', () => {
   });
 });
 
-describe('whole-network vehicle count (CIV-2939)', () => {
-  function store() {
-    const objects = new Map<string, string>();
-    const BUCKET = {
-      get: async (key: string) => (objects.has(key) ? { text: async () => objects.get(key)! } : null),
-      put: async (key: string, body: string | ArrayBuffer) => { objects.set(key, typeof body === 'string' ? body : '(gzip)'); },
-    } as unknown as R2Bucket;
-    return { objects, BUCKET };
-  }
-  it('saves every vehicle in the feed once a minute, before the route filter, and leaves the snapshot as it was', async () => {
+describe('whole-network vehicle counts (CIV-2939)', () => {
+  it('puts the whole feed\'s counts in the snapshot, before the route filter, with no other write', async () => {
     serve();
-    const s = store();
-    const narrow = { ...feed, routeFilterSource: '^no-such-route$', paceSec: 30 };
-    const results = await recordRun([narrow], { BUCKET: s.BUCKET }, (FIXTURE_NOW - 40) * 1000, () => (FIXTURE_NOW + 60) * 1000);
-    expect(results.every(r => r.status === 'fulfilled')).toBe(true);
-    const counts = [...s.objects.keys()].filter(k => k.startsWith('counts/'));
-    expect(counts).toEqual([liveCountKey('hamilton', FIXTURE_NOW - 40)]);
-    const day = JSON.parse(s.objects.get(counts[0])!);
-    // The filter keeps no route, so the snapshot has no vehicles; the count still has the whole feed's.
-    expect(day.counts).toHaveLength(1);
-    expect(day.counts[0][1]).toBeGreaterThan(0);
-    expect([...s.objects.keys()].filter(k => k.startsWith('live/'))).toHaveLength(2);
-  });
-  it('adds each minute to the same day file', async () => {
-    serve();
-    const s = store();
-    const t0 = FIXTURE_NOW - (FIXTURE_NOW % 60);
-    await writeCount({ BUCKET: s.BUCKET }, 'hamilton', t0, 10);
-    await writeCount({ BUCKET: s.BUCKET }, 'hamilton', t0 + 60, 12);
-    await writeCount({ BUCKET: s.BUCKET }, 'hamilton', t0 + 60, 13);
-    expect(JSON.parse(s.objects.get(liveCountKey('hamilton', t0))!).counts).toEqual([[t0, 10], [t0 + 60, 13]]);
+    const b = bucket();
+    const narrow = { ...feed, routeFilterSource: '^no-such-route$' };
+    const snap = await snapshotFor(narrow, { BUCKET: b.BUCKET }, FIXTURE_NOW);
+    expect(snap.records).toEqual([]);
+    expect(snap.network!.onTrip).toBeGreaterThan(0);
+    expect(snap.network).toEqual((await snapshotFor(feed, { BUCKET: b.BUCKET }, FIXTURE_NOW)).network);
+    await recordRun([narrow], { BUCKET: b.BUCKET }, FIXTURE_NOW * 1000, () => (FIXTURE_NOW + 60) * 1000);
+    expect(b.puts.map(p => p.key.split('/')[0])).toEqual(['live']);
   });
 });
 

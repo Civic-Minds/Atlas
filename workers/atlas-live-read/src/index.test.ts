@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import worker from './index';
 import { liveCloudServes, liveCloudServesVehicles } from '../../../shared/liveCloud';
+import { LIVE_SNAPSHOT_V2_SCHEMA_VERSION } from '../../../shared/liveContract';
 
 // CIV-2914 (manager's condition, CIV-1716): the public Live reader never serves an analysis-only agency, whatever its
 // buckets hold: Kingston (the Studio demo) is on the recorder and has Live analysis files, and must still read as 404.
@@ -22,14 +23,17 @@ describe('atlas-live-read serves only agencies Live shows', () => {
 });
 
 describe('the whole-network count (CIV-2939)', () => {
-  const at = Math.floor(Date.now() / 1000);
-  const minute = at - (at % 60);
-  const day = (slug: string) => JSON.stringify({ agency: slug, date: new Date(minute * 1000).toISOString().slice(0, 10), counts: [[minute - 60, 1490], [minute, 1502]] });
-  const countEnv = { LIVE_ARCHIVE: { get: async (key: string) => (key.startsWith('counts/ttc/') ? { text: async () => day('ttc') } : null) }, MCP_LIVE: {} } as never;
-  it('serves the latest count for an agency Live shows', async () => {
+  const snap = (key: string) => {
+    const capturedAt = Number(key.split('/').at(-1)!.replace('.json', ''));
+    return JSON.stringify({ schemaVersion: LIVE_SNAPSHOT_V2_SCHEMA_VERSION, agency: 'ttc', capturedAt, sourceTimestamp: null, tripsTimestamp: null, paceSec: 30, tripsOk: true, headways: {}, records: [], network: { onTrip: 1502, noTrip: 231 } });
+  };
+  const countEnv = { LIVE_ARCHIVE: { get: async (key: string) => (key.startsWith('live/ttc/') ? { arrayBuffer: async () => new TextEncoder().encode(snap(key)).buffer } : null) }, MCP_LIVE: {} } as never;
+  it('serves the latest snapshot\'s count for an agency Live shows, in the same answer as before', async () => {
     const res = await worker.fetch(new Request('https://x.test/live/network-count?agency=ttc'), countEnv);
     expect(res.status).toBe(200);
-    expect(await res.json()).toMatchObject({ agency: 'ttc', at: minute, vehicles: 1502 });
+    const body = await res.json() as Record<string, number | string>;
+    expect(Object.keys(body).sort()).toEqual(['ageSec', 'agency', 'at', 'noTrip', 'vehicles']);
+    expect(body).toMatchObject({ agency: 'ttc', vehicles: 1502, noTrip: 231 });
   });
   it('never serves Kingston or an agency the recorder does not record', async () => {
     for (const agency of ['kingston', 'stm', '']) {
