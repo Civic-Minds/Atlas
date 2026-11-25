@@ -49,7 +49,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL, liveListTitle } from '../content/noticeCopy';
+import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL, liveListTitle } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -400,17 +400,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
     return slugs.size > 1;
   }, [sidebarRouteGroups]);
-  // CIV-2042: with one agency's routes in the list, the title names it ("Live · TTC"); with several, each gets a heading.
-  const listAgencySlug = useMemo(() => {
-    const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
-    return slugs.size === 1 ? [...slugs][0] : null;
-  }, [sidebarRouteGroups]);
-  // CIV-2902 (#1797): the header dot's state by the shared rule (CIV-2084): the agency the header names, else the worst in view.
+  // CIV-2902 (#1797): the header dot's state by the shared rule (CIV-2084).
   const headerStatus = useMemo(() => {
     const nowSec = Math.floor(Date.now() / 1000);
-    const feeds = (statusFeeds ?? []).filter(f => !listAgencySlug || f.slug === listAgencySlug);
-    return worstLiveStatus(feeds.map(f => liveAgencyStatus(f, nowSec)));
-  }, [statusFeeds, listAgencySlug]);
+    // CIV-2902 (Ryan's pick): the header names no agency, so its dot is the worst in view, as the bottom-right pill's.
+    return worstLiveStatus((statusFeeds ?? []).map(f => liveAgencyStatus(f, nowSec)));
+  }, [statusFeeds]);
 
   const renderRouteGroupList = (groups: RouteGroup[]) => {
     let lastSlug = '';
@@ -744,9 +739,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const totalVehicles = allVehicles.length;
   const hasAnyError = errors.length > 0 && totalVehicles === 0;
-  // CIV-2042: the panel is showing the route list (the last branch of its body below), so its title can name the one agency.
-  const routeListShown = pickVehicles.length <= 1 && isZoomedIn && !(visibleSlugs.length === 0 && !isLoading)
-    && !(isLoading && totalVehicles === 0) && !hasAnyError && !(displayedRouteGroups.length === 0 && routeGroups.length === 0);
   // CIV-1768: every feed in view down: the map's loading pill reads "Unable to load · Retrying in 12s".
   const { setRetryAt } = useLiveFeedsDown();
   const feedsDownRetryAt = hasAnyError ? nextPollAt : null;
@@ -952,7 +944,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               ) : (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
-              <span className={PANEL_TITLE}>{liveListTitle(routeListShown && listAgencySlug ? agencyShortNameBySlug(agencies, listAgencySlug) : null)}</span>
+              {/* CIV-2902 (Ryan, 2026-11-24, "1"): the header just says "Live"; problems stay in the bottom-right pill. */}
+              <span className={PANEL_TITLE}>{liveListTitle(null)}</span>
             </PanelTitleBar>
           )}
 
@@ -1021,14 +1014,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               )
             ) : (
               <>
-                {/* CIV-2902 (#1797): one message per agency, each with that agency's own status dot, so a message about one
-                    agency never sits under another agency's green dot. */}
-                {Object.entries(errorBySlug).filter((entry): entry is [string, string] => Boolean(entry[1])).map(([slug]) => (
-                  <div key={slug} className="px-4 py-2 border-b border-[var(--border-primary)] flex items-start gap-2">
-                    <span className="mt-1.5"><LiveStatusDot status="unavailable" /></span>
-                    <CardHelpNotice message={liveUnreachableText([agencyShortNameBySlug(agencies, slug)])} />
-                  </div>
-                ))}
                 {offScreenOnly && !query && (
                   <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
                     Outside this view · {countOf(totalVehicles, 'vehicle')}
