@@ -711,6 +711,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     return fc && selectedGroup ? orderAlongRoute(list, fc.features, selectedGroup.routeShortName) : list;
   }, [destination, vehiclesByDirection, listVehicles, selectedGroup, routeLayer]);
   const [fitCount, setFitCount] = useState<number | null>(null);
+  // CIV-2901: the route card's vehicle list, closed until "N vehicles ›" is tapped; a new route or direction closes it.
+  const [vehiclesOpen, setVehiclesOpen] = useState(false);
+  useEffect(() => { setVehiclesOpen(false); }, [selectedRoute, selectedDirection]);
   const vehicleListRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setFitCount(null); }, [selectedRoute, selectedDirection, allListed.length]);
   // A taller window may fit them all again: measure afresh.
@@ -846,7 +849,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         onCounted={setCounted}
         scheduledRows={selectedScheduledRows}
       />
-      <SidebarCardSection label={destination ?? selectedRouteHeadwayLine ?? undefined}>
+      <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (
           <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
@@ -860,6 +863,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               chevron
             />
           ))
+        ) : !vehiclesOpen && !destination ? (
+          // CIV-2901 (mock v2): the vehicle list waits behind "N vehicles ›"; the counts per destination are in Right now above.
+          <CardDirectionRow label={countOf(allListed.length, 'vehicle')} labelWeight="regular" chevron onClick={() => setVehiclesOpen(true)} />
         ) : (
           <div ref={vehicleListRef} className="space-y-2">
           {shownVehicles.map((v, i) => {
