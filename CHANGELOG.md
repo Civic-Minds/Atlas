@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- **Atlas Studio's Fleet leads with right now**: the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
+- **Atlas Studio's Fleet leads with right now**: every vehicle on the road now and the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
 - **The cloud recorder saves each recorded agency's whole-network vehicle count every minute**: Fleet can show how many vehicles are in service now, including TTC routes Live doesn't record
 - **Turning Live off no longer breaks the map**: leaving Live replaced the whole map with "The map couldn't be shown because of an error" until Retry
 - **Live's route card is the map's route card**: it has the map card's chart, period and both directions' destinations, with "Right now" added below for every direction at once instead of a direction toggle, and it lines up with the search bar

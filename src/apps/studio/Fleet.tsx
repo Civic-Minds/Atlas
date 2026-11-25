@@ -40,7 +40,7 @@ import { SPARKLINE_HOURS } from '../../../shared/config';
 import type { HeadwayByHour } from '../../../shared/routeProperties';
 import { StudioRouteTable, pairFigures, periodCell, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
-import { CHANGE_COLOR, DEFAULT_PERIOD, type ChangeGroup, agencyFleet, agencyRouteCount, agencyRoutes, changeGroups, modesFor, groupFor, rowChange, rowFigure, studioMapLines } from './fleetModel';
+import { CHANGE_COLOR, DEFAULT_PERIOD, type ChangeGroup, agencyFleet, agencyRouteCount, changeGroups, modesFor, groupFor, rowChange, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 import { schedulesDesign, type SchedulesDesign } from './reviewDesign';
@@ -49,6 +49,7 @@ import { PageTitle } from '../../components/ui/PageTitle';
 import { PAGE_LEAD } from '../../components/ui/PageSection';
 import { SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../../styles';
 import { useInServiceNow } from './useInServiceNow';
+import { useNetworkInService } from './useNetworkInService';
 
 /**
  * Fleet (CIV-1828, a placeholder name) and Schedules, two pages of Atlas Studio on the main map (CIV-1922: Fleet
@@ -344,8 +345,8 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
   // The fleet file is Weekday only (scripts/vehicles-needed.ts): on a Saturday or Sunday its counts are not today's, so
   // "Scheduled now" is left out rather than shown as today's.
   const nowFleet = useMemo(() => (now?.day === 'Weekday' && vehicles && vehicles !== 'missing' && (PERIOD_KEYS as readonly string[]).includes(nowPeriod) ? agencyFleet(vehicles, nowPeriod) : null), [now, vehicles, nowPeriod]);
-  const nowRoutes = useMemo(() => (!route && vehicles && vehicles !== 'missing' ? agencyRoutes(vehicles, nowPeriod) : null), [route, vehicles, nowPeriod]);
-  const runningNow = useInServiceNow(slug, nowRoutes, nowPeriod);
+  // CIV-2939: every vehicle on the road now, the recorder's whole-network count; read only while Fleet's agency panel shows.
+  const runningNow = useNetworkInService(slug, view === 'fleet' && !route);
   // The words follow the modes even at a time of day with no service (CIV-2002).
   const routeModes = routeGroup?.modes ?? (route && vehicles && vehicles !== 'missing' ? modesFor(vehicles, route) : undefined);
   const agencyModes = fleet?.modes ?? (vehicles && vehicles !== 'missing' ? modesFor(vehicles, null) : undefined);
