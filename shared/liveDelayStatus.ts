@@ -11,7 +11,7 @@ export type DelayStatus = 'early' | 'on_time' | 'late';
 
 /** `window`: the agency's on-time window (onTimeWindow, CIV-2222); Atlas's default when left out. */
 export function delayStatus(delayMin: number, window: OnTimeWindow = DEFAULT_ON_TIME_WINDOW): DelayStatus {
-  if (delayMin <= window.earlyAtOrBelowMin) return 'early';
+  if (window.earlyStrict ? delayMin < window.earlyAtOrBelowMin : delayMin <= window.earlyAtOrBelowMin) return 'early';
   if (delayMin > window.lateAboveMin) return 'late';
   return 'on_time';
 }

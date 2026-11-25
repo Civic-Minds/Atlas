@@ -6,7 +6,8 @@
 import { runTimeDiffMin, dailyNoise, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
 import { dateRange } from '../../shared/dateText';
 import { MISSING_VALUE } from '../../shared/missingValue';
-import { BUNCHING_LABEL, EXTRA_WAIT_LABEL, LATE_LABEL, LATE_TILE_CAPTION, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText } from '../../shared/liveWording';
+import { BUNCHING_LABEL, EXTRA_WAIT_LABEL, LATE_LABEL, lateTileCaption, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText } from '../../shared/liveWording';
+import type { OnTimeWords } from '../../shared/liveWording';
 import { minutesText, tenth as clean } from '../../shared/liveFormat';
 import { runTimeAmount } from '../../shared/headwayText';
 import { percentTenthText, percentText } from '../../shared/numberText';
@@ -76,7 +77,7 @@ function runTimeCaption(typicalMin: number, scheduledMin: number): string {
 
 /** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). `runTimeScope` is the Run time tile's second caption line. */
 /** oneBunchingFigure: Bunching as its one total share, never its two parts (CIV-2021, Studio: "0% · 0%" read as two unlabelled numbers). */
-export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = {}, runTimeScope?: string, { oneBunchingFigure = false }: { oneBunchingFigure?: boolean } = {}): Kpi[] {
+export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = {}, runTimeScope?: string, { oneBunchingFigure = false, window }: { oneBunchingFigure?: boolean; /** CIV-2222: the page's on-time window (v3.thresholds), for the Late caption. */ window?: OnTimeWords | null } = {}): Kpi[] {
   const bunchSplit = (b: { bunched?: number; gapped?: number }) => !oneBunchingFigure && bunchSplitOf(b);
   const t = w.thisWeek, l = w.lastWeek;
   const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
@@ -89,7 +90,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const lastBunch = l.bunching ? (t.bunching && bunchSplit(t.bunching) && bunchSplit(l.bunching) ? bunchText(l.bunching) : percentText(l.bunching.share)) : null;
   const lateT = t.late ? percentText(t.late.share) : null, tripT = t.tripTime ? runTimeAmount(t.tripTime.typicalMin) : null, waitT = t.extraWait ? minutesText(t.extraWait.minutes) : null, delT = t.delivered?.share != null ? percentTenthText(t.delivered.share) : null;
   const tiles = [
-    mk('late', LATE_LABEL, t.late ? percentText(t.late.share) : MISSING_VALUE, LATE_TILE_CAPTION, t.late?.n ?? 0, 'departures', l.late?.n ?? null,
+    mk('late', LATE_LABEL, t.late ? percentText(t.late.share) : MISSING_VALUE, lateTileCaption(window), t.late?.n ?? 0, 'departures', l.late?.n ?? null,
       compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, noise('late'), l.late ? percentText(l.late.share) : null, lateT) : null, l.late ? percentText(l.late.share) : null),
     mk('tripTime', TRIP_TIME_LABEL, t.tripTime ? runTimeAmount(t.tripTime.typicalMin) : MISSING_VALUE, t.tripTime ? runTimeCaption(t.tripTime.typicalMin, t.tripTime.scheduledMin) : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, noise('tripTime'), l.tripTime ? runTimeAmount(l.tripTime.typicalMin) : null, tripT) : null, l.tripTime ? runTimeAmount(l.tripTime.typicalMin) : null),

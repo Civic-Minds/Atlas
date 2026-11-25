@@ -5,7 +5,7 @@ import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
 import { minutesText } from './liveFormat';
-import { BUNCHED_GAP_SEC, GAPPED_FACTOR } from './rules/live';
+import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow, type OnTimeWindow } from './rules/live';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -101,6 +101,32 @@ export const DELAY_STEP_LABELS = [ON_TIME_LABEL, '1–3 min', '3+ min behind'] a
 /** How late is Late, the one place its words live (E9). */
 export const LATE_LIMIT_TEXT = 'more than 5½ min';
 export const LATE_DEFINITION = `is ${LATE_LIMIT_TEXT} behind schedule. This is based on the TTC’s 5-minute standard, plus 30 seconds because we only record each vehicle’s location once a minute.`;
+/**
+ * CIV-2222: the on-time window a page's figures use, as a Live file records it (`v3.thresholds`) or from the agency's slug
+ * (onTimeWindowWords). Absent fields read Atlas's window.
+ */
+export interface OnTimeWords { lateAtOrAboveMin?: number; earlyAtOrBelowMin?: number; onTimeWindowPublished?: boolean }
+/** The window words for an agency, from shared/rules/live.ts. */
+export const onTimeWindowWords = (slug: string | null | undefined): OnTimeWords => {
+  const w = onTimeWindow(slug);
+  return { lateAtOrAboveMin: w.lateAboveMin, earlyAtOrBelowMin: w.earlyAtOrBelowMin, onTimeWindowPublished: w.published };
+};
+const halfMinText = (n: number): string => (Number.isInteger(n) ? String(n) : `${Math.floor(n)}½`);
+/** "more than 5½ min" for Atlas's window; the agency's own late limit where it publishes one ("more than 5 min", TTC). */
+export const lateLimitText = (t?: OnTimeWords | null): string =>
+  t?.lateAtOrAboveMin != null && t.lateAtOrAboveMin !== LATE_ABOVE_MIN ? `more than ${halfMinText(t.lateAtOrAboveMin)} min` : LATE_LIMIT_TEXT;
+/** LATE_THRESHOLD at a page's window. */
+export const lateThreshold = (t?: OnTimeWords | null): string => `${lateLimitText(t)} late`;
+/** An agency's own on-time window in Ryan's words (2026-11-24, CIV-2222: ">1 min early or >5 min late"). */
+export const onTimeWindowText = (w: Pick<OnTimeWindow, 'earlyAtOrBelowMin' | 'lateAboveMin'>): string =>
+  `>${halfMinText(Math.abs(w.earlyAtOrBelowMin))} min early or >${halfMinText(w.lateAboveMin)} min late`;
+/** The Late definition at a page's window: the agency's own window in Ryan's words, else Atlas's LATE_DEFINITION. */
+export const lateDefinition = (t?: OnTimeWords | null): string =>
+  t?.onTimeWindowPublished && t.lateAtOrAboveMin != null && t.earlyAtOrBelowMin != null
+    ? onTimeWindowText({ earlyAtOrBelowMin: t.earlyAtOrBelowMin, lateAboveMin: t.lateAtOrAboveMin })
+    : LATE_DEFINITION;
+/** CIV-2222 line B, the card note for an agency that publishes no on-time window: wording still to be asked (Ryan). Null shows nothing. */
+export const NO_PUBLISHED_WINDOW_NOTE: string | null = null;
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
@@ -123,22 +149,26 @@ export const LIVE_MAP_TITLE = 'Live';
  * "The 10 stops where vehicles most often leave more than 5½ min late, Oct 8–14, across every route Live covers." on the
  * agency page; "… late (stops with 30+ departures)." on a route. With no dates, the days are left out.
  */
-export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; dates?: readonly string[] }): string => {
+export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; dates?: readonly string[]; window?: OnTimeWords | null }): string => {
   const d = o.dates ?? [];
   const days = d.length ? `, ${dateRange(d[0], d[d.length - 1])}` : '';
-  return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across every route Live covers' : ` ${RANKED_STOPS_NOTE}`}.`;
+  return `The ${countOf(count, 'stop')} where vehicles most often leave ${lateThreshold(o.window)}${days}${o.scope === 'agency' ? ', across every route Live covers' : ` ${RANKED_STOPS_NOTE}`}.`;
 };
 
 /** Which stops a route's late-stops list ranks, after the sentence it ends. */
 const RANKED_STOPS_NOTE = '(stops with 30+ departures)';
 /** The route's late-stops intro when no map is shown. */
 export const STOPS_RANKED_LATE_TEXT = `Stops ranked by how often vehicles leave ${LATE_THRESHOLD} ${RANKED_STOPS_NOTE}.`;
+/** STOPS_RANKED_LATE_TEXT at a page's window (CIV-2222). */
+export const stopsRankedLateText = (t?: OnTimeWords | null): string => `Stops ranked by how often vehicles leave ${lateThreshold(t)} ${RANKED_STOPS_NOTE}.`;
 
 /** The faded-mark note under a chart, one sentence everywhere (CIV-1448): "Paler bars rest on fewer than 30 trips." */
 export const fadedNoteText = (minN: number, unit: string, marks: 'bars' | 'dots' = 'bars'): string => `Paler ${marks} rest on fewer than ${minN} ${unit}.`;
 
 /** The Late tile's caption under its percentage. */
 export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRESHOLD}`;
+/** LATE_TILE_CAPTION at a page's window (CIV-2222). */
+export const lateTileCaption = (t?: OnTimeWords | null): string => `of trips left the end of the line ${lateThreshold(t)}`;
 
 /** The week a page's figures cover, as its subtitle opens: "Week of Oct 8–14". */
 export const weekOfText = (from: string, to: string): string => `Week of ${dateRange(from, to)}`;

@@ -5,7 +5,9 @@
  * passes it through the function, so the clause lands before the full stop.
  */
 import { COLOURED_CHANGES } from './liveDashboard.js';
-import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, DELIVERED_LABEL, EARLY_STEP_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, LATE_LIMIT_TEXT, RECORDING_GAPS, TRIP_TIME_LABEL } from './liveWording.js';
+import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, DELIVERED_LABEL, EARLY_STEP_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, LATE_LIMIT_TEXT, RECORDING_GAPS, TRIP_TIME_LABEL, onTimeWindowText } from './liveWording.js';
+import { AGENCY_ON_TIME_WINDOWS } from './rules/live.js';
+import { LIVE_AGENCY_EXTRAS } from './liveAgencyConfig.js';
 
 /** `legend`: a chart key rather than a definition, shown as "**Term**: …" (E22) and not on the agency page. */
 export interface LiveTerm { term: string; text: string; legend?: boolean }
@@ -44,8 +46,15 @@ export const PHONE_METHOD_TEXT = {
 /** The link under the method block to the Docs glossary. */
 export const METHOD_TERMS_LINK = 'What these terms mean';
 
+/**
+ * CIV-2222: the Docs glossary is shared by every agency, so an agency with its own published on-time window is named
+ * beside it in Ryan's words ("TTC: >1 min early or >5 min late"); its own pages say it without the name.
+ */
+const AGENCY_WINDOW_LINES = Object.entries(AGENCY_ON_TIME_WINDOWS)
+  .map(([slug, w]) => ` ${LIVE_AGENCY_EXTRAS[slug]?.shortName ?? slug}: ${onTimeWindowText(w)}.`).join('');
+
 export const LIVE_GLOSSARY: readonly LiveTerm[] = [
-  { term: LATE_LABEL, text: LATE_DEFINITION },
+  { term: LATE_LABEL, text: `${LATE_DEFINITION}${AGENCY_WINDOW_LINES}` },
   { term: TRIP_TIME_LABEL, text: tripTimeText() },
   { term: EXTRA_WAIT_LABEL, text: EXTRA_WAIT_TEXT },
   { term: BUNCHING_LABEL, text: bunchingText() },

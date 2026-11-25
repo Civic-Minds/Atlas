@@ -16,7 +16,12 @@ export const EARLY_AT_OR_BELOW_MIN = -1.5;
 export const LATE_ABOVE_MIN = 5.5;
 
 /** On time is between these: early at or below `earlyAtOrBelowMin` (negative: ahead), late above `lateAboveMin`. */
-export interface OnTimeWindow { earlyAtOrBelowMin: number; lateAboveMin: number }
+export interface OnTimeWindow {
+  earlyAtOrBelowMin: number;
+  lateAboveMin: number;
+  /** Early only when MORE than |earlyAtOrBelowMin| ahead (TTC: ">1 min early", Ryan's words), not at it. */
+  earlyStrict?: boolean;
+}
 
 /** Atlas's window, kept for every agency that publishes none of its own. */
 export const DEFAULT_ON_TIME_WINDOW: OnTimeWindow = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAboveMin: LATE_ABOVE_MIN };
@@ -26,7 +31,7 @@ export const DEFAULT_ON_TIME_WINDOW: OnTimeWindow = { earlyAtOrBelowMin: EARLY_A
  * window. TTC: 1 min early to 5 min late (his OK for those two numbers). Add an agency only with its published definition.
  */
 export const AGENCY_ON_TIME_WINDOWS: Readonly<Record<string, OnTimeWindow>> = {
-  ttc: { earlyAtOrBelowMin: -1, lateAboveMin: 5 },
+  ttc: { earlyAtOrBelowMin: -1, lateAboveMin: 5, earlyStrict: true },
 };
 
 /** The window an agency's figures use, and whether it is the agency's own (published) or Atlas's default. */

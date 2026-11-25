@@ -31,7 +31,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { SubsectionTitle, PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, DIRECTION_LABEL, LATE_LABEL, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, shareRiseText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
+import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, DIRECTION_LABEL, LATE_LABEL, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, onTimeWindowWords, shareRiseText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateStopsMap from './components/Live/LateStopsMapLazy';
@@ -231,7 +231,7 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title={LATE_STOPS_TITLE} intro={`${lateStopsIntro(Math.min(s.worstStops.length, LATE_MAP_STOPS), { scope: 'agency', dates })} ${LATE_MAP_HINT}`}>
+        <Section id="agency-stops" title={LATE_STOPS_TITLE} intro={`${lateStopsIntro(Math.min(s.worstStops.length, LATE_MAP_STOPS), { scope: 'agency', dates, window: onTimeWindowWords(s.agency) })} ${LATE_MAP_HINT}`}>
           <LateStops s={s} rows={s.worstStops.slice(0, LATE_MAP_STOPS)} />
         </Section>
 

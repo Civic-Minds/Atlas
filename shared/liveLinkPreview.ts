@@ -1,4 +1,4 @@
-import { LATE_TILE_CAPTION, weekOfText } from './liveWording';
+import { lateTileCaption, onTimeWindowWords, weekOfText } from './liveWording';
 import type { AgencySummary } from './liveAgency';
 import { percentText } from './numberText';
 import { PAGE_NAMES, tabTitle } from './pageNames';
@@ -17,7 +17,7 @@ export const liveTabTitle = (name: string, route = false): string => tabTitle(ro
 export function liveLinkPreview(/** The agency's short name ("MiWay"), never the address in capitals (CIV-1160 question 7). */ agencyName: string, route: string | null, summary: AgencySummary | null): { title: string; description: string } {
   const dates = summary?.weekly?.thisWeek.dates ?? [];
   const week = dates.length ? weekOfText(dates[0], dates[dates.length - 1]) : '';
-  const line = (share: number | null | undefined) => (share == null ? '' : `${percentText(share)} ${LATE_TILE_CAPTION}${week ? ` · ${week}` : ''}`);
+  const line = (share: number | null | undefined) => (share == null ? '' : `${percentText(share)} ${lateTileCaption(onTimeWindowWords(summary?.agency))}${week ? ` · ${week}` : ''}`);
   if (!route) return { title: liveTabTitle(agencyName), description: line(summary?.weekly?.thisWeek.late?.share) };
   const row = summary?.routes.find(r => r.route === route);
   return { title: liveTabTitle(row?.titleLabel ?? `${agencyName} ${route}`, true), description: line(row?.lateShare) };

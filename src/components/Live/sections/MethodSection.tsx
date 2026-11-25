@@ -2,11 +2,11 @@ import type { ReactNode } from 'react';
 import { goodDayCounts, goodDayLimits } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { joinList } from '../../../../shared/overflowText';
-import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, coveredRoutesText, serviceDaysText } from '../../../../shared/liveWording';
+import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, coveredRoutesText, onTimeWindowWords, serviceDaysText } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
-import { phoneMethodLines, aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
+import { phoneMethodLines, aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLineFor, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 import { percentText, countText } from '../../../../shared/numberText';
 import { DOCS_PATH } from '../../../../shared/pagePaths';
@@ -40,10 +40,11 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
   const phone = useMediaQuery(PHONE_MEDIA_QUERY);
   if (phone) {
     const v3 = props.scope === 'route' ? props.data.v3 : null;
+    const window = v3 ? v3.thresholds : onTimeWindowWords(props.scope === 'agency' ? props.s.agency : null);
     return (
       <MethodFootnote id={props.scope === 'route' ? props.id ?? 'method' : 'agency-method'} groups={[{ label: METHOD_GROUPS.numbers, items: phoneMethodLines(v3
-        ? { aheadMin: Math.abs(v3.thresholds.earlyAtOrBelowMin), underMin: Math.round(v3.thresholds.bunchedGapSec / 60) }
-        : {}) }]} after={termsLink} />
+        ? { aheadMin: window.onTimeWindowPublished ? undefined : Math.abs(v3.thresholds.earlyAtOrBelowMin), underMin: Math.round(v3.thresholds.bunchedGapSec / 60), window }
+        : { window }) }]} after={termsLink} />
     );
   }
   if (props.scope === 'route') {
@@ -60,8 +61,8 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
     return (
       <MethodFootnote id={props.id ?? 'method'} groups={[
       { label: METHOD_GROUPS.numbers, items: [
-        lateLine,
-        aheadLine(Math.abs(v3.thresholds.earlyAtOrBelowMin)),
+        lateLineFor(v3.thresholds),
+        ...(v3.thresholds.onTimeWindowPublished ? [] : [aheadLine(Math.abs(v3.thresholds.earlyAtOrBelowMin))]),
         runTimeLine(true),
         extraWaitLine,
         bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),
@@ -97,7 +98,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
   return (
     <MethodFootnote id="agency-method" groups={[
           { label: METHOD_GROUPS.numbers, items: [
-            lateLine,
+            lateLineFor(onTimeWindowWords(s.agency)),
             runTimeLine(),
             extraWaitLine,
             bunchingLine(),

@@ -32,7 +32,9 @@ describe('Live glossary', () => {
   for (const { term, text: def } of LIVE_GLOSSARY.filter(g => !g.legend)) {
     it(`${term} reads the same on the agency page and in the glossary`, () => {
       // The bold term, then the rest of the sentence, no colon (CIV-1075).
-      expect(text(lines[term])).toBe(`${term} ${def}`);
+      // CIV-2222: the shared glossary's Late also names each agency's own window ("TTC: >1 min early or >5 min late").
+      if (term === 'Late') expect(`${term} ${def}`).toBe(`${text(lines[term])} TTC: >1 min early or >5 min late.`);
+      else expect(text(lines[term])).toBe(`${term} ${def}`);
     });
   }
   it('shows the delay legend in its own words (E22)', () => {

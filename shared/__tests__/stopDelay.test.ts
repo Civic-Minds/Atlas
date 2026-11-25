@@ -19,8 +19,9 @@ describe('on-time thresholds (shared with the map)', () => {
 
   it("CIV-2222: an agency's own published window (TTC 1 min early to 5 min late); others keep Atlas's", () => {
     const ttc = onTimeWindow('ttc');
-    expect(ttc).toEqual({ earlyAtOrBelowMin: -1, lateAboveMin: 5, published: true });
-    expect([-1.2, -1, -0.9, 5, 5.1].map(m => delayStatus(m, ttc))).toEqual(['early', 'early', 'on_time', 'on_time', 'late']);
+    expect(ttc).toEqual({ earlyAtOrBelowMin: -1, lateAboveMin: 5, earlyStrict: true, published: true });
+    // Ryan's words, ">1 min early or >5 min late": exactly 1 min early and exactly 5 min late are on time.
+    expect([-1.2, -1, -0.9, 5, 5.1].map(m => delayStatus(m, ttc))).toEqual(['early', 'on_time', 'on_time', 'on_time', 'late']);
     expect(onTimeWindow('kingston')).toEqual({ earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAboveMin: LATE_ABOVE_MIN, published: false });
     const runs = [run('2026-10-01', [5.2, 0, -1.2, 1])];
     expect(adherenceReport(runs, { window: ttc }).overall).toMatchObject({ late: 1, early: 1, onTime: 2 });
