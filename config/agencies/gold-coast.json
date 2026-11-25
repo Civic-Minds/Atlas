@@ -10,10 +10,10 @@
   "region": "California",
   "feedUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
   "bbox": [
-    34,
-    -119.5,
-    34.4,
-    -118.8
+    34.14,
+    -119.31,
+    34.45,
+    -119.13
   ],
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,

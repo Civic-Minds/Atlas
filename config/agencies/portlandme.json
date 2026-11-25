@@ -13,10 +13,10 @@
   ],
   "region": "Maine",
   "bbox": [
-    43.5,
-    -70.5,
-    43.9,
-    -70
+    43.55,
+    -70.45,
+    43.92,
+    -69.96
   ],
   "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",

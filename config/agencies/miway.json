@@ -14,10 +14,10 @@
     -79.6441
   ],
   "bbox": [
-    43.19,
-    -80.14,
-    43.99,
-    -79.14
+    43.49,
+    -79.8,
+    43.74,
+    -79.52
   ],
   "feedUrl": "https://www.miapp.ca/GTFS/google_transit.zip",
   "lastFeedExpiry": "20270221",

@@ -13,10 +13,10 @@
   "region": "Connecticut",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-530/latest.zip",
   "bbox": [
-    41.0979,
-    -73.4351,
-    41.3404,
-    -73.0124
+    41.11,
+    -73.42,
+    41.32,
+    -73.03
   ],
   "cities": [
     "Bridgeport, Connecticut",

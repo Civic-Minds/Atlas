@@ -9,10 +9,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    47,
-    -122.7,
-    48.1,
-    -121.7
+    47.15,
+    -122.5,
+    47.98,
+    -122.1
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip",
   "sameNameRoutes": [

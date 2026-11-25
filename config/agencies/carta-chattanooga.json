@@ -7,10 +7,10 @@
     -85.31
   ],
   "bbox": [
-    34.8,
-    -85.6,
-    35.3,
-    -85
+    34.98,
+    -85.34,
+    35.14,
+    -85.1
   ],
   "feedUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
   "region": "Tennessee",

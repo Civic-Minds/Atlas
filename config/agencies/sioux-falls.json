@@ -14,10 +14,10 @@
   "region": "South Dakota",
   "mdbFeedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
   "bbox": [
-    43.4802,
-    -96.8308,
-    43.623,
-    -96.633
+    43.5,
+    -96.81,
+    43.61,
+    -96.65
   ],
   "cities": [
     "Sioux Falls, South Dakota"

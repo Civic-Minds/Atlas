@@ -9,10 +9,10 @@
     -73.9512
   ],
   "bbox": [
-    40.7234,
-    -73.9942,
-    40.7989,
-    -73.9129
+    40.75,
+    -73.97,
+    40.77,
+    -73.93
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/rooseveltisland-ny-us/rooseveltisland-ny-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-3364/latest.zip",

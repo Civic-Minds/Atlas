@@ -18,10 +18,10 @@
   "region": "Yukon",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
   "bbox": [
-    60.6639,
-    -135.1889,
-    60.8076,
-    -134.9969
+    60.68,
+    -135.17,
+    60.79,
+    -135.01
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

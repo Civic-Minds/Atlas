@@ -8,10 +8,10 @@
     -115.5336
   ],
   "bbox": [
-    32.6176,
-    -116.0445,
-    33.4744,
-    -115.3224
+    32.66,
+    -115.74,
+    33.43,
+    -115.37
   ],
   "feedUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/latest.zip",

@@ -15,10 +15,10 @@
     -113.4938
   ],
   "bbox": [
-    53.35,
-    -113.88,
-    53.75,
-    -113.15
+    53.25,
+    -113.94,
+    53.72,
+    -113.2
   ],
   "feedUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
   "excludeTripHeadsigns": [

@@ -47,10 +47,10 @@
   "region": "Colorado",
   "parentAgency": "bustang",
   "bbox": [
-    37.1,
-    -105,
-    38.3,
-    -104.4
+    37.17,
+    -108.57,
+    40.63,
+    -102.61
   ],
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 06-Nov-2026 21:40",

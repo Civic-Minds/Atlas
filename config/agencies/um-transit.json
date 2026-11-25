@@ -14,10 +14,10 @@
   "region": "Michigan",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2072/latest.zip",
   "bbox": [
-    42.2444,
-    -83.7675,
-    42.3411,
-    -83.654
+    42.26,
+    -83.75,
+    42.33,
+    -83.67
   ],
   "cities": [
     "Ann Arbor, Michigan"

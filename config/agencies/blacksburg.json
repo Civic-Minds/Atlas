@@ -14,10 +14,10 @@
   "region": "Virginia",
   "mdbFeedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
   "bbox": [
-    37.1065,
-    -80.4734,
-    37.2761,
-    -80.3323
+    37.12,
+    -80.46,
+    37.26,
+    -80.35
   ],
   "cities": [
     "Roanoke, Virginia"

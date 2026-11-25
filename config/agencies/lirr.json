@@ -10,10 +10,10 @@
     -73.6
   ],
   "bbox": [
-    40.5891,
-    -73.9951,
+    40.59,
+    -74,
     41.1,
-    -71.9532
+    -71.95
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
   "lastFeedExpiry": "20270228",

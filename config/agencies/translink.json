@@ -17,9 +17,9 @@
   ],
   "bbox": [
     49,
-    -123.5,
-    49.5,
-    -122.2
+    -123.43,
+    49.48,
+    -122.3
   ],
   "feedUrl": "https://gtfs-static.translink.ca/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-696/latest.zip",

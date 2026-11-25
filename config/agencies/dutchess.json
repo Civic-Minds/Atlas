@@ -9,10 +9,10 @@
     -73.9
   ],
   "bbox": [
-    41.494,
-    -73.9846,
-    42.0599,
-    -73.5665
+    41.49,
+    -73.99,
+    42.06,
+    -73.69
   ],
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
   "lastFeedExpiry": "20501001",

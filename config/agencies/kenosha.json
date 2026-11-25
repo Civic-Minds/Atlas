@@ -13,10 +13,10 @@
   "lastRefreshedAt": "2026-11-23",
   "region": "Wisconsin",
   "bbox": [
-    42.4973,
-    -87.9747,
-    42.6687,
-    -87.7985
+    42.5,
+    -87.97,
+    42.65,
+    -87.8
   ],
   "cities": [
     "Kenosha, Wisconsin"

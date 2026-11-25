@@ -10,10 +10,10 @@
     -73.7
   ],
   "bbox": [
-    41.3267,
-    -73.9641,
-    41.5091,
-    -73.5352
+    41.32,
+    -73.82,
+    41.51,
+    -73.53
   ],
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/PART_Putnam_Area_Rapid_Transit.zip",
   "lastFeedExpiry": "20270131",

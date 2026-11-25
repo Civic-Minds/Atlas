@@ -14,10 +14,10 @@
   "region": "Montana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-295/latest.zip",
   "bbox": [
-    45.6354,
-    -111.2156,
-    45.8027,
-    -110.5413
+    45.66,
+    -111.19,
+    45.79,
+    -111
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

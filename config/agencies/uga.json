@@ -13,10 +13,10 @@
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-2276/latest.zip",
   "bbox": [
-    33.8745,
-    -83.4243,
-    33.9845,
-    -83.3203
+    33.89,
+    -83.41,
+    33.97,
+    -83.33
   ],
   "cities": [
     "Athens, Georgia"

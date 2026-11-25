@@ -8,10 +8,10 @@
     -122.3277
   ],
   "bbox": [
-    47.5791,
-    -122.3586,
-    47.6477,
-    -122.294
+    47.59,
+    -122.34,
+    47.63,
+    -122.31
   ],
   "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
   "agencyId": "23",

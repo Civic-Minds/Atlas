@@ -13,10 +13,10 @@
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-378/latest.zip",
   "bbox": [
-    35.9588,
-    -78.9779,
-    36.041,
-    -78.8837
+    35.97,
+    -78.96,
+    36.02,
+    -78.91
   ],
   "cities": [
     "Durham, North Carolina"

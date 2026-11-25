@@ -14,10 +14,10 @@
   "region": "New Hampshire",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-631/latest.zip",
   "bbox": [
-    43.6047,
-    -72.3636,
-    43.7492,
-    -71.9942
+    43.62,
+    -72.35,
+    43.73,
+    -72.01
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

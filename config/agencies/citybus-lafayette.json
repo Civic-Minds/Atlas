@@ -18,10 +18,10 @@
   "region": "Indiana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-391/latest.zip",
   "bbox": [
-    40.3452,
-    -86.9822,
-    40.5008,
-    -86.7848
+    40.36,
+    -86.97,
+    40.49,
+    -86.8
   ],
   "cities": [
     "Lafayette, Indiana"

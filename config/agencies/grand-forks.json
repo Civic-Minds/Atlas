@@ -14,10 +14,10 @@
   "region": "North Dakota",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2199/latest.zip",
   "bbox": [
-    47.8549,
-    -97.1297,
-    47.9691,
-    -96.9906
+    47.87,
+    -97.11,
+    47.95,
+    -97.01
   ],
   "cities": [
     "Grand Forks, North Dakota"

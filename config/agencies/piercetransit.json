@@ -7,10 +7,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    47,
-    -122.7,
-    47.5,
-    -122
+    47.05,
+    -122.65,
+    47.63,
+    -122.17
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip",
   "lastFeedExpiry": "20261212",

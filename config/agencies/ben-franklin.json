@@ -14,10 +14,10 @@
   "region": "Washington",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
   "bbox": [
-    46.1568,
-    -119.809,
-    46.371,
-    -119.0246
+    46.17,
+    -119.8,
+    46.36,
+    -119.03
   ],
   "cities": [
     "Richland, Washington",

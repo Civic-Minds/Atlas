@@ -14,10 +14,10 @@
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2267/latest.zip",
   "bbox": [
-    40.4285,
-    -89.0761,
-    40.5567,
-    -88.8901
+    40.44,
+    -89.06,
+    40.54,
+    -88.9
   ],
   "cities": [
     "Bloomington, Illinois",

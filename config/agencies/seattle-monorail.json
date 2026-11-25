@@ -8,10 +8,10 @@
     -122.3433
   ],
   "bbox": [
-    47.592,
-    -122.3697,
-    47.6413,
-    -122.3169
+    47.61,
+    -122.35,
+    47.63,
+    -122.33
   ],
   "feedUrl": "https://github.com/Seattle-Monorail-Services/gtfs/raw/refs/heads/main/96_gtfs.zip",
   "lastFeedExpiry": "20270530",

@@ -8,10 +8,10 @@
   ],
   "region": "California",
   "bbox": [
-    34.06,
-    -122.35,
-    38.58,
-    -118.24
+    37.33,
+    -122.04,
+    37.96,
+    -121.26
   ],
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=CE",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2684/latest.zip",

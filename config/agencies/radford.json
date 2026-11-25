@@ -13,10 +13,10 @@
   "region": "Virginia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2415/latest.zip",
   "bbox": [
-    37.0857,
-    -80.7163,
-    37.252,
-    -80.3802
+    37.1,
+    -80.6,
+    37.17,
+    -80.4
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

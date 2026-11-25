@@ -9,10 +9,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    47.1,
-    -122.7,
-    47.9,
-    -121.8
+    47.18,
+    -122.51,
+    47.87,
+    -121.78
   ],
   "feedUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
   "excludeRouteShortNames": [

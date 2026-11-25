@@ -13,10 +13,10 @@
   "region": "Indiana",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2066/latest.zip",
   "bbox": [
-    39.1013,
-    -86.6192,
-    39.2285,
-    -86.4524
+    39.12,
+    -86.6,
+    39.21,
+    -86.47
   ],
   "cities": [
     "Bloomington, Indiana"

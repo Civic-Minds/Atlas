@@ -28,10 +28,10 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-30054/latest.zip",
   "bbox": [
-    40.741,
-    -77.9455,
-    40.8581,
-    -77.7763
+    40.75,
+    -77.93,
+    40.84,
+    -77.8
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
