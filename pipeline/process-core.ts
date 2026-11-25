@@ -32,7 +32,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, computeTripStartFirst, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -1792,6 +1792,23 @@ export async function processGtfsBuffer(
     }
   }
 
+  // CIV-2229 (#1772, Ryan "1"): when each trip of a route direction's day leaves its first stop, over the same trips the
+  // reference stops' lists count (inGroup: the direction's representative weekday; a headsign's or shape's own day can be
+  // another weekday), so the route's first time is its first boarding. Times are read as the day lists read them.
+  // Frequency templates add their generated starts below.
+  const tripStartsByGroup = new Map<string, number[]>();
+  const addTripStart = (grp: StopTripGroup, mins: number) => {
+    if (!grp.inGroup) return;
+    const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
+    const list = tripStartsByGroup.get(gKey);
+    if (list) list.push(mins); else tripStartsByGroup.set(gKey, [mins]);
+  };
+  for (const [tripId, groups] of tripGroupByTripId) {
+    const first = frequencyTemplateTripIds.has(tripId) ? undefined : firstDepartureByTripId.get(tripId);
+    if (first === undefined) continue;
+    for (const grp of groups) addTripStart(grp, first);
+  }
+
   // A thin-shape feature's scoped headline (scopedTerminalHeadline) reads only its own branch:
   // the headsign's trips that serve at least two thirds of the drawn shape's stops, at the
   // shape's last stop. Every trip of a headsign at a shared last stop over-claims a branch that
@@ -2056,6 +2073,7 @@ export async function processGtfsBuffer(
           for (const grp of groups) {
             const pickupAllowed = boardsAt(st);
             addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
+            if (st === visits[0]) addTripStart(grp, mins);
             if (grp.inGroup) {
               const night = mins < SERVICE_DAY_CUTOFF_MIN && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < SERVICE_DAY_CUTOFF_MIN;
               addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, final: isTripFinalStop(tripId, st.stop_sequence) || undefined });
@@ -2066,6 +2084,15 @@ export async function processGtfsBuffer(
         }
       }
     }
+  }
+
+  // CIV-2229: every row of a route direction's day carries that slot's first boarding (none when a trip leaves before the
+  // day window, as the hours bar reads it).
+  for (const [feature, slot] of featureStopHeadwaySlots) {
+    const starts = tripStartsByGroup.get(`${slot.shortName}::${slot.dirId}::${slot.day}`);
+    if (!starts?.length) continue;
+    const first = computeTripStartFirst(starts);
+    feature.properties.tripStartFirst = first ?? null;
   }
 
   // Unique route short names per stop — more accurate hub detection than raw route_id count,

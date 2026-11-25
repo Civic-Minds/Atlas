@@ -66,7 +66,8 @@ export interface AgencyPageRoute {
    * CIV-1605: when the route runs on weekdays. `hours`: each service-day hour (can pass 24) with a departure at any of its
    * directions' and branches' reference stops (the published departuresByHour). `first`/`last`: the exact first and last
    * times (minutes after midnight), only where the data has them (a period edge in the first or last hour); else the bar
-   * ends on the hour.
+   * ends on the hour. CIV-2229: with published trip starts, `first` is where trips start (first boarding) and `hours`
+   * begins at its hour; `last` stays at the reference stops.
    */
   runs?: { hours: number[]; first?: number; last?: number; /** Each break inside the day: [last departure before, first after], exact or widened to the hour, never narrowed. */ gaps?: Array<[number, number]> };
   /** CIV-274: paged areas (config/areas slugs) where this route stops at two places inside (shared/areaBoundaries.ts). */

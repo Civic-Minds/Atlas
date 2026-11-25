@@ -323,6 +323,50 @@ describe('routeRuns (CIV-1605, hours bar prototype)', () => {
   });
 });
 
+describe('routeRuns first time where trips start, last time unchanged (CIV-2229, #1772, Ryan "1")', () => {
+  const span = (first: number, last: number) => ({ first, last });
+  const day = Object.fromEntries(Array.from({ length: 21 }, (_, i) => [String(i + 5), 10]));
+  it('reads STM 1\'s first boarding at Angrignon (5:30), not the reference stop (5:47), and keeps the last', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    const rows = [
+      { departuresByHour: day, departureSpan: span(347, 1505), tripStartFirst: 330 },
+      { departuresByHour: day, departureSpan: span(352, 1517), tripStartFirst: 335 },
+    ];
+    const runs = routeRuns(rows, undefined)!;
+    expect(runs.first).toBe(330);
+    expect(runs.last).toBe(1517);
+    expect(runs.hours[0]).toBe(5);
+  });
+
+  it('keeps an all-night route\'s last time exactly as today (CTA 9: a trip before 5 AM leaves the first out)', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    const rows = [{ departuresByHour: { ...day, '25': 4 }, departureSpan: { last: 1510 }, tripStartFirst: null }];
+    const runs = routeRuns(rows, undefined)!;
+    expect(runs.first).toBeUndefined();
+    expect(runs.last).toBe(1510);
+  });
+
+  it('fills the hours on the way to the reference stop rather than drawing a break', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    const rows = [{ departuresByHour: { '7': 3, '8': 3 }, departureSpan: span(425, 530), tripStartFirst: 350 }];
+    expect(routeRuns(rows, undefined)).toEqual({ hours: [5, 6, 7, 8], first: 350, last: 530 });
+  });
+
+  it('counts a direction read only through a stretch (AC Transit 604: its 7:17 AM school trip)', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    const rows = [
+      { departuresByHour: {}, tripStartFirst: 437, stretchMeta: { main: { departuresByHour: { '7': 1 }, span: span(459, 459) }, tails: [] } },
+      { departuresByHour: { '15': 1 }, departureSpan: span(930, 930), tripStartFirst: 930, stretchMeta: { main: { departuresByHour: { '15': 1, '16': 1 }, span: span(955, 994) }, tails: [] } },
+    ];
+    expect(routeRuns(rows, undefined)).toMatchObject({ first: 437, last: 994 });
+  });
+
+  it('reads the reference stop when a release has no trip starts', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    expect(routeRuns([{ departuresByHour: { '5': 2, '6': 2 }, departureSpan: span(347, 400) }], undefined)).toEqual({ hours: [5, 6], first: 347, last: 400 });
+  });
+});
+
 describe('routeRuns from the stretches (CIV-1611)', () => {
   it("reads the exact first and last departure from every stretch's span, and the hours from their counts", async () => {
     const { routeRuns } = await import('./build-agency-page-summaries');

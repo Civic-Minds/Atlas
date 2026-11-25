@@ -1,6 +1,6 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
-import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
+import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, SPARKLINE_HOURS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 import { headwayGradeOn, TIER_MAXES } from '../shared/rules/frequency.js';
 import {
   FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS,
@@ -876,6 +876,14 @@ export function computeDepartureSpan(departureTimes: readonly number[], hours: r
     ...(departureTimes.every(t => t < lastHour * 60 + 60) ? { last: counted[counted.length - 1].b.last } : {}),
     ...(gaps.length ? { gaps } : {}),
   };
+}
+
+/**
+ * CIV-2229 (#1772): the first of a route direction's trip-start departures (each trip's first stop), read with the same day
+ * window and the same rule for an early end as computeDepartureSpan: undefined when a trip leaves before the window.
+ */
+export function computeTripStartFirst(tripStartTimes: readonly number[]): number | undefined {
+  return computeDepartureSpan(tripStartTimes, SPARKLINE_HOURS)?.first;
 }
 
 /** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
