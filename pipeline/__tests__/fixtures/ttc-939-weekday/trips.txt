@@ -1,0 +1,336 @@
+trip_id,route_id,service_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible
+85141020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93916160,shp-939-01,1
+75668020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93970140,shp-939-01,1
+83370020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93912120,shp-939-01,1
+26237020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93912120,shp-939-01,1
+8810020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93910100,shp-939-01,1
+48353020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93915150,shp-939-01,1
+3674020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93915150,shp-939-01,1
+61321020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93972202,shp-939-01,1
+10987020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93916160,shp-939-01,1
+20534020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93972202,shp-939-01,1
+47366020,939,1,East - 939A Finch Express towards Scarborough Centre Stn,A,0,93910100,shp-939-01,1
+4838020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390770,shp-939-02,1
+47583020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93915150,shp-939-02,1
+46688020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390330,shp-939-02,1
+24394020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390550,shp-939-02,1
+46114020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390770,shp-939-02,1
+23767020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93918180,shp-939-02,1
+34515020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93972202,shp-939-02,1
+52811020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93917170,shp-939-02,1
+30763020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390550,shp-939-02,1
+56263020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93925251,shp-939-02,1
+30597020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390330,shp-939-02,1
+56102020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93917170,shp-939-04,1
+52163020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390550,shp-939-02,1
+4054020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93923231,shp-939-04,1
+52422020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93911110,shp-939-04,1
+52890020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390220,shp-939-02,1
+44044020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93921212,shp-939-04,1
+35664020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93917170,shp-939-02,1
+51088020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93921212,shp-939-02,1
+57907020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93970140,shp-939-02,1
+1694020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93917170,shp-939-02,1
+58003020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93918180,shp-939-04,1
+17879020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390220,shp-939-02,1
+2077020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390330,shp-939-02,1
+20942020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9398110,shp-939-02,1
+68939020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390550,shp-939-02,1
+2310020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93970140,shp-939-02,1
+23310020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390220,shp-939-02,1
+70324020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93925251,shp-939-02,1
+21897020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93911110,shp-939-02,1
+70717020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93922221,shp-939-02,1
+7174020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93928281,shp-939-02,1
+33219020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93918180,shp-939-02,1
+32912020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93927271,shp-939-02,1
+32997020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93923231,shp-939-02,1
+38193020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9398110,shp-939-02,1
+14984020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93920201,shp-939-02,1
+37708020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93911110,shp-939-02,1
+1274020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390330,shp-939-02,1
+41602020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93918180,shp-939-02,1
+16867020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390770,shp-939-02,1
+27145020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93911110,shp-939-02,1
+16487020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390220,shp-939-02,1
+28552020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93915150,shp-939-02,1
+28597020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93928281,shp-939-04,1
+65966020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93970140,shp-939-02,1
+32545020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93917170,shp-939-02,1
+62057020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390220,shp-939-02,1
+6208020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93911110,shp-939-02,1
+66299020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93972202,shp-939-02,1
+100955020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93924241,shp-939-02,1
+74574020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390550,shp-939-04,1
+7352020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9398110,shp-939-02,1
+50480020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93924241,shp-939-04,1
+19868020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93915150,shp-939-02,1
+19275020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390770,shp-939-02,1
+44090020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390770,shp-939-04,1
+25645020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93970140,shp-939-02,1
+45170020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93970140,shp-939-02,1
+2528020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390550,shp-939-02,1
+55738020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93919192,shp-939-02,1
+59808020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390550,shp-939-02,1
+58628020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9398110,shp-939-02,1
+88329020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390330,shp-939-02,1
+92159020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93915150,shp-939-02,1
+95286020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93915150,shp-939-02,1
+88909020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93920201,shp-939-02,1
+93587020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93970140,shp-939-02,1
+81654020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93970140,shp-939-04,1
+94135020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9398110,shp-939-02,1
+82102020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93919192,shp-939-02,1
+76760020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93917170,shp-939-02,1
+82651020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390770,shp-939-02,1
+86005020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9398110,shp-939-02,1
+79415020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390330,shp-939-02,1
+86687020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,9390220,shp-939-02,1
+9031020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93915150,shp-939-02,1
+87476020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93927271,shp-939-04,1
+87384020,939,1,East - 939B Finch Express towards Scarborough Centre Stn via Finch Stn,B,0,93972202,shp-939-02,1
+99725020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93913130,shp-939-03,1
+98928020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-08,1
+94414020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93922222,shp-939-03,1
+79494020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390990,shp-939-03,1
+79618020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+87372020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-03,1
+84605020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93913130,shp-939-03,1
+7559020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+93440020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93913130,shp-939-08,1
+93838020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+76571020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-08,1
+7767020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93929291,shp-939-03,1
+59410020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93922222,shp-939-03,1
+58235020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+55404020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+97178020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93913130,shp-939-03,1
+97484020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93921211,shp-939-03,1
+95189020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93916160,shp-939-03,1
+44091020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93929291,shp-939-08,1
+50190020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+14597020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+49656020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93916160,shp-939-03,1
+49105020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+7353020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-03,1
+18215020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+74304020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+78133020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+100238020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93967191,shp-939-03,1
+74424020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93916160,shp-939-03,1
+77303020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+13945020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+13240020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390990,shp-939-03,1
+73742020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93922222,shp-939-03,1
+14067020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390990,shp-939-03,1
+72808020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93921211,shp-939-03,1
+73509020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-03,1
+28964020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390990,shp-939-08,1
+67352020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+28472020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93913130,shp-939-03,1
+61041020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93921211,shp-939-08,1
+16646020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-03,1
+26346020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-03,1
+16453020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93913130,shp-939-03,1
+15230020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390990,shp-939-03,1
+26792020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+37985020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93913130,shp-939-03,1
+11210020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93916160,shp-939-03,1
+37211020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+11445020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+33470020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+10986020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+76149020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+71835020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93922222,shp-939-03,1
+70708020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-03,1
+20982020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93916160,shp-939-03,1
+71318020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+21580020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93926261,shp-939-03,1
+6974020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+6897020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+40411020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+65474020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93916160,shp-939-03,1
+31588020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93916160,shp-939-03,1
+3105020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+67914020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-08,1
+34479020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+34619020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390660,shp-939-03,1
+51647020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390990,shp-939-03,1
+35226020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+5210020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390440,shp-939-03,1
+3472020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+5606020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93912120,shp-939-03,1
+55521020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93910100,shp-939-03,1
+42932020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,93926261,shp-939-08,1
+46750020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390990,shp-939-03,1
+4836020,939,1,East - 939C Finch Express towards Morningside Heights,C,0,9390880,shp-939-03,1
+30682020,939,1,East - 939S Finch Express Short Turn,S,0,9390330,shp-939-05,1
+46416020,939,1,East - 939S Finch Express Short Turn,S,0,9390220,shp-939-05,1
+98620020,939,1,East - 939S Finch Express Short Turn,S,0,9398110,shp-939-05,1
+64372020,939,1,East - 939S Finch Express Short Turn,S,0,93917170,shp-939-05,1
+96138020,939,1,East - 939S Finch Express Short Turn,S,0,9390550,shp-939-05,1
+87779020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93912120,shp-939-51,1
+96913020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93910100,shp-939-51,1
+18161020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93972202,shp-939-51,1
+49736020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93915150,shp-939-51,1
+44010020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93915150,shp-939-51,1
+37308020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93970140,shp-939-51,1
+38752020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93916160,shp-939-51,1
+40614020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93972202,shp-939-51,1
+34953020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93910100,shp-939-51,1
+69058020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93970140,shp-939-51,1
+70222020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93916160,shp-939-51,1
+70935020,939,1,West - 939A Finch Express towards Finch Stn,A,1,93972202,shp-939-51,1
+15913020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9398110,shp-939-52,1
+16586020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390770,shp-939-52,1
+51442020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390220,shp-939-52,1
+15802020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9398110,shp-939-52,1
+52834020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93970140,shp-939-52,1
+15317020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93917170,shp-939-52,1
+57161020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390330,shp-939-06,1
+56184020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93911110,shp-939-52,1
+12241020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93917170,shp-939-52,1
+21952020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93972202,shp-939-52,1
+5605020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93911110,shp-939-52,1
+21886020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390770,shp-939-52,1
+22568020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9398110,shp-939-52,1
+20344020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93927271,shp-939-52,1
+43609020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93918180,shp-939-52,1
+70391020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93923231,shp-939-52,1
+35078020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93970140,shp-939-52,1
+71877020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93917170,shp-939-52,1
+39810020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93915150,shp-939-52,1
+40085020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390770,shp-939-52,1
+6431020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390330,shp-939-52,1
+40289020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390550,shp-939-52,1
+5822020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390220,shp-939-06,1
+29384020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93924241,shp-939-52,1
+57122020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93917170,shp-939-52,1
+29829020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9398110,shp-939-52,1
+64623020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93924241,shp-939-52,1
+31236020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93922221,shp-939-52,1
+34286020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390330,shp-939-52,1
+31534020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93915150,shp-939-52,1
+59457020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390220,shp-939-52,1
+59014020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93919192,shp-939-55,1
+37269020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93972202,shp-939-55,1
+55424020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93919192,shp-939-52,1
+54628020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93970140,shp-939-52,1
+32136020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93920201,shp-939-06,1
+43740020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93928281,shp-939-52,1
+26303020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390330,shp-939-52,1
+77816020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390770,shp-939-52,1
+74252020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390220,shp-939-52,1
+101916020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390330,shp-939-52,1
+73608020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9398110,shp-939-52,1
+100506020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93919192,shp-939-52,1
+66190020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93970140,shp-939-52,1
+66560020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93923231,shp-939-52,1
+61475020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93918180,shp-939-52,1
+6209020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390330,shp-939-52,1
+18232020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93915150,shp-939-52,1
+62015020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93911110,shp-939-52,1
+60177020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390550,shp-939-52,1
+66003020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93921212,shp-939-52,1
+65397020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93915150,shp-939-52,1
+97429020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93972202,shp-939-52,1
+66274020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93911110,shp-939-52,1
+92395020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93911110,shp-939-52,1
+92285020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93970140,shp-939-52,1
+93297020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390550,shp-939-52,1
+92310020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390220,shp-939-52,1
+89983020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93917170,shp-939-52,1
+95668020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93915150,shp-939-55,1
+88256020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93925251,shp-939-55,1
+9030020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93922221,shp-939-06,1
+89210020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390220,shp-939-52,1
+9032020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93918180,shp-939-52,1
+90325020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390550,shp-939-52,1
+83659020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93920201,shp-939-52,1
+78929020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390770,shp-939-52,1
+87190020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390330,shp-939-52,1
+79214020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9398110,shp-939-52,1
+87026020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390550,shp-939-52,1
+98684020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93925251,shp-939-52,1
+85751020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93915150,shp-939-52,1
+9863020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390550,shp-939-52,1
+98409020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93970140,shp-939-52,1
+8184020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93917170,shp-939-52,1
+98111020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,93921212,shp-939-52,1
+98822020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390220,shp-939-52,1
+80167020,939,1,West - 939B Finch Express towards Finch West Stn via Finch Stn,B,1,9390550,shp-939-52,1
+80779020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+97541020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+85560020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+97982020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93913130,shp-939-53,1
+98117020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93922222,shp-939-53,1
+90786020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+98802020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390660,shp-939-53,1
+87295020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93916160,shp-939-53,1
+95130020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+89248020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93922222,shp-939-53,1
+92607020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390660,shp-939-53,1
+89890020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+97512020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+19835020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390660,shp-939-53,1
+93988020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+93680020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390990,shp-939-53,1
+93657020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93913130,shp-939-53,1
+17332020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+93613020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93913130,shp-939-53,1
+18116020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93916160,shp-939-53,1
+60541020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93916160,shp-939-53,1
+60497020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390990,shp-939-53,1
+13874020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93913130,shp-939-53,1
+72664020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93916160,shp-939-53,1
+27333020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+32621020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390990,shp-939-53,1
+681020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93913130,shp-939-53,1
+29374020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390990,shp-939-53,1
+7354020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390660,shp-939-53,1
+2911020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+73402020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390990,shp-939-53,1
+74518020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+37844020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+74283020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93921211,shp-939-53,1
+37766020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93916160,shp-939-53,1
+7768020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+38793020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93926261,shp-939-53,1
+49102020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+49168020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390660,shp-939-53,1
+64716020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+48386020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93929291,shp-939-53,1
+44721020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+63811020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390990,shp-939-53,1
+63552020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93926261,shp-939-53,1
+45672020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+75688020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+71855020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390990,shp-939-53,1
+59707020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93921211,shp-939-53,1
+42906020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390660,shp-939-53,1
+31530020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93916160,shp-939-53,1
+24316020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93929291,shp-939-53,1
+30252020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93922222,shp-939-53,1
+46152020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+4650020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93916160,shp-939-53,1
+30609020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+55754020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+20220020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+1696020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+22642020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390660,shp-939-53,1
+22232020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+22221020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+23222020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93912120,shp-939-53,1
+23602020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93913130,shp-939-53,1
+10788020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+11273020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390440,shp-939-53,1
+10594020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+11636020,939,1,West - 939C Finch Express towards Finch Stn,C,1,9390880,shp-939-53,1
+12428020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93910100,shp-939-53,1
+16307020,939,1,West - 939C Finch Express towards Finch Stn,C,1,93967191,shp-939-53,1
+43249020,939,1,West - 939S Finch Express Short Turn,,1,9390660,shp-939-54,1
+75843020,939,1,West - 939S Finch Express Short Turn,,1,93967191,shp-939-54,1
+297020,939,1,West - 939S Finch Express Short Turn,,1,93913130,shp-939-54,1
+90109020,939,1,West - 939S Finch Express Short Turn,,1,93922222,shp-939-54,1
+5411020,939,1,West - 939S Finch Express Short Turn,,1,9390880,shp-939-54,1
+7271020,939,1,West - 939S Finch Express Short Turn,,1,9390440,shp-939-54,1
