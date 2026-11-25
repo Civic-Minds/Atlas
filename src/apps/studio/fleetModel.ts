@@ -54,6 +54,16 @@ export function routeChangeAt(file: StudioBeforeAfterFile, route: string, period
   return periodChange(c.before, c.after, period);
 }
 
+/**
+ * The dot by a list row's newer figure (#1746: a row showing Evening's 10 → 15 min had Midday's grey "no change" dot): the
+ * change at the time of day the row's figure is from, so the dot agrees with the numbers beside it. A row whose figure is
+ * not a frequency (trips, first or last trip, trip time) gets no dot: the key's colours are frequency changes.
+ */
+export function rowChange(file: StudioBeforeAfterFile, c: StudioRouteChange, figure: Pick<RowFigure, 'key'>): StudioPeriodChange | null {
+  if (!(PERIOD_KEYS as readonly string[]).includes(figure.key)) return null;
+  return routeChangeAt(file, c.route, figure.key as PeriodKey);
+}
+
 /** The map's lines: each route's newer shape (a removed route's older one, dashed) in its change colour; the picked route's older shape dashed under it. */
 export function studioMapLines(file: StudioBeforeAfterFile, period: PeriodKey, picked: string | null): MapLine[] {
   const before = file.lines?.before ?? {}, after = file.lines?.after ?? {};

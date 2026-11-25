@@ -5,6 +5,7 @@ import { PAGE_NAMES } from '../../../shared/pageNames';
 import { headwayEvery, runTimeAmount } from '../../../shared/headwayText';
 import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 import { MISSING_VALUE } from '../../../shared/missingValue';
+import { countText } from '../../../shared/numberText';
 import { groupAtTarget, STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../../../shared/studioVehicles';
 import { STUDIO_VEHICLES_TEXT, fleetNetworkText, groupSharesText, noServiceText } from '../../../shared/studioWording';
 
@@ -64,7 +65,7 @@ export function StudioGroupFigures({ group, showRunning = true, network = false,
           { key: 'label', header: network ? '' : FREQUENCY_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
           // CIV-1925 (Ryan: Fleet's spacing "looks odd"): the full panel width with the figures at its right edge, as Live's
           // and Schedules' tables (layout fill).
-          { key: 'value', header: <span className="block text-right">{network ? N.count : T.needed}</span>, className: 'text-right', cell: r => r.value },
+          { key: 'value', header: <span className="block text-right">{network ? N.count : T.needed}</span>, className: 'text-right', cell: r => (typeof r.value === 'number' ? countText(r.value) : r.value) },  // #1745: 1,642, as the rest of the app
         ]}
       />
     </ScrollX>

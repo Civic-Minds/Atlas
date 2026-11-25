@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's Fleet leads with right now**: the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
 - **Turning Live off no longer breaks the map**: leaving Live replaced the whole map with "The map couldn't be shown because of an error" until Retry
 - **Studio Live's map shows "Not measured" stretches dashed**: they were the same grey as "Under 0.5 min", so a stretch with no figure looked like one where nothing was lost
 - **Live says which late limit it uses for agencies that publish none**: a note under the week's figures, with a Learn more page on why the limit has a 30-second buffer
@@ -55,6 +56,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Hamilton's Live recordings miss fewer minutes**: when Hamilton's feed briefly fails, the recorder tries once more a few seconds later instead of skipping that minute
 - **The Live card says "At <stop>" while a vehicle stands at a stop**: it never did on a real feed, because the stop status was read as text and checked as a number
 - **The internal Status page shows how many days of recordings each Live agency has**: a bar fills until the agency has enough days to be listed on Studio Live, so a new city's progress is visible as it comes online
+- **Atlas Studio's Schedules list reads cleanly**: times under a figure no longer run into the next column or get cut off, and each row's colour dot matches its own numbers instead of the time of day picked in the top bar; Fleet's vehicle counts now have thousands separators
 - **The Live Full report shows one topic at a time**: a row of topic pills (Along the route, Late departures by hour, Trip time and the rest) replaces one very long page, and every chart and control is still there under its topic
 - **History draws subway, commuter rail and ferry lines in its latest year**: routes with no route number, such as MBTA's Red Line and Hingham ferry, the CTA L, LA Metro Rail and SkyTrain, had no line at all
 - **The Frequent service story lets you pick the weekday hours behind its coverage figures**: 7 AM–7 PM by default, or 7 AM–10 PM, so a route counts by how it runs across the day instead of needing service from 6 AM
