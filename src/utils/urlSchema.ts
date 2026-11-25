@@ -263,6 +263,8 @@ export const URL_PARAM_ORDER: readonly string[] = [
   MAP_URL.headway.key, COMPARE_HEADWAY_PARAM, MAP_URL.hideSpan.key, MAP_URL.hideLimited.key, MODES_PARAM, APP_URL.hideLowQuality.key,
   FREQUENT_URL.frequency.key, NIGHT_URL.frequency.key, BUSTANG_WITHIN_PARAM, LIVE_TOOL_URL.measure.key, LIVE_AGENCY_URL.sort.key,
   APP_URL.forceSlowConnection.key,
+  // CIV-2182 review only: which proposed Schedules design Studio shows; removed with the switch once Ryan picks.
+  STUDIO_REVIEW_URL.design.key,
 ];
 
 const PARAM_RANK = new Map(URL_PARAM_ORDER.map((key, i) => [key, i]));
