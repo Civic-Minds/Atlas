@@ -775,6 +775,74 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       showAgency={false}
     />
   ) : null;
+  // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer loads.
+  const liveRouteSections = selectedGroup ? (
+    <>
+      <LiveRoutePerformance
+        key={selectedRoute ?? ''}
+        slug={selectedGroup.agencySlug}
+        routeShortName={selectedGroup.routeShortName}
+        vehicles={selectedGroup.vehicles}
+        feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
+        scheduledRowsFor={scheduledRowsFor}
+      />
+      <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
+        {/* Match static route cards: destinations first, live vehicles second. */}
+        {selectedGroup.vehicles.length === 0 ? (
+          <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
+        ) : canGroupByDirection && !destination ? (
+          orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
+            <CardDirectionRow
+              key={dirKey}
+              label={dirKey}
+              subLabel={directionSummary(vehicles, selectedRouteModeWord)}
+              onClick={() => setSelectedDirection(dirKey)}
+              chevron
+            />
+          ))
+        ) : !vehiclesOpen && !destination ? (
+          // CIV-2901 (mock v2): the vehicle list waits behind "N vehicles ›"; the counts per destination are in Right now above.
+          <CardDirectionRow label={countOf(allListed.length, 'vehicle')} labelWeight="regular" chevron onClick={() => setVehiclesOpen(true)} />
+        ) : (
+          <div ref={vehicleListRef} className="space-y-2">
+          {shownVehicles.map((v, i) => {
+            const colors = getVehicleColors(v.status, colorMode);
+            return (
+              // The route card's direction row (CIV-1117 preview), with the vehicle's delay at the right end.
+              <CardDirectionRow
+                key={v.id}
+                label={vehicleRowName(v, i, selectedRouteModeWord)}
+                singleLine
+                onClick={() => {
+                  setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
+                  setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
+                  setVehicleCard({ routeKey: buildRouteKey(v.agencySlug, v.routeShortName), id: v.id });
+                }}
+                // No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043).
+                // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
+                value={(v.speedKmh != null || delayLabel(v)) ? (
+                  <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
+                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
+                    {delayLabel(v) && (
+                      <span
+                        style={{ color: v.status === 'no_data' ? undefined : colors.border }}
+                        className={`text-xs font-black ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
+                      >
+                        {delayLabel(v)}
+                      </span>
+                    )}
+                  </span>
+                ) : undefined}
+              />
+            );
+          })}
+          {/* The card never scrolls: at the busiest times it lists as many vehicles as fit and counts the rest (all are on the map). */}
+          {hiddenVehicles > 0 && <p className="text-xs font-bold text-[var(--text-dim)] pt-1">{andOthers(hiddenVehicles, 'vehicle')}</p>}
+          </div>
+        )}
+      </SidebarCardSection>
+    </>
+  ) : null;
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -843,73 +911,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       hoveredBranch={hoveredBranch}
       setHoveredBranch={setHoveredBranch}
       onInfoOpen={onInfoOpen}
-      extra={(
-        <>
-          <LiveRoutePerformance
-            key={selectedRoute ?? ''}
-            slug={selectedGroup.agencySlug}
-            routeShortName={selectedGroup.routeShortName}
-            vehicles={selectedGroup.vehicles}
-            feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
-            scheduledRowsFor={scheduledRowsFor}
-          />
-          <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
-            {/* Match static route cards: destinations first, live vehicles second. */}
-            {selectedGroup.vehicles.length === 0 ? (
-              <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
-            ) : canGroupByDirection && !destination ? (
-              orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
-                <CardDirectionRow
-                  key={dirKey}
-                  label={dirKey}
-                  subLabel={directionSummary(vehicles, selectedRouteModeWord)}
-                  onClick={() => setSelectedDirection(dirKey)}
-                  chevron
-                />
-              ))
-            ) : !vehiclesOpen && !destination ? (
-              // CIV-2901 (mock v2): the vehicle list waits behind "N vehicles ›"; the counts per destination are in Right now above.
-              <CardDirectionRow label={countOf(allListed.length, 'vehicle')} labelWeight="regular" chevron onClick={() => setVehiclesOpen(true)} />
-            ) : (
-              <div ref={vehicleListRef} className="space-y-2">
-              {shownVehicles.map((v, i) => {
-                const colors = getVehicleColors(v.status, colorMode);
-                return (
-                  // The route card's direction row (CIV-1117 preview), with the vehicle's delay at the right end.
-                  <CardDirectionRow
-                    key={v.id}
-                    label={vehicleRowName(v, i, selectedRouteModeWord)}
-                    singleLine
-                    onClick={() => {
-                      setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
-                      setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
-                      setVehicleCard({ routeKey: buildRouteKey(v.agencySlug, v.routeShortName), id: v.id });
-                    }}
-                    // No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043).
-                    // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
-                    value={(v.speedKmh != null || delayLabel(v)) ? (
-                      <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
-                        {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
-                        {delayLabel(v) && (
-                          <span
-                            style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                            className={`text-xs font-black ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
-                          >
-                            {delayLabel(v)}
-                          </span>
-                        )}
-                      </span>
-                    ) : undefined}
-                  />
-                );
-              })}
-              {/* The card never scrolls: at the busiest times it lists as many vehicles as fit and counts the rest (all are on the map). */}
-              {hiddenVehicles > 0 && <p className="text-xs font-bold text-[var(--text-dim)] pt-1">{andOthers(hiddenVehicles, 'vehicle')}</p>}
-              </div>
-            )}
-          </SidebarCardSection>
-        </>
-      )}
+      extra={liveRouteSections}
     />
   ) : selectedGroup ? (
     // The route layer hasn't loaded (or has no such route): Live's own header over the same sections.
@@ -937,69 +939,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           />
         </div>
       </SidebarCardHeaderBlock>
-      <LiveRoutePerformance
-        key={selectedRoute ?? ''}
-        slug={selectedGroup.agencySlug}
-        routeShortName={selectedGroup.routeShortName}
-        vehicles={selectedGroup.vehicles}
-        feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
-        scheduledRowsFor={scheduledRowsFor}
-      />
-      <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
-        {/* Match static route cards: destinations first, live vehicles second. */}
-        {selectedGroup.vehicles.length === 0 ? (
-          <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
-        ) : canGroupByDirection && !destination ? (
-          orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
-            <CardDirectionRow
-              key={dirKey}
-              label={dirKey}
-              subLabel={directionSummary(vehicles, selectedRouteModeWord)}
-              onClick={() => setSelectedDirection(dirKey)}
-              chevron
-            />
-          ))
-        ) : !vehiclesOpen && !destination ? (
-          // CIV-2901 (mock v2): the vehicle list waits behind "N vehicles ›"; the counts per destination are in Right now above.
-          <CardDirectionRow label={countOf(allListed.length, 'vehicle')} labelWeight="regular" chevron onClick={() => setVehiclesOpen(true)} />
-        ) : (
-          <div ref={vehicleListRef} className="space-y-2">
-          {shownVehicles.map((v, i) => {
-            const colors = getVehicleColors(v.status, colorMode);
-            return (
-              // The route card's direction row (CIV-1117 preview), with the vehicle's delay at the right end.
-              <CardDirectionRow
-                key={v.id}
-                label={vehicleRowName(v, i, selectedRouteModeWord)}
-                singleLine
-                onClick={() => {
-                  setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
-                  setFocusedVehicle({ id: v.id, lat: v.lat, lon: v.lon, ts: Date.now() });
-                  setVehicleCard({ routeKey: buildRouteKey(v.agencySlug, v.routeShortName), id: v.id });
-                }}
-                // No status at all where the feed gives none (TTC streetcars), not an empty field (CIV-1043).
-                // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
-                value={(v.speedKmh != null || delayLabel(v)) ? (
-                  <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
-                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
-                    {delayLabel(v) && (
-                      <span
-                        style={{ color: v.status === 'no_data' ? undefined : colors.border }}
-                        className={`text-xs font-black ${v.status === 'no_data' ? 'text-[var(--text-muted)]' : ''}`}
-                      >
-                        {delayLabel(v)}
-                      </span>
-                    )}
-                  </span>
-                ) : undefined}
-              />
-            );
-          })}
-          {/* The card never scrolls: at the busiest times it lists as many vehicles as fit and counts the rest (all are on the map). */}
-          {hiddenVehicles > 0 && <p className="text-xs font-bold text-[var(--text-dim)] pt-1">{andOthers(hiddenVehicles, 'vehicle')}</p>}
-          </div>
-        )}
-      </SidebarCardSection>
+      {liveRouteSections}
     </SidebarCardShell>
   ) : null;
 
