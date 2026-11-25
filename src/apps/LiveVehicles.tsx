@@ -30,7 +30,8 @@ import { liveScheduledHeadway, liveScheduledRowsNow } from '../utils/liveSchedul
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
-import { newestReportSec, type LiveAgencyFeed } from '../../shared/liveStatus';
+import { liveAgencyStatus, newestReportSec, worstLiveStatus, type LiveAgencyFeed } from '../../shared/liveStatus';
+import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
@@ -404,6 +405,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
     return slugs.size === 1 ? [...slugs][0] : null;
   }, [sidebarRouteGroups]);
+  // CIV-2902 (#1797): the header dot's state by the shared rule (CIV-2084): the agency the header names, else the worst in view.
+  const headerStatus = useMemo(() => {
+    const nowSec = Math.floor(Date.now() / 1000);
+    const feeds = (statusFeeds ?? []).filter(f => !listAgencySlug || f.slug === listAgencySlug);
+    return worstLiveStatus(feeds.map(f => liveAgencyStatus(f, nowSec)));
+  }, [statusFeeds, listAgencySlug]);
 
   const renderRouteGroupList = (groups: RouteGroup[]) => {
     let lastSlug = '';
@@ -918,11 +925,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             <PanelTitleBar>
               {!isZoomedIn ? (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
-              ) : vehiclesInViewport > 0 ? (
+              ) : headerStatus === 'live' && vehiclesInViewport > 0 ? (
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--status-positive)] opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--status-positive)]" />
                 </span>
+              ) : headerStatus && headerStatus !== 'live' ? (
+                // CIV-2902 (#1797): the shared Live / Delayed / Unavailable rule for the agency the header names (else the
+                // worst in view), never green while that agency's vehicles can't be shown.
+                <LiveStatusDot status={headerStatus} />
               ) : isLoading ? (
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--status-caution)] opacity-75" />
@@ -1004,15 +1015,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               )
             ) : (
               <>
-                {errors.length > 0 && (
-                  <div className="px-4 py-2 border-b border-[var(--border-primary)]">
-                    <CardHelpNotice
-                      message={liveUnreachableText(Object.entries(errorBySlug)
-                        .filter((entry): entry is [string, string] => Boolean(entry[1]))
-                        .map(([slug]) => agencyShortNameBySlug(agencies, slug)))}
-                    />
+                {/* CIV-2902 (#1797): one message per agency, each with that agency's own status dot, so a message about one
+                    agency never sits under another agency's green dot. */}
+                {Object.entries(errorBySlug).filter((entry): entry is [string, string] => Boolean(entry[1])).map(([slug]) => (
+                  <div key={slug} className="px-4 py-2 border-b border-[var(--border-primary)] flex items-start gap-2">
+                    <span className="mt-1.5"><LiveStatusDot status="unavailable" /></span>
+                    <CardHelpNotice message={liveUnreachableText([agencyShortNameBySlug(agencies, slug)])} />
                   </div>
-                )}
+                ))}
                 {offScreenOnly && !query && (
                   <div className={`${PANEL_SECTION_HEAD} border-b border-[var(--border-primary)]`}>
                     Outside this view · {countOf(totalVehicles, 'vehicle')}
