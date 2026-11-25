@@ -5,10 +5,9 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { PERIOD_KEYS } from '../../shared/config';
-import { memoryStore, type MemoryData } from '../../shared/mcpMemoryStore';
-import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+import { memoryStore } from '../../shared/mcpMemoryStore';
 import { splitPaths, splitStore } from '../../shared/mcpSplitStore';
 
 const FIXTURE = JSON.parse(readFileSync(join(import.meta.dirname, '../../src/utils/__tests__/fixtures/ttc-29-weekday.json'), 'utf8')) as { features: Array<{ geometry: unknown; properties: Record<string, unknown> }> };
