@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Map cards stay lined up with the search bar**: a card could open about 55 px to the right of the search bar when the logo beside it changed width after the page had laid out
 - **Live shows vehicles straight from the cloud recording**: the Live map no longer needs anything running on a computer, for the agencies Atlas records (TTC, Hamilton, Kingston, MBTA, YRT, Durham and Brampton)
 - **On-demand zone cards no longer give booking details**: Atlas shows how often service runs, not how to book a ride, so app names, phone numbers and booking rules are gone from the cards and from Atlas Studio MCP's answers
 - **Atlas Studio MCP's hour-by-hour figures list every branch running then, and count lone trips**: RTD 31's 106th & Melody branch had no row at rush hour, and hours with one trip read "no regular trips"
