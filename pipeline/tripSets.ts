@@ -1041,13 +1041,17 @@ export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
   const times = [...s.times];
   const headways = computePeriodHeadways(times, true, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
   const coverage = computePeriodCoverageHeadways(times, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
-  const coverageClock = computePeriodCoverageHeadways(clockTimes(times), READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
-  const sustained = computePeriodSustained(times, READ_WINDOWS) as Partial<Record<ReadKey, boolean>>;
+  // CIV-1958: every yes/no below (steady, uneven, a tail's two-gap check, the midpoint, one gap, the coverage cap) reads the
+  // departures' clock minutes; the numbers published (headways, coverage, the uneven wait) keep their exact times.
+  const clock = clockTimes(times);
+  const headwaysClock = computePeriodHeadways(clock, true, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
+  const coverageClock = computePeriodCoverageHeadways(clock, READ_WINDOWS) as Partial<Record<ReadKey, number | null>>;
+  const sustained = computePeriodSustained(clock, READ_WINDOWS) as Partial<Record<ReadKey, boolean>>;
   const out = {} as Record<ReadKey, StretchPeriod>;
   for (const { key, start, end } of READ_WINDOWS) {
     const runs = coverage[key] != null;
     const steady = sustained[key] === true;
-    const uneven = runs && steady && isUnevenPeriod(times, start, end, headways[key]);
+    const uneven = runs && steady && isUnevenPeriod(clock, start, end, headwaysClock[key]);
     // An uneven period reads its longest wait, leaving out only a true start or end of its service
     // (CIV-1064, unevenWait): the 6's Pelham Bay tail starts its evening at 19:41, when the <6> express
     // (another route) serves it, and reads 18, not 41. A wait the window cuts counts, for a tail as for
@@ -1063,10 +1067,10 @@ export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
     // Settled rule 3: a tail that does not run steadily is left out. Only whether the tail counts for
     // the period changes here; its own value, the main stretch, the published steady flag and the
     // all-day branch test (countsSettled) are unchanged.
-    const ordered = [...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b);
+    const ordered = [...new Set(forCrossMidnightWindow(clock, end))].sort((a, b) => a - b);
     const inWindow = ordered.filter(t => t >= start && t <= end);
     const windowGaps = inWindow.slice(1).map((t, i) => t - inWindow[i]);
-    const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headways[key] ?? 0));
+    const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headwaysClock[key] ?? 0));
     // B4: a byTrips tail speaks only in the periods where it is regular (rule D).
     const regularHere = !s.byTrips || (s.activeIn?.includes(key as PeriodKey) ?? false);
     const countsSettled = runs && regularHere && (s.kind === 'main' || (steady && sustainedWithMidpoint(ordered, sustained[key], start, end) === true));
@@ -1079,8 +1083,8 @@ export function stretchPeriods(s: Stretch): Record<ReadKey, StretchPeriod> {
       coverage: coverage[key] ?? null,
       ...(coverageClock[key] !== coverage[key] ? { coverageClock: coverageClock[key] ?? null } : {}),
       sustained: sustained[key] ?? null,
-      sustainedMid: sustainedWithMidpoint([...new Set(forCrossMidnightWindow([...times], end))].sort((a, b) => a - b), sustained[key], start, end),
-      oneGap: runs && isOneGapPeriod(times, start, end, value, sustained[key]),
+      sustainedMid: sustainedWithMidpoint([...new Set(forCrossMidnightWindow(clock, end))].sort((a, b) => a - b), sustained[key], start, end),
+      oneGap: runs && isOneGapPeriod(clock, start, end, value, sustained[key]),
       uneven,
     };
   }
