@@ -12,8 +12,12 @@ export const MCP_TESTER_CALLS_SHOWN = 50;
 export interface McpTester { name: string; created_at: string; revoked_at: string | null; calls: number; /** Calls in the last 7 days (CIV-2063); missing from a server deployed before it. */ calls_7d?: number; /** Distinct question IDs, all time and in the last 7 days; missing from a server deployed before them. */ questions?: number; questions_7d?: number }
 export interface McpTesterCall { id: number; at: string; tool: string; question: string | null; question_id?: string | null; ok: number; ms: number }
 
-/** The MCP page's usage chart: days shown, ending today (UTC). */
-export const MCP_USAGE_DAYS = 28;
+/** The MCP page's usage chart: the days it can show, ending today (UTC). The local API reads the longest. */
+export const MCP_USAGE_DAY_CHOICES = [7, 14, 28] as const;
+export type McpUsageDayChoice = typeof MCP_USAGE_DAY_CHOICES[number];
+/** CIV-2944 (Ryan, 2026-11-25: "do 7 days w a toggle for 14 or 28"): the chart opens on the shortest. */
+export const MCP_USAGE_DAYS_DEFAULT: McpUsageDayChoice = MCP_USAGE_DAY_CHOICES[0];
+export const MCP_USAGE_DAYS: McpUsageDayChoice = MCP_USAGE_DAY_CHOICES[MCP_USAGE_DAY_CHOICES.length - 1];
 /** The most calls per tester the page reads when the server has no daily count yet (the log endpoint's limit). */
 export const MCP_USAGE_LOG_LIMIT = 500;
 /** One day's use of the hosted pilot, every tester together; `date` is "2026-11-22" (UTC). */

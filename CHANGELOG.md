@@ -7,6 +7,12 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The cloud recorder saves each recorded agency's whole-network vehicle counts with every snapshot**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network
+- **The overnight and frequent-service maps say to zoom in when zoomed out**: they draw no routes that far out, but the overnight list said only "some less frequent routes are hidden" and the frequent-service map said nothing
+- **The Coverage page's tags line up under their headings**: four Live tags ran over the Studio column, so "Lateness" sat on top of "Schedule"
+- **Atlas Studio's Fleet leads with right now**: every vehicle on the road now and the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
+- **The internal MCP page's usage chart shows questions and calls as two lines, over 7, 14 or 28 days**: calls were only in the hover, and it opens on the last week
+- **The internal MCP page's Stop link sits in a tester's own view**: a button on every row of the Testers table was too much
+- **The cloud recorder saves each recorded agency's whole-network vehicle count every minute**: Fleet can show how many vehicles are in service now, including TTC routes Live doesn't record
 - **Turning Live off no longer breaks the map**: leaving Live replaced the whole map with "The map couldn't be shown because of an error" until Retry
 - **Live's route card is the map's route card**: it has the map card's chart, period and both directions' destinations, with "Right now" added below for every direction at once instead of a direction toggle, and it lines up with the search bar
 - **Studio Live's map shows "Not measured" stretches dashed**: they were the same grey as "Under 0.5 min", so a stretch with no figure looked like one where nothing was lost
@@ -57,6 +63,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Hamilton's Live recordings miss fewer minutes**: when Hamilton's feed briefly fails, the recorder tries once more a few seconds later instead of skipping that minute
 - **The Live card says "At <stop>" while a vehicle stands at a stop**: it never did on a real feed, because the stop status was read as text and checked as a number
 - **The internal Status page shows how many days of recordings each Live agency has**: a bar fills until the agency has enough days to be listed on Studio Live, so a new city's progress is visible as it comes online
+- **Atlas Studio's Schedules list reads cleanly**: times under a figure no longer run into the next column or get cut off, and each row's colour dot matches its own numbers instead of the time of day picked in the top bar; Fleet's vehicle counts now have thousands separators
 - **The Live Full report shows one topic at a time**: a row of topic pills (Along the route, Late departures by hour, Trip time and the rest) replaces one very long page, and every chart and control is still there under its topic
 - **History draws subway, commuter rail and ferry lines in its latest year**: routes with no route number, such as MBTA's Red Line and Hingham ferry, the CTA L, LA Metro Rail and SkyTrain, had no line at all
 - **The Frequent service story lets you pick the weekday hours behind its coverage figures**: 7 AM–7 PM by default, or 7 AM–10 PM, so a route counts by how it runs across the day instead of needing service from 6 AM

@@ -20,14 +20,17 @@ export interface SplitBarSegment {
  * frequency bar, the Free child fares page). Hovering, focusing or tapping a part highlights its legend item and fades the
  * other parts; the legend items do the same in reverse. Parts with no count are left out.
  */
-export default function SplitBar({ segments, label, trailing }: {
+export default function SplitBar({ segments, label, trailing, onPick }: {
   segments: readonly SplitBarSegment[];
   /** The bar's accessible name. */
   label: string;
   /** Beside the legend, at its right on wide screens (a link). */
   trailing?: ReactNode;
+  /** CIV-2182: a click on a part or its legend item also picks it (Studio Schedules' summary opens that part's routes). */
+  onPick?: (key: Key) => void;
 }) {
-  const { active, clear, faded, partEvents } = useActivePart();
+  const { active, clear, faded, partEvents: hoverEvents } = useActivePart();
+  const partEvents = (key: Key) => { const e = hoverEvents(key); return onPick ? { ...e, onClick: () => { e.onClick(); onPick(key); } } : e; };
   const shown = withCount(segments);
   if (shown.length === 0) return null;
   return (

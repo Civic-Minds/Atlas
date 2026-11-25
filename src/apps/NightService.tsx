@@ -15,15 +15,14 @@ import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { headwayAmount, headwayEvery, headwayOrBetter } from '../utils/headwayText';
-import ResearchInfo from '../components/ResearchInfo';
+import ResearchInfo, { useResearchZoomedOut } from '../components/ResearchInfo';
 import { NIGHT_INFO_HEADING, NIGHT_LIST_TITLE, nightRuleText } from '../content/researchRules';
 import { compareRouteNumber } from '../utils/sortCompare';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import AgencyName from '../components/ui/AgencyName';
-import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH, ZOOMED_OUT_NOTICE, OVERNIGHT_PART_OF_ROUTE } from '../content/noticeCopy';
-import { shouldLoadAgencyDetails } from '../hooks/useAgencyData';
+import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH, ZOOM_IN_TO_SEE_ROUTES, OVERNIGHT_PART_OF_ROUTE } from '../content/noticeCopy';
 import { nightRouteKey, nightRoutesInView, type NightServiceFeatureProperties } from '../utils/nightRoutesInView';
 
 interface NightServiceRoute {
@@ -98,9 +97,9 @@ interface Props {
 export default function NightService({ active, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const { bounds, zoom } = useViewport();
-  // Below the detail zoom the route data isn't loaded, so an empty list means zoomed out, not no service (CIV-1337).
-  const zoomedOut = !shouldLoadAgencyDetails(zoom ?? undefined, query);
+  const { bounds } = useViewport();
+  // Below the detail zoom the route data isn't loaded, so an empty list means zoomed out, not no service (CIV-1337, #1817).
+  const zoomedOut = useResearchZoomedOut(query);
   const colorMode = useColorMode();
   const visibleRoutes = useMemo(
     () => (Object.keys(layers).length === 0 ? [] : nightRoutesInView(layers, frequency, bounds)),
@@ -228,7 +227,7 @@ export default function NightService({ active, layers, query = '', frequency, on
           {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('overnight service')}</PanelEmpty>}
           {loadState === 'error' && <PanelEmpty kind="error">{NIGHT_LOAD_FAILED}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <PanelEmpty>{query.trim() ? NO_AGENCIES_MATCH_SEARCH : zoomedOut ? ZOOMED_OUT_NOTICE : nightNoRoutesNotice(frequency)}</PanelEmpty>
+            <PanelEmpty>{query.trim() ? NO_AGENCIES_MATCH_SEARCH : zoomedOut ? ZOOM_IN_TO_SEE_ROUTES : nightNoRoutesNotice(frequency)}</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>

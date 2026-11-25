@@ -72,9 +72,10 @@ const liveCell = (r: CoverageRow, live: LiveDays | null) => {
 const columns = (live: LiveDays | null): DataTableColumn<CoverageRow>[] => [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
   { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => <TagList tags={historyPills(r)} /> },
-  { key: 'live', header: H.live, width: WIDE + 6, cell: r => liveCell(r, live) },
-  { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagList tags={studioPills(r)} /> },
-  { key: 'mcp', header: H.mcp, width: WIDE + 6, cell: r => <TagList tags={mcpPills(r)} /> },
+  // #1816: room for all four Live tags and both Studio tags on one line; the MCP column holds one tag.
+  { key: 'live', header: H.live, width: WIDE + 12, cell: r => liveCell(r, live) },
+  { key: 'studio', header: H.studio, width: WIDE + 6, cell: r => <TagList tags={studioPills(r)} /> },
+  { key: 'mcp', header: H.mcp, width: WIDE, cell: r => <TagList tags={mcpPills(r)} /> },
 ];
 
 function CoverageTable({ rows, caption, live }: { rows: CoverageRow[]; caption: string; live: LiveDays | null }) {

@@ -8,6 +8,9 @@
  */
 import type { LiveSnapshotV2 } from './liveContract';
 
+/** How old a count can be: every snapshot carries one, and every recorded agency snapshots at least once a minute. */
+export const LIVE_COUNT_STEP_SEC = 60;
+
 type Positions = { entity?: readonly { vehicle?: { position?: unknown; trip?: { tripId?: string | null; routeId?: string | null } | null } | null }[] | null };
 
 /** Vehicles with a position in a decoded positions feed (gtfs-realtime-bindings toObject): on a trip, and not on one. */

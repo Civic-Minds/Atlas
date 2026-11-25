@@ -142,8 +142,13 @@ export const loadingText = (noun: string) => `Loading ${noun}…`;
 /** "This route couldn't load.": the thing first. */
 export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn’t load.`;
 
-/** The zoomed-out note, shared by the map export and the Night list (CIV-1337, Ryan: reuse this exact string). */
+/** The frequency map's zoomed-out note, in the map export (CIV-1337). */
 export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden.';
+/**
+ * The research views' zoomed-out line (overnight and frequent service), where below the detail zoom no route is drawn at
+ * all (#1817, CIV-2946; Ryan, 2026-11-25: "1").
+ */
+export const ZOOM_IN_TO_SEE_ROUTES = 'Zoom in to see the routes.';
 // N54 history-failed (hint)
 /** Added after a load error that the person can retry. */
 export const RETRY_HINT = 'Check your connection and try again.';
