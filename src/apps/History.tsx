@@ -1138,6 +1138,8 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   }, [active, historyData, selectedSlug, selectedRouteShortName, selectedYear, latestYear, regionList, routeQuery, activeFilter]);
 
 
+  // #1812: read before the early return, so every render calls the same hooks.
+  const frameStyle = useSidebarFrame().style;
   if (!shouldRender) return null;
 
   const showScrubber = selectedSlug && availableYears.length > 1;
@@ -1146,7 +1148,6 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const panelInteractive = Boolean(selectedSlug || showAgencyChooser || searchFocused);
   // Placement shared by History's panels, by the regular cards' rule: anchored under the search bar
   // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
-  const frameStyle = useSidebarFrame().style;
   const frameClassName = `transition-opacity ${TRANSITION_BASE} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
   // The agency chooser fades out with the same transition once dismissed (#1031). One opacity class only: with the
   // frame's opacity-100 beside an opacity-0, the stylesheet order kept it showing.

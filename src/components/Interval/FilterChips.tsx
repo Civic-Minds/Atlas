@@ -303,6 +303,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
 
+  // #1812: every hook runs before the early returns below.
+  const frequencyOptions = useFrequencyOptions();
   if (connectionsBar) {
     const c = connectionsBar;
     const pickedLabel = c.trips.flatMap(([, list]) => list).find(t => t.id === c.tripId)?.label;
@@ -376,7 +378,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     );
   }
 
-  const frequencyOptions = useFrequencyOptions();
   const frequencyChip = (className: string) => (
     <ChipMenu className={className} label={FREQUENCY_LABEL} active={maxHeadway !== Infinity} open={openChip === 'frequency'} onToggle={() => toggle('frequency')} panelClassName="w-36">
           <ChipOptions value={String(maxHeadway)} onPick={k => { setMaxHeadway(Number(k)); setOpenChip(null); }}

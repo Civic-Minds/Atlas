@@ -735,15 +735,17 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const shownVehicles = fitCount != null && fitCount < allListed.length ? allListed.slice(0, fitCount) : allListed;
   const hiddenVehicles = allListed.length - shownVehicles.length;
 
-  if (!active) return null;
-
   const totalVehicles = allVehicles.length;
   const hasAnyError = errors.length > 0 && totalVehicles === 0;
   // CIV-1768: every feed in view down: the map's loading pill reads "Unable to load · Retrying in 12s".
+  // #1812: these hooks run before the early return below, so leaving or opening Live keeps the hook count the same.
   const { setRetryAt } = useLiveFeedsDown();
-  const feedsDownRetryAt = hasAnyError ? nextPollAt : null;
+  const feedsDownRetryAt = active && hasAnyError ? nextPollAt : null;
   useEffect(() => { setRetryAt(feedsDownRetryAt); }, [feedsDownRetryAt, setRetryAt]);
   useEffect(() => () => setRetryAt(null), [setRetryAt]);
+
+  if (!active) return null;
+
   const hasLiveElsewhere = offScreenOnly && !query;
   const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
 
