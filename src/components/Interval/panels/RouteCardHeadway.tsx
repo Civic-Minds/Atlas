@@ -506,7 +506,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             <CardHelpNotice
               message={notices.filter.text}
-              onLearnMore={notices.filter.learnMore && onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N12'), filterNotice: notices.filter!.text }) : undefined}
+              onLearnMore={notices.filter.learnMore && onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N12'), filterNotice: notices.filter!.pageText ?? notices.filter!.text }) : undefined}
             />
           </div>
         )}
