@@ -7,6 +7,9 @@ import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/rou
 import { PERIOD_KEYS } from '../../shared/config';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { splitRouteKey } from './routeKey';
+import { cardIrregularLines } from './routeListRange';
+import { isHiddenByIrregularFilter } from '../../shared/irregularRoutes';
+import { routeGroupKey } from '../../shared/routeGroupKey';
 import { rowIrregularInPeriod } from './effectiveHeadway';
 import {
   buildSharedStopIndex,
@@ -853,4 +856,31 @@ export function buildPartialMatchFilterExpression(keys: FrequencySegmentRouteKey
 export function broadenFilterForPartialMatches(baseFilter: any, partialMatches: FrequencySegmentRouteKey[]): any {
   if (partialMatches.length === 0) return baseFilter;
   return ['any', baseFilter, buildPartialMatchFilterExpression(partialMatches)];
+}
+
+/**
+ * CIV-2232 follow-up (preview, waits on Ryan): with "hide irregular routes" on, the lines whose card reads "Runs irregularly
+ * in this period" (cardIrregularLines, the card's own model) leave the map too, so map and card read one value. Lines the
+ * irregular setting already hides are left to it.
+ */
+export function cardIrregularRouteKeys(layers: AgencyLayers, period: TimePeriod): FrequencySegmentRouteKey[] {
+  const keys: FrequencySegmentRouteKey[] = [];
+  if (period === 'all') return keys;
+  for (const [slug, fc] of Object.entries(layers)) {
+    if (slug.endsWith('-corridors')) continue;
+    const groups = new Map<string, ShapeProperties[]>();
+    for (const f of fc.features) {
+      if (f.geometry?.type !== 'LineString') continue;
+      const p = f.properties as unknown as ShapeProperties;
+      if (isHiddenByIrregularFilter(p as never)) continue;
+      const k = `${routeGroupKey(p.routeShortName ?? null, p.routeId)}|${p.day ?? ''}`;
+      groups.set(k, [...(groups.get(k) ?? []), p]);
+    }
+    for (const rows of groups.values()) {
+      for (const p of cardIrregularLines(rows, period)) {
+        keys.push({ agencySlug: p.agencySlug ?? slug, routeId: p.routeId, directionId: p.directionId, headsign: p.headsign ?? null, day: p.day ?? null });
+      }
+    }
+  }
+  return keys;
 }
