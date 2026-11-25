@@ -3,6 +3,7 @@ import PillGroup from '../ui/PillGroup';
 import { CardDirectionRow, CardHelpNotice, CardSectionLabel, SidebarCardSection } from '../Interval/cardUi';
 import { countOf } from '../../../shared/overflowText';
 import { useSegmentDelayStatus } from '../../hooks/useSegmentDelay';
+import { liveCloudFetch } from '../../lib/liveCloudFetch';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/urlSchema';
 import { periodKeyForHour } from '../../../shared/config';
@@ -129,7 +130,7 @@ function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, rout
     let live = true;
     setSeed([]);
     Promise.resolve()
-      .then(() => fetch(`${LIVE_RECENT_URL}?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(routeShortName)}`))
+      .then(() => liveCloudFetch('recent', { agency: slug, route: routeShortName }))
       .then(r => (r.ok ? r.json() as Promise<{ snapshots?: RecentSnapshot[] }> : null))
       .then(j => { if (live && j?.snapshots?.length) setSeed(j.snapshots); })
       .catch(() => {});
@@ -143,8 +144,6 @@ function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, rout
   }, [seed, polls]);
 }
 
-/** The recorded last half hour of a live route's positions (local only). */
-export const LIVE_RECENT_URL = '/api/live-recent';
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
 export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled }: Props) {

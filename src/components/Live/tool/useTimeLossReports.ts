@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { liveCloudFetch } from '../../../lib/liveCloudFetch';
 import { recentSegmentData, type SegmentDelayData } from '../../../utils/segmentDelayView';
 
 // One fetch per route and agency, kept for the page's life (the files change only when the analysis is rebuilt).
@@ -8,7 +9,7 @@ function load(agency: string, route: string): Promise<SegmentDelayData | null> {
   const key = `${agency}::${route}`;
   let p = cache.get(key);
   if (!p) {
-    p = fetch(`/api/live-segments?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}&fields=segments`)
+    p = liveCloudFetch('segments', { agency, route, fields: 'segments' })
       .then(r => (r.ok ? r.json() as Promise<{ noData?: boolean; segments?: unknown }> : null))
       // The last LIVE_WINDOW_DAYS service dates, good days only ("Rolling 7 days only"), where the file has them.
       .then(j => (j && !j.noData && Array.isArray(j.segments) ? recentSegmentData(j as SegmentDelayData) : null))

@@ -44,8 +44,8 @@ describe('route card shows only what is live (CIV-892)', () => {
     card([car('a', 't1', 2, Math.floor(Date.now() / 1000))]);
     await act(async () => {});
     const urls = vi.mocked(fetch).mock.calls.map(([url]) => String(url));
-    expect(urls.some(u => u.includes('/api/live-recent?agency=ttc&route=505'))).toBe(true);
-    expect(urls.some(u => u.includes('live-dashboard'))).toBe(false);
+    expect(urls.some(u => u.includes('/live/recent?agency=ttc&route=505'))).toBe(true);
+    expect(urls.some(u => u.includes('dashboard'))).toBe(false);
   });
 });
 

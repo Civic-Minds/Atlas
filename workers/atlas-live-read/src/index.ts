@@ -5,11 +5,46 @@
  * CORS for Atlas's own sites and localhost (shared/liveCloud.ts). Nothing here writes anywhere.
  */
 import { fromRecorder } from '../../../local-api/live-vehicles';
-import { RECORDER_SLUGS } from '../../../shared/liveArchiveFeeds';
-import { liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
+import liveSegments from '../../../local-api/live-segments';
+import liveDashboard from '../../../local-api/live-dashboard';
+import liveRecent from '../../../local-api/live-recent';
+import liveAgency from '../../../local-api/live-agency';
+import liveGaps from '../../../local-api/live-gaps';
+import liveStop from '../../../local-api/live-stop';
+import { cloudLiveFiles, setLiveFilesSource } from '../../../local-api/liveFiles';
+import { liveCloudServes, liveCloudServesVehicles, liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
 import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
+import { setAgencyNameLookup } from '../../../local-api/agencyName';
+import { checkMcpRelease } from '../../../shared/mcpRelease';
+import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
+import { R2_PUBLIC_URL } from '../../../shared/config';
 
-interface Env { LIVE_ARCHIVE: R2Bucket }
+// Agency names for the handlers' sentences ("TTC 7 is held back"), from the current release's catalog, the one the MCP
+// reads: the Worker has no config/agencies folder. Read once per isolate; a failed read is tried again next time.
+let catalogNames: Promise<Map<string, string>> | null = null;
+setAgencyNameLookup(async slug => {
+  catalogNames ??= (async () => {
+    const check = await checkMcpRelease(R2_PUBLIC_URL);
+    if (check.kind !== 'ready') throw new Error('no release');
+    return new Map((await splitStore(urlReader(check.base)).catalog()).map(a => [a.slug, a.name]));
+  })().catch(e => { catalogNames = null; throw e; });
+  return (await catalogNames).get(slug) ?? null;
+});
+
+/** LIVE_ARCHIVE: the recorder (atlas-live). MCP_LIVE: the daily Live analysis files (atlas-mcp-live, studio-live/). Both read only. */
+interface Env { LIVE_ARCHIVE: R2Bucket; MCP_LIVE: R2Bucket }
+
+/** CIV-2914: the Live card's own reads, served by local-api's handlers so the answers are the same; agency-gated here too. */
+const ROUTE_HANDLERS: Record<string, { fetch: (req: Request) => Promise<Response> }> = {
+  '/live/segments': liveSegments,
+  '/live/dashboard': liveDashboard,
+  '/live/recent': liveRecent,
+  '/live/agency': liveAgency,
+  '/live/gaps': liveGaps,
+  // A stop's next arrivals, read from the agency's own feed; its key (if any) is a Worker secret, read via process.env.
+  '/live/stop': liveStop,
+};
+let boundFiles: R2Bucket | undefined;
 
 let bound: R2Bucket | undefined;
 const json = (body: unknown, status: number, headers: Record<string, string>) => Response.json(body, { status, headers });
@@ -19,12 +54,23 @@ export default {
     const url = new URL(request.url);
     const origin = liveVehiclesCorsOrigin(request.headers.get('Origin'));
     const cors: Record<string, string> = origin ? { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' } : {};
-    if (url.pathname !== '/live/vehicles') return json({ error: 'Not found' }, 404, cors);
+    const handler = ROUTE_HANDLERS[url.pathname];
+    if (url.pathname !== '/live/vehicles' && !handler) return json({ error: 'Not found' }, 404, cors);
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...cors, 'Access-Control-Allow-Methods': 'GET', 'Access-Control-Max-Age': '86400' } });
     if (request.method !== 'GET') return json({ error: 'Not found' }, 404, cors);
     const agency = url.searchParams.get('agency') ?? '';
-    if (!RECORDER_SLUGS.includes(agency)) return json({ error: 'Live has no cloud recording for this agency.' }, 404, cors);
+    // CIV-2914 (CIV-1716): only agencies Live shows; an analysis-only agency (Kingston) is never served, whatever the files hold.
+    if (!(handler ? liveCloudServes(agency) : liveCloudServesVehicles(agency))) return json({ error: 'Live has no cloud recording for this agency.' }, 404, cors);
     if (env.LIVE_ARCHIVE !== bound) { bound = env.LIVE_ARCHIVE; useNowSource(bucketNowSource(bound)); }
+    if (handler) {
+      if (env.MCP_LIVE !== boundFiles) { boundFiles = env.MCP_LIVE; setLiveFilesSource(cloudLiveFiles(async key => (await boundFiles!.get(key))?.text() ?? null)); }
+      // The visitor's address, so the handlers' per-visitor rate limit counts each visitor, not the Worker.
+      const ip = request.headers.get('CF-Connecting-IP');
+      const res = await handler.fetch(new Request(`http://localhost/api${url.pathname.slice('/live'.length).replace(/^\//, '/live-')}${url.search}`, { headers: ip ? { 'x-real-ip': ip } : {} }));
+      const headers = new Headers(res.headers);
+      for (const [k, v] of Object.entries(cors)) headers.set(k, v);
+      return new Response(res.body, { status: res.status, headers });
+    }
     try {
       const answer = await fromRecorder(agency);
       if (!answer) return json({ error: 'The cloud recording has no recent snapshot for this agency.', reason: 'timeout' }, 502, { ...cors, 'Cache-Control': 'public, max-age=0, s-maxage=5' });

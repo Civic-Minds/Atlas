@@ -1,9 +1,10 @@
 import { ATLAS_MODE, R2_PUBLIC_URL } from '../../shared/config';
 import { liveTabTitle } from '../../shared/liveLinkPreview';
+import { liveCloudUrl } from '../../shared/liveCloud';
 import { seoTitlePrefix } from '../../shared/seo';
 
 /**
- * Where the Live report pages read their data. Dev: the local API (local-api/, served by `npm run live`). Production and
+ * Where the Live report pages read their data. Dev: the cloud reader atlas-live-read (CIV-2914; nothing runs on the Mac). Production and
  * beta builds: the published analysis JSON on R2 (scripts/live-publish.ts writes atlas/live/<agency>/<route>.json and
  * agency.json), so the pages work without any Live endpoint deployed.
  */
@@ -12,11 +13,11 @@ const fromR2 = !import.meta.env.DEV;
 export function liveDashboardDataUrl(agency: string, route: string): string {
   return fromR2
     ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/${encodeURIComponent(route)}.json`
-    : `/api/live-dashboard?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
+    : liveCloudUrl('dashboard', { agency, route });
 }
 
 export function liveAgencyDataUrl(agency: string): string {
-  return fromR2 ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/agency.json` : `/api/live-agency?agency=${encodeURIComponent(agency)}`;
+  return fromR2 ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/agency.json` : liveCloudUrl('agency', { agency });
 }
 
 /** What the report pages say outside dev when their data fails to load (wording approved by Ryan, 2026-10-16). */
@@ -35,12 +36,12 @@ export const ANALYZE_DEV_HINT = 'npm run live:analyze';
 export const liveReportTitle = (name: string, route = false) => `${seoTitlePrefix(ATLAS_MODE)}${liveTabTitle(name, route)}`;
 
 /**
- * The per-stop gaps file for the gaps-through-the-day chart: the local endpoint in dev; null on deployed builds, because
+ * The per-stop gaps file for the gaps-through-the-day chart: the cloud reader in dev; null on deployed builds, because
  * scripts/live-publish.ts publishes no gaps file, so asking R2 only logged a 404 on every route page (#1475). When the
  * publish uploads `<route>-gaps.json`, return its R2 URL here again.
  */
 export function liveGapsDataUrl(agency: string, route: string): string | null {
-  return fromR2 ? null : `/api/live-gaps?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
+  return fromR2 ? null : liveCloudUrl('gaps', { agency, route });
 }
 
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */

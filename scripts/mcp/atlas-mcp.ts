@@ -1,8 +1,8 @@
 /**
  * CIV-1650: a private, local, read-only MCP server for Atlas (Ryan's "1", 2026-11-17). It runs on this Mac over stdio
  * and answers planner questions from Atlas's processed per-agency route files (scripts/mcp/atlasData.ts), with the
- * map's own numbers. It reads published data from the cloud, the release the map reads (CIV-2014: scripts/mcp/cloudStore.ts),
- * and this Mac only for unpublished files. Nothing is uploaded or written; it is not deployed anywhere.
+ * map's own numbers. It reads only what the hosted server reads (CIV-2914), from the cloud. Nothing is uploaded or
+ * written; it is not deployed anywhere: it is atlas-studio-dev, for testing MCP code before it deploys.
  *
  * Setup for Claude Code and Claude Desktop: scripts/mcp/README.md.
  *
@@ -18,60 +18,38 @@ const data = await import('./atlasData');
 const tools = await import('./tools');
 const { INSTRUCTIONS } = tools;
 type Args = Record<string, unknown>;
-const { diskStore } = await import('./diskStore');
-// ATLAS_MCP_STORE=split:<folder> reads the split release files in a folder (what the hosted server reads), else the files on this Mac.
+// CIV-2914: atlas-studio-dev exists only to test MCP code before it deploys, so it reads what the hosted server reads
+// (workers/atlas-mcp): the current release's split files, the private Live bucket, the recorder. Never a copy on this Mac.
+// Opt-in test folders only: ATLAS_MCP_STORE=split:<folder> (split release files), ATLAS_MCP_DATA_DIR (route files).
 const splitDir = process.env.ATLAS_MCP_STORE?.startsWith('split:') ? process.env.ATLAS_MCP_STORE.slice(6) : null;
 const { folderReader } = await import('./folderReader');
-const { splitStore, urlReader } = await import('../../shared/mcpSplitStore');
-// CIV-2014: published data from the cloud (the release the map reads), this Mac only for unpublished files. The pointer is
-// re-read at most once a minute, so a release published while the server runs is picked up. ATLAS_MCP_DATA_DIR (a folder
-// of route files) and split:<folder> keep reading disk, for tests and the MCP chat's runs.
-const { MCP_POINTER_RECHECK_MS: POINTER_RECHECK_MS } = await import('../../shared/rules/limits');
-const POINTER_TIMEOUT_MS = 5_000;
-let cloud: { releaseId: string | null; checkedAt: number } | null = null;
-/** The note answers carry while the cloud can't be reached and the copy on this Mac is older than the latest release. */
-let staleNote: string | null = null;
-async function useCurrentData(): Promise<void> {
-  if (splitDir || process.env.ATLAS_MCP_DATA_DIR) return;
-  const now = Date.now();
-  if (cloud && now - cloud.checkedAt < POINTER_RECHECK_MS) return;
-  const { checkMcpRelease } = await import('../../shared/mcpRelease');
-  const { R2_PUBLIC_URL } = await import('../../shared/config');
-  const { cloudFirstStore } = await import('./cloudStore');
-  const readThisMac = async (why: string) => {
-    if (cloud?.releaseId !== null) {
-      data.useStore(diskStore());
-      staleNote = (await import('./diskStore')).staleCacheNote();
-      console.error(`Atlas Studio MCP: ${why}; reading the copy on this Mac.`);
-    }
-    cloud = { releaseId: null, checkedAt: now };
-  };
-  let check;
-  try { check = await checkMcpRelease(R2_PUBLIC_URL, { signal: AbortSignal.timeout(POINTER_TIMEOUT_MS) }); }
-  catch (e) { return readThisMac(`the cloud release could not be read (${(e as Error).message})`); }
-  if (check.kind === 'ready') {
-    if (check.releaseId !== cloud?.releaseId) {
-      data.useStore(cloudFirstStore(splitStore(urlReader(check.base)), diskStore({ releaseCache: false })));
-      staleNote = null;
-    }
-    cloud = { releaseId: check.releaseId, checkedAt: now };
-  } else if (cloud?.releaseId) {
-    // The pointer moved before the new release's MCP files were up: the release loaded keeps answering (as the hosted server does).
-    cloud = { ...cloud, checkedAt: now };
-  } else await readThisMac(`release ${check.releaseId} has no MCP files yet`);
-}
+const { splitStore } = await import('../../shared/mcpSplitStore');
+const { useCurrentRelease } = await import('./currentRelease');
+const useCurrentData = async () => { if (!splitDir && !process.env.ATLAS_MCP_DATA_DIR) await useCurrentRelease(); };
 if (splitDir) data.useStore(splitStore(folderReader(splitDir)));
-else if (process.env.ATLAS_MCP_DATA_DIR) data.useStore(diskStore());
-else await useCurrentData();
-// Testing only (CIV-1860): ATLAS_MCP_LIVE_DIR points the Live tools at a folder laid out like the private Live bucket
-// (scripts/mcp/releaseLivePrivate.ts --dry-run writes one under <work>/dry-run).
-const liveDir = process.env.ATLAS_MCP_LIVE_DIR;
-if (liveDir) {
+else if (process.env.ATLAS_MCP_DATA_DIR) data.useStore((await import('./diskStore')).diskStore());
+else await useCurrentData().catch(e => console.error(`Atlas Studio MCP: ${(e as Error).message}`));
+// The Live tools read the private Live bucket, as the hosted server does (its MCP_LIVE binding), with the read-only keys.
+{
   const { splitLiveReader, useLiveReader } = await import('./liveData');
-  useLiveReader(splitLiveReader(folderReader(liveDir)));
+  if (process.env.ATLAS_MCP_LIVE_DIR) useLiveReader(splitLiveReader(folderReader(process.env.ATLAS_MCP_LIVE_DIR)));
+  else {
+    const { privateBucket } = await import('../../local-api/privateBucket');
+    const LIVE_TTL_MS = 5 * 60_000;
+    const liveCache = new Map<string, { at: number; value: unknown }>();
+    useLiveReader(splitLiveReader(async key => {
+      const hit = liveCache.get(key);
+      if (hit && Date.now() - hit.at < LIVE_TTL_MS) return hit.value;
+      const text = await privateBucket().get(key);
+      const value = text == null ? null : JSON.parse(text);
+      liveCache.set(key, { at: Date.now(), value });
+      return value;
+    }));
+  }
 }
-
-const { localHandlers } = await import('./localTools');
+// trip_time, combined_frequency and stop_frequency's every-route reading need schedule zips, which the hosted server
+// doesn't have: only with the opt-in test folder ATLAS_MCP_FEEDS_DIR (CIV-2914).
+const localHandlers = process.env.ATLAS_MCP_FEEDS_DIR ? (await import('./localTools')).localHandlers : {};
 // route_now (CIV-1870) reads the Live recorder's snapshots (the hosted server adds it too).
 const { liveNowHandlers } = await import('./liveNowTools');
 const { onDemandHandlers, useOnDemandBase } = await import('./onDemandTools');
@@ -81,8 +59,8 @@ const { nightHandlers } = await import('./nightTools');
 const { coverageHandlers } = await import('./coverageTools');
 const { withScheduleWarning } = await import('./toolHelpers');
 const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = withScheduleWarning({ ...tools.handlers, ...localHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers, ...coverageHandlers });
-// Every tool's definition, the local ones included.
-const TOOLS = tools.TOOLS;
+// The tools this server answers, as the hosted server lists them.
+const TOOLS = tools.TOOLS.filter(t => t.name in handlers);
 
 function reply(id: unknown, result: unknown) { process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id, result }) + '\n'); }
 function fail(id: unknown, code: number, message: string) { process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id, error: { code, message } }) + '\n'); }
@@ -99,9 +77,8 @@ for await (const line of createInterface({ input: process.stdin })) {
   else if (method === 'tools/call') {
     const handler = handlers[params?.name ?? ''];
     if (!handler) { fail(id, -32602, `Unknown tool ${params?.name}`); continue; }
-    await useCurrentData();
+    try { await useCurrentData(); } catch (e) { reply(id, toolCallResult(await runTool(() => { throw e; }, {}))); continue; }
     const result = toolCallResult(await runTool(handler, params?.arguments ?? {}));
-    if (staleNote) result.content.push({ type: 'text', text: staleNote });
     reply(id, result);
   } else fail(id, -32601, `Method not found: ${method}`);
 }
