@@ -83,7 +83,9 @@ export async function recordRun(feeds: readonly LiveRecorderFeed[], env: V2Env, 
   const runStartSec = Math.floor(runStartMs / 1000);
   const jobs = feeds.flatMap(feed => slotsInRun(runStartSec, feed.paceSec).map(slot => async () => {
     await wait(slot * 1000 - now());
-    return writeSnapshot(env, await snapshotFor(feed, env, slot));
+    // #1799: a failure names its agency in the log.
+    try { return await writeSnapshot(env, await snapshotFor(feed, env, slot)); }
+    catch (e) { throw new Error(`${feed.slug} ${slot}: ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}`); }
   }));
   return Promise.allSettled(jobs.map(job => job()));
 }

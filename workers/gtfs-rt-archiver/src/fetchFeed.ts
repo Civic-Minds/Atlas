@@ -12,6 +12,19 @@ export const FEED_TIMEOUT_MS = 15_000;
 export const FEED_RETRY_DELAY_MS = 3_000;
 /** Retries after the first attempt (so at most two fetches a feed a run). */
 export const FEED_RETRIES = 1;
+/**
+ * #1799: Cloudflare lets one invocation hold 6 connections open at once; more fetches wait in a queue while their
+ * timeout already runs, so the last feeds of a busy run timed out (Burlington, last of eight agencies, missed about half
+ * its slots). Fetches beyond this wait here, before their timeout starts.
+ */
+export const MAX_OPEN_FETCHES = 6;
+let open = 0;
+const waiting: Array<() => void> = [];
+async function slot<T>(work: () => Promise<T>): Promise<T> {
+  if (open >= MAX_OPEN_FETCHES) await new Promise<void>(resolve => waiting.push(resolve));
+  open++;
+  try { return await work(); } finally { open--; waiting.shift()?.(); }
+}
 
 export interface FetchFeedOptions {
   headers?: Record<string, string>;
@@ -25,9 +38,10 @@ const defaultSleep = (ms: number) => new Promise<void>(resolve => setTimeout(res
 export async function fetchFeed(url: string, options: FetchFeedOptions = {}): Promise<Response> {
   const sleep = options.sleep ?? defaultSleep;
   for (let attempt = 0; ; attempt++) {
-    const res = await fetch(url, {
-      headers: options.headers,
-      signal: AbortSignal.timeout(FEED_TIMEOUT_MS),
+    // The body is read inside the slot too, so the connection stays counted until the feed is in.
+    const res = await slot(async () => {
+      const r = await fetch(url, { headers: options.headers, signal: AbortSignal.timeout(FEED_TIMEOUT_MS) });
+      return r.status >= 500 ? r : new Response(await r.arrayBuffer(), { status: r.status, statusText: r.statusText, headers: r.headers });
     });
     if (res.status < 500 || attempt >= FEED_RETRIES) return res;
     // Free the failed body before waiting so the connection can be reused.
