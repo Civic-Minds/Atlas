@@ -100,7 +100,8 @@ export const DELAY_STEP_LABELS = [ON_TIME_LABEL, '1–3 min', '3+ min behind'] a
 
 /** How late is Late, the one place its words live (E9). */
 export const LATE_LIMIT_TEXT = 'more than 5½ min';
-export const LATE_DEFINITION = `is ${LATE_LIMIT_TEXT} behind schedule. This is based on the TTC’s 5-minute standard, plus 30 seconds because we only record each vehicle’s location once a minute.`;
+/** Ryan, 2026-11-24 (CIV-2222), word for word: "Late is more than 5½ min behind schedule, unless the agency publishes its own limit, which we use instead." */
+export const LATE_DEFINITION = `is ${LATE_LIMIT_TEXT} behind schedule, unless the agency publishes its own limit, which we use instead.`;
 /**
  * CIV-2222: the on-time window a page's figures use, as a Live file records it (`v3.thresholds`) or from the agency's slug
  * (onTimeWindowWords). Absent fields read Atlas's window.

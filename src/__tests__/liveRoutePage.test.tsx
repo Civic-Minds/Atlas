@@ -124,9 +124,9 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/scheduled for \(4% of trips\)/)).toBeTruthy();
     // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
-    expect(screen.getAllByText(/is more than 5½ min behind schedule\. This is based on the TTC’s 5-minute standard/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/is more than 5½ min behind schedule, unless the agency publishes its own limit, which we use instead\./).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Late at a stop/)).toBeNull();
-    expect(screen.getAllByText((_, el) => el?.tagName === 'P' && /once a minute\.\s?Ahead is 1\.5 min or more ahead of schedule\./.test(el.textContent ?? '')).length).toBeGreaterThan(0);
+    expect(screen.getAllByText((_, el) => el?.tagName === 'P' && /which we use instead\.\s?Ahead is 1\.5 min or more ahead of schedule\./.test(el.textContent ?? '')).length).toBeGreaterThan(0);
   });
 
   it('the header trip count and the service-days line count only the good days, and the excluded day is still named (CIV-910)', async () => {
