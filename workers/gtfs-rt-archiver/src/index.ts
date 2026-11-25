@@ -7,7 +7,7 @@
  *   atlas-live/{slug}/{YYYY-MM-DD}/{unix-seconds}.json
  *
  * Skips writing if the feed is too small to contain active trips (< 5 KB).
- * R2 lifecycle rules enforce the 30-day retention window.
+ * R2 lifecycle rules enforce the 60-day retention window (CIV-1906).
  */
 
 import { fetchFeed } from './fetchFeed';

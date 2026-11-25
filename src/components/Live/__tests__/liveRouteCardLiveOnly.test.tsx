@@ -66,8 +66,9 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     const shortest = screen.getByText('Shortest gap').nextElementSibling as HTMLElement;
     expect(shortest.textContent).toBe('1 min');
     expect(shortest.style.color).toBe('var(--status-caution-text)');
-    // The direction pills show with "Right now".
-    expect(screen.getByRole('button', { name: 'Westbound' })).toBeTruthy();
+    // CIV-2901 v3: no direction pills; each direction is headed by its name, as the regular card's directions are.
+    expect(screen.queryByRole('button', { name: 'Westbound' })).toBeNull();
+    expect(screen.getByText('Westbound')).toBeTruthy();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
   });
 
@@ -90,12 +91,12 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(screen.getByText('Right now · last updated 8:57 AM')).toBeTruthy();
   });
 
-  it('shows the count and keeps the direction pills with only one car, and never "Fewer than 2 cars"', () => {
+  it('shows the count with only one car, with no direction pills, and never "Fewer than 2 cars"', () => {
     card([car('a', 't1', 2, T0)]);
     expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('1')).toBeTruthy();
     expect(screen.queryByText('Longest gap')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Eastbound' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Eastbound' })).toBeNull();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
   });
 
@@ -110,9 +111,9 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(label.nextElementSibling?.textContent).toBe('1');
   });
 
-  it('reports the picked direction and the cars it counts, so the vehicle list can show the same ones (#1163)', () => {
+  it('reports Studio\'s picked direction and the cars it counts (#1163)', () => {
     const onCounted = vi.fn();
-    const view = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('b', 't2', 1.5, T0), car('c', 't9', 2, T0)]} feedDegraded={false} onCounted={onCounted} />);
+    const view = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('b', 't2', 1.5, T0), car('c', 't9', 2, T0)]} feedDegraded={false} onCounted={onCounted} direction={0} />);
     // Car c's trip isn't in this direction's timetable: it isn't counted, so it isn't listed either.
     expect(onCounted).toHaveBeenLastCalledWith({ directionId: 0, label: 'Westbound', ids: ['a', 'b'] });
     view.unmount();

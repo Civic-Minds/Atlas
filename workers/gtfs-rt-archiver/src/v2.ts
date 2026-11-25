@@ -1,7 +1,8 @@
 /**
  * CIV-2073: the cloud recorder (atlas.live.v2). Each cron run polls every Live agency at the pace slots that fall in the
  * minute (shared/liveSlots.ts), joins its positions to its trip updates with Live's own join (shared/liveJoin.ts), and
- * writes one gzip snapshot per agency per slot to live/{slug}/{date}/{slot}.json. Not deployed until Ryan has upgraded
+ * writes one gzip snapshot per agency per slot to live/{slug}/{date}/{slot}.json, and once a minute the whole feed's
+ * vehicle count to counts/{slug}/{date}.json (CIV-2939). Not deployed until Ryan has upgraded
  * the Workers plan and the manager gives the go (the free plan's 10 ms CPU can't decode a trip-update feed).
  */
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
@@ -12,6 +13,7 @@ import { LIVE_SNAPSHOT_V2_SCHEMA_VERSION, type LiveSnapshotV2 } from '../../../s
 import { liveRouteIdNames } from '../../../shared/livePollingConfig';
 import type { LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
 import { fetchFeed as fetchWithRetry } from './fetchFeed';
+import { addCount, liveCountKey, networkVehicleCount, parseCountDay } from '../../../shared/liveNetworkCount';
 
 export interface V2Env {
   BUCKET: R2Bucket;
@@ -39,6 +41,11 @@ async function fetchFeed(url: string, feed: LiveRecorderFeed, env: V2Env): Promi
 
 /** One agency's snapshot for a slot: its positions joined to its trip updates (or positions alone). */
 export async function snapshotFor(feed: LiveRecorderFeed, env: V2Env, slotSec: number): Promise<LiveSnapshotV2> {
+  return (await snapshotAndCount(feed, env, slotSec)).snap;
+}
+
+/** The snapshot, and every vehicle in the positions feed before any route filter (CIV-2939). */
+async function snapshotAndCount(feed: LiveRecorderFeed, env: V2Env, slotSec: number): Promise<{ snap: LiveSnapshotV2; vehicles: number }> {
   const [positions, trips] = await Promise.all([
     fetchFeed(feed.positionsUrl, feed, env),
     feed.tripsUrl ? fetchFeed(feed.tripsUrl, feed, env).catch(() => null) : Promise.resolve(null),
@@ -47,7 +54,7 @@ export async function snapshotFor(feed: LiveRecorderFeed, env: V2Env, slotSec: n
   const names = liveRouteIdNames(feed.slug);
   // Every route the feed's filter keeps (history needs them all); headways pool under Live's short name where Live names the route.
   const { records, headways } = joinLiveFeed(positions, trips, id => (filter.test(id) ? names.get(id)?.shortName ?? id : undefined), slotSec);
-  return {
+  const snap: LiveSnapshotV2 = {
     schemaVersion: LIVE_SNAPSHOT_V2_SCHEMA_VERSION,
     agency: feed.slug,
     capturedAt: slotSec,
@@ -58,6 +65,19 @@ export async function snapshotFor(feed: LiveRecorderFeed, env: V2Env, slotSec: n
     headways,
     records,
   };
+  return { snap, vehicles: networkVehicleCount(positions) };
+}
+
+/**
+ * CIV-2939: adds a minute's whole-network count to the agency's day file (counts/{slug}/{date}.json, private atlas-live).
+ * One writer per agency per minute (the run's first slot), so the read-then-write never races another run's.
+ */
+export async function writeCount(env: V2Env, slug: string, sec: number, vehicles: number): Promise<string> {
+  const key = liveCountKey(slug, sec);
+  const old = await env.BUCKET.get(key);
+  const day = addCount(parseCountDay(old ? await old.text() : null, slug, sec), sec, vehicles);
+  await env.BUCKET.put(key, JSON.stringify(day), { httpMetadata: { contentType: 'application/json' } });
+  return `${key}: ${vehicles} vehicles in the feed`;
 }
 
 async function gzip(text: string): Promise<ArrayBuffer> {
@@ -81,10 +101,17 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, Math.max
  */
 export async function recordRun(feeds: readonly LiveRecorderFeed[], env: V2Env, runStartMs: number, now: () => number = Date.now): Promise<PromiseSettledResult<string>[]> {
   const runStartSec = Math.floor(runStartMs / 1000);
-  const jobs = feeds.flatMap(feed => slotsInRun(runStartSec, feed.paceSec).map(slot => async () => {
+  const jobs = feeds.flatMap(feed => slotsInRun(runStartSec, feed.paceSec).map((slot, i) => async () => {
     await wait(slot * 1000 - now());
     // #1799: a failure names its agency in the log.
-    try { return await writeSnapshot(env, await snapshotFor(feed, env, slot)); }
+    try {
+      const { snap, vehicles } = await snapshotAndCount(feed, env, slot);
+      const wrote = await writeSnapshot(env, snap);
+      // CIV-2939: the whole-network count once a minute, from the run's first slot; a failed count never loses the snapshot.
+      if (i > 0) return wrote;
+      const counted = await writeCount(env, feed.slug, slot, vehicles).catch(e => `${feed.slug} count failed: ${e instanceof Error ? e.message : String(e)}`);
+      return `${wrote}; ${counted}`;
+    }
     catch (e) { throw new Error(`${feed.slug} ${slot}: ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}`); }
   }));
   return Promise.allSettled(jobs.map(job => job()));

@@ -18,6 +18,8 @@ import { setAgencyNameLookup } from '../../../local-api/agencyName';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
 import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
 import { R2_PUBLIC_URL } from '../../../shared/config';
+import { RECORDER_SLUGS } from '../../../shared/liveArchiveFeeds';
+import { latestCount, liveCountKey, parseCountDay } from '../../../shared/liveNetworkCount';
 
 // Agency names for the handlers' sentences ("TTC 7 is held back"), from the current release's catalog, the one the MCP
 // reads: the Worker has no config/agencies folder. Read once per isolate; a failed read is tried again next time.
@@ -46,6 +48,22 @@ const ROUTE_HANDLERS: Record<string, { fetch: (req: Request) => Promise<Response
 };
 let boundFiles: R2Bucket | undefined;
 
+/**
+ * CIV-2939: the latest whole-network vehicle count the recorder saved for an agency (Fleet's "In service now"), from today's
+ * UTC day file, else yesterday's (just after midnight UTC). Read only. Served for agencies Live shows (CIV-1716, as every
+ * route here): Kingston's count is saved too, but this public reader never serves an analysis-only agency.
+ */
+export const NETWORK_COUNT_PATH = '/live/network-count';
+async function networkCount(bucket: R2Bucket, agency: string, cors: Record<string, string>, nowSec = Math.floor(Date.now() / 1000)): Promise<Response> {
+  if (!RECORDER_SLUGS.includes(agency) || !liveCloudServesVehicles(agency)) return json({ error: 'Atlas does not record this agency.' }, 404, cors);
+  for (const sec of [nowSec, nowSec - 86_400]) {
+    const obj = await bucket.get(liveCountKey(agency, sec));
+    const latest = obj ? latestCount(parseCountDay(await obj.text(), agency, sec)) : null;
+    if (latest) return json({ agency, at: latest.at, vehicles: latest.vehicles, ageSec: Math.max(0, nowSec - latest.at) }, 200, { ...cors, 'Cache-Control': 'public, max-age=0, s-maxage=30' });
+  }
+  return json({ error: 'The recorder has no recent count for this agency.' }, 404, { ...cors, 'Cache-Control': 'public, max-age=0, s-maxage=30' });
+}
+
 let bound: R2Bucket | undefined;
 const json = (body: unknown, status: number, headers: Record<string, string>) => Response.json(body, { status, headers });
 
@@ -55,10 +73,12 @@ export default {
     const origin = liveVehiclesCorsOrigin(request.headers.get('Origin'));
     const cors: Record<string, string> = origin ? { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' } : {};
     const handler = ROUTE_HANDLERS[url.pathname];
-    if (url.pathname !== '/live/vehicles' && !handler) return json({ error: 'Not found' }, 404, cors);
+    const counting = url.pathname === NETWORK_COUNT_PATH;
+    if (url.pathname !== '/live/vehicles' && !handler && !counting) return json({ error: 'Not found' }, 404, cors);
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...cors, 'Access-Control-Allow-Methods': 'GET', 'Access-Control-Max-Age': '86400' } });
     if (request.method !== 'GET') return json({ error: 'Not found' }, 404, cors);
     const agency = url.searchParams.get('agency') ?? '';
+    if (counting) return networkCount(env.LIVE_ARCHIVE, agency, cors);
     // CIV-2914 (CIV-1716): only agencies Live shows; an analysis-only agency (Kingston) is never served, whatever the files hold.
     if (!(handler ? liveCloudServes(agency) : liveCloudServesVehicles(agency))) return json({ error: 'Live has no cloud recording for this agency.' }, 404, cors);
     if (env.LIVE_ARCHIVE !== bound) { bound = env.LIVE_ARCHIVE; useNowSource(bucketNowSource(bound)); }

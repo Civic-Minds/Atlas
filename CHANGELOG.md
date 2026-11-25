@@ -7,7 +7,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Atlas Studio's Fleet leads with right now**: the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
+- **The cloud recorder saves each recorded agency's whole-network vehicle count every minute**: Fleet can show how many vehicles are in service now, including TTC routes Live doesn't record
 - **Turning Live off no longer breaks the map**: leaving Live replaced the whole map with "The map couldn't be shown because of an error" until Retry
+- **Live's route card is the map's route card**: it has the map card's chart, period and both directions' destinations, with "Right now" added below for every direction at once instead of a direction toggle, and it lines up with the search bar
 - **Studio Live's map shows "Not measured" stretches dashed**: they were the same grey as "Under 0.5 min", so a stretch with no figure looked like one where nothing was lost
 - **Live says which late limit it uses for agencies that publish none**: a note under the week's figures, with a Learn more page on why the limit has a 30-second buffer
 - **Atlas Studio MCP knows agencies split across feeds by their own name**: asked about "MTA New York" it said no agency matched, and "exo" or "Bustang" answered for one feed as if it were the whole agency; it now names the feeds to pick from
