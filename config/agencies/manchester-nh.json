@@ -10,10 +10,10 @@
   "region": "New Hampshire",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
   "bbox": [
-    42.7484,
-    -71.5444,
-    43.2225,
-    -71.1978
+    42.74,
+    -71.54,
+    43.22,
+    -71.2
   ],
   "cities": [
     "Concord, New Hampshire",

@@ -9,10 +9,10 @@
   ],
   "region": "Oregon",
   "bbox": [
-    42.18,
-    -122.97,
-    42.48,
-    -122.66
+    42.17,
+    -122.92,
+    42.45,
+    -122.67
   ],
   "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3219/latest.zip",

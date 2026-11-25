@@ -7,10 +7,10 @@
     -89.01
   ],
   "bbox": [
-    42.4970909,
-    -89.065752,
-    42.72933096,
-    -88.962477
+    42.49,
+    -89.06,
+    42.73,
+    -88.97
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/jts-wi-us/jts-wi-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-393/latest.zip",

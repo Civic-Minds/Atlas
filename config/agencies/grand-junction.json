@@ -13,10 +13,10 @@
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-161/latest.zip",
   "bbox": [
-    39.0109,
-    -108.7584,
-    39.1844,
-    -108.3284
+    39.03,
+    -108.74,
+    39.17,
+    -108.34
   ],
   "timezone": "America/Denver",
   "lastRawArchiveKey": "20271012-8d67693b1006b078",

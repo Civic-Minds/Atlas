@@ -13,10 +13,10 @@
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-559/latest.zip",
   "bbox": [
-    41.608,
-    -91.6188,
-    41.7092,
-    -91.4488
+    41.62,
+    -91.6,
+    41.7,
+    -91.46
   ],
   "cities": [
     "Iowa City, Iowa"

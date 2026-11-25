@@ -10,10 +10,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    47.7,
-    -122.5,
-    48.2,
-    -121.7
+    47.59,
+    -122.39,
+    48.28,
+    -121.6
   ],
   "feedUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
   "lastFeedExpiry": "20270326",

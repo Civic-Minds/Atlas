@@ -8,10 +8,10 @@
     -79.2469
   ],
   "bbox": [
-    42.76,
-    -79.75,
-    43.56,
-    -78.75
+    42.83,
+    -79.76,
+    43.27,
+    -78.9
   ],
   "feedUrl": "http://68.71.24.110/gtfs/GTFSExport.zip",
   "preprocess": "nrt-cleanup",

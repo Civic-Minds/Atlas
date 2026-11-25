@@ -13,10 +13,10 @@
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
   "bbox": [
-    41.4838,
-    -90.6572,
-    41.615,
-    -90.494
+    41.5,
+    -90.64,
+    41.62,
+    -90.51
   ],
   "cities": [
     "Davenport, Iowa"

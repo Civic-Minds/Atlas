@@ -14,10 +14,10 @@
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2076/latest.zip",
   "bbox": [
-    40.356,
-    -105.1056,
-    40.6015,
-    -104.6573
+    40.37,
+    -105.09,
+    40.59,
+    -104.67
   ],
   "cities": [
     "Greeley, Colorado",

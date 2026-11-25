@@ -10,10 +10,10 @@
   "region": "South Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40206/latest.zip",
   "bbox": [
-    32.5693,
-    -80.5739,
-    33.5814,
-    -79.464
+    32.56,
+    -80.58,
+    33.45,
+    -79.44
   ],
   "cities": [
     "Moncks Corner, South Carolina",

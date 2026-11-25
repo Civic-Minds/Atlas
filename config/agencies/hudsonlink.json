@@ -9,10 +9,10 @@
   ],
   "region": "New York",
   "bbox": [
-    41.5,
-    -74.2,
-    41.9,
-    -73.7
+    41.03,
+    -74.16,
+    41.12,
+    -73.76
   ],
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
   "lastFeedExpiry": "20270628",

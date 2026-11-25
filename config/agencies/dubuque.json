@@ -14,10 +14,10 @@
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2083/latest.zip",
   "bbox": [
-    42.4555,
-    -90.7956,
-    42.5914,
-    -90.6247
+    42.46,
+    -90.78,
+    42.58,
+    -90.64
   ],
   "cities": [
     "Dubuque, Iowa"

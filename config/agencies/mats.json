@@ -8,10 +8,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    45.57,
-    -121.57,
-    45.85,
-    -120.78
+    45.59,
+    -121.55,
+    45.83,
+    -120.8
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-580/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-580/latest.zip",

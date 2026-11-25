@@ -13,10 +13,10 @@
   "region": "Manitoba",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
   "bbox": [
-    49.7931,
-    -100.021,
-    49.9072,
-    -99.8338
+    49.81,
+    -100.01,
+    49.89,
+    -99.85
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

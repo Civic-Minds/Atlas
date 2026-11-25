@@ -9,10 +9,10 @@
     -116.243
   ],
   "bbox": [
-    33.7741,
-    -116.6336,
-    34.3163,
-    -115.9861
+    33.82,
+    -116.61,
+    34.3,
+    -116.03
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip",
   "lastFeedExpiry": "20270101",

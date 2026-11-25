@@ -8,10 +8,10 @@
     -89.2903
   ],
   "bbox": [
-    31.1,
-    -89.5,
-    31.6,
-    -88.9
+    31.26,
+    -89.39,
+    31.35,
+    -89.25
   ],
   "feedUrl": "https://api.transloc.com/gtfs/hct.zip",
   "cities": [

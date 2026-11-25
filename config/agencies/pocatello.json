@@ -13,10 +13,10 @@
   "region": "Idaho",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-171/latest.zip",
   "bbox": [
-    42.7457,
-    -112.9421,
-    42.955,
-    -112.3447
+    42.76,
+    -112.92,
+    42.94,
+    -112.37
   ],
   "cities": [
     "Pocatello, Idaho"

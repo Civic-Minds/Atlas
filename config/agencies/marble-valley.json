@@ -14,10 +14,10 @@
   "region": "Vermont",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-430/latest.zip",
   "bbox": [
-    43.1436,
-    -73.296,
-    44.0308,
-    -72.6852
+    43.18,
+    -73.28,
+    44.02,
+    -72.78
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

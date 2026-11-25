@@ -8,10 +8,10 @@
     -78.48
   ],
   "bbox": [
-    37.98634719848633,
-    -78.52404022216797,
-    38.09883880615234,
-    -78.43753814697266
+    37.99,
+    -78.53,
+    38.1,
+    -78.43
   ],
   "feedUrl": "https://apps.charlottesville.gov/publicfiles/GTFS.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3493/latest.zip",

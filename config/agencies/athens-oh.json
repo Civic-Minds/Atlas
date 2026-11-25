@@ -13,10 +13,10 @@
   "region": "Ohio",
   "mdbFeedUrl": "https://passio3.com/athenstransit/passioTransit/gtfs/google_transit.zip",
   "bbox": [
-    39.2039,
-    -82.2706,
-    39.49,
-    -82.008
+    39.29,
+    -82.26,
+    39.48,
+    -82.02
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20261223-bebc41a70b634e52",

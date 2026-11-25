@@ -9,10 +9,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    47.8,
-    -124.8,
-    48.4,
-    -122.9
+    47.62,
+    -124.64,
+    48.38,
+    -122.51
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-279/latest.zip",
   "lastFeedExpiry": "20271231",

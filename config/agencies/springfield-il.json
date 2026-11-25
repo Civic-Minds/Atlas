@@ -14,10 +14,10 @@
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3187/latest.zip",
   "bbox": [
-    39.6866,
-    -89.7724,
-    39.8801,
-    -89.5745
+    39.7,
+    -89.76,
+    39.87,
+    -89.59
   ],
   "cities": [
     "Springfield, Illinois"

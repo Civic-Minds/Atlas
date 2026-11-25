@@ -15,10 +15,10 @@
   "region": "New Hampshire",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4668/latest.zip",
   "bbox": [
-    43.0028,
-    -71.105,
-    43.4142,
-    -70.7223
+    43.02,
+    -71.09,
+    43.4,
+    -70.74
   ],
   "cities": [
     "Haverhill, Massachusetts"

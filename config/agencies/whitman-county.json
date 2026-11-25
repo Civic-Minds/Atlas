@@ -7,10 +7,10 @@
     -117.16
   ],
   "bbox": [
-    46.712487,
-    -117.208703,
-    46.750406,
-    -117.12101
+    46.71,
+    -117.21,
+    46.76,
+    -117.14
   ],
   "feedUrl": "https://pullmanbusbeacon.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-294/latest.zip",

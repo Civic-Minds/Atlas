@@ -8,10 +8,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    47.3,
-    -122.9,
-    47.9,
-    -122.3
+    47.4,
+    -122.86,
+    47.86,
+    -122.33
   ],
   "feedUrl": "http://pride.kitsaptransit.com/gtfs/google_transit.zip",
   "lastFeedExpiry": "20261205",

@@ -14,10 +14,10 @@
   "region": "North Dakota",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-6095/latest.zip",
   "bbox": [
-    46.7054,
-    -100.9244,
-    46.8762,
-    -100.7092
+    46.72,
+    -100.91,
+    46.86,
+    -100.72
   ],
   "cities": [
     "Bismarck, North Dakota"

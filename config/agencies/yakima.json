@@ -13,10 +13,10 @@
   "region": "Washington",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-276/latest.zip",
   "bbox": [
-    46.5429,
-    -120.6559,
-    46.6438,
-    -120.4574
+    46.56,
+    -120.64,
+    46.63,
+    -120.47
   ],
   "cities": [
     "Yakima, Washington"

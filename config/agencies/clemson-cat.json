@@ -16,10 +16,10 @@
   "region": "South Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
   "bbox": [
-    34.5352,
-    -83.0178,
-    34.7466,
-    -82.6584
+    34.58,
+    -82.88,
+    34.73,
+    -82.75
   ],
   "cities": [
     "Greenville, South Carolina"

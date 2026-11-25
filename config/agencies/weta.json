@@ -16,10 +16,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.66,
-    -122.41,
-    38.1,
-    -122.26
+    37.73,
+    -122.44,
+    38.11,
+    -122.24
   ],
   "feedUrl": "https://gtfs.sanfranciscobayferry.com/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3143/latest.zip",

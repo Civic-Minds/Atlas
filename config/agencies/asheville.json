@@ -13,10 +13,10 @@
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-903/latest.zip",
   "bbox": [
-    35.4047,
-    -82.6526,
-    35.6641,
-    -82.2991
+    35.42,
+    -82.64,
+    35.65,
+    -82.31
   ],
   "cities": [
     "Asheville, North Carolina"

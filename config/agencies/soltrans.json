@@ -9,10 +9,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.8,
+    37.78,
     -122.4,
-    38.53,
-    -121.75
+    38.47,
+    -121.83
   ],
   "feedUrl": "https://soltrans.connexionz.net/rtt/public/resource/gtfs.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-80/latest.zip",

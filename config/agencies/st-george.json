@@ -15,10 +15,10 @@
   "region": "Utah",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
   "bbox": [
-    37.0419,
-    -113.6997,
-    37.208,
-    -113.4708
+    37.05,
+    -113.7,
+    37.23,
+    -112.99
   ],
   "cities": [
     "Saint George, Utah"

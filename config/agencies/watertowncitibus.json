@@ -7,10 +7,10 @@
   ],
   "region": "New York",
   "bbox": [
-    43.8,
-    -76.1,
-    44.1,
-    -75.7
+    43.95,
+    -75.97,
+    44,
+    -75.87
   ],
   "feedUrl": "https://passio3.com/watertown/passioTransit/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271231",

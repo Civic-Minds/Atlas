@@ -12,10 +12,10 @@
   "region": "Northwest Territories",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4708/latest.zip",
   "bbox": [
-    62.4038,
-    -114.4539,
-    62.4952,
-    -114.3161
+    62.43,
+    -114.44,
+    62.48,
+    -114.33
   ],
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

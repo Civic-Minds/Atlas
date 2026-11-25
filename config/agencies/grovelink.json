@@ -9,10 +9,10 @@
   ],
   "region": "Oregon",
   "bbox": [
-    45.35,
-    -123.17,
-    45.64,
-    -122.72
+    45.37,
+    -123.15,
+    45.62,
+    -122.74
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-253/latest.zip",

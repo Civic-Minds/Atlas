@@ -13,10 +13,10 @@
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2146/latest.zip",
   "bbox": [
-    31.5113,
-    -84.2457,
-    31.6399,
-    -84.0333
+    31.57,
+    -84.23,
+    31.63,
+    -84.15
   ],
   "cities": [
     "Albany, Georgia"

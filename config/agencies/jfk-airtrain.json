@@ -8,10 +8,10 @@
     -73.7974
   ],
   "bbox": [
-    40.612,
-    -73.8596,
-    40.7289,
-    -73.7501
+    40.64,
+    -73.83,
+    40.7,
+    -73.77
   ],
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",
   "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/AirTrain_JFK.zip",

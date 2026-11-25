@@ -14,10 +14,10 @@
   "region": "Pennsylvania",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2064/latest.zip",
   "bbox": [
-    40.2338,
-    -76.2088,
-    40.5848,
-    -75.7382
+    40.26,
+    -76.19,
+    40.57,
+    -75.75
   ],
   "cities": [
     "Reading, Pennsylvania"

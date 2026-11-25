@@ -12,10 +12,10 @@
     -79.8711
   ],
   "bbox": [
-    42.86,
-    -80.37,
-    43.66,
-    -79.37
+    43.14,
+    -80.04,
+    43.34,
+    -79.62
   ],
   "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
   "lastFeedExpiry": "20261226",

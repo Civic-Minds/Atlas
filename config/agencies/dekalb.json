@@ -14,10 +14,10 @@
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-308/latest.zip",
   "bbox": [
-    41.8705,
-    -88.8081,
-    42.0119,
-    -88.4443
+    41.88,
+    -88.79,
+    42,
+    -88.45
   ],
   "cities": [
     "Elgin, Illinois",

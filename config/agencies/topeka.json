@@ -13,10 +13,10 @@
   "region": "Kansas",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1660_1/latest.zip",
   "bbox": [
-    38.9732,
-    -95.7993,
-    39.1199,
-    -95.5936
+    38.99,
+    -95.79,
+    39.1,
+    -95.61
   ],
   "cities": [
     "Topeka, Kansas"

@@ -8,10 +8,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    48.5,
-    -122.8,
-    49,
-    -122
+    48.41,
+    -122.79,
+    49.01,
+    -122.13
   ],
   "feedUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
   "lastFeedExpiry": "20270206",
