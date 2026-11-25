@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import DataTable from '../ui/DataTable';
+import LegendItem from '../ui/LegendItem';
 import { niceAxis } from './ProfileBars';
 import { useElementWidth } from '../../hooks/useElementWidth';
 import { AXIS_W } from './sparkParts';
@@ -18,13 +19,23 @@ export interface LinePoint {
 
 const PAD = { top: 24, right: 12, bottom: 24, left: AXIS_W };
 
+/** The main line's colour, and a second line's (CIV-2944: two measures on one chart, told apart by a key). */
+const LINE_COLOR = 'var(--text-primary)';
+const SECOND_LINE_COLOR = 'var(--text-dim)';
+
+/** A second line on the same axes: one value per main point (same order), and its name in the key and table. */
+export interface SecondLine {
+  name: string;
+  values: ReadonlyArray<number | null>;
+}
+
 /**
  * A line chart in the chart collection's look (CIV-1915, CIV-1173): faint gridlines, grey 12px axis text, a solid line with
  * dots that carry a halo on the panel colour, and the hover column the run-time chart uses. One focusable unit with a summary
  * label; each point's sentence shows on hover and the figures are in a table for screen readers. A gap in the data (`null`
  * between two points) breaks the line rather than joining them. Number formats and the axis title come from the caller.
  */
-export default function LineChart({ points, label, yTitle, formatY, height = 240, yMin, xTickLabels }: {
+export default function LineChart({ points, label, yTitle, formatY, height = 240, yMin, xTickLabels, name, second }: {
   /** In x order; a `null` breaks the line there. */
   points: ReadonlyArray<LinePoint | null>;
   label: string;
@@ -34,13 +45,19 @@ export default function LineChart({ points, label, yTitle, formatY, height = 240
   yMin?: number;
   /** The x axis's labels: which points get their label drawn (default: every one, so pass fewer for a long line). */
   xTickLabels?: (p: LinePoint, index: number) => boolean;
+  /** The main line's name in the key; with `second`, a key above the chart names both lines. */
+  name?: string;
+  second?: SecondLine;
 }) {
   const tableId = useId();
   const [hover, setHover] = useState<number | null>(null);
   const [ref, width] = useElementWidth();
   const real = points.filter((p): p is LinePoint => p != null);
   if (real.length === 0) return null;
-  const xs = real.map(p => p.x), ys = real.map(p => p.y);
+  // The second line's value for each drawn point, by the point's place in `points`.
+  const secondOf = new Map<LinePoint, number>();
+  if (second) points.forEach((p, i) => { const v = second.values[i]; if (p != null && v != null) secondOf.set(p, v); });
+  const xs = real.map(p => p.x), ys = [...real.map(p => p.y), ...secondOf.values()];
   const x0 = Math.min(...xs), x1 = Math.max(...xs);
   const ya = niceAxis(yMin ?? Math.min(...ys), Math.max(...ys));
   const plotW = Math.max(0, width - PAD.left - PAD.right);
@@ -58,6 +75,12 @@ export default function LineChart({ points, label, yTitle, formatY, height = 240
   const showTick = xTickLabels ?? (() => true);
   return (
     <figure className="m-0">
+      {second && name && (
+        <div className={`mb-2 flex flex-wrap gap-x-4 gap-y-1 ${CHART_TEXT}`} aria-hidden="true">
+          <LegendItem kind="line" color={LINE_COLOR}>{name}</LegendItem>
+          <LegendItem kind="line" color={SECOND_LINE_COLOR}>{second.name}</LegendItem>
+        </div>
+      )}
       <div className={`h-5 truncate ${CHART_TEXT}`} aria-hidden="true">
         {shown && <><span className={CHART_COUNT}>{shown.label}</span> {shown.sentence}</>}
       </div>
@@ -72,10 +95,15 @@ export default function LineChart({ points, label, yTitle, formatY, height = 240
               </g>
             ))}
             <text x={0} y={10} fontSize={12} fill="var(--text-dim)">{yTitle}</text>
+            {second && runs.map((r, k) => {
+              const pts = r.filter(p => secondOf.has(p));
+              return pts.length > 1 && <path key={`s${k}`} d={pts.map((p, i) => `${i ? 'L' : 'M'}${px(p.x)},${py(secondOf.get(p)!)}`).join('')} fill="none" stroke={SECOND_LINE_COLOR} strokeWidth={2} strokeLinejoin="round" />;
+            })}
+            {real.map((p, i) => secondOf.has(p) && <circle key={`s${i}`} cx={px(p.x)} cy={py(secondOf.get(p)!)} r={3.5} fill={SECOND_LINE_COLOR} stroke="var(--bg-panel)" strokeWidth={1.5} />)}
             {runs.map((r, k) => r.length > 1 && (
-              <path key={k} d={r.map((p, i) => `${i ? 'L' : 'M'}${px(p.x)},${py(p.y)}`).join('')} fill="none" stroke="var(--text-primary)" strokeWidth={2} strokeLinejoin="round" />
+              <path key={k} d={r.map((p, i) => `${i ? 'L' : 'M'}${px(p.x)},${py(p.y)}`).join('')} fill="none" stroke={LINE_COLOR} strokeWidth={2} strokeLinejoin="round" />
             ))}
-            {real.map((p, i) => <circle key={i} cx={px(p.x)} cy={py(p.y)} r={3.5} fill="var(--text-primary)" stroke="var(--bg-panel)" strokeWidth={1.5} />)}
+            {real.map((p, i) => <circle key={i} cx={px(p.x)} cy={py(p.y)} r={3.5} fill={LINE_COLOR} stroke="var(--bg-panel)" strokeWidth={1.5} />)}
             {real.map((p, i) => showTick(p, i) && (
               <text key={`t${i}`} x={px(p.x)} y={height - 4} textAnchor="middle" fontSize={12} fill="var(--text-dim)">{p.label}</text>
             ))}
@@ -93,7 +121,8 @@ export default function LineChart({ points, label, yTitle, formatY, height = 240
           rowKey={p => p.label}
           columns={[
             { key: 'label', header: '', rowHeader: true, className: 'font-normal', cell: p => p.label },
-            { key: 'y', header: yTitle, cell: p => formatY(p.y) },
+            { key: 'y', header: second && name ? name : yTitle, cell: p => formatY(p.y) },
+            ...(second ? [{ key: 'second', header: second.name, cell: (p: LinePoint) => { const v = secondOf.get(p); return v == null ? '' : formatY(v); } }] : []),
           ]}
         />
       </div>

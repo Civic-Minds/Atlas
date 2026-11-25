@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The internal MCP page's usage chart shows questions and calls as two lines, over 7, 14 or 28 days**: calls were only in the hover, and it opens on the last week
+- **The internal MCP page's Stop link sits in a tester's own view**: a button on every row of the Testers table was too much
 - **The cloud recorder saves each recorded agency's whole-network vehicle count every minute**: Fleet can show how many vehicles are in service now, including TTC routes Live doesn't record
 - **Turning Live off no longer breaks the map**: leaving Live replaced the whole map with "The map couldn't be shown because of an error" until Retry
 - **Live's route card is the map's route card**: it has the map card's chart, period and both directions' destinations, with "Right now" added below for every direction at once instead of a direction toggle, and it lines up with the search bar
