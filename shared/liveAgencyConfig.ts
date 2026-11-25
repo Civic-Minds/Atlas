@@ -28,6 +28,11 @@ export interface LiveAgencyExtras {
   serviceDayEndHour?: number;
   /** The agency's name in method notes ("the TTC feed has no delay values"). */
   shortName?: string;
+  /**
+   * #1801: trip ids the live feed makes up for runs with no scheduled trip, which no timetable can hold (the MBTA's
+   * "ADDED-…" Green Line and Mattapan runs, "…-OL1" Silver Line extras). They are left out of the timetable match.
+   */
+  unscheduledTripId?: RegExp;
 }
 
 /** Only agencies that need something non-default are listed. */
@@ -44,6 +49,7 @@ export const LIVE_AGENCY_EXTRAS: Readonly<Record<string, LiveAgencyExtras>> = {
     shortName: 'TTC',
   },
   kingston: { shortName: 'Kingston Transit' },
+  mbta: { unscheduledTripId: /^ADDED-|-OL\d+$/ },
 };
 
 export interface LiveAgencyConfig {
@@ -57,6 +63,7 @@ export interface LiveAgencyConfig {
   notDiversions: LatLon[];
   directionLabels: 'headsignFirstWordBound' | 'mostCommonHeadsign';
   shortName: string;
+  unscheduledTripId: RegExp | null;
 }
 
 export function liveAgencyConfig(slug: string, timeZone: string | undefined): LiveAgencyConfig {
@@ -75,6 +82,7 @@ export function liveAgencyConfig(slug: string, timeZone: string | undefined): Li
     notDiversions: [...carhouses, ...(x.notDiversions ?? [])],
     directionLabels: x.directionLabels ?? 'mostCommonHeadsign',
     shortName: x.shortName ?? slug,
+    unscheduledTripId: x.unscheduledTripId ?? null,
   };
 }
 
