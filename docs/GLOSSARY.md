@@ -93,7 +93,7 @@ Every entry in this section is **on feature/live-local-poc, not main yet**, unle
 ### Metrics on the card
 
 - **typical extra running time**: `gainedMedianSec`, the median of (actual minus scheduled) per pass.
-  - Card wording: "Time lost: {X}" (the Delays start cards' own line), plus the pass count and day count.
+  - Card wording: "Time lost: {X}" (the Schedule adherence cards' own line), plus the pass count and day count.
   - Never use: "late", "delay of", "at least".
   - Rounding: nearest ½ min (`halfMinutes`). Colour and flags test the raw seconds: amber from 30 s, red from 60 s. A stop pair is listed only from 30 s.
   - Minimum sample: 30 passes and 5 days (`MIN_SEGMENT_TRIPS`, `MIN_DAYS`).
@@ -154,6 +154,7 @@ These measures are different things. Never combine them, convert one into anothe
 5. **"stood still"** is a count of events, never a duration, a delay or a "hold".
 6. Use "+" or "at least" only on a value that was rounded down (the 1-in-10). Values rounded to nearest get a plain number.
 7. Name the period and the sample ("31 trips, 9 days") with every number.
+8. **"Delay"** is kept for the clear-street measure. The timetable measures read **"Schedule adherence"** (the measure and its Live section, once "Falls behind" / "Delays start" / "Where delays start") and **"Typical deviation"** (once "Typical delay"). Ryan, 2026-11-25, CIV-2924; supersedes CIV-1602's "Delays start".
 
 ## Internal term to UI wording
 
@@ -175,7 +176,7 @@ These measures are different things. Never combine them, convert one into anothe
 | `not_seen` (Live) | | "No vehicle reported under this trip's number" | not on card |
 | Late (Live) | `LATE_DEFINITION` | "**Late** is more than 5½ min behind schedule. This is based on the TTC's 5-minute standard, plus 30 seconds because we only record each vehicle's location once a minute." | How this is measured and the Docs glossary (E9). Each definition reads "**Term** is …", no colon after the term (CIV-1075) |
 | ahead of schedule (Live) | `aheadLine`, `earlyAtOrBelowMin` | "**Ahead** is N min or more ahead of schedule." | E10. The Live UI says "ahead", not "early" |
-| route strip delay steps (Live) | `EARLY_STEP_LABEL`, `STEP_LABELS.delay` | "Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind" ("1+ min ahead" only when a stop is ahead; "Not measured" only when a stop is) | E22 (Ryan, CIV-1075). "behind" under 5½ min; "late" only past it (E9) |
+| route strip delay steps (Live) | `EARLY_STEP_LABEL`, `STEP_LABELS.delay` | "Typical deviation: 1+ min ahead · On time · 1–3 min · 3+ min behind" ("1+ min ahead" only when a stop is ahead; "Not measured" only when a stop is) | E22 (Ryan, CIV-1075; title "Typical deviation" since CIV-2924). "behind" under 5½ min; "late" only past it (E9) |
 | route strip bunching steps (Live) | `STEP_LABELS.bunching`, `LEGEND_LAST_STEP_TAIL` | "Bunching: Under 15% · 15–25% · 25% or more of gaps" | E23 |
 | week colours (Live) | `COLOURED_CHANGES`, `NOISE_RULE` | "**Coloured changes** are bigger than the figure's normal day-to-day range. Grey changes fall inside that range and may just be normal variation." | E17 |
 | recording gaps (Live) | `RECORDING_GAPS` | "**Recording gaps** are times our recording missed, such as when the agency’s vehicle locations stopped coming in. Trips during a gap aren't counted, and days with gaps are left out." | E18; CIV-1795 question 5. "Where delays start" is no longer defined (E19 dropped) |

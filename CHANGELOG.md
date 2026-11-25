@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's timetable figures are named "Schedule adherence" and "Typical deviation"**: "Where delays start", "Delays start" and "Typical delay" read as amateur, and "Delay" is kept for the new clear-street measure
 - **The "Official data" Learn more page no longer sends riders to the agency's website**: Atlas shows how often service runs, not where to plan a trip
 - **Live's panel header just says "Live"**: it no longer names one agency while another agency's problem shows under it; problems stay in the bottom-right status pill
 - **Destinations read in normal case on Live and in Atlas Studio MCP's answers**: Hamilton's "HAMILTON GO CENTRE" now reads "Hamilton GO Centre", as it already did on the map, with short forms like GO, TTC and LRT kept in capitals

@@ -213,6 +213,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar (in Studio's Live, Measure sits with the filters: Agency, Route, Time of day; Ryan, 2026-11-19), with the map key as a card floating at the map's bottom left (since CIV-1821).
   - Why: the panels need a desktop's room, and controls in two places read as clutter.
   - Source: [decision log](#decision-log) (2026-11-16)
+- **Timetable measures are "Schedule adherence"; "Delay" is the clear-street measure**
+  - What: the measure once called "Falls behind" / "Delays start" and its section (once "Where delays start") read "Schedule adherence"; "Typical delay" reads "Typical deviation"; "Delay" stays for the new clear-street measure.
+  - Why: Ryan: ""delays start" and "behind schedule" sounds fucking stupid in a professional product".
+  - Source: [decision log](#decision-log) (2026-11-25, CIV-2924)
 - **Math explanations stay visible**
   - What: text that explains a number or threshold stays on screen, not hover-only; text that only restates a label can go.
   - Why: the explanation is what makes the figure trustworthy.
@@ -307,6 +311,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-25 — Live's timetable measures read "Schedule adherence" and "Typical deviation"; "Delay" is kept for the clear-street measure (CIV-2924; supersedes CIV-1602's "Delays start")
+Ryan, 2026-11-25, picking "1" after rejecting "Behind schedule" (""delays start" and "behind schedule" sounds fucking stupid in a professional product"), and on the section: "Why not just Schedule adherence wtf does by stretch mean". The timetable measures "Falls behind" and "Delays start" become one label, "Schedule adherence"; "Typical delay" becomes "Typical deviation"; the Live section "Where delays start" becomes "Schedule adherence". CIV-1602's "Delays start" (never logged here; recorded in the code and the style guard) is superseded. Labels live once in shared/liveWording.ts. Open: Studio's Measure menu lists "Falls behind" and "Delays start" as two measures, so it keeps "Falls behind" until Ryan says whether Studio drops one (asked on CIV-2924).
 
 ### 2026-11-24 — E10 (Official data) drops "The agency's website has its current schedule." and its link
 Settled by the no-booking-or-trip-planning rule ("Atlas is not a trip-planning tool; no booking info", 2026-11-24; Ryan: "this isnt for ppl using it like google maps"): Atlas never points riders elsewhere to plan or book. Only E10's paragraph 3 goes; the card lines stay as today (CIV-2896 tabled) and E2's own line is unchanged.
