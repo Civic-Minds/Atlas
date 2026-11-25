@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live says which late limit it uses for agencies that publish none**: a note under the week's figures, with a Learn more page on why the limit has a 30-second buffer
 - **Atlas Studio MCP knows agencies split across feeds by their own name**: asked about "MTA New York" it said no agency matched, and "exo" or "Bustang" answered for one feed as if it were the whole agency; it now names the feeds to pick from
 - **Live's timetable figures are named "Schedule adherence" and "Typical deviation"**: "Where delays start", "Delays start" and "Typical delay" read as amateur, and "Delay" is kept for the new clear-street measure
 - **The "Official data" Learn more page no longer sends riders to the agency's website**: Atlas shows how often service runs, not where to plan a trip

@@ -17,7 +17,7 @@ import { metresText } from '../../shared/unitText';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { joinList, plural, countOf } from '../../shared/overflowText';
 import { countText, countWord } from '../../shared/numberText';
-import { LIVE_MAP_TITLE, METHOD_TITLE } from '../../shared/liveWording';
+import { LATE_LIMIT_TEXT, LIVE_MAP_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
@@ -732,6 +732,8 @@ export const EXPLAINERS = {
   'route-rating': { code: 'E9', title: 'Route rating' },
   /** E10 (CIV-1978): title and paragraph 2 approved by Ryan (2026-11-20). */
   'official-data': { code: 'E10', title: 'Official data' },
+  /** E11 (CIV-2222): title Ryan's pick, "Late departures" (2026-11-25). */
+  'late-limit': { code: 'E11', title: 'Late departures' },
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
@@ -762,6 +764,8 @@ export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_SENTENCE} Some weekda
 // E9 (CIV-1199, Ryan 2026-11-14, word for word): N12's full sentence with its live values, then one more sentence.
 // CIV-2896: the card passes the full sentence (CardNotice.pageText), never its own card line.
 export const routeRatingLead = (filterNotice: string) => `${filterNotice} A part of the route runs less often than the rest.`;
+// E11 (CIV-2222, Ryan 2026-11-25, word for word; the whole page, no third paragraph: "Do we need a third paragraph then", then "1").
+export const LATE_LIMIT_LEAD = 'We check each vehicle’s location once per minute. The departure times can be up to 30 seconds off, so we add a 30 second buffer to the limit to allow for this.';
 
 // ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
 /** Where a paragraph-3 piece's links go, in order. */
@@ -817,6 +821,8 @@ export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly Explain
   'route-rating': { p2: ['STRETCH_AND_BRANCHES_SEPARATE'], p3: 'REPORT_WITH_FLAG' },
   // E10: no "agency's website has its current schedule" line or link: Atlas never points riders elsewhere to plan or book (DECISIONS 2026-11-24).
   'official-data': { p2: ['OFFICIAL_DATA_AS_PUBLISHED'] },
+  // E11: Ryan's two sentences are the whole page (2026-11-25): nothing for the reader to do, so no paragraph 3.
+  'late-limit': { p2: [] },
 };
 
 /**
@@ -835,6 +841,8 @@ export const NOTICE_EXPLAINERS = {
   /** CIV-1199 case 1: only when every row meets the filter but a part of the route doesn't (routeCardNotices learnMore). */
   N12: 'route-rating',
   N131: 'official-data',
+  /** CIV-2222 line B: an agency with no published on-time window (Live's week figures). */
+  N133: 'late-limit',
   /** An agency's own rollout note from its config (none set today); the beta-only notices link to beta instead. */
   N19: 'beta-rollout',
   N21: 'new-schedule-data',
@@ -861,6 +869,11 @@ export const officialDataOnlyNotice = officialDataOnlySentence;
 // E10's lead: N131's full sentence.
 export const officialDataLead = officialDataOnlySentence;
 
+// N133 no-published-window (CIV-2222 line B; Ryan's word-for-word OK): under Live's week figures, for an agency that publishes
+// no on-time window, with Learn more opening E11. 5½ min is LATE_LIMIT_TEXT.
+export const noPublishedWindowNotice = (agencyName: string): string =>
+  `${agencySentenceStart(agencyNames(agencyName).card.primary)} doesn’t publish its on-time window, so Atlas counts late as ${LATE_LIMIT_TEXT} behind schedule.`;
+
 // ---- CIV-2896: each Learn-more notice's two parts ----
 // Ryan (2026-11-24) picked "1": the card gets a short line, and its Learn more page keeps the full sentence and adds
 // what's new. "card" is what the card shows; "page" is the opening of its Learn more panel (E1 to E10), as InfoPanel shows it.
@@ -885,6 +898,7 @@ export const NOTICE_PARTS: Record<Exclude<LearnMoreCode, 'N19'>, NoticeParts> = 
   N14: { card: () => FIRST_LAST_TRIP_ALLOWANCE_HINT, page: () => EDGE_GAP_ALLOWANCE_LEAD },
   N25: { card: s => listingEndedNotice(s.date, s.ended), page: s => listingEndedPanelLead(s.agencyName, s.date, s.ended) },
   N131: { card: s => officialDataOnlyNotice(s.agencyName), page: s => officialDataLead(s.agencyName) },
+  N133: { card: s => noPublishedWindowNotice(s.agencyName), page: () => LATE_LIMIT_LEAD },
 };
 
 /**
