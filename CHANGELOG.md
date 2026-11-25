@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The cloud recorder saves each recorded agency's whole-network vehicle count every minute**: Fleet can show how many vehicles are in service now, including TTC routes Live doesn't record
 - **Turning Live off no longer breaks the map**: leaving Live replaced the whole map with "The map couldn't be shown because of an error" until Retry
 - **Live's route card is the map's route card**: it has the map card's chart, period and both directions' destinations, with "Right now" added below for every direction at once instead of a direction toggle, and it lines up with the search bar
 - **Studio Live's map shows "Not measured" stretches dashed**: they were the same grey as "Under 0.5 min", so a stretch with no figure looked like one where nothing was lost
