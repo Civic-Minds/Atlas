@@ -75,7 +75,6 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         ...(v3.weekly ? weekWindowItems(v3.weekly, props.namedAbove) : []),
         positionsLine,
         tripMatchLine(true),
-        data.replacementBuses && <Term t="Replacement buses">run this route in this schedule, so every figure describes the buses.</Term>,
       ] },
       { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
       { label: METHOD_GROUPS.limits, items: [
