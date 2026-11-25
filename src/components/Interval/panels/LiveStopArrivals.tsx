@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { liveCloudFetch } from '../../../lib/liveCloudFetch';
 import { isLiveEligibleSlug } from '../../../../shared/livePollingConfig';
 import { FEATURES } from '../../../../shared/config';
 import { SidebarCardSection } from '../cardUi';
@@ -29,7 +30,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
     setFailed(false);
     let cancelled = false;
     const load = () =>
-      fetch(`/api/live-stop?agency=${encodeURIComponent(slug)}&stop=${encodeURIComponent(stopId)}&lat=${lat}&lon=${lon}`)
+      liveCloudFetch('stop', { agency: slug, stop: stopId, lat: String(lat), lon: String(lon) })
         .then(r => {
           if (!r.ok) throw new Error(`live-stop ${r.status}`);
           return r.json() as Promise<LiveStopData>;

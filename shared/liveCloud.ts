@@ -28,6 +28,6 @@ export const liveCloudServesVehicles = (slug: string): boolean => liveCloudServe
 
 /** The cloud reader's URLs for a route's Live files (CIV-2914), in place of the local API's /api/live-*. */
 /** The Live analysis reads atlas-live-read serves besides vehicles (CIV-2914). */
-export type LiveCloudRead = 'segments' | 'dashboard' | 'recent' | 'agency' | 'gaps';
+export type LiveCloudRead = 'segments' | 'dashboard' | 'recent' | 'agency' | 'gaps' | 'stop';
 export const liveCloudUrl = (what: LiveCloudRead, params: Record<string, string>) =>
   `${LIVE_CLOUD_ORIGIN}/live/${what}?${new URLSearchParams(params).toString()}`;

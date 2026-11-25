@@ -10,7 +10,7 @@ describe('atlas-live-read serves only agencies Live shows', () => {
   it('never serves Kingston, on any route', async () => {
     expect(liveCloudServes('kingston')).toBe(false);
     expect(liveCloudServesVehicles('kingston')).toBe(false);
-    for (const path of ['/live/vehicles?agency=kingston', '/live/segments?agency=kingston&route=701', '/live/dashboard?agency=kingston&route=701', '/live/recent?agency=kingston&route=701', '/live/agency?agency=kingston', '/live/gaps?agency=kingston&route=701']) {
+    for (const path of ['/live/vehicles?agency=kingston', '/live/segments?agency=kingston&route=701', '/live/dashboard?agency=kingston&route=701', '/live/recent?agency=kingston&route=701', '/live/agency?agency=kingston', '/live/gaps?agency=kingston&route=701', '/live/stop?agency=kingston&stop=1']) {
       const res = await worker.fetch(new Request(`https://x.test${path}`), env);
       expect(res.status, path).toBe(404);
     }

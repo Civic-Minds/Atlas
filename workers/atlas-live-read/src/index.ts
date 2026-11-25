@@ -10,6 +10,7 @@ import liveDashboard from '../../../local-api/live-dashboard';
 import liveRecent from '../../../local-api/live-recent';
 import liveAgency from '../../../local-api/live-agency';
 import liveGaps from '../../../local-api/live-gaps';
+import liveStop from '../../../local-api/live-stop';
 import { cloudLiveFiles, setLiveFilesSource } from '../../../local-api/liveFiles';
 import { liveCloudServes, liveCloudServesVehicles, liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
 import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
@@ -24,6 +25,8 @@ const ROUTE_HANDLERS: Record<string, { fetch: (req: Request) => Promise<Response
   '/live/recent': liveRecent,
   '/live/agency': liveAgency,
   '/live/gaps': liveGaps,
+  // A stop's next arrivals, read from the agency's own feed; its key (if any) is a Worker secret, read via process.env.
+  '/live/stop': liveStop,
 };
 let boundFiles: R2Bucket | undefined;
 
@@ -45,7 +48,9 @@ export default {
     if (env.LIVE_ARCHIVE !== bound) { bound = env.LIVE_ARCHIVE; useNowSource(bucketNowSource(bound)); }
     if (handler) {
       if (env.MCP_LIVE !== boundFiles) { boundFiles = env.MCP_LIVE; setLiveFilesSource(cloudLiveFiles(async key => (await boundFiles!.get(key))?.text() ?? null)); }
-      const res = await handler.fetch(new Request(`http://localhost/api${url.pathname.slice('/live'.length).replace(/^\//, '/live-')}${url.search}`));
+      // The visitor's address, so the handlers' per-visitor rate limit counts each visitor, not the Worker.
+      const ip = request.headers.get('CF-Connecting-IP');
+      const res = await handler.fetch(new Request(`http://localhost/api${url.pathname.slice('/live'.length).replace(/^\//, '/live-')}${url.search}`, { headers: ip ? { 'x-real-ip': ip } : {} }));
       const headers = new Headers(res.headers);
       for (const [k, v] of Object.entries(cors)) headers.set(k, v);
       return new Response(res.body, { status: res.status, headers });
