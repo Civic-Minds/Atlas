@@ -156,14 +156,23 @@ export function headlineDeparturesInWindow(times: readonly number[], start: numb
 /** Rail's own midday window (09:30 to 14:30); the constant lives in shared/rules/frequency.ts so the Docs page reads it too. */
 
 /**
- * CIV-1958 (#1760): a departure's clock minute, as the timetable prints it (seconds dropped). Every rule that measures a
- * wait, a window's membership or a cut-off reads clock minutes, so a time 38 seconds past the hour never tips one (WMATA
- * D6X's 7:00:38 start is a 60-minute wait from 6:00, not 60.63); only the median between departures reads the seconds.
- * Whole-minute times are unchanged by it.
+ * CIV-1958 (#1760): a departure's clock minute, as the timetable prints it (seconds dropped). The yes/no cut-offs (window
+ * membership, the 60-minute coverage cap, the 8x boundary ratio, the night and edge-only tests) read clock minutes, so a
+ * time a few seconds past the minute never tips one (WMATA D6X's 7:00:38 start is the timetable's 60-minute wait from 6:00);
+ * every published number keeps its exact value, rounded up as before. Whole-minute times are unchanged by it.
  */
 export const clockMinute = (t: number): number => Math.floor(t);
 /** clockMinute for a list. */
 export const clockTimes = (times: readonly number[]): number[] => times.map(clockMinute);
+/**
+ * CIV-1958: one departure per clock minute, the earliest, in order (TTC 501's branch trips leave the shared stop 23
+ * seconds apart: one departure, as the timetable prints them). Exact times are kept.
+ */
+export function oncePerClockMinute(times: readonly number[]): number[] {
+  const byMinute = new Map<number, number>();
+  for (const t of [...times].sort((a, b) => a - b)) if (!byMinute.has(clockMinute(t))) byMinute.set(clockMinute(t), t);
+  return [...byMinute.values()];
+}
 
 export function medianHeadwayInWindow(
   departureTimes: number[],
@@ -172,11 +181,7 @@ export function medianHeadwayInWindow(
   minDeps = 2,
   typical = false,
 ): number | null {
-  // CIV-1958: a window's departures by clock minute (membership, and one departure per minute: TTC 501's branch trips
-  // leave the shared stop 23 seconds apart and are one departure, as the timetable prints them); the gaps keep the seconds.
-  const byMinute = new Map<number, number>();
-  for (const t of [...departureTimes].sort((a, b) => a - b)) if (!byMinute.has(clockMinute(t))) byMinute.set(clockMinute(t), t);
-  const times = [...byMinute].filter(([m]) => m >= start && m <= end).map(([, t]) => t).sort((a, b) => a - b);
+  const times = oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
@@ -208,10 +213,9 @@ export function forCrossMidnightWindow(departureTimes: number[], windowEnd: numb
  * period's 06:00 trip belongs to the AM peak there (CIV-1746). Each caller keeps the rule it had.
  */
 export function departuresInWindow(times: readonly number[], start: number, end: number, includeEnd: boolean): number[] {
-  // CIV-1958: clock minutes (clockMinute), so every rule reading a window measures waits as the timetable prints them.
-  return [...new Set(forCrossMidnightWindow(clockTimes(times), end))]
-    .filter(t => t >= start && (includeEnd ? t <= end : t < end))
-    .sort((a, b) => a - b);
+  // CIV-1958: membership and one departure per minute by clock minute (clockMinute); exact times are returned.
+  return oncePerClockMinute(forCrossMidnightWindow([...times], end))
+    .filter(t => clockMinute(t) >= start && (includeEnd ? clockMinute(t) <= end : clockMinute(t) < end));
 }
 
 // headwayByHour used a fixed 90-min-wide window ([h*60, h*60+90]) for every hour, because a
@@ -283,7 +287,7 @@ export function sustainedMedianHeadwayInWindow(
   dominantGapRatio: number = DOMINANT_GAP_RATIO,
   typical = false,
 ): number | null {
-  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+  const times = oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
@@ -349,7 +353,7 @@ export function isThinAllDayTerminalSample(departureTimes: readonly number[], br
  */
 export const UNEVEN_TWO_GAP_RATIO = 1.5;
 export function isUnevenTwoGapMiddayTerminalSample(departureTimes: readonly number[], branchTripCount = Infinity, branchHw = Infinity): boolean {
-  const times = [...new Set(departureTimes)].filter(t => t >= HEADLINE_WINDOWS.midday.start && t <= HEADLINE_WINDOWS.midday.end).sort((a, b) => a - b);
+  const times = oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= HEADLINE_WINDOWS.midday.start && clockMinute(t) <= HEADLINE_WINDOWS.midday.end);
   if (times.length !== 3 || branchTripCount <= 3) return false;
   const g1 = times[1] - times[0];
   const g2 = times[2] - times[1];
@@ -575,7 +579,7 @@ export function hasSustainedServiceInWindow(
   /** The longest wait from the window's start to the first departure and from the last to its end; defaults to maxGapMinutes. */
   maxEdgeMinutes: number = maxGapMinutes,
 ): boolean {
-  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+  const times = oncePerClockMinute(departureTimes).filter(t => clockMinute(t) >= start && clockMinute(t) <= end);
   if (times.length === 0) return false;
   if (times[0] - start > maxEdgeMinutes) return false;
   if (end - times[times.length - 1] > maxEdgeMinutes) return false;
@@ -987,8 +991,9 @@ export function computePeriodSustained(departureTimes: number[], windows: readon
     if (value == null) continue;
     const gaps: number[] = [];
     for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
-    const leadingGap = times[0] - start;
-    const trailingGap = end - times[times.length - 1];
+    // CIV-1958: the boundary waits in clock minutes (TTC 939 AM's 6:40:59 start is the timetable's 40 minutes).
+    const leadingGap = clockMinute(times[0]) - start;
+    const trailingGap = end - clockMinute(times[times.length - 1]);
     const boundarySustained = value > 0
       && leadingGap / value <= BOUNDARY_DOMINANT_RATIO
       && trailingGap / value <= BOUNDARY_DOMINANT_RATIO;
