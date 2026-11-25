@@ -67,6 +67,12 @@ Written by small Cloudflare Workers (only ttc-positions runs now) sharing `worke
 The local-only `history-adherence` handler (`local-api/`, never deployed) can read the archive; the former live snapshot/replay routes
 are no longer in the repository.
 
+Read by the Live page's vehicles (CIV-2894): the `atlas-live-read` Worker (`workers/atlas-live-read/`, workers.dev,
+`https://atlas-live-read.rhanna-334.workers.dev/live/vehicles?agency=<slug>`) reads the recorder's newest v2 snapshot through
+a read-only binding, for recorded agencies only (`RECORDER_SLUGS`), with CORS for Atlas's sites and localhost
+(`shared/liveCloud.ts`). It is the same reading as local-api's `fromRecorder`, so /apps/live needs nothing running on the Mac.
+It writes nothing. Deploy from its folder with `npx wrangler deploy`.
+
 60-day retention enforced by the bucket's R2 lifecycle rule.
 
 ### atlas-live-kingston (deleted)

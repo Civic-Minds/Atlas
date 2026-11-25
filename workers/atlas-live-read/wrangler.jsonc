@@ -1,0 +1,13 @@
+{
+  // CIV-2894: the Live page's cloud vehicle reader. Read only: one route, the atlas-live recorder bucket, no writes.
+  "name": "atlas-live-read",
+  "account_id": "334f99db1478f9e95eaea65b3b9e1fdd",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "r2_buckets": [
+    { "binding": "LIVE_ARCHIVE", "bucket_name": "atlas-live" }
+  ],
+  "observability": { "enabled": true }
+}

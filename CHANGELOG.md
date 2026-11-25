@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live shows vehicles straight from the cloud recording**: the Live map no longer needs anything running on a computer, for the agencies Atlas records (TTC, Hamilton, Kingston, MBTA, YRT, Durham and Brampton)
 - **Atlas Studio MCP's hour-by-hour figures list every branch running then, and count lone trips**: RTD 31's 106th & Melody branch had no row at rush hour, and hours with one trip read "no regular trips"
 - **A route list shows the slower frequency when service changes partway through a period**: STM's Green Line at midday read "every 4 min" though it runs every 6 after 9:17 AM
 - **Seasonal timetables update without waiting for review**: a ski or school-term timetable whose frequencies match the same date last year now goes onto the map at the next refresh, instead of being held as a suspicious change

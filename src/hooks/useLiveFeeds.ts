@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { liveVehiclesEqual } from '../utils/liveVehiclesFingerprint';
 import { LIVE_POLL_SEC } from '../../shared/rules/live';
+import { RECORDER_SLUGS } from '../../shared/liveArchiveFeeds';
+import { liveCloudVehiclesUrl } from '../../shared/liveCloud';
 
 export const POLL_INTERVAL_MS = LIVE_POLL_SEC * 1000;
 
@@ -37,7 +39,10 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
 
   const fetchForSlug = useCallback(async (slug: string) => {
     try {
-      const res = await fetch(`/api/live-vehicles?agency=${slug}`);
+      // CIV-2894 (Ryan, 2026-11-24): Live reads the cloud recorder, so it needs nothing running on the Mac. An agency the
+      // recorder doesn't cover has no cloud vehicles and is not polled.
+      if (!RECORDER_SLUGS.includes(slug)) return;
+      const res = await fetch(liveCloudVehiclesUrl(slug));
       if (!res.ok) {
         const errData = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(errData.error || "Can’t reach this feed right now.");
