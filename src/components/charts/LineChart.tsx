@@ -19,9 +19,12 @@ export interface LinePoint {
 
 const PAD = { top: 24, right: 12, bottom: 24, left: AXIS_W };
 
-/** The main line's colour, and a second line's (CIV-2944: two measures on one chart, told apart by a key). */
+/**
+ * The main line's colour, and a second line's (CIV-2944: two measures on one chart, told apart by a key). Ryan, 2026-11-25:
+ * "can the line colours not be the same": the second line takes the app's brand colour, not a second grey.
+ */
 const LINE_COLOR = 'var(--text-primary)';
-const SECOND_LINE_COLOR = 'var(--text-dim)';
+const SECOND_LINE_COLOR = 'var(--color-brand)';
 
 /** A second line on the same axes: one value per main point (same order), and its name in the key and table. */
 export interface SecondLine {
