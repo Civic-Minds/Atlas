@@ -1,0 +1,12 @@
+{
+  // CIV-2894: the Live page's cloud vehicle reader. It reads Live's shared code (local-api/live-vehicles.ts, shared/), which
+  // pulls in the app's own types (Node, Vite), so like the MCP Worker it has its own config instead of tsconfig.workers.json.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "types": ["node", "vite/client", "@cloudflare/workers-types"]
+  },
+  "include": ["src", "../../shared", "../../src/vite-env.d.ts"]
+}

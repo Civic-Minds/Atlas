@@ -24,7 +24,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json && node scripts/typecheck-pipeline.mjs && tsc --noEmit -p workers/atlas-mcp/tsconfig.json",
     "check:vercel": "bash scripts/check-vercel.sh",
-    "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json",
+    "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json && tsc --noEmit -p workers/atlas-live-read/tsconfig.json",
     "typecheck:mcp-worker": "tsc --noEmit -p workers/atlas-mcp/tsconfig.json",
     "check:mcp-figures": "node scripts/mcp/figureCheck.mjs",
     "check:duplicates": "node scripts/check-duplicates.mjs",

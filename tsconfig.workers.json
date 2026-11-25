@@ -10,5 +10,5 @@
     "types": ["@cloudflare/workers-types"]
   },
   "include": ["workers"],
-  "exclude": ["workers/atlas-mcp"]
+  "exclude": ["workers/atlas-mcp", "workers/atlas-live-read"]
 }
