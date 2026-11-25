@@ -15,9 +15,9 @@
   "region": "California",
   "bbox": [
     38.4,
-    -122.77,
+    -122.78,
     38.49,
-    -122.65
+    -122.57
   ],
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=SR",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2948/latest.zip",

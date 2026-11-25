@@ -9,8 +9,8 @@
   "region": "California",
   "bbox": [
     38.39,
-    -121.76,
-    38.72,
+    -121.77,
+    38.73,
     -121.09
   ],
   "feedUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",

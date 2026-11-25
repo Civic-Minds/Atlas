@@ -9,10 +9,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.78,
-    -122.74,
-    38.47,
-    -122.32
+    37.77,
+    -122.75,
+    38.48,
+    -122.29
   ],
   "feedUrl": "https://realtime.goldengate.org/gtfsstatic/GTFSTransitData.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-67/latest.zip",

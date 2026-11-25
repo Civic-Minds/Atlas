@@ -10,10 +10,10 @@
   ],
   "region": "Oregon",
   "bbox": [
-    44.94,
+    44.93,
     -123.04,
-    45.39,
-    -122.69
+    45.44,
+    -122.56
   ],
   "feedUrl": "https://mysmartbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",

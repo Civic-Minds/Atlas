@@ -9,10 +9,10 @@
   ],
   "region": "Washington",
   "bbox": [
-    48.2,
-    -122.6,
-    48.7,
-    -121.9
+    47.97,
+    -122.69,
+    48.76,
+    -121.73
   ],
   "feedUrl": "https://strweb.skagittransit.org/GTFS/google_transit.zip",
   "lastFeedExpiry": "20270103",

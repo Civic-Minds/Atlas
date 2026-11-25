@@ -17,10 +17,10 @@
     -75.1652
   ],
   "bbox": [
-    39.8036,
-    -75.8351,
-    40.3349,
-    -74.7521
+    39.66,
+    -75.84,
+    40.34,
+    -74.75
   ],
   "feedUrl": "https://www3.septa.org/developer/google_bus.zip",
   "supplementalFeedUrls": [

@@ -8,10 +8,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.83,
-    -122.31,
-    37.85,
-    -122.27
+    37.82,
+    -122.32,
+    37.86,
+    -122.26
   ],
   "feedUrl": "https://emerygoround.com/data/emerygoround-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2224/latest.zip",

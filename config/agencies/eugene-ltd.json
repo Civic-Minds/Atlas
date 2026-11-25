@@ -9,8 +9,8 @@
   "bbox": [
     43.78,
     -123.36,
-    44.22,
-    -122.12
+    44.23,
+    -122.11
   ],
   "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
   "preprocess": "eugene-emx-patterns",

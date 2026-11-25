@@ -7,9 +7,9 @@
   ],
   "region": "California",
   "bbox": [
-    37.57,
-    -122.08,
-    37.61,
+    37.56,
+    -122.09,
+    37.62,
     -122
   ],
   "feedUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",

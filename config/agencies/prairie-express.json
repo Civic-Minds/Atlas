@@ -10,10 +10,10 @@
   "region": "Colorado",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-801/latest.zip",
   "bbox": [
-    40.6106,
-    -103.2376,
-    40.6432,
-    -103.1607
+    40.61,
+    -103.24,
+    40.65,
+    -103.16
   ],
   "cities": [
     "Sterling, Colorado"
