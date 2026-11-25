@@ -458,6 +458,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // (CIV-1894), the map's own route lines show, the remembered agency's in focus and the rest dimmed, as History's open
   // agency is (CIV-1731's Studio map showed the agency's lines with nothing picked). A page draws its own lines instead.
   const studioNoPage = inStudio && !parseStudioPath(pathname)?.page;
+  // MOCK #1814 (review only, never merged): the main map's frequency filter chips in Studio with no page open.
+  const studioFiltersMock = studioNoPage && (typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/studio' ? new URLSearchParams(window.location.search).get('mock') : null) === 'filters';
   const studioFocusAgency = studioNoPage ? getSavedStudioAgency() : null;
   const studioFocusSlugs = useMemo(() => (studioFocusAgency ? [studioFocusAgency] : null), [studioFocusAgency]);
   // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
@@ -880,7 +882,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setLightMode={setLightMode}
               query={inStudio ? '' : deferredQuery}
               setQuery={setQuery}
-              showUi={inFrequency || inFrequentService}
+              showUi={inFrequency || inFrequentService || studioFiltersMock}
               showSelectionUi={inLive || inNight || inBustang}
               showRouteLayers={inFrequency || inLive || inHistory || inNight || inBustang || inFrequentService || studioNoPage}
               focusAgencySlugs={studioFocusSlugs}
@@ -902,7 +904,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               filterToAgencies={historyMapFilterOn || inBustang}
               agencyFilterSlugs={historyMapFilterOn ? historyFilterSlugs : inBustang ? bustangSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService || inStudio}
+              hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService || (inStudio && !studioFiltersMock)}
               pageView={inStudio}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
@@ -937,7 +939,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onCompareActiveChange={setCompareActive}
               compareTabElsewhere={FEATURES.modeTransitions && compareOn && (inLive || inHistory) ? () => setActiveApp('frequency', COMPARE_PATH) : undefined}
               // Studio puts its own chips and tabs in these slots (CIV-1828).
-              headerPortalContainer={inStudio ? null : headerPortalEl}
+              headerPortalContainer={inStudio && !studioFiltersMock ? null : headerPortalEl}
               viewTabsPortalContainer={inStudio ? null : viewTabsPortalEl}
               moreMenuPortalContainer={inStudio ? null : moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}

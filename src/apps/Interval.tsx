@@ -1493,7 +1493,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         )}
       </div>
 
-      {showMapLegend && !nightServiceView && !pageView && <PersistentMapLegend contextMetric={contextLayerAvailable() ? contextMetric : null} />}
+      {(showMapLegend || (typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/studio' ? new URLSearchParams(window.location.search).get('mock') : null) === 'key') && !nightServiceView && (!pageView || (typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/studio' ? new URLSearchParams(window.location.search).get('mock') : null) === 'key') && <PersistentMapLegend contextMetric={contextLayerAvailable() ? contextMetric : null} />}
 
       {/* On sm and up the bottom-left pills and the bottom-right counts share one row, so the pills
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).

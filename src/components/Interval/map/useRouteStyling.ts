@@ -1,3 +1,4 @@
+import { CHANGE_COLOR } from '../../../apps/studio/fleetModel';
 import { useEffect } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { getNightServiceColor, buildFocusedRouteLineOpacityExpression, buildDefaultRouteLineOpacityExpression, buildZoomHeadwayGateExpression, type ColorVisionMode } from '../../../utils/colors';
@@ -237,6 +238,8 @@ export function useRouteStyling(
         : ['interpolate', ['linear'], ['zoom'], 8, segmentStop(0.7), 11, segmentStop(0.8), 14, segmentStop(0.9)]) as any);
       // Stop focus narrows it below (CIV-1058); every other state draws the layer's own width.
       map.setPaintProperty('route-segments-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
+      // MOCK #1814: no section colours either, in the grey option.
+      if ((typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/studio' ? new URLSearchParams(window.location.search).get('mock') : null) === 'grey') map.setPaintProperty('route-segments-layer', 'line-opacity', 0);
     }
 
     // Live's thin context lines step back behind a picked route like every other line. CIV-2191: they take the main
@@ -283,6 +286,8 @@ export function useRouteStyling(
       } else {
         lineColorExpr = buildEffectiveHeadwayColorExpression(period, colorMode);
       }
+      // MOCK #1814 (review only, never merged): Studio with no page open draws its lines in one grey, no frequency colours.
+      if ((typeof window !== 'undefined' && window.location.pathname.replace(/\/$/, '') === '/studio' ? new URLSearchParams(window.location.search).get('mock') : null) === 'grey') lineColorExpr = CHANGE_COLOR.same;
       // History's year view: the open agency's lines take that year's colours.
       if (historyYearAgencyMatch) {
         lineColorExpr = ['case', historyYearAgencyMatch, historyYearColorExpression(historyOverlay!.yearRoutes!, lineColorExpr), lineColorExpr];
