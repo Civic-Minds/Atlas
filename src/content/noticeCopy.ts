@@ -1149,7 +1149,7 @@ export const LIVE_NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The Live route card's "Right now" figures. */
 export const RIGHT_NOW_LABEL = 'Right now';
 /** CIV-2901 (mock v2, Ryan): the Right now row for vehicles not matched to one of the card's destinations, so the rows add up. */
-export const LIVE_UNMATCHED_DESTINATION = 'Not matched to a destination';
+export const LIVE_UNMATCHED_DESTINATION = 'No destination';
 export const VEHICLES_LABEL = 'Vehicles';
 /** The Live map's link to the agency list filtered to Live agencies, and a stop card's recent arrivals. */
 export const BROWSE_LIVE_AGENCIES_LINK = 'Browse all live agencies';

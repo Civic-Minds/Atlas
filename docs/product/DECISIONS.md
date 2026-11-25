@@ -308,6 +308,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-24 — The Live route card's row for vehicles with no matched destination reads "No destination" (CIV-2901)
+Ryan, 2026-11-24: "No Destination might be better", then "1" (sentence case). Replaces "Not matched to a destination" on the Live route card's destination rows; the label lives once in noticeCopy.
+
 ### 2026-11-24 — A stretch's colour changes only where the branches split (CIV-1565, #1093; supersedes the 2026-11-19 end-piece rule, V0)
 Ryan, 2026-11-24, to Strategy: "we shouldn't show *incorrect* info. But realistically we also shouldn't usually ever need to show those random sections of a different colour outside of branches or short turns." Answering the Questions chat: "1", build "the colour changes exactly where the branches split"; V0 stays until this replaces it. Then: "Just think it would look very odd if we have a single section between 2 stops where the colour is different".
 - The rule: a drawn stretch (failing routes' shared stretches and passing routes' partial pieces) is cut only where the patterns pooled at its stops change, read from each pattern's shared stretches; a range end is a split stop when its own stretch ends there or its matched opposite stop ends an opposite shared stretch. Each section takes its worst stop's value; the joining piece takes the worse side. A range end whose nearest opposite stop is served by fewer opposite patterns than its neighbour's (past the opposite split, e.g. TTC 123 at North Queen / The East Mall) reads the neighbour's opposite value, never better than its own.
