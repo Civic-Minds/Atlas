@@ -45,6 +45,9 @@ import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 import { schedulesDesign, type SchedulesDesign } from './reviewDesign';
 import { agencyNow } from '../../../scripts/mcp/nowClock';
+import { PageTitle } from '../../components/ui/PageTitle';
+import { PAGE_LEAD } from '../../components/ui/PageSection';
+import { SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../../styles';
 import { useInServiceNow } from './useInServiceNow';
 
 /**
@@ -434,6 +437,17 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
               ) : null}
           </PanelBody>
         </StudioPanel>
+      ) : schedulesDesign() === 'page' ? (
+        // CIV-2182 review mock-up, "page": Schedules as a full page under Studio's top bar, in place of a panel on the map,
+        // on the shared page parts (PageTitle, PAGE_LEAD); the list is the same list.
+        <div className={`fixed inset-x-0 bottom-0 top-0 ${SIDEBAR_CARD_TOP_DESKTOP} ${Z_PANEL_RAISED} overflow-y-auto bg-[var(--bg-app)]`} aria-label={PAGE_NAMES.studioSchedules}>
+          <div className="mx-auto w-full max-w-5xl px-8 py-8">
+            <PageTitle>{PAGE_NAMES.studioSchedules}</PageTitle>
+            <p className={PAGE_LEAD}>{intro}</p>
+            {leftOut.map(n => <p key={n} className={PAGE_LEAD}>{n}</p>)}
+            <div className="mt-8"><ChangeList file={file} period={period} onPick={setRoute} design="today" /></div>
+          </div>
+        </div>
       ) : (
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>
           <PanelTitleBar title={PAGE_NAMES.studioSchedules} />
@@ -444,7 +458,7 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
           <ChangeList file={file} period={period} onPick={setRoute} design={schedulesDesign()} />
         </StudioPanel>
       )}
-      {view === 'schedules' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
+      {view === 'schedules' && schedulesDesign() !== 'page' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
     </>
   );
 }

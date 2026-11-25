@@ -5,11 +5,12 @@ import { readUrlParam, STUDIO_REVIEW_URL } from '../../utils/urlSchema';
  * /_review/studio-redesign/ opens each one). Without it, or with an unknown name, the screen is as it is today. Removed
  * once Ryan picks a design.
  */
-export type SchedulesDesign = 'today' | 'period' | 'byPeriod' | 'summary';
+/** 'page' (Ryan: "Maybe scehedules should be a full page too idk"): Schedules as a full page over the map, not a panel on it. */
+export type SchedulesDesign = 'today' | 'period' | 'byPeriod' | 'summary' | 'page';
 
 const param = (): string | null => (typeof window === 'undefined' ? null : readUrlParam(window.location.search, STUDIO_REVIEW_URL.design) ?? null);
 
 export function schedulesDesign(): SchedulesDesign {
   const d = param();
-  return d === 'period' || d === 'byPeriod' || d === 'summary' ? d : 'today';
+  return d === 'period' || d === 'byPeriod' || d === 'summary' || d === 'page' ? d : 'today';
 }

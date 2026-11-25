@@ -67,7 +67,7 @@ export type LiveSort = typeof LIVE_SORT_IDS[number];
 /** The map (Frequency and Frequent Service; it stays mounted under every other view). */
 /** CIV-2182 review only: which proposed Studio design a screen shows (src/apps/studio/reviewDesign.ts). Removed once Ryan picks. */
 export const STUDIO_REVIEW_URL = {
-  design: oneOf('design', ['change', 'period', 'byPeriod', 'summary', 'now'] as const, null),
+  design: oneOf('design', ['period', 'byPeriod', 'summary', 'page'] as const, null),
 } as const;
 
 export const MAP_URL = {
