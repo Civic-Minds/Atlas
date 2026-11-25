@@ -25,12 +25,14 @@ export interface ArchivedAgencyAnalysis {
   routes: Map<string, { file: string; generatedAt?: string; v3?: LiveV3 }>;
 }
 
-export function analyseArchivedAgency(slug: string, opts: { work: string; days: number; run: RunScript }): ArchivedAgencyAnalysis {
+/** `lastError`: the step's own one-line reason (#1801: "live-gtfs-window: …"), safe for a public log. */
+export function analyseArchivedAgency(slug: string, opts: { work: string; days: number; run: RunScript; lastError?: () => string | null }): ArchivedAgencyAnalysis {
   const { work, days, run } = opts;
+  const reason = () => opts.lastError?.() ?? null;
   const archive = join(work, `archive-${slug}`), feeds = join(work, 'gtfs', 'candidates', `${slug}-feeds`), outDir = join(work, 'out');
   mkdirSync(outDir, { recursive: true });
   if (!run('scripts/live-fetch-archive.ts', ['--agency', slug, '--days', String(days), '--out', archive, '--prune'])) throw new LiveBuildFailed('fetch');
-  if (!run('scripts/live-gtfs-for-window.ts', ['--agency', slug, '--days', String(days), '--feeds-dir', feeds, '--archive', archive])) throw new LiveBuildFailed('timetables');
+  if (!run('scripts/live-gtfs-for-window.ts', ['--agency', slug, '--days', String(days), '--feeds-dir', feeds, '--archive', archive])) throw new LiveBuildFailed(`timetables${reason() ? ` (${reason()})` : ''}`);
   const feedDirs = existsSync(feeds) ? readdirSync(feeds).map(d => join(feeds, d)).filter(d => existsSync(join(d, 'trips.txt'))).sort() : [];
   if (!feedDirs.length) throw new LiveBuildFailed('timetables');
   const gtfs = feedDirs.join(',');

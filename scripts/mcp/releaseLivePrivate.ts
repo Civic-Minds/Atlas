@@ -68,11 +68,14 @@ async function listKeys(bucket: string, prefix: string, delimiter?: string): Pro
 }
 
 /** Runs one of Live's scripts with its output in the private log only. */
+let lastStepError: string | null = null;
 function run(script: string, args: string[]): boolean {
   const r = spawnSync(process.execPath, [resolve('node_modules/tsx/dist/cli.mjs'), script, ...args], {
     env: { ...process.env, LIVE_DATA: work, NODE_OPTIONS: '--max-old-space-size=8192' }, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024,
   });
   appendFileSync(log, `\n$ ${script} ${args.join(' ')}\n${r.stdout ?? ''}${r.stderr ?? ''}exit ${r.status}\n`);
+  // #1801: the timetable step's own one-line reason (dates, counts and storage keys only) for the public reason code.
+  lastStepError = r.status === 0 ? null : (r.stderr ?? '').split('\n').reverse().find(l => l.startsWith('live-gtfs-window: '))?.slice(0, 300) ?? null;
   return r.status === 0;
 }
 
@@ -113,7 +116,7 @@ async function fromPublished(slug: string): Promise<Built> {
 /** Any other agency: fetch its archive and timetables, run Live's analysis per route, keep the routes with enough good days. */
 function fromArchive(slug: string): Built {
   const files = new Map<string, unknown>();
-  const { outDir: out, shortOf, routes: analysed } = analyseArchivedAgency(slug, { work, days, run });
+  const { outDir: out, shortOf, routes: analysed } = analyseArchivedAgency(slug, { work, days, run, lastError: () => lastStepError });
   const short = (id: string) => shortOf.get(id) ?? id;
   const ready = new Map<string, { generatedAt: string; v3: LiveV3 }>();
   for (const [route, r] of analysed) if (r.v3 && liveFiguresReady(r.v3)) ready.set(route, { generatedAt: r.generatedAt ?? new Date().toISOString(), v3: r.v3 });
