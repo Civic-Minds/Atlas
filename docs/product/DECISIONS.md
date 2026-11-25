@@ -19,6 +19,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How a route's frequency is decided
 
+- **On-demand zones show only with no frequency filter**
+  - What: under any frequency filter (every 10, 15, 20, 30 or 60) the map hides on-demand zones and stops; with no filter (all service) they show by their hours as before. One rule (shared/viewLayers.ts mapDrawsOnDemand), so the failed-to-load notice follows it too.
+  - Why: on-demand service has no headway, so it can't pass a frequency filter.
+  - Source: Ryan, 2026-11-24 (CIV-2898): "on demand doens't have deadways so why do they show up if i select 10 mins lol", then "1"
 - **Atlas is not a trip-planning tool; no booking info**
   - What: no on-demand booking info anywhere: no app names, booking links, phone numbers, call-centre hours or booking-ahead rules on zone cards, other UI or the MCP's on_demand_zones answer. The bookingInfo and bookingUrl fields are deleted from the data, and a guard test (noBookingInfo.test.ts) fails if a booking field or booking text comes back.
   - Why: Atlas shows how often service runs, not how to ride it.
@@ -303,6 +307,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-24 — On-demand zones are hidden under any frequency filter (CIV-2898)
+Ryan, 2026-11-24: "on demand doens't have deadways so why do they show up if i select 10 mins lol"; he picked "1": hide on-demand zones whenever a frequency filter is set, and show them only with no frequency filter (all service). Before, the filter checked only routes and zones showed by their hours alone. The MCP's on_demand_zones takes no frequency filter, so the rule doesn't apply there.
 
 ### 2026-11-24 — Atlas is not a trip-planning tool; no booking info (supersedes CIV-1784's partial removal)
 Ryan, 2026-11-24: "THis is like the 6th time i have said to remove the on demand booking info i fucking swear to god". Earlier, CIV-1784: "this isnt for ppl using it like google maps". CIV-1784 (8e84819) removed only the booking link and kept the booking text. Now every booking field is deleted from config/on-demand (81 fields in 44 files) and src/data, the zone card's Booking section and the MCP's booking field are gone (MCP 0.24.0), and a guard test fails if a booking field or booking text (app names, phone numbers, booking-ahead wording) reappears in zone text.
