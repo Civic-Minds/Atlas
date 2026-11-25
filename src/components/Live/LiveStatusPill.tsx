@@ -13,6 +13,11 @@ const DOT: Record<LiveStatus, string> = {
   unavailable: 'bg-[var(--status-negative)]',
 };
 
+/** CIV-2902 (#1797): one agency's status dot, by the shared Live / Delayed / Unavailable rule, for the Live panel. */
+export function LiveStatusDot({ status }: { status: LiveStatus }) {
+  return <span className={`relative inline-flex rounded-full h-2 w-2 shrink-0 ${DOT[status]}`} aria-hidden="true" />;
+}
+
 /** How often the pill re-reads its clock, so positions turn Delayed while no new poll arrives. */
 const TICK_MS = 5_000;
 
