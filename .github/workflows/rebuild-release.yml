@@ -516,24 +516,8 @@ jobs:
       - name: Check the resumed run built this commit and put its files back
         if: inputs.start_at != 'reprocess' && inputs.resume_run_id != ''
         run: |
-          head_sha="$(git rev-parse HEAD)"
-          for dir in tmp/rebuild-state tmp/rebuild-manifest; do
-            [ -f "$dir/sha.txt" ] || continue
-            if [ "$(cat "$dir/sha.txt")" != "$head_sha" ]; then
-              echo "main is now ${head_sha:0:7}; run $RESUME_RUN_ID built $(cut -c1-7 "$dir/sha.txt")."
-              echo "Resuming across a new commit would mix builds. Start again with start_at=reprocess."
-              exit 1
-            fi
-          done
-          if [ -s tmp/rebuild-state/stamps.patch ]; then
-            if git apply --check tmp/rebuild-state/stamps.patch 2>/dev/null; then
-              git apply tmp/rebuild-state/stamps.patch
-            elif git apply -R --check tmp/rebuild-state/stamps.patch 2>/dev/null; then
-              echo "The stamps are already on main (their pull request was merged)."
-            else
-              echo "The saved stamps neither apply nor are already applied."; exit 1
-            fi
-          fi
+          # Main may have moved on only by this run's own stamps pull request (#1865); anything else is refused.
+          bash scripts/rebuild-resume-check.sh tmp/rebuild-state tmp/rebuild-manifest
           if [ -f tmp/rebuild-manifest/atlas-release-manifest.json ]; then
             cp tmp/rebuild-manifest/atlas-release-manifest.json tmp/atlas-release-manifest.json
           fi
@@ -695,6 +679,10 @@ jobs:
             git checkout "$REPROCESS_HEAD_SHA" -- .
             git reset --quiet
           fi
+          # The index and catalogs aren't committed (CIV-2975): write them from the restored config. The pull
+          # request step's branch switches regenerate them from main's unstamped config, so without this the
+          # tiles and the publish gate read the old expiries (#1864: avon-transit blocked as ended 20261125).
+          npm run build:agency-data
           git diff --shortstat
 
       # ---- Tiles, history, release -------------------------------------------------------

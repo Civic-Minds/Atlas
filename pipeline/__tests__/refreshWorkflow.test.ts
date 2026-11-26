@@ -29,6 +29,20 @@ describe('weekly refresh workflow contract', () => {
     expect(workflow).toContain('git checkout "$REFRESH_HEAD_SHA" -- .');
   });
 
+  it('regenerates the uncommitted index after restoring files the pull request step reset (#1864)', () => {
+    // The index and catalogs aren't committed (CIV-2975). create-pull-request's branch switches rewrite them from
+    // main's config, so a restore that puts back only config leaves the tiles and publish gate on old expiries.
+    for (const file of ['refresh-feeds.yml', 'rebuild-release.yml']) {
+      const workflow = readFileSync(resolve(`.github/workflows/${file}`), 'utf8');
+      const restores = workflow.split('\n      - name: ').filter(step => /git checkout "\$\w+" -- \./.test(step));
+      expect(restores.length, file).toBeGreaterThan(0);
+      for (const step of restores) {
+        expect(step.indexOf('npm run build:agency-data'), `${file}: ${step.split('\n')[0]}`)
+          .toBeGreaterThan(step.search(/git checkout "\$\w+" -- \./));
+      }
+    }
+  });
+
   it('publishes the release pointer exactly once, after every derived artifact', () => {
     const workflow = readFileSync(resolve('.github/workflows/refresh-feeds.yml'), 'utf8');
     const publishSteps = workflow.split('      - name: Publish verified data release').length - 1;
