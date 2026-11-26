@@ -40985,6 +40985,74 @@
       "feedUrl": "https://passio3.com/edmond/passioTransit/gtfs/google_transit.zip",
       "timezone": "America/Chicago",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "part-nc",
+      "name": "Piedmont Authority for Regional Transportation (PART)",
+      "officialName": "Piedmont Authority for Regional Transportation",
+      "commonName": "PART",
+      "websiteUrl": "http://www.partnc.org/",
+      "dataLicense": {
+        "url": "http://www.partnc.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "North Carolina",
+      "center": [
+        36.0559,
+        -79.959
+      ],
+      "bbox": [
+        35.631,
+        -80.246,
+        36.118,
+        -79.051
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-373/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "fond-du-lac",
+      "name": "Fond du Lac Area Transit",
+      "officialName": "Fond du Lac Area Transit",
+      "websiteUrl": "https://FondDuLac.transloc.com",
+      "dataLicense": {
+        "url": "https://FondDuLac.transloc.com",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Wisconsin",
+      "center": [
+        43.7769,
+        -88.4486
+      ],
+      "feedUrl": "http://www.fonddulac.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "frta",
+      "name": "Franklin Regional Transit Authority (FRTA)",
+      "officialName": "Franklin Regional Transit Authority",
+      "commonName": "FRTA",
+      "websiteUrl": "http://frta.org",
+      "dataLicense": {
+        "url": "http://frta.org",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Massachusetts",
+      "center": [
+        42.5877,
+        -72.5983
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-429/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     }
   ]
 }
