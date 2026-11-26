@@ -11,6 +11,7 @@ import { liveTooFewTrips, USUALLY_COLUMN, SCHEDULED_COLUMN, LIVE_RUN_TIME_INTRO 
 import { TRIP_TIME_LABEL } from '../../../../shared/liveWording';
 import { SubsectionTitle } from '../../ui/PageTitle';
 import { LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
+import { minuteTicks } from '../../../utils/chartAxis';
 
 /** The one derivation of the run-time figures, so every surface draws the same numbers. */
 export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -81,22 +82,13 @@ function PatternRow({ row, scale, width, dense, showLabel, unit }: { row: RunTim
   );
 }
 
-/** The scale's ticks, whole 5 or 10 minutes. */
-function scaleTicks(scale: { min: number; max: number }) {
-  const span = scale.max - scale.min || 1;
-  const step = span > 30 ? 10 : 5;
-  const ticks: number[] = [];
-  for (let t = Math.ceil(scale.min / step) * step; t <= scale.max; t += step) ticks.push(t);
-  return ticks;
-}
-
 /** The minutes under a direction's rows, with "min" at the end. */
 function RowAxis({ scale }: { scale: { min: number; max: number } }) {
   return (
     <div className={`relative h-4 text-xs text-[var(--text-dim)] ${GUTTER}`} aria-hidden="true">
       <div className="relative h-full">
         <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
-          {scaleTicks(scale).map(t => <span key={t} className="absolute top-0 -translate-x-1/2" style={{ left: `${rowPercent(t, scale)}%` }}>{t}</span>)}
+          {minuteTicks(scale).map(t => <span key={t} className="absolute top-0 -translate-x-1/2" style={{ left: `${rowPercent(t, scale)}%` }}>{t}</span>)}
         </div>
       </div>
       <span className="absolute right-0 top-0">min</span>
@@ -114,7 +106,7 @@ export function PatternRows({ rows, scale, dense = false, hideMainLabel = false,
       <div className={`relative ${unitOnNumbers ? '' : GUTTER}`}>
         <div className="pointer-events-none absolute inset-y-0 left-0" style={{ right: unitOnNumbers ? 0 : 28 }} aria-hidden="true">
           <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
-            {scaleTicks(scale).map(t => <div key={t} className="absolute inset-y-0 w-px bg-[var(--border-primary)] opacity-60" style={{ left: `${rowPercent(t, scale)}%` }} />)}
+            {minuteTicks(scale).map(t => <div key={t} className="absolute inset-y-0 w-px bg-[var(--border-primary)] opacity-60" style={{ left: `${rowPercent(t, scale)}%` }} />)}
           </div>
         </div>
         <ul ref={ref} className={`relative m-0 list-none p-0 ${dense ? 'space-y-1' : 'space-y-2'}`}>{shown.map(r => <PatternRow key={r.key} row={r} scale={scale} width={width} dense={dense} showLabel={!(hideMainLabel && r.main)} unit={unitOnNumbers ? ' min' : ''} />)}</ul>
