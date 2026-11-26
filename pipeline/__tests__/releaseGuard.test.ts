@@ -154,10 +154,11 @@ describe('tile rules fingerprint', () => {
   // CIV-238 adds the ewf_<period> keys (the grades a period's first or last wait breaks) and a filter clause that reads
   // them. No version bump, as for #899: no existing tile value changes, older tiles lack the keys and evaluate exactly as
   // before (the clause is skipped without them), and older apps ignore them. Hash only.
+  // CIV-3017: flag check in build-pmtiles only, no tile change: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '1993b8a9a2479ea09d9519bb508fa2de54e46cbc81ca13a77237a80936cd94e4',
+      fingerprint: '32ca9c1a36e7f83f3ad87cf44ab9e2999fb1b6d21e95115a7eaed1eb73af3db7',
     });
   });
 });
