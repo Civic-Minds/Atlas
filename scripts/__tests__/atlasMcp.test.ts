@@ -102,6 +102,15 @@ describe('time windows that start after midnight (CIV-1840)', () => {
     expect([700, 1500].map(t => windowHas(t, { start: 600, end: 1080 }))).toEqual([true, false]);
     expect([1380, 1500, 100].map(t => windowHas(t, { start: 1380, end: 1680 }))).toEqual([true, true, false]);
   });
+  it('gives the night hours and the Overnight period for 2 AM–6 AM (#1868: RTC Red Line showed only 5–6 AM and no period)', () => {
+    expect(periodsIn(parseClock('2 AM')!, parseClock('6 AM')!)).toEqual(['Overnight (2–6 AM)']);
+    const night = { '5': 3, '25': 2, '26': 2, '27': 2, '28': 2 };
+    const rows = [{ directionId: 0, headsign: 'Downtown', departuresByHour: night, headwayByHour: { '5': 20, '25': 30, '26': 30, '27': 30, '28': 30 } }];
+    const red = { key: 'r', name: 'RED LINE', shortName: 'RED LINE', longName: null, mode: 'Bus', rows } as unknown as Parameters<typeof hourlyFrequency>[0];
+    expect(hourlyFrequency(red, 120, 360)[0].byHour.map(h => [h.hour, h.every])).toEqual([
+      ['2–3 AM', 'every 30 min'], ['3–4 AM', 'every 30 min'], ['4–5 AM', 'every 30 min'], ['5–6 AM', 'every 20 min'],
+    ]);
+  });
 });
 
 describe('tool annotations (CIV-1854: every directory asks for a title and readOnlyHint)', () => {

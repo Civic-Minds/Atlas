@@ -35,7 +35,7 @@ import { headwayAboutRange, headwayEvery } from '../../shared/headwayText';
 import { buildStopRoutes, stopRouteLineHeadway, stopRowHeadway, stopRowRangeLow } from '../../src/utils/stopRoutes';
 import { pairChanges } from '../../shared/scheduleChangePairing';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
-import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
+import { DAYTIME_PERIOD_KEYS, MINUTES_PER_DAY, TIME_PERIODS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { mayRedistribute, redistributionExclusion } from '../../shared/rules/redistribution';
@@ -576,9 +576,30 @@ export function parseClock(text: unknown): number | null {
   return h > 30 || min > 59 ? null : h * 60 + min;
 }
 
-/** The Atlas periods a time window overlaps, with their own hours. */
+/** Whether a window starts before the first part of the day and ends by midnight (2 AM to 6 AM), so it is read both ways (startsInWindow). */
+const earlyWindow = (w: { start: number; end: number }) => w.start < TIME_PERIODS[0].startHour * 60 && w.end <= MINUTES_PER_DAY;
+
+/**
+ * A time window for the service day. A clock window that starts before the first part of the day (12 AM–3 AM) can mean
+ * the hours after midnight that belong to the day's late night (24:00–27:00), where the schedule writes them, or the
+ * hours at its start (5 AM). Both are read: the starts that fall in the window shifted a day, folded into it.
+ */
+export function startsInWindow(starts: readonly number[], w: { start: number; end: number }): number[] {
+  return starts.filter(t => windowHas(t, w)).map(t => (t >= w.end ? t - MINUTES_PER_DAY : t));
+}
+
+/** Whether a departure (minutes in the service day) falls in a window, reading an early-morning window both ways (see startsInWindow). */
+export function windowHas(t: number, w: { start: number; end: number }): boolean {
+  if (t >= w.start && t < w.end) return true;
+  return earlyWindow(w) && t >= w.start + MINUTES_PER_DAY && t < w.end + MINUTES_PER_DAY;
+}
+
+/** The Atlas periods a time window overlaps, with their own hours; an early-morning window also reads the night's hours (#1868: 2–6 AM is Overnight). */
 export function periodsIn(start: number, end: number): string[] {
-  return PERIOD_KEYS.filter(k => PERIOD_MINUTES[k].start < end && PERIOD_MINUTES[k].end > start).map(k => `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`);
+  const overlaps = (k: PeriodKey, s: number, e: number) => PERIOD_MINUTES[k].start < e && PERIOD_MINUTES[k].end > s;
+  const shifted = earlyWindow({ start, end });
+  return PERIOD_KEYS.filter(k => overlaps(k, start, end) || (shifted && overlaps(k, start + MINUTES_PER_DAY, end + MINUTES_PER_DAY)))
+    .map(k => `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`);
 }
 
 /**
@@ -589,7 +610,10 @@ export function periodsIn(start: number, end: number): string[] {
  */
 export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?: (row: ShapeProperties) => string | null) {
   const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
-  const inWindow = (h: number) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end;
+  // #1868: an early-morning window reads the night's hours too (2 AM to 6 AM is 26:00 to 28:00 and 5 AM), in clock order.
+  const hourWindow = { start: Math.floor(start / 60) * 60, end };
+  const inWindow = (h: number) => windowHas(h * 60, hourWindow);
+  const clockOrder = (h: number) => startsInWindow([h * 60], hourWindow)[0] ?? h * 60;
   // #1714: a row that carries a tenth of its direction's trips inside the asked window keeps its column too, after the
   // day's columns, so a branch that runs mostly late (TTC 501 Sunday westbound "towards Long Branch": 23 of 253 trips a
   // day, nearly all after 10 PM) is not left out. The day's columns and their order stay as they were.
@@ -628,7 +652,7 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
     columns.push({ row, towards: towardsOf(row) });
   }
   const hours = (row: ShapeProperties) => Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
-    .map(([h, v]) => [+h, v] as const).filter(([h]) => inWindow(h)).sort((a, b) => a[0] - b[0]);
+    .map(([h, v]) => [+h, v] as const).filter(([h]) => inWindow(h)).sort((a, b) => clockOrder(a[0]) - clockOrder(b[0]));
   const runs = (row: ShapeProperties) => hours(row).some(([, v]) => v != null);
   const stopsOf = (row: ShapeProperties) => (row.stopOrder as string[] | undefined) ?? [];
   // #1714 (part 2): a column with no regular trips in any hour of the window is left out when another column of its direction

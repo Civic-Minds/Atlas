@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Reporting a problem from a route card's destination name picks the name reason**: clicking "to Maryland Pkwy Southbound" had pre-checked "The frequency is wrong"; only clicking the figure does that now
+- **Studio's assistant gives the hours after midnight when asked about the early morning**: asked for the Red Line from 2 to 6 AM, it gave only the 5 AM hour and named no part of the day, though the route runs every 30 min all night
 - **Studio's assistant gives no first or last trip for a route that runs all night**: RTC's Red Line, every 30 min from 2 AM, read "first during the 5 AM hour", the edge of Atlas's day rather than a trip
 - **A line on the map's top bar separates the apps from the modes**: Live and History now sit apart from Compare and the filters
 - **Route lists keep a one-gap note when two directions name slightly different gaps**: SEPTA 53's Saturday morning list read just "every 30 min" beside rows with a 59 and a 60 min gap; it now reads "every 30 min, with one 60 min gap", as the card does
