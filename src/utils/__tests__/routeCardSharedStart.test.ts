@@ -25,8 +25,9 @@ const rowsText = (period: TimePeriod) => group(period).rows.map(r => `${r.label}
 describe('#1823: branches that share a start: the trunk is the Shared stretch row, each branch reads its own trips', () => {
   it('TransLink 9 westbound AM: "Shared stretch every 8"; "to Granville St" reads its own trips, not the trunk\'s 8', () => {
     expect(group('amPeak').shared).toMatchObject({ label: 'Shared stretch', headway: 8 });
-    expect(rowsText('amPeak')).toContain('to Granville St: every 18 min');
-    expect(rowsText('amPeak')).toContain('to Alma St: every 16 min');
+    // Each branch's own start or end is worded with the branch readings on (CIV-1959 B3, CIV-1241; #1825).
+    expect(rowsText('amPeak')).toContain('to Granville St: every 18 min from 7:40 AM');
+    expect(rowsText('amPeak')).toContain('to Alma St: every 16 min until 7:14 AM');
     expect(group('midday').shared).toMatchObject({ label: 'Shared stretch', headway: 11 });
     expect(rowsText('midday')).toContain('to Granville St: every 24 min');
   });
