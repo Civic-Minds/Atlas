@@ -55,6 +55,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Runs irregularly in this period" on cards, "Irregular" in tight spots (table cells, list values). Both come from src/content/noticeCopy.ts.
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
   - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
+- **A card row with a wait over an hour needs 4 of its own trips for a number**
+  - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Runs irregularly in this period", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
+  - Why: 2 or 3 trips are not a pattern a rider can plan around, even when evenly spaced.
+  - Source: Ryan, 2026-11-24, on CIV-2232: "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1" to "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words"
 - **A route with no all-day value stays without one**
   - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route. The all-day value is internal (the map has no All day option); riders see only the "limited".
   - Why: a peak-only route is not all-day service.
@@ -311,6 +315,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-24 — A card row with a wait over an hour needs 4 of its own trips for a number (CIV-2232; logged 2026-11-25 with #1827)
+Ryan, 2026-11-24, answering the Questions chat on CIV-2232. First, "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular" (over "2. Keep 3 as today"). That changed 10,779 cards, not the 542 first shown, so it was re-asked, and he picked "1": "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words." Service that starts or ends in the period keeps its number (about 5,000 cards changed).
+- The rule: a route card row whose period wait is over PERIOD_COVERAGE_MAX_HEADWAY (60 min), with fewer than `MIN_CARD_ROW_DEPARTURES` (4) of its own trips in the period and no "from …"/"until …" words, reads "Runs irregularly in this period". Card wording only: the colour and the filter are unchanged. Built in a08c19d (CIV-2232). The number had not been logged here until now.
+- #1827 (2026-11-25): branch rows skipped it. A branch whose piece has no number took its own trips' reading back (SEPTA 20 Sunday evening to Frankford Transit Center: 3 trips, "every 171 min"). Branch rows now follow the same rule: 173 card rows in 57 agencies go from a number to "Runs irregularly in this period" (NJ Transit 32, SEPTA 13, MBTA 8), and no other row changes (release-mwvbser2, 226,564 card rows).
 
 ### 2026-11-25 — The full-day chart's title line names the hovered hour, "5 AM: every 15 min" (#1820, CIV-2950)
 Ryan, 2026-11-25, on CapMetro 801 Southbound's "Overnight every 15 min" ("Is this overnigth every 15 not wrong and/or bad"): "Actually 1" (the title names the hour, not its period), then "1" to "5 AM: every 15 min", with the colon, as the hourly hover reads ("2 PM: every 30 min"). The 801 has no overnight service; the 5 AM hour's 15 came from its one trip at 5:57 and the next at 6:12, and the title put the period's name beside it. The title is built by the hover's own function (formatHourTitle; trip time by formatTripTimeTitle), so the two can't drift. Across all published agencies 1,854 routes showed an overnight hour's figure in a period with none.

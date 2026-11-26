@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A branch with 2 or 3 trips more than an hour apart reads "Runs irregularly in this period"**: branch lines skipped the 4-trip minimum the other rows follow, so SEPTA 20's Sunday evening card read "every 171 min" from 3 trips
 - **Atlas Studio MCP counts each station once in a route's stops**: OC Transpo Line 1 said 26 stops each way for its 13 stations, because each station was counted as both its platform and the station itself
 - **Route cards count each trip once, late trips included**: Kingston 22 left out its 11:02 and 11:38 PM trips towards First Canada (30 trips against the feed's 33), and Kingston 10 counted one trip twice each way (34 against 33), because a row's hourly counts mixed two lists of departures
 - **Routes you must book ahead no longer show a fixed frequency**: exo's taxibuses, Annapolis Call-in and the rest printed "every 40 min" or even "every 15 min" beside "Rides on this route must be booked ahead.", and their map colour and frequency filter read the same number
