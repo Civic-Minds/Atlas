@@ -150,6 +150,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: an agency on the exclusion list (`shared/rules/redistribution.ts`: WMATA; DART, NYC Ferry and Bee-Line, whose terms bar sharing; and 13 agencies that need written permission first) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
   - Why: WMATA's Transit Data Terms of Use bar "creating an application programming interface that enables access to Transit Data". Ryan: "Then remove it from MCP and note this somewhere internally".
   - Source: [decision log](#decision-log) (2026-11-22, twice), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693), CIV-2124, CIV-2125
+- **The MCP may say more than the map, never something different**
+  - What: the MCP may hold and give more detail than the map, cards and lists show end users, but it must never contradict them: the same question gets the same answer, and a different answer is a bug.
+  - Why: Ryan asked "can the MCP use info if we don't show it to end users", and picked 1 over keeping the MCP to what end users see.
+  - Source: [decision log](#decision-log) (2026-11-26)
 - **Modes come from GTFS route_type**
   - What: a route's mode is the feed's route_type; known mistakes are listed per-route overrides in the agency config, never guessed from names.
   - Why: one shared definition keeps the map menu, pages and counters agreeing.
@@ -347,6 +351,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — The MCP may hold more detail than the map, but never contradicts it
+Ryan, 2026-11-26: "can the MCP use info if we don't show it to end users", then picked "1": the MCP may hold more detail than the map (cards, lists), but must never contradict it. The same question gets the same answer, and a different answer is a bug. Not chosen: 2, the MCP shows no more than end users see.
 
 ### 2026-11-26 — A route's last time is its last boarding where trips start (CIV-2963, #1791)
 Ryan, 2026-11-26, picked "1": "Merge it", over "2. Keep last times as they are". It completes his CIV-2229 pick of 2026-11-24 ("1": first times move to where trips start, last times stay at the reference stop for now). The last time is the last trip start of the direction's representative weekday; a night service's 0:xx trip counts as the night it ends; a route that runs all night shows no exact last time. Cloud dry-run pair (530 agencies, 14,527 weekday routes): 13,762 routes get an earlier last time (median 29 min, 90% within an hour), 175 a later one (late-night trips after midnight, trips that never reach the reference stop), 223 lose an exact last time (221 run all night; CDTA 93 and Coast RTA), 12 gain one (night routes); first times unchanged.
