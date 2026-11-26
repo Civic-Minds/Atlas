@@ -40144,6 +40144,81 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-551/latest.zip",
       "timezone": "America/New_York",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "seat-ct",
+      "name": "Southeast Area Transit District (Connecticut)",
+      "officialName": "Southeast Area Transit District",
+      "nameQualifier": "Connecticut",
+      "websiteUrl": "https://southeastareatransitdistrict.com",
+      "dataLicense": {
+        "url": "https://southeastareatransitdistrict.com",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Connecticut",
+      "center": [
+        41.4245,
+        -72.0913
+      ],
+      "feedUrl": "https://gtfs.remix.com/seat_preston_ct_us.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "santee-wateree",
+      "name": "Santee Wateree Regional Transportation Authority (SWRTA)",
+      "officialName": "Santee Wateree Regional Transportation Authority",
+      "commonName": "SWRTA",
+      "websiteUrl": "https://www.swrta.com/",
+      "dataLicense": {
+        "url": "https://www.swrta.com/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "South Carolina",
+      "center": [
+        33.9478,
+        -80.3735
+      ],
+      "bbox": [
+        33.471,
+        -81.039,
+        34.229,
+        -80.229
+      ],
+      "feedUrl": "https://santeebus.com/gtfs",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "berkshire",
+      "name": "Berkshire Regional Transit Authority (BRTA)",
+      "officialName": "Berkshire Regional Transit Authority",
+      "commonName": "BRTA",
+      "websiteUrl": "http://www.berkshirerta.com/",
+      "dataLicense": {
+        "url": "https://cdn.mbta.com/sites/default/files/2023-08/mbta-massdot-develop-license-agreement.pdf",
+        "attribution": "required",
+        "name": "MassDOT Developers License Agreement",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "Massachusetts",
+      "center": [
+        42.4567,
+        -73.2375
+      ],
+      "bbox": [
+        42.174,
+        -73.381,
+        42.717,
+        -72.601
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-537/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     }
   ]
 }
