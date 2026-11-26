@@ -125,6 +125,8 @@ jobs:
         if: env.TICKET == 'CIV-1862'
         env:
           ATLAS_HISTORY_WEEKEND_PERIODS: ${{ matrix.slug }}
+          # CIV-1862: read-only Mobility Database API token (public datasets), for periods the archive has no zip for.
+          MDB_REFRESH_TOKEN: ${{ secrets.MDB_REFRESH_TOKEN }}
         run: |
           set -o pipefail
           mkdir -p "$OUT"
