@@ -3503,6 +3503,18 @@ export async function processGtfsBuffer(
         // sample rejects its 4-hour holes) keep phase 2's own headline.
       }
       settleTierOnStops(settleStopIds(boardableDrawnStops(coverageStops.map(p => p.stopId), dropOffOnlyStops)));
+      // #1769/#1770 (CIV-2227 option 1): Step 4 never runs for this row, so its counts would stay those of its own list,
+      // which a time-limited row keeps only inside the grading window (Kingston 22 "First Canada": 5 of its 8 weekday
+      // trips; the 6:34, 23:02 and 23:38 were dropped). Count the whole day from its end-stop list, the one Step 4 reads.
+      if (terminalId != null) {
+        const endStopList = featureHeadsign && coverageStops.length > 1
+          ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId)
+          : selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId));
+        if (endStopList && endStopList.length > 0) {
+          feature.properties.departuresByHour = computeHourDepartureCounts(endStopList, SPARKLINE_HOURS);
+          feature.properties.departureSpan = computeDepartureSpan(endStopList, SPARKLINE_HOURS);
+        }
+      }
       continue;
     }
 
@@ -3976,8 +3988,16 @@ export async function processGtfsBuffer(
       }
       feature.properties.headwayByHour = mergedHourHw;
       feature.properties.maxGapByHour = mergedHourGaps;
-      feature.properties.departuresByHour = mergedHourDepartures;
-      feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as DepartureSpan | undefined);
+      if (terminalHourDepartures && terminalDepartureList?.length) {
+        // #1770 (CIV-2227 option 1): the counts and the span read one list for the whole day, the row's end-stop list.
+        // Picking each hour from whichever list set its headway counted a trip near the hour line twice (Kingston 10: 34
+        // trips each way against the feed's 33): the end-stop list and the row's own list read it about 30 min apart.
+        feature.properties.departuresByHour = terminalHourDepartures;
+        feature.properties.departureSpan = computeDepartureSpan(terminalDepartureList, SPARKLINE_HOURS);
+      } else {
+        feature.properties.departuresByHour = mergedHourDepartures;
+        feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as DepartureSpan | undefined);
+      }
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
       feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
