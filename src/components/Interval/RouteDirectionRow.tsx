@@ -88,6 +88,8 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  */
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
+/** CIV-3040 MOCK (not for merge): localStorage.rowmock 'b' = a two-part reading stays on the name's line when both fit, else takes the line below. */
+const rowMock = (): string | null => { try { return window.localStorage.getItem('rowmock'); } catch { return null; } };
 
 export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
@@ -103,14 +105,15 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
   const valueRef = React.useRef<HTMLSpanElement>(null);
   // CIV-1465 (Ryan, 2026-11-13: "same as the other one i thin split it into 2 lines"): a long value in two parts ("every
   // 60 min" / "until 5:05 PM") stays in the value column on two right-aligned lines, the list rule (CIV-1300).
-  const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel);
-  const longValue = wrapLongValue && !twoLineValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
+  const fitOrBelow = rowMock() === 'b' && wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel);
+  const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel) && !fitOrBelow;
+  const longValue = wrapLongValue && !twoLineValue && !fitOrBelow && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
   // CIV-1165 (Ryan, 2026-11-13: "i wonder if instead we should wrap the destination text if needed", then "1"): a destination
   // name is never cut. With a short value the value stays on the row's first line at the right and the name wraps onto a
   // second line beneath itself, as in the route lists.
-  const wrapName = wrapLongValue && !longValue;
+  const wrapName = wrapLongValue && !longValue && !fitOrBelow;
   const singleLine = singleLineProp && !longValue && !wrapName;
-  const valueEnd = valueEndProp || longValue;
+  const valueEnd = valueEndProp || longValue || fitOrBelow;
   // CIV-1300: a route list row (number and name) keeps its value in the right-hand column, a long value on two lines.
   const listRow = !!routeName;
   // Measured only while not held, so the held size is always the pre-hover layout.
@@ -137,9 +140,9 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
       onMouseLeave={onHoverEnd}
       {...keyboardFocusHover(onHoverStart, onHoverEnd)}
     >
-      <div className={`flex ${singleLine || listRow || wrapName ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
+      <div className={`flex ${singleLine || listRow || wrapName ? '' : 'flex-wrap'} items-start justify-between gap-2 ${fitOrBelow ? 'gap-y-0.5' : ''}`}>
         <span
-          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
+          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} ${fitOrBelow ? 'flex-auto' : 'flex-1'} min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
           {...{ [FLAG_LABEL_PART]: '' }}
         >
