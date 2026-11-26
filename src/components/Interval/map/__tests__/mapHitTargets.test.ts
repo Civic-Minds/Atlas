@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MAP_HIT_PRIORITY, pageMapHitPriority, topMapHit } from '../mapHitTargets';
+import { LIVE_CONTEXT_LAYER_IDS } from '../mapLayers';
 
 // A map whose layers each answer with the features "under" the pointer; the box a query used is recorded.
 function fakeMap(hits: Record<string, string[]>, missing: string[] = []) {
@@ -19,6 +20,10 @@ const P = { x: 100, y: 100 };
 describe('map click priority (CIV-1011 #13)', () => {
   it('orders stop, on-demand zone, route', () => {
     expect(MAP_HIT_PRIORITY.map(p => p.kind)).toEqual(['stop', 'serviceArea', 'route']);
+  });
+
+  it("Live's context lines open their route (#1878: Burlington 1 and HSR 2 drew only there and took no click)", () => {
+    for (const id of LIVE_CONTEXT_LAYER_IDS) expect(topMapHit(fakeMap({ [id]: ['r1'] }), P)?.kind).toBe('route');
   });
 
   it('a stop inside a zone opens the stop (#1071)', () => {

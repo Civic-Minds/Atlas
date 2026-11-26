@@ -1,4 +1,5 @@
 import type { MapGeoJSONFeature, Map as MaplibreMap, PointLike } from 'maplibre-gl';
+import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 
 /**
  * What a click on the map picks, in order (CIV-1011 #13): a stop, then an on-demand zone or its stop
@@ -15,6 +16,8 @@ export const MAP_HIT_PRIORITY = [
     layers: [
       'overview-routes-hit-layer', 'routes-hit-layer', 'local-routes-hit-layer', 'night-service-routes-hit-layer',
       'frequent-service-routes-hit-layer', 'frequency-qualifying-segments-hit-layer',
+      // #1878: Live draws its routes that have vehicles as thin context lines (CIV-326); they open the route like any line.
+      ...LIVE_CONTEXT_LAYER_IDS,
     ],
     // Route lines are thin, so they answer within 12 px of the pointer.
     tolerancePx: 12,
