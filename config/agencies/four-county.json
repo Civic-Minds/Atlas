@@ -1,0 +1,26 @@
+{
+  "slug": "four-county",
+  "officialName": "Four County Transit",
+  "websiteUrl": "https://www.fourcountytransit.org/",
+  "dataLicense": {
+    "url": "https://www.fourcountytransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Virginia",
+  "center": [
+    37.1355,
+    -82.0701
+  ],
+  "bbox": [
+    36.311,
+    -82.76,
+    37.42,
+    -80.02
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/fourcounty-va-us/fourcounty-va-us--flex-v2.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2448/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

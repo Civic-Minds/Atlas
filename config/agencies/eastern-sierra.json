@@ -1,0 +1,27 @@
+{
+  "slug": "eastern-sierra",
+  "officialName": "Eastern Sierra Transit Authority",
+  "commonName": "ESTA",
+  "websiteUrl": "https://www.estransit.com/",
+  "dataLicense": {
+    "url": "https://www.estransit.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    37.6402,
+    -118.9774
+  ],
+  "bbox": [
+    34.696,
+    -119.776,
+    39.535,
+    -117.817
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/easternsierra-ca-us/easternsierra-ca-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-25/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}
