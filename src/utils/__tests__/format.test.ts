@@ -85,6 +85,11 @@ describe('shortenAgencyName', () => {
     expect(shortenAgencyName('Victor Valley Transit Authority (VVTA)')).not.toBe('VTA');
   });
 
+  it('does not mislabel agencies whose name contains "county connection" (#1848)', () => {
+    expect(shortenAgencyName('Madera County Connection')).toBe('Madera County Connection');
+    expect(shortenAgencyName('County Connection (CCCTA)')).toBe('County Connection');
+  });
+
   it('does not mislabel agencies whose name contains "bart" as a substring', () => {
     expect(shortenAgencyName('BARTA (Reading)')).not.toBe('BART');
   });
@@ -124,12 +129,20 @@ describe('shortenAgencyName', () => {
   //             Charleville-Mézières-Sedan) — same initials, unrelated networks
   //   TUB     — Saint-Brieuc, France (Transports Urbains Briochins) /
   //             Bergerac, France (Transports Urbains Bergeracois)
+  // Added with the 2026-11-25 agency batches (#1848, each checked in its config):
+  //   VTA     — Santa Clara Valley (CA) / Martha's Vineyard Transit Authority (MA)
+  //   PART    — Putnam Area Rapid Transit (NY) / Piedmont Authority for Regional Transportation (NC)
+  //   HART    — Hillsborough Area Regional Transit (FL) / Huntington Area Rapid Transit (NY)
+  //   B-Line  — Corpus Christi RTA (TX) / Butte Regional Transit (CA)
+  //   Valley Transit       — Appleton / Fox Cities (WI) / Walla Walla (WA)
+  //   River Valley Transit — Pennsylvania / Connecticut
   // Multi-region single agencies (exo, BC Transit both legitimately operate
   // many service areas under one brand) are also expected, not collisions.
   const KNOWN_SHARED_ACRONYMS = new Set([
     'CAT', 'GET', 'The Bus', 'DART', 'CARTA',
     'SMART', 'TCAT', 'CATA', 'SCT', 'SAM', 'RTC', 'exo', 'BC Transit',
     'Citibus', 'TAC', 'TUB',
+    'VTA', 'PART', 'HART', 'B-Line', 'Valley Transit', 'River Valley Transit',
   ]);
 
   // General regression guard: no two distinct real agencies in the live
