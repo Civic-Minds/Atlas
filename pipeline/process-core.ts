@@ -63,7 +63,7 @@ import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { periodEdge, periodOneGap, directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
-import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { periodFilterValue } from '../shared/periodEligibility.js';
 import { branchReadingsFromEnv, headlineFromTrunkFromEnv, patternPools, pieceReadingFromEnv, pieceReadingOverlay, readFeaturePieces } from './pieces.js';
 import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
@@ -3864,7 +3864,7 @@ export async function processGtfsBuffer(
         // a period D8 calls unsteady reads its wait on the card, so its edge is read here (TTC 510 weekday evening to Queens Quay:
         // "every 10 min until 10:03 PM", not a bare 57).
         const steady = period.sustained === true && (feature.properties.headwayByPeriodSustainedMid as HeadwayByPeriodSustained | undefined)?.[pk] !== false;
-        const edgeValue = steady && period.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? period.headway : period.coverage;
+        const edgeValue = periodFilterValue({ headway: period.headway, coverage: period.coverage, steady }) as number;
         const edge = periodEdge(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end, edgeValue);
         if (edge) rowEdges[pk] = edge;
         else {

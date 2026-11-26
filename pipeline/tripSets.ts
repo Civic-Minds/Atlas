@@ -13,7 +13,7 @@
  * computes the same stretches from the feed zip.
  */
 import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, MINUTES_PER_DAY, type PeriodKey } from '../shared/config.js';
-import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY, periodFilterValue } from '../shared/periodEligibility.js';
 import { edgeWaitFailMask } from './edgeWaits.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -788,8 +788,8 @@ export function stretchFilterValue(p: StretchPeriod): number | null {
   // (unevenWait).
   if (p.uneven) return p.value;
   // CIV-1958: the cap's yes/no reads the wait in clock minutes (coverageClock); the published wait stays exact, rounded up.
-  const capped = p.coverageClock !== undefined ? p.coverageClock : p.coverage;
-  return p.sustained === true && !p.uneven && p.coverage != null && capped != null && capped <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
+  const capWait = p.coverageClock !== undefined ? p.coverageClock : p.coverage;
+  return periodFilterValue({ headway: p.headway, coverage: p.coverage, steady: p.sustained === true, capWait }) ?? null;
 }
 
 /**
