@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Live no longer says a route has no live figures while listing its live buses**: Burlington 1 showed "Live figures for this route aren't available yet" above eight buses with early and on-time readings
+- **Studio's assistant marks a night route the same way in every answer**: its nearby-routes list called 1,043 weekday routes with no trips at all "night routes" and missed TTC's Blue Night buses, which its route answers already said run overnight only
 - **Route card rows read alike when one has a branch letter**: the TTC 504 showed "504C · to Roncesvalles" above a bare "to Dundas West"; that row now reads "504 · to Dundas West"
 - **Route lists that show a range keep the card's one-gap note**: AC Transit 60's weekday morning list read just "every 26–45 min" beside a card row saying "every 26 min, with one 45 min gap"; it now reads "every 26–45 min, with one 45 min gap"
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { allNightService, serviceSpan, type RouteRows } from '../mcp/atlasData';
+import { allNightService, isNightRoute, serviceSpan, type RouteRows } from '../mcp/atlasData';
 import { runsEveryHour } from '../../shared/routeRuns';
 
 // #1867: route_frequency's first and last trips. A route that runs through the night has neither; its first and last
@@ -54,12 +54,24 @@ describe('runsEveryHour', () => {
 
 // Ryan's words for a night-only route (2026-11-26): only "Runs overnight only", never beside the all-night line.
 describe('a night-only route', () => {
-  const nightOnly = { figures: { amPeak: { shown: 'some trips (3), but no regular frequency' }, midday: { shown: 'no service' }, pmPeak: { shown: 'no service' }, evening: { shown: 'no service' }, overnight: { shown: 'every 15 min' } }, span: { first: null, last: null, breaks: ['6:18 AM–1:12 AM (after midnight)'] } } as never;
+  const nightOnly = { figures: { amPeak: { shown: 'some trips (3), but no regular frequency' }, midday: { shown: 'no service' }, pmPeak: { shown: 'no service' }, evening: { shown: 'no service' }, overnight: { shown: 'every 15 min' } }, night: 30, span: { first: null, last: null, breaks: ['6:18 AM–1:12 AM (after midnight)'] } } as never;
   it('says only "Runs overnight only", with no times or breaks (TTC 320 weekday)', () => {
     expect(allNightService(nightOnly, [])).toEqual({ first: null, last: null, runsOvernightOnly: 'Runs overnight only', breaks: [] });
   });
   it('keeps the all-night line for a route with daytime service (the Red Line runs every 12 at midday)', () => {
     const red = { figures: { midday: { shown: 'every 12 min' }, pmPeak: { shown: 'no service' }, evening: { shown: 'no service' }, overnight: { shown: 'every 30 min' } }, span: null } as never;
     expect(allNightService(red, [])).toHaveProperty('runsAllNight');
+  });
+});
+
+// Ryan, 2026-11-26: the MCP never contradicts itself. routes_near's nightRoute is route_frequency's "Runs overnight only".
+describe('isNightRoute, one verdict for every tool', () => {
+  const figures = (am: string, late: string, overnight: string) => ({ amPeak: { shown: am }, midday: { shown: 'no service' }, pmPeak: { shown: 'no service' }, evening: { shown: 'no service' }, late: { shown: late }, overnight: { shown: overnight } });
+  it('marks TTC 320, whose last trips run into the AM peak', () => {
+    expect(isNightRoute({ figures: figures('some trips (3), but no regular frequency', 'some trips (10), but no regular frequency', 'every 15 min'), night: 30 } as never)).toBe(true);
+  });
+  it('leaves out a weekday route with no trips at all, and one that does not run through the night', () => {
+    expect(isNightRoute({ figures: figures('no service', 'no service', 'no service'), night: null } as never)).toBe(false);
+    expect(isNightRoute({ figures: figures('no service', 'some trips (5), but no regular frequency', 'no service'), night: null } as never)).toBe(false);
   });
 });
