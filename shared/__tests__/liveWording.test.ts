@@ -2,11 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { bunchPartsText, bunchTotalParts, coveredRoutesText, figuresUpdatedText, LATE_DEFINITION, LATE_THRESHOLD, LATE_TILE_CAPTION, liveSubtitle } from '../liveWording';
 
 describe('Live wording', () => {
-  it('writes when the figures were built in Toronto time, "Figures updated Oct 16, 6:12 PM" (CIV-1814 item 41)', () => {
-    expect(figuresUpdatedText('2026-10-16T22:12:03Z')).toBe('Figures updated Oct 16, 6:12 PM');
-    expect(figuresUpdatedText('2026-10-16T13:05:00Z')).toBe('Figures updated Oct 16, 9:05 AM');
-    expect(figuresUpdatedText('2026-10-16T22:00:00Z')).toBe('Figures updated Oct 16, 6 PM');
-    expect(figuresUpdatedText('2026-10-16T04:30:00Z')).toBe('Figures updated Oct 16, 12:30 AM');
+  it('writes when the figures were built in the zone given, "Figures updated Oct 16, 6:12 PM" (CIV-1814 item 41)', () => {
+    expect(figuresUpdatedText('2026-10-16T22:12:03Z', 'America/Toronto')).toBe('Figures updated Oct 16, 6:12 PM');
+    expect(figuresUpdatedText('2026-10-16T13:05:00Z', 'America/Toronto')).toBe('Figures updated Oct 16, 9:05 AM');
+    expect(figuresUpdatedText('2026-10-16T22:00:00Z', 'America/Toronto')).toBe('Figures updated Oct 16, 6 PM');
+    expect(figuresUpdatedText('2026-10-16T04:30:00Z', 'America/Toronto')).toBe('Figures updated Oct 16, 12:30 AM');
+  });
+  it('CIV-2976 N5: reads the build time in the zone given, not always Toronto', () => {
+    expect(figuresUpdatedText('2026-10-16T22:12:03Z', 'America/Los_Angeles')).toBe('Figures updated Oct 16, 3:12 PM');
+    expect(figuresUpdatedText('2026-10-16T22:12:03Z', 'America/Halifax')).toBe('Figures updated Oct 16, 7:12 PM');
   });
 
   it('counts the covered routes with no mode word, since replacement buses can run a streetcar route (CIV-1075)', () => {
