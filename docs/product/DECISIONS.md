@@ -160,9 +160,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ### How Atlas is built
 
 - **The MCP leaves out agencies whose terms bar an API**
-  - What: an agency on the exclusion list (`shared/rules/redistribution.ts`: WMATA; DART, NYC Ferry and Bee-Line, whose terms bar sharing; and 13 agencies that need written permission first) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
+  - What: an agency on the exclusion list (`shared/rules/redistribution.ts`: WMATA; DART, NYC Ferry and Bee-Line, whose terms bar sharing; and 12 agencies that need written permission first) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
   - Why: WMATA's Transit Data Terms of Use bar "creating an application programming interface that enables access to Transit Data". Ryan: "Then remove it from MCP and note this somewhere internally".
-  - Source: [decision log](#decision-log) (2026-11-22, twice), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693), CIV-2124, CIV-2125
+  - Source: [decision log](#decision-log) (2026-11-22, twice; C-TRAN removed from the list 2026-11-26), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693), CIV-2124, CIV-2125, CIV-3051
 - **The MCP may say more than the map, never something different**
   - What: the MCP may hold and give more detail than the map, cards and lists show end users, but it must never contradict them: the same question gets the same answer, and a different answer is a bug.
   - Why: Ryan asked "can the MCP use info if we don't show it to end users", and picked 1 over keeping the MCP to what end users see.
@@ -364,6 +364,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — C-TRAN is back in the MCP, crediting its required notice (CIV-3051)
+Ryan, 2026-11-26: "1 but need to work on credit wording", then "1" to where it shows.
+- The rule: C-TRAN comes off the MCP exclusion list. Its credit is the notice its licence requires word for word, shown when its pill opens in About → Schedule sources; the map's pill shows only "C-TRAN", as for other agencies.
+- Why: C-TRAN's GTFS Data License Agreement (https://www.c-tran.com/about-c-tran/business/c-tran-gtfs-data, read 2026-11-26 in the CIV-3014 licence review) grants "use, reproduce, create derivative works of and redistribute" the data, accepted by using it ("By accessing or using the Data, Licensee indicates that it has read, understands and agrees"). It needs no written permission. It requires that "All Data derivative versions prepared by the Licensee shall bear the following notice: Reproduced with permission granted by C-TRAN. The information has been provided by means of a nonexclusive, limited, and revocable license granted by C-TRAN." It also bars C-TRAN's logos. CIV-2124 had grouped it with agencies needing consent before the page could be read.
 
 ### 2026-11-26 — A zone card drops its running line; only "Hours unavailable" stays (CIV-2900)
 Ryan, 2026-11-24, on "Running during Saturday evening" above a zone's hours bars: "why do we need to say", then "But on fixed routes we don't show a 'not running at this time' notice when they're not running, so why is this one special"; he picked "1": drop the line for every state except "Hours unavailable" (his wording, 2026-10-27). The hours bars are unchanged. Noted, not asked for: a fixed route card does say "No trips from …" on a direction with no service in the period (CIV-1251), so a zone outside its hours now says less than such a route does.
@@ -572,7 +577,7 @@ Ryan (2026-11-22, relayed by Atlas Questions), to keep Atlas's readings of MTA a
 ### 2026-11-22 — 15 more agencies left out of the MCP: terms that bar sharing or need written permission (CIV-2124)
 Ryan (2026-11-22, on CIV-2124): "2 and update Coverage as "Removed" then have the reason when you hover over the Removed pill".
 - Group A, terms that don't allow sharing the data with other tools: Des Moines DART, NYC Ferry, Bee-Line.
-- Group C, terms that need the agency's consent, so each is left out until the agency gives written permission: NORTA, CATA Lansing, Spokane, TriMet, VRE, RTC Washoe, MTA Flint, MAX Birmingham, CityBus Lafayette, Topeka, Cherriots, C-TRAN, and Whitehorse Transit (added by CIV-2125: the City of Whitehorse's open data terms allow internal and personal use only, with no publishing for commercial purposes without its written consent).
+- Group C, terms that need the agency's consent, so each is left out until the agency gives written permission: NORTA, CATA Lansing, Spokane, TriMet, VRE, RTC Washoe, MTA Flint, MAX Birmingham, CityBus Lafayette, Topeka, Cherriots, C-TRAN (superseded 2026-11-26, CIV-3051: back in the MCP), and Whitehorse Transit (added by CIV-2125: the City of Whitehorse's open data terms allow internal and personal use only, with no publishing for commercial purposes without its written consent).
 - Each has its own reason in `shared/rules/redistribution.ts`, shown on hover over its "Removed" tag on the Status page. The clauses are in `_reports/civ-462/agencies-v2.tsv` (CIV-462 v2, from CIV-468).
 - The map and History keep them, as with WMATA.
 
