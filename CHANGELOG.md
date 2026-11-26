@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Studio Live's week table says which time of day it covers**: TTC 504 showed "Late 18%" for the evening above an all-day "8% late" chart, with nothing saying the two cover different hours
 - **Studio Fleet says how many vehicles with no trip are parked at garages**: "Not on a trip: 622, of which 521 at garages", since most of the evening count is buses pulled in for the night
 - **RTC Las Vegas route cards name where each bus is going**: the Red Line read "to Maryland Pkwy" both ways, the street it runs on, because RTC's file names a street and a direction; it now reads "to South Strip Transit Terminal" and "to Wellness & Willow"
+- **Route cards show both directions when one runs only on branches that stop partway through the period**: Winnipeg 31's weekday rush showed only "to Riverbend", though buses to The Forks run every 28 min
 - **A route card row no longer shows a whole-period wait for a direction that runs steadily**: RTD 31 on Saturday afternoons read "to Evans every 114 min" while it runs every 15, because a short branch that stops at 5:06 PM set the number
 - **A route's Live figures say "Loading…" while they load**: on opening a route they briefly said they couldn't be shown, which read as a failure
 - **Live's "Figures updated" time reads on your own clock**: it always showed Toronto time with no zone named, so a viewer in San Francisco, Los Angeles, Vancouver, Edmonton or Halifax read the build time hours off

@@ -5,6 +5,10 @@ import { dedupeCrossDirectionHeadsigns } from './crossDirectionDedup';
 import { branchDisplayPeriodHeadway, buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { hasStretchRoles, notThroughRowSaysWhen, stretchRowFeatures, tailNotThroughPeriod, variantOnlyRow } from './stretchCard';
 import { pooledMainStretch } from './routeCardTrunk';
+import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
+import { BRANCH_READINGS_ENABLED } from '../../shared/rules/flags';
+import { directionPieceTreatments } from './branchReadings';
+import type { PeriodKey } from '../../shared/config';
 
 export interface RouteCardDirectionGroup {
   dirId: number;
@@ -87,8 +91,9 @@ export function buildDirectionGroups(
     }
     const members = [...byRoute.values()].filter(hasStretchRoles);
     const parts = members.length > 1 ? members.map(f => stretchRowsFor(f, period, false)) : [stretchRowsFor(directionFeatures, period, true)];
-    const rows = parts.flatMap(p => p.rows);
     const notThroughCount = parts.reduce((n, p) => n + p.notThrough, 0);
+    const missingRow = parts.every(p => p.rows.length === 0) && notThroughCount > 0 ? missingDirectionRow(directionFeatures, period) : null;
+    const rows = missingRow ? [missingRow] : parts.flatMap(p => p.rows);
     if (parts.length === 1 && parts[0].pooledMain) g.pooledMain = parts[0].pooledMain;
     if (rows.length > 0 || notThroughCount > 0) { g.realTier = rows; g.span = []; g.directionFeatures = directionFeatures; }
   }
@@ -161,6 +166,28 @@ function outboundFirst(order: number[], labels: Map<number, string>): number[] {
  * no destination row. `pool` lets a main stretch two destinations share read as one pooled row (#1185); a folded family
  * member (#1818) reads its own rows only.
  */
+/**
+ * #1857 (Ryan, 2026-11-26, "1": "Add the missing row, for directions running every 60 min or better"): when #1115 has hidden every
+ * line of a direction (tails that stop mid-period) and the card's branch readings (CIV-1959 B3) give none of them its line back, a
+ * direction whose main stretch runs every 60 min or better (the last public grade) keeps one row, read as its main stretch
+ * (Winnipeg 31 weekday PM toward The Forks: every 28, no row before).
+ */
+function missingDirectionRow(directionFeatures: ShapeProperties[], period: TimePeriod): ShapeProperties | null {
+  if (period === 'all') return null;
+  const key = period as PeriodKey;
+  const tails = stretchRowFeatures(directionFeatures, period).filter(d => d.stretchRole === 'tail');
+  const hidden = tails.filter(d => tailNotThroughPeriod(d, period) && !notThroughRowSaysWhen(d, period));
+  if (hidden.length === 0) return null;
+  const pieces = BRANCH_READINGS_ENABLED ? directionPieceTreatments(directionFeatures, period) : null;
+  if (pieces && [...pieces.branches.keys()].some(i => pieces.names.has(i) || tails.some(d => (d.stretchIndex ?? 0) === i))) return null;
+  const main = directionFeatures.find(d => d.stretchMeta?.main)?.stretchMeta?.main;
+  const every = main?.period?.[key];
+  if (typeof every !== 'number' || every > PUBLIC_TIER_MAXES[PUBLIC_TIER_MAXES.length - 1] || (main?.noRegular ?? []).includes(key)) return null;
+  // The row needs a name ("to <place>") and a number of its own: a row with neither would not say the direction runs every 60 or better.
+  const row: ShapeProperties = { ...hidden[0], stretchRole: 'main' };
+  return row.headsign?.trim() && routeCardDisplayHeadway(row, period) != null ? row : null;
+}
+
 function stretchRowsFor(directionFeatures: ShapeProperties[], period: TimePeriod, pool: boolean): { rows: ShapeProperties[]; notThrough: number; pooledMain?: RouteCardDirectionGroup['pooledMain'] } {
   // #1115: a branch that does not run through the period has no row for it, unless the row says when it runs there from
   // its own trips (#1277, notThroughRowSaysWhen).

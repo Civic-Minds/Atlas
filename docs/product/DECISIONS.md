@@ -59,6 +59,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Runs irregularly in this period", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
   - Why: 2 or 3 trips are not a pattern a rider can plan around, even when evenly spaced.
   - Source: Ryan, 2026-11-24, on CIV-2232: "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1" to "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words"
+- **A direction running every 60 min or better always has a card row**
+  - What: when every line of a direction is a branch that stops partway through the period (hidden by #1115) and no branch reading gives one back, a direction whose main stretch runs every 60 min or better (the last public grade, `PUBLIC_TIER_MAXES`) keeps one row, read as its main stretch. The row needs a destination name and a number of its own.
+  - Why: a card that shows one direction only reads as a one-way route (Winnipeg 31 weekday PM showed only "to Riverbend" while The Forks runs every 28).
+  - Source: [decision log](#decision-log) (2026-11-26, #1857)
 - **A route with no all-day value stays without one**
   - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route. The all-day value is internal (the map has no All day option); riders see only the "limited".
   - Why: a peak-only route is not all-day service.
@@ -350,6 +354,10 @@ Ryan, 2026-11-26, answering the Questions chat on #1832 ("Well those 622 buses a
 Ryan, 2026-11-26, picked "1": "Name the end of the line where an agency's file only gives a street: for RTC, show each direction's last stop instead (for example "to South Strip Transit Terminal")". The manager settled the form on Ryan's "RTC first": an agency setting (`headsignFromLastStop`), not an automatic rule, since Atlas can't tell a street from a destination by itself (both directions sharing a name matched 617 routes at 176 agencies, most of them loops and real terminals).
 - What: a headsign that carries a direction word ("101 Rainbow Northbound") takes the last stop most of its trips end at, tidied: a leading EB/NB/SB/WB and a trailing "Bay N" go, and "X before/after Y" reads "X & Y". RTC's Red Line reads "to Wellness & Willow" and "to South Strip Transit Terminal".
 - Counts (RTC dry run against main without the setting): 73 of 77 weekday route-directions on 37 routes change name; 300 → 300 drawn patterns (only the name changes: a headsign's trips stay one row, and a headsign whose stop another already took keeps the feed's name; manager, 2026-11-26: Ryan asked for the destination name, not more rows); no map wait changes (702 route-day-periods compared).
+
+### 2026-11-26 — A direction running every 60 min or better always has a card row (#1857, CIV-3022)
+Ryan, 2026-11-26, answering the Questions chat, picked "1": "Add the missing row, for directions running every 60 min or better". He asked "Why 60 though": 60 is the last public grade (10/15/20/30/60), his own CIV-1959 words "if it is less than hourly then it is infrequent", and the cut-off the first count used. He confirmed 1 with 60.
+- Built on release-mwvbser2 (226,564 card rows): 191 rows added in 110 routes of 58 agencies (Winnipeg 31 weekday PM "to The Forks every 28"); 5 of them read "Runs irregularly in this period" (the row's own trips fall under the 4-trip minimum). RTC 212's 7 rows lose their "to Direction 2" label, since the card now shows both directions under their own headings. No other row changes. A direction whose hidden branch has no name or no number of its own still gets no row.
 
 ### 2026-11-26 — Intercity agencies are added like the rest, hidden until checked (CIV-2239)
 Ryan, 2026-11-26: "For Intercity we already have Bustang is my point", then "1" on adding Ontario Northland and Brightline hidden like the CIV-2237 agencies, then "1" on visibility: new ones go in hidden until checked.
