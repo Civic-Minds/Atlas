@@ -171,10 +171,16 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   const parent = parentNamed(query, list);
   if (parent?.members.length === 1) return parent.members[0];
   if (parent && parent.members.length > 1) throw new Error(`${parent.name} is split across several feeds here: ${parent.members.map(a => a.name).join('; ')}. Call again with one of them.`);
-  const byShort = list.filter(a => (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q);
-  if (byShort.length === 1) return byShort[0];
-  const exact = list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q);
-  if (exact) return exact;
+  const several = (hits: CatalogAgency[]) => new Error(`"${query}" matches several agencies: ${hits.slice(0, 6).map(a => a.name).join('; ')}${hits.length > 6 ? '; …' : ''}. Call again with the full name.`);
+  // #1869: a name, short name, id or bracketed name that two agencies answer to is asked about, never settled by one of
+  // them ("RTC" is RTC Québec's id and "Regional Transportation Commission of Southern Nevada (RTC)").
+  const bracketed = (a: CatalogAgency) => /\(([^()]+)\)\s*$/.exec(a.name)?.[1].trim().toLowerCase();
+  // A bracketed name only widens an exact match: alone it falls to the name tiers below ("Vancouver" asks about TransLink
+  // (Vancouver) and C-TRAN (Vancouver, WA)).
+  const strict = list.filter(a => (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q || a.slug === q || a.name.toLowerCase() === q);
+  const exact = strict.length ? [...new Set([...strict, ...list.filter(a => bracketed(a) === q)])] : [];
+  if (exact.length === 1) return exact[0];
+  if (exact.length > 1) throw several(exact);
   await refuseExcluded(q, true);
   const op = operatorNamed(query, list);
   if (op?.members.length === 1) return op.members[0];
@@ -185,7 +191,7 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   for (const tier of [(a: CatalogAgency) => named(a).startsWith(q), (a: CatalogAgency) => hasWordsAt(a.name, q), (a: CatalogAgency) => named(a).includes(q)]) {
     const hits = list.filter(tier);
     if (hits.length === 1) return hits[0];
-    if (hits.length > 1) throw new Error(`"${query}" matches several agencies: ${hits.slice(0, 6).map(a => a.name).join('; ')}${hits.length > 6 ? '; …' : ''}. Call again with the full name.`);
+    if (hits.length > 1) throw several(hits);
   }
   await refuseExcluded(q, false);
   return null;
