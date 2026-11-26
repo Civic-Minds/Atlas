@@ -1,0 +1,20 @@
+{
+  "slug": "meva",
+  "officialName": "Merrimack Valley Regional Transit Authority",
+  "commonName": "MeVa Transit",
+  "websiteUrl": "https://www.mvrta.com/",
+  "dataLicense": {
+    "url": "https://www.mvrta.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Massachusetts",
+  "center": [
+    42.7235,
+    -71.1438
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-445/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

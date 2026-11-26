@@ -1,0 +1,21 @@
+{
+  "slug": "rabbittransit",
+  "officialName": "York Adams Transportation Authority",
+  "commonName": "rabbittransit",
+  "websiteUrl": "https://www.rabbittransit.org/",
+  "dataLicense": {
+    "url": "https://www.rabbittransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Pennsylvania",
+  "center": [
+    39.9595,
+    -76.7404
+  ],
+  "feedUrl": "https://realtime.rabbittransit.org/InfoPoint/GTFS-Zip.ashx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-223/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
