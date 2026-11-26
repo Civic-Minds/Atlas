@@ -16,7 +16,6 @@
   "feedUrl": "https://bowvalley.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-711/latest.zip",
   "timezone": "America/Edmonton",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bowvalley.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
   "lastFeedCheckAt": "20261126",

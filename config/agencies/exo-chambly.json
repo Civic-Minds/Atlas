@@ -19,7 +19,6 @@
   "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citcrc/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-750/latest.zip",
   "timezone": "America/Montreal",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citcrc/google_transit.zip",
   "lastFeedCheckAt": "20261126",

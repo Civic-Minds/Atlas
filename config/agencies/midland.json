@@ -15,7 +15,6 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-4704/latest.zip",
   "timezone": "America/Toronto",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4704/latest.zip",
   "lastFeedCheckAt": "20261126",

@@ -16,7 +16,6 @@
   "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-saultstemarie.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4740/latest.zip",
   "timezone": "America/Toronto",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-saultstemarie.zip",
   "lastFeedCheckAt": "20261126",
