@@ -343,10 +343,11 @@
       "check": "headway-shift",
       "firstHeld": "2026-11-23",
       "lastHeld": "2026-11-26",
-      "runs": 3,
+      "runs": 4,
       "message": "6 of 12 routes' filter headway halves or doubles in some day and period (50%; 1 Weekday amPeak 15->64 min, 10 Weekday amPeak 15->30 min, 20 Weekday amPeak 30->62 min, 3 Weekday amPeak 15->60 min, 5 Weekday amPeak 30->60 min, 8 Weekday amPeak 30->60 min)",
-      "outcome": "held",
-      "cause": "holiday weekday: likely a Thanksgiving-week weekday picked as the reference day"
+      "outcome": "let-through",
+      "cause": "holiday weekday: likely a Thanksgiving-week weekday picked as the reference day",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "unitrans",
