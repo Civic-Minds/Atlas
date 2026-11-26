@@ -194,8 +194,13 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                 </div>
   ) : null;
   // Loaded and still missing: Live has no analysis for this route, so "Right now" can't show; one grey line says so (CIV-1413 B).
-  // While it loads, nothing.
-  if (!data) return settled ? <div className="flex flex-col gap-3"><CardHelpNotice message={unavailableMessage} />{scheduledBlock}</div> : null;
+  // While it loads, nothing. #1796 (Ryan: "This says live vehicles arent available on this route but then shows me live vehicles
+  // lol"): main Live's line shows only while the route has no live vehicle; with some, the card's vehicle list below is live.
+  if (!data) {
+    if (!settled) return null;
+    const note = steered || vehicles.length === 0 ? <CardHelpNotice message={unavailableMessage} /> : null;
+    return note || scheduledBlock ? <div className="flex flex-col gap-3">{note}{scheduledBlock}</div> : null;
+  }
   if (!directions.length) return null;
 
   // Fresh data needs no time; stale data says when it was last updated (by the newest vehicle report).
