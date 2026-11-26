@@ -40352,6 +40352,75 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-79/latest.zip",
       "timezone": "America/Los_Angeles",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "kanawha",
+      "name": "Kanawha Valley Regional Transportation Authority (KRT)",
+      "officialName": "Kanawha Valley Regional Transportation Authority",
+      "commonName": "KRT",
+      "websiteUrl": "http://www.rideonkrt.com",
+      "dataLicense": {
+        "url": "http://www.rideonkrt.com",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "West Virginia",
+      "center": [
+        38.36,
+        -81.64
+      ],
+      "feedUrl": "https://gtfs.krt.cadavl.com/KRT/GTFS/GTFS_KRT.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5769/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "danville-il",
+      "name": "Danville Mass Transit",
+      "officialName": "Danville Mass Transit",
+      "websiteUrl": "https://danvillemasstransit.tripshot.com/",
+      "dataLicense": {
+        "url": "https://danvillemasstransit.tripshot.com/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Illinois",
+      "center": [
+        40.1318,
+        -87.6298
+      ],
+      "bbox": [
+        39.975,
+        -88.241,
+        40.204,
+        -87.54
+      ],
+      "feedUrl": "https://danvillemasstransit.tripshot.com/v1/gtfs.zip",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "muncie",
+      "name": "Muncie Indiana Transit System (MITS)",
+      "officialName": "Muncie Indiana Transit System",
+      "commonName": "MITS",
+      "websiteUrl": "http://www.mitsbus.org/",
+      "dataLicense": {
+        "url": "http://www.mitsbus.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Indiana",
+      "center": [
+        40.1929,
+        -85.3855
+      ],
+      "feedUrl": "https://www.mitsbus.org/wp-content/uploads/2026/04/MITS2026GTFS.zip",
+      "timezone": "America/Indiana/Indianapolis",
+      "hiddenInProduction": true
     }
   ]
 }
