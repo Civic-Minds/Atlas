@@ -367,6 +367,8 @@ describe('routeRuns first time where trips start, last time unchanged (CIV-2229,
     // #1791: the last time is the last boarding where trips start; none where a row's day runs on into the night.
     expect(routeRuns([{ departuresByHour: { '21': 2, '22': 2, '23': 1 }, departureSpan: span(1265, 1395), tripStartLast: 1350 }], undefined)).toEqual({ hours: [21, 22], first: 1265, last: 1350 });
     expect(routeRuns([{ departuresByHour: { '21': 2, '22': 2 }, departureSpan: span(1265, 1370), tripStartLast: null }], undefined)).toEqual({ hours: [21, 22], first: 1265 });
+    // A row with no last boarding of its own (only a trip before the day window) doesn't hide the other row's (b-line 50).
+    expect(routeRuns([{ departuresByHour: { '15': 1, '16': 1 }, departureSpan: span(905, 970), tripStartLast: 939 }, { departuresByHour: { '5': 1 }, departureSpan: span(330, 330), tripStartLast: null }], undefined)).toMatchObject({ last: 939 });
     // A route that runs through the night (the Night Service verdict) has no last boarding (CTA 9).
     expect(routeRuns([{ departuresByHour: { '21': 2, '22': 2 }, departureSpan: span(1265, 1370), tripStartLast: 1350, routeRunsByPeriod: { overnight: true } }], undefined)).toEqual({ hours: [21, 22], first: 1265 });
     // A last boarding in an hour no list counts (a trip that never reaches the reference stops) ends the bar after a break.

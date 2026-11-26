@@ -61,7 +61,10 @@ export function routeRuns(
     const allNight = rows.some(p => p.routeRunsByPeriod?.overnight === true);
     if (allNight && lastBoardings.some(t => t !== undefined)) last = undefined;
     else if (lastBoardings.length > 0 && lastBoardings.every(t => t !== undefined)) {
-      last = lastBoardings.every(t => t != null) ? Math.max(...(lastBoardings as number[])) : undefined;
+      // A row with none of its own (its only trips leave before the day window, or it has no trips that day) doesn't hide
+      // the others' last boarding (b-line 50: one 4:50 AM trip one way, the last boarding 3:40 PM the other way).
+      const known = lastBoardings.filter((t): t is number => t != null);
+      last = known.length > 0 ? Math.max(...known) : undefined;
       // The bar ends at the last boarding: the hours after it are a trip on its way, not service a rider can board. A last
       // boarding in an hour no list counts (a trip that leaves after the reference stops' last, or reaches them in a later
       // hour) ends the bar there, after a break.
