@@ -7,6 +7,7 @@
  * The atlas-live-read Worker serves the latest (/live/network-count).
  */
 import type { LiveSnapshotV2 } from './liveContract';
+import { latDegreesFor, withinMetres, type LatLon } from './geoDistance';
 import { GARAGE_MIN_VEHICLES, GARAGE_RADIUS_M, GARAGE_STANDING_SPEED_MS } from './rules/live';
 
 /** How old a count can be: every snapshot carries one, and every recorded agency snapshots at least once a minute. */
@@ -33,24 +34,18 @@ export function networkVehicleCounts(positions: Positions): { onTrip: number; no
  * CIV-2990: how many standing vehicles with no trip are at a garage: at least GARAGE_MIN_VEHICLES of them, itself included,
  * within GARAGE_RADIUS_M (shared/rules/live.ts). Grid cells one radius wide, so each vehicle checks only its 3×3 block.
  */
-export function atGarageCount(standing: readonly { lat: number; lon: number }[]): number {
-  const M_PER_DEG = 111_320;
-  const cellOf = (v: { lat: number; lon: number }) => {
-    const x = Math.floor((v.lon * M_PER_DEG * Math.cos((v.lat * Math.PI) / 180)) / GARAGE_RADIUS_M);
-    const y = Math.floor((v.lat * M_PER_DEG) / GARAGE_RADIUS_M);
-    return [x, y] as const;
-  };
-  const grid = new Map<string, { lat: number; lon: number }[]>();
+export function atGarageCount(standing: readonly LatLon[]): number {
+  // Grid cells about one radius wide (latDegreesFor), so each vehicle checks only its 3×3 block; the distance is metresBetween's.
+  const cellDeg = latDegreesFor(GARAGE_RADIUS_M);
+  const cellOf = (v: LatLon) => [Math.floor((v.lon * Math.cos((v.lat * Math.PI) / 180)) / cellDeg), Math.floor(v.lat / cellDeg)] as const;
+  const grid = new Map<string, LatLon[]>();
   for (const v of standing) { const [x, y] = cellOf(v); const k = `${x},${y}`; (grid.get(k) ?? grid.set(k, []).get(k)!).push(v); }
   let count = 0;
   for (const v of standing) {
     const [x, y] = cellOf(v);
     let near = 0;
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
-      for (const w of grid.get(`${x + dx},${y + dy}`) ?? []) {
-        const mx = (w.lon - v.lon) * M_PER_DEG * Math.cos((v.lat * Math.PI) / 180), my = (w.lat - v.lat) * M_PER_DEG;
-        if (mx * mx + my * my <= GARAGE_RADIUS_M * GARAGE_RADIUS_M) near++;
-      }
+      for (const w of grid.get(`${x + dx},${y + dy}`) ?? []) if (withinMetres(v, w, GARAGE_RADIUS_M)) near++;
     }
     if (near >= GARAGE_MIN_VEHICLES) count++;
   }
