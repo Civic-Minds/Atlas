@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio Fleet says how many vehicles with no trip are parked at garages**: "Not on a trip: 622, of which 521 at garages", since most of the evening count is buses pulled in for the night
 - **A route's Live figures say "Loading…" while they load**: on opening a route they briefly said they couldn't be shown, which read as a failure
 - **Live's "Figures updated" time reads on your own clock**: it always showed Toronto time with no zone named, so a viewer in San Francisco, Los Angeles, Vancouver, Edmonton or Halifax read the build time hours off
 - **Route lists show the full range when a branch runs on its own schedule**: RTD 31's weekday rush read "every 60 min until 5:14 PM" while Federal Blvd runs every 10; it now reads "every 10–60 min", as the card shows both

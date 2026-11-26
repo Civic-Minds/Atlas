@@ -63,5 +63,5 @@ export interface LiveSnapshotV2 {
   headways: LiveHeadways;
   records: LiveRecord[];
   /** CIV-2939: the agency's whole feed, before the route filter: vehicles on a trip, and with a position but no trip. Absent in older snapshots. */
-  network?: { onTrip: number; noTrip: number };
+  network?: { onTrip: number; noTrip: number; /** CIV-2990: of noTrip, those parked at a garage (liveNetworkCount.ts). Absent in older snapshots. */ atGarage?: number };
 }
