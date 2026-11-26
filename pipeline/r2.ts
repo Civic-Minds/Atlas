@@ -30,6 +30,18 @@ export function publicBucketName(): string {
   return bucket;
 }
 
+/**
+ * The private bucket Studio's and the hosted MCP's Live files go to (MCP_LIVE_BUCKET). Refuses the public bucket, and
+ * refuses a run that can't tell because R2_BUCKET_NAME is unset (CIV-2988: the old check passed when it was unset).
+ */
+export function privateLiveBucketName(): string {
+  const bucket = requireEnv('MCP_LIVE_BUCKET');
+  const publicBucket = process.env.R2_BUCKET_NAME;
+  if (!publicBucket) throw new Error('Missing env var: R2_BUCKET_NAME. Needed to confirm MCP_LIVE_BUCKET is not the public bucket; refusing.');
+  if (bucket === publicBucket) throw new Error('MCP_LIVE_BUCKET is the public bucket; refusing.');
+  return bucket;
+}
+
 export function requireEnv(key: string): string {
   const v = process.env[key];
   if (v) return v;

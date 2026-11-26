@@ -28,6 +28,7 @@ import { LIVE_V2_BUCKET, onRecorder, snapshotsPerDay } from '../../shared/liveAr
 import { LIVE_V2_PREFIX } from '../../shared/liveSlots';
 import { liveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
+import { privateLiveBucketName, requireEnv } from '../../pipeline/r2';
 import type { AgencySummary } from '../../shared/liveAgency';
 import { liveIndexPath, liveSplitPaths, slimRanking, type LiveIndex, type LiveManifest } from './liveData';
 
@@ -41,14 +42,13 @@ const only = opt('--only')?.split(',');
 mkdirSync(work, { recursive: true });
 writeFileSync(log, '');
 
-const need = (k: string) => { const v = process.env[k]; if (!v) throw new Error(`Missing env var ${k}.`); return v; };
 const s3 = new S3Client({
   region: 'auto',
-  endpoint: `https://${need('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: need('R2_ACCESS_KEY_ID'), secretAccessKey: need('R2_SECRET_ACCESS_KEY') },
+  endpoint: `https://${requireEnv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
+  credentials: { accessKeyId: requireEnv('R2_ACCESS_KEY_ID'), secretAccessKey: requireEnv('R2_SECRET_ACCESS_KEY') },
 });
-const PRIVATE = dryRun ? process.env.MCP_LIVE_BUCKET ?? '' : need('MCP_LIVE_BUCKET');
-const PUBLIC = need('R2_BUCKET_NAME');
+const PRIVATE = dryRun ? process.env.MCP_LIVE_BUCKET ?? '' : privateLiveBucketName();
+const PUBLIC = requireEnv('R2_BUCKET_NAME');
 if (PRIVATE && PRIVATE === PUBLIC) throw new Error('MCP_LIVE_BUCKET is the public bucket; refusing.');
 
 async function getText(bucket: string, key: string): Promise<string | null> {

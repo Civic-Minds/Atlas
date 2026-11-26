@@ -33,6 +33,7 @@ import { LIVE_ARCHIVE_SLUGS } from '../shared/liveCoverage';
 import { isRecordingNow } from '../shared/liveArchiveFeeds';
 import { LIVE_TTC_ANALYSED_ROUTES } from '../shared/rules/live';
 import type { LiveV3 } from '../shared/liveDashboard';
+import { privateLiveBucketName, requireEnv } from '../pipeline/r2';
 import { analyseArchivedAgency, LiveBuildFailed } from './liveArchiveAnalysis';
 import { STUDIO_LIVE_POINTER, studioLiveRunPrefix, acceptStudioLiveBuild, goodDaysByWeek, nextStudioLivePointer, runsToPrune, type StudioLivePointer } from './studioLiveRun';
 
@@ -48,16 +49,14 @@ if (!/^[A-Za-z0-9-]+$/.test(runId)) throw new Error('--run-id: letters, digits a
 mkdirSync(work, { recursive: true });
 writeFileSync(log, '');
 
-const need = (k: string) => { const v = process.env[k]; if (!v) throw new Error(`Missing env var ${k}.`); return v; };
 const s3 = new S3Client({
   region: 'auto',
-  endpoint: `https://${need('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: need('R2_ACCESS_KEY_ID'), secretAccessKey: need('R2_SECRET_ACCESS_KEY') },
+  endpoint: `https://${requireEnv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
+  credentials: { accessKeyId: requireEnv('R2_ACCESS_KEY_ID'), secretAccessKey: requireEnv('R2_SECRET_ACCESS_KEY') },
 });
 // CIV-2186: the files go to the private Live bucket the Mac's read-only key reads; timetables still come from the archive.
-need('R2_ARCHIVE_BUCKET_NAME');
-const PRIVATE = need('MCP_LIVE_BUCKET');
-if (PRIVATE === process.env.R2_BUCKET_NAME) throw new Error('MCP_LIVE_BUCKET is the public bucket; refusing.');
+requireEnv('R2_ARCHIVE_BUCKET_NAME');
+const PRIVATE = privateLiveBucketName();
 
 async function getText(key: string): Promise<string | null> {
   try { return await (await s3.send(new GetObjectCommand({ Bucket: PRIVATE, Key: key }))).Body!.transformToString(); }
