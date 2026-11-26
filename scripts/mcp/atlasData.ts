@@ -298,7 +298,7 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
   // Exact matches: a short-name match first, then a daytime route before a night-only one (TTC "King" is the 504, not the
   // 304), else the list's order. CIV-2025: trains no longer win a tie over buses (#1623 had GO's "Lakeshore West" pick the
   // LW train over bus 18 with the same long name; otherExactMatches still names the other).
-  const night = (r: R) => { const f = (r as { figures?: RouteSummary['figures'] }).figures; return f && isNightRoute({ figures: f }) ? 1 : 0; };
+  const night = (r: R) => { const x = r as { figures?: RouteSummary['figures']; night?: RouteSummary['night'] }; return x.figures && isNightRoute({ figures: x.figures, night: x.night }) ? 1 : 0; };
   const exact = routes.filter(r => names(r).includes(q)).map((r, i) => ({ r, i, short: r.shortName.toLowerCase() === q ? 0 : 1 }))
     .sort((a, b) => a.short - b.short || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
   if (exact) return exact;
@@ -420,17 +420,17 @@ export async function daysRunningEveryHour(agency: CatalogAgency, s: Pick<RouteS
  * of the day). The AM peak is left out: a night route's last trips run into it (TTC 320 weekday: 3 trips before 6:18 AM).
  */
 const NIGHT_ONLY_EMPTY_PERIODS = DAYTIME_PERIOD_KEYS.filter(k => k !== 'amPeak');
-export const runsOvernightOnly = (s: Pick<RouteSummary, 'figures'>): boolean => NIGHT_ONLY_EMPTY_PERIODS.every(k => s.figures[k]?.shown === 'no service');
+const runsOvernightOnly = (s: Pick<RouteSummary, 'figures'>): boolean => NIGHT_ONLY_EMPTY_PERIODS.every(k => s.figures[k]?.shown === 'no service');
 
 /**
  * #1867 (Ryan, option 1: "if you ask 'what time is the first trip on the red line' is that different than 'does the red
  * line run all night'"): an all-night route's service says it runs all night, with its Overnight figure, in place of a
  * first or last time; and 24 hours, with the days, where every hour has service in every direction.
  */
-export function allNightService(s: Pick<RouteSummary, 'figures' | 'span'>, everyHourOn: readonly DayType[]) {
+export function allNightService(s: Pick<RouteSummary, 'figures' | 'span' | 'night'>, everyHourOn: readonly DayType[]) {
   // Ryan's words for a night-only route (2026-11-26): only "Runs overnight only", with no frequency, no clock times and so
   // no breaks (TTC 320's "6:18 AM–1:12 AM" is its daytime, not a break in its service).
-  if (runsOvernightOnly(s)) return { first: null, last: null, runsOvernightOnly: 'Runs overnight only', breaks: [] };
+  if (isNightRoute(s)) return { first: null, last: null, runsOvernightOnly: 'Runs overnight only', breaks: [] };
   const allWeek = everyHourOn.length === DAY_TYPES.length;
   return {
     first: null, last: null,
@@ -868,8 +868,12 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
  * Routes near a place: stops whose names hold every part of the place ("Bathurst and Bloor": a stop named with both
  * streets, or the station), then every stop within `metres` of those. Each route gets the stops it uses there.
  */
-/** A route that runs only at night: no trips in any part of the day before the late evening (the map's own period list). */
-export const isNightRoute = (r: Pick<RouteSummary, 'figures'>) => DAYTIME_PERIOD_KEYS.every(k => r.figures[k]?.shown === 'no service');
+/**
+ * A route that runs only at night, the one verdict every tool gives (Ryan, 2026-11-26: the MCP never contradicts itself):
+ * it runs all night by the Night Service rule and has no service in Midday, PM peak or Evening. route_frequency says
+ * "Runs overnight only" for it, routes_near marks it nightRoute, and a name two routes share picks the daytime one first.
+ */
+export const isNightRoute = (r: Pick<RouteSummary, 'figures' | 'night'>): boolean => runsThroughNight(r.night) && runsOvernightOnly(r);
 
 /** How far apart the nearest stops on each street of a corner may be (YRT's Finch GO Bus Terminal is 330 m from its nearest Yonge St stop). */
 export const CORNER_MAX_APART_M = 400;
