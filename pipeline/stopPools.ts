@@ -43,6 +43,18 @@ export const POOLED_MAX_GAP_TYPICAL_RATIO = 1.6;
 // card's rule D (src/utils/rowTrips.ts) reads the same two numbers.
 export { POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO };
 
+/** The pooled evenness test's first clause (CIV-2976 F2): the longest gap is within POOLED_MAX_GAP_RATIO times the mean, or the grace over it. */
+export const gapFitsMean = (longest: number, mean: number): boolean =>
+  !(longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES));
+
+/** #813, the second clause: the longest gap is within POOLED_MAX_GAP_TYPICAL_RATIO times the value, or the grace over it. */
+export const gapFitsValue = (longest: number, value: number): boolean =>
+  !(longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES));
+
+/** The pooled evenness test: both clauses. The one copy of it (CIV-2976 F2); pieces.ts reads it too. */
+export const pooledListIsEven = (longest: number, mean: number, value: number): boolean =>
+  gapFitsMean(longest, mean) && gapFitsValue(longest, value);
+
 /**
  * The headway of a merged departure list inside [start, end]: the typical wait (typicalOfGaps,
  * #772, through medianHeadwayInWindow's `typical`), never better than the mean gap, never worse
@@ -105,8 +117,7 @@ export function pooledReadingInWindow(times: readonly number[], start: number, e
   // are not a 15) and, #813, none over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself.
   // Each ratio allows at least the grace over its base: one held bus on a dense service is
   // not an alternation, while two 30s three minutes apart (27 against a mean of 15) stay out.
-  if (longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
-    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return { value: null, worstWait: longest, typical: value };
+  if (!pooledListIsEven(longest, mean, value)) return { value: null, worstWait: longest, typical: value };
   return { value, worstWait: null };
 }
 

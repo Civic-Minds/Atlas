@@ -20,7 +20,7 @@ import { PERIOD_MINUTES, type PeriodKey } from '../shared/rules/periods.js';
 import { headwayGradeOn, PUBLIC_TIER_MAXES } from '../shared/rules/frequency.js';
 import { departuresInWindow, HEADLINE_MIN_DEPARTURES, isSteadyPeriodGaps, medianHeadwayInWindow } from './headway-utils.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { collapseBunched, computeStopSharers, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, POOLED_MAX_GAP_TYPICAL_RATIO, type StopSharers } from './stopPools.js';
+import { collapseBunched, computeStopSharers, gapFitsMean, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, pooledListIsEven, type StopSharers } from './stopPools.js';
 import { periodEdge, type DirectionStretches, type Stretch } from './tripSets.js';
 
 export { PIECE_PARAMS, pieceMinimum, piecesByTripsFromEnv } from './pieceParams.js';
@@ -133,8 +133,7 @@ export function listIsEvenAgainst(list: readonly number[], value: number): boole
   if (list.length < 2) return false;
   const mean = (list[list.length - 1] - list[0]) / (list.length - 1);
   const longest = Math.max(...gapsOf(list));
-  return !(longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
-    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES));
+  return pooledListIsEven(longest, mean, value);
 }
 
 const runsThroughWindow = (list: readonly number[], start: number, end: number): boolean => {
@@ -341,7 +340,7 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
   const inner = Math.max(...gaps);
   // Evenly spaced: the existing 1.75 x mean with the 5-minute grace (the pooled test's first clause; its 1.6 x value clause is a
   // second test on a reading and does not apply to a piece with no value yet).
-  if (inner > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)) return { t: 'limited' };
+  if (!gapFitsMean(inner, mean)) return { t: 'limited' };
   const every = Math.max(typical, Math.round(mean));
   const allowance = Math.max(POOLED_MAX_GAP_RATIO * every, every + POOLED_MAX_GAP_GRACE_MINUTES);
   const lead = t[0] - start;
