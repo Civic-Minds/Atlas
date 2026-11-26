@@ -105,7 +105,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
   const valueRef = React.useRef<HTMLSpanElement>(null);
   // CIV-1465 (Ryan, 2026-11-13: "same as the other one i thin split it into 2 lines"): a long value in two parts ("every
   // 60 min" / "until 5:05 PM") stays in the value column on two right-aligned lines, the list rule (CIV-1300).
-  const fitOrBelow = rowMock() === 'b' && wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel);
+  const fitOrBelow = rowMock() === 'b' && wrapLongValue && hasValueCell;
   const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel) && !fitOrBelow;
   const longValue = wrapLongValue && !twoLineValue && !fitOrBelow && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
   // CIV-1165 (Ryan, 2026-11-13: "i wonder if instead we should wrap the destination text if needed", then "1"): a destination
