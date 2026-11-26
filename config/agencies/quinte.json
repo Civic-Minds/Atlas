@@ -16,5 +16,42 @@
   "feedUrl": "https://myride.quintetransit.ca/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4685/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://myride.quintetransit.ca/gtfs/google_transit.zip",
+  "lastFeedCheckAt": "20261126",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270601",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 14,
+      "feedExpiry": "20270601",
+      "routeCount": 9,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-26"
+  },
+  "lastRawArchiveKey": "20270601-8d14aa346ac1d98e",
+  "lastFeedContentKey": "69d83a4e92b71dfc",
+  "lastFeedExpiry": "20270601",
+  "lastPeekedExpiry": "20270601",
+  "lastFeedStart": "20260812",
+  "lastFeedVersion": "20260701 Summer CTS V3",
+  "lastRefreshedAt": "2026-11-26",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "14ed4ea750af0cdd",
+  "feedObtainedAt": "20261125"
 }

@@ -45,15 +45,11 @@ playwright-report/
 public/data/samples/*.zip
 !public/data/samples/gtfs-sample.zip
 
-# Generated per-agency data (only catalogs and the index are tracked)
+# Generated per-agency data. index.json and the catalogs are generated from config/agencies too, by
+# npm install, dev, build and the test run (npm run build:agency-data; CIV-2975), so they aren't tracked.
 public/data/*.json
-!public/data/index.json
 !public/data/index.schema.json
 !public/data/feed-refresh.json
-!public/data/catalog-public.json
-!public/data/catalog-preview.json
-!public/data/catalog-beta.json
-!public/data/catalog-dev.json
 
 # Local benchmark output
 reports/benchmarks/

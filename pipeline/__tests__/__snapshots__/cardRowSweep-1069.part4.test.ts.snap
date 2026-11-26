@@ -1,0 +1,280 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-20-shape-monday-group-tuesday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-25-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-29-dufferin: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-29-dufferin-full: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-29-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-35-branches: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-38-weekday-short-turn: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-39-sunday-west: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-41-saturday-pooled: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-47-chained-trips: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-63-saturday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-63-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-76-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-86-saturday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-94-converging: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-94-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-96-weekday-east: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-191-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [
+    "ttc-191-weekday 191 Sunday d1 "York Mills" pmPeak: every 25 from 0 own",
+    "ttc-191-weekday 191 Sunday d1 "York Mills" evening: every 20 from 0 own",
+    "ttc-191-weekday 191 Sunday d1 "York Mills" late: every 20 from 0 own",
+  ],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-300-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-300-weekday-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-301-weekday-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-304-saturday-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-320-sunday-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [
+    "ttc-320-sunday-night 320 Sunday d0 "Queens Quay" amPeak: every 56 from 0 own",
+  ],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-320-weekday-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-337-373-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-340-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-353-395-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-354-395-night: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-505-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-506-thanksgiving: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-507-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-900-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-939-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-952-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > ttc-line1-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > uga-cn-night-services: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > wmata-yellow-weekend: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > yrt-viva-blue-night-shape: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;
+
+exports[`card rows read their value, gap and words from the same trips (CIV-1069), part 4 of 4 > yrt-viva-weekday: no number from fewer than 3 own departures, and no plain number beside a gap of half the period or more 1`] = `
+{
+  "borrowed": [],
+  "holes": [],
+}
+`;

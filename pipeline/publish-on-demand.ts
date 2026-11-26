@@ -16,6 +16,7 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { assertKnownFlags } from './cliFlags.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -29,6 +30,7 @@ function fail(message: string): never {
 
 const audience = (arg('--audience') ?? 'beta') as 'beta' | 'public';
 if (audience !== 'beta' && audience !== 'public') fail('--audience must be beta or public');
+assertKnownFlags(process.argv.slice(2), { '--promote': 'flag', '--write': 'flag', '--audience': 'value', '--allow': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 if (audience === 'public' && !process.argv.includes('--promote')) {
   fail('The public release needs --promote: it puts promoted services on the public site.');
 }

@@ -1,0 +1,25 @@
+{
+  "slug": "brightline",
+  "officialName": "Brightline",
+  "websiteUrl": "https://www.gobrightline.com/",
+  "dataLicense": {
+    "url": "https://www.gobrightline.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-26"
+  },
+  "region": "Florida",
+  "center": [
+    26.3538,
+    -80.1455
+  ],
+  "bbox": [
+    25.78,
+    -81.308,
+    28.412,
+    -80.055
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-1126/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

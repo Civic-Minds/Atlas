@@ -37,9 +37,11 @@ import { historyGeometryForRoute } from './historyGeometry.js';
 import { identitySplitApplies, isPeriodExcluded, type HistoryIdentityKeys, type HistoryPeriodExcludes, type HistoryPeriodRemaps, remapKeysByPeriod, seedSidecarOnlyKeys } from './historyRouteConfig.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
 import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 config({ path: resolve('.env.local') });
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--verify-only': 'flag', '--local-archive': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const dryRun = process.argv.includes('--dry-run');
 /**
  * CIV-415: --local-archive <dir> (dry runs only) reads v2 sidecars and shapes from <dir>/history-v2/{slug}/*.json and

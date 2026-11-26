@@ -13,6 +13,7 @@ import JSZip from 'jszip';
 import { processGtfsBuffer } from './process-core.js';
 import { backfillRouteKey } from './historyRouteKey.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 const FEEDS = [
   '/Users/ryan/Downloads/cdta Jun 24 2016.zip',
@@ -93,6 +94,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string) {
 }
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), {}); // CIV-3017: a mistyped flag must not turn into a real write
   if (!process.env.R2_ACCESS_KEY_ID) {
     console.error('Missing R2 credentials. Add R2_* vars to .env.local');
     process.exit(1);

@@ -13,7 +13,9 @@ import { r2Get, r2List, r2Put } from './r2.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import { parseRunPrefixArg, promoteRunArtifacts } from './runArtifacts.js';
+import { assertKnownFlags } from './cliFlags.js';
 
+assertKnownFlags(process.argv.slice(2), { '--run-prefix': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const prefix = parseRunPrefixArg(process.argv.slice(2), '--run-prefix');
 if (!prefix) throw new Error('--run-prefix atlas/runs/<run id> is required.');
 

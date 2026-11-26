@@ -105,6 +105,7 @@ import { assessByCounts, type FeedQuality } from '../shared/feedQuality.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 interface Agency {
   slug: string;
@@ -184,6 +185,7 @@ const outputDir = resolve('tmp/derived-reprocess');
 const localArchiveDir = process.env.ATLAS_LOCAL_ARCHIVE_DIR
   ? resolve(process.env.ATLAS_LOCAL_ARCHIVE_DIR)
   : null;
+assertKnownFlags(process.argv.slice(2), { '--write': 'flag', '--include-hidden': 'flag', '--i-am-launching-country': 'flag', '--allow-drop': 'flag', '--allow': 'value', '--only-slug': 'value', '--skip-slug': 'value', '--run-prefix': 'value', '--shard': 'value', '--merge-shards': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const writeToR2 = process.argv.includes('--write');
 // CIV-522: with --run-prefix atlas/runs/<run id>, --write puts each agency's files under that prefix
 // and leaves the top-level files alone; promote-run-artifacts copies them up once the release is public.

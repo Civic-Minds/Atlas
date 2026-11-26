@@ -7,13 +7,16 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Studio Fleet says how many vehicles with no trip are parked at garages**: "Not on a trip: 622, of which 521 at garages", since most of the evening count is buses pulled in for the night
+- **A route card row no longer shows a whole-period wait for a direction that runs steadily**: RTD 31 on Saturday afternoons read "to Evans every 114 min" while it runs every 15, because a short branch that stops at 5:06 PM set the number
 - **A route's Live figures say "Loading…" while they load**: on opening a route they briefly said they couldn't be shown, which read as a failure
 - **Live's "Figures updated" time reads on your own clock**: it always showed Toronto time with no zone named, so a viewer in San Francisco, Los Angeles, Vancouver, Edmonton or Halifax read the build time hours off
 - **Route lists show the full range when a branch runs on its own schedule**: RTD 31's weekday rush read "every 60 min until 5:14 PM" while Federal Blvd runs every 10; it now reads "every 10–60 min", as the card shows both
 - **Studio Fleet's vehicle tables name the vehicles as the page does**: screen readers heard "Buses Needed" on TTC tables titled "Vehicles Needed"
 - **No part of a route's line draws more frequent than the route when the same buses run its whole length**: CapMetro 801's weekday evening drew its north end green (every 15) beside a route that runs every 20, because those stops caught more of the service before it drops at 9 PM
 - **A route card's data warning sits at the bottom of the card, with the other notices**: CapMetro 10's "may be incomplete because of an error in the agency's data" sat under the title, though Learn more notices belong at the bottom
+- **Destination names drop direction codes like "SB" or "Northbound"**: CapMetro's cards read "to 38th Street SB" and RTC's Red Line "to Maryland Pkwy Southbound", though the card already names the direction
 - **A branch with 2 or 3 trips more than an hour apart reads "Runs irregularly in this period"**: branch lines skipped the 4-trip minimum the other rows follow, so SEPTA 20's Sunday evening card read "every 171 min" from 3 trips
+- **Rebuilds use the schedule file Atlas last downloaded**: a full rebuild could swap an agency back to an older file whose stated end date was later, so the TTC's stop names came from an older file than the one Atlas had downloaded (64 of 540 checked differed), and 27 other agencies were rebuilt from an older file too
 - **Atlas Studio MCP counts each station once in a route's stops**: OC Transpo Line 1 said 26 stops each way for its 13 stations, because each station was counted as both its platform and the station itself
 - **Route cards count each trip once, late trips included**: Kingston 22 left out its 11:02 and 11:38 PM trips towards First Canada (30 trips against the feed's 33), and Kingston 10 counted one trip twice each way (34 against 33), because a row's hourly counts mixed two lists of departures
 - **Routes you must book ahead no longer show a fixed frequency**: exo's taxibuses, Annapolis Call-in and the rest printed "every 40 min" or even "every 15 min" beside "Rides on this route must be booked ahead.", and their map colour and frequency filter read the same number

@@ -19,6 +19,7 @@ import { historyRouteKey } from './historyRouteKey.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { join } from 'path';
 import { GTFS_FILES_DIR } from './gtfsArchivePath.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 const SLUG = 'nfta';
 const FEEDS = [
@@ -106,6 +107,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, n
 }
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), {}); // CIV-3017: a mistyped flag must not turn into a real write
   if (!process.env.R2_ACCESS_KEY_ID) {
     throw new Error('Missing R2 credentials in .env.local');
   }

@@ -78,6 +78,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### What the map shows and never shows
 
+- **Intercity service is in scope, like Bustang**
+  - What: intercity bus and rail agencies (Ontario Northland, Brightline) are added like any other agency, hidden in production until checked, then shown on Ryan's go. Their routes are graded on the same scale as everything else (most read "infrequent"), and a route's mode is the feed's own (Ontario Northland's Northlander stays as its feed publishes it).
+  - Why: Atlas already shows Bustang, an intercity coach service.
+  - Source: Ryan, 2026-11-26 (CIV-2239): "For Intercity we already have Bustang is my point", then "1" (add them like the rest), then "1" on visibility (new ones hidden until checked)
 - **A list's range has no width cap where its slow line has its own number**
   - What: a route list, agency page or MCP answer shows a range up to 4× wide as before. A wider one shows when the slow line gets its own number (3 or more evenly spaced trips); a slow end that is only the shared stretch keeps 4×. Cards, grades and map colours don't change. A list with a range drops the line's "from"/"until" words (the card keeps them).
   - Why: Ryan: "No cap. A range shows when its slow line runs regularly enough to get its own number (3 or more evenly spaced trips)" (RTD 31 weekday PM read "every 60 min until 5:14 PM" while Federal Blvd runs every 10).
@@ -225,6 +229,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: the measure once called "Falls behind" / "Delays start" and its section (once "Where delays start") read "Schedule adherence"; "Typical delay" reads "Typical deviation". The new positions-only view is named "Speed" (average speed, no baseline), not "Delay".
   - Why: Ryan: ""delays start" and "behind schedule" sounds fucking stupid in a professional product"; "Delay" implies a baseline the picked method doesn't have.
   - Source: [decision log](#decision-log) (2026-11-25, CIV-2924; 2026-11-26, CIV-2917)
+- **Speed's minimums are starting values, to be checked**
+  - What: Speed shows a stretch's average speed (total distance over total time of its recorded weekday trips, per time-of-day slot) only when the stretch is at least 400 m long, has at least 7 weekdays recorded, at least 30 trips in total and at least 10 trips in that slot; below any of them it shows no figure ("Not measured"). The numbers live in SPEED_MINIMUMS (shared/rules/live.ts).
+  - Why: 400 m, 30 and 10 are untested prototype guesses and 7 weekdays is Strategy's proposal; Ryan took them as starting values, to be tested on TTC, HSR and MBTA routes, with counts of how many stretches go blank, before anything ships.
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-2919)
 - **Studio is split by time: now, past, plan**
   - What: Live and Fleet (now) stay map panels; Performance (past) and Schedules (plan) are full pages. Live's weekly late figures move into Performance, so no figure shows in two places.
   - Why: trip time showed in three places and lateness in two.
@@ -324,8 +332,17 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-26 — Intercity agencies are added like the rest, hidden until checked (CIV-2239)
+Ryan, 2026-11-26: "For Intercity we already have Bustang is my point", then "1" on adding Ontario Northland and Brightline hidden like the CIV-2237 agencies, then "1" on visibility: new ones go in hidden until checked.
+- What: Ontario Northland (22 routes, intercity bus plus the Northlander) and Brightline (1 rail line) are added with hiddenInProduction; the Northlander keeps the feed's route type. Counts: 2 agencies, 23 routes.
+- Earlier, the CIV-2237 brief said to flag intercity agencies rather than add them; that instruction is superseded.
+
 ### 2026-11-26 — A list's range has no width cap where its slow line has its own number (CIV-2909, #1786; supersedes Ryan's 2026-11-25 "up to 6 times")
 Ryan, 2026-11-26, answering the Questions chat, picked "1": "No cap. A range shows when its slow line runs regularly enough to get its own number (3 or more evenly spaced trips)", over "2. Keep 4×". It replaces his 2026-11-25 pick "Allow up to 6 times" (logged here for the first time; superseded by 2026-11-26 / CIV-2909). The asked counts: 285 more ranges, 62 stay blocked (the slow line's trips aren't evenly spaced, mostly service that changes partway: CTA 36 "every 16 min until 5:07 PM, then every 61 min"), and the 6 routes whose slow end is the shared stretch keep 4×. RTD 31 weekday PM peak's list reads "every 10–60 min"; "until 5:14 PM" stays on the card only. Built on release-mwvbser2 (160,965 list cells): 288 cells gain a range past 4× and 2 more read a range within 4× once their words drop, in 57 agencies (NJ Transit 53, TTC 30, SEPTA 17); 27 of them lose "from"/"until" words in the list. Cards, grades and map colours are unchanged.
+
+### 2026-11-26 — Speed's minimums: starting values, checked after the first build (CIV-2919)
+Ryan, 2026-11-26, answering the Questions chat, asked "How did we come up with these numbers?" and picked option 1: "Use them as starting values and check later". Speed's minimums: a stretch at least 400 m long, at least 7 weekdays of data, at least 30 trips in total, at least 10 trips in each time-of-day slot; below that it shows no figure ("Not measured"). 400 m, 30 and 10 are untested prototype guesses (CIV-2919's M2 prototype); 7 weekdays is Strategy's proposal. After the first build they are tested on TTC, HSR and MBTA routes, and Ryan gets the counts of how many stretches go blank before anything ships. Method (CIV-2919, Ryan): average speed by time of day, no baseline.
+Checked 2026-11-26 after the first build (local runs, nothing uploaded): TTC 504 shows 45 of 62 stretches (the 17 blank are short-turn patterns seen on 1 or 2 weekdays); HSR 5 (169 stretches) and MBTA 66 (46) are all blank only because their recordings don't yet reach 7 weekdays (without that minimum, 164 of 169 and 31 of 46 would show). Ryan picked "1": "Keep the minimums as they are; HSR shows once it has 7 recorded weekdays (around Nov 27) and MBTA a few days later", over "2. Lower the weekday minimum to 4 now".
 
 ### 2026-11-26 — Studio splits into now, past and plan; the new view is "Speed" (CIV-2917; supersedes CIV-2924's "Delay is kept for the clear-street measure")
 Ryan, 2026-11-26, answering the Questions chat on Strategy's layout review (screens checked on 5182, compared with Swiftly, Optibus and Remix), picked "1": "This split, with Speed", over "2. Keep Performance as a separate tab next to Live, as planned" (trip time and lateness then appear twice). Studio splits into now (Live, Fleet: map panels), past (Performance: a full page) and plan (Schedules: a full page, starting from Studio's mock-up, option 5 on CIV-2182). Live's weekly late figures move into Performance; today trip time shows in three places and lateness in two. The new view is "Speed": the method picked on CIV-2919 is average speed with no baseline, and "Delay" implies one. It shows average speed by stretch and time of day, plus recorded trip time beside the timetable's on the route card's chart. This replaces the 2026-11-25 picks of a "Performance" tab and a "Delay" view (CIV-2917's first comment).

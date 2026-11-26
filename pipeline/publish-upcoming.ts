@@ -13,6 +13,7 @@
  */
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
+import { assertKnownFlags } from './cliFlags.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -20,6 +21,7 @@ function arg(name: string): string | undefined {
 }
 
 async function main(): Promise<void> {
+  assertKnownFlags(process.argv.slice(2), { '--write': 'flag', '--slug': 'value', '--zip': 'value', '--source-key': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
   const slug = arg('--slug');
   const zipPath = arg('--zip');
   if (!slug || !zipPath) throw new Error('Usage: publish-upcoming.ts --slug <slug> --zip <held zip> [--source-key <archive key>] [--write]');

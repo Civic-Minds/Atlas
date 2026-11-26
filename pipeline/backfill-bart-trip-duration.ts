@@ -27,8 +27,10 @@ import { computeTripDurations, type RouteTripDuration } from './trip-duration.js
 import { readFeedEvidence } from './historyWeekend.js';
 import { readQualityRows } from './historyRefQuality.js';
 import { firstFullWeekAnchor } from './serviceDays.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 const SLUG = 'bart';
+assertKnownFlags(process.argv.slice(2), { '--write': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
 const write = process.argv.includes('--write');
 
 interface AgencyEntry extends GtfsTransformOptions {

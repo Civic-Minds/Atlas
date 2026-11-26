@@ -1,6 +1,7 @@
 {
   "slug": "washington-county",
-  "officialName": "Johnson City",
+  "officialName": "Johnson City Transit",
+  "internalNote": "The slug washington-county is historical: this is Johnson City Transit (Johnson City, Washington County, Tennessee). Kept to avoid breaking its public agency page URL and data paths (CIV-3000, #1834); Washington County Transit in Hagerstown, Maryland is washco-md.",
   "websiteUrl": "https://www.johnsoncitytransit.org",
   "center": [
     36.33,
