@@ -6,7 +6,6 @@ import { AIRPORTS } from '../../src/data/airportHourly';
 import { PERIOD_BANDS_ONLY } from '../../src/components/Live/sections/figures';
 import { LIVE_DAY_HOURS } from '../../src/utils/sparklinePeriods';
 import { TIME_LOSS_BANDS } from '../../src/utils/timeLossReport';
-import { onDemandRunningNote } from '../../shared/onDemandAvailability';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 
 /**
@@ -19,13 +18,6 @@ describe('leftover copies read from shared/rules (CIV-1835)', () => {
     expect(TIME_LOSS_BANDS).toEqual(['all', 'amPeak', 'midday', 'pmPeak', 'evening']);
     expect(['all', ...DAYTIME_PERIOD_KEYS]).toEqual(['all', 'amPeak', 'midday', 'pmPeak', 'evening']);
     expect(PERIOD_BANDS_ONLY).toEqual([['amPeak', 'AM peak'], ['midday', 'Midday'], ['pmPeak', 'PM peak'], ['evening', 'Evening']]);
-  });
-
-  it('keeps the on-demand running note period words', () => {
-    const availability = { Weekday: [{ startHour: 0, endHour: 30 }] };
-    const words = (['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'] as const)
-      .map(p => onDemandRunningNote(availability, 'Weekday', p).replace(/^Running during \S+ /, ''));
-    expect(words).toEqual(['AM peak', 'midday', 'PM peak', 'evening', 'late', 'overnight']);
   });
 
   it('keeps the Live chart axis, 5 AM to 4 AM next day', () => {

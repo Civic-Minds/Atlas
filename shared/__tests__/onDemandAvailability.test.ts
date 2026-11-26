@@ -98,14 +98,13 @@ describe('formatOnDemandHoursLines', () => {
 describe('onDemandRunningNote', () => {
   const availability = { Weekday: [{ startHour: 7, endHour: 19 }], Saturday: [{ startHour: 9, endHour: 15 }], Sunday: [] };
 
-  it('names the selected day and period when running', () => {
-    expect(onDemandRunningNote(availability, 'Saturday', 'midday')).toBe('Running during Saturday midday');
-    expect(onDemandRunningNote(availability, 'Weekday', 'amPeak')).toBe('Running during weekday AM peak');
-  });
-
-  it('says not running outside the hours', () => {
-    expect(onDemandRunningNote(availability, 'Saturday', 'evening')).toBe('Not running at this time');
-    expect(onDemandRunningNote(availability, 'Sunday', 'midday')).toBe('Not running at this time');
+  // CIV-2900 (Ryan, "1"): no running or not-running line, as fixed routes have none; only "Hours unavailable" stays.
+  it('gives no note when the zone is running or not running', () => {
+    expect(onDemandRunningNote(availability, 'Saturday', 'midday')).toBeNull();
+    expect(onDemandRunningNote(availability, 'Weekday', 'amPeak')).toBeNull();
+    expect(onDemandRunningNote(availability, 'Weekday', 'all')).toBeNull();
+    expect(onDemandRunningNote(availability, 'Saturday', 'evening')).toBeNull();
+    expect(onDemandRunningNote(availability, 'Sunday', 'midday')).toBeNull();
   });
 
   it('never claims service when hours are missing', () => {

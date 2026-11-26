@@ -36,7 +36,7 @@ function renderZoneCard(zoneId: string | null, day: 'Weekday' | 'Saturday' | 'Su
 describe('on-demand zone card', () => {
   it('builds hours from structured data and bolds the selected day', () => {
     renderZoneCard('Lower North Stoney Creek', 'Saturday', 'midday');
-    expect(screen.getByText('Running during Saturday midday')).toBeInTheDocument();
+    expect(screen.queryByTestId('on-demand-running-note')).toBeNull();
     // Hours rows (CIV-964): the selected day's row is bold, days and times in words beside its bar.
     expect(screen.getByText('Mon–Sat')).toHaveClass('font-bold');
     expect(screen.getByText('4:30 AM–2 AM').closest('p')).toHaveClass('font-bold');
@@ -53,14 +53,16 @@ describe('on-demand zone card', () => {
     expect(screen.getByText('4:30 AM–12 AM')).toBeInTheDocument();
   });
 
-  it('says when a zone is not running', () => {
+  // CIV-2900 (Ryan, "1"): no running or not-running line on a zone card, as fixed routes have none.
+  it('says nothing about running when the zone is not running', () => {
     renderZoneCard('West Glanbrook', 'Weekday', 'overnight');
-    expect(screen.getByText('Not running at this time')).toBeInTheDocument();
+    expect(screen.queryByText('Not running at this time')).toBeNull();
+    expect(screen.queryByTestId('on-demand-running-note')).toBeNull();
   });
 
-  it('shows myRide running on its own published hours', () => {
+  it('says nothing about running when myRide runs on its own published hours', () => {
     renderZoneCard(null, 'Saturday', 'midday');
-    expect(screen.getByText('Running during Saturday midday')).toBeInTheDocument();
+    expect(screen.queryByText(/Running/)).toBeNull();
   });
 
   it('never claims service when hours are not on file', () => {
@@ -152,7 +154,7 @@ describe('whole-service card with hours set zone by zone', () => {
         onDemandZoneId="Parker" onSelectOnDemandZone={() => {}} />,
     );
     expect(screen.queryByTestId('on-demand-zone-rows')).toBeNull();
-    expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during weekday midday');
+    expect(screen.queryByTestId('on-demand-running-note')).toBeNull();
   });
 });
 
@@ -177,9 +179,9 @@ describe('Friday-only weekday service (#1440)', () => {
     expect(screen.queryByText(/Running/)).toBeNull();
   });
 
-  it('keeps the running note on Saturday', () => {
+  it('has no running note on Saturday either (CIV-2900)', () => {
     card('Saturday');
-    expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during Saturday late');
+    expect(screen.queryByTestId('on-demand-running-note')).toBeNull();
   });
 });
 
@@ -220,8 +222,8 @@ describe('whole-service card whose hours are set per zone', () => {
     expect(screen.getByText(hours)).toBeInTheDocument();
   });
 
-  it("a zone's own card keeps its running note", () => {
+  it("a zone's own card has no running note (CIV-2900)", () => {
     renderZoneCard('Zone A', 'Weekday', 'midday', barrie);
-    expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during weekday midday');
+    expect(screen.queryByTestId('on-demand-running-note')).toBeNull();
   });
 });

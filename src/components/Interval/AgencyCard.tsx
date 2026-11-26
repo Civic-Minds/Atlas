@@ -653,7 +653,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               </div>
             ) : (
               <>
-                {!fridayOnlyWeekday && !hoursByZoneOnly && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
+                {runningNote && !fridayOnlyWeekday && !hoursByZoneOnly && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
                 <OnDemandHoursRows
                   availability={zone.availability}
                   serviceHours={zone.serviceHours}
