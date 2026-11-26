@@ -24,7 +24,7 @@ import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
 import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
-import { figuresUpdatedText, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
+import { BUNCHING_LABEL, figuresUpdatedText, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import { useLiveFiguresUpdated } from '../hooks/useLiveFiguresUpdated';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
@@ -40,7 +40,7 @@ import { loadHistoryConfig } from '../utils/historyConfig';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'late-limit' | 'sources' | 'measurements';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'late-limit' | 'sources' | 'measurements' | 'measure-bunching';
 /** 'sources': About → Schedule sources, from the map's credit pill (CIV-461). */
 export type Tab = 'about' | 'agencies' | 'history' | 'live' | 'sources';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
@@ -130,6 +130,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const FEATURES = { ...BASE_FEATURES, history: BASE_FEATURES.history && phoneModeFlags(isPhone).history };
   const [view, setView] = useState<View>('home');
+  const notesMock = (() => { try { return window.localStorage.getItem('notesmock'); } catch { return null; } })();
   const liveFiguresUpdated = useLiveFiguresUpdated(open);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -326,6 +327,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
     : view === 'sources' ? 'Sources'
     : view === 'measurements' ? MEASUREMENTS_TITLE
+    : view === 'measure-bunching' ? BUNCHING_LABEL
     : null;
 
   return (
@@ -356,9 +358,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <PanelBackButton
               onClick={() => {
                 if (view === 'agency-detail') setView('agencies');
+                else if (view === 'measure-bunching') setView('measurements');
                 else setView('home');
               }}
-              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : BACK_PLACES.aboutAtlas)}
+              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : view === 'measure-bunching' ? MEASUREMENTS_TITLE : BACK_PLACES.aboutAtlas)}
             />
             <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}
@@ -507,10 +510,21 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'measurements' && (
             // #1751: Live's definitions, moved here from About's Live part; Live's Learn more opens this page.
             <div className="h-full overflow-y-auto px-5 py-4 space-y-2" data-testid="measurements">
-              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{STUDIO_ROUTE_PANEL_PENDING.bunchingAbout()}</p>
+              {/* #1822 MOCK (not for merge): localStorage.notesmock '1' puts each measure behind a row like "Browse agencies ›". */}
+              {notesMock === '1' ? (
+                <div className="space-y-2 pb-2">
+                  <LinkCard as="button" onClick={() => setView('measure-bunching')} icon="chevron">{BUNCHING_LABEL}</LinkCard>
+                </div>
+              ) : <p className="text-xs text-[var(--text-primary)] leading-relaxed">{STUDIO_ROUTE_PANEL_PENDING.bunchingAbout()}</p>}
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">{LIVE_NOISE_CAPTION}</p>
               {/* CIV-1814 item 41: when Live's figures were built, as in Sources beside the schedule refresh line. */}
               {liveFiguresUpdated && <p className="text-xs text-[var(--text-dim)] leading-relaxed">{figuresUpdatedText(liveFiguresUpdated)}</p>}
+            </div>
+          )}
+
+          {view === 'measure-bunching' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-2">
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{STUDIO_ROUTE_PANEL_PENDING.bunchingAbout()}</p>
             </div>
           )}
 
