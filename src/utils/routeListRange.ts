@@ -21,6 +21,11 @@ export interface RouteCardRange {
   range: boolean;
   /** CIV-2909: the range is wider than RANGE_MAX_RATIO, shown because its slow line passes rule D; renderers show it as is. */
   wide?: true;
+  /**
+   * #1856 (b), Ryan 2026-11-26 ("1"): where the list shows a range and a card row at its slow end names one gap, the longest
+   * such gap, so the list keeps the card's note after the range (AC Transit 60 weekday AM: "every 26–45 min, with one 45 min gap").
+   */
+  gap?: number;
 }
 
 /**
@@ -65,7 +70,8 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
   const read = (bare: boolean) => {
     const shown: number[] = [];
     let color = 0;
-    const worded: Array<{ h: number; words: string; gap?: number }> = [];
+    // `full`: the row's own number for the period (its colour), where `h` can be the spacing its words name (#1825).
+    const worded: Array<{ h: number; full: number; words: string; gap?: number }> = [];
     // CIV-2909: each row number with whether its row's own trips pass rule D (3 or more, evenly spaced).
     const ownNumbers: Array<{ h: number; own: boolean }> = [];
     for (const group of model.groups) {
@@ -88,7 +94,7 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
         color = Math.max(color, h, v.colorHeadway ?? 0);
         const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, h);
         if (range) shown.push(v.trunkHeadway!);
-        else if (v.headwayLabel) worded.push({ h, words: v.headwayLabel, ...(periodShapeGap(v.headwayLabel) != null ? { gap: periodShapeGap(v.headwayLabel)! } : {}) });
+        else if (v.headwayLabel) worded.push({ h, full: v.headway, words: v.headwayLabel, ...(periodShapeGap(v.headwayLabel) != null ? { gap: periodShapeGap(v.headwayLabel)! } : {}) });
       }
     }
     return { shown, color, worded, ownNumbers };
@@ -109,7 +115,12 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
   const { shown, color } = bare;
   const high = Math.max(...shown);
   const shownRange = words ? { range: false } : listRangeShown(bare);
-  return { low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}), range: shownRange.range, ...(shownRange.wide ? { wide: true as const } : {}) };
+  // A row "every 26 min, with one 45 min gap" is the range's slow end by its own number (45), though the list reads its 26.
+  const gaps = shownRange.range ? bare.worded.filter(w => w.full === high && w.gap != null).map(w => w.gap!) : [];
+  return {
+    low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}), range: shownRange.range,
+    ...(shownRange.wide ? { wide: true as const } : {}), ...(gaps.length ? { gap: Math.max(...gaps) } : {}),
+  };
 }
 
 /**

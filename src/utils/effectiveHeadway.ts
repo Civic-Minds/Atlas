@@ -12,6 +12,7 @@ import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
 import { clockTime } from '../../shared/timeText';
 import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, ON_PART_OF_ROUTE } from '../content/noticeCopy';
 import { routeCardLowestHeadway, routeCardRange } from './routeListRange';
+import { withOneGap } from '../../shared/headwayText';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
 
@@ -579,6 +580,8 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   if (card.low < card.high && card.range) {
     display.sharedHeadway = card.low;
     if (card.wide) display.wideRange = true;
+    // #1856 (b), Ryan 2026-11-26 ("1"): the range keeps the card's one-gap note (AC Transit 60 weekday AM).
+    if (card.gap != null) display.edgeText = withOneGap(routeListHeadwayText(card.high, card.low, false, !!card.wide), card.gap);
   }
   if (card.color > card.high) display.colorHeadway = card.color;
   // #1292, CIV-1300 (#1311): the card's own words for that number, where its row says more than "every N" (NYC B "every 9 min

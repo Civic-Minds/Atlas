@@ -151,7 +151,7 @@ export function runTimeAmount(minutes: number | null | undefined): string {
  * 5:40 PM", "every 10 min, with a 45 min gap", "every 15 min until 8:57 PM, then every 30 min" (CIV-1913).
  */
 export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number; then?: number; thenGap?: number }): string {
-  if (shape.gap != null) return `${headwayEvery(shape.every)}, with one ${delayAmount(shape.gap)} gap`;
+  if (shape.gap != null) return withOneGap(headwayEvery(shape.every), shape.gap);
   const text = [
     headwayEvery(shape.every),
     shape.from != null ? `from ${shape.from}` : null,
@@ -173,6 +173,11 @@ export function headwayPeriodShape(shape: { from?: string; until?: string; every
 export function periodShapeParts(text: string): { main: string; note: string | null } {
   const m = /^(.*?)(?:, with (.*)| ((?:from|until) .*))$/.exec(text);
   return m ? { main: m[1], note: m[2] ?? m[3] } : { main: text, note: null };
+}
+
+/** D6's one-gap note after a frequency ("every 26–45 min" -> "every 26–45 min, with one 45 min gap"; #1856, a list range keeps it). */
+export function withOneGap(text: string, gap: number): string {
+  return `${text}, with one ${delayAmount(gap)} gap`;
 }
 
 /** #1856: the one gap D6's words name ("every 30 min, with one 59 min gap" -> 59), the inverse of headwayPeriodShape's gap form; null otherwise. */
