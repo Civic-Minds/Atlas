@@ -35,7 +35,8 @@ import { countText } from '../../../shared/numberText';
 import { useAgencies } from '../../hooks/useAgencies';
 import { getNowPeriodForTimezone } from '../../components/Interval/FilterChips';
 import { HeadwaySparkline } from '../../components/Interval/HeadwaySparkline';
-import { HOUR_TO_PERIOD } from '../../utils/sparklinePeriods';
+import { HOUR_TO_PERIOD, periodValuesByHour } from '../../utils/sparklinePeriods';
+import { hourChartMaxFreq } from '../../utils/hourChartModel';
 import { SPARKLINE_HOURS } from '../../../shared/config';
 import type { HeadwayByHour } from '../../../shared/routeProperties';
 import { StudioRouteTable, pairFigures, periodCell, routeTitle } from './StudioRouteTable';
@@ -72,10 +73,9 @@ function ChangeList({ file, period, onPick, design = 'today' }: { file: StudioBe
  * carry one figure per time of day); a built version would carry each hour's.
  */
 function ScheduleSparklines({ change, period, beforeDate, afterDate }: { change: StudioRouteChange; period: PeriodKey; beforeDate: string; afterDate: string }) {
-  const byHour = (d: StudioRouteChange['before']): HeadwayByHour => Object.fromEntries(SPARKLINE_HOURS.map(h => [h, d?.headway[HOUR_TO_PERIOD[h] as PeriodKey] ?? null]));
+  const byHour = (d: StudioRouteChange['before']): HeadwayByHour => periodValuesByHour(d?.headway ?? {});
   const sides = [{ date: beforeDate, hours: byHour(change.before) }, { date: afterDate, hours: byHour(change.after) }];
-  const all = sides.flatMap(x => Object.values(x.hours)).filter((v): v is number => typeof v === 'number' && v > 0);
-  const scaleMaxFreq = all.length ? 1 / Math.min(...all) : undefined;
+  const scaleMaxFreq = hourChartMaxFreq(sides.map(x => x.hours), SPARKLINE_HOURS) || undefined;
   return (
     <>
       {sides.map(x => <div key={x.date} className="mt-3"><CardSectionLabel className="!mb-0">{dateRange(x.date, x.date)}</CardSectionLabel><HeadwaySparkline byHour={x.hours} period={period} title={dateRange(x.date, x.date)} scaleMaxFreq={scaleMaxFreq} /></div>)}
@@ -117,10 +117,11 @@ function FleetPeriodSparkline({ vehicles, period, setPeriod, modes }: { vehicles
   // The vehicles the schedule runs (as the MCP's scheduledNow), not those its own frequencies would need (implied).
   const counts = Object.fromEntries(PERIOD_KEYS.map(p => [p, agencyFleet(vehicles, p)?.scheduled ?? null])) as Record<PeriodKey, number | null>;
   const [hoverHour, setHoverHour] = useState<number | null>(null);
+  const countByHour = periodValuesByHour(counts);
   const byHour: Record<number, number | null> = {};
   const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
   for (const h of SPARKLINE_HOURS) {
-    const n = counts[HOUR_TO_PERIOD[h] as PeriodKey] ?? null;
+    const n = countByHour[h];
     byHour[h] = n ? 60 / n : null;
     if (n) stackedByHour[h] = [{ label: word, headway: 60 / n, color: CHANGE_COLOR.same }];
   }
