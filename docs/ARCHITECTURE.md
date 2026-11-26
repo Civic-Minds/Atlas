@@ -2,7 +2,19 @@
 
 ## R2 buckets
 
-Three production Cloudflare R2 buckets. Public access means the browser fetches directly; private means only Vercel API functions or the pipeline can read it. A separate non-production `atlas-staging` bucket mirrors the public key layout for rehearsals and beta-only agencies (see [Staging R2](operations/STAGING.md)).
+Four production Cloudflare R2 buckets. Public access means the browser fetches directly; private means only Vercel API functions, Workers or the pipeline can read it. A separate non-production `atlas-staging` bucket mirrors the public key layout for rehearsals and beta-only agencies (see [Staging R2](operations/STAGING.md)).
+
+Inventory on 2026-11-26 (CIV-2995, a list-only count):
+
+| Bucket | Objects | Size | Biggest prefixes |
+|---|---:|---:|---|
+| `atlas` (public) | 270,784 | 65.7 GB | `atlas/runs/` 49.7 GB, `atlas/releases/` 10.4 GB, per-agency files 1.9 GB, root `atlas.pmtiles` 1.6 GB, `gtfs/` 1.5 GB |
+| `atlas-archive` (private) | 33,713 | 14.9 GB | `gtfs/archive/` 9.4 GB, `gtfs/historical/` 4.7 GB, `stops-meta/` 0.4 GB |
+| `atlas-live` (private) | 147,110 | 4.8 GB | `positions/` 3.7 GB, `live/` 0.8 GB |
+| `atlas-mcp-live` (private) | 428 | 0.2 GB | Studio's and the hosted MCP's Live files |
+| `atlas-staging` | 2,908 | 0.35 GB | `gtfs/archive/`, `atlas/on-demand/`, `history/` |
+
+Three leftovers in `atlas` are waiting on Ryan's OK to delete (CIV-2995): the unpruned `atlas/runs/` folders, the frozen public `gtfs/{slug}.zip` copies and the root `atlas.pmtiles`.
 
 ### atlas (public)
 
@@ -28,10 +40,18 @@ Per-agency working artifacts (inputs to each release build):
 
 Shared indexes: `atlas/agencies.json`, `atlas/hidden-routes.json`, `atlas/feed-refresh-meta.json`, `atlas/night-service.json`, `atlas/history-config.json`.
 
+Other prefixes:
+
+- `atlas/runs/{runId}/`: a cloud rebuild's staged agency files (CIV-522; [Data reprocessing](operations/DATA_REPROCESSING.md)), about 1.5 GB per run. Nothing prunes them: 32 runs (2026-10-30 to 11-23) on 2026-11-26.
+- `atlas/search/stops/`, `atlas/search/pages/`: the content-addressed search index; `pipeline/prune-search-index.ts` deletes files no kept release names (CIV-1056).
+- `atlas/history-v2-shapes/{slug}.json`: History's route shapes, written by `pipeline/build-history.ts`.
+- `atlas/live/`, `atlas/live-polling/`: a few Live files (12 and 10 objects).
+- `gtfs/{slug}.zip`: frozen public copies of raw feeds from before 2026-08-15 (466 files). Nothing reads them (`pipeline/audit-active-feeds.ts` lists them as leftovers); the private archive holds every zip.
+
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`, `pipeline/restore-active-feeds.ts`, `pipeline/reprocess-derived-artifacts.ts --write` (per-agency artifacts); `pipeline/build-pmtiles.ts` (immutable release); `pipeline/publish-data-release.ts` (`release.json` pointer, only after checks pass); `pipeline/build-history.ts` (`history-config.json`)
 Read by: browser directly via `VITE_R2_PUBLIC_URL` (default `https://data.transitatlas.fyi`); map tiles always from `https://data.transitatlas.fyi`
 
-Standalone tile uploads (`upload-pmtiles`, non-dry-run `build-pmtiles-incremental`) write the legacy root `atlas.pmtiles` outside any release and refuse to run without `--allow-unpaired-pmtiles-upload`. Publish through the release flow instead (`npm run refresh-release`, or `build-pmtiles` → `verify-pmtiles-remote` → `build-history` → `publish-data-release`).
+Standalone tile uploads (`upload-pmtiles`, non-dry-run `build-pmtiles-incremental`) write the legacy root `atlas.pmtiles` (last written 2026-10-06; deployed builds never read it) outside any release and refuse to run without `--allow-unpaired-pmtiles-upload`. Publish through the release flow instead (`npm run refresh-release`, or `build-pmtiles` → `verify-pmtiles-remote` → `build-history` → `publish-data-release`).
 
 ### atlas-archive (private)
 
@@ -43,6 +63,12 @@ Historical and reference data not needed at runtime.
 - `history/{slug}/{routeShortName}/{period}.json` — per-route headway snapshots, written only when that route's headway changes
 - `history/{slug}/coverage.json` — optional coverage metadata (covered years, `materializeAllPeriods`)
 - `stops-meta/{slug}/latest.json` and `stops-meta/{slug}/{period}.json` — stop snapshots used for stop-change audits
+- `gtfs/historical/{slug}/` — a one-time import of older feed zips (2026-08-10, `pipeline/migrate-gtfs-archive.ts`), read by History
+- `history-v2/{slug}/{periodKey}.json` and `history-v2-shapes/{slug}/{periodKey}.json` — History v2 sidecars and per-period shapes (`pipeline/history-v2-upload.ts`, `pipeline/historyShapes.ts`)
+- `history-v2-replaced/{ticket}/` — immutable backups of History v2 files that an approved replacement overwrote (`pipeline/historyV2Replace.ts`)
+- `trip-duration/{slug}/{routeKey}/{periodKey}.json` — trip-time history (`pipeline/backfill-bart-trip-duration.ts`; read by `build-history.ts`)
+- `studio-live/runs/` — 69 objects from 2026-11-22 and 11-23; Studio's Live files now go to `atlas-mcp-live`
+- `research/coverage-inputs/` — inputs for the coverage study
 
 Written by: `pipeline/refresh.ts` (zips, history, and stop snapshots); history backfill scripts (`pipeline/backfill-*-history.ts`)
 Read by: `pipeline/refresh.ts` (history and stop baselines), `pipeline/build-history.ts` (history tree), `pipeline/reprocess-derived-artifacts.ts` (archived zips; picks the newest service date and fails closed when it cannot tell which zip is current — see [Data reprocessing](operations/DATA_REPROCESSING.md))
@@ -59,8 +85,10 @@ kept 60 days by the bucket’s one lifecycle rule (CIV-1906, 2026-11-18; 30 days
 `npm run audit-live-state` shows the live crons, newest snapshots and lifecycle rules. Snapshot/replay for Live UI needs a
 restored provider contract before Live can be re-enabled.
 
-- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples, every minute; only `ttc` is recorded now
-- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries, every 5 minutes; none recorded now (the shards are paused)
+- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples, every minute; on 2026-11-26 the bucket held `ttc`, `hamilton`, `mbta` and `kingston`
+- `{slug}/{YYYY-MM-DD}/` — trip-update samples; on 2026-11-26 `hamilton` and `kingston`
+- `live/{slug}/` — the v2 recorder's snapshots (`LIVE_V2_PREFIX`, `shared/liveSlots.ts`); on 2026-11-26 `ttc`, `drt`, `hamilton`, `kingston`, `brampton`, `burlington`, `mbta` and `yrt`
+- `packs/{slug}/`, `counts/` — packed days and snapshot counts built from them
 - The archived formats use the `atlas.live.v1` normalized envelope where snapshots exist.
 
 Written by small Cloudflare Workers (only ttc-positions runs now) sharing `workers/gtfs-rt-archiver/src/index.ts`.
@@ -74,6 +102,17 @@ a read-only binding, for recorded agencies only (`RECORDER_SLUGS`), with CORS fo
 It writes nothing. Deploy from its folder with `npx wrangler deploy`.
 
 60-day retention enforced by the bucket's R2 lifecycle rule.
+
+### atlas-mcp-live (private)
+
+Studio's and the hosted Atlas Studio MCP's Live and schedule files, never public.
+
+- `studio-live/runs/{runId}/{slug}/` and `studio-live/current.json` — Studio's Live files and the pointer to the current run (`scripts/studio-live-cloud.ts`, CIV-2186)
+- Studio's buses-needed and schedule-change files under `STUDIO_FILES_PREFIX` (`scripts/studio-files-upload.ts`, CIV-1974)
+- `live/` — the hosted MCP's Live files, `live/index.json` written last (`scripts/mcp/releaseLivePrivate.ts`, CIV-1860)
+
+Written by those three scripts from cloud workflows; each refuses the public bucket (CIV-2988).
+Read by the hosted MCP Worker through its binding, and by the Vite dev server (`local-api/liveFiles.ts`, `local-api/studioFiles.ts`) with the Mac's read-only key, which can read only this bucket.
 
 ### atlas-live-kingston (deleted)
 
