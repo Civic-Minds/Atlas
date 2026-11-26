@@ -32,7 +32,8 @@ import { effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
-import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../src/utils/effectiveHeadway';
+import { routeListCellText } from '../src/utils/effectiveHeadway';
+import { routeReading } from '../src/utils/routeReading';
 import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import { routeRuns } from '../shared/routeRuns';
 export { routeRuns };
@@ -180,14 +181,16 @@ export function summarize(
     const text: NonNullable<AgencyPageRoute['text']> = {};
     for (const [col, period] of cols) {
       // The agency pages' bands and summaries read the filter's number (CIV-1447 left them on it; the lists read the card).
-      const d = routeListFilterDisplay(ps, period);
+      // CIV-2953: the route's one reading (src/utils/routeReading.ts).
+      const reading = routeReading(ps, period);
+      const d = reading.filterDisplay;
       r[col] = d.headway;
       if (d.limited) limited.push(col);
       if (d.noRegular) noRegular.push(col);
       if (d.sharedHeadway != null) shared[col] = d.sharedHeadway;
       if (d.edge) edge[col] = d.edge;
       // CIV-1300: the page reads what the map's lists read (the route card), where that differs from the filter's number.
-      const shown = routeListCellText(routeListDisplay(ps, period), true);
+      const shown = reading.text(true);
       if (shown != null && shown !== routeListCellText(d, true)) text[col] = shown;
     }
     if (limited.length) r.limited = limited;

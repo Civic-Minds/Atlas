@@ -22,7 +22,7 @@ import { gtfsTimeToMinutes } from '../shared/connections.js';
 import { ALL_DAYS, DAYS_SUNDAY_FIRST } from '../shared/rules/days.js';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
-import { routeListFilterDisplay, routeWaitMinutes } from '../src/utils/effectiveHeadway.js';
+import { routeReading } from '../src/utils/routeReading.js';
 import type { ShapeProperties } from '../src/hooks/useIntervalStats.js';
 
 export type PeriodFigures = Partial<Record<PeriodKey, number | null>>;
@@ -40,7 +40,8 @@ export function periodFigures(groups: Iterable<readonly Props[]>): PeriodFigures
   const lists = [...groups];
   const out: PeriodFigures = {};
   for (const k of PERIOD_KEYS) {
-    const waits = lists.map(g => routeWaitMinutes(routeListFilterDisplay(g as unknown as ShapeProperties[], k))).filter((v): v is number => v != null);
+    // CIV-2953: the route's one reading (src/utils/routeReading.ts), its waitMinutes.
+    const waits = lists.map(g => routeReading(g as unknown as ShapeProperties[], k).wait).filter((v): v is number => v != null);
     out[k] = waits.length ? Math.min(...waits) : null;
   }
   return out;

@@ -15,12 +15,12 @@ import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange, type Per
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { PUBLIC_TIER_MAXES, headwayGradeOn } from '../../shared/rules/frequency';
 import { routeGroupKey } from '../../shared/routeGroupKey';
-import { normalizeRouteFilterFeatures, readingPassesHeadwayFilter, routeFilterReading, type RouteFilterReading } from '../../shared/routeHeadwayFilter';
+import { normalizeRouteFilterFeatures, readingPassesHeadwayFilter, type RouteFilterReading } from '../../shared/routeHeadwayFilter';
 import { frequencyChange } from '../../shared/frequencyChange';
 import { clockTime, hourRange } from '../../shared/timeText';
 import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
-import { routeListCellText, routeListDisplay, routeListFilterDisplay, routeWaitMinutes } from '../../src/utils/effectiveHeadway';
+import { routeReading } from '../../src/utils/routeReading';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
 import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
@@ -323,9 +323,11 @@ export const someTripsText = (trips: number) => `some trips (${trips}), but no r
  * quietest) and name a long gap where the route card does.
  */
 export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
-  const filter = routeListFilterDisplay(r.rows, period);
-  const shown = routeListCellText(routeListDisplay(r.rows, period), false);
-  const waitMinutes = routeWaitMinutes(filter);
+  // CIV-2953: the route's one reading (src/utils/routeReading.ts).
+  const reading = routeReading(r.rows, period);
+  const filter = reading.filterDisplay;
+  const shown = reading.text(false);
+  const waitMinutes = reading.wait;
   const trips = departuresInPeriod(r.rows as Array<{ departuresByHour?: Record<string, number> | null }>, period);
   const range = shown ? /every (\d+(?:\.\d+)?)–(\d+(?:\.\d+)?) min/.exec(shown) : null;
   return {
@@ -338,7 +340,7 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
     // the edge the filter read is named here in the card's own words ("every 5 min until 1:13 AM").
     ...(edgeWait(shown, waitMinutes) || edgeBehindWait(shown, waitMinutes, filter.edgeText) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it${!edgeWait(shown, waitMinutes) && filter.edgeText ? ` (${filter.edgeText})` : ''}, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
     ...(waitBelowShown(shown, waitMinutes) ? { warning: `waitMinutes (every ${waitMinutes} min) is more frequent than anything this route's list shows (${shown}). Atlas may have read it from a stretch this route shares with other routes, so it can overstate this route's own service. Go by "shown" for this route, and say the two disagree.` } : {}),
-    filter: routeFilterReading(r.rows, period),
+    filter: reading.filter,
   };
 }
 
