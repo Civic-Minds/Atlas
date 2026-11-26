@@ -305,6 +305,11 @@ export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'r
   const consistent = d.headwayByPeriodSustained?.[period] === true && typeof cov === 'number' && cov <= PERIOD_COVERAGE_MAX_HEADWAY;
   const v = consistent || typeof cov !== 'number' ? hw : cov;
   const edge = d.rowPeriodEdge?.[period];
-  if (edge && (edge.from != null || edge.until != null)) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), ...(edge.then != null ? { then: edge.then } : {}), ...(edge.thenGap != null ? { thenGap: edge.thenGap } : {}) };
+  const edgeWords = edge != null && (edge.from != null || edge.until != null);
+  // #1827: CIV-2232's 4-trip minimum (Ryan, 2026-11-24), as rowTrips has it: a row whose period wait is over an hour, with fewer than
+  // MIN_CARD_ROW_DEPARTURES of its own trips and no "from …"/"until …" words, gets no number (SEPTA 20 Sunday evening to Frankford
+  // Transit Center: 3 trips read "every 171 min").
+  if (!edgeWords && (cov ?? 0) > PERIOD_COVERAGE_MAX_HEADWAY && ownDeparturesIn(d, period) < MIN_CARD_ROW_DEPARTURES) return null;
+  if (edgeWords) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), ...(edge.then != null ? { then: edge.then } : {}), ...(edge.thenGap != null ? { thenGap: edge.thenGap } : {}) };
   return { t: 'reading', v };
 }
