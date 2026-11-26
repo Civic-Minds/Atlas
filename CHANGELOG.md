@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's Fleet shows how many vehicles are out with no trip**: a quieter "Not on a trip" row under "In service now", for agencies whose feed reports such vehicles, since "In service now" counts only vehicles on a trip
 - **Tapping "1 agency couldn't load" says which agency**: the map's pill lists each agency that failed, on phones too, where the names were only a hover you couldn't reach
 - **The full-day schedule names the hour you point at**: hovering 5 AM reads "5 AM: every 15 min" instead of "Overnight every 15 min", which read as overnight service on routes like CapMetro 801 that have none
 - **The cloud recorder saves each recorded agency's whole-network vehicle counts with every snapshot**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network

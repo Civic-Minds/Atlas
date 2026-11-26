@@ -94,7 +94,8 @@ export function vehiclesNeededTitle(modes: readonly number[] | undefined): strin
 export const fleetNetworkText = (modes: readonly number[] | undefined) => {
   const word = vehiclesWord(modes);
   // CIV-2056 (Ryan, 2026-11-21: "1" to adding "In service now" next to "As scheduled", Live cities only).
-  return { asScheduled: 'As scheduled', inServiceNow: 'In service now', count: word.charAt(0).toUpperCase() + word.slice(1) };
+  // CIV-2939 (Ryan, 2026-11-25: "1", a quieter row for vehicles reporting a position with no trip; no note).
+  return { asScheduled: 'As scheduled', inServiceNow: 'In service now', notOnTrip: 'Not on a trip', count: word.charAt(0).toUpperCase() + word.slice(1) };
 };
 
 /** A time of day with no service: "No trains at this time of day." (CIV-2002: by mode, as the rest of Fleet). */

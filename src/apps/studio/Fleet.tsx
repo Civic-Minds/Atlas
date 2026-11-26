@@ -46,7 +46,7 @@ import { useDevFile } from './useDevFile';
 import { schedulesDesign, type SchedulesDesign } from './reviewDesign';
 import { agencyNow } from '../../../scripts/mcp/nowClock';
 import { useInServiceNow } from './useInServiceNow';
-import { useNetworkInService } from './useNetworkInService';
+import { useNetworkInService, type NetworkCount } from './useNetworkInService';
 
 /**
  * Fleet (CIV-1828, a placeholder name) and Schedules, two pages of Atlas Studio on the main map (CIV-1922: Fleet
@@ -87,17 +87,20 @@ function ScheduleSparklines({ change, period, beforeDate, afterDate }: { change:
  * CIV-2182 "now" design, Fleet's agency card: Live's vehicles on the road now, the vehicles the schedule needs now, and the
  * vehicles it needs at the top bar's time of day, in the shared table. A dash where Live doesn't follow the agency.
  */
-function FleetNowTable({ modes, runningNow, scheduledNow }: { modes: readonly number[] | undefined; runningNow: number | null; scheduledNow: number | null }) {
+export function FleetNowTable({ modes, runningNow, scheduledNow }: { modes: readonly number[] | undefined; runningNow: NetworkCount | null; scheduledNow: number | null }) {
   const N = fleetNetworkText(modes);
   const R = STUDIO_REDESIGN_TEXT;
   // A row with no figure is left out, never a dash (CIV-2182: no placeholder reaches Ryan).
   const rows = [
-    { key: 'live', label: N.inServiceNow, n: runningNow },
+    { key: 'live', label: N.inServiceNow, n: runningNow?.onTrip ?? null },
+    // CIV-2939 (Ryan, 2026-11-25: "1"): vehicles reporting a position with no trip, a quieter row straight under "In service
+    // now", only where the feed reports any (never 0) and never added into a total.
+    { key: 'noTrip', label: N.notOnTrip, n: runningNow?.noTrip ?? null },
     { key: 'now', label: R.scheduledNow, n: scheduledNow },
   ].flatMap(r => (r.n == null ? [] : [{ key: r.key, label: r.label, value: countText(r.n) }]));
   if (!rows.length) return null;
   return (
-    <DataTable caption={PAGE_NAMES.studioVehicles} layout="fill" rows={rows} rowKey={r => r.key} columns={[
+    <DataTable caption={PAGE_NAMES.studioVehicles} layout="fill" rows={rows} rowKey={r => r.key} rowMuted={r => r.key === 'noTrip'} columns={[
       { key: 'label', header: TIME_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
       { key: 'value', header: <span className="block text-right">{N.count}</span>, className: 'text-right', cell: r => r.value },
     ]} />
