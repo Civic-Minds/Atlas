@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route's Live figures say "Loading…" while they load**: on opening a route they briefly said they couldn't be shown, which read as a failure
 - **Studio Fleet's vehicle tables name the vehicles as the page does**: screen readers heard "Buses Needed" on TTC tables titled "Vehicles Needed"
 - **No part of a route's line draws more frequent than the route when the same buses run its whole length**: CapMetro 801's weekday evening drew its north end green (every 15) beside a route that runs every 20, because those stops caught more of the service before it drops at 9 PM
 - **A branch with 2 or 3 trips more than an hour apart reads "Runs irregularly in this period"**: branch lines skipped the 4-trip minimum the other rows follow, so SEPTA 20's Sunday evening card read "every 171 min" from 3 trips
