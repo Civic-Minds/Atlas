@@ -108,7 +108,8 @@ describe('compare two schedule versions (CIV-1684)', () => {
     expect(a.after!.trips).toBe(65);
 
     const d = cmp.changed[1].days.Weekday!;
-    expect(d.what).toEqual(['span', 'run time']);
+    // #1791: the last time is the last boarding where trips start, which a longer run time doesn't move.
+    expect(d.what).toEqual(['run time']);
     expect(Object.values(d.before!.runMinutes)).toEqual([20]);
     expect(Object.values(d.after!.runMinutes)).toEqual([30]);
 

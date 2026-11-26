@@ -328,9 +328,16 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: downstream tools need stable data, and Atlas stays the shared platform.
   - Source: [decision log](#decision-log) (2026-07-15, shared data platform and operational consumers)
 
+- **A route's first and last times are read where its trips start**
+  - What: the first time is the first trip's start and the last time the last trip's start, over the trips of the direction's representative weekday (CIV-2229, #1791). A night service's trip written as 0:xx counts as the night it ends, and a route that runs all night (the Night Service verdict) shows no exact last time.
+  - Why: the reference stop's times are when a bus passes the middle of the route, not when a rider can first or last board.
+  - Source: [decision log](#decision-log) (2026-11-24, CIV-2229 first times; 2026-11-26, CIV-2963 last times)
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — A route's last time is its last boarding where trips start (CIV-2963, #1791)
+Ryan, 2026-11-26, picked "1": "Merge it", over "2. Keep last times as they are". It completes his CIV-2229 pick of 2026-11-24 ("1": first times move to where trips start, last times stay at the reference stop for now). The last time is the last trip start of the direction's representative weekday; a night service's 0:xx trip counts as the night it ends; a route that runs all night shows no exact last time. Cloud dry-run pair (530 agencies, 14,527 weekday routes): 13,762 routes get an earlier last time (median 29 min, 90% within an hour), 175 a later one (late-night trips after midnight, trips that never reach the reference stop), 223 lose an exact last time (221 run all night; CDTA 93 and Coast RTA), 12 gain one (night routes); first times unchanged.
 
 ### 2026-11-26 — Intercity agencies are added like the rest, hidden until checked (CIV-2239)
 Ryan, 2026-11-26: "For Intercity we already have Bustang is my point", then "1" on adding Ontario Northland and Brightline hidden like the CIV-2237 agencies, then "1" on visibility: new ones go in hidden until checked.

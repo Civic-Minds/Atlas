@@ -27,7 +27,7 @@ export function departuresInPeriod(rows: ReadonlyArray<{ departuresByHour?: Reco
 }
 
 export function routeRuns(
-  rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null; departureSpan?: RouteDepartureSpan | null; tripStartFirst?: number | null; stretchMeta?: { main?: StretchHours | null; tails?: StretchHours[] } | null }>,
+  rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null; departureSpan?: RouteDepartureSpan | null; tripStartFirst?: number | null; tripStartLast?: number | null; routeRunsByPeriod?: Partial<Record<string, boolean>> | null; stretchMeta?: { main?: StretchHours | null; tails?: StretchHours[] } | null }>,
   edge: AgencyPageRoute['edge'],
 ): AgencyPageRoute['runs'] | null {
   // Every list a route's hours are read from: each row's own (departuresByHour with departureSpan) and its stretches'.
@@ -44,13 +44,36 @@ export function routeRuns(
     const firsts = lists.map(s => s.span!.first);
     const lasts = lists.map(s => s.span!.last);
     let first = firsts.every(t => t != null) ? Math.min(...(firsts as number[])) : undefined;
-    const last = lasts.every(t => t != null) ? Math.max(...(lasts as number[])) : undefined;
+    let last = lasts.every(t => t != null) ? Math.max(...(lasts as number[])) : undefined;
     // CIV-2229 (#1772, Ryan "1"): the first time is read where trips start (each trip's first stop), when a rider can first
-    // board, not at the reference stops; the last time stays at the reference stops for now. Only when every row that gives
+    // board, not at the reference stops. Only when every row that gives
     // the bar a list (its own or a stretch's) has it; a trip before the day window (null) leaves the first out. A reference
     // stop's departure earlier than every counted start (a list holding trips the starts don't) stays the first.
     const hasList = (s: StretchHours | null | undefined) => !!s && Object.values(s.departuresByHour ?? {}).some(n => n > 0);
-    const boardings = rows.filter(p => hasList(p) || hasList(p.stretchMeta?.main) || (p.stretchMeta?.tails ?? []).some(hasList)).map(p => p.tripStartFirst);
+    const listRows = rows.filter(p => hasList(p) || hasList(p.stretchMeta?.main) || (p.stretchMeta?.tails ?? []).some(hasList));
+    const boardings = listRows.map(p => p.tripStartFirst);
+    // #1791: the last time is read where trips start too: the last boarding of the day's trips, none where a row has none (a
+    // trip after the window, or a day that runs on into the night). Data without the field keeps the reference stops' last.
+    const lastBoardings = listRows.map(p => p.tripStartLast);
+    let lastBoardingHour: number | undefined;
+    // A route that runs through the night (the Night Service verdict, routeRunsByPeriod's Overnight) has no last boarding:
+    // its last trip before the morning isn't one (CTA 9, AC Transit 800).
+    const allNight = rows.some(p => p.routeRunsByPeriod?.overnight === true);
+    if (allNight && lastBoardings.some(t => t !== undefined)) last = undefined;
+    else if (lastBoardings.length > 0 && lastBoardings.every(t => t !== undefined)) {
+      // A row with none of its own (its only trips leave before the day window, or it has no trips that day) doesn't hide
+      // the others' last boarding (b-line 50: one 4:50 AM trip one way, the last boarding 3:40 PM the other way).
+      const known = lastBoardings.filter((t): t is number => t != null);
+      last = known.length > 0 ? Math.max(...known) : undefined;
+      // The bar ends at the last boarding: the hours after it are a trip on its way, not service a rider can board. A last
+      // boarding in an hour no list counts (a trip that leaves after the reference stops' last, or reaches them in a later
+      // hour) ends the bar there, after a break.
+      if (last != null) {
+        const hi = Math.floor(last / 60);
+        sorted = sorted.filter(h => h <= hi);
+        if (sorted[sorted.length - 1] !== hi) { sorted.push(hi); lastBoardingHour = hi; }
+      }
+    }
     if (boardings.length > 0 && boardings.every(t => t !== undefined)) {
       const start = boardings.every(t => t != null) ? Math.min(...(boardings as number[])) : undefined;
       first = start == null ? undefined : first != null ? Math.min(start, first) : start;
@@ -71,6 +94,8 @@ export function routeRuns(
         ? [[s.span!.last, ...(s.span!.gaps ?? []).map(g => g[0])].map(t => inHour(t, before)).find(t => t != null) ?? Math.max(before * 60, ...known(s, before))] : []);
       const ends = lists.flatMap((s, k) => listHours[k].has(after)
         ? [[s.span!.first, ...(s.span!.gaps ?? []).map(g => g[1])].map(t => inHour(t, after)).find(t => t != null) ?? Math.min(after * 60 + 60, ...known(s, after))] : []);
+      // #1791: a bar ended at a last boarding no list counts: the break ends at that boarding.
+      if (after === lastBoardingHour && ends.length === 0 && last != null) ends.push(last);
       gaps.push([Math.max(...starts), Math.min(...ends)]);
     }
     // Each end must sit in the first or last hour with departures, or it isn't the same fact.

@@ -26,13 +26,13 @@ import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, MINUTES_PER_DAY, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, MINUTES_PER_DAY, SPARKLINE_HOURS, SPARKLINE_START_HOUR, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, computeTripStartFirst, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, computeTripStartFirst, computeTripStartLast, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -1797,11 +1797,19 @@ export async function processGtfsBuffer(
   // another weekday), so the route's first time is its first boarding. Times are read as the day lists read them.
   // Frequency templates add their generated starts below.
   const tripStartsByGroup = new Map<string, number[]>();
+  // #1791: the same starts for the last boarding, with a night-only service's trip before the day window read as the
+  // night it ends (CIV-1812's service-day rule, as the night lists read it: CTA writes its after-midnight trips 0:xx under
+  // night services, so 0:45 is that day's 12:45 AM, not the morning's).
+  const lastStartsByGroup = new Map<string, number[]>();
   const addTripStart = (grp: StopTripGroup, mins: number) => {
     if (!grp.inGroup) return;
     const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
     const list = tripStartsByGroup.get(gKey);
     if (list) list.push(mins); else tripStartsByGroup.set(gKey, [mins]);
+    const night = mins < SPARKLINE_START_HOUR * 60 && mins < SERVICE_DAY_CUTOFF_MIN && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < SERVICE_DAY_CUTOFF_MIN;
+    const late = night ? mins + MINUTES_PER_DAY : mins;
+    const lastList = lastStartsByGroup.get(gKey);
+    if (lastList) lastList.push(late); else lastStartsByGroup.set(gKey, [late]);
   };
   for (const [tripId, groups] of tripGroupByTripId) {
     const first = frequencyTemplateTripIds.has(tripId) ? undefined : firstDepartureByTripId.get(tripId);
@@ -2093,6 +2101,9 @@ export async function processGtfsBuffer(
     if (!starts?.length) continue;
     const first = computeTripStartFirst(starts);
     feature.properties.tripStartFirst = first ?? null;
+    // #1791: and its last boarding where trips start, over the same trips.
+    const lastStarts = lastStartsByGroup.get(`${slot.shortName}::${slot.dirId}::${slot.day}`) ?? starts;
+    feature.properties.tripStartLast = computeTripStartLast(lastStarts) ?? null;
   }
 
   // Unique route short names per stop — more accurate hub detection than raw route_id count,

@@ -352,10 +352,13 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     const span = p.departureSpan as { first?: number; last?: number } | undefined;
     // The map's hours bar leaves "first" out when a trip leaves before 5 AM (no same-day 4 AM hour, by design for the
     // bar, CIV-1605). The comparison needs it: the trip of this route and direction that opens the day (#1582).
-    // CIV-2229: the first boarding where trips start, as the route's first time is read elsewhere; the last stays the span's.
+    // CIV-2229, #1791: the first and last boardings where trips start, as the route's times are read elsewhere.
     const first = (p.tripStartFirst as number | null | undefined) ?? span?.first ?? earliestStart(routeId, dir, dayType);
     if (first != null) day.first = day.first == null ? first : Math.min(day.first, first);
-    if (span?.last != null) day.last = day.last == null ? span.last : Math.max(day.last, span.last);
+    // A route that runs through the night has no last boarding; it keeps the span's last, as before #1791.
+    const allNight = (p.routeRunsByPeriod as Partial<Record<string, boolean>> | undefined)?.overnight === true;
+    const last = (allNight ? undefined : p.tripStartLast as number | null | undefined) ?? span?.last;
+    if (last != null) day.last = day.last == null ? last : Math.max(day.last, last);
     if (p.headsign && !(day.headsigns[dir] ??= []).includes(p.headsign)) day.headsigns[dir].push(p.headsign);
     const run = runMinutesOf(parsed.runningTimes?.[`${routeId}::${dir}::${dayType}`]);
     if (run != null && day.runMinutes[dir] == null) day.runMinutes[dir] = run;
