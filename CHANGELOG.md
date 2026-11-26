@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Routes you must book ahead no longer show a fixed frequency**: exo's taxibuses, Annapolis Call-in and the rest printed "every 40 min" or even "every 15 min" beside "Rides on this route must be booked ahead.", and their map colour and frequency filter read the same number
 - **Atlas Studio's Fleet shows how many vehicles are out with no trip**: a quieter "Not on a trip" row under "In service now", for agencies whose feed reports such vehicles, since "In service now" counts only vehicles on a trip
+- **Route cards for branches that share a start show the shared stretch on its own line**: TransLink 9 read "to Granville St every 8", which was the Broadway trunk shared with the Alma St and UBC buses; it now reads "Shared stretch every 8" and Granville St its own every 18
 - **Tapping "1 agency couldn't load" says which agency**: the map's pill lists each agency that failed, on phones too, where the names were only a hover you couldn't reach
 - **The full-day schedule names the hour you point at**: hovering 5 AM reads "5 AM: every 15 min" instead of "Overnight every 15 min", which read as overnight service on routes like CapMetro 801 that have none
 - **The cloud recorder saves each recorded agency's whole-network vehicle counts with every snapshot**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network

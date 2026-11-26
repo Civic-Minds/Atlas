@@ -8,7 +8,8 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../../shared/pmtilesProps';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { routeRunsThroughNight } from '../../shared/nightService';
-import { rowReadsPeriodEdge } from './effectiveHeadway';
+import { hasDirectionPeriodService, rowReadsPeriodEdge } from './effectiveHeadway';
+import { departuresInPeriod } from '../../shared/routeRuns';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
 
@@ -287,3 +288,29 @@ export function rowStretchReading(f: ShapeProperties, period: TimePeriod): Stret
   return f.stretchRowPeriods?.includes(period as PeriodKey) ? r : null;
 }
 
+
+/**
+ * #1823 (CIV-1959 B3 in DECISIONS: the trunk reads "Shared stretch every N" and each branch gets its own line): a main or tail
+ * row whose stretch another destination's row also runs in the period, in a direction with a branch. The stretch's number
+ * then counts buses that never reach this row's destination (TransLink 9 westbound: "to Granville St" read the Broadway trunk's
+ * every 8, pooled with the Alma St and UBC trips), so the row reads its own trips and the trunk's number
+ * goes on the Shared stretch row (stretchSharedHeadway). A period its own trips aren't steady in keeps CIV-1074 2a (rowTrips). Short turns (variants) are no destination row, and a main stretch two
+ * patterns share with no branch is #1185's (pooledMainStretch): neither counts here. `directionFeatures` is every feature of
+ * the row's direction. False on data without stretchCovers.
+ */
+export function rowStretchRunByOthers(d: ShapeProperties, directionFeatures: readonly ShapeProperties[], period: TimePeriod): boolean {
+  if (period === 'all' || (d.stretchRole !== 'main' && d.stretchRole !== 'tail')) return false;
+  const slot = d.stretchRole === 'main' ? 'main' : d.stretchIndex ?? 0;
+  const destination = (f: ShapeProperties) => (f.headsign ?? '').trim().toLowerCase();
+  const others = directionFeatures.some(o => o !== d
+    && o.stretchRole === 'tail'
+    && o.stretchCovers?.includes(slot) === true
+    && destination(o) !== destination(d)
+    && hasDirectionPeriodService(o, period));
+  if (!others) return false;
+  // Only where the stretch really has more departures in the period than the row's own: with the same trips, its reading is
+  // the row's own (SDMTS 227 evening, every trip to Iris Ave: the stretch's 30, not a re-read 20 that the 30s after 8:22 PM undercut).
+  const stretch = d.stretchRole === 'main' ? d.stretchMeta?.main : d.stretchMeta?.tails?.[d.stretchIndex ?? 0];
+  if (!stretch?.departuresByHour || !d.departuresByHour) return true;
+  return departuresInPeriod([stretch], period) > departuresInPeriod([d], period);
+}

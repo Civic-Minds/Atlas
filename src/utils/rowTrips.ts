@@ -117,7 +117,7 @@ export function rowStretchHourValue(d: ShapeProperties, hour: number): number | 
  *   faster or slower than its stretch (NYCT R late; Phoenix 35's branch rows), keeps its own trips' gap.
  * - Otherwise the row's own value and its own longest gap (maxGapByPeriod follows the value's source, #281).
  */
-export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean; stretch?: boolean; branchReadings?: boolean } = {}): RowTrips {
+export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean; stretch?: boolean; branchReadings?: boolean; /** #1823: another destination's row runs this row's stretch (rowStretchRunByOthers): the row reads its own trips only. */ stretchRunByOthers?: boolean } = {}): RowTrips {
   if (period === 'all') return { ...NONE, value: routeCardDisplayHeadway(d, period) };
   const key = period as PeriodKey;
   if (d.noOwnServiceByPeriod?.includes(key)) return { ...NONE, noOwnService: true };
@@ -130,8 +130,14 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // CIV-995 (b): a main or tail row reads its stretch's own values (every trip at the stretch's stop) where the stretch runs
   // through the period: its cadence, steadiness and longest gap. Elsewhere, and on older data, the row's own trips. The
   // shared and pooled rows' comparison (ownTrips) and the stop card (stretch: false) keep reading the row's own trips.
-  const stretch = opts.ownTrips || opts.stretch === false ? null : rowStretchValue(d, period);
+  const stretch = opts.ownTrips || opts.stretch === false || opts.stretchRunByOthers ? null : rowStretchValue(d, period);
   let value = stretch ? stretch.cadence : routeCardDisplayHeadway(d, period);
+  // #1823: a row's own trips are some of its stretch's, so they never run more often than the stretch: where its own reading
+  // is shorter (a few trips' median, CTtransit 55 AM to Middletown: 40 on 6:00, 6:30, 7:20, 8:20), it keeps the stretch's.
+  if (opts.stretchRunByOthers && value != null) {
+    const shared = rowStretchValue(d, period)?.cadence;
+    if (shared != null && shared > value) value = shared;
+  }
   // ownTrips: the card's shared and pooled rows compare the rows' own trips with the stretch's, so they stay as they are
   // (SEPTA 19 Saturday midday keeps "Shared stretch every 63" over its two destinations every 120).
   const filterReading = partPeriod == null && value != null && !opts.ownTrips ? mainFilterReading(d, key) : null;
