@@ -1,0 +1,20 @@
+{
+  "slug": "tri-valley",
+  "officialName": "Tri-Valley Transit",
+  "websiteUrl": "https://www.trivalleytransit.org/",
+  "dataLicense": {
+    "url": "https://www.trivalleytransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Vermont",
+  "center": [
+    44.1405,
+    -72.6712
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/trivalleytransit-vt-us/trivalleytransit-vt-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-852/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

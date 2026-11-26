@@ -39742,6 +39742,68 @@
       "lastServiceWeek": "4370d5e725c394a0",
       "feedObtainedAt": "20261015",
       "lastFeedStart": "20261015"
+    },
+    {
+      "slug": "ulster-county",
+      "name": "Ulster County Area Transit (UCAT)",
+      "officialName": "Ulster County Area Transit",
+      "commonName": "UCAT",
+      "websiteUrl": "https://ulstercountyny.gov/ucat/bus-schedules",
+      "dataLicense": {
+        "url": "https://ulstercountyny.gov/ucat/bus-schedules",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "New York",
+      "center": [
+        41.928,
+        -74.0057
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-526/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "eau-claire",
+      "name": "Eau Claire Transit",
+      "officialName": "Eau Claire Transit",
+      "websiteUrl": "https://www.eauclairewi.gov/government/our-divisions/transit",
+      "dataLicense": {
+        "url": "https://www.eauclairewi.gov/government/our-divisions/transit",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Wisconsin",
+      "center": [
+        44.8121,
+        -91.4867
+      ],
+      "feedUrl": "https://gtfs.ect.cadavl.com/ECT/GTFS/GTFS_ECT.zip",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "tri-valley",
+      "name": "Tri-Valley Transit",
+      "officialName": "Tri-Valley Transit",
+      "websiteUrl": "https://www.trivalleytransit.org/",
+      "dataLicense": {
+        "url": "https://www.trivalleytransit.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Vermont",
+      "center": [
+        44.1405,
+        -72.6712
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/trivalleytransit-vt-us/trivalleytransit-vt-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-852/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     }
   ]
 }
