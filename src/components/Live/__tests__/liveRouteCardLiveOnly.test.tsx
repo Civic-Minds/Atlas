@@ -166,6 +166,13 @@ describe('a route with no Live analysis (CIV-1413 B)', () => {
     expect(screen.queryByText('Live figures for this route aren’t available yet.')).toBeNull();
   });
 
+  it('says nothing about live figures while the route has live vehicles (#1796: Burlington 1 listed live buses below it)', () => {
+    status.data = null; status.settled = true;
+    const view = card([car('a', 't1', 2, Math.floor(Date.now() / 1000))]);
+    expect(screen.queryByText('Live figures for this route aren’t available yet.')).toBeNull();
+    expect(view.container.textContent).toBe('');
+  });
+
   it('shows nothing while the file is still loading', () => {
     status.data = null; status.settled = false;
     const view = card();
