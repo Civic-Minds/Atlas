@@ -40,25 +40,25 @@
   "lastPeekedExpiry": "20261231",
   "feedQuality": {
     "status": "review",
-    "score": 70,
+    "score": 73,
     "reasons": [
-      "4 route have stops whose frequency differs from the overall route schedule."
+      "2 route shapes needed adjustment before display.",
+      "3 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 8,
+      "shapeAnomalies": 2,
+      "routeHeadwayMismatches": 7,
       "featureCount": 86,
       "feedExpiry": "20261231",
       "routeCount": 11,
-      "problemShapes": 0,
+      "problemShapes": 2,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 4,
+      "mismatchRoutes": 3,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-26"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

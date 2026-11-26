@@ -40,8 +40,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-26"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",

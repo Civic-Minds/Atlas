@@ -8,7 +8,8 @@
       "lastHeld": "2026-11-23",
       "runs": 4,
       "message": "output would drop sharply against live data (stopPoints 65 -> 47) (pass --allow-drop after review)",
-      "outcome": "held"
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "coast-nh",
@@ -17,7 +18,8 @@
       "lastHeld": "2026-11-23",
       "runs": 4,
       "message": "no route lines on Sunday now (Sunday 1 -> 0)",
-      "outcome": "held"
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "coralville",
@@ -26,7 +28,8 @@
       "lastHeld": "2026-11-23",
       "runs": 4,
       "message": "output would drop sharply against live data (stopPoints 117 -> 81) (pass --allow-drop after review)",
-      "outcome": "held"
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "evansville",
@@ -53,8 +56,9 @@
       "lastHeld": "2026-11-23",
       "runs": 4,
       "message": "5 of 5 routes' filter headway halves or doubles in some day and period (100%; 1 Weekday midday 60->120 min, 2 Weekday midday 60->120 min, 3 Weekday midday 60->120 min, 4 Weekday midday 60->120 min, 5 Weekday midday 60->120 min)",
-      "outcome": "held",
-      "cause": "real change: likely a midday cut, 60 to 120 min on all 5 routes"
+      "outcome": "cleared",
+      "cause": "real change: likely a midday cut, 60 to 120 min on all 5 routes",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "max-transit",
@@ -159,7 +163,8 @@
       "lastHeld": "2026-11-23",
       "runs": 4,
       "message": "output would drop sharply against live data (stopPoints 5689 -> 2845) (pass --allow-drop after review)",
-      "outcome": "held"
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "whitehorse",
@@ -266,7 +271,8 @@
       "lastHeld": "2026-11-23",
       "runs": 2,
       "message": "output would drop sharply against live data (stopPoints 52 -> 34) (pass --allow-drop after review)",
-      "outcome": "held"
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "njt",
@@ -306,8 +312,9 @@
       "lastHeld": "2026-11-23",
       "runs": 1,
       "message": "5 of 7 routes' filter headway halves or doubles in some day and period (71%; 5639 Weekday evening 25->71 min, 5641 Weekday all 13->26 min, 5644 Weekday pmPeak 8->30 min, 5645 Weekday all 14->28 min, 5646 Weekday all 18->36 min)",
-      "outcome": "held",
-      "cause": "seasonal: likely Thanksgiving break service"
+      "outcome": "cleared",
+      "cause": "seasonal: likely Thanksgiving break service",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "rfta",
@@ -316,8 +323,9 @@
       "lastHeld": "2026-11-23",
       "runs": 1,
       "message": "5 of 12 routes' filter headway halves or doubles in some day and period (42%; BRT Weekday all 30->15 min, CM Weekday amPeak 67->20 min, HC Weekday amPeak 72->20 min, MV Weekday amPeak 78->30 min, SM Saturday amPeak 70->32 min)",
-      "outcome": "held",
-      "cause": "seasonal: ski season (allowed in run 45407022151, 2026-11-24)"
+      "outcome": "cleared",
+      "cause": "seasonal: ski season (allowed in run 45407022151, 2026-11-24)",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "rtcsnv",
@@ -326,15 +334,16 @@
       "lastHeld": "2026-11-23",
       "runs": 1,
       "message": "12 of 39 routes' filter headway halves or doubles in some day and period (31%; 4743 Weekday amPeak 30->61 min, 4744 Weekday amPeak 15->30 min, 4745 Weekday amPeak 20->97 min, 4751 Weekday amPeak 20->59 min, 4756 Weekday amPeak 15->69 min, 4762 Weekday midday 30->97 min, ...)",
-      "outcome": "held",
-      "cause": "holiday weekday: likely a Thanksgiving-week weekday picked as the reference day"
+      "outcome": "cleared",
+      "cause": "holiday weekday: likely a Thanksgiving-week weekday picked as the reference day",
+      "outcomeOn": "2026-11-26"
     },
     {
       "slug": "tarc",
       "check": "headway-shift",
       "firstHeld": "2026-11-23",
-      "lastHeld": "2026-11-23",
-      "runs": 1,
+      "lastHeld": "2026-11-26",
+      "runs": 2,
       "message": "6 of 12 routes' filter headway halves or doubles in some day and period (50%; 1 Weekday amPeak 15->64 min, 10 Weekday amPeak 15->30 min, 20 Weekday amPeak 30->62 min, 3 Weekday amPeak 15->60 min, 5 Weekday amPeak 30->60 min, 8 Weekday amPeak 30->60 min)",
       "outcome": "held",
       "cause": "holiday weekday: likely a Thanksgiving-week weekday picked as the reference day"
@@ -343,8 +352,8 @@
       "slug": "unitrans",
       "check": "drop",
       "firstHeld": "2026-11-23",
-      "lastHeld": "2026-11-23",
-      "runs": 1,
+      "lastHeld": "2026-11-26",
+      "runs": 2,
       "message": "output would drop sharply against live data (stops 71 -> 49) (pass --allow-drop after review)",
       "outcome": "held"
     },
@@ -352,8 +361,8 @@
       "slug": "unitrans",
       "check": "headway-lost",
       "firstHeld": "2026-11-23",
-      "lastHeld": "2026-11-23",
-      "runs": 1,
+      "lastHeld": "2026-11-26",
+      "runs": 2,
       "message": "28 of 34 weekday route/directions with a headway live have none now (82%; A d0, A d1, B d0, B d1, C d0, C d1, D d0, D d1, E d0, E d1, ...)",
       "outcome": "held"
     },
@@ -361,8 +370,8 @@
       "slug": "unitrans",
       "check": "headway-shift",
       "firstHeld": "2026-11-23",
-      "lastHeld": "2026-11-23",
-      "runs": 1,
+      "lastHeld": "2026-11-26",
+      "runs": 2,
       "message": "4 of 7 routes' filter headway halves or doubles in some day and period (57%; K Weekday all 30->60 min, M Weekday pmPeak 25->60 min, P Weekday all 30->60 min, Q Weekday all 30->60 min)",
       "outcome": "held",
       "cause": "seasonal: likely Thanksgiving break service"
@@ -374,6 +383,16 @@
       "lastHeld": "2026-11-23",
       "runs": 1,
       "message": "output would drop sharply against live data (routes 8 -> 6) (pass --allow-drop after review)",
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-26"
+    },
+    {
+      "slug": "rockford",
+      "check": "expired",
+      "firstHeld": "2026-11-26",
+      "lastHeld": "2026-11-26",
+      "runs": 1,
+      "message": "service ended 20261010, before today (20261126)",
       "outcome": "held"
     }
   ]
