@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **TTC stop names are whole again and use current station names**: TTC's file cuts names at 60 characters ("... - Bayview Statio") and still says "Dundas Station" and "Eglinton West"; a hand-checked list of 41 stops now gives the full name, TMU and Cedarvale
+
 - **The Data saver, analytics and update notices sit just above the map’s bottom pills on desktop**: they floated two rows up, out of line with everything else
 - **Studio's assistant answers questions about C-TRAN again**: its data licence allows sharing with the credit it requires, which now shows in C-TRAN's Schedule sources pill; it had been left out pending written permission
 - **An on-demand zone card no longer says "Running during …" or "Not running at this time"**: its hours bars already say when it runs, and fixed routes have no such line; "Hours unavailable" stays

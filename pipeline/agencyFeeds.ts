@@ -15,6 +15,7 @@ import type { BranchReadCorrection } from './branchReadCorrections.js';
 import { addIds, gtfsIdSets, idCollisions } from './supplementalIds.js';
 import type { RouteSplit } from './preprocess/split-routes.js';
 import type { SameNameRoute } from './preprocess/same-name-routes.js';
+import type { StopRename } from './transforms/stop-renames.js';
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { extractAgencySections } from '../shared/agencySections.js';
@@ -55,6 +56,8 @@ export interface AgencyFeedConfig {
   routeNumberFromLongName?: boolean;
   /** CIV-2999: see GtfsTransformOptions.headsignFromLastStop. */
   headsignFromLastStop?: boolean;
+  /** CIV-3021: see GtfsTransformOptions.stopRenames. */
+  stopRenames?: StopRename[];
   /** CIV-1485: History only. A route with no long name keeps the feed's route_desc for the reused-number test. */
   historyNameFromDesc?: boolean;
   referenceDateFromRunDate?: boolean;
@@ -123,6 +126,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     excludeRouteShortNames: agency.excludeRouteShortNames,
     routeNumberFromLongName: agency.routeNumberFromLongName,
     headsignFromLastStop: agency.headsignFromLastStop,
+    stopRenames: agency.stopRenames,
     bookingRequiredRoutes: agency.bookingRequiredRoutes,
     secondsRoutes: agency.secondsRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,

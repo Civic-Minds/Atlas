@@ -12,6 +12,7 @@ import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-lab
 import { splitLeadingRouteNumber } from '../transforms/leading-route-number.js';
 import { headsignsFromLastStop } from '../transforms/last-stop-destinations.js';
 import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
+import { renameStops, type StopRename } from '../transforms/stop-renames.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
@@ -40,6 +41,8 @@ export interface GtfsTransformOptions {
   routeNumberFromLongName?: boolean;
   /** CIV-2999: a trip headsign that is a street and a direction word ("101 Rainbow Northbound") reads its last stop instead (RTC). */
   headsignFromLastStop?: boolean;
+  /** CIV-3021: the agency's hand-checked stop renames (transforms/stop-renames.ts). */
+  stopRenames?: StopRename[];
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
@@ -81,6 +84,13 @@ export function normalizeGtfs(
   options: GtfsTransformOptions | undefined,
   onStatus?: (msg: string) => void,
 ): GtfsData {
+  if (options?.stopRenames?.length) {
+    // CIV-3021: first, so every step after it (last-stop headsigns, bay merges, stop lists) reads the checked name.
+    const result = renameStops(gtfs, options.stopRenames);
+    gtfs = result.gtfs;
+    onStatus?.(`Stop renames: ${result.renamed} of ${options.stopRenames.length} applied (CIV-3021)`);
+    if (result.stale.length) onStatus?.(`Stop renames: ${result.stale.length} no longer match the feed, left as published: ${result.stale.map(r => r.stopId).join(', ')}`);
+  }
   if (options?.agencyName) {
     gtfs = filterGtfsByAgencyName(gtfs, options.agencyName);
     onStatus?.(`Agency filter: ${options.agencyName}`);
