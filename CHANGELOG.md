@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route's trip count includes trips that end short of its last stop**: RTD's FreeRide toward Union Station showed 255 weekday trips, not 296, because the 41 ending at Union Station Loop were counted nowhere
+
 - **The Data saver, analytics and update notices sit just above the map’s bottom pills on desktop**: they floated two rows up, out of line with everything else
 - **Studio's assistant answers questions about C-TRAN again**: its data licence allows sharing with the credit it requires, which now shows in C-TRAN's Schedule sources pill; it had been left out pending written permission
 - **An on-demand zone card no longer says "Running during …" or "Not running at this time"**: its hours bars already say when it runs, and fixed routes have no such line; "Hours unavailable" stays

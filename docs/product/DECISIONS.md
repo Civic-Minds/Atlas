@@ -198,6 +198,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: never show wrong or misleading information; hide or hold first, fix after.
   - Why: a wrong number on the map costs more trust than a missing one.
   - Source: Ryan, standing rule (data integrity first: "never show wrong or misleading info"); [DATA_PRINCIPLES.md](../data/DATA_PRINCIPLES.md) (Why this matters)
+- **A row's trip count counts every trip of the row, wherever it ends**
+  - What: a row's whole-day trip count adds its trips that end without reaching its end stop (running at least two thirds of its line); a trip reaching another row's end stop stays with that row (CIV-1069). Hour counts, first/last times and frequencies still read the end stop.
+  - Why: RTD FreeRide showed 255 of 296 weekday trips; 41 end at Union Station Loop.
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-2233, #1776)
 - **Manual corrections only fix errors inside the feed**
   - What: a manual correction only fixes an error inside the agency's GTFS file, and Atlas adds no note carrying information that is only on the agency's website.
   - Why: Ryan: "The GTFS is live. It is the truth."
@@ -364,6 +368,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — A row's trip count counts every trip of the row, wherever it ends (CIV-2233, #1776)
+Ryan, 2026-11-26 (Questions chat, logged on CIV-2233): picked option 1, "Count every trip of the row, wherever it ends (Recommended)". Keeps the CIV-1069 guard.
+- The rule: a row's whole-day trip count (the count the MCP gives as a branch's trips) adds the trips of its route, direction and day that reach no row's end stop but run at least two thirds of its line, each going to the one row it covers best. A trip that reaches any row's end stop stays in that row's count only (CIV-1069: a row never takes another pattern's trips). The hour counts, first and last times and every frequency value still read the end stop.
+- Why: the count was read only at the row's end stop, so a trip ending anywhere else was counted nowhere. RTD FreeRide toward Union Station showed 255 of its 296 weekday trips; the other 41 end at Union Station Loop.
+- Counts before the change (release `release-mwxp2myj` against local feeds, weekday, read-only): 1,592 route-directions in 296 agencies were short 5,342 trips for certain (52,797 counted of 58,139); up to 2,706 route-directions and 21,912 trips where the feed or date may differ. The cloud dry-run diff gives the counts after.
 
 ### 2026-11-26 — C-TRAN is back in the MCP, crediting its required notice (CIV-3051)
 Ryan, 2026-11-26: "1 but need to work on credit wording", then "1" to where it shows.
