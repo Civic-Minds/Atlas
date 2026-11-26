@@ -110,9 +110,9 @@ describe('a thin result only loses the line to a real daytime sample (#740, capm
     const lines = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null);
     const find = (route: string, dir: number, day: string, headsign: string) =>
       lines.find((p: any) => p.routeId === route && p.directionId === dir && p.day === day && p.headsign === headsign);
-    expect(find('335', 0, 'Sunday', 'Exposition WB')).toMatchObject({ headway: 30, tier: '30' });
-    expect(find('392', 1, 'Sunday', 'Kramer Station WB')).toMatchObject({ headway: 30, tier: '30' });
-    expect(find('243', 1, 'Weekday', 'Tech Ridge Park & Ride EB')).toMatchObject({ headway: 35, tier: '60' });
+    expect(find('335', 0, 'Sunday', 'Exposition')).toMatchObject({ headway: 30, tier: '30' });
+    expect(find('392', 1, 'Sunday', 'Kramer Station')).toMatchObject({ headway: 30, tier: '30' });
+    expect(find('243', 1, 'Weekday', 'Tech Ridge Park & Ride')).toMatchObject({ headway: 35, tier: '60' });
   });
 
   it('a 3-trip early piece does not lose the line to a daytime sibling of fewer than 8 departures', async () => {

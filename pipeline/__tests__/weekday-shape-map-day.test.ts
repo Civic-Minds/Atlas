@@ -40,8 +40,8 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     const weekday = JSON.parse(result.geojson).features
       .map((feature: any) => feature.properties)
       .filter((p: any) => p.routeId === '550' && p.day === 'Weekday' && p.stopId == null);
-    const sb = weekday.find((p: any) => p.headsign === 'Downtown Station SB');
-    const nb = weekday.find((p: any) => p.headsign === 'Leander Station NB');
+    const sb = weekday.find((p: any) => p.headsign === 'Downtown Station');
+    const nb = weekday.find((p: any) => p.headsign === 'Leander Station');
     expect(sb.headway).toBe(54);
     expect(sb.headwayByPeriod.midday).toBe(54);
     // CIV-1161/CIV-1204: northbound's headline reads the rider's wait on the main stretch, trains about hourly at midday.
@@ -82,8 +82,8 @@ describe('Weekday shape maps on a non-representative weekday', () => {
     // headway, so its phase-2 value 222 stayed. Hand count, Wed Oct 14 2026 (21-172): 16
     // trips, median gap 47; first-stop midday (9-15) median 56.5. The terminal midday is 54.
     const weekday = await weekdayFeatures('capmetro-550-fresh-per-trip-shapes', 'capmetro', '550');
-    const sb = weekday.find((p: any) => p.headsign === 'Downtown Station SB');
-    const nb = weekday.find((p: any) => p.headsign === 'Leander Station NB');
+    const sb = weekday.find((p: any) => p.headsign === 'Downtown Station');
+    const nb = weekday.find((p: any) => p.headsign === 'Leander Station');
     expect(sb.headway).toBe(54);
     expect(sb.headwayByPeriod.midday).toBe(54);
     expect(sb.tier).toBe('infrequent');
