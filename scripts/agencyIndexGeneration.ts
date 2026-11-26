@@ -1,9 +1,9 @@
 /**
  * Shared generators for public/data/index.json and catalog-*.json.
- * Used by the build scripts and by check-agency-index-drift.ts so CI compares
- * the committed files against exactly what the build would write.
+ * Used by the build scripts, the dev server, the test run and check-agency-index-drift.ts. Neither
+ * file is committed (CIV-2975): each is generated from config/agencies where it is needed.
  */
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { buildAgencyCatalog } from '../shared/agencyCatalog.js';
 import { indexEntryFromConfig } from '../shared/agencyRegistryName.js';
@@ -31,6 +31,24 @@ export function generateAgencyIndex(sourceDir: string): { contents: string; agen
   }
 
   return { contents: `${JSON.stringify({ agencies }, null, 2)}\n`, agencies };
+}
+
+/**
+ * Write public/data/index.json and every catalog from config/agencies under `root`, touching only files whose contents
+ * change (so a watching dev server or a parallel test worker never sees a half-written or needlessly rewritten file).
+ * The same bytes as `npm run build:agency-data`. Returns the paths written.
+ */
+export function writeAgencyIndexAndCatalogs(root: string): string[] {
+  const index = generateAgencyIndex(resolve(root, 'config/agencies'));
+  const files: Array<[string, string]> = [[resolve(root, 'public/data/index.json'), index.contents]];
+  for (const mode of CATALOG_MODES) files.push([resolve(root, 'public/data', `catalog-${mode}.json`), generateAgencyCatalog(index.agencies, mode).contents]);
+  const written: string[] = [];
+  for (const [path, contents] of files) {
+    if (existsSync(path) && readFileSync(path, 'utf8') === contents) continue;
+    writeFileSync(path, contents);
+    written.push(path);
+  }
+  return written;
 }
 
 /** Return the catalog-<mode>.json file contents for an agency list. */

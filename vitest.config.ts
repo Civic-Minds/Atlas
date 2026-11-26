@@ -14,6 +14,8 @@ export default defineConfig({
     plugins: [react()],
     test: {
         globals: true,
+        // CIV-2975: generates public/data/index.json and the catalogs, which aren't committed.
+        globalSetup: ['./src/test/agencyDataSetup.ts'],
         projects: [
             {
                 extends: true,

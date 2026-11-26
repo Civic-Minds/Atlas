@@ -58,6 +58,8 @@ jobs:
         run: |
           cd rules
           npm ci --ignore-scripts --no-audit --no-fund
+          # Since CIV-2975 public/data/index.json isn't committed; --ignore-scripts skips the postinstall that writes it.
+          [ -f public/data/index.json ] || { npm run build:agency-index && npm run build:agency-catalog; }
       - name: Check the input
         env:
           ONLY: ${{ inputs.only }}
