@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The MCP says when a route's grade is slower than its listed frequency**: RTD 31 weekday mornings read "every 10 min" beside a 60-minute grade with no word on why, so a model could drop either figure
 - **TTC stop names are whole again and use current station names**: TTC's file cuts names at 60 characters ("... - Bayview Statio") and still says "Dundas Station" and "Eglinton West"; a hand-checked list of 41 stops now gives the full name, TMU and Cedarvale
 
 - **The Data saver, analytics and update notices sit just above the map’s bottom pills on desktop**: they floated two rows up, out of line with everything else

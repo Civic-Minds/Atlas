@@ -336,15 +336,23 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
   const waitMinutes = reading.wait;
   const trips = departuresInPeriod(r.rows as Array<{ departuresByHour?: Record<string, number> | null }>, period);
   const range = shown ? /every (\d+(?:\.\d+)?)–(\d+(?:\.\d+)?) min/.exec(shown) : null;
+  const rangeMeaning = range ? `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` : null;
+  const edge = edgeWait(shown, waitMinutes) || edgeBehindWait(shown, waitMinutes, filter.edgeText);
+  // #1787: the reverse of waitBelowShown (RTD 31 weekday AM peak: waitMinutes 60 beside "every 10 min"). The answer names
+  // the slower figure the map grades by, so a model neither drops it nor reads it as the whole route's service.
+  const above = !edge && waitAboveShown(shown, waitMinutes)
+    ? `Atlas colours and filters this route by every ${waitMinutes} min, the typical wait on its least frequent part or direction, which is slower than anything "shown" gives (${shown}). Give both figures, and say the map grades the route by the slower one.`
+    : null;
+  const meaning = [rangeMeaning, above].filter(Boolean).join('. ');
   return {
     period: PERIOD_LABELS[period],
     hours: formatPeriodRange(period),
     waitMinutes,
     shown: shown ?? (trips > 0 ? someTripsText(trips) : 'no service'),
-    ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
+    ...(meaning ? { meaning } : {}),
     // #1711: a range in shown drops the card's edge words (TTC 501 Sunday Late "every 5–10 min" beside a 47 min wait), so
     // the edge the filter read is named here in the card's own words ("every 5 min until 1:13 AM").
-    ...(edgeWait(shown, waitMinutes) || edgeBehindWait(shown, waitMinutes, filter.edgeText) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it${!edgeWait(shown, waitMinutes) && filter.edgeText ? ` (${filter.edgeText})` : ''}, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
+    ...(edge ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it${!edgeWait(shown, waitMinutes) && filter.edgeText ? ` (${filter.edgeText})` : ''}, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
     ...(waitBelowShown(shown, waitMinutes) ? { warning: `waitMinutes (every ${waitMinutes} min) is more frequent than anything this route's list shows (${shown}). Atlas may have read it from a stretch this route shares with other routes, so it can overstate this route's own service. Go by "shown" for this route, and say the two disagree.` } : {}),
     filter: reading.filter,
   };
@@ -366,6 +374,23 @@ export function edgeBehindWait(shown: string | null, waitMinutes: number | null,
   // Both ends of a range ("every 5–10 min" is 5 and 10), so a wait inside the range is never called an edge wait.
   const shownMins = [...shown.matchAll(/every (\d+(?:\.\d+)?)(?:–(\d+(?:\.\d+)?))?/g)].flatMap(m => [Number(m[1]), ...(m[2] ? [Number(m[2])] : [])]);
   return shownMins.length > 0 && waitMinutes > Math.max(...shownMins);
+}
+
+/**
+ * #1787: a wait in a slower public grade than every figure the route list shows, counting both ends of a range and a
+ * named gap ("every 30 min, with one 60 min gap"). waitMinutes reads the route's least frequent part or direction, which
+ * the list's words can leave out. Compared by public grade, as waitBelowShown is: 13 beside "every 10 min" counts (the
+ * next grade), 50 beside "every 45 min" doesn't (the same grade).
+ */
+export function waitAboveShown(shown: string | null, waitMinutes: number | null): boolean {
+  if (!shown || waitMinutes == null) return false;
+  const shownMins = [
+    ...[...shown.matchAll(/every (\d+(?:\.\d+)?)(?:–(\d+(?:\.\d+)?))?/g)].flatMap(m => [Number(m[1]), ...(m[2] ? [Number(m[2])] : [])]),
+    ...[...shown.matchAll(/(\d+(?:\.\d+)?) min gap/g)].map(m => Number(m[1])),
+  ];
+  if (!shownMins.length) return false;
+  const grade = (m: number) => headwayGradeOn(m, PUBLIC_TIER_MAXES) ?? Infinity;
+  return grade(waitMinutes) > grade(Math.max(...shownMins));
 }
 
 /**

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { hourlyFrequency, edgeWait, edgeBehindWait, waitBelowShown, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
+import { hourlyFrequency, edgeWait, edgeBehindWait, waitAboveShown, waitBelowShown, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
 import { agencyLabel, withAgency } from '../mcp/localData';
 import { diskStore } from '../mcp/diskStore';
 import { startsInWindow, windowHas } from '../mcp/tools';
@@ -334,5 +334,21 @@ describe('schedule_changes gives trips beside the grades (#1633)', () => {
       changes: [{ route: '6', name: 'Greenboro <> Rockcliffe', before: side(15, 154), after: side(38, 148), size: 'frequency' }] } as never;
     const pm = frequencyChanges(file).find(c => c.period === 'PM peak')!;
     expect([pm.before, pm.after, pm.tripsBefore, pm.tripsAfter]).toEqual([15, 38, 154, 148]);
+  });
+});
+
+describe('waitAboveShown (#1787)', () => {
+  it('flags a wait in a slower public grade than anything shown', () => {
+    // RTD 31 weekday: AM peak waitMinutes 60 beside "every 10 min"; PM peak 81 beside "every 10–60 min".
+    expect(waitAboveShown('every 10 min', 60)).toBe(true);
+    expect(waitAboveShown('every 10–60 min', 81)).toBe(true);
+    expect(waitAboveShown('every 10 min', 13)).toBe(true);
+  });
+  it('leaves a wait the shown words cover, or one in the same grade', () => {
+    expect(waitAboveShown('every 10–60 min', 55)).toBe(false);
+    expect(waitAboveShown('every 30 min, with one 60 min gap', 60)).toBe(false);
+    expect(waitAboveShown('every 45 min', 50)).toBe(false);
+    expect(waitAboveShown('no service', 60)).toBe(false);
+    expect(waitAboveShown(null, 60)).toBe(false);
   });
 });
