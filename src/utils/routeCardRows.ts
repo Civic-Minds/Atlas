@@ -52,6 +52,8 @@ export interface CardRowDisplay {
   limitedLabel?: string;
   singleLine: boolean;
   valueEnd: boolean;
+  /** CIV-2909: the number is a branch piece's own reading, which a piece gets only under rule D (3 or more evenly spaced trips). */
+  pieceNumber?: true;
 }
 
 export interface CardSpanRow {
@@ -416,7 +418,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
           // A piece with no number reads and sits as any row with no number does (as rowDisplay has it).
           const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
           const noNumber = t.t === 'limited';
-          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber, ...(noNumber ? {} : { pieceNumber: true as const }) };
         } }];
       });
       // #1636: a branch with no feature of its own gets a row named from where it ends ("to Tower Rd"), the words every branch row has. An origin leg
@@ -435,7 +437,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
           const shown = base.display(hoveredHour);
           const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
           const noNumber = t.t === 'limited';
-          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber, ...(noNumber ? {} : { pieceNumber: true as const }) };
         } }];
       }) : [];
       // CIV-2018: a line whose words the card already has is left out, whatever it reads. Two rows "to X" with different numbers contradict each

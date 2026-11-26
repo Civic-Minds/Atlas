@@ -287,7 +287,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; edgeText?: string; colorHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; wideRange?: true; edgeText?: string; colorHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -308,6 +308,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const limited = display.limited;
         const noRegular = display.noRegular === true;
         const sharedHeadway = display.sharedHeadway;
+        const wideRange = display.wideRange;
         const colorHeadway = display.colorHeadway;
         const edgeText = display.edgeText;
         const shortName = facts.shortName;
@@ -315,12 +316,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const agencyName = agencyNames(facts.agencyName).name;
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, edgeText, colorHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, ...(wideRange ? { wideRange } : {}), edgeText, colorHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
             existing.headway = headway;
             existing.sharedHeadway = sharedHeadway;
+            existing.wideRange = wideRange;
             existing.edgeText = edgeText;
             existing.colorHeadway = colorHeadway;
           }
@@ -599,7 +601,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     // The same reading the other route lists use (CIV-1447: the route card's own range), not the best branch.
     for (const [mapKey, rows] of connectionRows) {
       const display = routeListDisplay(rows, period);
-      Object.assign(seen.get(mapKey)!, { headway: display.headway, sharedHeadway: display.sharedHeadway, colorHeadway: display.colorHeadway, edgeText: display.edgeText });
+      Object.assign(seen.get(mapKey)!, { headway: display.headway, sharedHeadway: display.sharedHeadway, wideRange: display.wideRange, colorHeadway: display.colorHeadway, edgeText: display.edgeText });
     }
 
     return Array.from(seen.values())

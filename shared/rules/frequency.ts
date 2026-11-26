@@ -99,3 +99,11 @@ export const SLOW_START_STEADY_RATIO = 1.5;
  * many times the row's usual wait. "every 63 min, with a 66 min gap" (AC Transit 281 AM) isn't worth mentioning.
  */
 export const ROW_GAP_WORDS_RATIO = 1.5;
+
+/**
+ * The widest range a route card row or list shows by itself: its slow end at most this many times its fast end (CIV-1143
+ * rule B, Ryan 2026-10-30; TTC 102 PM: 7 against 30 reads "every 30 min"). CIV-2909 (Ryan, 2026-11-26, "No cap"): a list
+ * shows a wider range when its slow line gets its own number (3 or more evenly spaced trips, rule D); a slow end that is
+ * the shared stretch keeps this cap.
+ */
+export const RANGE_MAX_RATIO = 4;

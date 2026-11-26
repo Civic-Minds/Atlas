@@ -78,6 +78,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### What the map shows and never shows
 
+- **A list's range has no width cap where its slow line has its own number**
+  - What: a route list, agency page or MCP answer shows a range up to 4× wide as before. A wider one shows when the slow line gets its own number (3 or more evenly spaced trips); a slow end that is only the shared stretch keeps 4×. Cards, grades and map colours don't change. A list with a range drops the line's "from"/"until" words (the card keeps them).
+  - Why: Ryan: "No cap. A range shows when its slow line runs regularly enough to get its own number (3 or more evenly spaced trips)" (RTD 31 weekday PM read "every 60 min until 5:14 PM" while Federal Blvd runs every 10).
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-2909)
 - **One entry per agency or region, everywhere**
   - What: an agency split across feeds (MTA New York, exo, Maryland Transit Administration, Bustang) is one entry wherever agencies are listed, counted, ranked or compared: the map's agency picker, search and In view list, the count pills, the agency index and pages, Studio (Coverage included) and the Atlas Studio MCP tools (list_agencies, rank_agencies, compare_agencies). A route in two of its feeds (same name, mode and long name) counts once. The feeds stay separate in the data; the grouping happens when it is read, in the one shared module `shared/agencyGroups.ts`, and a guard test fails if a list skips it.
   - Why: the site listed MTA New York as nine feeds on some screens and one agency on others.
@@ -319,6 +323,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — A list's range has no width cap where its slow line has its own number (CIV-2909, #1786; supersedes Ryan's 2026-11-25 "up to 6 times")
+Ryan, 2026-11-26, answering the Questions chat, picked "1": "No cap. A range shows when its slow line runs regularly enough to get its own number (3 or more evenly spaced trips)", over "2. Keep 4×". It replaces his 2026-11-25 pick "Allow up to 6 times" (logged here for the first time; superseded by 2026-11-26 / CIV-2909). The asked counts: 285 more ranges, 62 stay blocked (the slow line's trips aren't evenly spaced, mostly service that changes partway: CTA 36 "every 16 min until 5:07 PM, then every 61 min"), and the 6 routes whose slow end is the shared stretch keep 4×. RTD 31 weekday PM peak's list reads "every 10–60 min"; "until 5:14 PM" stays on the card only. Built on release-mwvbser2 (160,965 list cells): 288 cells gain a range past 4× and 2 more read a range within 4× once their words drop, in 57 agencies (NJ Transit 53, TTC 30, SEPTA 17); 27 of them lose "from"/"until" words in the list. Cards, grades and map colours are unchanged.
 
 ### 2026-11-26 — Studio splits into now, past and plan; the new view is "Speed" (CIV-2917; supersedes CIV-2924's "Delay is kept for the clear-street measure")
 Ryan, 2026-11-26, answering the Questions chat on Strategy's layout review (screens checked on 5182, compared with Swiftly, Optibus and Remix), picked "1": "This split, with Speed", over "2. Keep Performance as a separate tab next to Live, as planned" (trip time and lateness then appear twice). Studio splits into now (Live, Fleet: map panels), past (Performance: a full page) and plan (Schedules: a full page, starting from Studio's mock-up, option 5 on CIV-2182). Live's weekly late figures move into Performance; today trip time shows in three places and lateness in two. The new view is "Speed": the method picked on CIV-2919 is average speed with no baseline, and "Delay" implies one. It shows average speed by stretch and time of day, plus recorded trip time beside the timetable's on the route card's chart. This replaces the 2026-11-25 picks of a "Performance" tab and a "Delay" view (CIV-2917's first comment).

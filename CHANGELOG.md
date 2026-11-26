@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route lists show the full range when a branch runs on its own schedule**: RTD 31's weekday rush read "every 60 min until 5:14 PM" while Federal Blvd runs every 10; it now reads "every 10–60 min", as the card shows both
 - **Studio Fleet's vehicle tables name the vehicles as the page does**: screen readers heard "Buses Needed" on TTC tables titled "Vehicles Needed"
 - **A branch with 2 or 3 trips more than an hour apart reads "Runs irregularly in this period"**: branch lines skipped the 4-trip minimum the other rows follow, so SEPTA 20's Sunday evening card read "every 171 min" from 3 trips
 - **Atlas Studio MCP counts each station once in a route's stops**: OC Transpo Line 1 said 26 stops each way for its 13 stations, because each station was counted as both its platform and the station itself
