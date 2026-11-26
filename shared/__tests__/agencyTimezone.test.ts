@@ -20,7 +20,7 @@ describe('resolveAgencyTimezone (CIV-251)', () => {
     const overrides = readdirSync(dir).filter(f => f.endsWith('.json') && f !== 'order.json')
       .map(f => JSON.parse(readFileSync(resolve(dir, f), 'utf8')))
       .filter(a => a.timezoneOverride != null);
-    expect(overrides.map(a => a.slug).sort()).toEqual(['gold-coast', 'spokane', 'washington-county']);
+    expect(overrides.map(a => a.slug).sort()).toEqual(['gold-coast', 'hiawathaland', 'spokane', 'washington-county']);
     for (const a of overrides) {
       expect(() => new Intl.DateTimeFormat('en', { timeZone: a.timezoneOverride })).not.toThrow();
       expect(a.timezone).toBe(a.timezoneOverride);

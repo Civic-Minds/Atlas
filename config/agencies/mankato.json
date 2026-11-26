@@ -1,0 +1,20 @@
+{
+  "slug": "mankato",
+  "officialName": "Mankato Transit System",
+  "websiteUrl": "https://www.mankatomn.gov/residents/mankato-transit-system",
+  "dataLicense": {
+    "url": "https://www.mankatomn.gov/residents/mankato-transit-system",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Minnesota",
+  "center": [
+    44.1631,
+    -93.9894
+  ],
+  "feedUrl": "https://content.mankatomn.gov/transit/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50205/latest.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}
