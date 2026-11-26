@@ -42,6 +42,7 @@
     "refresh:staging": "ATLAS_ENV=staging npx tsx pipeline/refresh.ts",
     "restore-active-feeds": "npx tsx pipeline/restore-active-feeds.ts",
     "audit-active-feeds": "npx tsx pipeline/audit-active-feeds.ts",
+    "audit-feed-archive": "npx tsx pipeline/audit-feed-archive.ts",
     "audit-current-gtfs": "npx tsx pipeline/audit-current-gtfs.ts",
     "build-pmtiles": "npx tsx pipeline/build-pmtiles.ts",
     "prune-releases": "npx tsx pipeline/prune-releases.ts",
