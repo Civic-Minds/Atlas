@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Route card rows read alike when one has a branch letter**: the TTC 504 showed "504C · to Roncesvalles" above a bare "to Dundas West"; that row now reads "504 · to Dundas West"
 - **Route lists that show a range keep the card's one-gap note**: AC Transit 60's weekday morning list read just "every 26–45 min" beside a card row saying "every 26 min, with one 45 min gap"; it now reads "every 26–45 min, with one 45 min gap"
 
+- **Studio's assistant counts a night route's trips before 5 AM**: AC Transit's 800 showed 4 trips each way, though it runs 12 to 14, most of them written before Atlas's 5 AM day start
 - **Studio's assistant asks which agency when a short name fits two**: "RTC" went to RTC Québec without a word, so a question about Las Vegas's Red Line got Québec's answer
 - **A route card's shared stretch sits as close to the rows under it as they sit to each other**: the gap under "Shared stretch" was three times wider
 - **Reporting a problem from a route card's destination name picks the name reason**: clicking "to Maryland Pkwy Southbound" had pre-checked "The frequency is wrong"; only clicking the figure does that now

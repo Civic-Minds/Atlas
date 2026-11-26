@@ -32,7 +32,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, computeTripStartFirst, computeTripStartLast, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, countDayDepartures, computeDepartureSpan, computeTripStartFirst, computeTripStartLast, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -1550,6 +1550,7 @@ export async function processGtfsBuffer(
         headwayByHour: computeHourHeadways(result.times, SPARKLINE_HOURS),
         maxGapByHour: computeHourMaxGaps(result.times, SPARKLINE_HOURS),
         departuresByHour: computeHourDepartureCounts(result.times, SPARKLINE_HOURS),
+        departuresInDay: countDayDepartures(result.times),
         // CIV-1611: the first and last of those same departures (minutes), for the agency page's hours bar.
         departureSpan: computeDepartureSpan(result.times, SPARKLINE_HOURS),
         routeShortName: shortName,
@@ -3530,6 +3531,7 @@ export async function processGtfsBuffer(
         const ownAtEnd = shapeMap?.get(terminalId)?.length;
         if (endStopList && endStopList.length > 0 && (ownAtEnd == null || endStopList.length <= ownAtEnd)) {
           feature.properties.departuresByHour = computeHourDepartureCounts(endStopList, SPARKLINE_HOURS);
+          feature.properties.departuresInDay = countDayDepartures(endStopList);
           feature.properties.departureSpan = computeDepartureSpan(endStopList, SPARKLINE_HOURS);
         }
       }
@@ -4011,8 +4013,13 @@ export async function processGtfsBuffer(
         // Picking each hour from whichever list set its headway counted a trip near the hour line twice (Kingston 10: 34
         // trips each way against the feed's 33): the end-stop list and the row's own list read it about 30 min apart.
         feature.properties.departuresByHour = terminalHourDepartures;
+        feature.properties.departuresInDay = countDayDepartures(terminalDepartureList);
         feature.properties.departureSpan = computeDepartureSpan(terminalDepartureList, SPARKLINE_HOURS);
       } else {
+        // #1873: the merged hours, plus the row's own trips outside them (a night trip written before 5 AM).
+        const hourTotal = (byHour: Record<number, number> | undefined) => Object.values(byHour ?? {}).reduce((a, b) => a + b, 0);
+        const ownOutside = typeof feature.properties.departuresInDay === 'number' ? feature.properties.departuresInDay - hourTotal(branchHourDepartures) : 0;
+        feature.properties.departuresInDay = hourTotal(mergedHourDepartures) + Math.max(0, ownOutside);
         feature.properties.departuresByHour = mergedHourDepartures;
         feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as DepartureSpan | undefined);
       }
@@ -4021,6 +4028,7 @@ export async function processGtfsBuffer(
       feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
       if (terminalHourDepartures) {
         feature.properties.departuresByHour = terminalHourDepartures;
+        feature.properties.departuresInDay = terminalDepartureList ? countDayDepartures(terminalDepartureList) : undefined;
         feature.properties.departureSpan = terminalDepartureList ? computeDepartureSpan(terminalDepartureList, SPARKLINE_HOURS) : undefined;
       }
     }

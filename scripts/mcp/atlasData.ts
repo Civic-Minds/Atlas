@@ -834,7 +834,8 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
     const order = (row.stopOrder as string[] | undefined) ?? [];
     const towards = [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
     const direction = String(row.directionId ?? '0');
-    const trips = total(hoursOf(row));
+    // #1873: the row's whole-day count where the release has it (trips written before 5 AM included), else its hours'.
+    const trips = typeof row.departuresInDay === 'number' ? row.departuresInDay : total(hoursOf(row));
     if (trips <= 0 || !(towards || order.length)) continue;
     // Some rows carry no stop list (night rows, short turns): give where they head, not empty ends.
     const to = order.length ? name.get(order[order.length - 1]) ?? null : null;
