@@ -234,9 +234,17 @@ describe('HeadwaySparkline', () => {
     expect(within(screen.getByRole('dialog')).queryByRole('group', { name: 'Schedule direction' })).not.toBeInTheDocument();
   });
 
-  it('names the inline series in hour tooltips', () => {
-    const { container } = render(<HeadwaySparkline byHour={{ 6: 35 }} seriesLabel="slower direction" />);
-    expect(container.querySelector('[title^="6 AM"]')?.getAttribute('title')).toBe('6 AM: every 35 min (slower direction)');
+  // #1819 (CIV-2949, Ryan 2026-11-25: "Hour beside the period name, no hover text").
+  it('names the hovered hour beside the period, with no hover text on the bars', () => {
+    const { container } = render(<HeadwaySparkline byHour={{ 16: 10, 17: 8 }} period="pmPeak" onPeriodChange={() => {}} />);
+    expect(container.querySelector('[title]')).toBeNull();
+    expect(screen.getByTestId('hovered-period-name').textContent).toBe('PM peak');
+    const area = container.querySelector('.cursor-pointer') as HTMLElement;
+    area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
+    fireEvent.mouseMove(area, { clientX: ((SPARKLINE_HOURS.indexOf(17) + 0.5) / SPARKLINE_HOURS.length) * 240 });
+    expect(screen.getByTestId('hovered-period-name').textContent).toBe('PM peak · 5 PM');
+    fireEvent.mouseLeave(area);
+    expect(screen.getByTestId('hovered-period-name').textContent).toBe('PM peak');
   });
 
   describe('slowerDirectionKey', () => {

@@ -13,6 +13,7 @@ import { PERIOD_LABELS, PUBLIC_TIER_MAXES, type PeriodKey } from '../../shared/c
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
+import { clockTime } from '../../shared/timeText';
 import { metresText } from '../../shared/unitText';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { joinList, plural, countOf } from '../../shared/overflowText';
@@ -520,6 +521,13 @@ export function noTripsInPeriodText(period: string, mode: number | null): string
   const name = PERIOD_LABELS[period as PeriodKey];
   return vehicles && name ? `No ${name.replace(/^\p{Lu}(?=\p{Ll})/u, c => c.toLowerCase())} ${vehicles}` : null;
 }
+/**
+ * The period name above the route card's chart, with the hovered hour beside it (#1819, CIV-2949: Ryan, 2026-11-25,
+ * picked "Hour beside the period name, no hover text": "PM peak · 5 PM" on hover, plain "PM peak" otherwise).
+ * Wording pending Ryan's word-for-word OK.
+ */
+export const periodWithHourText = (period: PeriodKey, hour: number | null | undefined): string =>
+  hour == null ? PERIOD_LABELS[period] : `${PERIOD_LABELS[period]} · ${clockTime(hour * 60)}`;
 /** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
 export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
   `${day} values by time of day aren’t available for this agency yet.`;
