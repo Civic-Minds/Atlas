@@ -420,24 +420,22 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             <>
                 {(() => {
                   const loop = gridBlocks.some(option => option.tripTime?.loop);
-                  // Each chart's title sits right above it, with the hovered hour's period name (as on the card's chart)
-                  // and its number at the other end of the same line, so nothing jumps and no line is left empty.
-                  const modalPeriod = modalHour != null ? (HOUR_TO_PERIOD[modalHour] as PeriodKey | undefined) ?? null : null;
+                  // Each chart's title sits right above it, with the hovered hour's own reading at the other end of the same
+                  // line, so nothing jumps and no line is left empty. #1820 (Ryan, 2026-11-25: "Actually 1", then "1" to
+                  // "5 AM: every 15 min"): the line names the hour, in the hover's own words (formatHourTitle), never the
+                  // hour's period, so one hour's figure ("Overnight every 15 min" on a route with no overnight service)
+                  // never reads as the period's.
                   const titleRow = (title: string, value: string, testId: string) => (
                     <div className={`flex items-baseline justify-between gap-2 leading-4 ${CHART_HEADING} ${HEADING_GAP}`} data-testid={testId}>
                       <span>{title}</span>
-                      <span className="flex items-baseline gap-2" aria-hidden="true">
-                        {/* The title line's own line height, so the name never makes the line taller. */}
-                        <HoveredPeriodName period={modalPeriod} className="leading-[inherit]" />
-                        <span className="text-[var(--text-muted)]" data-testid="full-day-chart-value">{value}</span>
-                      </span>
+                      <span className="text-[var(--text-muted)]" aria-hidden="true" data-testid="full-day-chart-value">{value}</span>
                     </div>
                   );
                   const frequencyCell = (option: typeof gridBlocks[number]) => {
                     const hw = modalHour != null ? option.byHour[modalHour] : null;
                     return (
                       <div className="relative pl-11" data-testid="full-day-frequency-cell">
-                        {titleRow(FREQUENCY_LABEL, hw != null ? headwayEvery(hw) : '', 'full-day-frequency-heading')}
+                        {titleRow(FREQUENCY_LABEL, hw != null && modalHour != null ? formatHourTitle(modalHour, hw) : '', 'full-day-frequency-heading')}
                         {pairFreqTicks.length > 0 && <div className={`mb-2 ${UNIT_LINE}`} data-testid="full-day-frequency-unit">{TRIPS_PER_HOUR_LABEL}</div>}
                         <HeadwaySparkline
                           byHour={option.byHour}
@@ -463,7 +461,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                       <div className="relative pl-11" data-testid="full-day-trip-time-cell">
                         <TripTimeStrip
                           above={<>
-                            {titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
+                            {titleRow(tripTimeHeading(loop), tt != null && modalHour != null ? formatTripTimeTitle(modalHour, tt) : '', 'full-day-trip-time-heading')}
                             {/* The frequency chart's unit line has no twin here: an empty line of the same size keeps the two charts level. */}
                             {pairFreqTicks.length > 0 && <div className={`mb-2 ${UNIT_LINE} invisible`} aria-hidden="true">{TRIPS_PER_HOUR_LABEL}</div>}
                           </>}
