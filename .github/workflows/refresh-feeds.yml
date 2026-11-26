@@ -291,3 +291,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr merge "${{ steps.agency-pages-pr.outputs.pull-request-number }}" --auto --squash
+
+      # CIV-3027 (Ryan: "how do we avoid this in the future"): every feed version the index records
+      # (each agency's main and supplemental zip) must have its copy in the private archive bucket.
+      # Read-only. It runs last so a gap turns the run red without holding back the release.
+      - name: Check every used feed version has a private archive copy
+        if: ${{ !cancelled() }}
+        run: npm run audit-feed-archive
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
