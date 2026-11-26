@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION, TILE_RULES_VERSION } from '../../shared/artifactSchema';
 import {
-  ALLOW_UNPAIRED_UPLOAD_FLAG,
   publicAgenciesExcludedFromRelease,
   publicAgenciesMissingFromRelease,
   releaseFileExists,
   releasePublishError,
   tileRulesFingerprint,
-  unpairedUploadError,
   type PublishEvidence,
   type ReleaseManifest,
 } from '../releaseGuard';
@@ -82,13 +80,6 @@ describe('releasePublishError', () => {
   });
 });
 
-describe('unpairedUploadError', () => {
-  it('blocks legacy root PMTiles uploads unless explicitly overridden', () => {
-    expect(unpairedUploadError(['tmp/atlas.pmtiles'], 'upload-pmtiles')).toContain('outside a verified data release');
-    expect(unpairedUploadError(['tmp/atlas.pmtiles', ALLOW_UNPAIRED_UPLOAD_FLAG], 'upload-pmtiles')).toBeNull();
-  });
-});
-
 describe('tile rules fingerprint', () => {
   // These files decide what build-pmtiles bakes into the map tiles, and the app
   // re-applies them to agency JSON at load. If this hash changes:
@@ -155,10 +146,12 @@ describe('tile rules fingerprint', () => {
   // them. No version bump, as for #899: no existing tile value changes, older tiles lack the keys and evaluate exactly as
   // before (the clause is skipped without them), and older apps ignore them. Hash only.
   // CIV-3017: flag check in build-pmtiles only, no tile change: hash only.
+  // CIV-2995 records the staged run a release was built from (sourcePrefix) in its manifest; the manifest is not tile
+  // content: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '32ca9c1a36e7f83f3ad87cf44ab9e2999fb1b6d21e95115a7eaed1eb73af3db7',
+      fingerprint: 'c51dac59827d2b852e97e95c25f89e728e3bdbb10ac116510bba7ace5bc7492a',
     });
   });
 });

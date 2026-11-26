@@ -14,7 +14,7 @@ Inventory on 2026-11-26 (CIV-2995, a list-only count):
 | `atlas-mcp-live` (private) | 428 | 0.2 GB | Studio's and the hosted MCP's Live files |
 | `atlas-staging` | 2,908 | 0.35 GB | `gtfs/archive/`, `atlas/on-demand/`, `history/` |
 
-Three leftovers in `atlas` are waiting on Ryan's OK to delete (CIV-2995): the unpruned `atlas/runs/` folders, the frozen public `gtfs/{slug}.zip` copies and the root `atlas.pmtiles`.
+Ryan agreed (CIV-2995) to clear three leftovers in `atlas`: the old `atlas/runs/` folders (now pruned by `npm run prune-runs`), the frozen public `gtfs/{slug}.zip` copies and the root `atlas.pmtiles`. Each delete runs only after its own go-ahead.
 
 ### atlas (public)
 
@@ -42,7 +42,7 @@ Shared indexes: `atlas/agencies.json`, `atlas/hidden-routes.json`, `atlas/feed-r
 
 Other prefixes:
 
-- `atlas/runs/{runId}/`: a cloud rebuild's staged agency files (CIV-522; [Data reprocessing](operations/DATA_REPROCESSING.md)), about 1.5 GB per run. Nothing prunes them: 32 runs (2026-10-30 to 11-23) on 2026-11-26.
+- `atlas/runs/{runId}/`: a cloud rebuild's staged agency files (CIV-522; [Data reprocessing](operations/DATA_REPROCESSING.md)), about 1.5 GB per run (32 runs, 2026-10-30 to 11-23, on 2026-11-26). `npm run prune-runs` (`pipeline/prune-runs.ts`, CIV-2995) deletes old ones: it keeps every run a kept release was built from (the release manifest's `sourcePrefix`, recorded by `build-pmtiles` since CIV-2995, or else the newest run written within 12 hours before it), every run written after the live release, and the newest run. Dry run by default; `--apply` deletes.
 - `atlas/search/stops/`, `atlas/search/pages/`: the content-addressed search index; `pipeline/prune-search-index.ts` deletes files no kept release names (CIV-1056).
 - `atlas/history-v2-shapes/{slug}.json`: History's route shapes, written by `pipeline/build-history.ts`.
 - `atlas/live/`, `atlas/live-polling/`: a few Live files (12 and 10 objects).
@@ -51,7 +51,7 @@ Other prefixes:
 Written by: `pipeline/refresh.ts`, `pipeline/process-gtfs.ts`, `pipeline/restore-active-feeds.ts`, `pipeline/reprocess-derived-artifacts.ts --write` (per-agency artifacts); `pipeline/build-pmtiles.ts` (immutable release); `pipeline/publish-data-release.ts` (`release.json` pointer, only after checks pass); `pipeline/build-history.ts` (`history-config.json`)
 Read by: browser directly via `VITE_R2_PUBLIC_URL` (default `https://data.transitatlas.fyi`); map tiles always from `https://data.transitatlas.fyi`
 
-Standalone tile uploads (`upload-pmtiles`, non-dry-run `build-pmtiles-incremental`) write the legacy root `atlas.pmtiles` (last written 2026-10-06; deployed builds never read it) outside any release and refuse to run without `--allow-unpaired-pmtiles-upload`. Publish through the release flow instead (`npm run refresh-release`, or `build-pmtiles` → `verify-pmtiles-remote` → `build-history` → `publish-data-release`).
+The legacy root `atlas.pmtiles` outside any release is retired (CIV-2995): nothing writes or reads it any more. `upload-pmtiles` is gone, `build-pmtiles-incremental` only builds a local preview from the live release's tiles, and `verify-pmtiles-coverage` reads the live release's tiles when no local manifest names one. Publish through the release flow (`npm run refresh-release`, or `build-pmtiles` → `verify-pmtiles-remote` → `build-history` → `publish-data-release`).
 
 ### atlas-archive (private)
 

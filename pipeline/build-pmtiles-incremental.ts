@@ -37,25 +37,15 @@
  *     for the exact rectangle test.
  *
  * Usage:
- *   npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [--allow-stale-data] [--i-am-launching-country]
+ *   npx tsx pipeline/build-pmtiles-incremental.ts <slug> --dry-run
  *
- * A live (non --dry-run) upload also requires --allow-unpaired-pmtiles-upload:
- * it writes the legacy root atlas.pmtiles, which is not part of a verified data
- * release (see pipeline/releaseGuard.ts). Use refresh-release instead.
+ * CIV-2995: preview only. It merges into the live data release's tiles (atlas/release.json's pmtilesKey) and
+ * leaves the result in tmp/ for the local map preview; it never uploads. The legacy root atlas.pmtiles it used to
+ * write is retired. Publishing goes through npm run refresh-release. --dry-run is required.
  *
  * --dry-run runs both safety checks and the full tippecanoe/tile-join build
- * locally, then reports what WOULD be uploaded (size, feature counts, which
- * layers changed) and stops — no R2 write. Without --dry-run, it uploads for
- * real. Treat that exactly like `npm run build-pmtiles`: this is a
- * production data pipeline command — get explicit human go-ahead before
- * running it without --dry-run (see CLAUDE.md § Production Data Rules).
- *
- * --i-am-launching-country: required (with explicit maintainer approval) to
- * upload tiles for a country that still has zero production-visible agencies.
- * See AGENTS.md § Production Data Rules / pipeline/countryLaunchGate.ts.
- *
- * --allow-stale-data: explicit escape hatch for an intentional repack without
- * a preceding refresh. It is never needed for the normal refresh workflow.
+ * locally, then reports the merged file's size, feature counts and changed
+ * layers, and stops: no R2 write.
  */
 import fs from 'fs';
 import path from 'path';
@@ -67,8 +57,8 @@ import { PbfReader } from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE } from './loadEnv.js';
-import { r2PutFile } from './r2.js';
-import { getAgencyArtifactUrls, AGENCY_BBOX_PAD, R2_PUBLIC_URL } from '../shared/config.js';
+import { getAgencyArtifactUrls, AGENCY_BBOX_PAD } from '../shared/config.js';
+import { livePmtilesUrl } from './livePmtiles.js';
 import { prepareAgencyRouteFeaturesForTiles } from './prepareAgencyRoutesForTiles.js';
 import {
   assertAgencyNotAlreadyPublished,
@@ -77,14 +67,7 @@ import {
   type AgencyBboxSource,
   type Bbox,
 } from './incrementalPmtilesSafety.js';
-import {
-  COUNTRY_LAUNCH_FLAG,
-  assertCountryMayWriteToR2,
-  resolveAgencyCountry,
-  type AgencyCountrySource,
-} from './countryLaunchGate.js';
-import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
-import { unpairedUploadError } from './releaseGuard.js';
+import type { AgencyCountrySource } from './countryLaunchGate.js';
 import { assertKnownFlags } from './cliFlags.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
@@ -261,37 +244,18 @@ async function collectAgencyFeatures(slug: string): Promise<{ routes: Feature[];
   return { routes, stops };
 }
 
-function parseArgs(argv: string[]): { slug: string; dryRun: boolean; allowStaleData: boolean; forceCountryLaunch: boolean } {
+function parseArgs(argv: string[]): { slug: string; dryRun: boolean } {
   const dryRun = argv.includes('--dry-run');
-  const allowStaleData = argv.includes('--allow-stale-data');
-  const forceCountryLaunch = argv.includes(COUNTRY_LAUNCH_FLAG);
   const slug = argv.find(a => !a.startsWith('--'));
-  if (!slug) {
-    throw new Error(
-      `Usage: npx tsx pipeline/build-pmtiles-incremental.ts <slug> [--dry-run] [--allow-stale-data] [${COUNTRY_LAUNCH_FLAG}]`,
-    );
-  }
-  return { slug, dryRun, allowStaleData, forceCountryLaunch };
+  if (!slug) throw new Error('Usage: npx tsx pipeline/build-pmtiles-incremental.ts <slug> --dry-run');
+  return { slug, dryRun };
 }
 
 async function main() {
-  assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--allow-stale-data': 'flag', '--i-am-launching-country': 'flag', '--allow-unpaired-pmtiles-upload': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
-  const { slug, dryRun, allowStaleData, forceCountryLaunch } = parseArgs(process.argv.slice(2));
-
-  // The merged archive goes to the legacy root atlas.pmtiles, outside any
-  // verified data release, so it is never paired with agency data.
-  const unpairedError = dryRun ? null : unpairedUploadError(process.argv.slice(2), 'build-pmtiles-incremental');
-  if (unpairedError) throw new Error(unpairedError);
-
-  if (!dryRun && !allowStaleData) {
-    const guardError = dataRefreshGuardError(readDataRefreshMarker());
-    if (guardError) {
-      throw new Error(`${guardError} Use --allow-stale-data only for an explicitly intentional repack.`);
-    }
-    console.log('Data refresh handoff verified; building incremental PMTiles from freshly refreshed artifacts.');
-  } else if (allowStaleData) {
-    console.warn('WARNING: --allow-stale-data bypasses the refresh-to-PMTiles guard.');
-  }
+  assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
+  const { slug, dryRun } = parseArgs(process.argv.slice(2));
+  // CIV-2995: preview only; it never uploads (the legacy root atlas.pmtiles is retired).
+  if (!dryRun) throw new Error('build-pmtiles-incremental only builds a local preview now: pass --dry-run. Publish through npm run refresh-release.');
 
   console.log(`Loading agency index from public/data/index.json...`);
   const index = JSON.parse(fs.readFileSync('public/data/index.json', 'utf-8')) as {
@@ -306,20 +270,8 @@ async function main() {
     );
   }
 
-  // Country-launch gate before any tippecanoe work on a real (non-dry-run) upload.
-  // --dry-run still builds locally for map preview.
-  if (!dryRun) {
-    assertCountryMayWriteToR2({
-      country: resolveAgencyCountry(agency),
-      agencies,
-      forceLaunch: forceCountryLaunch,
-      slug,
-      action: 'incremental PMTiles R2 upload',
-    });
-  }
-
   const targetBbox = deriveAgencyBbox(agency, AGENCY_BBOX_PAD);
-  const pmtilesUrl = `${R2_PUBLIC_URL}/atlas.pmtiles`;
+  const pmtilesUrl = await livePmtilesUrl();
 
   console.log(`\n=== Safety check 1/2: is "${slug}" already published? ===`);
   console.log(`Scanning deployed atlas.pmtiles near "${slug}"'s bbox [${targetBbox.join(', ')}] (${pmtilesUrl})...`);
@@ -386,21 +338,8 @@ async function main() {
     console.log(`Merged atlas.pmtiles:   ${(mergedSize / 1024 / 1024).toFixed(1)} MB (${deltaMb >= 0 ? '+' : ''}${deltaMb.toFixed(1)} MB)`);
     console.log(`Layers changed: routes (+${routes.length}), stops (+${stops.length})`);
 
-    if (dryRun) {
-      console.log(`\n--dry-run: nothing uploaded. Merged file left at ${mergedPath} for inspection.`);
-      console.log(`To upload for real, rerun without --dry-run — after getting explicit human go-ahead ` +
-        `(this writes directly to the live public R2 bucket; see CLAUDE.md § Production Data Rules).`);
-      return;
-    }
-
-    console.log(`\nUploading merged atlas.pmtiles to Cloudflare R2 (streaming)...`);
-    await r2PutFile('atlas.pmtiles', mergedPath, 'application/octet-stream');
-    consumeDataRefreshMarker();
-    console.log(`PMTiles uploaded: ${pmtilesUrl}`);
-    console.log(`Incremental build complete for "${slug}". Consider running \`npm run verify-pmtiles-coverage\` to confirm.`);
-
-    console.log(`Cleaning up temporary files...`);
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    console.log(`\nPreview only: nothing uploaded. Merged file left at ${mergedPath} for the local map preview.`);
+    console.log('Publish through npm run refresh-release.');
   } catch (err) {
     console.log(`Cleaning up temporary files after failure...`);
     fs.rmSync(tmpDir, { recursive: true, force: true });

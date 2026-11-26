@@ -400,6 +400,8 @@ async function main() {
     pmtilesKey: `${releasePrefix}/atlas.pmtiles`,
     overviewPmtilesKey: `${releasePrefix}/atlas-overview.pmtiles`,
     agencyPrefix,
+    // CIV-2995: the staged run it was built from, so prune-runs keeps that run while this release is kept.
+    ...(sourcePrefix ? { sourcePrefix } : {}),
   };
 
   console.log(`Uploading immutable data release ${releaseId}...`);

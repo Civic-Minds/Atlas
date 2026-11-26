@@ -21,6 +21,7 @@ import { VectorTile } from '@mapbox/vector-tile';
 import { getAgencyArtifactUrls, R2_PUBLIC_URL } from '../shared/config.js';
 import { isScheduleOnlyRouteArtifact, isSeasonalPauseRouteArtifact, mustAppearInTiles, tilesForAgency, type TileInclusionAgency } from './pmtilesCoverage.js';
 import { runWithConcurrency } from './utils.js';
+import { livePmtilesUrl } from './livePmtiles.js';
 import { agencyTodayYmd, effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared/feedAvailability.js';
 
 interface Agency extends TileInclusionAgency, SupplementalFeedExpiryEntry {
@@ -108,7 +109,8 @@ async function main() {
     ? JSON.parse(fs.readFileSync(localManifestPath, 'utf8')) as { pmtilesKey?: string; agencyPrefix?: string }
     : null;
   const pmtilesUrl = process.env.PMTILES_URL
-    ?? (localManifest?.pmtilesKey ? `${R2_PUBLIC_URL}/${localManifest.pmtilesKey}` : `${R2_PUBLIC_URL}/atlas.pmtiles`);
+    ?? (localManifest?.pmtilesKey ? `${R2_PUBLIC_URL}/${localManifest.pmtilesKey}` : await livePmtilesUrl());
+  // CIV-2995: with no local manifest, the live release's tiles (the legacy root atlas.pmtiles is retired).
   console.log(`Opening PMTiles archive: ${pmtilesUrl}`);
   const localPmtilesPath = process.env.PMTILES_LOCAL_PATH;
   const pmtiles = localPmtilesPath
