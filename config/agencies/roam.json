@@ -1,0 +1,20 @@
+{
+  "slug": "roam",
+  "officialName": "Roam Transit",
+  "websiteUrl": "https://roamtransit.com/",
+  "dataLicense": {
+    "url": "https://roamtransit.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Alberta",
+  "center": [
+    51.0978,
+    -115.3658
+  ],
+  "feedUrl": "https://bowvalley.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-711/latest.zip",
+  "timezone": "America/Edmonton",
+  "hiddenInProduction": true
+}
