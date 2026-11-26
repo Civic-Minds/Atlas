@@ -277,8 +277,12 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     const peers = (group.directionFeatures ?? directions.filter(x => dirIdNum(x.directionId) === dirIdNum(group.dirId))).filter(x => destinationKey(x) === key);
     return peers.every(p => rowBranchCode(p, base) === code) ? code : null;
   };
+  // CIV-3036 (Ryan picked 1, 2026-11-26): where another row in the direction leads with a branch ID, a row with none leads
+  // with the plain route number, so the rows read alike (TTC "504C · to Roncesvalles", then "504 · to Dundas West").
+  const rowLeadCode = (group: RouteCardDirectionGroup, d: ShapeProperties): string | null =>
+    rowCode(group, d) ?? ([...group.realTier, ...group.span].some(x => x !== d && rowCode(group, x) != null) ? base : null);
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
-    withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowCode(group, direction));
+    withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowLeadCode(group, direction));
   const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours, branchReadings, stretchRunByOthers };
   const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
