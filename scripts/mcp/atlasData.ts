@@ -724,6 +724,22 @@ async function stopNamesFor(agency: CatalogAgency, day: DayType, r: RouteRows): 
   return new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
 }
 
+/** #1778: the parent station of each stop a route's rows use that has one: from the store's list for the route, else from the agency's stops. */
+async function stopParentsFor(agency: CatalogAgency, day: DayType, r: RouteRows): Promise<Map<string, string>> {
+  if (store.stopParents) return new Map(Object.entries((await store.stopParents(agency.slug, day, r.key)) ?? {}));
+  return new Map((await stopsOf(agency)).filter(s => s.parent).map(s => [s.id, s.parent!]));
+}
+
+/**
+ * #1778: how many stops a row's stop list has, counting a station once. Atlas copies a platform's departures up to its parent station
+ * (AI-117), so both are in the list (OC Transpo Line 1: each of its 13 stations and its platform, 26). A parent station is left out
+ * where one of its own platforms is in the same list.
+ */
+export function stopCount(order: readonly string[], parentOf: ReadonlyMap<string, string>): number {
+  const parentsInList = new Set(order.map(id => parentOf.get(id)).filter((p): p is string => p != null));
+  return order.filter(id => !parentsInList.has(id)).length;
+}
+
 /** Where each row of an agency's route ends (its last stop's name), for grouping branches that end at the same place. */
 export async function endOfRows(agency: CatalogAgency, day: DayType, r: RouteRows): Promise<(row: ShapeProperties) => string | null> {
   const name = await stopNamesFor(agency, day, r);
@@ -737,6 +753,7 @@ export async function endOfRows(agency: CatalogAgency, day: DayType, r: RouteRow
  */
 export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRows) {
   const name = await stopNamesFor(agency, day, r);
+  const parentOf = await stopParentsFor(agency, day, r);
   type Branch = { direction: string; towards: string | null; from?: string | null; to?: string | null; stops?: number; trips: number; startsAt?: string[] };
   const groups = new Map<string, { rows: ShapeProperties[]; branch: Branch; hours: Map<string, number>; from: string[]; headsigns: Set<string> }>();
   const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
@@ -751,7 +768,7 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
     const to = order.length ? name.get(order[order.length - 1]) ?? null : null;
     const key = order.length ? `${direction}|to:${to}` : `${direction}|towards:${towards}`;
     const sig = JSON.stringify(Object.entries(hoursOf(row)).sort(([a], [b]) => +a - +b));
-    const g = groups.get(key) ?? groups.set(key, { rows: [], branch: { direction, towards, ...(order.length ? { from: name.get(order[0]) ?? null, to, stops: order.length } : {}), trips: 0 }, hours: new Map(), from: [], headsigns: new Set() }).get(key)!;
+    const g = groups.get(key) ?? groups.set(key, { rows: [], branch: { direction, towards, ...(order.length ? { from: name.get(order[0]) ?? null, to, stops: stopCount(order, parentOf) } : {}), trips: 0 }, hours: new Map(), from: [], headsigns: new Set() }).get(key)!;
     g.rows.push(row);
     g.hours.set(sig, trips); // the same departures count once
     const from = order.length ? name.get(order[0]) : null;

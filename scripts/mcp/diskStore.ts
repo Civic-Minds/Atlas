@@ -132,7 +132,7 @@ export function diskStore({ releaseCache = true }: { releaseCache?: boolean } = 
       const all = read(slug);
       if (!all) return null;
       return all.filter(f => f.geometry?.type === 'Point').map((f): McpStop => ({
-        id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates![0], lat: f.geometry!.coordinates![1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String),
+        id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates![0], lat: f.geometry!.coordinates![1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String), ...(f.properties.parentStation ? { parent: String(f.properties.parentStation) } : {}),
       }));
     },
     async index() {

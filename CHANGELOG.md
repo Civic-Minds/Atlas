@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP counts each station once in a route's stops**: OC Transpo Line 1 said 26 stops each way for its 13 stations, because each station was counted as both its platform and the station itself
 - **Routes you must book ahead no longer show a fixed frequency**: exo's taxibuses, Annapolis Call-in and the rest printed "every 40 min" or even "every 15 min" beside "Rides on this route must be booked ahead.", and their map colour and frequency filter read the same number
 - **Atlas Studio's Fleet shows how many vehicles are out with no trip**: a quieter "Not on a trip" row under "In service now", for agencies whose feed reports such vehicles, since "In service now" counts only vehicles on a trip
 - **Route cards for branches that share a start show the shared stretch on its own line**: TransLink 9 read "to Granville St every 8", which was the Broadway trunk shared with the Alma St and UBC buses; it now reads "Shared stretch every 8" and Granville St its own every 18
