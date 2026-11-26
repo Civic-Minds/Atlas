@@ -221,6 +221,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: the measure once called "Falls behind" / "Delays start" and its section (once "Where delays start") read "Schedule adherence"; "Typical delay" reads "Typical deviation". The new positions-only view is named "Speed" (average speed, no baseline), not "Delay".
   - Why: Ryan: ""delays start" and "behind schedule" sounds fucking stupid in a professional product"; "Delay" implies a baseline the picked method doesn't have.
   - Source: [decision log](#decision-log) (2026-11-25, CIV-2924; 2026-11-26, CIV-2917)
+- **Speed's minimums are starting values, to be checked**
+  - What: Speed shows a stretch's average speed (total distance over total time of its recorded weekday trips, per time-of-day slot) only when the stretch is at least 400 m long, has at least 7 weekdays recorded, at least 30 trips in total and at least 10 trips in that slot; below any of them it shows no figure ("Not measured"). The numbers live in SPEED_MINIMUMS (shared/rules/live.ts).
+  - Why: 400 m, 30 and 10 are untested prototype guesses and 7 weekdays is Strategy's proposal; Ryan took them as starting values, to be tested on TTC, HSR and MBTA routes, with counts of how many stretches go blank, before anything ships.
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-2919)
 - **Studio is split by time: now, past, plan**
   - What: Live and Fleet (now) stay map panels; Performance (past) and Schedules (plan) are full pages. Live's weekly late figures move into Performance, so no figure shows in two places.
   - Why: trip time showed in three places and lateness in two.
@@ -319,6 +323,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — Speed's minimums: starting values, checked after the first build (CIV-2919)
+Ryan, 2026-11-26, answering the Questions chat, asked "How did we come up with these numbers?" and picked option 1: "Use them as starting values and check later". Speed's minimums: a stretch at least 400 m long, at least 7 weekdays of data, at least 30 trips in total, at least 10 trips in each time-of-day slot; below that it shows no figure ("Not measured"). 400 m, 30 and 10 are untested prototype guesses (CIV-2919's M2 prototype); 7 weekdays is Strategy's proposal. After the first build they are tested on TTC, HSR and MBTA routes, and Ryan gets the counts of how many stretches go blank before anything ships. Method (CIV-2919, Ryan): average speed by time of day, no baseline.
 
 ### 2026-11-26 — Studio splits into now, past and plan; the new view is "Speed" (CIV-2917; supersedes CIV-2924's "Delay is kept for the clear-street measure")
 Ryan, 2026-11-26, answering the Questions chat on Strategy's layout review (screens checked on 5182, compared with Swiftly, Optibus and Remix), picked "1": "This split, with Speed", over "2. Keep Performance as a separate tab next to Live, as planned" (trip time and lateness then appear twice). Studio splits into now (Live, Fleet: map panels), past (Performance: a full page) and plan (Schedules: a full page, starting from Studio's mock-up, option 5 on CIV-2182). Live's weekly late figures move into Performance; today trip time shows in three places and lateness in two. The new view is "Speed": the method picked on CIV-2919 is average speed with no baseline, and "Delay" implies one. It shows average speed by stretch and time of day, plus recorded trip time beside the timetable's on the route card's chart. This replaces the 2026-11-25 picks of a "Performance" tab and a "Delay" view (CIV-2917's first comment).
