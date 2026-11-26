@@ -98,6 +98,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a route card row leads with the branch ID the agency's data gives (TTC 504C, GO 41G). Where another row in the same direction has one, a row without a letter leads with the plain route number ("504C · to Roncesvalles", then "504 · to Dundas West"). Display only: no grouping, figure or grade changes. A direction with no lettered row is unchanged.
   - Why: Ryan: "For the 504 why do some destinations now have a route like 504C but then below it none".
   - Source: [decision log](#decision-log) (2026-11-26, CIV-3036)
+
+- **A list's range keeps the card's one-gap note**
+  - What: where a route list shows a range and the card row at its slow end names one gap, the list keeps the note after the range: AC Transit 60 weekday AM peak reads "every 26–45 min, with one 45 min gap", as the card does. "From"/"until" words still drop (the rule above).
+  - Why: the list read "every 26–45 min" beside a card saying "every 26 min, with one 45 min gap".
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-3023, #1856)
 - **One entry per agency or region, everywhere**
   - What: an agency split across feeds (MTA New York, exo, Maryland Transit Administration, Bustang) is one entry wherever agencies are listed, counted, ranked or compared: the map's agency picker, search and In view list, the count pills, the agency index and pages, Studio (Coverage included) and the Atlas Studio MCP tools (list_agencies, rank_agencies, compare_agencies). A route in two of its feeds (same name, mode and long name) counts once. The feeds stay separate in the data; the grouping happens when it is read, in the one shared module `shared/agencyGroups.ts`, and a guard test fails if a list skips it.
   - Why: the site listed MTA New York as nine feeds on some screens and one agency on others.
@@ -371,6 +376,9 @@ Ryan, 2026-11-26: "can the MCP use info if we don't show it to end users", then 
 
 ### 2026-11-26 — A row without a letter shows the plain route number beside a lettered row (CIV-3036, #1871)
 Ryan, 2026-11-26, asked "For the 504 why do some destinations now have a route like 504C but then below it none", then picked "1": a row without a letter shows the plain route number when another row in the same direction has one (e.g. "504 · to Dundas West"), display only. The TTC feed names the King replacement bus 504C (581 trips to Roncesvalles), while the streetcar rows mix plain 504 with a few 504A or 504B trips (362 and 27 to Dundas West), so under CIV-1456 they carry no letter. Over release-mwxd9t4l, after the card's per-period rows: 125 route-directions in 12 agencies gain the plain number (NJ Transit 25, TTC 30, CTtransit 20, GO 19, Brampton 10, Miami-Dade 9, London 5, Hamilton 3, TCAT, MiWay, RTC and Westmoreland 1 each).
+
+### 2026-11-26 — A list's range keeps the card's one-gap note (CIV-3023, #1856)
+Ryan, 2026-11-26, picked "1": "Keep the gap note after the range, so the list reads "every 26–45 min, with one 45 min gap" and matches the card", over "2. Leave it as it is". No new number. Counts (release-mwvbser2): 207 list cells at 78 agencies gain the note (most at NJ Transit 18, LA Metro 10, OC Transpo 10); the question's 209 included 2 cells whose list reads "Irregular" and shows no range (GO 21 weekday PM peak, MTA Bus BxM1 weekday late), which don't change. Where several rows at the slow end name a gap, the list names the longest, as a list row is the route's slowest showing (#1771).
 
 ### 2026-11-26 — A route's last time is its last boarding where trips start (CIV-2963, #1791)
 Ryan, 2026-11-26, picked "1": "Merge it", over "2. Keep last times as they are". It completes his CIV-2229 pick of 2026-11-24 ("1": first times move to where trips start, last times stay at the reference stop for now). The last time is the last trip start of the direction's representative weekday; a night service's 0:xx trip counts as the night it ends; a route that runs all night shows no exact last time. Cloud dry-run pair (530 agencies, 14,527 weekday routes): 13,762 routes get an earlier last time (median 29 min, 90% within an hour), 175 a later one (late-night trips after midnight, trips that never reach the reference stop), 223 lose an exact last time (221 run all night; CDTA 93 and Coast RTA), 12 gain one (night routes); first times unchanged.

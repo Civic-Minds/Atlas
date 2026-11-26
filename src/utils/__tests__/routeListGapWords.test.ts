@@ -3,6 +3,9 @@ import { routeCardRange } from '../routeListRange';
 import { headwayPeriodShape, periodShapeGap } from '../../../shared/headwayText';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import septa53json from './fixtures/septa-53-saturday.json';
+import ac60json from './fixtures/actransit-60-weekday.json';
+import { routeListDisplay } from '../effectiveHeadway';
+import { normalizeRouteFilterFeatures } from '../../../shared/routeHeadwayFilter';
 
 // SEPTA 53, Saturday (release-mwvbser2; per-stop fields left out). In the AM peak one direction reads "every 30 min, with one
 // 59 min gap" and the other "every 30 min, with one 60 min gap"; the list said only "every 30 min" (#1856).
@@ -16,5 +19,17 @@ describe('a route list keeps the gap words its rows differ in (#1856)', () => {
     expect(periodShapeGap(headwayPeriodShape({ every: 30, gap: 59 }))).toBe(59);
     expect(periodShapeGap(headwayPeriodShape({ every: 9, from: '7:12 AM' }))).toBeNull();
     expect(periodShapeGap(headwayPeriodShape({ every: 15, until: '8:57 PM', then: 25, thenGap: 37 }))).toBeNull();
+  });
+});
+
+// AC Transit 60, weekday (release-mwvbser2). In the AM peak a row reads "every 26 min, with one 45 min gap" beside the Shared
+// stretch's every 45; the list read just "every 26–45 min" (#1856 b; Ryan 2026-11-26 picked "1": keep the gap note).
+describe('a route list range keeps the gap note of the row at its slow end (#1856 b)', () => {
+  it('AC Transit 60 weekday AM peak reads "every 26–45 min, with one 45 min gap"', () => {
+    const features = (ac60json as unknown as GeoJSON.FeatureCollection).features;
+    normalizeRouteFilterFeatures(features as never);
+    const props = features.map(f => f.properties as unknown as ShapeProperties);
+    expect(routeCardRange(props, 'amPeak')).toMatchObject({ low: 26, high: 45, range: true, gap: 45 });
+    expect(routeListDisplay(props, 'amPeak')).toMatchObject({ headway: 45, sharedHeadway: 26, edgeText: 'every 26–45 min, with one 45 min gap' });
   });
 });
