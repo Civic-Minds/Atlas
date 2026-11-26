@@ -64,6 +64,9 @@ export const STUDIO_CHANGES_TEXT = {
  * CIV-2182 proposals, PENDING RYAN'S OK (review page /_review/studio-redesign/): Fleet's change column, and the Schedules
  * list's heading for routes whose change is at another time of day.
  */
+/** Fleet's chart line for a time of day, "Midday: 1,790 buses" (CIV-2182; CIV-2973 moved it here, unchanged). */
+export const fleetPeriodCountText = (periodLabel: string, count: number, word: string) => `${periodLabel}: ${countText(count)} ${word}`;
+
 export const STUDIO_REDESIGN_TEXT = {
   /** Schedules "period" design: the heading over routes that changed only at other times of day. */
   otherTimes: 'Changed at other times of day',

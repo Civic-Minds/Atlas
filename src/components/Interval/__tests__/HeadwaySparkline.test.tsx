@@ -561,3 +561,14 @@ describe('HeadwaySparkline full-day link', () => {
   });
 
 });
+
+// CIV-2973 step 2: a count series (Fleet's vehicles by time of day) never reads as minutes between trips.
+describe('CountSparkline', () => {
+  it('draws counts with the hover text it is given, never "every … min"', async () => {
+    const { CountSparkline } = await import('../HeadwaySparkline');
+    const { container } = render(<CountSparkline countByHour={{ 12: 1790, 17: 1900 }} color="#888" label="buses" period="midday" hourTitle={h => `${h}: buses`} onPeriodChange={() => {}} />);
+    expect(container.textContent).not.toMatch(/every|min\b/);
+    expect(container.querySelector('[title="12: buses"]')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: /expand/i })).toBeNull();
+  });
+});

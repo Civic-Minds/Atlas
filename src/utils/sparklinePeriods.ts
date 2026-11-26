@@ -8,6 +8,14 @@ export const HOUR_TO_PERIOD: Record<number, string> = Object.fromEntries(
   SPARKLINE_HOURS.map(h => [h, periodKeyForHour(h)]).filter(([, p]) => p != null),
 ) as Record<number, string>;
 
+/**
+ * CIV-2973: one figure per time of day spread over the chart's hours, each hour taking its time of day's figure (Studio
+ * Fleet's charts: its files carry one figure per time of day). Hours outside every time of day, or with no figure, are null.
+ */
+export function periodValuesByHour(byPeriod: Readonly<Record<string, number | null | undefined>>, hours: readonly number[] = SPARKLINE_HOURS): Record<number, number | null> {
+  return Object.fromEntries(hours.map(h => [h, byPeriod[HOUR_TO_PERIOD[h]] ?? null]));
+}
+
 /** Contiguous hover bands per period, as fractions of the chart width (overnight tail: 2 AM, 3 AM, 4 AM, 5 AM). */
 export const PERIOD_BANDS: Record<string, { left: number; width: number }[]> = periodBandsFor(SPARKLINE_HOURS);
 
