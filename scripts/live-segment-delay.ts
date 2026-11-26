@@ -16,6 +16,7 @@
  * Days the GTFS calendar doesn't cover are dropped, not guessed (with several --gtfs folders, a window date none covers is an error).
  * --gtfs takes one folder or a comma-separated list; each service date uses the feed that covers it (scripts/live-gtfs-feeds.ts).
  */
+import { speedStretches, speedTraversals, summarizeSpeed, type SpeedStretch, type SpeedTraversal } from '../shared/liveSpeed.js';
 import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, join } from 'path';
 import { buildShape, haversineM, projectOntoShape, type Shape } from '../shared/shapeProjection.js';
@@ -62,6 +63,10 @@ const OBS_OUT = args['obs-out'];
 const STRINGS_DIR = args['strings-dir'];
 /** Optional: write each measured end-to-end trip time (for hand-checking). */
 const RUNTIMES_OUT = args['runtimes-out'];
+// CIV-2919: Speed. --speed-out is the private traversal file (start time and duration per stretch, no vehicle ids);
+// --speed-summary-out is the figures built from it (summarizeSpeed), the only file a reader may use.
+const SPEED_OUT = args['speed-out'];
+const SPEED_SUMMARY_OUT = args['speed-summary-out'];
 /** Trips whose headsign contains this text (any case) are another service under the same route number (e.g. replacement buses): left out and counted. Plain text, not a pattern. */
 const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? String(args['exclude-headsign']).toLowerCase() : null;
 // A separate service that shares the route number (the 507M shuttle): its own trips carry the name in the headsign; its
@@ -377,6 +382,8 @@ let runsWithDelays = 0;
 const swapLog: { date: string; outcome: 'reassigned' | 'dropped' }[] = [];
 const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
 // Per vehicle: its runs in time order (for turn-backs); per trip: when it was seen.
+const speedStretchesByPattern = new Map<string, SpeedStretch[]>();
+const speedRuns: SpeedTraversal[] = [];
 const vehicleRuns = new Map<string, { tripId: string; first: PositionSample; last: PositionSample; samples: PositionSample[] }[]>();
 const tripPings = new Map<string, TripPing[]>(); // per trip number: reports, with position along its route
 const unlistedRuns: [number, number][] = []; // when cars on trip numbers missing from the timetable were running
@@ -452,6 +459,11 @@ for (const [key, samples] of runs) {
       if (excess != null) holds.push({ ...h, end: h.start + excess, directionId: pattern.directionId });
     }
     const legs = stopPassages(projected, pattern);
+    if (SPEED_OUT || SPEED_SUMMARY_OUT) {
+      let stretches = speedStretchesByPattern.get(pattern.id);
+      if (!stretches) { stretches = speedStretches(pattern, DEPARTURE_OFFSET_M); speedStretchesByPattern.set(pattern.id, stretches); }
+      speedRuns.push(...speedTraversals(projected, pattern, stretches, runDate, DEPARTURE_OFFSET_M));
+    }
     // v3: delay at each stop = when the car LEFT it (25 m past) minus the timetable's departure for this trip there.
     // Terminal "passes" are layover arrivals, so the arrival moment would fake early cars.
     const deps = stopPassages(projected, pattern, SEGMENT_DEFAULTS, DEPARTURE_OFFSET_M).flat();
@@ -1418,6 +1430,12 @@ if (STRINGS_DIR) {
   }
 }
 if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns.map(r => ({ ...r, tripId: rawTripId_(r.tripId) }))));
+if (SPEED_OUT || SPEED_SUMMARY_OUT) {
+  // The same days and feed checks as every other window figure.
+  const kept = speedRuns.filter(t => inGoodDays.has(t.date) && !feedDown(t.departT) && !feedDown(t.departT + t.sec));
+  if (SPEED_OUT) writeFileSync(SPEED_OUT, JSON.stringify(kept.map(({ key, departT, sec, date }) => [key, departT, sec, date])));
+  if (SPEED_SUMMARY_OUT) writeFileSync(SPEED_SUMMARY_OUT, JSON.stringify(summarizeSpeed([...speedStretchesByPattern.values()].flat(), kept, hourOf)));
+}
 if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes.map(r => { const x = r as typeof r & { tripId: string; patternId: string }; return { ...r, tripId: rawTripId_(x.tripId), patternId: rawShapeIdOf(x.patternId) }; })));
 console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);
 

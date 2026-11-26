@@ -178,3 +178,19 @@ export const CUTOFF_LIMITS = {
   bunchedWithinMin: { min: 0.5, max: 10, step: 0.5 },
   gappedFactor: { min: 1, max: 6, step: 0.25 },
 } as const;
+
+/**
+ * CIV-2919 (Ryan, 2026-11-26, option 1: "Use them as starting values and check later"): the Speed view's minimums. Below any
+ * of them a stretch shows no figure ("Not measured"). Starting values: 400 m, 30 trips and 10 per slot are untested prototype
+ * guesses and 7 weekdays is Strategy's proposal; they are tested on TTC, HSR and MBTA routes before anything ships.
+ */
+export const SPEED_MINIMUMS = {
+  /** A stretch is consecutive stops merged until it is at least this long (metres along the route shape). */
+  stretchM: 400,
+  /** Weekdays with at least one recorded trip over the stretch. */
+  weekdays: 7,
+  /** Recorded weekday trips over the stretch, all times of day together. */
+  trips: 30,
+  /** Recorded weekday trips over the stretch in one time-of-day slot. */
+  tripsPerSlot: 10,
+} as const;
