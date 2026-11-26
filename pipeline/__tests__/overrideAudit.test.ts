@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  clearIssueUrlOnFeedChange,
   clearOverrideUserFacingOnFeedChange,
   formatOverrideIssueUrlClearedLog,
   formatOverrideResolvedLog,
@@ -130,29 +129,6 @@ describe('clearOverrideUserFacingOnFeedChange', () => {
     };
     expect(clearOverrideUserFacingOnFeedChange(agency, null, 'S1000045')).toBe(false);
     expect(agency.overrideNote).toBeDefined();
-  });
-});
-
-describe('clearIssueUrlOnFeedChange', () => {
-  it('clears issueUrl on new upstream file but keeps exclusions', () => {
-    const agency = {
-      lastFeedVersion: 'S1000045',
-      issueUrl: 'https://github.com/Civic-Minds/Atlas/issues/144',
-      excludeRouteShortNames: ['Test'],
-    };
-    const cleared = clearIssueUrlOnFeedChange(agency, null, 'S1000099');
-    expect(cleared).toContain('/issues/144');
-    expect(agency.issueUrl).toBeUndefined();
-    expect(agency.excludeRouteShortNames).toEqual(['Test']);
-  });
-
-  it('does not clear issueUrl when feed version is unchanged', () => {
-    const agency = {
-      lastFeedVersion: 'S1000045',
-      issueUrl: 'https://github.com/Civic-Minds/Atlas/issues/144',
-    };
-    expect(clearIssueUrlOnFeedChange(agency, null, 'S1000045')).toBeNull();
-    expect(agency.issueUrl).toBeDefined();
   });
 });
 
