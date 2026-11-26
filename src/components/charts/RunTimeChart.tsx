@@ -5,6 +5,7 @@ import { fadedNoteText } from '../../../shared/liveWording';
 import { hourTime as clock } from '../../../shared/timeText';
 import { liveChartHours } from '../../utils/sparklinePeriods';
 import DataTable from '../ui/DataTable';
+import { minuteTicks, runTimeAxis } from '../../utils/chartAxis';
 import { runTimeAmount } from '../../utils/headwayText';
 import { countText } from '../../../shared/numberText';
 import { SCHEDULED_COLUMN, STARTS_AT_COLUMN, TRIPS_COLUMN, USUALLY_COLUMN } from '../../content/noticeCopy';
@@ -24,11 +25,7 @@ const LABEL_W_FULL = 118;
 
 /** The minute range every chart in a row should share, with a little headroom, on whole 5-minute steps. */
 export function runTimeScale(groups: ReadonlyArray<readonly RunTimeHour[]>): { min: number; max: number } {
-  const all = groups.flat();
-  if (!all.length) return { min: 0, max: 10 };
-  const lo = Math.min(...all.map(h => Math.min(h.scheduledMin, h.typicalMin)));
-  const hi = Math.max(...all.map(h => Math.max(h.scheduledMin, h.typicalMin)));
-  return { min: Math.max(0, Math.floor((lo - 2) / 5) * 5), max: Math.ceil((hi + 2) / 5) * 5 };
+  return runTimeAxis(groups.flat().flatMap(h => [h.scheduledMin, h.typicalMin]));
 }
 
 interface EndLabel { key: string; y: number; h: number; lines: string[]; color: string; weight: number }
@@ -75,9 +72,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
   const x = (i: number) => AXIS_W + (axis.length > 1 ? (i / (axis.length - 1)) * plotW : 0);
   const span = scale.max - scale.min || 1;
   const y = (m: number) => PAD_TOP + (1 - (m - scale.min) / span) * (H - PAD_TOP - PAD_BOTTOM);
-  const step = span > 30 ? 10 : 5;
-  const ticks: number[] = [];
-  for (let t = Math.ceil(scale.min / step) * step; t <= scale.max; t += step) ticks.push(t);
+  const ticks = minuteTicks(scale);
   // Runs of consecutive well-measured hours: lines break where an hour has no or few trips (those show as faded dots only).
   const runs: (typeof pts)[] = [];
   for (const p of pts.filter(q => q.n >= minN)) { const r = runs[runs.length - 1]; if (r && p.i === r[r.length - 1].i + 1) r.push(p); else runs.push([p]); }

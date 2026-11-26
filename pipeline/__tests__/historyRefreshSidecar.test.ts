@@ -4,9 +4,9 @@
  * next-service-dates opt-in), and an unchanged feed whose picked week moved keeps its first sidecar.
  * Real MDOT MTA bus + subway fixture (fixtures/mdot-mta-bus-rail), in-memory sidecar store.
  */
-import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import JSZip from 'jszip';
+import { zipDir } from './fixtureZip';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { processAgencyFeeds, type AgencyFeedConfig, type AgencyFeedResult } from '../agencyFeeds.js';
 import { buildMergedV2Routes, historyV2InputFor, writeRefreshSidecar } from '../historyRefreshSidecar.js';
@@ -17,12 +17,6 @@ const SUBWAY_URL = 'https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_metro.zip
 const BUS_URL = 'https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_localbus.zip';
 // LA Metro shape: the rail supplemental was read on next-service dates by the old picker.
 const agency: AgencyFeedConfig = { slug: 'mta-maryland', feedUrl: BUS_URL, supplementalFeedUrls: [SUBWAY_URL], nextServiceDatesFeedUrls: [SUBWAY_URL] };
-
-async function zipFixture(name: string): Promise<Buffer> {
-  const zip = new JSZip();
-  for (const file of readdirSync(join(FIXTURE, name))) zip.file(file, readFileSync(join(FIXTURE, name, file)));
-  return zip.generateAsync({ type: 'nodebuffer' });
-}
 
 function memoryStore() {
   const objects = new Map<string, string>();
@@ -43,8 +37,8 @@ const runAt = async (anchor: string) => processAgencyFeeds(bus, [{ url: SUBWAY_U
 const features = (r: AgencyFeedResult) => JSON.parse(r.geojson).features;
 
 beforeAll(async () => {
-  bus = await zipFixture('bus');
-  subway = await zipFixture('metro-subway');
+  bus = await zipDir(join(FIXTURE, 'bus'));
+  subway = await zipDir(join(FIXTURE, 'metro-subway'));
 });
 
 describe('refresh History sidecar (writeRefreshSidecar)', () => {

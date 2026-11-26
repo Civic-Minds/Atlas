@@ -78,9 +78,9 @@ export function liveAgencyConfig(slug: string, timeZone: string | undefined): Li
   };
 }
 
-const dateFmts = new Map<string, Intl.DateTimeFormat>();
-const hourFmts = new Map<string, Intl.DateTimeFormat>();
-function fmt(cache: Map<string, Intl.DateTimeFormat>, timeZone: string, opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+const dateFmts = new Map<string | undefined, Intl.DateTimeFormat>();
+const hourFmts = new Map<string | undefined, Intl.DateTimeFormat>();
+function fmt(cache: Map<string | undefined, Intl.DateTimeFormat>, timeZone: string | undefined, opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
   let f = cache.get(timeZone);
   if (!f) { f = new Intl.DateTimeFormat('en-CA', { timeZone, ...opts }); cache.set(timeZone, f); }
   return f;
@@ -91,8 +91,8 @@ export function localDate(ms: number, timeZone: string): string {
   return fmt(dateFmts, timeZone, { year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms);
 }
 
-/** Local hour (0-23) at an instant (ms). */
-export function localHour(ms: number, timeZone: string): number {
+/** Local hour (0-23) at an instant (ms). With no zone, the runtime's own clock. */
+export function localHour(ms: number, timeZone: string | undefined): number {
   return Number(fmt(hourFmts, timeZone, { hour: 'numeric', hourCycle: 'h23' }).format(ms));
 }
 

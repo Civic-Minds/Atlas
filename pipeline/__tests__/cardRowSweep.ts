@@ -12,7 +12,7 @@
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import JSZip from 'jszip';
+import { zipDir } from './fixtureZip';
 import { vi } from 'vitest';
 import { processAgencyFeeds } from '../agencyFeeds.js';
 import { applyAgencySections, type AgencySections } from '../../shared/agencySections.js';
@@ -41,12 +41,6 @@ function referenceDate(dir: string): Date {
   const day = new Date(`${pick.slice(0, 4)}-${pick.slice(4, 6)}-${pick.slice(6, 8)}T12:00:00Z`);
   day.setUTCDate(day.getUTCDate() + ((3 - day.getUTCDay() + 7) % 7));
   return day;
-}
-
-async function zipDir(dir: string): Promise<Buffer> {
-  const zip = new JSZip();
-  for (const file of readdirSync(dir)) zip.file(file, readFileSync(join(dir, file)));
-  return zip.generateAsync({ type: 'nodebuffer' });
 }
 
 /** A headsign's own departures in a period, from its departures per hour (CIV-1010). Undefined on data without them. */
