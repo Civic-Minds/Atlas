@@ -1,0 +1,21 @@
+{
+  "slug": "bayway",
+  "officialName": "Bay Town Trolley",
+  "commonName": "Bayway",
+  "websiteUrl": "https://www.baywaytransit.org/",
+  "dataLicense": {
+    "url": "https://www.baywaytransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Florida",
+  "center": [
+    30.1784,
+    -85.6955
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/baytowntrolley-fl-us/baytowntrolley-fl-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-337/latest.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}
