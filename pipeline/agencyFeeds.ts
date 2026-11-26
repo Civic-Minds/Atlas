@@ -290,7 +290,7 @@ export async function processAgencyFeeds(
   stopsMeta.stopCount = stopsMeta.stops.length;
   Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
   const onDemandChanged = applyOnDemandRoutes(features as Array<{ properties?: Record<string, unknown> | null }>, runningTimes, agency.onDemandRoutes);
-  if (onDemandChanged > 0) onProgress?.(`On-demand routes: ${onDemandChanged} features carry no timetable values (#1119)`);
+  if (onDemandChanged > 0) onProgress?.(`On-demand routes: ${onDemandChanged} features carry no timetable values (#1119, booked routes #1828)`);
   // CIV-321: one pass over the merged list, so supplemental features' keys number on from the main feed's.
   const sections = extractAgencySections(features as Array<{ geometry?: { type?: string } | null; properties?: Record<string, unknown> | null }>);
 
