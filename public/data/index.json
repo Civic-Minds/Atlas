@@ -40922,6 +40922,69 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2894/latest.zip",
       "timezone": "America/Los_Angeles",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "nantucket",
+      "name": "Nantucket Regional Transit Authority (The WAVE)",
+      "officialName": "Nantucket Regional Transit Authority",
+      "commonName": "The WAVE",
+      "websiteUrl": "http://nrtawave.com/",
+      "dataLicense": {
+        "url": "http://nrtawave.com/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Massachusetts",
+      "center": [
+        41.2721,
+        -70.0909
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/nantucket-ma-us/nantucket-ma-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-426/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "flint-hills",
+      "name": "Flint Hills Area Transportation Agency (Flint Hills ATA)",
+      "officialName": "Flint Hills Area Transportation Agency",
+      "commonName": "Flint Hills ATA",
+      "websiteUrl": "https://www.fhata.org/",
+      "dataLicense": {
+        "url": "https://www.fhata.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Kansas",
+      "center": [
+        39.0422,
+        -96.8141
+      ],
+      "feedUrl": "http://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5197/FH_ATA_GTFS.zip",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "citylink-edmond",
+      "name": "Citylink Edmond",
+      "officialName": "Citylink Edmond",
+      "websiteUrl": "https://www.edmondok.gov/205/Citylink-Edmond",
+      "dataLicense": {
+        "url": "https://www.edmondok.gov/205/Citylink-Edmond",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Oklahoma",
+      "center": [
+        35.6504,
+        -97.4789
+      ],
+      "feedUrl": "https://passio3.com/edmond/passioTransit/gtfs/google_transit.zip",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
     }
   ]
 }

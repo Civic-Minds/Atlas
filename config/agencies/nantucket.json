@@ -1,0 +1,21 @@
+{
+  "slug": "nantucket",
+  "officialName": "Nantucket Regional Transit Authority",
+  "commonName": "The WAVE",
+  "websiteUrl": "http://nrtawave.com/",
+  "dataLicense": {
+    "url": "http://nrtawave.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Massachusetts",
+  "center": [
+    41.2721,
+    -70.0909
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/nantucket-ma-us/nantucket-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-426/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "citylink-edmond",
+  "officialName": "Citylink Edmond",
+  "websiteUrl": "https://www.edmondok.gov/205/Citylink-Edmond",
+  "dataLicense": {
+    "url": "https://www.edmondok.gov/205/Citylink-Edmond",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Oklahoma",
+  "center": [
+    35.6504,
+    -97.4789
+  ],
+  "feedUrl": "https://passio3.com/edmond/passioTransit/gtfs/google_transit.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}
