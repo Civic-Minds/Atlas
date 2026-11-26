@@ -1,0 +1,26 @@
+{
+  "slug": "neo-transit",
+  "officialName": "Northeast Oregon Public Transit",
+  "websiteUrl": "http://www.neotransit.org/",
+  "dataLicense": {
+    "url": "http://www.neotransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Oregon",
+  "center": [
+    45.3212,
+    -117.9385
+  ],
+  "bbox": [
+    44.024,
+    -118.201,
+    45.571,
+    -116.969
+  ],
+  "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/northeast-or-us/northeast-or-us--flex-v2.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3652/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}
