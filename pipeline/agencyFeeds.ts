@@ -155,25 +155,8 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
   };
 }
 
-/** Download a GTFS zip, falling back to curl for hosts whose TLS chain Node rejects. */
-export async function downloadFeedBuffer(url: string): Promise<Buffer> {
-  try {
-    const response = await fetch(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-      signal: AbortSignal.timeout(180_000),
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return Buffer.from(await response.arrayBuffer());
-  } catch (fetchError) {
-    try {
-      const { execFileSync } = await import('node:child_process');
-      return execFileSync('curl', ['-fsSL', url], { maxBuffer: 128 * 1024 * 1024, timeout: 180_000 });
-    } catch {
-      throw fetchError instanceof Error ? fetchError : new Error(String(fetchError));
-    }
-  }
-}
+// CIV-2976 D4: the feed download lives in downloadFeed.ts; re-exported for its readers here.
+export { downloadFeedBuffer } from './downloadFeed.js';
 
 /**
  * Archive folder for a supplemental feed's raw zips, by 1-based position in
