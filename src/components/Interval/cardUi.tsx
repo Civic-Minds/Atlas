@@ -158,6 +158,15 @@ const REPORT_CATEGORIES = [
 
 type ReportCategoryKey = (typeof REPORT_CATEGORIES)[number]['key'];
 
+/** MOCK (#1842, #1843, not for merge): localStorage.reportmock '1' = one list, '2' = new words; closemock 'x' = no Cancel. */
+function reportMock(key: 'reportmock' | 'closemock'): string {
+  try { return window.localStorage.getItem(key) ?? ''; } catch { return ''; }
+}
+const MOCK_CATEGORY_WORDS: Partial<Record<ReportCategoryKey, { label: string; description: string }>> = {
+  route: { label: 'This route', description: 'Name, branch, line, frequency or schedule' },
+  filter: { label: 'Finding routes', description: 'Search, filters or what the map shows' },
+};
+
 export interface CardReportButtonHandle {
   /** Opens the report dialog with the given reason pre-checked after report mode is active. */
   openWithReason: (reason: ReportReason) => void;
@@ -283,6 +292,26 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
         ? 'What is wrong with the map, filter or search?'
         : 'What is wrong with the live vehicle information?';
 
+  const oneList = reportMock('reportmock') === '1';
+  const newWords = reportMock('reportmock') === '2';
+  const noCancel = reportMock('closemock') === 'x';
+  const formOpen = !!selectedCategory || oneList;
+  const reasonBox = (reason: ReportReason) => (
+    <label key={reason} className="flex items-start gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
+      <input
+        type="checkbox"
+        checked={selectedReasons.includes(reason)}
+        onChange={() => {
+          setValidationError('');
+          if (reason === REPORT_REASON.frequency && hasFrequencyReason) setFrequencyReasons([]);
+          toggleReason(reason, setSelectedReasons);
+        }}
+        className="mt-0.5 accent-[var(--accent)]"
+      />
+      <span className={CARD_LIST_ROUTE}>{REPORT_REASON_LABELS[reason] ?? reason}</span>
+    </label>
+  );
+
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (hasFrequencyReason && frequencyReasons.length === 0) {
@@ -342,7 +371,18 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             </div>
 
             <div className="px-4 py-3 space-y-2">
-              {!selectedCategory ? (
+              {oneList ? (
+                <div className="space-y-2">
+                  {availableCategories.map(category => (
+                    <fieldset key={category.key}>
+                      <legend className="text-xs font-black text-[var(--text-muted)] mb-1">{category.label}</legend>
+                      <div className="space-y-0">
+                        {category.reasons.filter(reason => reportReasons.includes(reason)).map(reason => reasonBox(reason))}
+                      </div>
+                    </fieldset>
+                  ))}
+                </div>
+              ) : !selectedCategory ? (
                 <fieldset>
                   <legend className="text-xs font-black text-[var(--text-muted)] mb-2">I have an issue with a…</legend>
                   <div className="space-y-2">
@@ -353,8 +393,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                         onClick={() => { setValidationError(''); setSelectedCategory(category.key); }}
                         className={`w-full ${CARD_CALLOUT} text-left hover:bg-[var(--bg-btn-hover)] transition-colors`}
                       >
-                        <span className={`block ${CARD_LIST_ROUTE} font-black`}>{category.label}</span>
-                        <span className={`block mt-0.5 ${CARD_NOTICE}`}>{category.description}</span>
+                        <span className={`block ${CARD_LIST_ROUTE} font-black`}>{(newWords && MOCK_CATEGORY_WORDS[category.key]?.label) || category.label}</span>
+                        <span className={`block mt-0.5 ${CARD_NOTICE}`}>{(newWords && MOCK_CATEGORY_WORDS[category.key]?.description) || category.description}</span>
                       </button>
                     ))}
                   </div>
@@ -372,26 +412,12 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                     </button>
                   </div>
                   <div className="space-y-0">
-                    {selectedCategoryReasons.map(reason => (
-                      <label key={reason} className="flex items-start gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-[var(--bg-btn-hover)] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedReasons.includes(reason)}
-                          onChange={() => {
-                            setValidationError('');
-                            if (reason === REPORT_REASON.frequency && hasFrequencyReason) setFrequencyReasons([]);
-                            toggleReason(reason, setSelectedReasons);
-                          }}
-                          className="mt-0.5 accent-[var(--accent)]"
-                        />
-                        <span className={CARD_LIST_ROUTE}>{REPORT_REASON_LABELS[reason] ?? reason}</span>
-                      </label>
-                    ))}
+                    {selectedCategoryReasons.map(reason => reasonBox(reason))}
                   </div>
                 </fieldset>
               )}
 
-              {selectedCategory && hasFrequencyReason && (
+              {formOpen && hasFrequencyReason && (
                 <fieldset className={`space-y-0.5 ${CARD_CALLOUT_SURFACE} p-3`}>
                   <legend className="px-1 text-xs font-black text-[var(--text-muted)]">Frequency details</legend>
                   {FREQUENCY_REASONS.map(reason => (
@@ -408,7 +434,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 </fieldset>
               )}
 
-              {selectedCategory && <label className="block">
+              {formOpen && <label className="block">
                 <span className="text-xs font-black text-[var(--text-muted)]">Additional details {selectedReasons.length === 0 && <span className="text-[var(--accent)]">(required if no reason is selected)</span>}</span>
                 <textarea
                   value={description}
@@ -422,8 +448,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             </div>
 
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
-              <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-xs font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">{CANCEL_LABEL}</button>
-              {selectedCategory && <Pill submit selected className="!h-8 !px-3 !py-0 !rounded-lg !font-black hover:opacity-90">{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</Pill>}
+              {!noCancel && <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-xs font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">{CANCEL_LABEL}</button>}
+              {formOpen && <Pill submit selected className="!h-8 !px-3 !py-0 !rounded-lg !font-black hover:opacity-90">{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</Pill>}
             </div>
           </form>
         </div>,
