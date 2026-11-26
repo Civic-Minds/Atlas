@@ -13,6 +13,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Clicking a route on the Live map opens its route card again**: Burlington 1 and HSR 2 Barton took no click, because Live draws its routes as thin lines that the map's click rule didn't include
 - **Live's vehicle list and vehicle panel are no longer all bold**: only the early, late or on-time reading stands out, as the frequency does on a route card
 - **Live puts each bus under the direction it is really going**: Burlington 1 listed buses heading to Hamilton under "Appleby GO" because the feed gave them the wrong direction; Live now takes a bus's direction and destination from the timetable for its trip, falls back to which way it moves along the route, and otherwise leaves it ungrouped
+- **A stretch the same buses run end to end is one colour on the map**: some stops drew a slower colour than the rest of their line only because each stop counts its buses by its own clock; stop cards keep each stop's own number
+
 - **Live no longer says a route has no live figures while listing its live buses**: Burlington 1 showed "Live figures for this route aren't available yet" above eight buses with early and on-time readings
 - **Studio's assistant marks a night route the same way in every answer**: its nearby-routes list called 1,043 weekday routes with no trips at all "night routes" and missed TTC's Blue Night buses, which its route answers already said run overnight only
 - **Route card rows read alike when one has a branch letter**: the TTC 504 showed "504C · to Roncesvalles" above a bare "to Dundas West"; that row now reads "504 · to Dundas West"
