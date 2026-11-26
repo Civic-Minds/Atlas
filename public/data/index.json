@@ -39932,6 +39932,68 @@
       "feedUrl": "https://files.mobilitydatabase.org/tld-4548/latest.zip",
       "timezone": "America/New_York",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "crawford",
+      "name": "Crawford Area Transportation Authority (CATA)",
+      "officialName": "Crawford Area Transportation Authority",
+      "commonName": "CATA",
+      "websiteUrl": "http://www.catabus.org",
+      "dataLicense": {
+        "url": "http://www.catabus.org",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Pennsylvania",
+      "center": [
+        41.634,
+        -80.1431
+      ],
+      "feedUrl": "https://catabus.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "rochester-mn",
+      "name": "Rochester Public Transit",
+      "officialName": "Rochester Public Transit",
+      "websiteUrl": "https://www.rochestermn.gov/departments/rochester-public-transit",
+      "dataLicense": {
+        "url": "https://www.rochestermn.gov/departments/rochester-public-transit/real-time-tools",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Minnesota",
+      "center": [
+        44.0341,
+        -92.4744
+      ],
+      "feedUrl": "https://gtfs.rpt.cadavl.com/RPT/GTFS/GTFS_RPT.zip",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "mountain-lynx",
+      "name": "Mountain Lynx Transit",
+      "officialName": "Mountain Lynx Transit",
+      "websiteUrl": "https://district-three.org/index.php/public-transit/",
+      "dataLicense": {
+        "url": "https://district-three.org/index.php/public-transit/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Virginia",
+      "center": [
+        36.7697,
+        -81.502
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/districtthree-va-us/districtthree-va-us--flex-v2.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2447/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     }
   ]
 }
