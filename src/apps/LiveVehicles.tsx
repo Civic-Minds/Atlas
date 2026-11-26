@@ -10,7 +10,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
-import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, CARD_NOTICE, PANEL_SIDEBAR, Z_HEADER, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FIT_CONTENT, BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import Tag from '../components/ui/Tag';
@@ -35,7 +35,7 @@ import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
-import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
+import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
@@ -812,6 +812,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               <CardDirectionRow
                 key={v.id}
                 label={vehicleRowName(v, i, selectedRouteModeWord)}
+                labelWeight="regular"
                 singleLine
                 onClick={() => {
                   setVehicleFly({ lat: v.lat, lon: v.lon, ts: Date.now() });
@@ -822,7 +823,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
                 value={(v.speedKmh != null || delayLabel(v)) ? (
                   <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
-                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
+                    {v.speedKmh != null && <span className={CARD_NOTICE}>{speedText(v.speedKmh)}</span>}
                     {delayLabel(v) && (
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
@@ -867,21 +868,27 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           vehicle's number is the card's first row. */}
       <SidebarCardSection label={selectedRouteModeLabel ?? selectedRouteModeWord}>
         {placedRows(vehicleCardRows(cardVehicle, cardDirectionLabel, cardTripEnd(cardVehicle.headsign, cardDirectionLabel, cardAnalysis), cardNowSec), cardDirectionsReady && cardAnalysisSettled).map(row => (
-          <div key={row.label} className="flex items-start justify-between gap-3">
-            <span className="text-xs font-bold text-[var(--text-dim)] shrink-0 whitespace-nowrap">{row.label}</span>
-            <span
-              style={row.status && row.status !== 'no_data' ? { color: getVehicleColors(row.status, colorMode).border } : undefined}
-              className={`${CARD_LIST_ROUTE} text-right min-w-0`}
-            >
-              {row.tag ? (
-                // The name stays whole; the tag drops under it when both don't fit on one line.
-                <span className="inline-flex flex-wrap items-center justify-end gap-x-1.5 gap-y-1">
-                  <span>{row.value}</span>
-                  <Tag className="whitespace-nowrap">{row.tag}</Tag>
-                </span>
-              ) : row.value}
-            </span>
-          </div>
+          // #1876: the route card's direction row, as the vehicle list above uses it: the label in regular weight and only
+          // the figure you scan for (the vehicle's early or late reading) in bold, the type rule of CIV-918.
+          <CardDirectionRow
+            key={row.label}
+            label={row.label}
+            labelWeight="regular"
+            value={
+              <span
+                style={row.status && row.status !== 'no_data' ? { color: getVehicleColors(row.status, colorMode).border } : undefined}
+                className={`text-xs leading-snug text-right min-w-0 ${row.status ? 'font-black' : 'font-normal text-[var(--text-primary)]'}`}
+              >
+                {row.tag ? (
+                  // The name stays whole; the tag drops under it when both don't fit on one line.
+                  <span className="inline-flex flex-wrap items-center justify-end gap-x-1.5 gap-y-1">
+                    <span>{row.value}</span>
+                    <Tag className="whitespace-nowrap">{row.tag}</Tag>
+                  </span>
+                ) : row.value}
+              </span>
+            }
+          />
         ))}
       </SidebarCardSection>
     </SidebarCardShell>
