@@ -112,7 +112,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
   // name is never cut. With a short value the value stays on the row's first line at the right and the name wraps onto a
   // second line beneath itself, as in the route lists.
   const wrapName = wrapLongValue && !longValue && !fitOrBelow;
-  const singleLine = singleLineProp && !longValue && !wrapName;
+  const singleLine = singleLineProp && !longValue && !wrapName && !fitOrBelow;
   const valueEnd = valueEndProp || longValue;
   // CIV-1300: a route list row (number and name) keeps its value in the right-hand column, a long value on two lines.
   const listRow = !!routeName;
