@@ -576,10 +576,10 @@ function twoPartSplit(text: string | undefined): [string, string] | null {
 /** Whether a value splits into two parts ("every 15 min," / "with one 32 min gap"; "every 60 min" / "until 5:05 PM"). */
 export const twoPart = (text: string | undefined) => twoPartSplit(text) != null;
 
-function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
+function TwoPartBadge({ dot, text, className, start = false }: { dot: React.ReactNode; text: string; className: string; start?: boolean }) {
   const [first, second] = twoPartSplit(text) ?? [text, ''];
   return (
-    <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
+    <span className={`inline-flex flex-wrap ${start ? 'justify-start' : 'justify-end'} gap-x-1 min-w-0 ${className}`}>
       <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
       {' '}
       <span className="whitespace-nowrap">{second}</span>
@@ -614,7 +614,10 @@ export function HeadwayBadge({
   className = '',
   secondLine = false,
   stacked = false,
+  start = false,
 }: {
+  /** CIV-3040 MOCK: a two-part reading on its own line starts at the left. */
+  start?: boolean;
   headway: number;
   colorHeadway?: number | null;
   /** A fixed dot colour in place of the headway tier's (the Night list's night shades, CIV-1329). */
@@ -642,7 +645,7 @@ export function HeadwayBadge({
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label={LIVE_DATA_AVAILABLE_LABEL} />}
-      {twoPart(words) ? (stacked ? <StackedBadge dot={dot} text={words} /> : <TwoPartBadge dot={dot} text={words} className={base} />) : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
+      {twoPart(words) ? (stacked ? <StackedBadge dot={dot} text={words} /> : <TwoPartBadge dot={dot} text={words} className={base} start={start} />) : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
   );

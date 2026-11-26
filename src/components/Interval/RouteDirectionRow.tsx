@@ -151,7 +151,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
         {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center ${fitOrBelow ? 'justify-start' : 'justify-end'} gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
-            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} start={fitOrBelow} />
           )}
           {/* The trunk-to-branch range ("every 15–54 min") is the shared badge (CIV-1000), coloured by its slower number, never
               the main stretch's: it must never look better than riders get (Ryan, CIV-1447). Where the row has its own colour
