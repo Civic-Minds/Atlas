@@ -41139,6 +41139,101 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-619/latest.zip",
       "timezone": "America/Los_Angeles",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "fresno-rural",
+      "name": "Fresno County Rural Transit Agency (FCRTA)",
+      "officialName": "Fresno County Rural Transit Agency",
+      "commonName": "FCRTA",
+      "websiteUrl": "https://www.ruraltransit.org/",
+      "dataLicense": {
+        "url": "https://www.ruraltransit.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "California",
+      "center": [
+        36.6123,
+        -119.7908
+      ],
+      "bbox": [
+        36.134,
+        -120.463,
+        36.869,
+        -119.313
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-85/latest.zip",
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "shore-transit",
+      "name": "Shore Transit",
+      "officialName": "Shore Transit",
+      "websiteUrl": "https://www.shoretransit.org/",
+      "dataLicense": {
+        "url": "https://www.shoretransit.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Maryland",
+      "center": [
+        38.3271,
+        -75.6008
+      ],
+      "bbox": [
+        37.978,
+        -75.855,
+        38.455,
+        -75.089
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3149/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "tuscaloosa",
+      "name": "Tuscaloosa Transit Authority",
+      "officialName": "Tuscaloosa Transit Authority",
+      "websiteUrl": "https://www.tuscaloosatransit.com",
+      "dataLicense": {
+        "url": "https://www.tuscaloosatransit.com",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Alabama",
+      "center": [
+        33.1936,
+        -87.5476
+      ],
+      "feedUrl": "https://passio3.com/tuscaloosatransit/passioTransit/gtfs/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7046/latest.zip",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "pulaski",
+      "name": "Pulaski Area Transit",
+      "officialName": "Pulaski Area Transit",
+      "websiteUrl": "http://www.pulaskitransit.org/",
+      "dataLicense": {
+        "url": "http://www.pulaskitransit.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Virginia",
+      "center": [
+        37.0513,
+        -80.7682
+      ],
+      "feedUrl": "https://data.trilliumtransit.com/gtfs/pulaski-va-us/pulaski-va-us--flex-v2.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2442/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     }
   ]
 }

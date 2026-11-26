@@ -1,0 +1,26 @@
+{
+  "slug": "fresno-rural",
+  "officialName": "Fresno County Rural Transit Agency",
+  "commonName": "FCRTA",
+  "websiteUrl": "https://www.ruraltransit.org/",
+  "dataLicense": {
+    "url": "https://www.ruraltransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    36.6123,
+    -119.7908
+  ],
+  "bbox": [
+    36.134,
+    -120.463,
+    36.869,
+    -119.313
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-85/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}
