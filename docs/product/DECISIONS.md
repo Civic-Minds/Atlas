@@ -352,6 +352,13 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-26 — The MCP says when a route runs all night, in place of first and last times (CIV-3032, #1867)
+Ryan, 2026-11-26: "1, OK as written", his word-for-word OK on the MCP's all-night wording. Earlier: "if you ask 'what time is the first trip on the red line' is that different than 'does the red line run all night'" and "If a route runs 24/7 then should it say that". For a route that passes the Night Service rule, route_frequency gives this in place of first and last times:
+- "Runs all night: every 30 min overnight (2–6 AM)" (his examples: the Red Line and AC Transit 800).
+- "Runs 24 hours, 7 days a week", only when every hour has service in both directions on all three day types.
+- Partial days name the days, e.g. "Runs 24 hours on weekdays and Saturdays".
+No new number: the test is the existing Night Service rule.
+
 ### 2026-11-26 — TARC's held refresh is let through with the slowest-piece rule applied (CIV-3029)
 Ryan, 2026-11-26, answering the Questions chat, picked "1": "Let it through: the next rebuild publishes TARC with the rule applied, like every other agency". Not chosen: 2, keep TARC held on its old figures. TARC had been held by the release check since at least 2026-11-24: 6 of its 12 routes read slower, because the CIV-2040 rule (approved 2026-11-21: a route's grade uses its slowest piece, since the trunk never covers the whole route) reached TARC for the first time. It is not a timetable change: the source zip is unchanged. Example: route 1 goes from every 15 to about every 62–64 min. The rebuild passes `--allow tarc:headway-shift`; his pick is the go-ahead for that R2 write.
 
