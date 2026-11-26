@@ -862,6 +862,15 @@ export function computeHourDepartureCounts(departureTimes: number[], hours: read
 }
 
 /**
+ * #1873: how many departures a list holds over the whole service day (distinct times, as computeHourDepartureCounts
+ * counts them), including those its hours leave out: AC Transit writes its All Nighters' trips 00:20-05:30 on the
+ * service day, so the 800 counted 4 a direction from 5 AM on and runs 12-14.
+ */
+export function countDayDepartures(departureTimes: readonly number[]): number {
+  return new Set(departureTimes).size;
+}
+
+/**
  * CIV-1611: the earliest and latest departure in one clock hour, from the same membership rule as
  * computeHourDepartureCounts (a time counts in [hour*60, hour*60+60)), in whole minutes. Null when the hour has none.
  */

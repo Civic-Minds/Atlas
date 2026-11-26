@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's assistant counts a night route's trips before 5 AM**: AC Transit's 800 showed 4 trips each way, though it runs 12 to 14, most of them written before Atlas's 5 AM day start
 - **Studio's assistant asks which agency when a short name fits two**: "RTC" went to RTC Québec without a word, so a question about Las Vegas's Red Line got Québec's answer
 - **Reporting a problem from a route card's destination name picks the name reason**: clicking "to Maryland Pkwy Southbound" had pre-checked "The frequency is wrong"; only clicking the figure does that now
 - **Studio's assistant gives the hours after midnight when asked about the early morning**: asked for the Red Line from 2 to 6 AM, it gave only the 5 AM hour and named no part of the day, though the route runs every 30 min all night

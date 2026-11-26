@@ -49,6 +49,8 @@ export interface RouteProperties {
   maxGapByHour?: HeadwayByHourMaxGap;
   /** CIV-1010: departures leaving in each clock hour, only hours with one or more (the last hour of the day included). */
   departuresByHour?: Record<number, number>;
+  /** #1873: the departures of the same list over the whole service day, the hours before 5 AM included: the row's trip count. */
+  departuresInDay?: number;
   /** CIV-1611: the first and last of the departuresByHour departures (minutes after midnight). */
   departureSpan?: RouteDepartureSpan;
   /**
