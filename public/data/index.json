@@ -40219,6 +40219,70 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-537/latest.zip",
       "timezone": "America/New_York",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "manatee",
+      "name": "Manatee County Area Transit (MCAT)",
+      "officialName": "Manatee County Area Transit",
+      "commonName": "MCAT",
+      "websiteUrl": "https://www.mymanatee.org/departments/mcat",
+      "dataLicense": {
+        "url": "https://www.mymanatee.org/departments/mcat",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Florida",
+      "center": [
+        27.4736,
+        -82.5719
+      ],
+      "feedUrl": "https://realtimemcat.availtec.com/InfoPoint/GTFS-Zip.ashx",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2258/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "frederick",
+      "name": "Transit Services of Frederick County (TransIT)",
+      "officialName": "Transit Services of Frederick County",
+      "commonName": "TransIT",
+      "websiteUrl": "https://www.frederickcountymd.gov/105/Transit",
+      "dataLicense": {
+        "url": "https://www.frederickcountymd.gov/105/Transit",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Maryland",
+      "center": [
+        39.4189,
+        -77.4159
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-2432/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "cache-valley",
+      "name": "Cache Valley Transit District (CVTD)",
+      "officialName": "Cache Valley Transit District",
+      "commonName": "CVTD",
+      "websiteUrl": "https://cvtdbus.org/",
+      "dataLicense": {
+        "url": "https://cvtdbus.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Utah",
+      "center": [
+        41.7408,
+        -111.8322
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-80028/latest.zip",
+      "timezone": "America/Denver",
+      "hiddenInProduction": true
     }
   ]
 }
