@@ -85,7 +85,10 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
   if (!worded.shown.length) return undefined;
   // Rows at that number saying different things leave the list on the number.
   const said = new Set(worded.worded.filter(w => w.h === Math.max(...worded.shown)).map(w => w.words));
-  const words = said.size === 1 ? [...said][0] : undefined;
+  // #1825: a list that shows a range drops the words (routeListDisplay), so it reads the bare numbers (#1771), never the first part of
+  // a row that changes partway. CTA 53 Saturday late read "every 7–18" beside "every 7 min until 11:33 PM, then every 31 min".
+  const rangeShown = headwayRangeShown(Math.min(...worded.shown), Math.max(...worded.shown));
+  const words = said.size === 1 && !rangeShown ? [...said][0] : undefined;
   const { shown, color } = words ? worded : read(true);
   const high = Math.max(...shown);
   return { low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}) };

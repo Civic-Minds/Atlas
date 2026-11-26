@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio MCP and agency pages give the same route figures as the map's route card**: they read the old card, so Brooklyn B35 on Sunday middays read "every 237 min" for a branch that runs every 12 from 12:57 PM, and AC Transit 40's weekday AM peak read "every 45" from 7 uneven trips the card calls irregular
 - **Tapping "1 agency couldn't load" says which agency**: the map's pill lists each agency that failed, on phones too, where the names were only a hover you couldn't reach
 - **The full-day schedule names the hour you point at**: hovering 5 AM reads "5 AM: every 15 min" instead of "Overnight every 15 min", which read as overnight service on routes like CapMetro 801 that have none
 - **The cloud recorder saves each recorded agency's whole-network vehicle counts with every snapshot**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network
