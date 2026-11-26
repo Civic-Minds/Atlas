@@ -3510,7 +3510,12 @@ export async function processGtfsBuffer(
         const endStopList = featureHeadsign && coverageStops.length > 1
           ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId)
           : selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId));
-        if (endStopList && endStopList.length > 0) {
+        // Only where the list is this row's own trips: a headsign's end-stop list can also hold the trips of its other
+        // patterns (SEPTA 98 weekday's 4-trip Norristown variant read the main pattern's 2 an hour, so it lost its
+        // noOwnServiceByPeriod and showed "every 30" beside its own 6-hour gap, CIV-1069). More departures than the row's
+        // own shape makes at its end stop are someone else's.
+        const ownAtEnd = shapeMap?.get(terminalId)?.length;
+        if (endStopList && endStopList.length > 0 && (ownAtEnd == null || endStopList.length <= ownAtEnd)) {
           feature.properties.departuresByHour = computeHourDepartureCounts(endStopList, SPARKLINE_HOURS);
           feature.properties.departureSpan = computeDepartureSpan(endStopList, SPARKLINE_HOURS);
         }
