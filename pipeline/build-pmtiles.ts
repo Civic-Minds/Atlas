@@ -16,6 +16,7 @@ import { emptyAgencySections } from '../shared/agencySections.js';
 import { currentCodeVersion, RELEASE_STAMP_FIELD } from './releaseGuard.js';
 import { planSearchIndex, readReleaseAgencies, uploadSearchIndex } from './searchIndex.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -118,6 +119,7 @@ async function fetchJson(url: string, retries = 5, missingOk = false): Promise<F
 }
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--allow-stale-data': 'flag', '--only-slug': 'value', '--source-prefix': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
   const dryRun = process.argv.includes('--dry-run');
   const allowStaleData = process.argv.includes('--allow-stale-data');
   if (!dryRun && !allowStaleData) {

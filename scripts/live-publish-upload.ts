@@ -17,6 +17,7 @@
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
 export interface ReportManifest { schema: number; agency: string; generatedAt?: string; thisWeek: { from: string; to: string } | null; lastWeek: { from: string; to: string } | null; routes: string[] }
 
@@ -70,6 +71,7 @@ export function wouldGoBackwards(publishedManifest: string | null, next: ReportM
 
 async function main() {
   await import('../pipeline/loadEnv.js');
+  assertKnownFlags(process.argv.slice(2), { '--upload': 'flag', '--allow-older': 'flag', '--first-publish': 'flag', '--from': 'value', '--backup': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
   const argv = process.argv.slice(2);
   const flags = new Set(argv.filter(a => a === '--upload' || a === '--allow-older' || a === '--first-publish'));
   const args: Record<string, string> = {};

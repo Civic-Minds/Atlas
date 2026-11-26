@@ -20,7 +20,9 @@ import { join, relative, resolve } from 'node:path';
 import { IMMUTABLE_CACHE_CONTROL, r2Get, r2PutFile } from '../../pipeline/r2';
 import { runWithConcurrency } from '../../pipeline/utils';
 import { splitPaths } from '../../shared/mcpSplitStore';
+import { assertKnownFlags } from '../../pipeline/cliFlags';
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--data-dir': 'value', '--only': 'value', '--history-file': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const opt = (name: string) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };

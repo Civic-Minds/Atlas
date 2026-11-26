@@ -8,7 +8,9 @@
 import './loadEnv.js';
 import { r2Get, r2List, r2Put } from './r2.js';
 import { RELEASE_HISTORY_KEY, appendReleaseHistory } from '../shared/releaseHistory.js';
+import { assertKnownFlags } from './cliFlags.js';
 
+assertKnownFlags(process.argv.slice(2), { '--write': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
 const write = process.argv.includes('--write');
 const keys = (await r2List('atlas/releases/')).filter(key => /^atlas\/releases\/release-[a-z0-9]+\/manifest\.json$/.test(key));
 const found: Array<{ releaseId?: string; generatedAt?: string }> = [];

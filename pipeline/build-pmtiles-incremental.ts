@@ -85,6 +85,7 @@ import {
 } from './countryLaunchGate.js';
 import { consumeDataRefreshMarker, dataRefreshGuardError, readDataRefreshMarker } from './dataRefreshMarker.js';
 import { unpairedUploadError } from './releaseGuard.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 console.log(`env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'})`);
 
@@ -274,6 +275,7 @@ function parseArgs(argv: string[]): { slug: string; dryRun: boolean; allowStaleD
 }
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--allow-stale-data': 'flag', '--i-am-launching-country': 'flag', '--allow-unpaired-pmtiles-upload': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
   const { slug, dryRun, allowStaleData, forceCountryLaunch } = parseArgs(process.argv.slice(2));
 
   // The merged archive goes to the legacy root atlas.pmtiles, outside any

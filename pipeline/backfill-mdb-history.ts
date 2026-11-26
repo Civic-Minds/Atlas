@@ -22,6 +22,7 @@ import { backfillRouteKey } from './historyRouteKey.js';
 import { r2PutArchive, r2PutArchiveJson, r2GetArchive } from './r2.js';
 import { writeHistoryCoverage } from './historyCoverage.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 const MDB_API = 'https://api.mobilitydatabase.org/v1';
 
@@ -181,6 +182,7 @@ async function writeSnapshot(slug: string, geojson: string, periodKey: string, o
 }
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
   const [slug, feedId, startYearArg] = process.argv.slice(2);
   const dryRun = process.argv.includes('--dry-run');
   if (!slug || !feedId) {

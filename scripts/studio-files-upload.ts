@@ -15,7 +15,9 @@ import { join, resolve } from 'path';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { STUDIO_FILES_PREFIX, isStudioFileName } from '../shared/studioFiles';
 import { privateLiveBucketName, requireEnv } from '../pipeline/r2';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--from': 'value', '--only': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const argv = process.argv.slice(2);
 const opt = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
 const from = resolve(opt('--from') ?? 'tmp/studio');
