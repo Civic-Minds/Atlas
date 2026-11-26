@@ -1,6 +1,6 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
-import JSZip from 'jszip';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { zipDir } from './fixtureZip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { processAgencyFeeds } from '../agencyFeeds';
 
@@ -11,12 +11,6 @@ import { processAgencyFeeds } from '../agencyFeeds';
 
 const FIXTURE = resolve(__dirname, 'fixtures/clemson-cat-2026-10');
 const agency = JSON.parse(readFileSync(resolve(__dirname, '../../config/agencies/clemson-cat.json'), 'utf8'));
-
-async function zipFixture(): Promise<Buffer> {
-  const zip = new JSZip();
-  for (const file of readdirSync(FIXTURE)) zip.file(file, readFileSync(join(FIXTURE, file)));
-  return zip.generateAsync({ type: 'nodebuffer' });
-}
 
 function routeDays(geojson: string): string[] {
   const lines = JSON.parse(geojson).features.filter((f: any) => f.properties.stopId == null);
@@ -32,7 +26,7 @@ describe('Clemson reads the current week (CIV-846)', () => {
   });
 
   it('lists every route running this week', async () => {
-    const buf = await zipFixture();
+    const buf = await zipDir(FIXTURE);
     const current = routeDays((await processAgencyFeeds(buf, [], agency)).geojson);
     expect(current).toEqual([
       'TL-17|Saturday', 'TL-17|Sunday', 'TL-17|Weekday', 'TL-23|Weekday',

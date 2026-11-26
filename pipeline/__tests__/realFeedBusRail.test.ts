@@ -11,7 +11,7 @@
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import JSZip from 'jszip';
+import { zipDir } from './fixtureZip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processAgencyFeeds, type AgencyFeedConfig, type AgencyFeedResult } from '../agencyFeeds.js';
 import { countArtifacts, outputDropRefusal } from '../archiveSelection.js';
@@ -21,12 +21,6 @@ const FIXTURE = join(import.meta.dirname, 'fixtures/mdot-mta-bus-rail');
 const REPO = join(import.meta.dirname, '../..');
 const SUBWAY_URL = 'https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_metro.zip';
 const agency: AgencyFeedConfig = { slug: 'mta-maryland', supplementalFeedUrls: [SUBWAY_URL] };
-
-async function zipFixture(name: string): Promise<Buffer> {
-  const zip = new JSZip();
-  for (const file of readdirSync(join(FIXTURE, name))) zip.file(file, readFileSync(join(FIXTURE, name, file)));
-  return zip.generateAsync({ type: 'nodebuffer' });
-}
 
 function fixtureRows(name: string, file: string): Array<Record<string, string>> {
   const [header, ...lines] = readFileSync(join(FIXTURE, name, file), 'utf8').trimEnd().split('\n');
@@ -46,8 +40,8 @@ beforeAll(async () => {
   // reference week never depends on the day the suite runs (#658).
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(new Date('2026-03-04T12:00:00-05:00'));
-  const bus = await zipFixture('bus');
-  merged = await processAgencyFeeds(bus, [{ url: SUBWAY_URL, buf: await zipFixture('metro-subway') }], agency);
+  const bus = await zipDir(join(FIXTURE, 'bus'));
+  merged = await processAgencyFeeds(bus, [{ url: SUBWAY_URL, buf: await zipDir(join(FIXTURE, 'metro-subway')) }], agency);
   busOnly = await processAgencyFeeds(bus, [], { slug: 'mta-maryland' });
 });
 
@@ -105,8 +99,8 @@ describe('real bus + rail supplemental feed (MDOT MTA)', () => {
   it('keeps the subway when processed with the real mta-maryland registry options', async () => {
     const registry = JSON.parse(readFileSync(join(REPO, 'config/agencies/mta-maryland.json'), 'utf8')) as AgencyFeedConfig;
     const result = await processAgencyFeeds(
-      await zipFixture('bus'),
-      [{ url: SUBWAY_URL, buf: await zipFixture('metro-subway') }],
+      await zipDir(join(FIXTURE, 'bus')),
+      [{ url: SUBWAY_URL, buf: await zipDir(join(FIXTURE, 'metro-subway')) }],
       { ...registry, supplementalFeedUrls: [SUBWAY_URL] },
     );
     expect(routeLines(result).some(f => f.properties.routeType === 1)).toBe(true);

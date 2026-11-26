@@ -1,6 +1,5 @@
-import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import JSZip from 'jszip';
+import { zipDir } from './fixtureZip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { processAgencyFeeds } from '../agencyFeeds.js';
@@ -10,11 +9,6 @@ import { TIER_MAXES } from '../../shared/rules/frequency';
 // the lift) reads the grading scale, so a subway every 4 reaches tier 5 end to end. CIV-1813: that
 // scale (5-8-10-15-20-30-60) is the same for every mode, buses included.
 
-async function zipDir(dir: string): Promise<Buffer> {
-  const zip = new JSZip();
-  for (const file of readdirSync(dir)) zip.file(file, readFileSync(join(dir, file)));
-  return zip.generateAsync({ type: 'nodebuffer' });
-}
 const lines = (geojson: string, day: string) => (JSON.parse(geojson).features as any[])
   .map(f => f.properties).filter(p => p.stopId == null && p.day === day && p.headway != null);
 const ON_SCALE = new Set([...TIER_MAXES.map(String), 'infrequent', 'span']);

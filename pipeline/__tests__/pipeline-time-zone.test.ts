@@ -2,6 +2,9 @@ import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+// The repo's own tsx, not `npx tsx`, which can reach the npm cache or the network (CIV-2976 T4).
+const TSX = resolve(__dirname, '../../node_modules/.bin/tsx');
+
 // #923: processing output depended on the machine's time zone. Loading the calendar code pins it.
 describe('processing time zone (#923)', () => {
   it('runs calendar math in America/Toronto whatever TZ the process starts with', () => {
@@ -12,7 +15,7 @@ describe('processing time zone (#923)', () => {
       const ref = detectReferenceDate([cal('a', '20261001', '20261130'), cal('b', '20261001', '20261130')], []);
       console.log(JSON.stringify({ tz: process.env.TZ, offset: new Date(2026, 10, 15).getTimezoneOffset(), ref }));
     `;
-    const run = (tz: string) => JSON.parse(execFileSync('npx', ['tsx', '--eval', script, '--input-type=module'], { env: { ...process.env, TZ: tz }, encoding: 'utf8' }).trim().split('\n').at(-1)!);
+    const run = (tz: string) => JSON.parse(execFileSync(TSX, ['--eval', script, '--input-type=module'], { env: { ...process.env, TZ: tz }, encoding: 'utf8' }).trim().split('\n').at(-1)!);
     const utc = run('UTC'), toronto = run('America/Toronto');
     expect(utc.tz).toBe('America/Toronto');
     expect(utc.offset).toBe(300);
