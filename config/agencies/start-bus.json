@@ -1,0 +1,26 @@
+{
+  "slug": "start-bus",
+  "officialName": "Southern Teton Area Rapid Transit",
+  "commonName": "START Bus",
+  "websiteUrl": "http://www.startbus.com",
+  "dataLicense": {
+    "url": "http://www.startbus.com",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Wyoming",
+  "center": [
+    43.4775,
+    -110.7885
+  ],
+  "bbox": [
+    43.023,
+    -111.113,
+    43.744,
+    -110.73
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/ntd-80188/latest.zip",
+  "timezone": "America/Denver",
+  "hiddenInProduction": true
+}

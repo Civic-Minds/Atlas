@@ -41234,6 +41234,98 @@
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2442/latest.zip",
       "timezone": "America/New_York",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "bayway",
+      "name": "Bay Town Trolley (Bayway)",
+      "officialName": "Bay Town Trolley",
+      "commonName": "Bayway",
+      "websiteUrl": "https://www.baywaytransit.org/",
+      "dataLicense": {
+        "url": "https://www.baywaytransit.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Florida",
+      "center": [
+        30.1784,
+        -85.6955
+      ],
+      "feedUrl": "http://data.trilliumtransit.com/gtfs/baytowntrolley-fl-us/baytowntrolley-fl-us.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-337/latest.zip",
+      "timezone": "America/Chicago",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "calaveras",
+      "name": "Calaveras Transit (Calaveras Connect)",
+      "officialName": "Calaveras Transit",
+      "commonName": "Calaveras Connect",
+      "websiteUrl": "http://calaverasconnect.org/",
+      "dataLicense": {
+        "url": "http://calaverasconnect.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "California",
+      "center": [
+        38.1905,
+        -120.5551
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-93/latest.zip",
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "start-bus",
+      "name": "Southern Teton Area Rapid Transit (START Bus)",
+      "officialName": "Southern Teton Area Rapid Transit",
+      "commonName": "START Bus",
+      "websiteUrl": "http://www.startbus.com",
+      "dataLicense": {
+        "url": "http://www.startbus.com",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Wyoming",
+      "center": [
+        43.4775,
+        -110.7885
+      ],
+      "bbox": [
+        43.023,
+        -111.113,
+        43.744,
+        -110.73
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/ntd-80188/latest.zip",
+      "timezone": "America/Denver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "kats",
+      "name": "Kingsport Area Transit Service (KATS)",
+      "officialName": "Kingsport Area Transit Service",
+      "commonName": "KATS",
+      "websiteUrl": "https://kingsporttransit.org/",
+      "dataLicense": {
+        "url": "https://kingsporttransit.org/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Tennessee",
+      "center": [
+        36.5473,
+        -82.5485
+      ],
+      "feedUrl": "https://api.transloc.com/gtfs/kats.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40080/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
     }
   ]
 }
