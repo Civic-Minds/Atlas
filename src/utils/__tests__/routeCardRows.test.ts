@@ -136,3 +136,25 @@ describe('CIV-1251 review: one word for a row with no number', () => {
     expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly in this period', 'Runs irregularly in this period']);
   });
 });
+
+describe('plain route number beside a lettered row (CIV-3036)', () => {
+  // TTC 504 King: the replacement bus is 504C; the streetcar rows to Dundas West and Broadview mix 504 with a few 504A/504B
+  // trips, so they carry no letter. Ryan picked 1: they lead with the plain route number.
+  const king = (directionId: number, headsign: string, midday: number, branchCode?: string) => ({
+    routeId: '504', routeShortName: '504', directionId, headsign, tier: '10', headway: midday,
+    headwayByPeriod: { midday }, ...(branchCode ? { branchCode } : {}),
+  }) as unknown as ShapeProperties;
+  const card = (directions: ShapeProperties[]) => buildRouteCardModel({
+    directions, routeShortName: '504', routeLongName: 'King',
+    directionGroups: [0, 1].map(dirId => ({ dirId, realTier: directions.filter(d => d.directionId === dirId), span: [] })),
+    period: 'midday', maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+  }).groups.map(g => g.rows.map(r => r.label));
+
+  it('labels the unlettered row with the route number when another row in its direction has a letter', () => {
+    expect(card([king(1, 'Roncesvalles', 5, '504C'), king(1, 'Dundas West', 10)])[1]).toEqual(['504C · to Roncesvalles', '504 · to Dundas West']);
+  });
+
+  it('leaves a direction with no lettered row as it was', () => {
+    expect(card([king(0, 'Broadview', 10), king(0, 'Distillery', 8)])[0]).toEqual(['to Broadview', 'to Distillery']);
+  });
+});
