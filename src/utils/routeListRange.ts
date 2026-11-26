@@ -2,6 +2,7 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { buildDirectionGroups } from './routeCardDirectionGroups';
 import { buildRouteCardModel } from './routeCardRows';
 import { headwayRangeShown } from './headwayText';
+import { periodShapeGap } from '../../shared/headwayText';
 import { routeCardDirectionOrder } from './routeCardRoute';
 import { rowOwnTripsEven } from './rowTrips';
 
@@ -64,7 +65,7 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
   const read = (bare: boolean) => {
     const shown: number[] = [];
     let color = 0;
-    const worded: Array<{ h: number; words: string }> = [];
+    const worded: Array<{ h: number; words: string; gap?: number }> = [];
     // CIV-2909: each row number with whether its row's own trips pass rule D (3 or more, evenly spaced).
     const ownNumbers: Array<{ h: number; own: boolean }> = [];
     for (const group of model.groups) {
@@ -87,15 +88,19 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
         color = Math.max(color, h, v.colorHeadway ?? 0);
         const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, h);
         if (range) shown.push(v.trunkHeadway!);
-        else if (v.headwayLabel) worded.push({ h, words: v.headwayLabel });
+        else if (v.headwayLabel) worded.push({ h, words: v.headwayLabel, ...(periodShapeGap(v.headwayLabel) != null ? { gap: periodShapeGap(v.headwayLabel)! } : {}) });
       }
     }
     return { shown, color, worded, ownNumbers };
   };
   const worded = read(false);
   if (!worded.shown.length) return undefined;
-  // Rows at that number saying different things leave the list on the number.
-  const said = new Set(worded.worded.filter(w => w.h === Math.max(...worded.shown)).map(w => w.words));
+  // Rows at that number saying different things leave the list on the number. #1856: where they differ only in the one gap they
+  // name ("every 30 min, with one 59 min gap" and "…, with one 60 min gap", SEPTA 53 Saturday AM), the list says the longest
+  // gap's words, as a list row is the route's slowest showing (#1771); words naming a time stay on the number.
+  const atHigh = worded.worded.filter(w => w.h === Math.max(...worded.shown));
+  const gapOnly = atHigh.length > 1 && atHigh.every(w => w.gap != null);
+  const said = new Set(gapOnly ? [atHigh.reduce((a, b) => (b.gap! > a.gap! ? b : a)).words] : atHigh.map(w => w.words));
   // #1825: a list that shows a range drops the words (routeListDisplay), so it reads the bare numbers (#1771), never the first part of
   // a row that changes partway. CTA 53 Saturday late read "every 7–18" beside "every 7 min until 11:33 PM, then every 31 min".
   const rangeShown = listRangeShown(worded);

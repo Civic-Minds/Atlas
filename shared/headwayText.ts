@@ -175,6 +175,12 @@ export function periodShapeParts(text: string): { main: string; note: string | n
   return m ? { main: m[1], note: m[2] ?? m[3] } : { main: text, note: null };
 }
 
+/** #1856: the one gap D6's words name ("every 30 min, with one 59 min gap" -> 59), the inverse of headwayPeriodShape's gap form; null otherwise. */
+export function periodShapeGap(text: string): number | null {
+  const m = /^every [^,]+, with one ([\d.]+) min gap$/.exec(text);
+  return m ? Number(m[1]) : null;
+}
+
 export function capitalizeFirst(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
