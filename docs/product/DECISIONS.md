@@ -217,10 +217,14 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar (in Studio's Live, Measure sits with the filters: Agency, Route, Time of day; Ryan, 2026-11-19), with the map key as a card floating at the map's bottom left (since CIV-1821).
   - Why: the panels need a desktop's room, and controls in two places read as clutter.
   - Source: [decision log](#decision-log) (2026-11-16)
-- **Timetable measures are "Schedule adherence"; "Delay" is the clear-street measure**
-  - What: the measure once called "Falls behind" / "Delays start" and its section (once "Where delays start") read "Schedule adherence"; "Typical delay" reads "Typical deviation"; "Delay" stays for the new clear-street measure.
-  - Why: Ryan: ""delays start" and "behind schedule" sounds fucking stupid in a professional product".
-  - Source: [decision log](#decision-log) (2026-11-25, CIV-2924)
+- **Timetable measures are "Schedule adherence"; the speed view is "Speed"**
+  - What: the measure once called "Falls behind" / "Delays start" and its section (once "Where delays start") read "Schedule adherence"; "Typical delay" reads "Typical deviation". The new positions-only view is named "Speed" (average speed, no baseline), not "Delay".
+  - Why: Ryan: ""delays start" and "behind schedule" sounds fucking stupid in a professional product"; "Delay" implies a baseline the picked method doesn't have.
+  - Source: [decision log](#decision-log) (2026-11-25, CIV-2924; 2026-11-26, CIV-2917)
+- **Studio is split by time: now, past, plan**
+  - What: Live and Fleet (now) stay map panels; Performance (past) and Schedules (plan) are full pages. Live's weekly late figures move into Performance, so no figure shows in two places.
+  - Why: trip time showed in three places and lateness in two.
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-2917)
 - **Math explanations stay visible**
   - What: text that explains a number or threshold stays on screen, not hover-only; text that only restates a label can go.
   - Why: the explanation is what makes the figure trustworthy.
@@ -316,6 +320,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-26 — Studio splits into now, past and plan; the new view is "Speed" (CIV-2917; supersedes CIV-2924's "Delay is kept for the clear-street measure")
+Ryan, 2026-11-26, answering the Questions chat on Strategy's layout review (screens checked on 5182, compared with Swiftly, Optibus and Remix), picked "1": "This split, with Speed", over "2. Keep Performance as a separate tab next to Live, as planned" (trip time and lateness then appear twice). Studio splits into now (Live, Fleet: map panels), past (Performance: a full page) and plan (Schedules: a full page, starting from Studio's mock-up, option 5 on CIV-2182). Live's weekly late figures move into Performance; today trip time shows in three places and lateness in two. The new view is "Speed": the method picked on CIV-2919 is average speed with no baseline, and "Delay" implies one. It shows average speed by stretch and time of day, plus recorded trip time beside the timetable's on the route card's chart. This replaces the 2026-11-25 picks of a "Performance" tab and a "Delay" view (CIV-2917's first comment).
+
 ### 2026-11-24 — A card row with a wait over an hour needs 4 of its own trips for a number (CIV-2232; logged 2026-11-25 with #1827)
 Ryan, 2026-11-24, answering the Questions chat on CIV-2232. First, "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular" (over "2. Keep 3 as today"). That changed 10,779 cards, not the 542 first shown, so it was re-asked, and he picked "1": "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words." Service that starts or ends in the period keeps its number (about 5,000 cards changed).
 - The rule: a route card row whose period wait is over PERIOD_COVERAGE_MAX_HEADWAY (60 min), with fewer than `MIN_CARD_ROW_DEPARTURES` (4) of its own trips in the period and no "from …"/"until …" words, reads "Runs irregularly in this period". Card wording only: the colour and the filter are unchanged. Built in a08c19d (CIV-2232). The number had not been logged here until now.
@@ -337,6 +344,7 @@ Ryan, 2026-11-25, answering the Questions chat after seeing the review page (TTC
 Ryan, 2026-11-25, on E11's body, word for word: "We check each vehicle's location once per minute. The departure times can be up to 30 seconds off, so we add a 30 second buffer to the limit to allow for this." That is the whole page. Asked whether it needs a third paragraph: "Do we need a third paragraph then", then "1" (no). Title, his pick: "Late departures". E11 opens from N133, line B: "<Agency> doesn't publish its on-time window, so Atlas counts late as more than 5½ min behind schedule.", shown under Live's week figures (Live map and Studio) for an agency with no published on-time window. The explainer layout rule in TEXT.md (Card notices) now says paragraph 3 is left out when the reader has nothing to do.
 
 ### 2026-11-25 — Live's timetable measures read "Schedule adherence" and "Typical deviation"; "Delay" is kept for the clear-street measure (CIV-2924; supersedes CIV-1602's "Delays start")
+Superseded in part by 2026-11-26 (CIV-2917): the clear-street view is named "Speed", not "Delay".
 Ryan, 2026-11-25, picking "1" after rejecting "Behind schedule" (""delays start" and "behind schedule" sounds fucking stupid in a professional product"), and on the section: "Why not just Schedule adherence wtf does by stretch mean". The timetable measures "Falls behind" and "Delays start" become one label, "Schedule adherence"; "Typical delay" becomes "Typical deviation"; the Live section "Where delays start" becomes "Schedule adherence". CIV-1602's "Delays start" (never logged here; recorded in the code and the style guard) is superseded. Labels live once in shared/liveWording.ts. Open: Studio's Measure menu lists "Falls behind" and "Delays start" as two measures, so it keeps "Falls behind" until Ryan says whether Studio drops one (asked on CIV-2924).
 
 ### 2026-11-24 — E10 (Official data) drops "The agency's website has its current schedule." and its link
