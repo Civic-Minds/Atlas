@@ -5,6 +5,10 @@
  * is irregular, limited service (the class whose filter text already reads "School runs, a few trips a day, on-demand"),
  * flagged onDemand. Surfaces then read it with their usual handling of a route with no values, and the frequency filter
  * never passes it.
+ *
+ * #1828 (CIV-2960): a route riders must book ahead (CIV-1006, bookingRequired) gets the same treatment: its timetable is
+ * the booking window, not a bus on a schedule, so the card, the map colour and the filter stop reading a fixed frequency
+ * from it (exo T30 printed a wait beside "Rides on this route must be booked ahead.").
  */
 
 /** Feature properties measured from the timetable (and the beta section fields built from them). */
@@ -18,20 +22,19 @@ export function isTimetableField(key: string): boolean {
 
 /**
  * Applies the on-demand treatment in place. Returns how many features changed. Only features whose routeShortName is
- * listed are touched; with no list, nothing is.
+ * listed, or that need a booking (bookingRequired), are touched.
  */
 export function applyOnDemandRoutes(
   features: ReadonlyArray<{ properties?: Props | null }>,
   runningTimes: Record<string, unknown>,
   onDemandRoutes: readonly string[] | undefined,
 ): number {
-  if (!onDemandRoutes?.length) return 0;
-  const listed = new Set(onDemandRoutes);
+  const listed = new Set(onDemandRoutes ?? []);
   const routeIds = new Set<string>();
   let changed = 0;
   for (const f of features) {
     const p = f.properties;
-    if (!p || p.stopId != null || !listed.has(String(p.routeShortName ?? ''))) continue;
+    if (!p || p.stopId != null || !(listed.has(String(p.routeShortName ?? '')) || p.bookingRequired === true)) continue;
     for (const key of Object.keys(p)) if (isTimetableField(key)) delete p[key];
     // The stretch rows' period values (beta section colours) come from the same timetable.
     const meta = p.stretchMeta as { main?: Props | null; tails?: Props[] } | undefined;

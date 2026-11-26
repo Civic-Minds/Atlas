@@ -33,3 +33,25 @@ describe('routes listed as running on demand (#1119)', () => {
     expect(applyOnDemandRoutes([feature('PRT')], {}, undefined)).toBe(0);
   });
 });
+
+// #1828 (CIV-2960): exo Vallée-du-Richelieu T30 (booked ahead) published headway 40 and printed a wait beside the
+// booking notice; TriCounty Link CS8 read every 15.
+describe('routes riders must book ahead (#1828)', () => {
+  it('get the same treatment with no config list: no fixed frequency, limited, irregular', () => {
+    const t30 = feature('T30');
+    t30.properties.bookingRequired = true;
+    const runningTimes: Record<string, unknown> = { 'T30::0::Weekday': { h: { 9: 15 } } };
+    expect(applyOnDemandRoutes([t30], runningTimes, undefined)).toBe(1);
+    expect(JSON.stringify(t30.properties)).not.toMatch(/\b30\b(?!")/);
+    expect(t30.properties).toMatchObject({ headway: null, tier: 'span', serviceClass: 'irregular', bookingRequired: true });
+    expect(runningTimes).toEqual({});
+  });
+
+  it('leaves a walk-on route and a booked route\'s stop points unchanged', () => {
+    const walkOn = feature('7');
+    const stop = { properties: { stopId: '1', routeShortName: 'T30', bookingRequired: true, headway: 40 } as Record<string, unknown> };
+    const before = JSON.stringify([walkOn, stop]);
+    expect(applyOnDemandRoutes([walkOn, stop], {}, undefined)).toBe(0);
+    expect(JSON.stringify([walkOn, stop])).toBe(before);
+  });
+});

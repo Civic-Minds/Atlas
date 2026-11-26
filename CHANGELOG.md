@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Routes you must book ahead no longer show a fixed frequency**: exo's taxibuses, Annapolis Call-in and the rest printed "every 40 min" or even "every 15 min" beside "Rides on this route must be booked ahead.", and their map colour and frequency filter read the same number
 - **Atlas Studio's Fleet shows how many vehicles are out with no trip**: a quieter "Not on a trip" row under "In service now", for agencies whose feed reports such vehicles, since "In service now" counts only vehicles on a trip
 - **Tapping "1 agency couldn't load" says which agency**: the map's pill lists each agency that failed, on phones too, where the names were only a hover you couldn't reach
 - **The full-day schedule names the hour you point at**: hovering 5 AM reads "5 AM: every 15 min" instead of "Overnight every 15 min", which read as overnight service on routes like CapMetro 801 that have none
