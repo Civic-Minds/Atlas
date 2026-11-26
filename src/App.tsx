@@ -7,7 +7,7 @@ import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import ModeUnavailableNote from './components/ModeUnavailableNote';
 import SearchClearButton from './components/ui/SearchClearButton';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SEARCH_ICON, CARD_NOTE } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SEARCH_ICON, CARD_NOTE, TOP_BAR_DIVIDER } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
@@ -777,6 +777,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
+        {/* #1835 (mock for Ryan): a line between the view tabs and the filter chips on wider screens, as phones have before "More". */}
+        {(showLiveControl || showHistoryControl || showCompareControl) && <span className={`hidden sm:block mx-1 ${TOP_BAR_DIVIDER}`} aria-hidden="true" />}
         {/* Live and History have no compare view: keep the tab (as an icon); it opens Compare's own address on the map. */}
         {/* CIV-1567 (beta): Interval keeps its own tab mounted there instead, so it folds rather than being swapped. */}
         {compareOn && (inLive || inHistory) && !FEATURES.modeTransitions && (
@@ -791,7 +793,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             not the map's top bar (#651). */}
         {(showLiveControl || showHistoryControl || showCompareControl) && !phoneSearchExpanded && (
           <>
-            <span className="sm:hidden w-px h-4 bg-[var(--border-primary)] shrink-0" aria-hidden="true" />
+            <span className={`sm:hidden ${TOP_BAR_DIVIDER}`} aria-hidden="true" />
 
             <div ref={appLinksRef} className="relative flex sm:hidden">
               <ModeTab

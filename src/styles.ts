@@ -86,6 +86,8 @@ export const FILTER_OPTION = 'px-2.5 py-0.5 rounded-full text-xs font-bold borde
 export const APP_TAB_ACTIVE = `${GLASS_PILL} ${CONTROL_ACTIVE_GLASS} ring-1 ring-[var(--control-active-border)]`;
 const appTabInactive = (outline: string) => `${GLASS_PILL} bg-[var(--bg-panel)] ${outline} text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)] hover:text-[var(--accent)]`;
 export const APP_TAB_INACTIVE = appTabInactive('border-[var(--border-primary)]');
+/** #1835: the thin line in the map top bar between the view tabs (Live, History, Compare) and what follows them. */
+export const TOP_BAR_DIVIDER = 'w-px h-5 bg-[var(--top-bar-outline)] shrink-0';
 /** An unselected view tab in the map top bar. */
 export const TOP_BAR_TAB_INACTIVE = appTabInactive(TOP_BAR_OUTLINE);
 export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
