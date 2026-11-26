@@ -106,6 +106,7 @@ Related evidence, folded in:
 - **#1786 / #1787** (RTD 31): the grade and the MCP followed the thin far-north branch ("every 60 min until 5:14 PM") while the trunk ran every 10; the MCP gave no warning. This is the grade-vs-trunk pair.
 - **#1760**: readings jump on a sub-minute nudge (TTC 939 AM 10 → 41). The same value is worked out by several rules with hard switches between them (steady vs longest wait, edge rule, alternation), so a small change can flip which rule wins.
 - **#1820**: the chart's title line pairs an hour's figure with its period name (1,854 routes).
+- **#1839** (recurring root cause, map colour along a line): each stop's section colour is the filter rule read over that stop's own departures (`stopPeriodValues`, pipeline/tripSets.ts), so the same trips grade differently along the line where the period's window cuts them at different times. CapMetro 801 weekday evening's last 8 northbound stops read 15 (more of their gaps fall before the 9 PM drop from 15 to 20) against the route's 20; METRO 26's first stops read 30 (the last 30 minute gap lands inside the window there) against 15. Of 162,916 one-piece direction-periods, 36,905 have a stop off the piece's tier. Since #1839 a one-piece direction colours no stop faster than the piece's reading (CIV-1959 B2); slower stops keep their colour (3,418 direction-periods have stops two tiers or more slower).
 
 ## What one shared source would change
 
