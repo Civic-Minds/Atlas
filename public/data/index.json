@@ -128,6 +128,27 @@
       "lastFeedContentKey": "bdcfa43cc2d9b3d4"
     },
     {
+      "slug": "quinte",
+      "name": "Quinte Transit",
+      "officialName": "Quinte Transit",
+      "websiteUrl": "https://quintetransit.ca/",
+      "dataLicense": {
+        "url": "https://quintetransit.ca/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Ontario",
+      "center": [
+        44.1032,
+        -77.5735
+      ],
+      "feedUrl": "https://myride.quintetransit.ca/gtfs/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4685/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "brantford",
       "name": "Brantford Transit",
       "officialName": "Brantford Transit",
@@ -3443,6 +3464,54 @@
       "lastFeedStart": "20261112",
       "lastRawArchiveKey": "20270103-125ddbc7d64cefd8",
       "lastFeedContentKey": "4763ba2607207a50"
+    },
+    {
+      "slug": "exo-chambly",
+      "name": "exo (Chambly-Richelieu-Carignan)",
+      "officialName": "exo",
+      "nameQualifier": "Chambly-Richelieu-Carignan",
+      "displayArea": "Chambly-Richelieu-Carignan",
+      "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/CITCRC",
+      "dataLicense": {
+        "url": "https://exo.quebec/fr/a-propos/donnees-ouvertes",
+        "attribution": "required",
+        "name": "CC BY",
+        "checkedOn": "2026-11-21"
+      },
+      "region": "Quebec",
+      "parentAgency": "exo",
+      "center": [
+        45.4406,
+        -73.2906
+      ],
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/citcrc/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-750/latest.zip",
+      "timezone": "America/Montreal",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "exo-lassomption",
+      "name": "exo (L'Assomption)",
+      "officialName": "exo",
+      "nameQualifier": "L'Assomption",
+      "displayArea": "L'Assomption",
+      "websiteUrl": "https://exo.quebec/fr/planifier-trajet/autobus/MRCLASSO",
+      "dataLicense": {
+        "url": "https://exo.quebec/fr/a-propos/donnees-ouvertes",
+        "attribution": "required",
+        "name": "CC BY",
+        "checkedOn": "2026-11-21"
+      },
+      "region": "Quebec",
+      "parentAgency": "exo",
+      "center": [
+        45.76,
+        -73.4573
+      ],
+      "feedUrl": "https://exo.quebec/uploads/ressources-telechargeables/a-propos/donnees-ouvertes/mrclasso/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-755/latest.zip",
+      "timezone": "America/Montreal",
+      "hiddenInProduction": true
     },
     {
       "slug": "bc-fraser-valley",
