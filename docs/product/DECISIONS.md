@@ -27,6 +27,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: no on-demand booking info anywhere: no app names, booking links, phone numbers, call-centre hours or booking-ahead rules on zone cards, other UI or the MCP's on_demand_zones answer. The bookingInfo and bookingUrl fields are deleted from the data, and a guard test (noBookingInfo.test.ts) fails if a booking field or booking text comes back.
   - Why: Atlas shows how often service runs, not how to ride it.
   - Source: Ryan, 2026-11-24: "THis is like the 6th time i have said to remove the on demand booking info i fucking swear to god"; earlier (CIV-1784): "this isnt for ppl using it like google maps"
+- **A zone card says nothing about whether the zone is running, unless its hours are unknown**
+  - What: no "Running during …", "Running on …" or "Not running at this time" line on an on-demand zone card; the hours bars say when it runs. Only "Hours unavailable" stays, so the card never claims service it can't show (shared/onDemandAvailability.ts onDemandRunningNote).
+  - Why: fixed routes have no such line, so zones match them.
+  - Source: Ryan, 2026-11-24 (CIV-2900): "why do we need to say", "But on fixed routes we don't show a 'not running at this time' notice when they're not running, so why is this one special", then "1"
 - **One frequency scale for every mode**
   - What: bus, rail and streetcar are all graded on one scale, 5, 8, 10, 15, 20, 30 and 60 minutes; no mode has bands of its own. Riders see 10, 15, 20, 30 and 60: the internal 5 and 8 count as 10.
   - Why: Ryan, "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". Rail had no 20 and graded a train every 16-20 minutes 30.
@@ -360,6 +364,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — A zone card drops its running line; only "Hours unavailable" stays (CIV-2900)
+Ryan, 2026-11-24, on "Running during Saturday evening" above a zone's hours bars: "why do we need to say", then "But on fixed routes we don't show a 'not running at this time' notice when they're not running, so why is this one special"; he picked "1": drop the line for every state except "Hours unavailable" (his wording, 2026-10-27). The hours bars are unchanged. Noted, not asked for: a fixed route card does say "No trips from …" on a direction with no service in the period (CIV-1251), so a zone outside its hours now says less than such a route does.
 
 ### 2026-11-26 — The MCP says when a route runs all night, in place of first and last times (CIV-3032, #1867)
 Ryan, 2026-11-26: "1, OK as written", his word-for-word OK on the MCP's all-night wording. Earlier: "if you ask 'what time is the first trip on the red line' is that different than 'does the red line run all night'" and "If a route runs 24/7 then should it say that". For a route that passes the Night Service rule, route_frequency gives this in place of first and last times:

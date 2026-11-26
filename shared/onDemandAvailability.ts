@@ -1,5 +1,5 @@
-import { dayInSentence, dayPlural, type DayType } from './dayTypes.js';
-import { PERIOD_LABELS, TIME_PERIODS, type PeriodKey } from './config.js';
+import { type DayType } from './dayTypes.js';
+import { TIME_PERIODS, type PeriodKey } from './config.js';
 import { clockTime, timeRange } from './timeText.js';
 import { DAY_TYPES, SHORT_DAY_LABELS } from './rules/days.js';
 
@@ -365,23 +365,13 @@ function formatHoursLinesWithFriday(availability: OnDemandAvailability): OnDeman
   return [...groups.entries()].map(([key, group]) => hoursLine(key, [...group.dayTypes], weekDaysLabel(group.days), group.windows));
 }
 
-const RUNNING_PERIOD_LABELS: Record<OnDemandPeriod, string> = {
-  all: '',
-  amPeak: PERIOD_LABELS.amPeak,
-  midday: PERIOD_LABELS.midday.toLowerCase(),
-  pmPeak: PERIOD_LABELS.pmPeak,
-  evening: PERIOD_LABELS.evening.toLowerCase(),
-  late: PERIOD_LABELS.late.toLowerCase(),
-  overnight: PERIOD_LABELS.overnight.toLowerCase(),
-};
-
-/** Plain note for the selected day/period. Never claims service when hours are missing. */
-export function onDemandRunningNote(availability: OnDemandAvailability | undefined, day: DayType, period: OnDemandPeriod): string {
-  const state = onDemandRunningState(availability, day, period);
-  if (state === 'unknown') return 'Hours unavailable'; // Ryan's wording, 2026-10-27
-  if (state === 'not-running') return 'Not running at this time';
-  if (period === 'all') return `Running on ${dayPlural(day)}`;
-  return `Running during ${dayInSentence(day)} ${RUNNING_PERIOD_LABELS[period]}`;
+/**
+ * The note above a zone's hours: only "Hours unavailable" (Ryan's wording, 2026-10-27), so the card never claims service
+ * it can't show. CIV-2900 (Ryan, 2026-11-24, "1"): no "Running during …" or "Not running at this time" line, as fixed
+ * routes have none; the hours bars say when the zone runs.
+ */
+export function onDemandRunningNote(availability: OnDemandAvailability | undefined, day: DayType, period: OnDemandPeriod): string | null {
+  return onDemandRunningState(availability, day, period) === 'unknown' ? 'Hours unavailable' : null;
 }
 
 export interface OnDemandPickupStop {

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **An on-demand zone card no longer says "Running during …" or "Not running at this time"**: its hours bars already say when it runs, and fixed routes have no such line; "Hours unavailable" stays
 - **A link to a Live route opens its card again**: a Burlington 1 link read "This route couldn't be found" because the map looked the route up by its feed id, not by the number Live links use
 - **Clicking a route on the Live map opens its route card again**: Burlington 1 and HSR 2 Barton took no click, because Live draws its routes as thin lines that the map's click rule didn't include
 - **Live's vehicle list and vehicle panel are no longer all bold**: only the early, late or on-time reading stands out, as the frequency does on a route card
