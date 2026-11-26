@@ -17,8 +17,8 @@ import { buildDirectionGroups } from './routeCardDirectionGroups';
  * nothing itself. Codes are noticeCopy's (N1 … N123).
  *
  * Each notice has one place (Ryan, CIV-1202; one kind of notice, one place; docs/style/TEXT.md "Card notices"):
- * 1 under the title, what the card is (variants, data warnings); 2 on the rows, anything about one direction or row;
- * 3 below the rows, the whole route in the period. And each fact once: a notice shows only when it says something the
+ * 1 under the title, what the card is (variants); 2 on the rows, anything about one direction or row; 3 below the rows,
+ * the whole route in the period and the data warnings, since every Learn more is at the bottom (CIV-1142, #1838). And each fact once: a notice shows only when it says something the
  * rows don't.
  */
 export type NoticePlace = 1 | 2 | 3;
@@ -57,7 +57,7 @@ export interface RouteCardNoticeInput {
 export type CardNoticeCode = 'N1' | 'N2' | 'N3' | 'N4' | 'N5' | 'N6' | 'N7' | 'N8' | 'N9' | 'N10' | 'N11' | 'N12' | 'N13' | 'N15' | 'N16' | 'N25' | 'N123';
 export interface CardNotice { code: CardNoticeCode; text: string; place: NoticePlace; /** CIV-1199 case 1: N12 opens the Route rating explainer (E9). */ learnMore?: true; /** CIV-2896: the full sentence its Learn more page opens with, when the card shows a short line. */ pageText?: string; /** N9: the hours it names, for the stop card's own words (CIV-1251). */ activeRange?: string }
 /** N4 and N5 render through their own components (they carry the agency's own wording and Learn more), so they have no text here. */
-export interface CardFooterNotice { code: Exclude<CardNoticeCode, 'N8' | 'N9' | 'N10' | 'N11' | 'N12' | 'N13' | 'N15' | 'N16' | 'N123'>; text?: string; place: NoticePlace }
+export interface CardFooterNotice { code: Exclude<CardNoticeCode, 'N8' | 'N9' | 'N10' | 'N11' | 'N12' | 'N13' | 'N15' | 'N16' | 'N123'>; text?: string; place: 3 }
 /** A note under one direction's heading: it has no rows in the period, or only its shared section meets the filter. */
 export interface CardDirectionNotice { dirId: number; kind: 'no-service'; text: string; place: 2 }
 
@@ -72,7 +72,7 @@ export interface RouteCardNotices {
   booking: CardNotice | null;
   /** On the rows (place 2): a direction with no service in the period, or only its shared section passing. */
   directions: CardDirectionNotice[];
-  /** Data and schedule notices, each with a Learn more: place 1 (under the title) except N1 (below the rows). */
+  /** Data and schedule notices, and N1: below the rows (place 3), where every Learn more goes (CIV-1142, #1838). */
   footer: CardFooterNotice[];
   /** Notices left out because the rows already say it (CIV-1202, "each fact once"), with why: for counts and tests. */
   dropped: Array<{ code: CardNoticeCode; why: string }>;
@@ -186,16 +186,15 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // Data and schedule notices, in the card's order. Only say the map is unavailable when nothing of this route is
   // drawn: a route with one shaped direction still shows its line.
   const footer: CardFooterNotice[] = [];
-  if (directions.length > 0 && directions.every(direction => direction.noRouteShape)) footer.push({ code: 'N7', text: NO_ROUTE_SHAPE_NOTICE, place: 1 });
-  if (directions.some(direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING)) footer.push({ code: 'N6', text: ROUTE_DATA_QUALITY_WARNING_MESSAGE, place: 1 });
+  if (directions.length > 0 && directions.every(direction => direction.noRouteShape)) footer.push({ code: 'N7', text: NO_ROUTE_SHAPE_NOTICE, place: 3 });
+  if (directions.some(direction => direction.routeDataQualityWarning === ROUTE_DATA_QUALITY_WARNING)) footer.push({ code: 'N6', text: ROUTE_DATA_QUALITY_WARNING_MESSAGE, place: 3 });
   // N25 (CIV-1055): most of the agency's routes stopped being listed; an ended timetable (N2) says more, so it wins.
-  if (input.listingEndedDate) footer.push({ code: 'N25', text: listingEndedNotice(input.listingEndedDate, input.listingEnded), place: 1 });
+  if (input.listingEndedDate) footer.push({ code: 'N25', text: listingEndedNotice(input.listingEndedDate, input.listingEnded), place: 3 });
   if (input.routeIsStale) {
-    footer.push({ code: input.agency?.manualFeedSource ? 'N3' : 'N2', text: expiredFeedNotice(input.agency?.name ?? 'This agency', input.expDateStr, input.agency?.manualFeedSource), place: 1 });
+    footer.push({ code: input.agency?.manualFeedSource ? 'N3' : 'N2', text: expiredFeedNotice(input.agency?.name ?? 'This agency', input.expDateStr, input.agency?.manualFeedSource), place: 3 });
   }
-  if (input.agency?.feedReviewStatus === 'review' && !input.agency.overrideNote) footer.push({ code: 'N4', place: 1 });
-  if (input.agency && input.routeOverrideNote) footer.push({ code: 'N5', place: 1 });
-  // N1 is about the route's service (its weekdays differ), not its data: place 3.
+  if (input.agency?.feedReviewStatus === 'review' && !input.agency.overrideNote) footer.push({ code: 'N4', place: 3 });
+  if (input.agency && input.routeOverrideNote) footer.push({ code: 'N5', place: 3 });
   if (directions.some(direction => direction.weekdayTierVariation)) footer.push({ code: 'N1', text: WEEKDAY_VARIATION_NOTICE, place: 3 });
 
   // Direction notes, in the card's group order: a heading with no rows in the period, and a direction whose only
