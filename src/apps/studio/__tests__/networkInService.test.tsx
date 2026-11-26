@@ -43,3 +43,16 @@ describe('Fleet\'s now table caption (#1832)', () => {
     expect(bus.container.querySelector('caption')?.textContent).toBe('Buses Needed');
   });
 });
+
+// CIV-2990 (Ryan, 2026-11-26: "Not on a trip: 622, of which 521 at garages"): the count stays, the parked share beside it.
+describe('Fleet\'s "Not on a trip" split (CIV-2990)', () => {
+  it('reads "622, of which 521 at garages", and the plain count where none are', () => {
+    expect(networkCountFrom({ vehicles: 717, noTrip: 622, atGarage: 521, ageSec: 20 })).toEqual({ onTrip: 717, noTrip: 622, atGarage: 521 });
+    const { container, unmount } = render(<FleetNowTable modes={[3]} runningNow={{ onTrip: 717, noTrip: 622, atGarage: 521 }} scheduledNow={null} />);
+    expect(screen.getByText('Not on a trip').closest('tr')!.textContent).toBe('Not on a trip622, of which 521 at garages');
+    unmount();
+    render(<FleetNowTable modes={[3]} runningNow={{ onTrip: 717, noTrip: 30 }} scheduledNow={null} />);
+    expect(screen.getByText('Not on a trip').closest('tr')!.textContent).toBe('Not on a trip30');
+    expect(container).toBeTruthy();
+  });
+});

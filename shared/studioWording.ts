@@ -64,6 +64,13 @@ export const STUDIO_CHANGES_TEXT = {
  * CIV-2182 proposals, PENDING RYAN'S OK (review page /_review/studio-redesign/): Fleet's change column, and the Schedules
  * list's heading for routes whose change is at another time of day.
  */
+/**
+ * Fleet's "Not on a trip" figure, with how many of them are parked at a garage (CIV-2990; Ryan, 2026-11-26, picked
+ * "Not on a trip: 622, of which 521 at garages"): "622, of which 521 at garages"; the plain count where none are.
+ */
+export const notOnTripValueText = (noTrip: number, atGarage?: number) =>
+  atGarage ? `${countText(noTrip)}, of which ${countText(atGarage)} at garages` : countText(noTrip);
+
 /** Fleet's chart line for a time of day, "Midday: 1,790 buses" (CIV-2182; CIV-2973 moved it here, unchanged). */
 export const fleetPeriodCountText = (periodLabel: string, count: number, word: string) => `${periodLabel}: ${countText(count)} ${word}`;
 

@@ -25,7 +25,7 @@ import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
 import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetPeriodCountText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetPeriodCountText, notOnTripValueText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
 import { CARD_NOTE } from '../../styles';
@@ -97,7 +97,7 @@ export function FleetNowTable({ modes, runningNow, scheduledNow }: { modes: read
     // now", only where the feed reports any (never 0) and never added into a total.
     { key: 'noTrip', label: N.notOnTrip, n: runningNow?.noTrip ?? null },
     { key: 'now', label: R.scheduledNow, n: scheduledNow },
-  ].flatMap(r => (r.n == null ? [] : [{ key: r.key, label: r.label, value: countText(r.n) }]));
+  ].flatMap(r => (r.n == null ? [] : [{ key: r.key, label: r.label, value: r.key === 'noTrip' ? notOnTripValueText(r.n, runningNow?.atGarage) : countText(r.n) }]));
   if (!rows.length) return null;
   return (
     <DataTable caption={vehiclesNeededTitle(modes)} layout="fill" rows={rows} rowKey={r => r.key} rowMuted={r => r.key === 'noTrip'} columns={[
