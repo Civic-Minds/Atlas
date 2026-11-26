@@ -441,7 +441,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     if (row.night) {
                       const { grade } = row.night;
                       return (
-                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
+                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
@@ -459,7 +459,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const shown = row.display(hoveredHour);
                     if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
                     return (
-                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
+                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
                         <CardDirectionRow
                           labelWeight="regular"
                           singleLine={shown.singleLine}

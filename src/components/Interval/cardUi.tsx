@@ -433,12 +433,18 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   );
 });
 
+/** The attribute that marks a row's name inside a FlaggableValue, so a click there uses its labelReason (#1844). */
+export const FLAG_LABEL_PART = 'data-flag-label';
+
 /**
  * Wraps a card value that can be clicked to report a problem after the card's report button has
  * activated report mode. The reason is pre-checked. Beta-gated (CARD_CLICK_TO_FLAG_ENABLED).
  */
-export function FlaggableValue({ reason, reportRef, children, className = 'inline-flex items-center gap-1' }: {
+export function FlaggableValue({ reason, labelReason, reportRef, children, className = 'inline-flex items-center gap-1' }: {
   reason: ReportReason;
+  /** #1844: the reason for a click on the row's name (the part marked FLAG_LABEL_PART), e.g. a destination row's
+   *  name pre-checks the name reason while its figure keeps `reason`. */
+  labelReason?: ReportReason;
   reportRef: React.RefObject<CardReportButtonHandle | null>;
   children: React.ReactNode;
   /** Full control over layout — replaces the default `inline-flex items-center gap-1`, doesn't merge with it. */
@@ -460,7 +466,10 @@ export function FlaggableValue({ reason, reportRef, children, className = 'inlin
   return (
     <button
       type="button"
-      onClick={() => reportRef.current?.openWithReason(reason)}
+      onClick={event => {
+        const onLabel = labelReason && (event.target as HTMLElement).closest?.(`[${FLAG_LABEL_PART}]`);
+        reportRef.current?.openWithReason(onLabel ? labelReason : reason);
+      }}
       title={`Flag: ${reason}`}
       className={`group/flag rounded hover:bg-[var(--bg-btn-hover)] transition-colors ${className}`}
     >

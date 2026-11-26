@@ -3,7 +3,7 @@ import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { ChevronRight } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { headwayRangeShown } from '../../utils/headwayText';
-import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
+import { FLAG_LABEL_PART, HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { keepLastWord } from '../../utils/keepLastWord';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
@@ -141,6 +141,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
         <span
           className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
+          {...{ [FLAG_LABEL_PART]: '' }}
         >
           {routeName ? <><RouteRowName shortName={routeName.shortName} name={routeName.name} />{routeNameNote && <span className={`${LIST_ROW_DIM} ml-1.5`}>{routeNameNote}</span>}</> : singleLine ? label : keepLastWord(label)}
         </span>

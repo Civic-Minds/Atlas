@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Reporting a problem from a route card's destination name picks the name reason**: clicking "to Maryland Pkwy Southbound" had pre-checked "The frequency is wrong"; only clicking the figure does that now
 - **Studio's assistant gives no first or last trip for a route that runs all night**: RTC's Red Line, every 30 min from 2 AM, read "first during the 5 AM hour", the edge of Atlas's day rather than a trip
 - **A line on the map's top bar separates the apps from the modes**: Live and History now sit apart from Compare and the filters
 - **A route's last time is when its last trip leaves where it starts**: it was the time that trip passed the middle of the route (CapMetro 214 said 8:34 PM though a bus leaves Lakeline at 9:04), routes whose late trips run past midnight now give their real last trip (CTA 72: 1:40 AM), and routes that run all night give no last time instead of a wrong one
