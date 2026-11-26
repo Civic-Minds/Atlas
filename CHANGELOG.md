@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **A route's last time is when its last trip leaves where it starts**: it was the time that trip passed the middle of the route (CapMetro 214 said 8:34 PM though a bus leaves Lakeline at 9:04), routes whose late trips run past midnight now give their real last trip (CTA 72: 1:40 AM), and routes that run all night give no last time instead of a wrong one
+- **Studio Live's week table says which time of day it covers**: TTC 504 showed "Late 18%" for the evening above an all-day "8% late" chart, with nothing saying the two cover different hours
 - **A route card row no longer shows a whole-period wait for a direction that runs steadily**: RTD 31 on Saturday afternoons read "to Evans every 114 min" while it runs every 15, because a short branch that stops at 5:06 PM set the number
 - **A route's Live figures say "Loading…" while they load**: on opening a route they briefly said they couldn't be shown, which read as a failure
 - **Live's "Figures updated" time reads on your own clock**: it always showed Toronto time with no zone named, so a viewer in San Francisco, Los Angeles, Vancouver, Edmonton or Halifax read the build time hours off
