@@ -332,6 +332,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-26 — Where an agency's file gives only a street, a direction reads its last stop (RTC first; CIV-2999, #1846)
+Ryan, 2026-11-26, picked "1": "Name the end of the line where an agency's file only gives a street: for RTC, show each direction's last stop instead (for example "to South Strip Transit Terminal")". The manager settled the form on Ryan's "RTC first": an agency setting (`headsignFromLastStop`), not an automatic rule, since Atlas can't tell a street from a destination by itself (both directions sharing a name matched 617 routes at 176 agencies, most of them loops and real terminals).
+- What: a headsign that carries a direction word ("101 Rainbow Northbound") takes the last stop most of its trips end at, tidied: a leading EB/NB/SB/WB and a trailing "Bay N" go, and "X before/after Y" reads "X & Y". RTC's Red Line reads "to Wellness & Willow" and "to South Strip Transit Terminal".
+- Counts (RTC dry run against main without the setting): 73 of 77 weekday route-directions on 37 routes change name; 300 → 300 drawn patterns (only the name changes: a headsign's trips stay one row, and a headsign whose stop another already took keeps the feed's name; manager, 2026-11-26: Ryan asked for the destination name, not more rows); no map wait changes (702 route-day-periods compared).
+
 ### 2026-11-26 — Intercity agencies are added like the rest, hidden until checked (CIV-2239)
 Ryan, 2026-11-26: "For Intercity we already have Bustang is my point", then "1" on adding Ontario Northland and Brightline hidden like the CIV-2237 agencies, then "1" on visibility: new ones go in hidden until checked.
 - What: Ontario Northland (22 routes, intercity bus plus the Northlander) and Brightline (1 rail line) are added with hiddenInProduction; the Northlander keeps the feed's route type. Counts: 2 agencies, 23 routes.

@@ -9,6 +9,7 @@ import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { mergeWvuPrtLine } from '../transforms/wvu-prt-line.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
 import { splitLeadingRouteNumber } from '../transforms/leading-route-number.js';
+import { headsignsFromLastStop } from '../transforms/last-stop-destinations.js';
 import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
@@ -36,6 +37,8 @@ export interface GtfsTransformOptions {
   excludeRouteShortNames?: string[];
   /** CIV-1551: take a leading route number out of route_long_name when route_short_name is blank (Manchester NH). */
   routeNumberFromLongName?: boolean;
+  /** CIV-2999: a trip headsign that is a street and a direction word ("101 Rainbow Northbound") reads its last stop instead (RTC). */
+  headsignFromLastStop?: boolean;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
@@ -210,6 +213,12 @@ export function normalizeGtfs(
     const result = interpolateUntimedStops(gtfs);
     gtfs = result.gtfs;
     onStatus?.(`Untimed stops: interpolated ${result.filled} stop times between timepoints`);
+  }
+  if (options?.headsignFromLastStop) {
+    // CIV-2999: before the bay merge and the headsign fill, which group trips by the names set here.
+    const result = headsignsFromLastStop(gtfs);
+    gtfs = result.gtfs;
+    if (result.renamed > 0) onStatus?.(`Destinations: ${result.renamed} trip(s) whose headsign is a street and direction word read their last stop (CIV-2999)`);
   }
   // Before the headsigns are filled from last stops, so both bays of one terminal share one.
   const bays = mergeTerminalBays(gtfs);
