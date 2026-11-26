@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's vehicle list and vehicle panel are no longer all bold**: only the early, late or on-time reading stands out, as the frequency does on a route card
 - **Live puts each bus under the direction it is really going**: Burlington 1 listed buses heading to Hamilton under "Appleby GO" because the feed gave them the wrong direction; Live now takes a bus's direction and destination from the timetable for its trip, falls back to which way it moves along the route, and otherwise leaves it ungrouped
 - **Live no longer says a route has no live figures while listing its live buses**: Burlington 1 showed "Live figures for this route aren't available yet" above eight buses with early and on-time readings
 - **Studio's assistant marks a night route the same way in every answer**: its nearby-routes list called 1,043 weekday routes with no trips at all "night routes" and missed TTC's Blue Night buses, which its route answers already said run overnight only
