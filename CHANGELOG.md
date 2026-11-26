@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Rebuilds use the schedule file Atlas last downloaded**: a full rebuild could swap an agency back to an older file whose stated end date was later, so the TTC's stop names came from an older file than the one Atlas had downloaded (64 of 540 checked differed), and 27 other agencies were rebuilt from an older file too
 - **Atlas Studio MCP counts each station once in a route's stops**: OC Transpo Line 1 said 26 stops each way for its 13 stations, because each station was counted as both its platform and the station itself
 - **Routes you must book ahead no longer show a fixed frequency**: exo's taxibuses, Annapolis Call-in and the rest printed "every 40 min" or even "every 15 min" beside "Rides on this route must be booked ahead.", and their map colour and frequency filter read the same number
 - **The route card's chart names the hour you point at beside the time of day**: "PM peak · 5 PM" instead of a hover bubble that said "(slower direction)", since the rows below already show each direction's figure
