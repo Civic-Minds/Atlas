@@ -360,7 +360,7 @@ function scheduleKeyForDate(date: string): string | null {
 /** GTFS service date: trips after midnight (before the agency's service-day end, 4 a.m. for the TTC) belong to the previous day. */
 const serviceDateOf = (t: number) => { const l = local(t); return l.hour < LIVE.serviceDayEndHour ? prevDate(l.date) : l.date; };
 
-let runsTotal = 0, runsMatched = 0, runsUnmatched = 0;
+let runsTotal = 0, runsMatched = 0, runsUnmatched = 0, runsExcluded = 0;
 const observations: SegmentObservation[] = [];
 // Passages by stop+direction, for headways.
 const passagesAt = new Map<string, { tripId: string; t: number }[]>();
@@ -417,7 +417,8 @@ for (const [key, samples] of runs) {
     vr.push({ tripId, first: run[0], last: run[run.length - 1], samples: run });
     vehicleRuns.set(vehicleId, vr);
     const trip = tripById.get(tripId);
-    if (!trip) { runsUnmatched++; unlistedRuns.push([run[0].t, run[run.length - 1].t]); continue; }
+    // #1859: runs of trips left out on purpose (e.g. --exclude-headsign replacement buses) are counted apart from runs with no timetable trip.
+    if (!trip) { if (excludedTripIds.has(tripId)) runsExcluded++; else runsUnmatched++; unlistedRuns.push([run[0].t, run[run.length - 1].t]); continue; }
     const pattern = patternFor(trip.shape_id);
     const projected = pattern ? projectRun(run, pattern) : [];
     const tp = tripPings.get(tripId) ?? [];
@@ -1464,6 +1465,7 @@ const result = {
   runsTotal,
   runsMatched,
   runsUnmatched,
+  runsExcluded,
   observations: observations.length,
   headwayWindows: { total: windowsTotal, kept: windowsKept },
   segments: stats.map(segmentOut),
@@ -1497,7 +1499,7 @@ for (const [key, m] of headwayByStop) {
   if (row) (gapsOut[dir] ??= {})[stopId] = row;
 }
 writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: AGENCY, route: ROUTE, dates: goodWindowDates, directions: gapsOut }));
-console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
+console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}${runsExcluded ? `, left out on purpose: ${runsExcluded}` : ""}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
 
 // The agency page reads one summary of every route's analysis. Any run of this script rebuilds it, and drops it if the
 // rebuild fails, so a summary can never be older than the route files beside it (CIV-305).
