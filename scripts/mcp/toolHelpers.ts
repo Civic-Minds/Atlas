@@ -9,7 +9,6 @@ import type { PeriodKey } from '../../shared/config';
 import type { DayType } from '../../shared/rules/days';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { SITE_URL } from '../../shared/rules/paths';
-import { TIME_PERIODS } from '../../shared/rules/periods';
 import { MAP_URL } from '../../src/utils/urlSchema';
 import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
 import { buildRouteKey } from '../../src/utils/routeKey';
@@ -34,20 +33,8 @@ export function mapLink(view: { route?: { agency: string; routeId: string }; age
   return `${SITE_URL}/?${q.toString()}`;
 }
 
-/**
- * A time window for the service day. A clock window that starts before the first part of the day (12 AM–3 AM) can mean
- * the hours after midnight that belong to the day's late night (24:00–27:00), where the schedule writes them, or the
- * hours at its start (5 AM). Both are read: the starts that fall in the window shifted a day, folded into it.
- */
-export function startsInWindow(starts: readonly number[], w: { start: number; end: number }): number[] {
-  return starts.filter(t => windowHas(t, w)).map(t => (t >= w.end ? t - 1440 : t));
-}
-
-/** Whether a departure (minutes in the service day) falls in a window, reading an early-morning window both ways (see startsInWindow). */
-export function windowHas(t: number, w: { start: number; end: number }): boolean {
-  if (t >= w.start && t < w.end) return true;
-  return w.start < TIME_PERIODS[0].startHour * 60 && w.end <= 1440 && t >= w.start + 1440 && t < w.end + 1440;
-}
+// The early-morning window rule lives with the hour-by-hour view that also reads it (#1868).
+export { startsInWindow, windowHas } from './atlasData';
 export const validThrough = (a: { lastFeedExpiry?: string | null }) => isoDate(a.lastFeedExpiry);
 
 /**
