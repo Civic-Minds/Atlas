@@ -27,7 +27,8 @@ export function resolveDisplayHeadsign(
 ): string | null {
   if (!raw?.trim()) return null;
   const trimmed = raw.trim();
-  const cleaned = cleanHeadsign(trimmed, shortName, longName);
+  // #1836: stored and grouped with its direction code, so patterns never merge on it; the app drops the code at render.
+  const cleaned = cleanHeadsign(trimmed, shortName, longName, { keepDirection: true });
   if (cleaned) return cleaned;
   if (isMiwayExpressHeadsign(trimmed)) return null;
   return trimmed;
