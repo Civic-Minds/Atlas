@@ -45,6 +45,8 @@ export interface NearbyConnection {
   headway: number | null;
   /** CIV-1447: the low end of the route card's range, its dot's slower number and its edge words (routeListDisplay). */
   sharedHeadway?: number;
+  /** CIV-2909: a range wider than 4x shown because its slow line has its own number. */
+  wideRange?: true;
   colorHeadway?: number;
   edgeText?: string;
   nearestStopName: string;
@@ -195,7 +197,7 @@ export const StopCard: React.FC<StopCardProps> = ({
 
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label={NEARBY_ROUTES_LABEL}>
-          {nearbyConnections.map(({ rKey, label: route, headway, sharedHeadway, colorHeadway, edgeText, nearestStopName, distanceMeters }) => {
+          {nearbyConnections.map(({ rKey, label: route, headway, sharedHeadway, wideRange, colorHeadway, edgeText, nearestStopName, distanceMeters }) => {
             // Hovering shows the whole route on the map, as the stop's own route lines do (CIV-1053).
             const hovered = !!hoveredBranch && hoveredBranch.routeKey === rKey && hoveredBranch.directionId == null;
             return (
@@ -210,7 +212,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 colorHeadway={colorHeadway}
-                headwayLabel={headway != null ? edgeText ?? routeListHeadwayText(headway, sharedHeadway) : undefined}
+                headwayLabel={headway != null ? edgeText ?? routeListHeadwayText(headway, sharedHeadway, false, wideRange === true) : undefined}
                 onClick={() => openRoute(rKey)}
                 {...(setHoveredBranch ? {
                   onHoverStart: () => setHoveredBranch({ routeKey: rKey }),
