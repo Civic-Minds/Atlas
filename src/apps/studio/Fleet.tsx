@@ -100,7 +100,7 @@ export function FleetNowTable({ modes, runningNow, scheduledNow }: { modes: read
   ].flatMap(r => (r.n == null ? [] : [{ key: r.key, label: r.label, value: countText(r.n) }]));
   if (!rows.length) return null;
   return (
-    <DataTable caption={PAGE_NAMES.studioVehicles} layout="fill" rows={rows} rowKey={r => r.key} rowMuted={r => r.key === 'noTrip'} columns={[
+    <DataTable caption={vehiclesNeededTitle(modes)} layout="fill" rows={rows} rowKey={r => r.key} rowMuted={r => r.key === 'noTrip'} columns={[
       { key: 'label', header: TIME_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
       { key: 'value', header: <span className="block text-right">{N.count}</span>, className: 'text-right', cell: r => r.value },
     ]} />
