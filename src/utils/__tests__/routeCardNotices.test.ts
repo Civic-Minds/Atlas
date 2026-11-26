@@ -27,7 +27,14 @@ describe('routeCardNotices (CIV-1200)', () => {
       routeIsStale: true, expDateStr: 'May 1, 2026', listingEndedDate: 'Oct 1, 2026', listingEnded: true,
       agency: { name: 'TTC', feedReviewStatus: 'review' },
     });
-    expect(n.footer.map(f => [f.code, f.place])).toEqual([['N7', 1], ['N6', 1], ['N25', 1], ['N2', 1], ['N4', 1], ['N1', 3]]);
+    expect(n.footer.map(f => [f.code, f.place])).toEqual([['N7', 3], ['N6', 3], ['N25', 3], ['N2', 3], ['N4', 3], ['N1', 3]]);
+  });
+
+  it('puts a data warning with a Learn more at the bottom, never under the title (#1838, CIV-1142: CapMetro 10)', () => {
+    const n = routeCardNotices({ ...base, directions: [{ routeDataQualityWarning: 'shape-anomaly' } as any] });
+    expect(n.footer).toEqual([{ code: 'N6', text: expect.any(String), place: 3 }]);
+    // Only "Includes variants", which has no Learn more, stays under the title.
+    expect(routeCardNotices({ ...base, variantShortNames: ['51A'] }).variants?.place).toBe(1);
   });
 
   it('an agency under review with its own correction note shows N5 in place of N4, only on the route it is for', () => {

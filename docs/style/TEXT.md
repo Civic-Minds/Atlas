@@ -151,15 +151,15 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - State what happened, then what it means, as two short sentences if needed.
 - One kind of notice, one place (Ryan, CIV-1202). A route card has three:
   1. Under the title: what the card is.
-     - "Includes variants …", and data warnings about the schedule (expired or outdated, under review, corrected, map line missing or incomplete).
+     - "Includes variants …".
      - Small, regular weight, grey.
-     - The data warnings end with "Learn more".
   2. On the rows: anything about one direction or row.
      - A direction with no service in the period is a row saying so ("Runs irregularly in this period"), not a note.
      - Row style: small, extra-bold, dark, fading with its row.
   3. Below the rows: the whole route in the period.
-     - The filter line, "This route runs only from …", "no trips", uneven gaps, booking ahead and weekday variation, in that order.
+     - The filter line, "This route runs only from …", "no trips", uneven gaps, booking ahead, then the data warnings about the schedule (map line missing or incomplete, no longer listed, expired or outdated, under review, corrected) and weekday variation, in that order.
      - Small, regular weight, grey.
+     - The data warnings end with "Learn more", which is why they sit here (CIV-1142, #1838).
 - Each fact once: a notice shows only when it says something the rows don't.
   - When a row already names the gap, the hours or a longer wait, the notice that repeats it is left out.
   - `routeCardNotices` (src/utils/routeCardNotices.ts) decides every notice and its place.

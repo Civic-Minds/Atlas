@@ -319,9 +319,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           {notices.variants.text}
         </p>
       )}
-      {onInfoOpen && notices.footer.some(notice => notice.place === 1) && (
-        <div className="-mt-1 mb-3 space-y-1">{notices.footer.filter(notice => notice.place === 1).map(renderFooterNotice)}</div>
-      )}
       {!nightView && (() => {
         const HOURS = SPARKLINE_HOURS;
         const branchColorOf = stableColors ? stableBranchColors(agencyFeatures, currentRoute.routeShortName) : undefined;
@@ -525,9 +522,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <CardHelpNotice message={notices.booking.text} />
           </div>
         )}
-        {onInfoOpen && notices.footer.some(notice => notice.place === 3) && (
+        {onInfoOpen && notices.footer.length > 0 && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-            {notices.footer.filter(notice => notice.place === 3).map(renderFooterNotice)}
+            {notices.footer.map(renderFooterNotice)}
           </div>
         )}
       </SidebarCardList>
