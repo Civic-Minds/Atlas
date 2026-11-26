@@ -1,0 +1,25 @@
+{
+  "slug": "grant-transit",
+  "officialName": "Grant Transit Authority",
+  "websiteUrl": "https://www.granttransit.com/",
+  "dataLicense": {
+    "url": "https://www.granttransit.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Washington",
+  "center": [
+    47.1532,
+    -119.3124
+  ],
+  "bbox": [
+    46.738,
+    -119.901,
+    47.942,
+    -119.006
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2309/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}
