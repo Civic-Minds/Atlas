@@ -1,0 +1,19 @@
+{
+  "slug": "turlock",
+  "officialName": "Turlock Transit",
+  "websiteUrl": "http://www.turlocktransit.com/",
+  "dataLicense": {
+    "url": "http://www.turlocktransit.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    37.5072,
+    -120.8577
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-619/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

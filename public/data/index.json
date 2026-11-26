@@ -41053,6 +41053,92 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-429/latest.zip",
       "timezone": "America/New_York",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "placer",
+      "name": "Placer County Transit",
+      "officialName": "Placer County Transit",
+      "websiteUrl": "https://www.placer.ca.gov/",
+      "dataLicense": {
+        "url": "https://www.placer.ca.gov/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "California",
+      "center": [
+        38.8523,
+        -121.2415
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3663/latest.zip",
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "pacific-transit",
+      "name": "Pacific Transit",
+      "officialName": "Pacific Transit",
+      "websiteUrl": "http://www.pacifictransit.org",
+      "dataLicense": {
+        "url": "http://www.pacifictransit.org",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Washington",
+      "center": [
+        46.6622,
+        -123.8128
+      ],
+      "bbox": [
+        46.19,
+        -124.061,
+        46.977,
+        -123.714
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3112/latest.zip",
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "commerce",
+      "name": "City of Commerce Transit",
+      "officialName": "City of Commerce Transit",
+      "websiteUrl": "https://www.ci.commerce.ca.us/city-hall/transportation",
+      "dataLicense": {
+        "url": "https://www.ci.commerce.ca.us/city-hall/transportation",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "California",
+      "center": [
+        34.005,
+        -118.1575
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-994/latest.zip",
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "turlock",
+      "name": "Turlock Transit",
+      "officialName": "Turlock Transit",
+      "websiteUrl": "http://www.turlocktransit.com/",
+      "dataLicense": {
+        "url": "http://www.turlocktransit.com/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "California",
+      "center": [
+        37.5072,
+        -120.8577
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-619/latest.zip",
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
     }
   ]
 }
