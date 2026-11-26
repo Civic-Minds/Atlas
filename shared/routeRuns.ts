@@ -26,6 +26,11 @@ export function departuresInPeriod(rows: ReadonlyArray<{ departuresByHour?: Reco
   return n;
 }
 
+/** The Night Service verdict: a route runs through the night when any of its rows runs its Overnight period (routeRunsByPeriod). */
+export function runsAllNight(rows: ReadonlyArray<{ routeRunsByPeriod?: Partial<Record<string, boolean>> | null }>): boolean {
+  return rows.some(p => p.routeRunsByPeriod?.overnight === true);
+}
+
 export function routeRuns(
   rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null; departureSpan?: RouteDepartureSpan | null; tripStartFirst?: number | null; tripStartLast?: number | null; routeRunsByPeriod?: Partial<Record<string, boolean>> | null; stretchMeta?: { main?: StretchHours | null; tails?: StretchHours[] } | null }>,
   edge: AgencyPageRoute['edge'],
@@ -58,7 +63,7 @@ export function routeRuns(
     let lastBoardingHour: number | undefined;
     // A route that runs through the night (the Night Service verdict, routeRunsByPeriod's Overnight) has no last boarding:
     // its last trip before the morning isn't one (CTA 9, AC Transit 800).
-    const allNight = rows.some(p => p.routeRunsByPeriod?.overnight === true);
+    const allNight = runsAllNight(rows);
     if (allNight && lastBoardings.some(t => t !== undefined)) last = undefined;
     else if (lastBoardings.length > 0 && lastBoardings.every(t => t !== undefined)) {
       // A row with none of its own (its only trips leave before the day window, or it has no trips that day) doesn't hide
