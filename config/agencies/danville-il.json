@@ -1,0 +1,25 @@
+{
+  "slug": "danville-il",
+  "officialName": "Danville Mass Transit",
+  "websiteUrl": "https://danvillemasstransit.tripshot.com/",
+  "dataLicense": {
+    "url": "https://danvillemasstransit.tripshot.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Illinois",
+  "center": [
+    40.1318,
+    -87.6298
+  ],
+  "bbox": [
+    39.975,
+    -88.241,
+    40.204,
+    -87.54
+  ],
+  "feedUrl": "https://danvillemasstransit.tripshot.com/v1/gtfs.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}
