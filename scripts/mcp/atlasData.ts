@@ -12,7 +12,7 @@
 import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RankWait, RouteLabel, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange, type PeriodKey } from '../../shared/config';
-import { DAY_TYPES, type DayType } from '../../shared/rules/days';
+import { DAY_TYPES, dayPlural, type DayType } from '../../shared/rules/days';
 import { PUBLIC_TIER_MAXES, headwayGradeOn } from '../../shared/rules/frequency';
 import { routeGroupKey } from '../../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures, readingPassesHeadwayFilter, type RouteFilterReading } from '../../shared/routeHeadwayFilter';
@@ -22,7 +22,7 @@ import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
 import { routeReading } from '../../src/utils/routeReading';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
-import { departuresInPeriod, routeRuns, runsAllNight } from '../../shared/routeRuns';
+import { departuresInPeriod, routeRuns, runsEveryHour } from '../../shared/routeRuns';
 import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
 import { metresBetween, withinMetres } from '../../shared/geoDistance';
 import { andOthers, joinList } from '../../shared/overflowText';
@@ -41,7 +41,7 @@ import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { mayRedistribute, redistributionExclusion } from '../../shared/rules/redistribution';
 import { feedPlaceName } from '../../src/utils/nameCase';
 import { FEED_CREDITS, type FeedCreditKey } from '../../shared/feedCredits';
-import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
+import { OVERNIGHT_NIGHT_GRADE, routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 /** CIV-2915: a destination or stop name the feed sent in capitals, in normal case, as the map and Live show it. */
@@ -387,12 +387,40 @@ export function serviceSpan(r: RouteRows) {
   if (!runs) return null;
   // #1867: a route that runs through the night (the Night Service verdict) has no first or last trip of the day. Its first
   // and last counted hours are only the edges of Atlas's day window (RTC's Red Line, every 30 min from 2 AM, read "first
-  // during the 5 AM hour"), so neither is given.
-  const allNight = runsAllNight(r.rows as never);
+  // during the 5 AM hour"), so neither is given: allNightService says it runs all night instead.
+  const allNight = runsThroughNight(nightGradeOf(r.rows));
   return {
     first: allNight ? null : runs.first != null ? serviceClock(runs.first) : runs.hours.length ? duringHour(runs.hours[0]) : null,
     last: allNight ? null : runs.last != null ? serviceClock(runs.last) : runs.hours.length ? duringHour(runs.hours[runs.hours.length - 1]) : null,
     breaks: (runs.gaps ?? []).map(([a, b]) => `${serviceClock(a)}–${serviceClock(b)}`),
+  };
+}
+
+/** #1867: whether a route runs all night, by the Night Service rule night_service lists routes by (its night grade at the Overnight view's 60). */
+export const runsThroughNight = (night: NightServiceFrequency | null | undefined): boolean => night != null && night <= OVERNIGHT_NIGHT_GRADE;
+
+/** The day types on which a route has service every hour in every direction (runsEveryHour), read from each day's own rows. */
+export async function daysRunningEveryHour(agency: CatalogAgency, s: Pick<RouteSummary, 'key' | 'name'>): Promise<DayType[]> {
+  const out: DayType[] = [];
+  for (const day of DAY_TYPES) {
+    const on = (await routeList(agency, day)).find(x => x.key === s.key);
+    if (on && runsEveryHour((await routeWithRows(agency, day, on)).rows as never)) out.push(day);
+  }
+  return out;
+}
+
+/**
+ * #1867 (Ryan, option 1: "if you ask 'what time is the first trip on the red line' is that different than 'does the red
+ * line run all night'"): an all-night route's service says it runs all night, with its Overnight figure, in place of a
+ * first or last time; and 24 hours, with the days, where every hour has service in every direction.
+ */
+export function allNightService(s: Pick<RouteSummary, 'figures' | 'span'>, everyHourOn: readonly DayType[]) {
+  const allWeek = everyHourOn.length === DAY_TYPES.length;
+  return {
+    first: null, last: null,
+    runsAllNight: `Runs all night: ${s.figures.overnight.shown} overnight (${formatPeriodRange('overnight')})`,
+    ...(allWeek ? { runs24Hours: 'Runs 24 hours, 7 days a week' } : everyHourOn.length ? { runs24Hours: `Runs 24 hours on ${joinList(everyHourOn.map(dayPlural))}` } : {}),
+    breaks: s.span?.breaks ?? [],
   };
 }
 

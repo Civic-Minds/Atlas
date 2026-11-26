@@ -210,11 +210,14 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const also = data.otherExactMatches(list, String(args.route ?? ''), found);
     const r = await data.routeWithRows(a, dayType, found);
     const sameRoutes = await data.sameNameRoutes(a, dayType, r);
+    // #1867: a route that runs all night says so, with its Overnight figure, in place of a first or last time.
+    const allNight = data.runsThroughNight(found.night);
     return {
       agency: a.name, route: r.name, name: r.longName, mode: r.mode, day: dayType, figure: `waitMinutes is ${FIGURE_LABELS.typical}`,
       // The summary holds these, made by the same functions from the same rows: a hosted call doesn't work them out again.
       periods: PERIOD_KEYS.map(p => found.figures[p]),
-      service: found.span,
+      runsAllNight: allNight,
+      service: allNight ? data.allNightService(found, await data.daysRunningEveryHour(a, found)) : found.span,
       branches: await data.branchesOf(a, dayType, r),
       branchesNote: 'Branches that end at the same stop are one row, with their trips counted once; startsAt names where its trips begin.',
       ...(now ? nowBlock(now, found.figures[now.period]?.shown === 'no service') : {}),

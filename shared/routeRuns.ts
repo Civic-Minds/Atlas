@@ -1,5 +1,6 @@
 /** The hours a route runs, read from its published rows (moved here from scripts/build-agency-page-summaries.ts, CIV-1840, so a Worker can import it). */
 import { TIME_PERIODS } from './config';
+import { SPARKLINE_HOURS } from './rules/periods';
 import type { RouteDepartureSpan } from './routeProperties';
 import type { AgencyPageRoute } from './agencyPages';
 
@@ -29,6 +30,19 @@ export function departuresInPeriod(rows: ReadonlyArray<{ departuresByHour?: Reco
 /** The Night Service verdict: a route runs through the night when any of its rows runs its Overnight period (routeRunsByPeriod). */
 export function runsAllNight(rows: ReadonlyArray<{ routeRunsByPeriod?: Partial<Record<string, boolean>> | null }>): boolean {
   return rows.some(p => p.routeRunsByPeriod?.overnight === true);
+}
+
+/**
+ * #1867 (Ryan, option 1: "If a route runs 24/7 then should it say that"): whether every hour of Atlas's day (the
+ * sparkline's 24 hours, 5 AM to 5 AM) has service in every direction: a departure counted in that hour, or a regular
+ * wait read in it (the hours after midnight are often only the latter).
+ */
+export function runsEveryHour(rows: ReadonlyArray<{ directionId?: unknown; departuresByHour?: Record<string, number> | null; headwayByHour?: Record<string, number | null> | null }>): boolean {
+  if (rows.length === 0) return false;
+  const byDirection = new Map<unknown, typeof rows[number][]>();
+  for (const row of rows) byDirection.set(row.directionId ?? null, [...(byDirection.get(row.directionId ?? null) ?? []), row]);
+  const runsIn = (row: typeof rows[number], h: number) => (row.departuresByHour?.[h] ?? 0) > 0 || row.headwayByHour?.[h] != null;
+  return [...byDirection.values()].every(dir => SPARKLINE_HOURS.every(h => dir.some(row => runsIn(row, h))));
 }
 
 export function routeRuns(

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { serviceSpan, type RouteRows } from '../mcp/atlasData';
+import { allNightService, serviceSpan, type RouteRows } from '../mcp/atlasData';
+import { runsEveryHour } from '../../shared/routeRuns';
 
 // #1867: route_frequency's first and last trips. A route that runs through the night has neither; its first and last
 // counted hours are only the edges of Atlas's day window (5 AM to 5 AM).
@@ -11,7 +12,7 @@ describe('serviceSpan', () => {
   it('gives no first or last for a route that runs all night (RTC Red Line: every 30 min from 2 AM read "first during the 5 AM hour")', () => {
     const span = serviceSpan(route({
       departuresByHour: hours(5, 27), departureSpan: { last: 27 * 60 + 30 },
-      routeRunsByPeriod: { amPeak: true, overnight: true },
+      routeRunsByPeriod: { amPeak: true, overnight: true }, nightService30: true,
     }));
     expect(span).toEqual({ first: null, last: null, breaks: [] });
   });
@@ -28,5 +29,25 @@ describe('serviceSpan', () => {
   it('still says the hour when a route that stops overnight has no exact first time', () => {
     const span = serviceSpan(route({ departuresByHour: hours(6, 22), departureSpan: { last: 22 * 60 + 40 }, routeRunsByPeriod: { overnight: false } }));
     expect(span?.first).toBe('during the 6 AM hour');
+  });
+});
+
+// #1867, Ryan option 1: an all-night route says so, with its Overnight figure, and "24 hours" only where every hour runs both ways.
+describe('allNightService', () => {
+  const s = { figures: { overnight: { shown: 'every 30 min' } }, span: { first: null, last: null, breaks: [] } } as never;
+  it('says it runs all night, and 24 hours 7 days a week when every day runs every hour', () => {
+    expect(allNightService(s, ['Weekday', 'Saturday', 'Sunday'])).toEqual({ first: null, last: null, runsAllNight: 'Runs all night: every 30 min overnight (2–6 AM)', runs24Hours: 'Runs 24 hours, 7 days a week', breaks: [] });
+  });
+  it('names the days when only some run every hour, and says nothing of 24 hours when none do', () => {
+    expect(allNightService(s, ['Weekday', 'Saturday']).runs24Hours).toBe('Runs 24 hours on weekdays and Saturdays');
+    expect(allNightService(s, [])).not.toHaveProperty('runs24Hours');
+  });
+});
+
+describe('runsEveryHour', () => {
+  const day = (skip?: number) => Object.fromEntries([...Array.from({ length: 24 }, (_, i) => i + 5)].filter(h => h !== skip).map(h => [String(h), 2]));
+  it('needs every hour of the day in every direction, by departures or a regular wait', () => {
+    expect(runsEveryHour([{ directionId: 0, departuresByHour: day() }, { directionId: 1, departuresByHour: day(27), headwayByHour: { 27: 30 } }])).toBe(true);
+    expect(runsEveryHour([{ directionId: 0, departuresByHour: day() }, { directionId: 1, departuresByHour: day(27) }])).toBe(false);
   });
 });
