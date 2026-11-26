@@ -37,7 +37,7 @@ import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { ModeCollapse, ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useModeLeaving, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
-import { splitRouteKey } from '../utils/routeKey';
+import { routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import { liveHandoffSettled, mapFocusRoute } from '../utils/routeFocus';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import { getPolledRoute } from '../../shared/livePollingConfig';
@@ -1197,6 +1197,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
+    // #1882: in Live a link's route is Live's agency::short name (burlington::1), not the map's agency::route_id; it
+    // becomes the map's key here, so it is handed to Live's card instead of reading "This route couldn't be found".
+    if (onLiveRouteSelected && !fc.features.some(f => routeKey(f.properties as ShapeProperties) === selectedRoute)) {
+      const byShortName = routeKeyForShortName(slug, fc.features, splitRouteKey(selectedRoute).routeId, day);
+      if (byShortName && byShortName !== selectedRoute) { setSelectedRoute(byShortName); return; }
+    }
     const resolvedRoute = resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day);
     if (resolvedRoute && resolvedRoute !== selectedRoute) {
       setSelectedRoute(resolvedRoute);
@@ -1205,7 +1211,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       clearMapSelection();
       setMissingRoute(missing);
     }
-  }, [selectedRoute, layers, day, clearMapSelection, linkCatalog]);
+  }, [selectedRoute, layers, day, clearMapSelection, linkCatalog, onLiveRouteSelected]);
   // The same for a stop (N36) or an on-demand service: the note shows and the value leaves the address bar (#1191).
   const clearOnDemandLink = useCallback(() => setOnDemandStopAgencySlug(null), []);
   const { missing: missingLinkCard, dismiss: dismissMissingLinkCard } = useMissingLinkCard({
