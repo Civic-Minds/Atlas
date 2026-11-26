@@ -75,15 +75,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 7,
       "routeHeadwayMismatches": 12,
-      "featureCount": 1111,
+      "featureCount": 1104,
       "feedExpiry": "20261212",
-      "routeCount": 184,
+      "routeCount": 182,
       "problemShapes": 6,
       "problemShapeRoutes": 1,
       "mismatchRoutes": 6,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-26"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

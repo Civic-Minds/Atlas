@@ -14,7 +14,7 @@
     -118.78
   ],
   "feedUrl": "https://www.valleyexpressbus.org/wp-content/uploads/2026/04/Spring-2026-Valley-Express-GTFS.zip",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281126",
   "lastFeedVersion": "Farebox Test",
   "lastRefreshedAt": "2026-11-16",
   "cities": [
@@ -39,15 +39,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 19,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281126",
       "routeCount": 8,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-26"
   },
   "lastPeekedExpiry": "20991231",
   "feedRefreshStatus": "current",

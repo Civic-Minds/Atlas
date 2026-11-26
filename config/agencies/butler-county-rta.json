@@ -21,16 +21,16 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 50,
-      "feedExpiry": "20281123",
+      "feedExpiry": "20281126",
       "routeCount": 13,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-26"
   },
-  "lastFeedExpiry": "20281123",
+  "lastFeedExpiry": "20281126",
   "lastFeedVersion": "Fall 2026 11172026",
   "lastRefreshedAt": "2026-11-23",
   "lastFeedCheckAt": "20261123",
