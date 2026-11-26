@@ -43,7 +43,7 @@ function stretchSlot(d: ShapeProperties) {
   return null;
 }
 
-import { MIN_CARD_ROW_DEPARTURES, ROW_GAP_WORDS_RATIO } from '../../shared/rules/frequency';
+import { MIN_CARD_ROW_DEPARTURES, MIN_SCHEDULE_DEPARTURES, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, ROW_GAP_WORDS_RATIO } from '../../shared/rules/frequency';
 export { ROW_GAP_WORDS_RATIO };
 
 /**
@@ -278,7 +278,7 @@ export function unsteadyDirectionFallback(d: ShapeProperties, period: TimePeriod
 
 /**
  * CIV-1959 (Ryan: "any piece with 3 or more evenly spaced trips gets a number"): whether a row's own trips in a period pass rule D: 3 or
- * more departures, evenly spaced (the longest gap within 1.75 x the spacing, or the spacing plus 5 minutes). A row that passes keeps its own
+ * more departures, evenly spaced (the longest gap within POOLED_MAX_GAP_RATIO x the spacing, or the spacing plus POOLED_MAX_GAP_GRACE_MINUTES; the pooled-list test's numbers). A row that passes keeps its own
  * reading even where the piece it sits on has no number (the piece's list is thin or bunched at its reference stop by other destinations' trips).
  */
 /** A row's own departures in a period (departuresByHour), the count rule D and MIN_CARD_ROW_DEPARTURES read. */
@@ -291,7 +291,8 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
   const trips = ownDeparturesIn(d, period);
   const hw = d.headwayByPeriod?.[period];
   const gap = d.maxGapByPeriod?.[period];
-  return trips >= 3 && typeof hw === 'number' && typeof gap === 'number' && gap <= Math.max(1.75 * hw, Math.round(hw) + 5);
+  return trips >= MIN_SCHEDULE_DEPARTURES && typeof hw === 'number' && typeof gap === 'number'
+    && gap <= Math.max(POOLED_MAX_GAP_RATIO * hw, Math.round(hw) + POOLED_MAX_GAP_GRACE_MINUTES);
 }
 
 /**

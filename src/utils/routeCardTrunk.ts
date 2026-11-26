@@ -8,6 +8,7 @@ import { rowTrips } from './rowTrips';
 import { SHARED_STRETCH_RATIO, stretchRowsFromMeta, trunkBeatsBranches } from './stretchCard';
 import { hourHasService } from './periodActiveRanges';
 import { rowIrregularInPeriod } from './effectiveHeadway';
+import { combinedWait } from '../../shared/combinedWait';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -83,8 +84,7 @@ export function groupTrunkHeadway(branches: ShapeProperties[], period: string): 
     .map(d => branchDisplayPeriodHeadway(d, period as TimePeriod))
     .filter((v): v is number => v != null && v > 0);
   if (values.length === 0) return null;
-  const combined = 1 / values.reduce((sum, value) => sum + 1 / value, 0);
-  return Math.max(1, Math.round(combined));
+  return combinedWait(values);
 }
 
 /** Shared on-shape stops in the order used by the first branch, restricted to real, non-limited
