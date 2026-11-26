@@ -328,7 +328,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         const hoveredSingleBranch = hoveredBranch?.headsign != null;
         // One hourly series per direction (the direction pills), the inline chart's series, its gap colours,
         // the default branch stack and the route's y-axis top, from the shared hour model (CIV-1118).
-        const { perDirection, directionsWithHours, defaultMerged, hasTrunkSparkline, mergedMaxGaps, defaultStackedByHour, scaleMaxFreq } =
+        const { perDirection, defaultMerged, hasTrunkSparkline, mergedMaxGaps, defaultStackedByHour, scaleMaxFreq } =
           routeHourModel({ groups: displayGroups, directions: currentRoute.directions, primaryMultiBranch, period, hours: HOURS, colorOf: branchColorOf });
         // A selected branch row (CIV-512) keeps the chart and its scale: the bars become that direction's
         // trips each hour, split by branch (part-day branches too), each segment its own trips on the
@@ -381,7 +381,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <HeadwaySparkline
               byHour={merged}
               maxGapByHour={mergedMaxGaps}
-              seriesLabel={merged === defaultMerged && directionsWithHours.length > 1 ? 'slower direction' : undefined}
               stackedByHour={stackedByHour}
               // The legend always names the default stack (none when there is none), so a selection never adds or swaps it.
               legendStackedByHour={defaultStackedByHour ?? {}}

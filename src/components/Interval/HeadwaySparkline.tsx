@@ -12,7 +12,7 @@ import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import ExpandDialog, { ExpandButton } from '../ui/ExpandDialog';
 import LegendItem from '../ui/LegendItem';
-import { delayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
+import { headwayEvery, runTimeAmount } from '../../utils/headwayText';
 import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -132,8 +132,6 @@ interface HourlySparklineProps {
   title?: string;
   /** The route, when the full-day window's title names it: drawn as the route title (CIV-1128); `title` stays its plain text. */
   titleLabel?: { primary: string; secondary?: string; text: string };
-  /** Names what the bars show in hour tooltips, e.g. "slower direction". */
-  seriesLabel?: string;
   /** Used by the modal's larger, all-period rendering. */
   expanded?: boolean;
   /** Full-day view only: trip time by hour, drawn as a strip on the chart's own hour columns. */
@@ -151,7 +149,7 @@ interface HourlySparklineProps {
   hourTitle?: (hour: number) => string | undefined;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', titleLabel, seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', titleLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -281,7 +279,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         >
         {expanded && <FullDayPeriodBands className="inset-x-0 top-1 bottom-0" />}
         {yAxis && <AxisOverlay ticks={yAxis} height={H} className="top-1" />}
-        <HoveredPeriodName period={activeLabelKey} className={`absolute top-0 ${allowExpand ? 'right-7' : 'right-0'}`} />
+        {/* #1819 (CIV-2949): a frequency chart's hovered hour shows beside the period name, not in a hover text. */}
+        <HoveredPeriodName period={activeLabelKey} hour={hourTitle ? null : hoveredHour} className={`absolute top-0 ${allowExpand ? 'right-7' : 'right-0'}`} />
         {/* Hover region highlight — visible on light bg. It starts below the label row
             (the top padding), so the period label sits above it, not inside it. */}
         {bands?.map((band, i) => (
@@ -313,9 +312,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               <div
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
-                title={hasValue && !expanded
-                  ? hourTitle ? hourTitle(h) : `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${delayAmount(maxGap)}` : ''}`
-                  : undefined}
+                title={hasValue && !expanded && hourTitle ? hourTitle(h) : undefined}
               >
                 <div style={{ height: H }} className="relative flex items-end justify-center w-full">
                   {isTooltipHover && hasValue && (
