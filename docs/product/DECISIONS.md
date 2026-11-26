@@ -217,6 +217,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How Live reads
 
+- **Fleet's "Not on a trip" says how many are parked at garages**
+  - What: the count stays whole and nothing is hidden; beside it, how many of those vehicles are at a garage ("622, of which 521 at garages"). A vehicle with no trip is at a garage when it stands still (under 1 m/s, or no speed reported) in a group of 5 or more such vehicles within 100 m. No garage list: a garage is where parked vehicles gather.
+  - Why: Ryan: "Well those 622 buses aren't operating technically right so I have no clue"; most of the TTC's evening count is buses pulled in for the night.
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-2990)
 - **Live report pages stay local**
   - What: the Live report pages are on only on the local dev server, not on Beta or Public, until the GTFS-RT archive restarts and the page design is approved.
   - Why: their data is not being refreshed, and the design is still in progress.
@@ -331,6 +335,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — Fleet's "Not on a trip" is split out by vehicles parked at garages (CIV-2990, #1832)
+Ryan, 2026-11-26, answering the Questions chat on #1832 ("Well those 622 buses aren't operating technically right so I have no clue"), after a plain-words recap (521 at garages, about 71 standing still elsewhere, about 30 moving without a trip), picked option 1: show it split, "Not on a trip: 622, of which 521 at garages" (the count stays, nothing hidden). He then gave his word-for-word OK on the rule's three numbers: under 1 m/s, groups of 5 or more, within 100 m (GARAGE_STANDING_SPEED_MS, GARAGE_MIN_VEHICLES, GARAGE_RADIUS_M in shared/rules/live.ts). The cloud recorder counts it in each snapshot. TTC check with the rule, 2026-11-26 04:42 UTC: 704 on a trip, 516 with none, 459 of them at garages.
 
 ### 2026-11-26 — Intercity agencies are added like the rest, hidden until checked (CIV-2239)
 Ryan, 2026-11-26: "For Intercity we already have Bustang is my point", then "1" on adding Ontario Northland and Brightline hidden like the CIV-2237 agencies, then "1" on visibility: new ones go in hidden until checked.

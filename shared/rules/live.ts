@@ -159,8 +159,8 @@ export const livePaceSec = (slug: string): number => LIVE_FEED_PACE_SEC[slug] ??
  * CIV-2990 (#1832; Ryan, 2026-11-26, picked "Not on a trip: 622, of which 521 at garages"): a vehicle with no trip is
  * "at a garage" when it stands still (speed under GARAGE_STANDING_SPEED_MS, or no speed reported) with at least
  * GARAGE_MIN_VEHICLES such vehicles, itself included, within GARAGE_RADIUS_M. No garage list: a garage is where parked
- * vehicles gather. PENDING Ryan's word-for-word OK on all three numbers (proposed from the TTC at 11:11 PM, 2026-11-25:
- * 521 of 622 in 41 groups at the TTC's garages and carhouses).
+ * vehicles gather. Ryan's word-for-word OK on all three numbers, 2026-11-26 (under 1 m/s, groups of 5+, within 100 m;
+ * DECISIONS.md, CIV-2990).
  */
 export const GARAGE_MIN_VEHICLES = 5;
 export const GARAGE_RADIUS_M = 100;
