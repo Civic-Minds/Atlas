@@ -2,6 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { buildRouteKey, dedupeRouteKeysByDisplay, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../routeKey';
 
 describe('route keys', () => {
+  it("turns a Live link's short name into the map's key when the route_id differs (#1882: burlington::1)", () => {
+    const f = (routeId: string, routeShortName: string, day = 'Weekday') => ({ type: 'Feature', geometry: null, properties: { routeId, routeShortName, day } }) as unknown as GeoJSON.Feature;
+    const features = [f('5806', '1'), f('5806', '1', 'Saturday'), f('5810', '10')];
+    expect(routeKeyForShortName('burlington', features, '1', 'Weekday')).toBe('burlington::5806');
+    expect(routeKeyForShortName('burlington', features, '99', 'Weekday')).toBeNull();
+  });
+
   it('keeps unbranched route keys backward-compatible', () => {
     expect(buildRouteKey('ttc', '506')).toBe('ttc::506');
     expect(splitRouteKey('ttc::506')).toEqual({ agencySlug: 'ttc', routeId: '506', routeBranch: undefined });

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A link to a Live route opens its card again**: a Burlington 1 link read "This route couldn't be found" because the map looked the route up by its feed id, not by the number Live links use
 - **Clicking a route on the Live map opens its route card again**: Burlington 1 and HSR 2 Barton took no click, because Live draws its routes as thin lines that the map's click rule didn't include
 - **Live's vehicle list and vehicle panel are no longer all bold**: only the early, late or on-time reading stands out, as the frequency does on a route card
 - **Live puts each bus under the direction it is really going**: Burlington 1 listed buses heading to Hamilton under "Appleby GO" because the feed gave them the wrong direction; Live now takes a bus's direction and destination from the timetable for its trip, falls back to which way it moves along the route, and otherwise leaves it ungrouped
