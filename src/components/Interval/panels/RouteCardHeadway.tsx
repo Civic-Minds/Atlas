@@ -422,6 +422,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     ))}
                   </>
                 )}
+                {/* #1840 (Ryan, "2"): the shared row sits in its group's rows, so the gap under it matches the gaps between them. */}
+                <div className="space-y-1">
                 {group.shared && (
                   <>
                     <CardDirectionRow
@@ -435,7 +437,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     />
                   </>
                 )}
-                <div className="space-y-1">
                   {group.rows.map((row, i) => {
                     const d = row.feature;
                     if (row.night) {
