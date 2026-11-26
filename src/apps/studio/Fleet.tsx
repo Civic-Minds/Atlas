@@ -34,7 +34,7 @@ import DataTable from '../../components/ui/DataTable';
 import { countText } from '../../../shared/numberText';
 import { useAgencies } from '../../hooks/useAgencies';
 import { getNowPeriodForTimezone } from '../../components/Interval/FilterChips';
-import { HeadwaySparkline } from '../../components/Interval/HeadwaySparkline';
+import { CountSparkline, HeadwaySparkline } from '../../components/Interval/HeadwaySparkline';
 import { HOUR_TO_PERIOD, periodValuesByHour } from '../../utils/sparklinePeriods';
 import { hourChartMaxFreq } from '../../utils/hourChartModel';
 import { SPARKLINE_HOURS } from '../../../shared/config';
@@ -117,21 +117,13 @@ function FleetPeriodSparkline({ vehicles, period, setPeriod, modes }: { vehicles
   // The vehicles the schedule runs (as the MCP's scheduledNow), not those its own frequencies would need (implied).
   const counts = Object.fromEntries(PERIOD_KEYS.map(p => [p, agencyFleet(vehicles, p)?.scheduled ?? null])) as Record<PeriodKey, number | null>;
   const [hoverHour, setHoverHour] = useState<number | null>(null);
-  const countByHour = periodValuesByHour(counts);
-  const byHour: Record<number, number | null> = {};
-  const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
-  for (const h of SPARKLINE_HOURS) {
-    const n = countByHour[h];
-    byHour[h] = n ? 60 / n : null;
-    if (n) stackedByHour[h] = [{ label: word, headway: 60 / n, color: CHANGE_COLOR.same }];
-  }
   const periodLine = (p: PeriodKey) => (counts[p] == null ? undefined : fleetPeriodCountText(PERIOD_LABELS[p], counts[p]!, word));
   const hourTitle = (h: number) => periodLine(HOUR_TO_PERIOD[h] as PeriodKey);
   return (
     <PanelSection label={STUDIO_REDESIGN_TEXT.scheduledByPeriod}>
       {/* Ryan: "Sparkline doesnt have the hover function tho": the route card's hover (onPeriodChange makes it interactive), the
           hovered time of day's count read out under it, and a click picks that time of day in the top bar. */}
-      <HeadwaySparkline byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} period={period} title={STUDIO_REDESIGN_TEXT.scheduledByPeriod} hourTitle={hourTitle} onPeriodChange={p => setPeriod(p as PeriodKey)} onHourHover={setHoverHour} />
+      <CountSparkline countByHour={periodValuesByHour(counts)} color={CHANGE_COLOR.same} label={word} period={period} title={STUDIO_REDESIGN_TEXT.scheduledByPeriod} hourTitle={hourTitle} onPeriodChange={p => setPeriod(p as PeriodKey)} onHourHover={setHoverHour} />
       <p className={`m-0 ${CARD_NOTE}`} aria-live="polite">{(hoverHour != null ? hourTitle(hoverHour) : periodLine(period)) ?? '\u00a0'}</p>
     </PanelSection>
   );

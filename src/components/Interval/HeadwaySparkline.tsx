@@ -522,3 +522,23 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 }
 
 // Legacy period-based export kept for any callers that still use it
+
+/**
+ * CIV-2973: the route card's chart for a count by hour (Studio Fleet's vehicles by time of day) instead of a frequency.
+ * The chart's bars are trips per hour (1 / headway), so a count draws as 60 / count, in one colour, never expandable: none
+ * of the chart's frequency wording ("every N min") can read a count. Hover text comes from `hourTitle`.
+ */
+export function CountSparkline({ countByHour, color, label, ...rest }: Pick<HourlySparklineProps, 'period' | 'title' | 'hourTitle' | 'onPeriodChange' | 'onHourHover'> & {
+  countByHour: Record<number, number | null>;
+  color: string;
+  /** The counted thing ("buses"), named on each bar's segment. */
+  label: string;
+}) {
+  const byHour: Record<number, number | null> = {};
+  const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
+  for (const [h, n] of Object.entries(countByHour)) {
+    byHour[+h] = n ? 60 / n : null;
+    if (n) stackedByHour[+h] = [{ label, headway: 60 / n, color }];
+  }
+  return <HeadwaySparkline {...rest} byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} />;
+}
