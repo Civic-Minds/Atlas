@@ -38,6 +38,8 @@ export interface RouteCardRowContext {
   sectionColours?: boolean;
   /** CIV-1959: the branch-readings switch, so a row's own late start or early end (rowPeriodEdge) is worded only behind it. */
   branchReadings?: boolean;
+  /** #1823: rows whose stretch another destination's row runs too (rowStretchRunByOthers): they read their own trips. */
+  stretchRunByOthers?: ReadonlySet<ShapeProperties>;
 }
 
 /** What one route card row shows: its number, its words and its colour (CIV-992; moved out of RouteCardHeadway). */
@@ -84,13 +86,15 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // A main-stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter
   // value. A tail never does: that value is the trunk's (#1115, Ryan 2026-10-26).
   // CIV-1069: the row's value, gap and part-period words come from the same trips.
-  const trips = rowTrips(d, period, { stretch: ctx.stretchValues !== false, branchReadings: ctx.branchReadings });
+  const runByOthers = ctx.stretchRunByOthers?.has(d) === true;
+  const trips = rowTrips(d, period, { stretch: ctx.stretchValues !== false, branchReadings: ctx.branchReadings, stretchRunByOthers: runByOthers });
   // CIV-995 (b): the hovered hour reads the row's stretch where the row's value does, under the same checks.
-  const stretchHour = hoveredHour != null && ctx.stretchValues !== false ? rowStretchHourValue(d, hoveredHour) : undefined;
+  const stretchHour = hoveredHour != null && ctx.stretchValues !== false && !runByOthers ? rowStretchHourValue(d, hoveredHour) : undefined;
   const ownH = hoveredHour != null
     ? (stretchHour !== undefined ? stretchHour : branchDisplayHourHeadway(d, hoveredHour)) ?? trips.value
     : trips.value;
-  const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail'
+  // #1823: nor does a main row whose stretch other destinations run: the direction's value counts their trips, not its own.
+  const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail' && !runByOthers
     ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
     : undefined;
   const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;

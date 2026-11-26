@@ -32,6 +32,7 @@ describe('pooled rows with a few departures in a period read Irregular (#1534)',
     expect(midday).toContain('to Galvin / des Trembles: Runs irregularly in this period');
     expect(midday).toContain('to Station du Cégep - Quai A: every 30 min');
     expect(rows(props(sherbrooke4json), '4', 'amPeak')).toContain('to Galvin / des Trembles: Runs irregularly in this period');
-    expect(rows(props(sherbrooke4json), '4', 'evening')).toContain('to Galvin / des Trembles: every 28 min');
+    // #1823: Galvin's own trips (31), not its branch's every 28, which counts the trips to Station du Cégep - Quai H too.
+    expect(rows(props(sherbrooke4json), '4', 'evening')).toContain('to Galvin / des Trembles: every 31 min');
   });
 });

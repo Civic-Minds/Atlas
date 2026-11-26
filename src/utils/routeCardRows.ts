@@ -11,7 +11,7 @@ import { dirIdNum, groupTrunkHeadway, oneRowMainStretchHeadway, sharedStopIdsFor
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
 import { branchBase, branchCodeOf } from '../../shared/branchCode';
-import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, stretchRowFeatures, type RouteContract } from './stretchCard';
+import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, rowStretchRunByOthers, stretchRowFeatures, type RouteContract } from './stretchCard';
 import { branchRowValue, directionPieceTreatments, tailText } from './branchReadings';
 import { BRANCH_READINGS_ENABLED } from '../../shared/rules/flags';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
@@ -213,9 +213,12 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     || (allDay != null && allDay.filterValue == null);
   const noRegularLabel = noNumberRowLabel({ nightView });
   const limitedWord = noRegularLabel;
+  // #1823: rows whose stretch another destination's row runs too read their own trips (rowStretchRunByOthers).
+  const stretchRunByOthers = new Set(stretchMode && stretchValues ? directionGroups.flatMap(group =>
+    group.realTier.filter(d => rowStretchRunByOthers(d, group.directionFeatures ?? group.realTier, period))) : []);
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     // #773: a row that reads "Runs irregularly" for a long gap (waitNotCadence) still runs in the period.
-    group.realTier.some(direction => { const t = rowTrips(direction, period, { stretch: stretchValues }); return t.value != null || t.waitNotCadence === true; }) ||
+    group.realTier.some(direction => { const t = rowTrips(direction, period, { stretch: stretchValues, stretchRunByOthers: stretchRunByOthers.has(direction) }); return t.value != null || t.waitNotCadence === true; }) ||
     group.span.length > 0,
   );
   const hasPartialPeriodService = period !== 'all' && !hasPeriodService && directions.some(direction =>
@@ -241,7 +244,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
       // CIV-2232: a row whose start or end words gave way to "Runs irregularly" (too few or uneven trips) still runs part of the period.
-      .map(group => ({ ...group, realTier: group.realTier.filter(direction => { const t = rowTrips(direction, period, { stretch: stretchValues, branchReadings }); return t.partPeriod != null || t.irregularPastHour === true; }), span: [] }))
+      .map(group => ({ ...group, realTier: group.realTier.filter(direction => { const t = rowTrips(direction, period, { stretch: stretchValues, branchReadings, stretchRunByOthers: stretchRunByOthers.has(direction) }); return t.partPeriod != null || t.irregularPastHour === true; }), span: [] }))
       .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
@@ -272,7 +275,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   };
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
     withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowCode(group, direction));
-  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours, branchReadings };
+  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours, branchReadings, stretchRunByOthers };
   const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
     return {
