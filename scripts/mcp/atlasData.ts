@@ -416,11 +416,21 @@ export async function daysRunningEveryHour(agency: CatalogAgency, s: Pick<RouteS
 }
 
 /**
+ * #1867: a night-only route, among those that run all night: no service in Midday, PM peak or Evening (the shared parts
+ * of the day). The AM peak is left out: a night route's last trips run into it (TTC 320 weekday: 3 trips before 6:18 AM).
+ */
+const NIGHT_ONLY_EMPTY_PERIODS = DAYTIME_PERIOD_KEYS.filter(k => k !== 'amPeak');
+export const runsOvernightOnly = (s: Pick<RouteSummary, 'figures'>): boolean => NIGHT_ONLY_EMPTY_PERIODS.every(k => s.figures[k]?.shown === 'no service');
+
+/**
  * #1867 (Ryan, option 1: "if you ask 'what time is the first trip on the red line' is that different than 'does the red
  * line run all night'"): an all-night route's service says it runs all night, with its Overnight figure, in place of a
  * first or last time; and 24 hours, with the days, where every hour has service in every direction.
  */
 export function allNightService(s: Pick<RouteSummary, 'figures' | 'span'>, everyHourOn: readonly DayType[]) {
+  // Ryan's words for a night-only route (2026-11-26): only "Runs overnight only", with no frequency, no clock times and so
+  // no breaks (TTC 320's "6:18 AM–1:12 AM" is its daytime, not a break in its service).
+  if (runsOvernightOnly(s)) return { first: null, last: null, runsOvernightOnly: 'Runs overnight only', breaks: [] };
   const allWeek = everyHourOn.length === DAY_TYPES.length;
   return {
     first: null, last: null,
