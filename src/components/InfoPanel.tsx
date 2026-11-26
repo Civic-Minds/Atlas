@@ -11,7 +11,7 @@ import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
 import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
+import { FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import { nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
@@ -36,6 +36,7 @@ import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton
 import SearchBox from './ui/SearchBox';
 import { DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { loadHistoryConfig } from '../utils/historyConfig';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -141,8 +142,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   useEffect(() => {
     if (!FEATURES.history || historyAgencies || !open) return;
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json() as Promise<HistoryAgencySummary[]>)
+    // The one shared fetch History itself uses (CIV-2976 D11): fetched once, an HTTP error is a failure.
+    loadHistoryConfig()
       .then((d: HistoryAgencySummary[]) => setHistoryAgencies(d))
       .catch(() => setHistoryAgencies([]));
   }, [historyAgencies, open]);
