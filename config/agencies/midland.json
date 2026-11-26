@@ -1,0 +1,19 @@
+{
+  "slug": "midland",
+  "officialName": "Midland Transit",
+  "websiteUrl": "https://www.midland.ca/Pages/transit.aspx",
+  "dataLicense": {
+    "url": "https://www.midland.ca/Pages/transit.aspx",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Ontario",
+  "center": [
+    44.7602,
+    -79.915
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-4704/latest.zip",
+  "timezone": "America/Toronto",
+  "hiddenInProduction": true
+}
