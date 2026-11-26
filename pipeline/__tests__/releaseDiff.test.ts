@@ -236,6 +236,20 @@ describe('release diff gate: red flags', () => {
       .toEqual(['moose-jaw:expired:yellow']);
   });
 
+  it('keeps a pinned expired feed yellow when code changes its output, red for any other end date (CIV-3028)', () => {
+    const live = countsOnly(1177, 1249, 40);
+    const changed = { ...countsOnly(1177, 1249, 40), contentHash: 'other' };
+    const pinnedFlags = evaluateAgency({ slug: 'rockford', live, next: changed, service: { end: '20260905', pinnedExpiry: '20260905' }, allowMissingLive: true }, [], TODAY);
+    expect(names(pinnedFlags)).toEqual(['rockford:expired:yellow']);
+    expect(pinnedFlags[0].message).toContain('pinned');
+    // A pin for a different expiry does not cover this feed.
+    expect(names(evaluateAgency({ slug: 'rockford', live, next: changed, service: { end: '20260905', pinnedExpiry: '20260601' }, allowMissingLive: true }, [], TODAY)))
+      .toEqual(['rockford:expired:red']);
+    // A pinned agency not yet in the live release still needs an explicit allow.
+    expect(names(evaluateAgency({ slug: 'rockford', live: null, next: changed, service: { end: '20260905', pinnedExpiry: '20260905' }, allowMissingLive: true }, [], TODAY)))
+      .toEqual(expect.arrayContaining(['rockford:expired:red']));
+  });
+
   it('keeps expired agencies that are already live yellow, and still blocks a new-to-release expired one until allowed', () => {
     const live = countsOnly(193, 193, 6);
     // Stale agency: refresh kept its live data, so the release copy is unchanged.

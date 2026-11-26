@@ -172,6 +172,11 @@ export interface ServiceWindow {
   calendarEnd?: string | null;
   /** Expiry of the feed the live data was built from: a future start is red while it still runs (#1144). */
   liveFeedExpiry?: string | null;
+  /**
+   * Expiry of an expiredFeedPin that approved this exact feed (#1036, CIV-3028). An already-live
+   * agency whose service ended on that date is yellow, so code changes can reach its pinned timetable.
+   */
+  pinnedExpiry?: string | null;
 }
 
 interface LineFeature {
@@ -637,9 +642,12 @@ export function evaluateAgency(input: AgencyGateInput, peers: GatePeer[], todayY
   const end = input.service?.end ?? null;
   if (end && /^\d{8}$/.test(end) && end < todayYmd) {
     const unchanged = !!live && live.contentHash === next.contentHash;
+    const pinned = !!live && input.service?.pinnedExpiry === end;
     flags.push(unchanged
       ? flag(slug, 'expired', 'yellow', `service ended ${end}; output unchanged from live`)
-      : flag(slug, 'expired', 'red', `service ended ${end}, before today (${todayYmd})`));
+      : pinned
+        ? flag(slug, 'expired', 'yellow', `service ended ${end}; this exact feed is pinned (expiredFeedPin)`)
+        : flag(slug, 'expired', 'red', `service ended ${end}, before today (${todayYmd})`));
   }
   const start = input.service?.start ?? null;
   if (start && /^\d{8}$/.test(start) && start > todayYmd) {
