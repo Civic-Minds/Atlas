@@ -25,6 +25,8 @@ export function cleanHeadsign(
   headsign: string,
   shortName: string | null = null,
   longName: string | null = null,
+  /** #1836: the pipeline keeps direction codes in the headsign it stores and groups trips by, so two patterns that differ only by one never merge (Kenosha 6229 "Bullen Middle School" and "... (Northbound)"); the app drops them at render. */
+  opts: { keepDirection?: boolean } = {},
 ): string {
   let h = headsign;
 
@@ -110,7 +112,7 @@ export function cleanHeadsign(
   // "38th Street SB", Calgary "78th Avenue N Station (SB)", RTC "Maryland Pkwy Southbound", StarMetro "AZALEA - EASTBOUND",
   // Tri Delta "Eastbound Antioch BART". The card already names the direction. A code inside the name stays ("Broadway SB
   // Past Cedar Lane"), and so does a headsign that is only a direction or a route number with one. Santa Barbara MTD's "Downtown SB" is the city.
-  const withoutDirection = h
+  const withoutDirection = opts.keepDirection ? '' : h
     .replace(DIRECTION_AT_END, '')
     .replace(DIRECTION_AT_START, '')
     .trim();
