@@ -320,6 +320,9 @@ jobs:
         continue-on-error: true
         run: nice -n 10 npx tsx scripts/studio-builds.ts --dry-run || { echo "::warning::Some Studio files failed to build; see the log."; exit 1; }
         env:
+          # #1874: the schedule comparison reads the pipeline switches; here they are the dry run's own, already in the
+          # job env from its flags step, so it must not read the repo variables with gh (it has no token and failed).
+          ATLAS_PUBLISH_FLAGS: none
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
@@ -751,6 +754,13 @@ jobs:
         continue-on-error: true
         run: nice -n 10 npx tsx scripts/studio-builds.ts || { echo "::warning::Some Studio files failed to build; see the log."; exit 1; }
         env:
+          # #1874: the schedule comparison reads routes as the publish job does: the same four switches from the repo
+          # variables, set here, so it never calls gh (this step has no token; every comparison failed on 2026-11-26).
+          ATLAS_PUBLISH_FLAGS: none
+          ATLAS_HEADLINE_FROM_TRUNK: ${{ vars.ATLAS_HEADLINE_FROM_TRUNK }}
+          ATLAS_PIECE_READING: ${{ vars.ATLAS_PIECE_READING }}
+          ATLAS_BRANCH_READINGS: ${{ vars.ATLAS_BRANCH_READINGS }}
+          ATLAS_PIECES_BY_TRIPS: ${{ vars.ATLAS_PIECES_BY_TRIPS }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}

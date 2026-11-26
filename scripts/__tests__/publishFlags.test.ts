@@ -23,6 +23,22 @@ describe('publish flags for Mac builds (#1708)', () => {
     expect(() => applyPublishFlags({}, () => { throw new Error('gh: not logged in'); })).toThrow(/ATLAS_PUBLISH_FLAGS=none/);
   });
 
+  it('#1874: every workflow step that runs a flag-reading script sets the switches itself, never reading them with gh', () => {
+    // The scripts that call applyPublishFlags, and studio-builds, which runs compare-feed-dates as a child process.
+    const flagScripts = ['scripts/compare-feed-dates.ts', 'scripts/studio-builds.ts'];
+    const steps = readFileSync('.github/workflows/rebuild-release.yml', 'utf8').split(/\n(?=      - name: )/);
+    const using = steps.filter(step => flagScripts.some(s => step.includes(s)));
+    expect(using.length).toBe(2);
+    for (const step of using) {
+      const name = /- name: (.+)/.exec(step)?.[1];
+      expect(step, name).toMatch(/\n\s+ATLAS_PUBLISH_FLAGS: none\n/);
+      // The publish step takes each switch from the repo variables, as the publish job does; the dry run's are already in its job env.
+      if (!name?.includes('(dry run)')) {
+        for (const flag of PUBLISH_FLAGS) expect(step, `${name}: ${flag}`).toContain(`${flag}: \${{ vars.${flag} }}`);
+      }
+    }
+  });
+
   it('names the same switches as the rebuild workflow', () => {
     const yml = readFileSync('.github/workflows/rebuild-release.yml', 'utf8');
     const allowed = /allowed=" ([A-Z_ ]+) "/.exec(yml)?.[1].split(' ');
