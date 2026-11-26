@@ -1,0 +1,26 @@
+{
+  "slug": "jo-ks",
+  "officialName": "Johnson County Transit",
+  "commonName": "RideKC Johnson County",
+  "websiteUrl": "https://ridekc.org/region/johnson-county-transit",
+  "dataLicense": {
+    "url": "https://ridekc.org/region/johnson-county-transit",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Kansas",
+  "center": [
+    38.9784,
+    -94.6864
+  ],
+  "bbox": [
+    38.883,
+    -95.266,
+    39.114,
+    -94.573
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2303/latest.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}
