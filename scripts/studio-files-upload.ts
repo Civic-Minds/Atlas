@@ -12,9 +12,9 @@
  */
 import { readFileSync, readdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { STUDIO_FILES_PREFIX, isStudioFileName } from '../shared/studioFiles';
-import { privateLiveBucketName, requireEnv } from '../pipeline/r2';
+import { getR2Client, privateLiveBucketName } from '../pipeline/r2';
 import { assertKnownFlags } from '../pipeline/cliFlags';
 
 assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--from': 'value', '--only': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
@@ -30,11 +30,7 @@ if (!names.length) { console.log('studio-files-upload: no Studio files to upload
 if (dryRun) { console.log(`studio-files-upload: would upload ${names.length} files (dry run).`); process.exit(0); }
 
 const bucket = privateLiveBucketName();
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${requireEnv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: requireEnv('R2_ACCESS_KEY_ID'), secretAccessKey: requireEnv('R2_SECRET_ACCESS_KEY') },
-});
+const s3 = getR2Client();
 for (const n of names) {
   const body = readFileSync(join(from, n));
   JSON.parse(body.toString('utf8')); // never upload a broken file
