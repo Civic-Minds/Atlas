@@ -1,0 +1,19 @@
+{
+  "slug": "gocary",
+  "officialName": "GoCary",
+  "websiteUrl": "https://gocary.org",
+  "dataLicense": {
+    "url": "https://gocary.org",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "North Carolina",
+  "center": [
+    35.7835,
+    -78.7831
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2277/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

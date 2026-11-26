@@ -1,0 +1,25 @@
+{
+  "slug": "lewis-county",
+  "officialName": "Lewis County Transit",
+  "websiteUrl": "https://lewiscountytransit.org/",
+  "dataLicense": {
+    "url": "https://lewiscountytransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Washington",
+  "center": [
+    46.7099,
+    -122.9571
+  ],
+  "bbox": [
+    46.141,
+    -123.014,
+    47.05,
+    -121.669
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-5579/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}
