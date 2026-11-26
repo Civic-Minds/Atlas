@@ -23,6 +23,10 @@ export const MAP_OVERLAY_ROWS = {
   notice: 'bottom-[calc(6.5rem+var(--map-key-h,0px))] sm:bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]',
   /** The notice pill one row higher still (and the update banner, so the two never meet). */
   noticeRaised: 'bottom-[calc(9rem+var(--map-key-h,0px))] sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]',
+  /** sm and up: a prompt (MAP_PROMPT_SLOT) takes the row just above the footer, so the notice pills step up one row while
+   *  one shows (html[data-consent-prompt], from usePromptFlag; #1887). */
+  noticeUnderPrompt: 'sm:[html[data-consent-prompt]_&]:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]',
+  noticeRaisedUnderPrompt: 'sm:[html[data-consent-prompt]_&]:bottom-[calc(7rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]',
   /** App-level status pills, just inside the bottom edge. */
   status: 'bottom-5',
 } as const;
@@ -102,8 +106,8 @@ export const MAP_CONTROLS_SLOT = `absolute ${R.edge} ${E.controlsRight}`;
 /** A centred notice pill one row above the bottom-left pills, clear of the controls; `raised` sits one row higher
  *  (CIV-1057). Phones put it above the counts row: the "Error" pill, with any other hint raised over it. On sm and up the footer row can wrap upward, so the pill sits
  *  above its measured height (--map-footer-h, from mapFooterStyle on the map app's root). */
-export const MAP_NOTICE_SLOT = `absolute ${R.notice} ${E.noticeSides} flex justify-center`;
-export const MAP_NOTICE_SLOT_RAISED = `absolute ${R.noticeRaised} ${E.noticeSides} flex justify-center`;
+export const MAP_NOTICE_SLOT = `absolute ${R.notice} ${R.noticeUnderPrompt} ${E.noticeSides} flex justify-center`;
+export const MAP_NOTICE_SLOT_RAISED = `absolute ${R.noticeRaised} ${R.noticeRaisedUnderPrompt} ${E.noticeSides} flex justify-center`;
 /** Sidebar cards on sm and up stop 7px above the footer row however far it wraps (CIV-1137): 56px top, the row's
  *  1.5rem inset and its measured height (--map-footer-h, published on <html>, so the cards outside the map app see it). */
 export const SIDEBAR_CARD_BOTTOM_LIMIT = 'max-h-[calc(100vh-80px-var(--map-footer-h,2rem))]';
@@ -125,9 +129,10 @@ export function mapFooterStyle(footerHeight?: number | null): CSSProperties {
 /**
  * The one place for the site's prompts: the analytics prompt, Data saver and the update notice (CIV-2004, Ryan chose 1:
  * "I thought the other ones were centered"). Centred; under the header on phones, clear of the map controls and footer
- * links, and one row above the notice pill on sm and up, so it never sits on the footer pills or the notice. inset-x-0 +
- * mx-auto + w-fit centres without the left-1/2 shrink-to-fit squeeze that wrapped the text on phones.
+ * links. On sm and up it sits on the row just above the footer pills, the same gap as every other row (#1887, Ryan: "This
+ * notice is not aligned well": it floated two rows up); the notice pills step up a row while it shows (noticeUnderPrompt).
+ * inset-x-0 + mx-auto + w-fit centres without the left-1/2 shrink-to-fit squeeze that wrapped the text on phones.
  */
-export const MAP_PROMPT_SLOT = 'fixed inset-x-0 mx-auto w-fit max-w-[calc(100vw-2rem)] top-[4.25rem] sm:top-auto sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]';
+export const MAP_PROMPT_SLOT = 'fixed inset-x-0 mx-auto w-fit max-w-[calc(100vw-2rem)] top-[4.25rem] sm:top-auto sm:bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]';
 /** App-level status pills (loading the map, a load error), centred along the bottom. */
 export const MAP_STATUS_SLOT = `absolute left-1/2 ${R.status} -translate-x-1/2`;
