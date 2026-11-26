@@ -145,6 +145,7 @@ describe('tile rules fingerprint', () => {
   // CIV-238 adds the ewf_<period> keys (the grades a period's first or last wait breaks) and a filter clause that reads
   // them. No version bump, as for #899: no existing tile value changes, older tiles lack the keys and evaluate exactly as
   // before (the clause is skipped without them), and older apps ignore them. Hash only.
+  // CIV-3017: flag check in build-pmtiles only, no tile change: hash only.
   // CIV-2995 records the staged run a release was built from (sourcePrefix) in its manifest; the manifest is not tile
   // content: hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {

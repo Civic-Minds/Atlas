@@ -66,6 +66,37 @@ describe('selectArchiveForAgency', () => {
       .toMatchObject({ ok: true, key: 'gtfs/archive/art/20271231-a6648eb7d6754139.zip' });
   });
 
+  it('ttc (#1767): the newest upload is the zip the last refresh processed, so an older file whose key date is later does not win', () => {
+    // S1000544's feed_info ends 20261219 (its key) while its calendar runs to 20261221, the live record's expiry, which an
+    // older TTC file's key carries: the rebuild took that file and published its stop names.
+    const objects = [
+      obj('ttc', '20261221-3bd40192f403dc8d.zip', '2026-10-31T12:00:00Z'),
+      obj('ttc', '20261219-a2c8d495bf7b06fe.zip', '2026-11-13T12:00:00Z'),
+    ];
+    const live = { lastFeedExpiry: '20261221', lastRawArchiveKey: '20261219-a2c8d495bf7b06fe' };
+    expect(selectArchiveForAgency(objects, live, '20261125')).toMatchObject({ ok: true, key: 'gtfs/archive/ttc/20261219-a2c8d495bf7b06fe.zip' });
+    // Without the record (agencies refreshed before #1423 stamped it) the old rule stands.
+    expect(selectArchiveForAgency(objects, { lastFeedExpiry: '20261221' }, '20261125')).toMatchObject({ ok: true, key: 'gtfs/archive/ttc/20261221-3bd40192f403dc8d.zip' });
+  });
+
+  it('#1767: a backfill uploaded after the processed zip still does not win, recorded or not', () => {
+    const objects = [
+      obj('norta', '20210506.zip', '2026-09-17T17:13:45Z'),
+      obj('norta', '20270124-3b32471680f57363.zip', '2026-08-27T21:09:32Z'),
+    ];
+    expect(selectArchiveForAgency(objects, { lastFeedExpiry: '20270124', lastRawArchiveKey: '20270124-3b32471680f57363' }))
+      .toMatchObject({ ok: true, key: 'gtfs/archive/norta/20270124-3b32471680f57363.zip' });
+  });
+
+  it('#1767: a newest upload the last refresh did not process (a manual process run) leaves the old rule in charge', () => {
+    const objects = [
+      obj('ttc', '20261221-3bd40192f403dc8d.zip', '2026-11-20T12:00:00Z'),
+      obj('ttc', '20261219-a2c8d495bf7b06fe.zip', '2026-11-21T12:00:00Z'),
+    ];
+    expect(selectArchiveForAgency(objects, { lastFeedExpiry: '20261221', lastRawArchiveKey: '20261221-3bd40192f403dc8d' }, '20261125'))
+      .toMatchObject({ ok: true, key: 'gtfs/archive/ttc/20261221-3bd40192f403dc8d.zip' });
+  });
+
   it('norta: a later backfill of an old feed does not beat the current one', () => {
     const objects = [
       obj('norta', '20200202.zip', '2026-09-17T17:11:18Z'),
