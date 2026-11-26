@@ -128,6 +128,27 @@
       "lastFeedContentKey": "bdcfa43cc2d9b3d4"
     },
     {
+      "slug": "lindsay",
+      "name": "Lindsay Transit",
+      "officialName": "Lindsay Transit",
+      "websiteUrl": "https://www.kawarthalakes.ca/lindsaytransit",
+      "dataLicense": {
+        "url": "https://www.kawarthalakes.ca/lindsaytransit",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Ontario",
+      "center": [
+        44.3539,
+        -78.7457
+      ],
+      "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-kawartha.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4732/latest.zip",
+      "timezone": "America/Toronto",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "quinte",
       "name": "Quinte Transit",
       "officialName": "Quinte Transit",
@@ -3575,6 +3596,27 @@
         "V250": true,
         "V260": true
       },
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "rimouski",
+      "name": "Société des transports de Rimouski",
+      "officialName": "Société des transports de Rimouski",
+      "websiteUrl": "https://www.rimouskibus.com/",
+      "dataLicense": {
+        "url": "https://www.donneesquebec.ca/recherche/dataset/transport-collectif",
+        "attribution": "required",
+        "name": "CC BY 4.0",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "Quebec",
+      "center": [
+        48.443,
+        -68.5219
+      ],
+      "feedUrl": "https://www.donneesquebec.ca/recherche/dataset/d2d92b84-4361-42f0-81eb-3c395bc54597/resource/bd4021ba-d3ae-4d3b-b8fd-016405166761/download/gtfsrimouskibus.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2276/latest.zip",
+      "timezone": "America/Montreal",
       "hiddenInProduction": true
     },
     {
@@ -7420,6 +7462,28 @@
       ],
       "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=29",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2529/latest.zip",
+      "timezone": "America/Vancouver",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "port-alberni",
+      "name": "BC Transit (Port Alberni)",
+      "officialName": "BC Transit",
+      "nameQualifier": "Port Alberni",
+      "websiteUrl": "https://www.bctransit.com/",
+      "dataLicense": {
+        "url": "https://www.bctransit.com/open-data/terms-of-use",
+        "attribution": "required",
+        "name": "BC Transit Open Data Terms of Use",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "British Columbia",
+      "center": [
+        49.2504,
+        -124.8022
+      ],
+      "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-761/latest.zip",
       "timezone": "America/Vancouver",
       "hiddenInProduction": true
     },

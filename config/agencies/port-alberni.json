@@ -1,0 +1,21 @@
+{
+  "slug": "port-alberni",
+  "officialName": "BC Transit",
+  "nameQualifier": "Port Alberni",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    49.2504,
+    -124.8022
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-761/latest.zip",
+  "timezone": "America/Vancouver",
+  "hiddenInProduction": true
+}
