@@ -61,7 +61,9 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
     let color = 0;
     const worded: Array<{ h: number; words: string }> = [];
     for (const group of model.groups) {
-      if (typeof group.shared?.headway === 'number') shown.push(group.shared.headway);
+      // #1825: a Shared stretch line that stops or starts partway reads its in-service spacing, as the card words it (VIA 24 Saturday
+      // evening: "every 18 min until 9:45 PM", not its full-window 75).
+      if (typeof group.shared?.headway === 'number') shown.push(group.shared.edgeEvery ?? group.shared.headway);
       for (const row of group.rows) {
         const v = row.display(null).value;
         // A row with no number (limited, irregular) shows none; a row reading a range ("every 15–54") shows both ends.
@@ -85,7 +87,10 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
   if (!worded.shown.length) return undefined;
   // Rows at that number saying different things leave the list on the number.
   const said = new Set(worded.worded.filter(w => w.h === Math.max(...worded.shown)).map(w => w.words));
-  const words = said.size === 1 ? [...said][0] : undefined;
+  // #1825: a list that shows a range drops the words (routeListDisplay), so it reads the bare numbers (#1771), never the first part of
+  // a row that changes partway. CTA 53 Saturday late read "every 7–18" beside "every 7 min until 11:33 PM, then every 31 min".
+  const rangeShown = headwayRangeShown(Math.min(...worded.shown), Math.max(...worded.shown));
+  const words = said.size === 1 && !rangeShown ? [...said][0] : undefined;
   const { shown, color } = words ? worded : read(true);
   const high = Math.max(...shown);
   return { low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}) };

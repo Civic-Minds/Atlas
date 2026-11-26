@@ -38,7 +38,8 @@ describe('a change partway through a period reads the slower number (#1771)', ()
   it('STM 1 weekday midday reads "every 6 min" (was "every 4"; every 4 only until 9:17 AM)', () => {
     expect(routeListCellText(routeListDisplay(rowsOf(stm1json), 'midday'))).toBe('every 6 min');
   });
-  it('CTA 53 Saturday late reads "every 20–31 min" (was "every 7–20"; every 7 only until 11:33 PM, then every 31)', () => {
-    expect(routeListCellText(routeListDisplay(rowsOf(cta53json), 'late'))).toBe('every 20–31 min');
+  // #1825: with the branch readings always on, Ford City's row reads its own "every 18 min until 12:13 AM", so its number is 18, not 20.
+  it('CTA 53 Saturday late reads "every 18–31 min" (was "every 7–20"; every 7 only until 11:33 PM, then every 31)', () => {
+    expect(routeListCellText(routeListDisplay(rowsOf(cta53json), 'late'))).toBe('every 18–31 min');
   });
 });
