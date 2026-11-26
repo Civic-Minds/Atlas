@@ -1,0 +1,19 @@
+{
+  "slug": "mwrta",
+  "officialName": "MetroWest Regional Transit Authority",
+  "websiteUrl": "https://www.mwrta.com/",
+  "dataLicense": {
+    "url": "https://www.mwrta.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-26"
+  },
+  "region": "Massachusetts",
+  "center": [
+    42.2958,
+    -71.4372
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-439/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

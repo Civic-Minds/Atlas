@@ -1,0 +1,19 @@
+{
+  "slug": "mason-transit",
+  "officialName": "Mason Transit Authority",
+  "websiteUrl": "https://www.masontransit.org/",
+  "dataLicense": {
+    "url": "https://www.masontransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-26"
+  },
+  "region": "Washington",
+  "center": [
+    47.2445,
+    -123.1015
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/mason-wa-us/mason-wa-us.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

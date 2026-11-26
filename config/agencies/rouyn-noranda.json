@@ -1,0 +1,19 @@
+{
+  "slug": "rouyn-noranda",
+  "officialName": "Transport collectif Rouyn-Noranda",
+  "websiteUrl": "https://www.ville.rouyn-noranda.qc.ca/citoyens/transports/autobus/",
+  "dataLicense": {
+    "url": "https://www.donneesquebec.ca/",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-26"
+  },
+  "region": "Quebec",
+  "center": [
+    48.2407,
+    -79.0225
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2603/latest.zip",
+  "timezone": "America/Montreal",
+  "hiddenInProduction": true
+}
