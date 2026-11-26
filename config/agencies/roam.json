@@ -16,5 +16,45 @@
   "feedUrl": "https://bowvalley.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-711/latest.zip",
   "timezone": "America/Edmonton",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://bowvalley.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/",
+  "lastFeedCheckAt": "20261126",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270228",
+  "feedQuality": {
+    "status": "review",
+    "score": 87,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 51,
+      "feedExpiry": "20270228",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-26"
+  },
+  "lastRawArchiveKey": "20270228-716946374d0ae927",
+  "lastFeedContentKey": "0c5374324108e599",
+  "lastFeedExpiry": "20270228",
+  "lastPeekedExpiry": "20270228",
+  "lastFeedStart": "20261119",
+  "lastFeedVersion": "202611231/20261120 11:10:02/20261123 04:00:00",
+  "lastRefreshedAt": "2026-11-26",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "aa01a074cdbb8b7d",
+  "feedObtainedAt": "20261125"
 }
