@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Studio Fleet's vehicle tables name the vehicles as the page does**: screen readers heard "Buses Needed" on TTC tables titled "Vehicles Needed"
+- **No part of a route's line draws more frequent than the route when the same buses run its whole length**: CapMetro 801's weekday evening drew its north end green (every 15) beside a route that runs every 20, because those stops caught more of the service before it drops at 9 PM
 - **A branch with 2 or 3 trips more than an hour apart reads "Runs irregularly in this period"**: branch lines skipped the 4-trip minimum the other rows follow, so SEPTA 20's Sunday evening card read "every 171 min" from 3 trips
 - **Atlas Studio MCP counts each station once in a route's stops**: OC Transpo Line 1 said 26 stops each way for its 13 stations, because each station was counted as both its platform and the station itself
 - **Route cards count each trip once, late trips included**: Kingston 22 left out its 11:02 and 11:38 PM trips towards First Canada (30 trips against the feed's 33), and Kingston 10 counted one trip twice each way (34 against 33), because a row's hourly counts mixed two lists of departures
