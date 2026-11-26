@@ -777,13 +777,21 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   ) : null;
   // #1877 (Ryan: "I don't like how the Live vehicles is separate here from the regular destinations"): a destination row
   // of the route card carries its own vehicles, a count under its name that opens them.
+  // MOCK for Ryan's review (#1877, not for merge): ?mock1877=a keeps "every X min" with the bus count under it;
+  // ?mock1877=b puts the bus count in its place. Both leave out "Right now", so each destination shows once.
+  const mock1877 = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mock1877') : null;
   const liveRowFor = useCallback((feature: { headsign?: unknown }) => {
     if (!selectedGroup || !vehiclesByDirection || !canGroupByDirection) return null;
     const key = rowDirectionKey(feature.headsign, selectedGroup.routeShortName);
     const vehicles = key ? vehiclesByDirection.get(key) : undefined;
+    if (mock1877 === 'b') {
+      const count = <span className="text-sm font-black text-[var(--text-primary)] whitespace-nowrap">{directionSummary(vehicles ?? [], selectedRouteModeWord)}</span>;
+      if (!key || !vehicles?.length) return { key: `none:${String(feature.headsign)}`, value: count };
+      return { key, value: count, onClick: () => setSelectedDirection(key) };
+    }
     if (!key || !vehicles?.length) return null;
     return { key, subLabel: directionSummary(vehicles, selectedRouteModeWord), onClick: () => setSelectedDirection(key) };
-  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord]);
+  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877]);
   // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
   // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
   const liveRouteSections = (claimed: ReadonlySet<string>) => {
@@ -792,14 +800,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const grouped = selectedGroup.vehicles.length > 0 && canGroupByDirection && !destination;
     return (
     <>
-      <LiveRoutePerformance
+      {!mock1877 && <LiveRoutePerformance
         key={selectedRoute ?? ''}
         slug={selectedGroup.agencySlug}
         routeShortName={selectedGroup.routeShortName}
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         scheduledRowsFor={scheduledRowsFor}
-      />
+      />}
       {!(grouped && unclaimed.length === 0) && <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (

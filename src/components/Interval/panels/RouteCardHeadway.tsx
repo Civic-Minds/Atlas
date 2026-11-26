@@ -125,7 +125,7 @@ export interface RouteCardHeadwayProps {
   extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
   /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
    *  destination (its key) carries it. */
-  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; onClick: () => void } | null;
+  rowLive?: (feature: ShapeProperties) => { key: string; subLabel?: string; onClick?: () => void; value?: React.ReactNode } | null;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -420,7 +420,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             const live = rowLive && feature ? rowLive(feature) : null;
             if (!live || claimedLive.has(live.key)) return {};
             claimedLive.add(live.key);
-            return { subLabel: live.subLabel, onClick: live.onClick, chevron: true };
+            // A live figure in place of the frequency (#1877 mock B): the row shows Live's reading only.
+            const liveValue = live.value != null
+              ? { value: live.value, headway: undefined, headwayLabel: undefined, trunkHeadway: undefined, limited: false, limitedLabel: undefined }
+              : {};
+            return { subLabel: live.subLabel, onClick: live.onClick, chevron: !!live.onClick, ...liveValue };
           };
           return model.groups.map((group, gi) => {
             const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);
