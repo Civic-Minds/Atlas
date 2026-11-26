@@ -66,6 +66,8 @@ export interface CardSharedRow {
   headway: number;
   /** CIV-1251 row 8: the shared stretch's own late start or early end ("every 15 min from 8:07 AM"), in place of the number. */
   edgeText?: string;
+  /** #1825: the in-service spacing edgeText names, where `headway` is the full-window wait the colour uses (a trunk tail). Lists read this. */
+  edgeEvery?: number;
   hover: HoveredBranch;
 }
 
@@ -371,7 +373,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       shared = mainRowIsTrunk ? null : {
         label: SHARED_STRETCH_LABEL,
         headway: trunkValue,
-        ...(pieces.trunk.t === 'tail' ? { edgeText: tailText(pieces.trunk) } : {}),
+        ...(pieces.trunk.t === 'tail' ? { edgeText: tailText(pieces.trunk), edgeEvery: pieces.trunk.every } : {}),
         hover: sharedRow?.hover ?? { directionId: group.dirId, headsigns: coreHeadsigns, sharedStopIds: groupSharedStopIds, sharedHeadway: trunkValue, isCore: true },
       };
       const rowOf = (d: ShapeProperties, i: number): CardRow => {

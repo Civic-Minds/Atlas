@@ -61,7 +61,9 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
     let color = 0;
     const worded: Array<{ h: number; words: string }> = [];
     for (const group of model.groups) {
-      if (typeof group.shared?.headway === 'number') shown.push(group.shared.headway);
+      // #1825: a Shared stretch line that stops or starts partway reads its in-service spacing, as the card words it (VIA 24 Saturday
+      // evening: "every 18 min until 9:45 PM", not its full-window 75).
+      if (typeof group.shared?.headway === 'number') shown.push(group.shared.edgeEvery ?? group.shared.headway);
       for (const row of group.rows) {
         const v = row.display(null).value;
         // A row with no number (limited, irregular) shows none; a row reading a range ("every 15–54") shows both ends.
