@@ -13,12 +13,12 @@ const lines = (geojson: string, day: string) => (JSON.parse(geojson).features as
   .map(f => f.properties).filter(p => p.stopId == null && p.day === day && p.headway != null);
 const ON_SCALE = new Set([...TIER_MAXES.map(String), 'infrequent', 'span']);
 
-describe('rail tier scale end to end', () => {
+describe('one tier scale for every mode, end to end', () => {
   beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-14T12:00:00') }); });
   afterAll(() => { vi.useRealTimers(); });
 
   // CIV-2025: back on with the train destination reading (#1712), the one train-only rule Ryan kept.
-  it('TTC Line 1 weekday, every 4, reaches tier 5 in both directions (settleTier on the rail scale, not 10)', async () => {
+  it('TTC Line 1 weekday, every 4, reaches tier 5 in both directions (settleTier on the one scale, its internal 5, not 10)', async () => {
     const result = await processGtfsBuffer(await zipDir(resolve(__dirname, 'fixtures', 'ttc-line1-weekday')), undefined, { slug: 'ttc' });
     const weekday = lines(result.geojson, 'Weekday');
     expect(weekday.length).toBeGreaterThan(0);
