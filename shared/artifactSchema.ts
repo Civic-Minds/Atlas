@@ -66,3 +66,24 @@ export function isAcceptedTileRulesVersion(release: { tileRulesVersion?: unknown
   const version = releaseTileRulesVersion(release);
   return version !== null && ACCEPTED_TILE_RULES_VERSIONS.includes(version);
 }
+
+/** The fields of a release pointer (`atlas/release.json`) that decide whether this code can read that release. */
+export interface ReleasePointerFields {
+  releaseId?: unknown;
+  pmtilesKey?: unknown;
+  overviewPmtilesKey?: unknown;
+  agencyPrefix?: unknown;
+  routeArtifactSchemaVersion?: unknown;
+  tileRulesVersion?: unknown;
+}
+
+/**
+ * Whether this code reads a release's agency data the same way its tiles were built (CIV-3019): the one test the app,
+ * the hosted MCP and the Live Worker all apply, so none of them answers from a release another refuses.
+ */
+export function isCompatibleReleasePointer(value: ReleasePointerFields | null | undefined): boolean {
+  return !!value
+    && !!value.releaseId && !!value.pmtilesKey && !!value.overviewPmtilesKey && !!value.agencyPrefix
+    && value.routeArtifactSchemaVersion === ROUTE_ARTIFACT_SCHEMA_VERSION
+    && isAcceptedTileRulesVersion(value);
+}
