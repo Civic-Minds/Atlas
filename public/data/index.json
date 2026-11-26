@@ -1683,6 +1683,33 @@
       "lastFeedStart": "20261027"
     },
     {
+      "slug": "ontario-northland",
+      "name": "Ontario Northland",
+      "officialName": "Ontario Northland",
+      "websiteUrl": "https://www.ontarionorthland.ca/",
+      "dataLicense": {
+        "url": "https://www.ontarionorthland.ca/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-26"
+      },
+      "region": "Ontario",
+      "center": [
+        47.326,
+        -81.0102
+      ],
+      "bbox": [
+        43.644,
+        -97.154,
+        51.275,
+        -75.647
+      ],
+      "feedUrl": "https://ontarionorthland.tmix.se/gtfs/gtfs.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4817/latest.zip",
+      "timezone": "America/Toronto",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "temiskaming",
       "name": "Temiskaming Transit",
       "officialName": "Temiskaming Transit",
@@ -41463,6 +41490,32 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2394/latest.zip",
       "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "brightline",
+      "name": "Brightline",
+      "officialName": "Brightline",
+      "websiteUrl": "https://www.gobrightline.com/",
+      "dataLicense": {
+        "url": "https://www.gobrightline.com/",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-26"
+      },
+      "region": "Florida",
+      "center": [
+        26.3538,
+        -80.1455
+      ],
+      "bbox": [
+        25.78,
+        -81.308,
+        28.412,
+        -80.055
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-1126/latest.zip",
+      "timezone": "America/New_York",
       "hiddenInProduction": true
     }
   ]
