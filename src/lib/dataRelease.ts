@@ -1,7 +1,7 @@
 import { BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL, R2_PUBLIC_URL } from '../../shared/config';
 import { RELEASE_HISTORY_KEY, parseReleaseHistory, type ReleaseHistoryEntry } from '../../shared/releaseHistory';
 import { takeEarlyRelease } from './earlyData';
-import { isAcceptedTileRulesVersion, ROUTE_ARTIFACT_SCHEMA_VERSION } from '../../shared/artifactSchema';
+import { isCompatibleReleasePointer } from '../../shared/artifactSchema';
 
 export interface DataRelease {
   releaseId: string;
@@ -19,10 +19,8 @@ export interface DataRelease {
  * disagrees with the route cards.
  */
 export function isCompatibleDataRelease(value: Partial<DataRelease> | null | undefined): value is DataRelease {
-  return !!value
-    && !!value.releaseId && !!value.pmtilesKey && !!value.overviewPmtilesKey && !!value.agencyPrefix
-    && value.routeArtifactSchemaVersion === ROUTE_ARTIFACT_SCHEMA_VERSION
-    && isAcceptedTileRulesVersion(value);
+  // CIV-3019: the same test the hosted MCP and the Live Worker apply (shared/artifactSchema.ts).
+  return isCompatibleReleasePointer(value);
 }
 
 /**

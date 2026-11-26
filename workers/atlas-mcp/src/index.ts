@@ -94,8 +94,9 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
   const check = await checkMcpRelease(env.DATA_ORIGIN, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } });
   if (activeRelease?.id !== check.releaseId) {
     // A new release counts only once its MCP files are up (the pointer can move before they are uploaded): until then the
-    // release already loaded keeps answering. With none loaded yet there is nothing to answer from.
-    if (check.kind === 'notReady') {
+    // release already loaded keeps answering. With none loaded yet there is nothing to answer from. A release this code
+    // can't read (CIV-3019) is never loaded, as the map never loads it.
+    if (check.kind !== 'ready') {
       if (activeRelease) { activeRelease = { ...activeRelease, checkedAt: now }; return activeRelease.id; }
       throw new Error('Atlas Studio has no schedule files for the current release yet. Try again later.');
     }
