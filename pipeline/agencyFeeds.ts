@@ -51,6 +51,8 @@ export interface AgencyFeedConfig {
   mergeIdenticalShapeIds?: boolean;
   /** CIV-1551: see GtfsTransformOptions.routeNumberFromLongName. */
   routeNumberFromLongName?: boolean;
+  /** CIV-2999: see GtfsTransformOptions.headsignFromLastStop. */
+  headsignFromLastStop?: boolean;
   /** CIV-1485: History only. A route with no long name keeps the feed's route_desc for the reused-number test. */
   historyNameFromDesc?: boolean;
   referenceDateFromRunDate?: boolean;
@@ -118,6 +120,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
     routeNumberFromLongName: agency.routeNumberFromLongName,
+    headsignFromLastStop: agency.headsignFromLastStop,
     bookingRequiredRoutes: agency.bookingRequiredRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
