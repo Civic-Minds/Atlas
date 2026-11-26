@@ -49,7 +49,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'lethbridge': { serviceName: 'cityLINK' },
   'mta-flint': { serviceName: 'Genesee Connect' },
   'max-transit': { serviceName: 'On-demand service' },
-  'merced': { serviceName: 'Micro Bus' },
   // Unclear (CIV-1063, 2026-10-27): Missing: a working official page confirming current service and riders.
   'milton': { serviceName: 'On-demand service' },
   // Confirmed 2026-10-27 (CIV-1063): https://northbay.ca/services-payments/north-bay-transit/dynamic-dispatching/
