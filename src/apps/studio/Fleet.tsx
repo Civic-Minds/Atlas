@@ -25,7 +25,7 @@ import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
 import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetPeriodCountText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
 import { CARD_NOTE } from '../../styles';
@@ -125,7 +125,7 @@ function FleetPeriodSparkline({ vehicles, period, setPeriod, modes }: { vehicles
     byHour[h] = n ? 60 / n : null;
     if (n) stackedByHour[h] = [{ label: word, headway: 60 / n, color: CHANGE_COLOR.same }];
   }
-  const periodLine = (p: PeriodKey) => (counts[p] == null ? undefined : `${PERIOD_LABELS[p]}: ${countText(counts[p]!)} ${word}`);
+  const periodLine = (p: PeriodKey) => (counts[p] == null ? undefined : fleetPeriodCountText(PERIOD_LABELS[p], counts[p]!, word));
   const hourTitle = (h: number) => periodLine(HOUR_TO_PERIOD[h] as PeriodKey);
   return (
     <PanelSection label={STUDIO_REDESIGN_TEXT.scheduledByPeriod}>

@@ -231,6 +231,9 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
+/** The schedule chart's default title (HeadwaySparkline), and the full-day view's note under it (CIV-2973: moved here, unchanged). */
+export const SCHEDULE_OVERVIEW_TITLE = 'Schedule overview';
+export const ALL_PERIODS_SHOWN_NOTE = 'All time periods are shown together.';
 // The button at the end of the For Transit Planners and For Researchers pages that emails us (CIV-1706); also the email's subject.
 export const REQUEST_DEMO_LABEL = 'Request a demo';
 

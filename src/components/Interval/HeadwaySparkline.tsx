@@ -21,7 +21,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { tripsPerHourAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
-import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL, EXPAND_SCHEDULE_LABEL, SCHEDULE_DIRECTION_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL, EXPAND_SCHEDULE_LABEL, SCHEDULE_DIRECTION_LABEL, SCHEDULE_OVERVIEW_TITLE, ALL_PERIODS_SHOWN_NOTE } from '../../content/noticeCopy';
 export { tripsPerHourAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
@@ -149,7 +149,7 @@ interface HourlySparklineProps {
   hourTitle?: (hour: number) => string | undefined;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', titleLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = SCHEDULE_OVERVIEW_TITLE, titleLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -394,7 +394,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
       {allowExpand && !expanded && isExpanded && (
         <ExpandDialog
           title={titleLabel ? <RouteTitleName label={titleLabel} /> : title}
-          note="All time periods are shown together."
+          note={ALL_PERIODS_SHOWN_NOTE}
           ariaLabel={`${title} full-day schedule`}
           closeLabel={closeLabel(CLOSE_PLACES.schedule)}
           onClose={closeExpanded}
