@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route cards count each trip once, late trips included**: Kingston 22 left out its 11:02 and 11:38 PM trips towards First Canada (30 trips against the feed's 33), and Kingston 10 counted one trip twice each way (34 against 33), because a row's hourly counts mixed two lists of departures
 - **Routes you must book ahead no longer show a fixed frequency**: exo's taxibuses, Annapolis Call-in and the rest printed "every 40 min" or even "every 15 min" beside "Rides on this route must be booked ahead.", and their map colour and frequency filter read the same number
 - **Atlas Studio's Fleet shows how many vehicles are out with no trip**: a quieter "Not on a trip" row under "In service now", for agencies whose feed reports such vehicles, since "In service now" counts only vehicles on a trip
 - **Route cards for branches that share a start show the shared stretch on its own line**: TransLink 9 read "to Granville St every 8", which was the Broadway trunk shared with the Alma St and UBC buses; it now reads "Shared stretch every 8" and Granville St its own every 18
