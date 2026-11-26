@@ -22,13 +22,15 @@ import { usageByDay } from './usage';
 import { dailyCapFor } from './dailyCap';
 import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
+import { MCP_POINTER_RECHECK_MS } from '../../../shared/rules/limits';
 import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
 import { splitLiveReader, useLiveReader } from '../../../scripts/mcp/liveData';
 import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_LOGGED_RESULT = 1_500_000; // D1 rows top out at 2 MB
-const POINTER_TTL_SECONDS = 60;
+/** The pointer recheck the local MCP server uses too (scripts/mcp/currentRelease.ts). */
+const POINTER_TTL_SECONDS = MCP_POINTER_RECHECK_MS / 1000;
 
 const json = (body: unknown, status = 200, headers: HeadersInit = {}) => Response.json(body, { status, headers });
 const hex = (buf: ArrayBuffer) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');

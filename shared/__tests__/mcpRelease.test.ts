@@ -50,3 +50,12 @@ describe('checkMcpRelease (CIV-3019: the MCP refuses what the map refuses)', () 
     await expect(checkMcpRelease(ORIGIN)).rejects.toThrow(/could not be read \(500\)/);
   });
 });
+
+describe('pointer recheck (CIV-2976 N3)', () => {
+  it('the hosted Worker rechecks the pointer on the shared interval, not a typed copy', async () => {
+    const { readFileSync } = await import('node:fs');
+    const source = readFileSync('workers/atlas-mcp/src/index.ts', 'utf8');
+    expect(source).toContain('POINTER_TTL_SECONDS = MCP_POINTER_RECHECK_MS / 1000');
+    expect(source).not.toMatch(/POINTER_TTL_SECONDS = \d/);
+  });
+});
