@@ -22,7 +22,7 @@ import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
 import { routeReading } from '../../src/utils/routeReading';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
-import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
+import { departuresInPeriod, routeRuns, runsAllNight } from '../../shared/routeRuns';
 import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
 import { metresBetween, withinMetres } from '../../shared/geoDistance';
 import { andOthers, joinList } from '../../shared/overflowText';
@@ -385,9 +385,13 @@ const duringHour = (h: number) => `during the ${clockTime(h * 60)} hour${h >= 24
 export function serviceSpan(r: RouteRows) {
   const runs = routeRuns(r.rows as never, undefined);
   if (!runs) return null;
+  // #1867: a route that runs through the night (the Night Service verdict) has no first or last trip of the day. Its first
+  // and last counted hours are only the edges of Atlas's day window (RTC's Red Line, every 30 min from 2 AM, read "first
+  // during the 5 AM hour"), so neither is given.
+  const allNight = runsAllNight(r.rows as never);
   return {
-    first: runs.first != null ? serviceClock(runs.first) : runs.hours.length ? duringHour(runs.hours[0]) : null,
-    last: runs.last != null ? serviceClock(runs.last) : runs.hours.length ? duringHour(runs.hours[runs.hours.length - 1]) : null,
+    first: allNight ? null : runs.first != null ? serviceClock(runs.first) : runs.hours.length ? duringHour(runs.hours[0]) : null,
+    last: allNight ? null : runs.last != null ? serviceClock(runs.last) : runs.hours.length ? duringHour(runs.hours[runs.hours.length - 1]) : null,
     breaks: (runs.gaps ?? []).map(([a, b]) => `${serviceClock(a)}–${serviceClock(b)}`),
   };
 }
