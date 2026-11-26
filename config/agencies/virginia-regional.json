@@ -1,0 +1,26 @@
+{
+  "slug": "virginia-regional",
+  "officialName": "Virginia Regional Transit",
+  "websiteUrl": "https://vatransit.org/",
+  "dataLicense": {
+    "url": "https://vatransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Virginia",
+  "center": [
+    38.698,
+    -78.1137
+  ],
+  "bbox": [
+    38.029,
+    -78.677,
+    39.15,
+    -77.562
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/vatransit-va-us/vatransit-va-us--flex-v2.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2445/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
