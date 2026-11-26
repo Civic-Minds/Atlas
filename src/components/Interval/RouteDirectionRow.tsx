@@ -88,7 +88,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  */
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
-/** CIV-3040 MOCK (not for merge): localStorage.rowmock 'b' = a two-part reading stays on the name's line when both fit, else takes the line below. */
+/** CIV-3040 MOCK (not for merge): localStorage.rowmock 'b' = a two-part reading stays on the name's line when both fit, else takes the line below, from the left, wrapped if needed (Ryan's layout). */
 const rowMock = (): string | null => { try { return window.localStorage.getItem('rowmock'); } catch { return null; } };
 
 export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
@@ -113,7 +113,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
   // second line beneath itself, as in the route lists.
   const wrapName = wrapLongValue && !longValue && !fitOrBelow;
   const singleLine = singleLineProp && !longValue && !wrapName;
-  const valueEnd = valueEndProp || longValue || fitOrBelow;
+  const valueEnd = valueEndProp || longValue;
   // CIV-1300: a route list row (number and name) keeps its value in the right-hand column, a long value on two lines.
   const listRow = !!routeName;
   // Measured only while not held, so the held size is always the pre-hover layout.
@@ -148,7 +148,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
         >
           {routeName ? <><RouteRowName shortName={routeName.shortName} name={routeName.name} />{routeNameNote && <span className={`${LIST_ROW_DIM} ml-1.5`}>{routeNameNote}</span>}</> : singleLine ? label : keepLastWord(label)}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
+        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center ${fitOrBelow ? 'justify-start' : 'justify-end'} gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />
