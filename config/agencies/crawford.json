@@ -1,0 +1,20 @@
+{
+  "slug": "crawford",
+  "officialName": "Crawford Area Transportation Authority",
+  "commonName": "CATA",
+  "websiteUrl": "http://www.catabus.org",
+  "dataLicense": {
+    "url": "http://www.catabus.org",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Pennsylvania",
+  "center": [
+    41.634,
+    -80.1431
+  ],
+  "feedUrl": "https://catabus.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

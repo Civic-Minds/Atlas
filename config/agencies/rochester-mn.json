@@ -1,0 +1,19 @@
+{
+  "slug": "rochester-mn",
+  "officialName": "Rochester Public Transit",
+  "websiteUrl": "https://www.rochestermn.gov/departments/rochester-public-transit",
+  "dataLicense": {
+    "url": "https://www.rochestermn.gov/departments/rochester-public-transit/real-time-tools",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Minnesota",
+  "center": [
+    44.0341,
+    -92.4744
+  ],
+  "feedUrl": "https://gtfs.rpt.cadavl.com/RPT/GTFS/GTFS_RPT.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}
