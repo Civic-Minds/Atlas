@@ -20,7 +20,7 @@
 import { spawnSync } from 'child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
-import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand } from '@aws-sdk/client-s3';
 import { LIVE_ARCHIVE_SLUGS, liveCoverage, liveFiguresReady } from '../../shared/liveCoverage';
 import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_MIN_DAYS_TO_SHOW } from '../../shared/rules/live';
 import { analyseArchivedAgency, LiveBuildFailed } from '../liveArchiveAnalysis';
@@ -28,7 +28,7 @@ import { LIVE_V2_BUCKET, onRecorder, snapshotsPerDay } from '../../shared/liveAr
 import { LIVE_V2_PREFIX } from '../../shared/liveSlots';
 import { liveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
-import { privateLiveBucketName, requireEnv } from '../../pipeline/r2';
+import { getR2Client, privateLiveBucketName, requireEnv } from '../../pipeline/r2';
 import type { AgencySummary } from '../../shared/liveAgency';
 import { liveIndexPath, liveSplitPaths, slimRanking, type LiveIndex, type LiveManifest } from './liveData';
 import { assertKnownFlags } from '../../pipeline/cliFlags';
@@ -44,11 +44,7 @@ const only = opt('--only')?.split(',');
 mkdirSync(work, { recursive: true });
 writeFileSync(log, '');
 
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${requireEnv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: requireEnv('R2_ACCESS_KEY_ID'), secretAccessKey: requireEnv('R2_SECRET_ACCESS_KEY') },
-});
+const s3 = getR2Client();
 const PRIVATE = dryRun ? process.env.MCP_LIVE_BUCKET ?? '' : privateLiveBucketName();
 const PUBLIC = requireEnv('R2_BUCKET_NAME');
 if (PRIVATE && PRIVATE === PUBLIC) throw new Error('MCP_LIVE_BUCKET is the public bucket; refusing.');

@@ -28,12 +28,12 @@
 import { spawnSync } from 'child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { basename, join, resolve } from 'path';
-import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand } from '@aws-sdk/client-s3';
 import { LIVE_ARCHIVE_SLUGS } from '../shared/liveCoverage';
 import { isRecordingNow } from '../shared/liveArchiveFeeds';
 import { LIVE_TTC_ANALYSED_ROUTES } from '../shared/rules/live';
 import type { LiveV3 } from '../shared/liveDashboard';
-import { privateLiveBucketName, requireEnv } from '../pipeline/r2';
+import { getR2Client, privateLiveBucketName, requireEnv } from '../pipeline/r2';
 import { analyseArchivedAgency, LiveBuildFailed } from './liveArchiveAnalysis';
 import { STUDIO_LIVE_POINTER, studioLiveRunPrefix, acceptStudioLiveBuild, goodDaysByWeek, nextStudioLivePointer, runsToPrune, type StudioLivePointer } from './studioLiveRun';
 import { assertKnownFlags } from '../pipeline/cliFlags';
@@ -51,11 +51,7 @@ if (!/^[A-Za-z0-9-]+$/.test(runId)) throw new Error('--run-id: letters, digits a
 mkdirSync(work, { recursive: true });
 writeFileSync(log, '');
 
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${requireEnv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: requireEnv('R2_ACCESS_KEY_ID'), secretAccessKey: requireEnv('R2_SECRET_ACCESS_KEY') },
-});
+const s3 = getR2Client();
 // CIV-2186: the files go to the private Live bucket the Mac's read-only key reads; timetables still come from the archive.
 requireEnv('R2_ARCHIVE_BUCKET_NAME');
 const PRIVATE = privateLiveBucketName();
