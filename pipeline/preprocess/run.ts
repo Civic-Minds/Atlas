@@ -1,4 +1,5 @@
 import type { GtfsData } from '../../types/gtfs.js';
+import { dropFeedSeconds } from '../parseGtfs.js';
 import { filterGtfsByAgencyId, filterGtfsByAgencyName, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns, filterGtfsByRouteTypes } from '../filterGtfs.js';
 import { synthesizeMissingDirections, synthesizeTripHeadsigns } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
@@ -253,5 +254,8 @@ export function normalizeGtfs(
       onStatus?.(`Identical shapes: ${identical.mergedTrips} trips of ${identical.mergedGroups} pattern(s) written under a second shape id for the same line (#1446)`);
     }
   }
+  // #1824 (CIV-2959): a preprocess can write times with seconds (interpolate-untimed-stops: Amarillo); every route but an
+  // agency's secondsRoutes reads them in whole minutes, as t2m always did.
+  dropFeedSeconds(gtfs, (options as { secondsRoutes?: string[] } | undefined)?.secondsRoutes);
   return gtfs;
 }
