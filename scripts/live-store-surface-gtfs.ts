@@ -7,6 +7,7 @@
 import '../pipeline/loadEnv.js';
 import { readFileSync } from 'node:fs';
 import { peekFeedDates } from '../pipeline/archiveSelection.js';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
 export const LIVE_SURFACE_PREFIX = 'gtfs/live/ttc-surface/';
 
@@ -14,6 +15,7 @@ export const LIVE_SURFACE_PREFIX = 'gtfs/live/ttc-surface/';
 export const surfaceKey = (feedStart: string) => `${LIVE_SURFACE_PREFIX}${feedStart.slice(0, 4)}-${feedStart.slice(4, 6)}-${feedStart.slice(6, 8)}.zip`;
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), { '--replace': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
   const [file] = process.argv.slice(2).filter(a => !a.startsWith('--'));
   if (!file) { console.error('usage: live-store-surface-gtfs.ts <surfacegtfs.zip> [--replace]'); process.exit(2); }
   const buf = readFileSync(file);

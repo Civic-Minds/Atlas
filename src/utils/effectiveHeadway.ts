@@ -505,6 +505,8 @@ export interface RouteListDisplay {
   noRegular?: boolean;
   /** Lower end of a display-only range on the shared stretch; absent when there is none or the range rule hides it. */
   sharedHeadway?: number;
+  /** CIV-2909: the range is wider than RANGE_MAX_RATIO and shows because its slow line has its own number; show it as is. */
+  wideRange?: true;
   /** CIV-1447: the number the dot is coloured by, where the card colours slower than `headway` (its rows' filter numbers). */
   colorHeadway?: number;
   /** Compare (CIV-844): each map's own reading of the route, for "A every 3 · B every 4". */
@@ -574,7 +576,10 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   if (!card) return filter;
   const display: RouteListDisplay = { headway: card.high, limited: filter.limited };
   if (filter.noRegular) display.noRegular = true;
-  if (card.low < card.high && headwayRangeShown(card.low, card.high)) display.sharedHeadway = card.low;
+  if (card.low < card.high && card.range) {
+    display.sharedHeadway = card.low;
+    if (card.wide) display.wideRange = true;
+  }
   if (card.color > card.high) display.colorHeadway = card.color;
   // #1292, CIV-1300 (#1311): the card's own words for that number, where its row says more than "every N" (NYC B "every 9 min
   // from 7:12 AM"; OC Transpo 6 "every 15 min, with one 32 min gap"), never a worst wait as "every N".
@@ -637,7 +642,7 @@ function routeValueEdge(features: readonly ShapeProperties[], period: TimePeriod
  * range, or "Irregular" where it has no number. Null where the row shows nothing. Agency pages store these (`text`).
  */
 export function routeListCellText(display: RouteListDisplay, compact = false): string | null {
-  if (display.headway != null && display.headway < HEADWAY_NO_SERVICE_FROM) return display.edgeText ?? routeListHeadwayText(display.headway, display.sharedHeadway, compact);
+  if (display.headway != null && display.headway < HEADWAY_NO_SERVICE_FROM) return display.edgeText ?? routeListHeadwayText(display.headway, display.sharedHeadway, compact, display.wideRange);
   return display.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : null;
 }
 
@@ -645,6 +650,6 @@ export function routeListCellText(display: RouteListDisplay, compact = false): s
  * List text for a route's cadence: "every 30–60 min" with a shared-stretch range, else "every N
  * min". Compact drops "every" from the range so it fits a narrow table cell ("30–60 min").
  */
-export function routeListHeadwayText(headway: number, sharedHeadway?: number | null, compact = false): string {
-  return headwayRangeShown(sharedHeadway, headway) ? headwayEveryRange(sharedHeadway!, headway, compact) : headwayEvery(headway);
+export function routeListHeadwayText(headway: number, sharedHeadway?: number | null, compact = false, wide = false): string {
+  return headwayRangeShown(sharedHeadway, headway, wide ? Infinity : undefined) ? headwayEveryRange(sharedHeadway!, headway, compact) : headwayEvery(headway);
 }

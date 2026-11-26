@@ -1,0 +1,21 @@
+{
+  "slug": "galveston",
+  "officialName": "Island Transit",
+  "nameQualifier": "Galveston",
+  "websiteUrl": "https://www.galvestontx.gov/393/Transportation",
+  "dataLicense": {
+    "url": "https://www.galvestontx.gov/393/Transportation",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Texas",
+  "center": [
+    29.2918,
+    -94.802
+  ],
+  "feedUrl": "https://gtfs.remix.com/island_transit_us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2861/latest.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}

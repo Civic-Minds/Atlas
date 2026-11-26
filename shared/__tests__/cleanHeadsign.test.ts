@@ -93,7 +93,7 @@ describe('cleanHeadsign', () => {
     expect(cleanHeadsign('63rd St/67th & Blue Ridge', '63', null)).toBe('63rd St/67th & Blue Ridge');
     expect(cleanHeadsign('211', '21', null)).toBe('211');
     expect(cleanHeadsign('AMERICAN CENTER', 'A', null)).toBe('AMERICAN CENTER');
-    expect(cleanHeadsign('BIG BEND - NORTHBOUND', 'B', null)).toBe('BIG BEND - NORTHBOUND');
+    expect(cleanHeadsign('BIG BEND - NORTHBOUND', 'B', null)).toBe('BIG BEND'); // #1836 drops the direction word
     expect(cleanHeadsign('UC Davis MU Terminal', 'U', null)).toBe('UC Davis MU Terminal');
   });
 
@@ -170,5 +170,23 @@ describe('the literal word "Destination" (exo, STM)', () => {
     expect(cleanHeadsign("Ouest Destination Anse-à-l'Orme / Timberlea-Trail", '68', null)).toBe("Ouest Anse-à-l'Orme / Timberlea-Trail");
     expect(cleanHeadsign('Est destination Station Snowdon', '51', null)).toBe('Est Station Snowdon');
     expect(cleanHeadsign('Destination Gare Centrale', null, null)).toBe('Gare Centrale');
+  });
+});
+
+// #1836, #1845: a direction code or word at the start or end is the direction, not the place.
+describe('direction codes and words', () => {
+  it('drops them at the end, bare, after a dash or in brackets, and at the start', () => {
+    expect(cleanHeadsign('38th Street SB', '10')).toBe('38th Street');
+    expect(cleanHeadsign('78th Avenue N Station (SB)', '1')).toBe('78th Avenue N Station');
+    expect(cleanHeadsign('Maryland Pkwy Southbound', 'RED')).toBe('Maryland Pkwy');
+    expect(cleanHeadsign('AZALEA - EASTBOUND', '9')).toBe('AZALEA');
+    expect(cleanHeadsign('Eastbound Antioch BART', '300')).toBe('Antioch BART');
+    expect(cleanHeadsign('EB Tarrytown', 'H05')).toBe('Tarrytown');
+  });
+  it('keeps a code inside the name, a headsign that is only a direction or a route number, and Santa Barbara\'s "Downtown SB"', () => {
+    expect(cleanHeadsign('Broadway SB Past Cedar Lane', '22')).toBe('Broadway SB Past Cedar Lane');
+    expect(cleanHeadsign('Eastbound', '1')).toBe('Eastbound');
+    expect(cleanHeadsign('Rt 3 Southbound', '3')).toBe('Rt 3 Southbound');
+    expect(cleanHeadsign('Mesa / Downtown SB', '5')).toBe('Mesa / Downtown SB');
   });
 });

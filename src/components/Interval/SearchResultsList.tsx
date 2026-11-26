@@ -186,7 +186,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             }}
             right={(() => {
               const display = displayForRouteKey(r.key);
-              return routeRowRight(r.agencyName || '', display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText, display.colorHeadway);
+              return routeRowRight(r.agencyName || '', display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText, display.colorHeadway, display.wideRange === true);
             })()}
           />
         );

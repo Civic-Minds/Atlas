@@ -22,7 +22,9 @@ import { RELEASE_HISTORY_KEY, parseReleaseHistory } from '../shared/releaseHisto
 import { publicCatalogSlugs, releaseFileExists, releasePrefixOf, type ReleaseManifest } from './releaseGuard.js';
 import { planRollback, rollbackFileKeys, RELEASE_POINTER_KEY } from './releaseRollback.js';
 import { runWithConcurrency } from './utils.js';
+import { assertKnownFlags } from './cliFlags.js';
 
+assertKnownFlags(process.argv.slice(2), { '--apply': 'flag', '--to': 'value', '--from-file': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const argv = process.argv.slice(2);
 const argValue = (flag: string): string | undefined => {
   const i = argv.indexOf(flag);

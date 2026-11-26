@@ -1,0 +1,20 @@
+{
+  "slug": "hart-ny",
+  "officialName": "Huntington Area Rapid Transit",
+  "commonName": "HART",
+  "websiteUrl": "http://www.huntingtonny.gov/hart-fixed-routes",
+  "dataLicense": {
+    "url": "http://www.huntingtonny.gov/hart-fixed-routes",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "New York",
+  "center": [
+    40.8566,
+    -73.3935
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-905/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

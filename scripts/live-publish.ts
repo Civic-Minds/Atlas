@@ -12,7 +12,9 @@ import dashboard from '../local-api/live-dashboard';
 import agencyApi from '../local-api/live-agency';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
 import type { AgencySummary } from '../shared/liveAgency';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
+assertKnownFlags(process.argv.slice(2), { '--upload': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
 const args = process.argv.slice(2);
 const agency = args.find(a => !a.startsWith('--')) ?? 'ttc';
 const upload = args.includes('--upload');

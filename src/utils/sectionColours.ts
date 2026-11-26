@@ -48,6 +48,12 @@ export function tierOfHeadway(h: number | null | undefined): string | null {
  * and headway from stretchStopPeriodValues, and the line's tier from its direction's filter value. Null
  * when the line has no per-stop period values or no value in the period (it keeps one colour).
  */
+/**
+ * #1839 (CIV-1959 B2): where a direction is one piece (pieceReadings: its trunk and no branch, so the same trips run its
+ * whole length), a stop that reads faster than the piece's reading is ignored for the colour and takes the piece's
+ * reading, so a period whose service changes partway can't paint part of the line a tier better than the route (CapMetro 801 weekday evening: the last
+ * 8 northbound stops read 15 against the route's 20). A slower stop keeps its value; the stop card keeps its own.
+ */
 export function periodSectionProps<P extends ShapeProperties>(p: P, period: PeriodKey): P | null {
   const stops = p.stopOrder ?? [];
   // (A row with a full line has had stopOrder replaced by fullStopOrder already: fullLineProps.)
@@ -68,14 +74,19 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   const first = values.findIndex(v => v != null);
   const last = values.findLastIndex(v => v != null);
   const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
+  // #1839: a direction that is one piece (the pipeline's pieceReadings: a trunk and no branch) colours no stop faster than the piece's reading.
+  const pieces = p.pieceReadings?.pieces;
+  const piece = pieces?.length === 1 ? pieces[0].periods?.[period] : undefined;
+  const pieceValue = piece && piece.t !== 'limited' ? piece.v : null;
   stops.forEach((stopId, i) => {
     const v = values[i];
     if (v == null) {
       if (period === 'overnight' && i > first && i < last && !dropOffOnly.has(stopId)) stopTiers[stopId] = 'infrequent';
       return;
     }
-    stopHeadways[stopId] = v;
-    stopTiers[stopId] = tierOfHeadway(v)!;
+    const shown = pieceValue != null && v < pieceValue ? pieceValue : v;
+    stopHeadways[stopId] = shown;
+    stopTiers[stopId] = tierOfHeadway(shown)!;
   });
   return { ...p, stopTiers, stopHeadways, tier: tierOfHeadway(lineValue)! };
 }

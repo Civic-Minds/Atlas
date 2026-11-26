@@ -22,6 +22,8 @@ export interface ReleaseManifest {
   pmtilesKey: string;
   overviewPmtilesKey: string;
   agencyPrefix: string;
+  /** The staged run the release was built from (`atlas/runs/<run id>`), when it had one (CIV-2995: prune-runs keeps it). */
+  sourcePrefix?: string;
 }
 
 /** Files whose output is baked into tile properties at build time. */
@@ -45,20 +47,6 @@ export function tileRulesFingerprint(root = process.cwd()): string {
 
 /** Field written into each release route snapshot and into PMTiles metadata (`name`). */
 export const RELEASE_STAMP_FIELD = 'atlasReleaseId';
-
-export const ALLOW_UNPAIRED_UPLOAD_FLAG = '--allow-unpaired-pmtiles-upload';
-
-/**
- * Uploading to the legacy root `atlas.pmtiles` bypasses the release pairing:
- * those tiles are not matched to any agency snapshot. Refuse unless the
- * operator explicitly asks for it.
- */
-export function unpairedUploadError(argv: string[], command: string): string | null {
-  if (argv.includes(ALLOW_UNPAIRED_UPLOAD_FLAG)) return null;
-  return `${command} uploads map tiles outside a verified data release, so the map could disagree with the route cards. `
-    + 'Use npm run refresh-release (or build-pmtiles, verify-pmtiles-remote, build-history, publish-data-release) instead. '
-    + `Pass ${ALLOW_UNPAIRED_UPLOAD_FLAG} only for an intentional, approved repair.`;
-}
 
 export function releasePrefixOf(manifest: Pick<ReleaseManifest, 'releaseId'>): string {
   return `atlas/releases/${manifest.releaseId}`;

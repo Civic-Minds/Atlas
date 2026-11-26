@@ -1,0 +1,20 @@
+{
+  "slug": "carts",
+  "officialName": "Chautauqua Area Regional Transit System",
+  "commonName": "CARTS",
+  "websiteUrl": "http://www.co.chautauqua.ny.us/",
+  "dataLicense": {
+    "url": "http://www.co.chautauqua.ny.us/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "New York",
+  "center": [
+    42.1089,
+    -79.2439
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-304/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "hiawathaland",
+  "officialName": "Hiawathaland Transit",
+  "websiteUrl": "https://www.threeriverscap.org/hiawathaland-transit/",
+  "dataLicense": {
+    "url": "https://www.threeriverscap.org/hiawathaland-transit/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Minnesota",
+  "center": [
+    44.4448,
+    -93.1633
+  ],
+  "bbox": [
+    44.13,
+    -93.305,
+    44.576,
+    -91.998
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/threerivers-mn-us/threerivers-mn-us--flex-v2.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2859/latest.zip",
+  "timezone": "America/Chicago",
+  "timezoneOverride": "America/Chicago",
+  "hiddenInProduction": true
+}

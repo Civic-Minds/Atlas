@@ -8,6 +8,33 @@ import { historyYearCounts } from './shared/historyEligibility';
 import { STUDIO_COVERAGE_DEV_URL, STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
 import { studioFiles } from './local-api/studioFiles';
 import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
+import { writeAgencyIndexAndCatalogs } from './scripts/agencyIndexGeneration';
+
+/**
+ * CIV-2975: public/data/index.json and the catalogs aren't committed. The dev server (every `dev:*` script) writes them
+ * from config/agencies when it starts and again whenever an agency file changes; `npm run build`'s prebuild writes them
+ * for a build.
+ */
+const agencyData: Plugin = {
+  name: 'atlas-agency-data',
+  apply: 'serve',
+  configureServer(server) {
+    const root = server.config.root;
+    const agenciesDir = resolve(root, 'config/agencies');
+    const regenerate = () => {
+      try {
+        for (const path of writeAgencyIndexAndCatalogs(root)) server.config.logger.info(`agency data: wrote ${path}`);
+      } catch (error) {
+        server.config.logger.error(`agency data: could not regenerate from config/agencies: ${(error as Error).message}`);
+      }
+    };
+    regenerate();
+    server.watcher.add(agenciesDir);
+    for (const event of ['add', 'change', 'unlink'] as const) {
+      server.watcher.on(event, (file: string) => { if (file.startsWith(agenciesDir)) regenerate(); });
+    }
+  },
+};
 
 /** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
 const MAP_MODULE = /[\\/]src[\\/](components[\\/]Interval[\\/](map[\\/]|MapCanvas)|components[\\/]Live[\\/]RouteMap|lib[\\/](mapStyle|pmtilesRetrySource|maplibreWorker)|apps[\\/]Interval)/;
@@ -301,6 +328,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
       tailwindcss(),
       earlyDataUrl,
       flagsJson,
+      agencyData,
       historyV2Fixtures,
       studioFixtures,
       contextLayerFixture,

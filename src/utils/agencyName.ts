@@ -311,7 +311,8 @@ function shortenedName(name: string): string {
   if (lower.includes('minnesota valley') || hasWord(lower, 'mvta')) return 'MVTA';
   if (hasWord(lower, 'vta')) return 'VTA';
   if (hasWord(lower, 'weta')) return 'WETA';
-  if (lower.includes('county connection')) return 'County Connection';
+  // CCCTA's brand only, not another agency whose name contains it (Madera County Connection, #1848).
+  if (lower.startsWith('county connection') || hasWord(lower, 'cccta')) return 'County Connection';
   if (lower.includes('westcat')) return 'WestCAT';
   if (lower.includes('soltrans')) return 'SolTrans';
   if (lower.includes('marin transit')) return 'Marin Transit';

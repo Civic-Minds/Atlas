@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { getR2Client, IMMUTABLE_CACHE_CONTROL, isRetryableR2Error, r2ObjectHeaders, r2PutFile } from '../r2.js';
+import { getR2Client, IMMUTABLE_CACHE_CONTROL, isRetryableR2Error, privateLiveBucketName, r2ObjectHeaders, r2PutFile } from '../r2.js';
 
 function connectAggregateError(codes: string[]): AggregateError {
   const children = codes.map(code => Object.assign(new Error(`connect ${code}`), { code }));
@@ -84,5 +84,36 @@ describe('release object Cache-Control (#840)', () => {
       rmSync(dir, { recursive: true, force: true });
       vi.unstubAllEnvs();
     }
+  });
+});
+
+describe('privateLiveBucketName (CIV-2988)', () => {
+  const withEnv = (env: Record<string, string | undefined>, run: () => void) => {
+    for (const [k, v] of Object.entries(env)) vi.stubEnv(k, v as string);
+    try { run(); } finally { vi.unstubAllEnvs(); }
+  };
+
+  it('returns the private bucket when the public one is named and different', () => {
+    withEnv({ MCP_LIVE_BUCKET: 'atlas-mcp-live', R2_BUCKET_NAME: 'atlas' }, () => {
+      expect(privateLiveBucketName()).toBe('atlas-mcp-live');
+    });
+  });
+
+  it('refuses the public bucket', () => {
+    withEnv({ MCP_LIVE_BUCKET: 'atlas', R2_BUCKET_NAME: 'atlas' }, () => {
+      expect(() => privateLiveBucketName()).toThrow(/is the public bucket; refusing/);
+    });
+  });
+
+  it('refuses when it cannot tell, because R2_BUCKET_NAME is unset', () => {
+    withEnv({ MCP_LIVE_BUCKET: 'atlas', R2_BUCKET_NAME: '' }, () => {
+      expect(() => privateLiveBucketName()).toThrow(/R2_BUCKET_NAME/);
+    });
+  });
+
+  it('refuses when MCP_LIVE_BUCKET is unset', () => {
+    withEnv({ MCP_LIVE_BUCKET: '', R2_BUCKET_NAME: 'atlas' }, () => {
+      expect(() => privateLiveBucketName()).toThrow(/MCP_LIVE_BUCKET/);
+    });
   });
 });

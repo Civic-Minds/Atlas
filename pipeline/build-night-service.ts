@@ -17,6 +17,7 @@ import { resolve } from 'node:path';
 import { r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, type NightServiceRouteEntry } from './nightServiceIndex.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 interface IndexAgency {
   slug: string;
@@ -24,6 +25,7 @@ interface IndexAgency {
   region?: string | null;
 }
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--local-dir': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 function argValue(flag: string): string | null {
   const args = process.argv.slice(2);
   const i = args.indexOf(flag);

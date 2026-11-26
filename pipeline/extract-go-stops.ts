@@ -10,6 +10,7 @@ import { resolve } from 'path';
 import { r2Put } from './r2.js';
 import { config } from 'dotenv';
 import { parseGtfsZip } from './parseGtfs.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 config({ path: resolve('.env.local') });
 
@@ -37,6 +38,7 @@ async function loadGtfsBuffer(): Promise<Buffer> {
 }
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), {}); // CIV-3017: a mistyped flag must not turn into a real write
   if (!process.env.R2_ACCESS_KEY_ID) {
     console.error('Missing R2 credentials. Add R2_* vars to .env.local');
     process.exit(1);

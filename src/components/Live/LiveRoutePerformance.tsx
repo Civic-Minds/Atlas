@@ -15,7 +15,7 @@ import { useRouteAnalysis } from '../../hooks/useRouteAnalysisPatterns';
 import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
-import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
+import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LOADING_LABEL, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
 import { LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL } from '../../../shared/liveWording';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
@@ -119,28 +119,33 @@ interface Props {
  * ahead's recent track: how long ago it passed the spot where the car behind is now. Without the recordings (no read
  * token, a route not recorded) the polls alone build it up, as before.
  */
-function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, routeShortName: string): RecentSnapshot[] {
+export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, routeShortName: string): { recent: RecentSnapshot[]; seedSettled: boolean } {
   const [polls, setPolls] = useState<RecentSnapshot[]>([]);
   const [seed, setSeed] = useState<RecentSnapshot[]>([]);
+  // #1833: whether the recorded half hour has come back (or failed). Until then a thin first poll is loading, not a failure.
+  const [seedSettled, setSeedSettled] = useState(false);
   useEffect(() => {
     setPolls(b => addSnapshot(b, positionsSnapshot(vehicles, Math.floor(Date.now() / 1000))));
   }, [vehicles]);
   useEffect(() => {
     let live = true;
     setSeed([]);
+    setSeedSettled(false);
     Promise.resolve()
       .then(() => liveCloudFetch('recent', { agency: slug, route: routeShortName }))
       .then(r => (r.ok ? r.json() as Promise<{ snapshots?: RecentSnapshot[] }> : null))
       .then(j => { if (live && j?.snapshots?.length) setSeed(j.snapshots); })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { if (live) setSeedSettled(true); });
     return () => { live = false; };
   }, [slug, routeShortName]);
-  return useMemo(() => {
+  const recent = useMemo(() => {
     if (!seed.length) return polls;
     // The recordings up to the first poll, then the polls: one history, oldest first.
     const first = polls[0]?.capturedAt ?? Infinity;
     return [...seed.filter(sn => sn.capturedAt < first), ...polls].reduce<RecentSnapshot[]>((b, sn) => addSnapshot(b, sn), []);
   }, [seed, polls]);
+  return { recent, seedSettled };
 }
 
 
@@ -155,7 +160,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
-  const recent = useRecentPositions(vehicles, slug, routeShortName);
+  const { recent, seedSettled } = useRecentPositions(vehicles, slug, routeShortName);
   // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -216,6 +221,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             routeShortName={routeShortName}
             vehicles={vehicles}
             recent={recent}
+            seedSettled={seedSettled}
             now={now}
             scheduledRows={steered ? scheduledRows : scheduledRowsFor?.(id, label) ?? null}
             scheduledBlock={scheduledBlock}
@@ -228,7 +234,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
 }
 
 /** One direction's "Right now": its vehicles by destination row, each with its longest gap (CIV-2047). */
-function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, now, scheduledRows, scheduledBlock, onCounted }: {
+function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted }: {
   data: SegmentDelayData & { tripDirections?: Record<string, string[]> };
   directionId: number;
   directionLabel: string;
@@ -238,6 +244,8 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   routeShortName: string;
   vehicles: readonly LiveVehicle[];
   recent: RecentSnapshot[];
+  /** #1833: the recorded half hour has come back (or failed). */
+  seedSettled: boolean;
   now: number;
   scheduledRows: ReadonlyArray<LiveScheduledRow> | null | undefined;
   scheduledBlock: ReactNode;
@@ -293,7 +301,8 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     <div className="flex flex-col gap-2">
       {heading && <CardSectionLabel className="mb-0">{heading}</CardSectionLabel>}
       {live.incomplete ? (
-        <div className="text-xs font-bold text-[var(--text-muted)]">{LIVE_FEED_INCOMPLETE}</div>
+        // #1833: while the recorded half hour is still on its way, the thin first poll is loading, not a failure.
+        <div className="text-xs font-bold text-[var(--text-muted)]">{seedSettled ? LIVE_FEED_INCOMPLETE : LOADING_LABEL}</div>
       ) : (
         <>
           {/* CIV-2901 (Ryan, mock v2: "the destinations like in the regular map route cards"): one row per destination in

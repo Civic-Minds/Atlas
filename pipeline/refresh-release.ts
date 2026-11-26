@@ -20,7 +20,9 @@ import { execFileSync } from 'node:child_process';
 import './loadEnv.js';
 import { readRefreshRunResult } from './dataRefreshMarker.js';
 import { overrideArgs, parseGateOverrides } from './releaseDiff.js';
+import { assertKnownFlags } from './cliFlags.js';
 
+assertKnownFlags(process.argv.slice(2), { '--force': 'flag', '--i-am-launching-country': 'flag', '--allow-drop': 'flag', '--allow': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const args = process.argv.slice(2);
 const overrides = parseGateOverrides(args);
 if (overrides.errors.length) {

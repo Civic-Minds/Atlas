@@ -1,0 +1,19 @@
+{
+  "slug": "placer",
+  "officialName": "Placer County Transit",
+  "websiteUrl": "https://www.placer.ca.gov/",
+  "dataLicense": {
+    "url": "https://www.placer.ca.gov/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    38.8523,
+    -121.2415
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3663/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "high-valley",
+  "officialName": "High Valley Transit",
+  "websiteUrl": "https://hvtutah.gov/",
+  "dataLicense": {
+    "url": "https://hvtutah.gov/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Utah",
+  "center": [
+    40.7222,
+    -111.5424
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-7037/latest.zip",
+  "timezone": "America/Denver",
+  "hiddenInProduction": true
+}

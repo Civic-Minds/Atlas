@@ -1,0 +1,26 @@
+{
+  "slug": "yarts",
+  "officialName": "Yosemite Area Regional Transportation System",
+  "commonName": "YARTS",
+  "websiteUrl": "http://www.yarts.com/",
+  "dataLicense": {
+    "url": "http://www.yarts.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    37.6711,
+    -119.7973
+  ],
+  "bbox": [
+    36.738,
+    -120.515,
+    37.983,
+    -118.964
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2394/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

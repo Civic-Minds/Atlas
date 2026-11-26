@@ -30,6 +30,7 @@
  */
 
 import { MISSING_VALUE } from './missingValue';
+import { RANGE_MAX_RATIO } from './rules/frequency.js';
 
 const MISSING = MISSING_VALUE;
 
@@ -103,13 +104,14 @@ export function headwayEveryRange(low: number | null | undefined, high: number |
  * Whether a low end reads as a range beside the value ("every 15–52 min"), or the value stands alone. One rule for every
  * range: the route list, route cards, History and agency pages (CIV-1143 rule B, Ryan 2026-10-30; the list too, CIV-1227,
  * 2026-11-02). Shown only when the low end is at least 5 min, the two are at least 5 min apart, and no more than 4 times apart
- * (TTC 102 PM: 7 against 30 reads "every 30 min"). A single branch's faster short turn counts too (TTC 94 Castle Frank, #493).
+ * (RANGE_MAX_RATIO; TTC 102 PM: 7 against 30 reads "every 30 min"). A single branch's faster short turn counts too (TTC 94 Castle
+ * Frank, #493). A list passes `maxRatio` Infinity where its slow line has its own number (CIV-2909, routeListRange.ts).
  */
-export function headwayRangeShown(low: number | null | undefined, high: number | null | undefined): boolean {
+export function headwayRangeShown(low: number | null | undefined, high: number | null | undefined, maxRatio: number = RANGE_MAX_RATIO): boolean {
   if (low == null || high == null) return false;
   if (low < 5 || low >= high) return false;
   if (high - low < 5) return false;
-  if (high / low > 4) return false;
+  if (high / low > maxRatio) return false;
   return true;
 }
 
