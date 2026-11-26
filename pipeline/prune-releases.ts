@@ -5,5 +5,7 @@
  */
 import './loadEnv.js';
 import { pruneOldReleases } from './pruneReleases.js';
+import { assertKnownFlags } from './cliFlags.js';
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
 await pruneOldReleases({ dryRun: process.argv.includes('--dry-run') });

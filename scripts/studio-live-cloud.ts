@@ -36,7 +36,9 @@ import type { LiveV3 } from '../shared/liveDashboard';
 import { privateLiveBucketName, requireEnv } from '../pipeline/r2';
 import { analyseArchivedAgency, LiveBuildFailed } from './liveArchiveAnalysis';
 import { STUDIO_LIVE_POINTER, studioLiveRunPrefix, acceptStudioLiveBuild, goodDaysByWeek, nextStudioLivePointer, runsToPrune, type StudioLivePointer } from './studioLiveRun';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--days': 'value', '--work': 'value', '--log': 'value', '--only': 'value', '--run-id': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const argv = process.argv.slice(2);
 const opt = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
 const dryRun = argv.includes('--dry-run');

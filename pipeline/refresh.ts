@@ -97,6 +97,7 @@ import {
   type SameSeasonSource,
 } from './releaseDiff.js';
 import { coversDate, sameDateLastYear, sameSeasonCandidates } from './sameSeasonFeed.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -107,6 +108,7 @@ if (!process.env.R2_ACCESS_KEY_ID) {
 
 const FLAG_ARGS = new Set(['--force', COUNTRY_LAUNCH_FLAG]);
 // --allow <slug>:<flag> and --allow-drop are pulled out first so they are never read as slugs.
+assertKnownFlags(process.argv.slice(2), { '--force': 'flag', '--i-am-launching-country': 'flag', '--allow-drop': 'flag', '--allow': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const gateOverrides = parseGateOverrides(process.argv.slice(2));
 const rawArgs = gateOverrides.rest;
 const forceRefresh = rawArgs.includes('--force');

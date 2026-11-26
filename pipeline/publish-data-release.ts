@@ -54,7 +54,9 @@ import {
   releasePublishError,
   type ReleaseManifest,
 } from './releaseGuard.js';
+import { assertKnownFlags } from './cliFlags.js';
 
+assertKnownFlags(process.argv.slice(2), { '--allow-drop': 'flag', '--prune-dry-run': 'flag', '--prune-search': 'flag', '--allow': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const overrides = parseGateOverrides(process.argv.slice(2));
 const indexAgencies = (JSON.parse(fs.readFileSync('public/data/index.json', 'utf8')) as { agencies?: Array<Record<string, unknown>> }).agencies ?? [];
 const overrideErrors = [...overrides.errors, ...unknownOverrideSlugs(overrides, indexAgencies.map(a => String(a.slug)))];

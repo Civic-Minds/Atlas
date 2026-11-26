@@ -19,11 +19,13 @@ import { config } from 'dotenv';
 import JSZip from 'jszip';
 import { r2PutArchive } from './r2.js';
 import { GTFS_ARCHIVE_DIR } from './gtfsArchivePath.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 config({ path: resolve('.env.local') });
 
 const DEFAULT_GTFS_DIR = GTFS_ARCHIVE_DIR;
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const dirArg = args.find(a => !a.startsWith('--'));

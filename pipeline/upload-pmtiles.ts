@@ -15,11 +15,13 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { unpairedUploadError } from './releaseGuard.js';
 import { publicBucketName, requireEnv } from './r2.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 // loadEnv picks .env.local, or .env.staging under ATLAS_ENV=staging (upload-pmtiles:staging), and refuses a
 // staging run that would reach the production bucket (#1129).
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), { '--allow-unpaired-pmtiles-upload': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
   const unpairedError = unpairedUploadError(process.argv.slice(2), 'upload-pmtiles');
   if (unpairedError) throw new Error(unpairedError);
   const filePath = process.argv.slice(2).find(arg => !arg.startsWith('--')) || 'tmp/geojson-build/atlas.pmtiles';
