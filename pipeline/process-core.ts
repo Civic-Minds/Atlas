@@ -510,6 +510,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
   idPrefix?: string;
   /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
   bookingRequiredRoutes?: Record<string, boolean>;
+  /** #1824: routes (short names) whose timetable runs to the second; their times keep seconds (parseGtfs.ts dropFeedSeconds). */
+  secondsRoutes?: string[];
   manualBaseFare?: number;
   /**
    * When true, continue after GTFS validation errors (log only).
@@ -785,7 +787,7 @@ export async function processGtfsBuffer(
   onStatus?: (msg: string) => void,
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
-  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug });
+  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug, secondsRoutes: options?.secondsRoutes });
   // A supplemental feed whose ids would collide with the main feed's (NJ Transit rail): see supplementalIds.ts.
   if (options?.idPrefix) gtfs = prefixGtfsIds(gtfs, options.idPrefix);
   gtfs = normalizeGtfs(gtfs, options, onStatus);

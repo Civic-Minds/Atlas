@@ -31,6 +31,8 @@ export interface AgencyFeedConfig {
   onDemandRoutes?: string[];
   /** CIV-1006: force a route's booking-required status by short name (see bookedRoutes.ts). */
   bookingRequiredRoutes?: Record<string, boolean>;
+  /** #1824: routes (short names) whose timetable runs to the second; their times keep seconds. */
+  secondsRoutes?: string[];
   timezoneOverride?: string;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
@@ -119,6 +121,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     excludeRouteShortNames: agency.excludeRouteShortNames,
     routeNumberFromLongName: agency.routeNumberFromLongName,
     bookingRequiredRoutes: agency.bookingRequiredRoutes,
+    secondsRoutes: agency.secondsRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
