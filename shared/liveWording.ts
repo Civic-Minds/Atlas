@@ -35,6 +35,12 @@ export const SERVICE_DELIVERED_TITLE = 'Service delivered';
 export const LATE_STOPS_TITLE = 'Stops most often late';
 /** The week table's section and caption. */
 export const WEEK_COMPARE_TITLE = 'This week compared with last week';
+/**
+ * #1831 (CIV-3001): the week table's scope line names the time of day its figures are for, where one is picked ("both
+ * directions · Evening"), so they aren't read against the all-day late-by-hour chart below them (TTC 504: "Late 18%" for the
+ * evening beside "8% late" for the whole day). The names are the period labels; nothing new.
+ */
+export const weekScopeText = (scope: string, periodLabel: string | null): string => (periodLabel ? `${scope} · ${periodLabel}` : scope);
 /** The bunching section. */
 export const BUNCHING_FORMS_TITLE = 'Where bunching forms';
 /** The route strip's marked stretch where bunching starts, beside DELAY_STARTS_LABEL (CIV-1803). */
