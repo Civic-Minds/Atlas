@@ -359,11 +359,24 @@ function scheduleKeyForDate(date: string): string | null {
 
 /** GTFS service date: trips after midnight (before the agency's service-day end, 4 a.m. for the TTC) belong to the previous day. */
 const serviceDateOf = (t: number) => { const l = local(t); return l.hour < LIVE.serviceDayEndHour ? prevDate(l.date) : l.date; };
+/**
+ * #1858: a run's service date comes from its own trip, not the clock alone. A trip timetabled before the service-day
+ * end (the TTC's first 501/504 cars at 03:51) belongs to the day it starts, so a car out before 4 a.m. on it was put on
+ * the previous day and read 24 h late. Of the clock's local date and the day before, take the one that puts the trip's
+ * scheduled start nearest the run's first report.
+ */
+function runServiceDate(t: number, tripId: string): string {
+  const startSec = timesByTrip.get(tripId)?.[0]?.dep;
+  if (startSec == null) return serviceDateOf(t);
+  const today = local(t).date;
+  const off = (d: string) => Math.abs(serviceDayStart(d) + startSec - t);
+  return off(today) <= off(prevDate(today)) ? today : prevDate(today);
+}
 
 let runsTotal = 0, runsMatched = 0, runsUnmatched = 0;
 const observations: SegmentObservation[] = [];
 // Passages by stop+direction, for headways.
-const passagesAt = new Map<string, { tripId: string; t: number }[]>();
+const passagesAt = new Map<string, { tripId: string; t: number; date: string }[]>();
 const holds: (HoldEvent & { directionId: number })[] = [];
 const runDelays: RunDelays[] = [];
 let delaysExcluded = 0;
@@ -404,10 +417,11 @@ for (const [key, samples] of runs) {
     const run = dedup.slice(start, i);
     start = i;
     runsTotal++;
-    const runDate = serviceDateOf(run[0].t);
-    allRunDates.add(runDate);
+    const clockDate = serviceDateOf(run[0].t);
     // The position feed's trip number belongs to the timetable in force on the run's service date.
-    const tripId = prefixedId(FEEDS, feedForDate(FEEDS, runDate), rawTripId);
+    const tripId = prefixedId(FEEDS, feedForDate(FEEDS, clockDate), rawTripId);
+    const runDate = runServiceDate(run[0].t, tripId);
+    allRunDates.add(runDate);
     if (excludedTripIds.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'excluded' });
     else if (!tripById.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'no_timetable_trip' });
     else keptRuns.push(runDate);
@@ -447,7 +461,7 @@ for (const [key, samples] of runs) {
     for (const h of detectHolds(projected, pattern)) {
       if (!times.length) continue;
       const stop = stopsById.get(h.stopId);
-      const base = serviceDayStart(serviceDateOf(h.start));
+      const base = serviceDayStart(runDate);
       const st = times.find(x => x.stopId === h.stopId);
       const excess = standingStillExcess({
         start: h.start, end: h.end, runFirst: run[0].t, runLast: run[run.length - 1].t,
@@ -469,7 +483,7 @@ for (const [key, samples] of runs) {
     const deps = stopPassages(projected, pattern, SEGMENT_DEFAULTS, DEPARTURE_OFFSET_M).flat();
     const firstDeparture = deps[0];
     if (firstDeparture && times.length) {
-      const svcDate = serviceDateOf(firstDeparture.t);
+      const svcDate = runDate;
       const base = serviceDayStart(svcDate);
       const seenStop = new Set<string>();
       const observed = deps.filter(p => !seenStop.has(p.stopId) && !!seenStop.add(p.stopId));
@@ -537,7 +551,7 @@ for (const [key, samples] of runs) {
     for (const leg of legs) for (const p of leg) {
       const k = `${p.stopId}|${pattern.directionId}`;
       const l = passagesAt.get(k) ?? [];
-      l.push({ tripId, t: p.t });
+      l.push({ tripId, t: p.t, date: runDate });
       passagesAt.set(k, l);
     }
   }
@@ -588,7 +602,7 @@ for (const [k, sched] of scheduledAt) {
   // Only passes by trips this stop's timetable has for that service day; other
   // vehicles (yard moves, the next day's first trips) would fill real gaps.
   const scheduledIds = new Set(sched.map(s => s.tripId));
-  const obs = (passagesAt.get(`${stopId}|${dir}`) ?? []).filter(p => scheduledIds.has(p.tripId) && serviceDateOf(p.t) === date);
+  const obs = (passagesAt.get(`${stopId}|${dir}`) ?? []).filter(p => scheduledIds.has(p.tripId) && p.date === date);
   const byTrip = new Map(obs.map(p => [p.tripId, p.t]));
   const byBand = new Map<TimeBand, { tripId: string; t: number }[]>();
   for (const s of sched) { const b = bandForHour(hourOf(s.t)); const l = byBand.get(b) ?? []; l.push(s); byBand.set(b, l); }
@@ -941,7 +955,9 @@ console.log(`#1789: ${partwayRuns} runs with no first-stop departure (${partwayF
 console.log(`v2: trip instances ${tripInstances} (short pieces left out ${tripsShortExcluded}), not seen ${tripsNotSeen}, unlisted cover ${tripsUnlistedCover}, feed-gap trips ${tripsFeedGap}, turned back ${tripsShortTurned}, stood-still events ${holds.length}, degraded snapshots empty/stale/thin ${degradedEmpty}/${degradedStale}/${degradedThin}, stood-still dropped for degraded feed ${standingStillDegraded}`);
 
 // --- v3: the dashboard analysis over the last DAYS service dates ---
-const windowDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort().slice(-DAYS);
+// #1858: a service day the archive has not reached yet (cars out before 4 a.m. on its first trips) is not a window day.
+const lastServiceDate = serviceDateOf(snapshotTimes[snapshotTimes.length - 1]);
+const windowDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d) && d <= lastServiceDate).sort().slice(-DAYS);
 const inWindow = new Set(windowDates);
 const windowRuns = runDelays.filter(r => inWindow.has(r.date));
 // Which days of the archive are healthy (good recordings). The window keeps all its dates, but the stop lists, run time by hour,
