@@ -1,0 +1,26 @@
+{
+  "slug": "berkshire",
+  "officialName": "Berkshire Regional Transit Authority",
+  "commonName": "BRTA",
+  "websiteUrl": "http://www.berkshirerta.com/",
+  "dataLicense": {
+    "url": "https://cdn.mbta.com/sites/default/files/2023-08/mbta-massdot-develop-license-agreement.pdf",
+    "attribution": "required",
+    "name": "MassDOT Developers License Agreement",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "Massachusetts",
+  "center": [
+    42.4567,
+    -73.2375
+  ],
+  "bbox": [
+    42.174,
+    -73.381,
+    42.717,
+    -72.601
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-537/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
