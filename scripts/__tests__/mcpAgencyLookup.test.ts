@@ -71,6 +71,14 @@ describe('agency lookup', () => {
     expect((await data.findAgencyEntry('exo'))?.members.map(m => m.slug)).toEqual(['exo', 'exo-laurentides']);
   });
 
+  it('asks which agency when an id, short name or bracketed name fits two (#1869: "RTC" went to Québec silently)', async () => {
+    const rtc = [{ slug: 'rtc', name: 'RTC (Québec)' }, { slug: 'rtcsnv', name: 'Regional Transportation Commission of Southern Nevada (RTC)' }, { slug: 'cta', name: 'Chicago Transit Authority (CTA)' }];
+    data.useStore({ ...store, catalog: async () => rtc, available: async () => new Set(rtc.map(a => a.slug)), meta: async () => new Map(rtc.map(a => [a.slug, { shortName: '', parentAgency: null }])) } as unknown as AtlasStore);
+    await expect(data.findAgency('RTC')).rejects.toThrow(/"RTC" matches several agencies: RTC \(Québec\); Regional Transportation Commission of Southern Nevada \(RTC\)/);
+    expect((await data.findAgency('RTC (Québec)'))?.slug).toBe('rtc');
+    expect((await data.findAgency('CTA'))?.slug).toBe('cta');
+  });
+
   it('says a parent agency is in Atlas when this server has none of its feeds (#1806)', async () => {
     data.useStore({ ...store, available: async () => new Set(['go', 'cta']) } as unknown as AtlasStore);
     expect(await data.agencyNotOnThisServer('MTA New York')).toEqual({ name: 'MTA New York' });
