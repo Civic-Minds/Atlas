@@ -352,6 +352,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-26 — TARC's held refresh is let through with the slowest-piece rule applied (CIV-3029)
+Ryan, 2026-11-26, answering the Questions chat, picked "1": "Let it through: the next rebuild publishes TARC with the rule applied, like every other agency". Not chosen: 2, keep TARC held on its old figures. TARC had been held by the release check since at least 2026-11-24: 6 of its 12 routes read slower, because the CIV-2040 rule (approved 2026-11-21: a route's grade uses its slowest piece, since the trunk never covers the whole route) reached TARC for the first time. It is not a timetable change: the source zip is unchanged. Example: route 1 goes from every 15 to about every 62–64 min. The rebuild passes `--allow tarc:headway-shift`; his pick is the go-ahead for that R2 write.
+
 ### 2026-11-26 — The MCP may hold more detail than the map, but never contradicts it
 Ryan, 2026-11-26: "can the MCP use info if we don't show it to end users", then picked "1": the MCP may hold more detail than the map (cards, lists), but must never contradict it. The same question gets the same answer, and a different answer is a bug. Not chosen: 2, the MCP shows no more than end users see.
 
