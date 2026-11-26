@@ -474,10 +474,37 @@ export function synthesizeCalendarFromDates(calendarDates: GtfsCalendarDate[]): 
  * When only `calendar_dates.txt` is present, calendar entries are synthesized
  * by analyzing the day-of-week distribution of service dates.
  */
+const dropSeconds = (t: string | undefined): string | undefined => {
+    if (!t) return t;
+    const p = t.trim().split(':');
+    return p.length > 2 ? `${p[0]}:${p[1]}:00` : t;
+};
+
+/**
+ * #1824 (CIV-2959): every feed time is read in whole minutes (its seconds dropped), as Atlas always has, except on the
+ * routes the agency config lists in `secondsRoutes` (by short name). There the timetable itself runs to the second and
+ * whole minutes read it a minute too often (TTC Line 4 every 5:30 read "every 5"), so its times keep their seconds.
+ */
+export function dropFeedSeconds(gtfsData: Partial<GtfsData>, secondsRoutes: readonly string[] | undefined): void {
+    const kept = new Set((secondsRoutes ?? []).map(s => s.trim()));
+    const keepRoute = new Set((gtfsData.routes ?? []).filter(r => kept.has((r.route_short_name ?? '').trim())).map(r => r.route_id));
+    const keepTrip = new Set((gtfsData.trips ?? []).filter(t => keepRoute.has(t.route_id)).map(t => t.trip_id));
+    for (const st of (gtfsData.stopTimes ?? []) as Array<{ trip_id: string; departure_time?: string; arrival_time?: string }>) {
+        if (keepTrip.has(st.trip_id)) continue;
+        st.departure_time = dropSeconds(st.departure_time);
+        st.arrival_time = dropSeconds(st.arrival_time);
+    }
+    for (const f of (gtfsData.frequencies ?? []) as Array<{ trip_id: string; start_time?: string; end_time?: string }>) {
+        if (keepTrip.has(f.trip_id)) continue;
+        f.start_time = dropSeconds(f.start_time);
+        f.end_time = dropSeconds(f.end_time);
+    }
+}
+
 export const parseGtfsZip = async (
     file: File | ArrayBuffer,
     onStatus?: (message: string) => void,
-    options: { keepLongShapeJumps?: boolean; skipClusteredJumpRepair?: boolean; agencySlug?: string } = {},
+    options: { keepLongShapeJumps?: boolean; skipClusteredJumpRepair?: boolean; agencySlug?: string; secondsRoutes?: readonly string[] } = {},
 ): Promise<GtfsData> => {
     onStatus?.('Loading ZIP archive...');
     const zip = await JSZip.loadAsync(file);
@@ -527,6 +554,8 @@ export const parseGtfsZip = async (
             throw new Error(`Missing required GTFS file: ${filename}`);
         }
     }
+
+    dropFeedSeconds(gtfsData, options.secondsRoutes);
 
     if (rawShapes) {
         // Agency opt-in: rural highway shapes can have several multi-kilometre steps between

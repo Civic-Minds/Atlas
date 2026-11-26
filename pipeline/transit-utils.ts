@@ -2,7 +2,9 @@ import { GtfsCalendar, DayName } from '../types/gtfs';
 import { getGtfsModeName } from '../shared/modes.js';
 
 /**
- * Converts HH:MM:SS string to minutes from beginning of day.
+ * Converts HH:MM:SS string to minutes from beginning of day, seconds kept as a fraction of a minute.
+ * Feed times reach it with their seconds already dropped except on the routes an agency config lists in
+ * `secondsRoutes` (#1824, parseGtfs.ts dropFeedSeconds), so every other time reads whole minutes as before.
  * Returns null for invalid, empty, or negative times.
  * Supports GTFS extended times > 24:00 (e.g. 25:30 = 1:30am next day).
  */
@@ -10,7 +12,8 @@ export const t2m = (s: string): number | null => {
     if ((s || '').trimStart().startsWith('-')) return null;
     const p = (s || '').split(':');
     if (p.length < 2) return null;
-    const mins = (+p[0]) * 60 + (+p[1]);
+    const secs = p.length > 2 && p[2].trim() !== '' ? +p[2] : 0;
+    const mins = (+p[0]) * 60 + (+p[1]) + secs / 60;
     if (Number.isNaN(mins) || mins < 0) return null;
     return mins;
 };
@@ -19,8 +22,9 @@ export const t2m = (s: string): number | null => {
  * Converts minutes from beginning of day to HH:MM string.
  */
 export const m2t = (m: number): string => {
-    const h = Math.floor(m / 60);
-    const mm = String(m % 60).padStart(2, '0');
+    const whole = Math.floor(m);
+    const h = Math.floor(whole / 60);
+    const mm = String(whole % 60).padStart(2, '0');
     return `${String(h).padStart(2, '0')}:${mm}`;
 };
 
