@@ -217,7 +217,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       // The summary holds these, made by the same functions from the same rows: a hosted call doesn't work them out again.
       periods: PERIOD_KEYS.map(p => found.figures[p]),
       runsAllNight: allNight,
-      service: allNight ? data.allNightService(found, await data.daysRunningEveryHour(a, found)) : found.span,
+      service: allNight ? data.allNightService(found, data.runsOvernightOnly(found) ? [] : await data.daysRunningEveryHour(a, found)) : found.span,
       branches: await data.branchesOf(a, dayType, r),
       branchesNote: 'Branches that end at the same stop are one row, with their trips counted once; startsAt names where its trips begin.',
       ...(now ? nowBlock(now, found.figures[now.period]?.shown === 'no service') : {}),
