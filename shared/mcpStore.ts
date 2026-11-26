@@ -18,7 +18,7 @@ export interface McpAgency { slug: string; name: string; /** Its parent agency's
 export interface McpFeature { geometry: { type: string } | null; properties: Record<string, unknown> }
 
 /** A stop from the route file: name, place and the routes that stop there. */
-export interface McpStop { id: string; name: string; lat: number; lon: number; routeIds: string[] }
+export interface McpStop { id: string; name: string; lat: number; lon: number; routeIds: string[]; /** #1778: the stop's GTFS parent station, where it has one. */ parent?: string }
 
 /** What config/agencies/<slug>.json says that the tools use. */
 export interface McpAgencyMeta { shortName: string; parentAgency: string | null; /** The agency's own time zone (config/agencies/<slug>.json), for "now" (#1627). */ timezone?: string | null }
@@ -92,6 +92,8 @@ export interface AtlasStore {
   routeRows?(slug: string, day: DayType, key: string): Promise<Array<Record<string, unknown>> | null>;
   /** The names of the stops one route's rows use, by stop id. */
   stopNames?(slug: string, day: DayType, key: string): Promise<Record<string, string> | null>;
+  /** #1778: the parent station of each stop one route's rows use that has one, by stop id (empty on files built before it). */
+  stopParents?(slug: string, day: DayType, key: string): Promise<Record<string, string> | null>;
   /** Each route id's names and mode, on whichever day the route last appears: [id, name, long name, mode]. */
   routeNames?(slug: string): Promise<Array<[string, string, string | null, string]> | null>;
   /** The agencies ranking reads. */

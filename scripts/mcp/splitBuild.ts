@@ -11,6 +11,7 @@ export async function agencyFiles(a: McpAgency): Promise<Files> {
   const store = currentStore();
   const stops = (await store.stops(a.slug)) ?? [];
   const stopName = new Map(stops.map(s => [s.id, s.name]));
+  const stopParent = new Map(stops.filter(s => s.parent).map(s => [s.id, s.parent!]));
   const files: Files = [];
   const routeNames = new Map<string, [string, string, string | null, string]>();
   for (const day of DAY_TYPES) {
@@ -18,13 +19,14 @@ export async function agencyFiles(a: McpAgency): Promise<Files> {
     files.push([splitPaths.summary(a.slug, day), routes.map(summarize)]);
     for (const r of routes) {
       const names: Record<string, string> = {};
-      for (const row of r.rows) for (const id of (row.stopOrder as string[] | undefined) ?? []) { const n = stopName.get(id); if (n != null) names[id] = n; }
-      files.push([splitPaths.rows(a.slug, day, r.key), { rows: r.rows.map(row => ({ ...row })), names } satisfies SplitRows]);
+      const parents: Record<string, string> = {};
+      for (const row of r.rows) for (const id of (row.stopOrder as string[] | undefined) ?? []) { const n = stopName.get(id); if (n != null) names[id] = n; const p = stopParent.get(id); if (p != null) parents[id] = p; }
+      files.push([splitPaths.rows(a.slug, day, r.key), { rows: r.rows.map(row => ({ ...row })), names, ...(Object.keys(parents).length ? { parents } : {}) } satisfies SplitRows]);
       for (const row of r.rows) routeNames.set(String(row.routeId), [String(row.routeId), r.name, r.longName, r.mode]);
     }
   }
   files.push([splitPaths.routeNames(a.slug), [...routeNames.values()]]);
-  files.push([splitPaths.stops(a.slug), stops.map((s): SplitStop => [s.id, s.name, s.lon, s.lat, s.routeIds])]);
+  files.push([splitPaths.stops(a.slug), stops.map((s): SplitStop => s.parent ? [s.id, s.name, s.lon, s.lat, s.routeIds, s.parent] : [s.id, s.name, s.lon, s.lat, s.routeIds])]);
   const cmp = await store.comparison(a.slug);
   if (cmp) files.push([splitPaths.comparison(a.slug), cmp]);
   const veh = await store.vehicles(a.slug);

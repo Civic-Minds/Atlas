@@ -17,10 +17,10 @@ export type SplitRead = (path: string) => Promise<unknown | null>;
 
 export interface SplitManifest { releaseId: string; builtAt: string; agencies: string[] }
 
-/** A stop as the stops file writes it: [id, name, longitude, latitude, route ids]. */
-export type SplitStop = [string, string, number, number, string[]];
-/** A route's rows file: the rows, and the names of the stops they use by stop id. */
-export interface SplitRows { rows: Array<Record<string, unknown>>; names: Record<string, string> }
+/** A stop as the stops file writes it: [id, name, longitude, latitude, route ids, parent station (#1778, where it has one)]. */
+export type SplitStop = [string, string, number, number, string[], string?];
+/** A route's rows file: the rows, the names of the stops they use by stop id, and those stops' parent stations (#1778). */
+export interface SplitRows { rows: Array<Record<string, unknown>>; names: Record<string, string>; parents?: Record<string, string> }
 
 /** Where each file sits under the release's mcp folder. One place, used by the build and the store. */
 export const splitPaths = {
@@ -92,7 +92,7 @@ export function splitStore(read: SplitRead): AtlasStore {
     async routeFeatures() { return null; },
     async stops(slug) {
       const stops = await get<SplitStop[]>(splitPaths.stops(slug));
-      return stops ? stops.map(([id, name, lon, lat, routeIds]): McpStop => ({ id, name, lon, lat, routeIds })) : null;
+      return stops ? stops.map(([id, name, lon, lat, routeIds, parent]): McpStop => ({ id, name, lon, lat, routeIds, ...(parent ? { parent } : {}) })) : null;
     },
     async index() { return null; },
     async historyIndex(slug) { return get<Array<[string, string | null]>>(splitPaths.historyIndex(slug)); },
@@ -102,6 +102,7 @@ export function splitStore(read: SplitRead): AtlasStore {
     async summaries(slug, day) { return get<RouteSummary[]>(splitPaths.summary(slug, day)); },
     async routeRows(slug, day, key) { return (await get<SplitRows>(splitPaths.rows(slug, day, key)))?.rows ?? null; },
     async stopNames(slug, day, key) { return (await get<SplitRows>(splitPaths.rows(slug, day, key)))?.names ?? null; },
+    async stopParents(slug, day, key) { return (await get<SplitRows>(splitPaths.rows(slug, day, key)))?.parents ?? {}; },
     async routeNames(slug) { return get<Array<[string, string, string | null, string]>>(splitPaths.routeNames(slug)); },
     async rankAgencies() { return get<RankAgency[]>(splitPaths.rankAgencies); },
     async rankWaits(day) { return get<Record<string, Array<Array<RankWait>>>>(splitPaths.rankWaits(day)); },
