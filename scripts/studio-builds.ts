@@ -75,7 +75,23 @@ async function main(): Promise<void> {
       console.error(`studio-builds: ${slug} failed: ${e instanceof Error ? e.message : e}`);
     }
   }
-  if (failed.length) { console.error(`studio-builds: failed: ${failed.join(', ')}`); process.exit(1); }
+  if (failed.length) {
+    console.error(`studio-builds: failed: ${failed.join(', ')}`);
+    reportFailures(failed, dryRun);
+    process.exit(1);
+  }
+}
+
+/**
+ * #1874: in the cloud rebuild, name the agencies whose files failed as a warning and on the run summary page. The step
+ * runs with continue-on-error, so a log line alone went unseen when every schedule comparison failed in the 2026-11-26 publish.
+ */
+function reportFailures(failed: string[], dry: boolean): void {
+  if (!process.env.GITHUB_ACTIONS) return;
+  const line = `Studio files failed to build${dry ? ' (dry run)' : ''} for ${failed.join(', ')}: their schedule changes and buses needed are missing from the MCP files. See the step log.`;
+  console.log(`::warning title=Studio files failed::${line}`);
+  const summary = process.env.GITHUB_STEP_SUMMARY;
+  if (summary) writeFileSync(summary, `### Studio files\n\n${line}\n`, { flag: 'a' });
 }
 
 if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('studio-builds.ts')) await main();
