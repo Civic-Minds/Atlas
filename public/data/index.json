@@ -40283,6 +40283,75 @@
       "feedUrl": "https://files.mobilitydatabase.org/ntd-80028/latest.zip",
       "timezone": "America/Denver",
       "hiddenInProduction": true
+    },
+    {
+      "slug": "brockton",
+      "name": "Brockton Area Transit Authority (BAT)",
+      "officialName": "Brockton Area Transit Authority",
+      "commonName": "BAT",
+      "websiteUrl": "http://www.ridebat.com/",
+      "dataLicense": {
+        "url": "https://cdn.mbta.com/sites/default/files/2023-08/mbta-massdot-develop-license-agreement.pdf",
+        "attribution": "required",
+        "name": "MassDOT Developers License Agreement",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "Massachusetts",
+      "center": [
+        42.0933,
+        -71.0319
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-422/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "cape-cod",
+      "name": "Cape Cod Regional Transit Authority (CCRTA)",
+      "officialName": "Cape Cod Regional Transit Authority",
+      "commonName": "CCRTA",
+      "websiteUrl": "https://capecodrta.org/",
+      "dataLicense": {
+        "url": "https://cdn.mbta.com/sites/default/files/2023-08/mbta-massdot-develop-license-agreement.pdf",
+        "attribution": "required",
+        "name": "MassDOT Developers License Agreement",
+        "checkedOn": "2026-11-24"
+      },
+      "region": "Massachusetts",
+      "center": [
+        41.6906,
+        -70.2948
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-645/latest.zip",
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
+      "slug": "yuba-sutter",
+      "name": "Yuba-Sutter Transit Authority",
+      "officialName": "Yuba-Sutter Transit Authority",
+      "websiteUrl": "http://www.yubasuttertransit.com/",
+      "dataLicense": {
+        "url": "https://www.yubasuttertransit.com/general-transit-feed-specification-gtfs",
+        "attribution": "unread",
+        "name": "unknown",
+        "checkedOn": "2026-11-25"
+      },
+      "region": "California",
+      "center": [
+        39.1306,
+        -121.5925
+      ],
+      "bbox": [
+        38.573,
+        -121.673,
+        39.457,
+        -121.254
+      ],
+      "feedUrl": "https://passio3.com/yubasutter/passioTransit/gtfs/google_transit.zip",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-79/latest.zip",
+      "timezone": "America/Los_Angeles",
+      "hiddenInProduction": true
     }
   ]
 }
