@@ -10,6 +10,8 @@ tmp
 pipeline/
 scripts/*
 !scripts/build-agency-catalog.ts
+# prebuild generates public/data/index.json from config/agencies (CIV-2975).
+!scripts/build-agency-index.ts
 !scripts/agencyIndexGeneration.ts
 !scripts/build-sitemap.ts
 !scripts/prerender-routes.ts

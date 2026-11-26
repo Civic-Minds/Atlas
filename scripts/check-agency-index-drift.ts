@@ -1,14 +1,10 @@
 #!/usr/bin/env npx tsx
 /**
- * CI guard: public/data/index.json and catalog-*.json are generated from
- * config/agencies/*.json but committed. Regenerate them in memory and fail if
- * the committed files differ, so a hand edit to index.json (or a stale catalog)
- * can't be silently reverted by the next regeneration.
- *
- * No fields are excluded: pipeline-stamped metadata (lastFeedExpiry,
- * feedRefreshStatus, ...) is written to both index.json and config/agencies by
- * refresh.ts, process-gtfs.ts, restore-active-feeds.ts, and the backfill
- * scripts, so config is the full source of truth.
+ * CI guard for config/agencies, the one source of the agency registry. public/data/index.json and the catalogs are
+ * generated from it and no longer committed (CIV-2975), so there is nothing of theirs to compare. This checks that:
+ * - config/agencies generates (valid JSON, a file for every slug in order.json, no duplicate slug);
+ * - the two generated files still committed, shared/data/mode-overrides.json and agency-short-names.json, match it;
+ * - every public agency gets a release file.
  *
  *   npm run check:agency-index
  */
@@ -18,34 +14,10 @@ import { CATALOG_MODES, generateAgencyCatalog, generateAgencyIndex, generateAgen
 import { publicAgenciesExcludedFromRelease } from '../pipeline/releaseGuard.js';
 
 const root = resolve(import.meta.dirname, '..');
-const dataDir = resolve(root, 'public/data');
 
 const index = generateAgencyIndex(resolve(root, 'config/agencies'));
-const expected = new Map<string, string>([['index.json', index.contents]]);
-for (const mode of CATALOG_MODES) {
-  expected.set(`catalog-${mode}.json`, generateAgencyCatalog(index.agencies, mode).contents);
-}
+for (const mode of CATALOG_MODES) generateAgencyCatalog(index.agencies, mode);
 
-function describeIndexDrift(committed: string): string[] {
-  try {
-    const actual = (JSON.parse(committed) as { agencies: Array<Record<string, unknown>> }).agencies;
-    const bySlug = new Map(actual.map(agency => [agency.slug, agency]));
-    const details: string[] = [];
-    for (const agency of index.agencies) {
-      const other = bySlug.get(agency.slug);
-      if (!other) details.push(`missing from index.json: ${String(agency.slug)}`);
-      else if (JSON.stringify(other) !== JSON.stringify(agency)) details.push(`differs from config: ${String(agency.slug)}`);
-      bySlug.delete(agency.slug);
-    }
-    for (const slug of bySlug.keys()) details.push(`not in config/agencies: ${String(slug)}`);
-    if (details.length === 0) details.push('agency order or formatting differs');
-    return details;
-  } catch {
-    return ['index.json is not valid JSON'];
-  }
-}
-
-const drifted: string[] = [];
 const modeOverridesPath = resolve(root, 'shared/data/mode-overrides.json');
 if (!existsSync(modeOverridesPath) || readFileSync(modeOverridesPath, 'utf8') !== generateModeOverrides(index.agencies).contents) {
   console.error('shared/data/mode-overrides.json is out of date with config/agencies modeOverrides — run npm run build:agency-index');
@@ -56,16 +28,6 @@ if (!existsSync(shortNamesPath) || readFileSync(shortNamesPath, 'utf8') !== gene
   console.error('shared/data/agency-short-names.json is out of date with config/agencies shortName — run npm run build:agency-index');
   process.exit(1);
 }
-for (const [name, contents] of expected) {
-  const path = resolve(dataDir, name);
-  const committed = existsSync(path) ? readFileSync(path, 'utf8') : null;
-  if (committed === contents) continue;
-  drifted.push(name);
-  if (name === 'index.json' && committed !== null) {
-    for (const line of describeIndexDrift(committed).slice(0, 20)) console.error(`  ${line}`);
-  }
-}
-
 // A public agency that build-pmtiles never copies into a release shows
 // "Couldn't load" in production (#757, #759). publish-data-release also checks
 // every public slug against the release itself.
@@ -75,11 +37,5 @@ if (excluded.length > 0) {
   console.error('Set hiddenInProduction + issueUrl in config/agencies/<slug>.json until each one is refreshed into a release.');
 }
 
-if (drifted.length > 0) {
-  console.error(`\nOut of date with config/agencies: ${drifted.map(name => `public/data/${name}`).join(', ')}`);
-  console.error('index.json is out of date with config/agencies — run npm run build:agency-index && npm run build:agency-catalog');
-  console.error('(Edit config/agencies/<slug>.json, not index.json; index.json is regenerated from config.)');
-  process.exit(1);
-}
 if (excluded.length > 0) process.exit(1);
-console.log(`index.json and ${CATALOG_MODES.length} catalogs match config/agencies (${index.agencies.length} agencies)`);
+console.log(`config/agencies generates the index and ${CATALOG_MODES.length} catalogs (${index.agencies.length} agencies); mode overrides and short names match`);
