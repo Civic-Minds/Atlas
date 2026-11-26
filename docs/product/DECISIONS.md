@@ -71,6 +71,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: two trips of one route, direction, service and headsign that leave the same first stop in the same minute, one serving a strict subset of the other's stops, count as one departure (the subset trip is left out), only when, within that route, direction and service, more than 50% of departure slots are paired and at least 3 slots are paired.
   - Why: an express and a local leaving together read as a busy branch (Metro-North buses, CyRide 812 Saturday); a one-off pair must not change a route's reading (the first version failed at rtc, port-authority-pa, pvpta, petaluma and mtd-champaign).
   - Source: Ryan, 2026-11-21 (Atlas Questions chat), "CIV-1098 1", answering "1. Ship it as built (Recommended). You'd be approving the rule as written: more than half paired, at least 3 pairs."; Linear CIV-1098, comment of 2026-11-21
+- **Times are read in whole minutes, except routes an agency lists as running to the second**
+  - What: every feed time drops its seconds before it is read, except on the routes an agency's config lists in `secondsRoutes`, whose timetable runs to the second; today only TTC Lines 1 and 4. An agency-specific fix, not a rule for trains.
+  - Why: whole minutes read TTC Line 4 (every 5½ min) as every 5, and Line 1's 2:40–3:29 and 3:53–4:25 gaps as every 4 and 5.
+  - Source: [decision log](#decision-log) (2026-11-26), [#1824](https://github.com/Civic-Minds/Atlas/issues/1824), Linear CIV-2959
 
 ### What the map shows and never shows
 
@@ -311,6 +315,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — TTC Lines 1 and 4 keep their timetable's seconds; every other route reads whole minutes (#1824, CIV-2959)
+Ryan, 2026-11-26, answering the Questions chat, picked "1": "Merge it for Lines 1 and 4" (branch fix-1824-ttc-seconds, 0535e5a18). Earlier, on whether this broke the no-train-rules rule: "That is not a special rule for trains - that is a agency-specific fix which I never said 'no' to." TTC's config lists the routes in `secondsRoutes`; their times keep seconds, and every other route in every agency drops them, as whole minutes always did. 12 figures change, all TTC, none crossing a frequency grade, nothing in any other agency: Line 4 every 5 → every 6 (the timetable runs every 5½ min); Line 1 weekday evening every 4 → every 3, Saturday evening and Sunday midday every 5 → every 4 (timetable gaps 2:40–3:29 and 3:53–4:25). Line 2 is left out: read to the second, its weekday morning (every 2:21) read every 6. Not picked: 2 (keep whole-minute readings), 3 (before/after page first). Earlier candidates not taken: seconds everywhere (545 cells read faster), "never faster" (4,248 cells one minute slower), and a 50%-of-timepoints detection rule (757 cells in 31 agencies).
 
 ### 2026-11-25 — The full-day chart's title line names the hovered hour, "5 AM: every 15 min" (#1820, CIV-2950)
 Ryan, 2026-11-25, on CapMetro 801 Southbound's "Overnight every 15 min" ("Is this overnigth every 15 not wrong and/or bad"): "Actually 1" (the title names the hour, not its period), then "1" to "5 AM: every 15 min", with the colon, as the hourly hover reads ("2 PM: every 30 min"). The 801 has no overnight service; the 5 AM hour's 15 came from its one trip at 5:57 and the next at 6:12, and the title put the period's name beside it. The title is built by the hover's own function (formatHourTitle; trip time by formatTripTimeTitle), so the two can't drift. Across all published agencies 1,854 routes showed an overnight hour's figure in a period with none.
