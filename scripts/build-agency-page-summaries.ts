@@ -32,7 +32,6 @@ import { effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
-import { routeListCellText } from '../src/utils/effectiveHeadway';
 import { routeReading } from '../src/utils/routeReading';
 import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import { routeRuns } from '../shared/routeRuns';
@@ -191,7 +190,7 @@ export function summarize(
       if (d.edge) edge[col] = d.edge;
       // CIV-1300: the page reads what the map's lists read (the route card), where that differs from the filter's number.
       const shown = reading.text(true);
-      if (shown != null && shown !== routeListCellText(d, true)) text[col] = shown;
+      if (shown != null && shown !== reading.filterText(true)) text[col] = shown;
     }
     if (limited.length) r.limited = limited;
     if (noRegular.length) r.noRegular = noRegular;

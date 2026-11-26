@@ -22,6 +22,8 @@ export interface RouteReading {
   list: RouteListDisplay;
   /** The list's words; `compact` gives the tight-spot form (agency pages). */
   text(compact?: boolean): string | null;
+  /** The filter's number in the same words (agency pages compare it with `text`, CIV-2976 F8). */
+  filterText(compact?: boolean): string | null;
 }
 
 /** A route's reading for a period, from its direction and branch rows (one route, one day). */
@@ -39,5 +41,6 @@ export function routeReading(rows: readonly ShapeProperties[], period: TimePerio
     get wait() { return routeWaitMinutes(readFilterDisplay()); },
     get list() { return readList(); },
     text: (compact = false) => routeListCellText(readList(), compact),
+    filterText: (compact = false) => routeListCellText(readFilterDisplay(), compact),
   };
 }
