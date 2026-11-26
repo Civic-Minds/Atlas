@@ -321,7 +321,7 @@ async function processAgency(agency: Agency, fareOverrides: FareOverrides): Prom
     const live = await readBaseline(agency.slug);
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
-    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
+    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry, pinnedExpiry: pinned ? agency.expiredFeedPin!.feedExpiry : null } }, live });
     processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedStart: feedPeriodStart(processedDates), feedQuality: result.feedQuality });
     row.feedQuality = { status: result.feedQuality.status, score: result.feedQuality.score };
     const countRules = assessByCounts({ ...result.feedQuality.metrics, checkedAt: result.feedQuality.checkedAt });

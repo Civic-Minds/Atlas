@@ -121,6 +121,7 @@ These commands write public R2 data. Get explicit approval immediately before ru
 | `day-shrunk` | yellow | A day type's route lines fall below 65% of live, with at least 5 live. On the 2026-10-12 bundle dry run this caught cdta Saturday 92 to 56 (Albany routes missing) and nyc-ferry's summer weekend routes ending (21 to 13); every other day type stayed at 72% or more. |
 | `expired` | red | Service has already ended and the output differs from live. |
 | `expired` | yellow | Service has ended, but the output is unchanged from live. This keeps long-expired agencies from blocking every release. |
+| `expired` | yellow | Service has ended on exactly the date an already-live agency's `expiredFeedPin` approves (Rockford, #1036), so code fixes still reach its pinned timetable; the other checks still apply (CIV-3028). |
 | `future-start` | yellow | Service does not start until a future date (refresh and reprocess, which read the zip). |
 | `placeholder-expiry` | yellow | The calendar runs more than 2 years past today, likely a placeholder end date; the recorded expiry is capped so the agency can still show as outdated. |
 | `added` | yellow | The agency has no live artifact to compare with (for example, new to the release), or its live artifact predates route schema v2. No before/after diff is taken. The duplicate and date checks still run. Reprocess still refuses an agency whose live artifact cannot be read at all. |
