@@ -85,6 +85,24 @@ export function edgeWaitBit(grade: number): number | null {
 
 /** #720: three repeated departures are the minimum evidence for a schedule; one or two trips are one-off. */
 export const MIN_SCHEDULE_DEPARTURES = 3;
+
+/**
+ * A pooled value is published only when no gap inside its window exceeds this times the mean
+ * gap. Two 30-minute branches 3 minutes apart (gaps 3, 27: 1.8 times the mean) or 5 apart (5,
+ * 25: 1.67) are bunched, not one service; an hourly variant over a half-hourly base (15, 15, 30)
+ * is one service, and its 30 is 1.5 times the mean, more where a window edge cuts the list.
+ */
+export const POOLED_MAX_GAP_RATIO = 1.75;
+/**
+ * On a dense pooled service the ratios bite on a single held bus: ttc 52 westbound at midday,
+ * four branches every 20 merged to every 5 over 73 departures, has one 9-10 minute gap at
+ * 14:31 from stop 26 on (running-time drift), and 1.6 times 5 is 8, so the stop published
+ * nothing and read its own 20, a 14-stop hole in the Lawrence stretch. Each ratio allows at
+ * least this many minutes over its base (the mean, the value), the tier grader's grace, so the
+ * ratios only decide on services around 8 minutes and slower, where a 1.6x gap is a real
+ * alternation.
+ */
+export const POOLED_MAX_GAP_GRACE_MINUTES = 5;
 /**
  * CIV-2232 (Ryan, 2026-11-24, "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular"): a route
  * card row read from its own trips shows a number only with at least this many of them in the period. Card wording only.

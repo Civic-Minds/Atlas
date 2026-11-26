@@ -7,7 +7,8 @@ import type { Agency } from '../../App';
 import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../../utils/routeCardRoute';
 import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
-import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { routeReading } from '../../utils/routeReading';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { buildDirectionGroups, routeDirectionOverrides } from '../../utils/routeCardDirectionGroups';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT } from '../../utils/agencySearch';
@@ -303,7 +304,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               buildRouteFacts(candidateProps, slug).key === facts.key;
           })
           .map(candidate => candidate.properties as ShapeProperties);
-        const display = routeListDisplay(routeFeatures, period);
+        const display = routeReading(routeFeatures, period).list;
         const headway = display.headway ?? 999;
         const limited = display.limited;
         const noRegular = display.noRegular === true;
@@ -355,12 +356,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return { headway: null, limited: false };
-    const displayOn = (day: DayType, onPeriod: TimePeriod) => routeListDisplay(fc?.features
+    const displayOn = (day: DayType, onPeriod: TimePeriod) => routeReading(fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
         return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === day);
       })
-      .map(candidate => candidate.properties as ShapeProperties) ?? [], onPeriod);
+      .map(candidate => candidate.properties as ShapeProperties) ?? [], onPeriod).list;
     const display = displayOn(currentDay, period);
     // Compare (CIV-844): the row reads both maps, each on its own day and time.
     return compareListSideB ? { ...display, compare: { A: display, B: displayOn(compareListSideB.day, compareListSideB.period) } } : display;
@@ -600,7 +601,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     // The same reading the other route lists use (CIV-1447: the route card's own range), not the best branch.
     for (const [mapKey, rows] of connectionRows) {
-      const display = routeListDisplay(rows, period);
+      const display = routeReading(rows, period).list;
       Object.assign(seen.get(mapKey)!, { headway: display.headway, sharedHeadway: display.sharedHeadway, wideRange: display.wideRange, colorHeadway: display.colorHeadway, edgeText: display.edgeText });
     }
 

@@ -8,6 +8,7 @@ import { branchDisplayHourHeadway, branchDisplayPeriodHeadway, buildRouteService
 import { medianHeadway, shouldShowTrunkSummary, sparklineSourceDirections, trunkSparklineByHour, worstDirectionByHour } from './routeCardTrunk';
 import { isRiderMeaningfulGap } from './routeCardUneven';
 import { HOUR_TO_PERIOD } from './sparklinePeriods';
+import { combinedWait } from '../../shared/combinedWait';
 
 /**
  * The hour chart's model (CIV-1011 #10): each direction's hour values, its scale, each bar's height, colour and
@@ -195,8 +196,7 @@ export function branchHourStack(
 
 /** A stack's combined wait in whole minutes, like the Combined row (groupTrunkHeadway), so it reads "every 15 min". */
 export function stackHeadway(segments: readonly { headway: number }[]): number | null {
-  const perMinute = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
-  return perMinute > 0 ? Math.max(1, Math.round(1 / perMinute)) : null;
+  return combinedWait(segments.map(segment => segment.headway));
 }
 
 /** A group's branches as its stack draws them: the rows, then the limited patterns. */

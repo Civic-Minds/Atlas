@@ -21,7 +21,8 @@ import { headwayEveryRange } from '../../utils/headwayText';
 import { agencyCardTitle } from '../../utils/agencyName';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
-import { IRREGULAR_PERIOD_SHORT_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
+import { IRREGULAR_PERIOD_SHORT_LABEL } from '../../utils/effectiveHeadway';
+import { routeReading } from '../../utils/routeReading';
 import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton, CorrectedDataNotice, NewScheduleDataNotice, REPORT_REASON } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
@@ -151,7 +152,7 @@ export function getRoutes(
       shortName: row.shortName,
       label: row.label,
       longName: row.longName,
-      ...routeListDisplay(row.props, period),
+      ...routeReading(row.props, period).list,
       tier: row.tier,
       routeType: row.routeType,
       bookingRequired: row.bookingRequired,
