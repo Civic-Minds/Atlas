@@ -17,7 +17,6 @@
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-761/latest.zip",
   "timezone": "America/Vancouver",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
   "lastFeedCheckAt": "20261126",

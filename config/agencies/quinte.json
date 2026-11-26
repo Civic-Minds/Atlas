@@ -16,7 +16,6 @@
   "feedUrl": "https://myride.quintetransit.ca/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4685/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://myride.quintetransit.ca/gtfs/google_transit.zip",
   "lastFeedCheckAt": "20261126",

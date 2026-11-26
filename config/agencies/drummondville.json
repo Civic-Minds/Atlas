@@ -86,7 +86,6 @@
     "V250": true,
     "V260": true
   },
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://geomatique.drummondville.ca/GTFS/GTFS_DMV.zip",
   "lastFeedCheckAt": "20261126",

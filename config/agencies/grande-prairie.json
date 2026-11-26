@@ -16,7 +16,6 @@
   "feedUrl": "https://gpt.mapstrat.com/current/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4821/latest.zip",
   "timezone": "America/Denver",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gpt.mapstrat.com/current/google_transit.zip",
   "lastFeedCheckAt": "20261126",
