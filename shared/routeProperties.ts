@@ -54,9 +54,15 @@ export interface RouteProperties {
   /**
    * CIV-2229 (#1772, Ryan "1"): the first time a trip of the row's route direction that day leaves its first stop (minutes
    * after midnight; the same trips the reference stops count), where a rider can first board. Null when a trip leaves
-   * before the day window departuresByHour uses. The route's first time reads this; its last time stays departureSpan's.
+   * before the day window departuresByHour uses. The route's first time reads this.
    */
   tripStartFirst?: number | null;
+  /**
+   * #1791: the last time a trip of the row's route direction that day leaves its first stop, over the same trips: the last
+   * boarding. Null when a trip leaves after the day window, or the day runs on into the night (a night-only service's trip
+   * written before the window, CIV-1812). The route's last time reads this.
+   */
+  tripStartLast?: number | null;
   routeShortName: string | null;
   routeLongName: string | null;
   routeVariant?: string | null;

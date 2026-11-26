@@ -912,6 +912,15 @@ export function computeTripStartFirst(tripStartTimes: readonly number[]): number
   return computeDepartureSpan(tripStartTimes, SPARKLINE_HOURS)?.first;
 }
 
+/**
+ * #1791: the last of them (a night service's trips read after midnight, 24:00 on), by the same window and rule for a late
+ * end: undefined when a trip leaves after the window. A route that runs through the night has no last boarding; the
+ * readers leave it out by the Night Service verdict (routeRunsByPeriod's Overnight, shared/routeRuns.ts).
+ */
+export function computeTripStartLast(tripStartTimes: readonly number[]): number | undefined {
+  return computeDepartureSpan(tripStartTimes, SPARKLINE_HOURS)?.last;
+}
+
 /** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
 export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
   const result: HeadwayByPeriodRange = {};
