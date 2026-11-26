@@ -5,6 +5,7 @@ import { useSegmentDelayStatus } from '../../hooks/useSegmentDelay';
 import { liveCloudFetch } from '../../lib/liveCloudFetch';
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
+import { localHour } from '../../../shared/liveAgencyConfig';
 import { clockTime } from '../../../shared/timeText';
 import { type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
 import { headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
@@ -36,7 +37,7 @@ const AMBER = 'var(--status-caution-text)';
 
 /** The agency's hour (LIVE_AGENCY_TIMEZONES); the browser's clock when the agency has no zone listed. */
 export function agencyHour(slug: string, d = new Date()): number {
-  return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d));
+  return localHour(d.getTime(), LIVE_AGENCY_TIMEZONES[slug]);
 }
 
 /** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 PM" (CIV-1034). */
