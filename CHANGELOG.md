@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **A route's Live figures say "Loading…" while they load**: on opening a route they briefly said they couldn't be shown, which read as a failure
+- **Live's "Figures updated" time reads on your own clock**: it always showed Toronto time with no zone named, so a viewer in San Francisco, Los Angeles, Vancouver, Edmonton or Halifax read the build time hours off
 - **Studio Fleet's vehicle tables name the vehicles as the page does**: screen readers heard "Buses Needed" on TTC tables titled "Vehicles Needed"
 - **No part of a route's line draws more frequent than the route when the same buses run its whole length**: CapMetro 801's weekday evening drew its north end green (every 15) beside a route that runs every 20, because those stops caught more of the service before it drops at 9 PM
 - **A route card's data warning sits at the bottom of the card, with the other notices**: CapMetro 10's "may be incomplete because of an error in the agency's data" sat under the title, though Learn more notices belong at the bottom
