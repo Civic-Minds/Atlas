@@ -266,14 +266,17 @@ describe('period section colours (CIV-321 S3)', () => {
     expect(at(night(',,20*3'), 'overnight')).toEqual([['infrequent', null]]);
   });
 
-  // #1839 (CIV-1959 B2): a direction that is one piece colours no stop faster than the piece. CapMetro 801 weekday evening:
-  // the last stops read 15 because more of their gaps fall before the 9 PM drop from 15 to 20; the piece reads 20.
-  it('ignores a stop faster than its piece where the direction is one piece, and keeps slower stops', () => {
+  // CIV-2994 (replaces #1839's faster-only rule): a direction that is one piece colours every stop as the piece. CapMetro 801
+  // weekday evening: the last stops read 15 because more of their gaps fall before the 9 PM drop from 15 to 20; the piece reads 20.
+  it('colours every stop as its piece where the direction is one piece, faster or slower', () => {
     const piece = (v: number) => ({ pieces: [{ kind: 'trunk', index: 0, stopCount: 4, refStop: 'g', periods: { midday: { t: 'reading', v } } }] });
     const fast = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: piece(30) }).features[0].properties as unknown as ShapeProperties;
     expect(periodSectionProps(fast, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '30', u: '30' });
     const slow = line({ stretchStopPeriodValues: { midday: '60*2,30*2' }, pieceReadings: piece(30) }).features[0].properties as unknown as ShapeProperties;
-    expect(periodSectionProps(slow, 'midday')!.stopTiers).toEqual({ k: '60', g: '60', b: '30', u: '30' });
+    expect(periodSectionProps(slow, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '30', u: '30' });
+    // A stop with no value in the period gets none from the piece.
+    const gap = line({ stretchStopPeriodValues: { midday: ',30*3' }, pieceReadings: piece(30) }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(gap, 'midday')!.stopTiers).toEqual({ g: '30', b: '30', u: '30' });
     // Two pieces (a branch): each stop keeps its own value.
     const branched = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: { pieces: [...piece(30).pieces, { ...piece(15).pieces[0], kind: 'branch', index: 1 }] } }).features[0].properties as unknown as ShapeProperties;
     expect(periodSectionProps(branched, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '15', u: '15' });

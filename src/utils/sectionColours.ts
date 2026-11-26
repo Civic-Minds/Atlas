@@ -49,10 +49,11 @@ export function tierOfHeadway(h: number | null | undefined): string | null {
  * when the line has no per-stop period values or no value in the period (it keeps one colour).
  */
 /**
- * #1839 (CIV-1959 B2): where a direction is one piece (pieceReadings: its trunk and no branch, so the same trips run its
- * whole length), a stop that reads faster than the piece's reading is ignored for the colour and takes the piece's
- * reading, so a period whose service changes partway can't paint part of the line a tier better than the route (CapMetro 801 weekday evening: the last
- * 8 northbound stops read 15 against the route's 20). A slower stop keeps its value; the stop card keeps its own.
+ * CIV-2994 (#1847; replaces #1839's faster-only rule): where a direction is one piece (pieceReadings: its trunk and no branch,
+ * so the same trips run its whole length), every stop with a value colours as the piece's reading, faster or slower, so the
+ * stretch is one colour. Each stop reads its own clock, so a period whose service changes partway paints stops differently
+ * though the same buses serve them (CapMetro 801 weekday evening: the last 8 northbound stops read 15 against the route's 20;
+ * METRO 26's first stops read two tiers slower). Map colours only: the stop card and published values keep their own.
  */
 export function periodSectionProps<P extends ShapeProperties>(p: P, period: PeriodKey): P | null {
   const stops = p.stopOrder ?? [];
@@ -74,7 +75,7 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   const first = values.findIndex(v => v != null);
   const last = values.findLastIndex(v => v != null);
   const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
-  // #1839: a direction that is one piece (the pipeline's pieceReadings: a trunk and no branch) colours no stop faster than the piece's reading.
+  // CIV-2994: a direction that is one piece (the pipeline's pieceReadings: a trunk and no branch) colours every stop as the piece's reading.
   const pieces = p.pieceReadings?.pieces;
   const piece = pieces?.length === 1 ? pieces[0].periods?.[period] : undefined;
   const pieceValue = piece && piece.t !== 'limited' ? piece.v : null;
@@ -84,7 +85,7 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
       if (period === 'overnight' && i > first && i < last && !dropOffOnly.has(stopId)) stopTiers[stopId] = 'infrequent';
       return;
     }
-    const shown = pieceValue != null && v < pieceValue ? pieceValue : v;
+    const shown = pieceValue ?? v;
     stopHeadways[stopId] = shown;
     stopTiers[stopId] = tierOfHeadway(shown)!;
   });
