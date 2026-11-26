@@ -1,13 +1,12 @@
 import DataTable from '../../components/ui/DataTable';
 import ScrollX from '../../components/ui/ScrollX';
 import { CardBodyText } from '../../components/Interval/cardUi';
-import { PAGE_NAMES } from '../../../shared/pageNames';
 import { headwayEvery, runTimeAmount } from '../../../shared/headwayText';
 import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 import { MISSING_VALUE } from '../../../shared/missingValue';
 import { countText } from '../../../shared/numberText';
 import { groupAtTarget, STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../../../shared/studioVehicles';
-import { STUDIO_VEHICLES_TEXT, fleetNetworkText, groupSharesText, noServiceText } from '../../../shared/studioWording';
+import { STUDIO_VEHICLES_TEXT, fleetNetworkText, groupSharesText, noServiceText, vehiclesNeededTitle } from '../../../shared/studioWording';
 
 /**
  * Atlas Studio's buses-needed figures (CIV-1693), now in Fleet's route card (CIV-1828, Fleet.tsx): the picked route's
@@ -56,7 +55,7 @@ export function StudioGroupFigures({ group, showRunning = true, network = false,
     {/* -mx-2: the marked row's tint reaches past the text while the words line up with the lines above and below. */}
     <ScrollX className="-mx-2">
       <DataTable
-        caption={PAGE_NAMES.studioVehicles}
+        caption={vehiclesNeededTitle(group.modes)}
         layout="fill"
         rows={network ? busRows(group, 'current', inService).filter(r => r.now || r.key === 'live') : busRows(group, 'current', inService)}
         rowKey={r => r.key}
