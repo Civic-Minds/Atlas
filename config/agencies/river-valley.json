@@ -1,0 +1,19 @@
+{
+  "slug": "river-valley",
+  "officialName": "River Valley Transit",
+  "websiteUrl": "http://www.ridervt.com",
+  "dataLicense": {
+    "url": "http://www.ridervt.com",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Pennsylvania",
+  "center": [
+    41.2432,
+    -77.0035
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-4548/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

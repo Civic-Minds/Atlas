@@ -1,0 +1,21 @@
+{
+  "slug": "srta",
+  "officialName": "Southeastern Regional Transit Authority",
+  "commonName": "SRTA",
+  "websiteUrl": "http://www.srtabus.com",
+  "dataLicense": {
+    "url": "http://www.srtabus.com",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Massachusetts",
+  "center": [
+    41.676,
+    -71.0192
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/srta-ma-us/srta-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-421/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}
