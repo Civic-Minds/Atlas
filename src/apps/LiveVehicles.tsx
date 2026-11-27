@@ -45,7 +45,7 @@ import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
 import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
-import LiveRoutePerformance, { agencyHour } from '../components/Live/LiveRoutePerformance';
+import LiveRoutePerformance, { agencyHour, type MockRowReading } from '../components/Live/LiveRoutePerformance';
 import { RouteCardHeadway } from '../components/Interval/panels/RouteCardHeadway';
 import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../utils/routeCardRoute';
 import { buildDirectionGroups } from '../utils/routeCardDirectionGroups';
@@ -94,13 +94,6 @@ function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
   const count = vehicleModeCount(vehicles.length, modeWord);
   const late = vehicles.filter(v => vehicleStatus(v) === 'late').length;
   return late > 0 ? `${count} · ${late} late` : count;
-}
-
-/** MOCK (#1877 mock C): the count and the late count, "0 late" included, left out only when no vehicle reports how late it is. */
-function mockCountLine(vehicles: LiveVehicle[], modeWord: string): string {
-  const count = vehicleModeCount(vehicles.length, modeWord);
-  if (!vehicles.some(v => v.delayMin != null)) return count;
-  return `${count} · ${vehicles.filter(v => vehicleStatus(v) === 'late').length} late`;
 }
 
 function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
@@ -789,32 +782,38 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // MOCK for Ryan's review (#1877, not for merge): ?mock1877=a keeps "every X min" with the bus count under it;
   // ?mock1877=b puts the bus count in its place. Both leave out "Right now", so each destination shows once.
   const mock1877 = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mock1877') : null;
-  // ?mock1877=c: "every X min" from the vehicles on the road now (a new number: each row's median live gap, the same gap
-  // calculation as "Right now"'s longest gap), with the vehicle count and late count under it where "until 9:37 AM" goes.
-  const [mockEvery, setMockEvery] = useState<ReadonlyMap<string, number>>(new Map());
-  const onRowEvery = useCallback((_dir: number, every: ReadonlyMap<string, number>) => {
-    if (!selectedGroup) return;
-    setMockEvery(prev => {
+  // ?mock1877=c: every row of the card is live, Shared stretch included: "every X min" from the vehicles on the road now
+  // (a new number: the average gap between the row's vehicles over the last half hour, from the same gap calculation as
+  // "Right now"'s longest gap), with the vehicle count and late count on the line under it, in the same type, where
+  // "until 1:24 AM" goes. A row with too few measured gaps shows its count alone.
+  const [mockRows, setMockRows] = useState<ReadonlyMap<string, MockRowReading>>(new Map());
+  const onRowEvery = useCallback((dir: number, rows: ReadonlyMap<string, MockRowReading>) => {
+    setMockRows(prev => {
       const next = new Map(prev);
-      for (const [h, m] of every) { const k = rowDirectionKey(h, selectedGroup.routeShortName); if (k) next.set(k, m); }
-      return next.size === prev.size && [...next].every(([k, v]) => prev.get(k) === v) ? prev : next;
+      for (const [k, f] of rows) next.set(`${dir}|${k}`, f);
+      return JSON.stringify([...next]) === JSON.stringify([...prev]) ? prev : next;
     });
-  }, [selectedGroup]);
-  const liveRowFor = useCallback((feature: { headsign?: unknown }) => {
+  }, []);
+  const liveRowFor = useCallback((feature: { headsign?: unknown } | undefined, row?: { dirId: number; key: string }) => {
     if (!selectedGroup || !vehiclesByDirection || !canGroupByDirection) return null;
-    const key = rowDirectionKey(feature.headsign, selectedGroup.routeShortName);
-    const vehicles = key ? vehiclesByDirection.get(key) : undefined;
     if (mock1877 === 'c') {
-      const every = key ? mockEvery.get(key) : undefined;
+      const f = row ? mockRows.get(`${row.dirId}|${row.key}`) : undefined;
+      const headKey = feature ? rowDirectionKey(feature.headsign, selectedGroup.routeShortName) : null;
+      const cars = f?.cars ?? (headKey ? vehiclesByDirection.get(headKey)?.length ?? 0 : 0);
+      const count = vehicleModeCount(cars, selectedRouteModeWord) + (f?.late != null ? ` · ${f.late} late` : '');
+      const line = 'text-sm font-black text-[var(--text-primary)] whitespace-nowrap';
       const value = (
-        <span className="flex flex-col items-end text-right whitespace-nowrap">
-          {every != null && <span className="text-sm font-black text-[var(--text-primary)]">{headwayEvery(every)}</span>}
-          <span className={every != null ? 'text-xs font-medium text-[var(--text-secondary)]' : 'text-sm font-black text-[var(--text-primary)]'}>{mockCountLine(vehicles ?? [], selectedRouteModeWord)}</span>
+        <span className="flex flex-col items-end text-right">
+          {f?.every != null && <span className={line}>{headwayEvery(f.every)}</span>}
+          <span className={line}>{count}</span>
         </span>
       );
-      if (!key || !vehicles?.length) return { key: `none:${String(feature.headsign)}`, value };
-      return { key, value, onClick: () => setSelectedDirection(key) };
+      const key = `c:${row?.dirId ?? ''}|${row?.key ?? String(feature?.headsign)}`;
+      return { key, claim: headKey ?? undefined, value, ...(headKey && cars > 0 ? { onClick: () => setSelectedDirection(headKey) } : {}) };
     }
+    if (!feature) return null;
+    const key = rowDirectionKey(feature.headsign, selectedGroup.routeShortName);
+    const vehicles = key ? vehiclesByDirection.get(key) : undefined;
     if (mock1877 === 'b') {
       const count = <span className="text-sm font-black text-[var(--text-primary)] whitespace-nowrap">{directionSummary(vehicles ?? [], selectedRouteModeWord)}</span>;
       if (!key || !vehicles?.length) return { key: `none:${String(feature.headsign)}`, value: count };
@@ -822,7 +821,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
     if (!key || !vehicles?.length) return null;
     return { key, subLabel: directionSummary(vehicles, selectedRouteModeWord), onClick: () => setSelectedDirection(key) };
-  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877, mockEvery]);
+  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877, mockRows]);
   // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
   // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
   const liveRouteSections = (claimed: ReadonlySet<string>) => {

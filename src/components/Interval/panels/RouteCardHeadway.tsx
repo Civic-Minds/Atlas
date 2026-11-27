@@ -125,7 +125,7 @@ export interface RouteCardHeadwayProps {
   extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
   /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
    *  destination (its key) carries it. */
-  rowLive?: (feature: ShapeProperties) => { key: string; subLabel?: string; onClick?: () => void; value?: React.ReactNode } | null;
+  rowLive?: (feature: ShapeProperties | undefined, row?: { dirId: number; key: string }) => { key: string; claim?: string; subLabel?: string; onClick?: () => void; value?: React.ReactNode } | null;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -416,10 +416,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             };
           };
           // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
-          const liveProps = (feature: ShapeProperties | undefined) => {
-            const live = rowLive && feature ? rowLive(feature) : null;
+          const liveProps = (feature: ShapeProperties | undefined, row?: { dirId: number; key: string }) => {
+            const live = rowLive && (feature || row) ? rowLive(feature, row) : null;
             if (!live || claimedLive.has(live.key)) return {};
             claimedLive.add(live.key);
+            // Mock C: the destination the row's vehicles go to, so the list under the card leaves it out.
+            if (live.claim) claimedLive.add(live.claim);
             // A live figure in place of the frequency (#1877 mock B): the row shows Live's reading only.
             const liveValue = live.value != null
               ? { value: live.value, headway: undefined, headwayLabel: undefined, trunkHeadway: undefined, limited: false, limitedLabel: undefined }
@@ -452,6 +454,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       branchDimmed={!!hoveredBranch && !coreHovered}
                       onHoverStart={() => setHoveredBranch(group.shared!.hover)}
                       onHoverEnd={() => setHoveredBranch(null)}
+                      {...liveProps(undefined, { dirId: group.dirId, key: 'shared' })}
                     />
                   </>
                 )}
@@ -493,7 +496,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           dimmed={shown.value.dimmed}
                           limited={shown.value.isLimited}
                           {...hoverProps(group.dirId, d, row.hover)}
-                          {...liveProps(d)}
+                          {...liveProps(d, { dirId: group.dirId, key: row.id })}
                           holdLayout={hoveredHour != null}
                         />
                       </FlaggableValue>

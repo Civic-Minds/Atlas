@@ -81,6 +81,9 @@ function Stats({ items }: { items: [string, string, /** A colour for the figure 
  * CIV-2045 layout); amber when a gap breaks the shared too-far / too-close rule. The figures are kept apart from the
  * layout, so the compact one-line form can be shown instead for Ryan's review.
  */
+/** MOCK (#1877 mock C). */
+export interface MockRowReading { every: number | null; cars: number; late: number | null }
+
 interface Props {
   /** CIV-2045: the main map card's own Scheduled lines for the picked direction (liveScheduledRows); none shows nothing. */
   scheduledRows?: ReadonlyArray<LiveScheduledRow> | null;
@@ -112,9 +115,10 @@ interface Props {
    * itself (useLiveFeeds(true)); left out, Live mode decides (main Live, the map card).
    */
   liveEnabled?: boolean;
-  /** MOCK (#1877 mock C, not for merge): each destination row's live gap now, the median of its measured gaps in minutes,
-   *  keyed by the row's headsign. A new number: needs Ryan's word-for-word OK before any build. */
-  onRowEvery?: (directionId: number, every: ReadonlyMap<string, number>) => void;
+  /** MOCK (#1877 mock C, not for merge): each card row's live reading, keyed by the row's key ("shared" or the card row's
+   *  id): its live gap now (the average of its measured gaps, in minutes; a new number that needs Ryan's word-for-word OK),
+   *  its vehicles, and how many are late (null when none of them reports how late it is). */
+  onRowEvery?: (directionId: number, rows: ReadonlyMap<string, MockRowReading>) => void;
 }
 
 /**
@@ -287,23 +291,27 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     const cars = vehicles.filter(v => ids0.has(v.id));
     const only = branchOnlyStops(stopPatterns?.[String(directionId)] ?? [], scheduledRows);
     const groups = vehiclesByPattern(cars, only);
-    const out = new Map<string, { cars: number; extremes: ReturnType<typeof gapExtremes>; every: number | null }>();
+    const out = new Map<string, { cars: number; extremes: ReturnType<typeof gapExtremes>; every: number | null; late: number | null }>();
     for (const r of scheduledRows) {
       const mine = r.key === 'shared' ? cars : groups.get(r.key) ?? [];
       if (r.key !== 'shared' && !only.has(r.key)) continue;
       const ids = new Set(mine.map(v => v.id));
       const sub = r.key === 'shared' ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
       const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
-      // MOCK (#1877 mock C): the median measured gap, under the same "more than half measured" rule as gapExtremes.
-      const measured = sub && !sub.incomplete ? sub.gapsMin.filter((g): g is number => g != null).sort((a, b) => a - b) : [];
-      const every = sub && measured.length > 0 && measured.length * 2 > sub.gapsMin.length ? Math.round(measured[Math.floor((measured.length - 1) / 2)] + (measured.length % 2 ? 0 : (measured[measured.length / 2] - measured[(measured.length - 1) >> 1]) / 2)) : null;
-      out.set(r.key, { cars: mine.length, extremes: ext, every });
+      // MOCK (#1877 mock C): the average measured gap (the time from the first car to the last over the gaps between them, so
+      // a bunched pair doesn't pull it down as the middle gap did), under the same "more than half measured" rule as gapExtremes.
+      const measured = sub && !sub.incomplete ? sub.gapsMin.filter((g): g is number => g != null) : [];
+      const every = sub && measured.length > 0 && measured.length * 2 > sub.gapsMin.length ? Math.round(measured.reduce((a, b) => a + b, 0) / measured.length) : null;
+      const reportingLate = mine.filter(v => v.delayMin != null);
+      const late = reportingLate.length ? reportingLate.filter(v => vehicleStatus(v) === 'late').length : null;
+      out.set(r.key, { cars: mine.length, extremes: ext, every, late });
     }
     return out;
   }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId]); // eslint-disable-line react-hooks/exhaustive-deps
-  const everyKey = rowFigures && scheduledRows ? scheduledRows.filter(r => r.headsign && rowFigures.get(r.key)?.every != null).map(r => `${r.headsign}\t${rowFigures.get(r.key)!.every}`).join('\n') : '';
+  const everyKey = rowFigures && scheduledRows ? scheduledRows.filter(r => rowFigures.has(r.key)).map(r => { const f = rowFigures.get(r.key)!; return `${r.key}\t${f.every ?? ''}\t${f.cars}\t${f.late ?? ''}`; }).join('\n') : '';
   useEffect(() => {
-    onRowEvery?.(directionId, new Map(everyKey ? everyKey.split('\n').map(l => { const [h, m] = l.split('\t'); return [h, Number(m)] as const; }) : []));
+    const num = (x: string) => (x === '' ? null : Number(x));
+    onRowEvery?.(directionId, new Map(everyKey ? everyKey.split('\n').map(l => { const [k, e, c, la] = l.split('\t'); return [k, { every: num(e), cars: Number(c), late: num(la) }] as const; }) : []));
   }, [onRowEvery, everyKey, directionId]);
   if (!line || !live) return null;
 
