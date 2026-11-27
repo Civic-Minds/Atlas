@@ -3,13 +3,12 @@ import type * as maplibregl from 'maplibre-gl';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { useLiveVehiclesMapOverlay } from '../../../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../../../context/LiveVehiclesMapOverlay';
-import { cleanRouteShortName } from '../../../utils/format';
 import { liveVehiclesFingerprint } from '../../../utils/liveVehiclesFingerprint';
 import { useColorVision } from '../../../context/ColorVisionContext';
 import { getVehicleRgb } from '../../../utils/colors';
 import { vehicleTooltipHtml } from '../../../lib/mapHtml';
 import { cardFramePadding, frameRoute } from './routeFraming';
-import { LIVE_VEHICLE_PICK_RADIUS_PX, pickLiveVehicles } from './liveVehiclePick';
+import { LIVE_VEHICLE_ARROW_EDGE_PX, LIVE_VEHICLE_ARROW_PX, LIVE_VEHICLE_LAYER_IDS, LIVE_VEHICLE_PICK_RADIUS_PX, pickLiveVehicles } from './liveVehiclePick';
 import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { focusOpacity } from '../../../utils/routeFocus';
 import { buildRouteKey, splitRouteKey } from '../../../utils/routeKey';
@@ -18,6 +17,16 @@ import { metresPerPixel } from '../../../../shared/geoDistance';
 
 // Kept exported from here for the escape test that imports it.
 export { vehicleTooltipHtml };
+
+/**
+ * #1813: the arrow a vehicle with a heading is drawn as, pointing up (north) before rotation; a mask, so each layer
+ * fills it with its own colour.
+ */
+const ARROW_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M32 4 L56 58 L32 45 L8 58 Z" fill="#fff"/></svg>';
+const ARROW_ATLAS = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(ARROW_SVG)}`;
+const ARROW_MAPPING = { arrow: { x: 0, y: 0, width: 64, height: 64, mask: true } };
+/** A heading the feed actually gives: a number in 0–360. */
+export const hasHeading = (v: Pick<LiveVehicle, 'bearing'>): boolean => typeof v.bearing === 'number' && Number.isFinite(v.bearing) && v.bearing >= 0 && v.bearing <= 360;
 
 /**
  * Live vehicle map layers: deck.gl is dynamically imported only when Live is
@@ -86,9 +95,7 @@ export function useLiveVehiclesLayer(
     // direction in view.
     const focus = liveOverlay.focus ?? null;
     const alpha = (v: LiveVehicle) => (v.id === focusedId ? 1 : focusOpacity(v, focus));
-    const labelVehicles = focus ? vehicles.filter(v => alpha(v) === 1) : [];
-    const focusFp = focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : '';
-    const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${focusFp}|${labelVehicles.length}|${colorMode}`;
+    const fp = `${liveVehiclesFingerprint(vehicles)}|${focusedId ?? ''}|${focus ? `${focus.agencySlug}::${focus.routeShortName}::${focus.ids?.join(',') ?? '*'}` : ''}|${colorMode}`;
     if (fp === lastDeckFpRef.current && deckOverlayRef.current) return;
 
     let cancelled = false;
@@ -96,22 +103,44 @@ export function useLiveVehiclesLayer(
       const deck = await ensureDeckOverlay();
       if (cancelled || !deck) return;
 
-      const { ScatterplotLayer, TextLayer } = await import('@deck.gl/layers');
+      const { IconLayer, ScatterplotLayer } = await import('@deck.gl/layers');
       if (cancelled) return;
+
+      // #1813 (Ryan picked option 1): a vehicle with a heading is an arrow pointing along it, a vehicle without one a plain
+      // dot; no route number on either. CIV-2043: the picked vehicle keeps its size and white edge, filled with its
+      // colour's darker shade (both palettes' border shade).
+      const fill = (v: LiveVehicle) => [...getVehicleRgb(v.status ?? 'no_data', colorMode, v.id === focusedId ? 'border' : 'bg'), Math.round(255 * alpha(v))] as [number, number, number, number];
+      const edge = (v: LiveVehicle) => [255, 255, 255, Math.round(200 * alpha(v))] as [number, number, number, number];
+      const arrows = vehicles.filter(hasHeading);
+      const dots = vehicles.filter(v => !hasHeading(v));
+      // deck.gl turns icons anticlockwise; a heading is clockwise from north.
+      const angle = (v: LiveVehicle) => -(v.bearing ?? 0);
+      const arrowLayer = (id: string, size: number, getColor: (v: LiveVehicle) => [number, number, number, number], pickable: boolean) => new IconLayer({
+        id,
+        data: arrows,
+        iconAtlas: ARROW_ATLAS,
+        iconMapping: ARROW_MAPPING,
+        getIcon: () => 'arrow',
+        getPosition: (v: LiveVehicle) => [v.lon, v.lat],
+        getAngle: angle,
+        getSize: size,
+        sizeUnits: 'pixels',
+        getColor,
+        pickable,
+        updateTriggers: { getColor: fp, getAngle: fp, data: fp },
+      });
 
       lastDeckFpRef.current = fp;
       deck.setProps({
         layers: [
           new ScatterplotLayer({
             id: 'vehicles-dots',
-            data: vehicles,
+            data: dots,
             getPosition: (v: LiveVehicle) => [v.lon, v.lat],
-            // CIV-2043 (Ryan: "look the same as when not clicked but maybe darker"): the picked vehicle keeps its dot's
-            // size and ring, filled with its colour's darker shade (both palettes' border shade), with no halo.
             getRadius: 4.5,
-            getFillColor: (v: LiveVehicle) => [...getVehicleRgb(v.status ?? 'no_data', colorMode, v.id === focusedId ? 'border' : 'bg'), Math.round(255 * alpha(v))] as [number, number, number, number],
+            getFillColor: fill,
             stroked: true,
-            getLineColor: (v: LiveVehicle) => [255, 255, 255, Math.round(200 * alpha(v))],
+            getLineColor: edge,
             getLineWidth: 1.25,
             lineWidthUnits: 'pixels',
             radiusUnits: 'pixels',
@@ -122,20 +151,8 @@ export function useLiveVehiclesLayer(
               data: fp,
             },
           }),
-          new TextLayer({
-            id: 'vehicles-labels',
-            data: labelVehicles,
-            getPosition: (v: LiveVehicle) => [v.lon, v.lat],
-            getText: (v: LiveVehicle) => cleanRouteShortName(v.routeShortName) ?? '',
-            getSize: 9,
-            getColor: [255, 255, 255, 230],
-            fontWeight: 800,
-            fontFamily: '"Inter", ui-sans-serif, sans-serif',
-            getTextAnchor: 'middle',
-            getAlignmentBaseline: 'center',
-            billboard: true,
-            updateTriggers: { data: fp },
-          }),
+          arrowLayer('vehicles-arrows-edge', LIVE_VEHICLE_ARROW_PX + LIVE_VEHICLE_ARROW_EDGE_PX, edge, false),
+          arrowLayer('vehicles-arrows', LIVE_VEHICLE_ARROW_PX, fill, true),
         ],
       });
     })();
@@ -190,7 +207,7 @@ export function useLiveVehiclesLayer(
         const deck = deckOverlayRef.current;
         if (!deck) return hide();
         // The hover tip shows within the same reach as a click, so a tip never shows where a click opens nothing (CIV-1117).
-        const info = deck.pickObject({ x: e.point.x, y: e.point.y, radius: LIVE_VEHICLE_PICK_RADIUS_PX, layerIds: ['vehicles-dots'] });
+        const info = deck.pickObject({ x: e.point.x, y: e.point.y, radius: LIVE_VEHICLE_PICK_RADIUS_PX, layerIds: LIVE_VEHICLE_LAYER_IDS });
         const html = info?.object ? vehicleTooltipHtml(info.object as LiveVehicle, colorMode) : null;
         if (html) {
           tip.innerHTML = html;
