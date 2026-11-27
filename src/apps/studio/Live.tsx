@@ -154,8 +154,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
           <PanelBody className="px-4 pt-3 pb-3">
             {/* CIV-1878 (Ryan, "1"): one route selector, the top bar's Route chip (its list scrolls inside the chip); the panel opens with the at-a-glance lines and the week table. */}
             {/* CIV-3098 (Ryan: "Why do we have cards inside cards, which we don't use as a visual style anywhere else"): the
-                agency view is one panel of sections too, as the route view is (CIV-2021). */}
-            <PanelSectionsProvider>
+                agency view is one panel of sections too, as the route view is (CIV-2021); each part keeps its own title. */}
+            <PanelSectionsProvider headings={false}>
               {/* No header sits above the first section here, so it drops its top rule. */}
               <div className="[&>section:first-child>div]:mt-0 [&>section:first-child>div]:border-t-0 [&>section:first-child>div]:pt-0">
                 <LiveGlance s={s} band={band} />

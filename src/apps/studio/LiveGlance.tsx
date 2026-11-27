@@ -30,7 +30,7 @@ export default function LiveGlance({ s, band }: { s: AgencySummary; band: Dashbo
   if (!bar) return null;
   const splitBar = <SplitBar segments={bar} label={`${title}: ${G.onTime} ${onTimeText}, ${G.late} ${lateText}`} />;
   // CIV-3098: inside Studio's panel, a section of the panel under the shared section heading, with no box.
-  if (sections) return <PanelSection label={title}>{splitBar}</PanelSection>;
+  if (sections) return <PanelSection label={title}><p className={`m-0 ${FIGURE_SCOPE_HEAD}`}>{title}</p>{splitBar}</PanelSection>;
   return (
     <Card as="section" tone="surface" aria-label={title} className="mb-3 px-3 py-2.5 text-sm">
       <p className={`m-0 ${FIGURE_SCOPE_HEAD}`}>{title}</p>
