@@ -179,3 +179,13 @@ describe('a route with no Live analysis (CIV-1413 B)', () => {
     expect(view.container.textContent).toBe('');
   });
 });
+
+describe('#1877: on main Live\'s route card, "Right now" repeats no destination', () => {
+  it('draws nothing and hands the gaps to the card\'s rows', () => {
+    const onDestinationGaps = vi.fn();
+    const { container } = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]} feedDegraded={false} onDestinationGaps={onDestinationGaps} scheduledRowsFor={() => null} />);
+    expect(container.textContent).toBe('');
+    expect(screen.queryByText(/Right now/)).toBeNull();
+    expect(onDestinationGaps).toHaveBeenCalled();
+  });
+});

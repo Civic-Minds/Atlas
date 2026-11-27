@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef } from 'react';
 import { useSidebarFrame } from '../context/SidebarFrame';
+import { LONGEST_GAP_LABEL } from '../../shared/liveWording';
+import { gapText } from '../../shared/liveFormat';
 import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
@@ -33,7 +35,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { liveAgencyStatus, newestReportSec, worstLiveStatus, type LiveAgencyFeed } from '../../shared/liveStatus';
 import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
+import { compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
 import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -759,8 +761,37 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       showAgency={false}
     />
   ) : null;
-  // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer loads.
-  const liveRouteSections = selectedGroup ? (
+  // #1877 (Ryan: "I don't like how the Live vehicles is separate here from the regular destinations"; "Even inside Live mode
+  // you are proposing we show every destination twice?"): each destination shows once, on the route card's own row. Under
+  // its name: its vehicles (the same group the row opens, so the count is the one the list shows) and its longest gap.
+  // "Right now" and the vehicle list then repeat no destination: "Right now" hands its gaps over (onDestinationGaps) and
+  // the list keeps only vehicles no row names (Direction unclear, an unmatched headsign).
+  const [destinationGaps, setDestinationGaps] = useState<ReadonlyMap<number, ReadonlyMap<string, number>>>(new Map());
+  useEffect(() => setDestinationGaps(new Map()), [selectedRoute]);
+  const onDestinationGaps = useCallback((directionId: number, gaps: ReadonlyMap<string, number>) => {
+    setDestinationGaps(prev => {
+      const old = prev.get(directionId);
+      if (old && old.size === gaps.size && [...gaps].every(([k, m]) => old.get(k) === m)) return prev;
+      return new Map(prev).set(directionId, gaps);
+    });
+  }, []);
+  const liveRowFor = useCallback((feature: { headsign?: unknown }) => {
+    if (!selectedGroup || !vehiclesByDirection || !canGroupByDirection) return null;
+    const key = rowDirectionKey(feature.headsign, selectedGroup.routeShortName);
+    const vehicles = key ? vehiclesByDirection.get(key) : undefined;
+    if (!key || !vehicles?.length) return null;
+    const gap = [...destinationGaps.values()].map(g => g.get(key)).find(m => m != null);
+    const summary = directionSummary(vehicles, selectedRouteModeWord);
+    return { key, subLabel: gap != null ? `${summary} · ${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(gap)}` : summary, onClick: () => setSelectedDirection(key) };
+  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, destinationGaps]);
+  // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
+  // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
+  // `onRows`: the route card's rows carry the destinations (#1877), so "Right now" draws nothing and passes its gaps up.
+  const liveRouteSections = (claimed: ReadonlySet<string>, onRows = false) => {
+    if (!selectedGroup) return null;
+    const unclaimed = orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).filter(([dirKey]) => !claimed.has(dirKey));
+    const grouped = selectedGroup.vehicles.length > 0 && canGroupByDirection && !destination;
+    return (
     <>
       <LiveRoutePerformance
         key={selectedRoute ?? ''}
@@ -769,13 +800,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         scheduledRowsFor={scheduledRowsFor}
+        onDestinationGaps={onRows && canGroupByDirection ? onDestinationGaps : undefined}
       />
-      <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
+      {!(grouped && unclaimed.length === 0) && <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (
           <PanelEmpty>{LIVE_NO_VEHICLES_ON_ROUTE}</PanelEmpty>
-        ) : canGroupByDirection && !destination ? (
-          orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).map(([dirKey, vehicles]) => (
+        ) : grouped ? (
+          unclaimed.map(([dirKey, vehicles]) => (
             <CardDirectionRow
               key={dirKey}
               label={dirKey}
@@ -825,9 +857,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {hiddenVehicles > 0 && <p className="text-xs font-bold text-[var(--text-dim)] pt-1">{andOthers(hiddenVehicles, 'vehicle')}</p>}
           </div>
         )}
-      </SidebarCardSection>
+      </SidebarCardSection>}
     </>
-  ) : null;
+    );
+  };
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -902,7 +935,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       hoveredBranch={hoveredBranch}
       setHoveredBranch={setHoveredBranch}
       onInfoOpen={onInfoOpen}
-      extra={liveRouteSections}
+      extra={claimed => liveRouteSections(claimed, true)}
+      rowLive={liveRowFor}
     />
   ) : selectedGroup ? (
     // The route layer hasn't loaded (or has no such route): Live's own header over the same sections.
@@ -930,7 +964,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           />
         </div>
       </SidebarCardHeaderBlock>
-      {liveRouteSections}
+      {liveRouteSections(new Set())}
     </SidebarCardShell>
   ) : null;
 

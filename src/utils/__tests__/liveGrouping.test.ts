@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey, vehicleDirectionKey } from '../liveGrouping';
+import { streetJoin } from '../stopLabel';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -184,5 +185,19 @@ describe('orderAlongRoute (CIV-1125)', () => {
 
   it('leaves the list as it is when the route has no shapes', () => {
     expect(orderAlongRoute([at('b', -79.4, 0), at('a', -79.45, 0)], [], '501').map(x => x.id)).toEqual(['b', 'a']);
+  });
+});
+
+describe('rowDirectionKey (#1877: a route card row carries its destination\'s vehicles)', () => {
+  it('names a row as a vehicle with the same headsign is grouped', () => {
+    const raw = 'HAMILTON GO CENTRE';
+    const vehicle = { headsign: streetJoin(riderHeadsign(raw, '1')!), directionId: 0 };
+    expect(rowDirectionKey(raw, '1')).toBe(vehicleDirectionKey(vehicle, new Map()));
+    expect(rowDirectionKey('King and Bay', '504')).toBe(streetJoin(riderHeadsign('King and Bay', '504')!));
+  });
+  it('gives no key for a short turn or a row with no headsign', () => {
+    expect(rowDirectionKey('88S South Leaside Short Turn', '88')).toBeNull();
+    expect(rowDirectionKey(undefined, '1')).toBeNull();
+    expect(rowDirectionKey('', '1')).toBeNull();
   });
 });

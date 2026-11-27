@@ -18,6 +18,7 @@ import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LOADING_LABEL, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
 import { LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL } from '../../../shared/liveWording';
+import { rowDirectionKey } from '../../utils/liveGrouping';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
@@ -112,6 +113,13 @@ interface Props {
    * itself (useLiveFeeds(true)); left out, Live mode decides (main Live, the map card).
    */
   liveEnabled?: boolean;
+  /**
+   * #1877 (Ryan: "I don't like how the Live vehicles is separate here from the regular destinations"): main Live's route
+   * card shows each destination once, on its own row, with its vehicles and its gap. Given this, "Right now" draws nothing
+   * and hands each direction's destination gaps (longest, in minutes, keyed as rowDirectionKey names the destination) to
+   * the card instead. Must be stable (a state setter or useCallback).
+   */
+  onDestinationGaps?: (directionId: number, gaps: ReadonlyMap<string, number>) => void;
 }
 
 /**
@@ -156,7 +164,7 @@ export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: strin
  * as the regular card lists them, with no toggle; the card's own destination rows already give the schedule. Studio's panel
  * (CIV-2021) steers it to one direction with its own Direction chip and keeps the Scheduled lines, having no route card.
  */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled, onDestinationGaps }: Props) {
   const steered = direction !== undefined;
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
@@ -197,7 +205,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   // While it loads, nothing. #1796 (Ryan: "This says live vehicles arent available on this route but then shows me live vehicles
   // lol"): main Live's line shows only while the route has no live vehicle; with some, the card's vehicle list below is live.
   if (!data) {
-    if (!settled) return null;
+    if (!settled || onDestinationGaps) return null;
     const note = steered || vehicles.length === 0 ? <CardHelpNotice message={unavailableMessage} /> : null;
     return note || scheduledBlock ? <div className="flex flex-col gap-3">{note}{scheduledBlock}</div> : null;
   }
@@ -213,6 +221,18 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const shown = steered
     ? [directions.find(([id]) => id === direction) ?? directions[0]]
     : directions;
+  // #1877: the card's destination rows carry the figures, so nothing is drawn here.
+  if (onDestinationGaps) {
+    return (
+      <>
+        {shown.map(([id, label]) => (
+          <DirectionRightNow key={id} data={data} directionId={id} directionLabel={label} heading={null} slug={slug} routeShortName={routeShortName}
+            vehicles={vehicles} recent={recent} seedSettled={seedSettled} now={now} scheduledRows={scheduledRowsFor?.(id, label) ?? null}
+            scheduledBlock={null} onDestinationGaps={onDestinationGaps} />
+        ))}
+      </>
+    );
+  }
   return (
     <SidebarCardSection label={rightNowLabel}>
       <div className="flex flex-col gap-3">
@@ -240,7 +260,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
 }
 
 /** One direction's "Right now": its vehicles by destination row, each with its longest gap (CIV-2047). */
-function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted }: {
+function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted, onDestinationGaps }: {
   data: SegmentDelayData & { tripDirections?: Record<string, string[]> };
   directionId: number;
   directionLabel: string;
@@ -256,6 +276,8 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   scheduledRows: ReadonlyArray<LiveScheduledRow> | null | undefined;
   scheduledBlock: ReactNode;
   onCounted?: Props['onCounted'];
+  /** #1877: report the destinations' gaps and draw nothing (see Props). */
+  onDestinationGaps?: Props['onDestinationGaps'];
 }) {
   const line: LineModel | null = useMemo(() => lineModel(data, directionId), [data, directionId]);
   // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
@@ -293,7 +315,19 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     }
     return out;
   }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (!line || !live) return null;
+  // #1877: each destination row's longest gap, keyed as the card names the destination (the first row naming it).
+  const gapsKey = rowFigures && scheduledRows ? scheduledRows.flatMap(r => {
+    const dest = r.key === 'shared' ? null : rowDirectionKey(r.headsign, routeShortName);
+    const longest = rowFigures.get(r.key)?.extremes?.longest.min;
+    return dest && longest != null ? [`${dest}\t${longest}`] : [];
+  }).join('\n') : '';
+  useEffect(() => {
+    if (!onDestinationGaps) return;
+    const gaps = new Map<string, number>();
+    for (const l of gapsKey ? gapsKey.split('\n') : []) { const [k, m] = l.split('\t'); if (!gaps.has(k)) gaps.set(k, Number(m)); }
+    onDestinationGaps(directionId, gaps);
+  }, [onDestinationGaps, gapsKey, directionId]);
+  if (!line || !live || onDestinationGaps) return null;
 
   const extremes = !live.incomplete ? gapExtremes(live) : null;
 
