@@ -152,11 +152,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const isZoomedIn = zoom !== null && zoom >= MIN_LIVE_ZOOM;
 
-  // Agency picked from the zoomed-out agency list: the list shows only its routes, since
-  // neighbouring agencies' bboxes overlap (Toronto / York Region).
-  const [placeScope, setPlaceScope] = useState<string | null>(null);
-  const placeScopeArrivedRef = useRef(false);
-
   // Which agency slugs are currently in the viewport
   const visibleSlugs = useMemo(() => {
     if (!bounds || !isZoomedIn) return [];
@@ -168,17 +163,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       )
       .map(([slug]) => slug);
   }, [bounds]);
-
-  // Drop the scope once the user leaves that agency's area or zooms back out.
-  useEffect(() => {
-    if (!placeScope) { placeScopeArrivedRef.current = false; return; }
-    if (isZoomedIn && visibleSlugs.length > 0) {
-      placeScopeArrivedRef.current = true;
-      if (!visibleSlugs.includes(placeScope)) setPlaceScope(null);
-    } else if (!isZoomedIn && placeScopeArrivedRef.current) {
-      setPlaceScope(null);
-    }
-  }, [placeScope, isZoomedIn, visibleSlugs]);
 
   const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
 
@@ -351,14 +335,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       .sort(compareLiveRoutes);
   }, [allVehicles, query, layers, localLayers]);
 
-  // Viewport-filter the sidebar list: only show routes with at least one vehicle on screen
+  // Viewport-filter the sidebar list: only show routes with at least one vehicle on screen. CIV-3049 (Ryan picked 1, "The
+  // list always matches the map"): every agency's routes, as the map draws them; picking a place no longer narrows it.
   const displayedRouteGroups = useMemo(() => {
-    const scoped = placeScope ? routeGroups.filter(g => g.agencySlug === placeScope) : routeGroups;
-    if (!bounds) return scoped;
-    return scoped.filter(g =>
+    if (!bounds) return routeGroups;
+    return routeGroups.filter(g =>
       g.vehicles.some(v => v.lat >= bounds.s && v.lat <= bounds.n && v.lon >= bounds.w && v.lon <= bounds.e)
     );
-  }, [routeGroups, bounds, placeScope]);
+  }, [routeGroups, bounds]);
 
   const vehiclesInViewport = useMemo(() => {
     if (!bounds) return allVehicles.length;
@@ -393,13 +377,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const handlePlaceClick = useCallback((slug: string) => {
     const bounds = LIVE_AGENCY_BBOXES[slug];
     if (!bounds) return;
-    setPlaceScope(slug);
+    // CIV-3049: picking a place only flies the map there; the list then shows every route with a vehicle on screen.
     // Land safely above the tracking threshold so vehicles appear right away
     setFocusArea({ bounds, minZoom: MIN_LIVE_ZOOM + 0.2, ts: Date.now() });
   }, []);
 
   const offScreenOnly = displayedRouteGroups.length === 0 && routeGroups.length > 0;
-  const sidebarRouteGroups = offScreenOnly ? (placeScope ? routeGroups.filter(g => g.agencySlug === placeScope) : routeGroups) : displayedRouteGroups;
+  const sidebarRouteGroups = offScreenOnly ? routeGroups : displayedRouteGroups;
 
   const multipleAgencies = useMemo(() => {
     const slugs = new Set(sidebarRouteGroups.map(g => g.agencySlug));
