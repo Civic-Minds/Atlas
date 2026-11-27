@@ -44,7 +44,7 @@ import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPo
 import { dedupeRouteKeysByDisplay } from '../../utils/routeKey';
 import { computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
-import { dedupeMapContextByDisplay, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
+import { dedupeMapContextByDisplay, drawnAgencySlugs, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
 import MapExportDialog from '../MapExportDialog';
 import { waitForMapExportReady } from '../../utils/mapExport';
@@ -190,6 +190,8 @@ interface MapCanvasProps {
   onMapContextRouteCountChange?: (count: number | null) => void;
   /** Route keys drawn in view, counted the same way as the route-count badge (compare mode labels). */
   onRenderedRouteKeysChange?: (keys: Set<string>) => void;
+  /** CIV-3120: the feeds with at least one route drawn, from the same drawn routes as the route count, as a sorted "a|b" key. */
+  onDrawnAgencySlugsChange?: (key: string) => void;
   /** Phones (CIV-1057): the map's error notices, for the footer row's "Error" pill. */
   onPhoneErrorsChange?: (messages: string[]) => void;
   day?: DayType;
@@ -297,6 +299,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   onMapContextAgencyCountChange,
   onMapContextRouteCountChange,
   onRenderedRouteKeysChange,
+  onDrawnAgencySlugsChange,
   onPhoneErrorsChange,
   day = 'Weekday',
   routesForStop,
@@ -595,25 +598,30 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   const renderedRouteKeysRef = useRef(onRenderedRouteKeysChange);
   renderedRouteKeysRef.current = onRenderedRouteKeysChange;
   const reportsRenderedRoutes = !!onRenderedRouteKeysChange;
+  const drawnSlugsRef = useRef(onDrawnAgencySlugsChange);
+  drawnSlugsRef.current = onDrawnAgencySlugsChange;
+  const reportsDrawnSlugs = !!onDrawnAgencySlugsChange;
   const updateMapContext = useCallback(() => {
     const map = mapRef.current;
-    if ((!showMapContext && !reportsRenderedRoutes) || !map || !mapLoaded) {
+    if ((!showMapContext && !reportsRenderedRoutes && !reportsDrawnSlugs) || !map || !mapLoaded) {
       setMapContextAgencies([]);
+      drawnSlugsRef.current?.('');
       return;
     }
     // The same drawn routes the map export reads (map/drawnRoutes.ts), so the count always matches the lines.
     const layers = drawnRouteLayers(map);
     const features = queryDrawnRouteFeatures(map);
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
+    drawnSlugsRef.current?.(drawnAgencySlugs(contextAgencies).join('|'));
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
     if (showMapContext) { setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies)); setMapContextMeasured(true); }
     // Compare's route counts wait for the map to finish loading rather than report a partial count (#1075).
     if (!canCountRenderedRoutes(map, layers.length)) return;
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
-  }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes]);
+  }, [agencies, mapLoaded, showMapContext, reportsRenderedRoutes, reportsDrawnSlugs]);
 
   useEffect(() => {
-    if (!mapLoaded || (!showMapContext && !reportsRenderedRoutes)) return;
+    if (!mapLoaded || (!showMapContext && !reportsRenderedRoutes && !reportsDrawnSlugs)) return;
     const map = mapRef.current;
     if (!map) return;
     updateMapContext();
@@ -626,7 +634,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       map.off('idle', onIdle);
       map.off('moveend', updateMapContext);
     };
-  }, [mapLoaded, showMapContext, updateMapContext]);
+  }, [mapLoaded, showMapContext, reportsRenderedRoutes, reportsDrawnSlugs, updateMapContext]);
 
   // A deployed PMTiles source can finish loading its metadata while its route tiles
   // remain unavailable. If that happens, use the already-loaded GeoJSON for the current
