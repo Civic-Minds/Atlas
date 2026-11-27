@@ -15,6 +15,5 @@
     -71.0319
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-422/latest.zip",
-  "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "timezone": "America/New_York"
 }

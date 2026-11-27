@@ -16,6 +16,5 @@
   ],
   "feedUrl": "https://api.transloc.com/gtfs/kats.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40080/latest.zip",
-  "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "timezone": "America/New_York"
 }

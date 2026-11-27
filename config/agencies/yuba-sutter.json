@@ -21,6 +21,5 @@
   ],
   "feedUrl": "https://passio3.com/yubasutter/passioTransit/gtfs/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-79/latest.zip",
-  "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezone": "America/Los_Angeles"
 }

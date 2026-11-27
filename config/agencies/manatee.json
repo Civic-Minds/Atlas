@@ -16,6 +16,5 @@
   ],
   "feedUrl": "https://realtimemcat.availtec.com/InfoPoint/GTFS-Zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2258/latest.zip",
-  "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "timezone": "America/New_York"
 }

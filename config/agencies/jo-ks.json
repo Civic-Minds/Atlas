@@ -21,6 +21,5 @@
     -94.573
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2303/latest.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }

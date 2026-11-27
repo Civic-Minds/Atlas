@@ -21,6 +21,5 @@
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/northeast-or-us/northeast-or-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3652/latest.zip",
-  "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezone": "America/Los_Angeles"
 }

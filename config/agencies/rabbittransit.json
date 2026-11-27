@@ -16,6 +16,5 @@
   ],
   "feedUrl": "https://realtime.rabbittransit.org/InfoPoint/GTFS-Zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-223/latest.zip",
-  "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "timezone": "America/New_York"
 }

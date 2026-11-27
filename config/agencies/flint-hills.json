@@ -15,6 +15,5 @@
     -96.8141
   ],
   "feedUrl": "http://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5197/FH_ATA_GTFS.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }

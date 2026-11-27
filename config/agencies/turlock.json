@@ -14,6 +14,5 @@
     -120.8577
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-619/latest.zip",
-  "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezone": "America/Los_Angeles"
 }

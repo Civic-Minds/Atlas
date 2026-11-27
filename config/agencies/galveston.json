@@ -16,6 +16,5 @@
   ],
   "feedUrl": "https://gtfs.remix.com/island_transit_us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2861/latest.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }

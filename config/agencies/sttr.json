@@ -14,6 +14,5 @@
     -72.5758
   ],
   "feedUrl": "https://www.donneesquebec.ca/recherche/dataset/a2d3c9de-4045-41e3-b2ea-5bb64bd8c50f/resource/71d94f75-5a36-4789-b581-a21d49dcd5f5/download/gtfs_sttr_aut26_v2.zip",
-  "timezone": "America/Montreal",
-  "hiddenInProduction": true
+  "timezone": "America/Montreal"
 }

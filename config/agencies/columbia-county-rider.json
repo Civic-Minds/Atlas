@@ -21,7 +21,6 @@
     "Rainier, Oregon"
   ],
   "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/columbiacounty-or-us/columbiacounty-or-us.zip",
   "lastFeedCheckAt": "20261123",
