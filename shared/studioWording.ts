@@ -97,6 +97,9 @@ export function vehiclesNeededTitle(modes: readonly number[] | undefined): strin
   return word === 'buses' ? PAGE_NAMES.studioVehicles : `${word.replace(/\b\p{Ll}/gu, c => c.toUpperCase())} Needed`;
 }
 
+/** Fleet's network view heading in sentence case: "Vehicles needed" (CIV-3056: Ryan, 2026-11-26, picked 1 on #1745). The route view keeps `vehiclesNeededTitle`. */
+export const fleetNetworkTitle = (modes: readonly number[] | undefined) => `${vehiclesWord(modes).replace(/^\p{Ll}/u, c => c.toUpperCase())} needed`;
+
 /**
  * Fleet's network table (CIV-2002: Ryan, "is this network-wide?"): the schedule's own row is "As scheduled". CIV-2198:
  * its "If every route ran" rows are gone (Ryan doesn't want them).

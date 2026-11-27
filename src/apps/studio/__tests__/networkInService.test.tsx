@@ -32,15 +32,15 @@ describe('Fleet\'s now table: Not on a trip (CIV-2939)', () => {
   });
 });
 
-// #1832: the table's screen-reader caption names the vehicles as the visible title does ("Vehicles Needed" for the TTC's
-// mixed modes), never a hidden "Buses Needed" beside it.
+// #1832: the table's screen-reader caption names the vehicles as the visible title does ("Vehicles needed" for the TTC's
+// mixed modes), never a hidden "Buses needed" beside it.
 describe('Fleet\'s now table caption (#1832)', () => {
   it('follows the modes', () => {
     const { container, unmount } = render(<FleetNowTable modes={[1, 3]} runningNow={{ onTrip: 797, noTrip: 682 }} scheduledNow={1096} />);
-    expect(container.querySelector('caption')?.textContent).toBe('Vehicles Needed');
+    expect(container.querySelector('caption')?.textContent).toBe('Vehicles needed');
     unmount();
     const bus = render(<FleetNowTable modes={[3]} runningNow={{ onTrip: 216, noTrip: null }} scheduledNow={null} />);
-    expect(bus.container.querySelector('caption')?.textContent).toBe('Buses Needed');
+    expect(bus.container.querySelector('caption')?.textContent).toBe('Buses needed');
   });
 });
 
