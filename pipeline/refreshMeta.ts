@@ -31,6 +31,12 @@ export interface FeedMetaFields {
   heldFeedStart?: string | null;
   /** CIV-1223: the zips the release gate last refused (feedSetSha256); cleared once a feed is processed. */
   refusedFeedSha256?: string | null;
+  /** CIV-3115: the feed gives no real end date (isPlaceholderFeedEnd); absent otherwise. */
+  noFeedEnd?: boolean;
+  /** CIV-3115: the timetable's content key (timetableContentKey) at the last refresh. */
+  lastTimetableKey?: string | null;
+  /** CIV-3115: when the agency's timetable last changed (YYYYMMDD, timetableChangedDate). */
+  timetableChangedAt?: string | null;
 }
 
 /**
@@ -175,6 +181,42 @@ export function lowerStoredFeedExpiry(
   return stored;
 }
 
+/**
+ * CIV-3115 (Ryan, 2026-11-27): the feed gives no real end date. Its calendar runs past today + PLACEHOLDER_EXPIRY_YEARS
+ * (2099, 2050) and feed_info gives no end that wins, so the recorded expiry is only the placeholder cap. The cap stays in
+ * lastFeedExpiry for the date checks; pages and answers say "no end date" instead of showing it.
+ */
+export function isPlaceholderFeedEnd(feedExpiry: string | null, peekedExpiry: string | null, todayYmd: string, calendarOnlyEnd?: string | null): boolean {
+  const cap = addYearsYmd(todayYmd.replace(/-/g, ''), PLACEHOLDER_EXPIRY_YEARS);
+  return isYmd(peekedExpiry) && peekedExpiry > cap && recordedFeedExpiry(feedExpiry, peekedExpiry, todayYmd, calendarOnlyEnd) === cap;
+}
+
+/** Record or clear the CIV-3115 no-end-date flag. Returns whether it changed. */
+export function stampNoFeedEnd(agency: Pick<FeedMetaFields, 'noFeedEnd'>, placeholder: boolean): boolean {
+  if ((agency.noFeedEnd === true) === placeholder) return false;
+  if (placeholder) agency.noFeedEnd = true;
+  else delete agency.noFeedEnd;
+  return true;
+}
+
+/**
+ * CIV-3115: the day the agency's timetable (its trips and stop times, timetableContentKey) last changed. A new key moves it
+ * to the run date; the same key keeps it. The first reading, with no key recorded before, starts from the day Atlas first
+ * obtained the current file (feedObtainedAt, else the zip's own date), so a file unchanged since 2022 reads 2022.
+ */
+export function timetableChangedDate(o: { key: string | null; lastKey?: string | null; previous?: string | null; obtainedAt?: string | null; runDate: string }): string | null {
+  if (!o.key) return o.previous ?? null;
+  if (o.lastKey && o.key !== o.lastKey) return o.runDate;
+  return o.previous ?? o.obtainedAt ?? o.runDate;
+}
+
+/** Record the timetable key and the date it last changed. */
+export function stampTimetableChange(agency: Pick<FeedMetaFields, 'lastTimetableKey' | 'timetableChangedAt' | 'feedObtainedAt'>, key: string | null, runDate: string, obtainedAt: string | null | undefined = agency.feedObtainedAt): void {
+  const date = timetableChangedDate({ key, lastKey: agency.lastTimetableKey, previous: agency.timetableChangedAt, obtainedAt, runDate });
+  if (key) agency.lastTimetableKey = key;
+  if (date) agency.timetableChangedAt = date;
+}
+
 /** Apply feed metadata after a successful non-empty refresh. */
 export function stampFeedMeta(
   agency: FeedMetaFields,
@@ -200,8 +242,12 @@ export function stampFeedMeta(
     rawArchiveKey?: string | null;
     /** The zip's content key (zipContentKey), which the next refresh's unchanged check compares first. */
     contentKey?: string | null;
+    /** CIV-3115: the zip's timetableContentKey and the run date, for timetableChangedAt. */
+    timetableKey?: string | null;
+    runDate?: string;
   },
 ): void {
+  stampNoFeedEnd(agency, isPlaceholderFeedEnd(opts.feedExpiry, opts.calendarExpiry !== undefined ? opts.calendarExpiry : opts.peekedExpiry, opts.todayYmd, opts.calendarOnlyEnd));
   if (opts.rawArchiveKey !== undefined) agency.lastRawArchiveKey = opts.rawArchiveKey;
   if (opts.contentKey) agency.lastFeedContentKey = opts.contentKey;
   else if (opts.contentKey === null) delete agency.lastFeedContentKey;
@@ -220,6 +266,7 @@ export function stampFeedMeta(
   if (opts.serviceWeek) agency.lastServiceWeek = opts.serviceWeek;
   else if (opts.serviceWeek === null) delete agency.lastServiceWeek;
   if (opts.feedObtainedAt) agency.feedObtainedAt = opts.feedObtainedAt;
+  if (opts.timetableKey !== undefined && opts.runDate) stampTimetableChange(agency, opts.timetableKey, opts.runDate);
 }
 
 /** Record or clear the CIV-1011 listing end. Returns whether it changed. */
@@ -240,12 +287,23 @@ export function stampListingEnd(agency: Pick<FeedMetaFields, 'listingEndedOn'>, 
  * changed, so unchanged agencies leave their files alone.
  */
 export function stampReprocessedFeedExpiry(
-  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'lastFeedStart' | 'listingEndedOn'>,
-  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null; feedStart?: string | null },
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'lastFeedStart' | 'listingEndedOn' | 'noFeedEnd' | 'lastTimetableKey' | 'timetableChangedAt' | 'feedObtainedAt'>,
+  opts: {
+    feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null; feedStart?: string | null;
+    /** CIV-3115: the processed zip's timetableContentKey and the run date, for timetableChangedAt. */
+    timetableKey?: string | null; runDate?: string;
+  },
 ): boolean {
   const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   if (lastFeedExpiry == null) return false;
-  const listingChanged = opts.listingEnd !== undefined && stampListingEnd(agency, opts.listingEnd);
+  let listingChanged = opts.listingEnd !== undefined && stampListingEnd(agency, opts.listingEnd);
+  // CIV-3115: the no-end-date flag and the timetable's last change travel with the expiry.
+  if (stampNoFeedEnd(agency, isPlaceholderFeedEnd(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd, opts.calendarOnlyEnd))) listingChanged = true;
+  if (opts.timetableKey !== undefined && opts.runDate) {
+    const before = `${agency.lastTimetableKey ?? ''}|${agency.timetableChangedAt ?? ''}`;
+    stampTimetableChange(agency, opts.timetableKey, opts.runDate);
+    if (`${agency.lastTimetableKey ?? ''}|${agency.timetableChangedAt ?? ''}` !== before) listingChanged = true;
+  }
   const lastPeekedExpiry = opts.calendarExpiry ?? agency.lastPeekedExpiry ?? null;
   // The period start travels with the expiry (#1359); a record without one gains it.
   const lastFeedStart = opts.feedStart !== undefined ? opts.feedStart : (agency.lastFeedStart ?? null);

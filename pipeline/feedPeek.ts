@@ -15,7 +15,7 @@ import { isFeedExpired, shouldReplaceExpiredFeed } from './refreshMeta.js';
  * re-zip the same files on every download (zenbus, passio3, ridesystems), so the byte hash changes weekly
  * with no schedule change. Null when the central directory can't be read (not a zip, ZIP64 sizes).
  */
-export function zipContentKey(buf: Buffer): string | null {
+export function zipContentKey(buf: Buffer, include: (name: string) => boolean = () => true): string | null {
   const EOCD = 0x06054b50;
   const CDH = 0x02014b50;
   let eocd = -1;
@@ -37,11 +37,23 @@ export function zipContentKey(buf: Buffer): string | null {
     const commentLen = buf.readUInt16LE(p + 32);
     if (size === 0xffffffff || p + 46 + nameLen > buf.length) return null;
     const name = buf.subarray(p + 46, p + 46 + nameLen).toString('utf8');
-    if (!name.endsWith('/')) entries.push(`${name}\t${crc}\t${size}`);
+    if (!name.endsWith('/') && include(name)) entries.push(`${name}\t${crc}\t${size}`);
     p += 46 + nameLen + extraLen + commentLen;
   }
   if (entries.length === 0) return null;
   return createHash('sha256').update(entries.sort().join('\n')).digest('hex').slice(0, 16);
+}
+
+/**
+ * CIV-3115 (Strategy's definition, Ryan's pick 2026-11-27): the files that are the timetable itself, the trips and their
+ * stop times. Calendars, feed_info and re-zipping are left out: on-demand exporters rebuild the zip and roll the calendar
+ * end on every download (Waco, Bowling Green) while their trips stay the same.
+ */
+const TIMETABLE_FILES = new Set(['trips.txt', 'stop_times.txt', 'frequencies.txt']);
+
+/** A key for the timetable's own contents (zipContentKey over TIMETABLE_FILES); it changes only when trips or times do. */
+export function timetableContentKey(buf: Buffer): string | null {
+  return zipContentKey(buf, name => TIMETABLE_FILES.has(name.slice(name.lastIndexOf('/') + 1)));
 }
 
 export async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {

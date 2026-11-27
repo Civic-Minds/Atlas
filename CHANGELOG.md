@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Agency pages no longer show a made-up end date for schedules that give none**: 39 agencies whose files run to 2099 read "covers service until" a date Atlas invented; they now say the schedule has no end date, and the 7 whose timetable hasn't changed in 12 months or more say it may be out of date
 - **About → Sources credits about 200 more agencies whose data licence requires it**: French, ODbL, Creative Commons and city open-data feeds were shown without the credit their licence asks for
 - **The MCP's agency list no longer gives a "schedule added" date**: it was Atlas's last refresh, so a schedule from 2019 read as added this month
 - **The MCP no longer answers for Embark, UTA and IndyGo**: their data terms need the agency's written permission for other uses, as TriMet's do; the map and History keep them
