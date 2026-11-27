@@ -3,6 +3,13 @@
   "officialName": "Fairfax Connector",
   "displayArea": "Fairfax County",
   "websiteUrl": "http://www.fairfaxcounty.gov/connector/routes/",
+  "dataLicense": {
+    "url": "https://www.fairfaxcounty.gov/connector/bustracker/data",
+    "attribution": "required",
+    "name": "Fairfax Connector Terms and Conditions of License Agreement to Use Transportation Data",
+    "credit": "Visit fairfaxconnector.com for more information",
+    "checkedOn": "2026-11-26"
+  },
   "region": "Virginia",
   "center": [
     38.85,

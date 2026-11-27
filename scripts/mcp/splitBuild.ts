@@ -39,6 +39,7 @@ export const slimCatalog = (catalog: McpAgency[]): McpAgency[] => catalog.map(a 
   slug: a.slug, name: a.name, ...(a.region != null ? { region: a.region } : {}), ...(a.cities ? { cities: a.cities } : {}),
   ...(a.lastFeedExpiry != null ? { lastFeedExpiry: a.lastFeedExpiry } : {}), ...(a.lastRefreshedAt != null ? { lastRefreshedAt: a.lastRefreshedAt } : {}),
   ...(a.betaOnly ? { betaOnly: a.betaOnly } : {}), ...(a.center ? { center: a.center } : {}), ...(a.feedCredit ? { feedCredit: a.feedCredit } : {}),
+  ...(a.dataLicense ? { dataLicense: a.dataLicense } : {}),
 }));
 
 /** The ranking files from the index: the agency list, each day's waits, each agency's route names, and the weekday route-name text. */
