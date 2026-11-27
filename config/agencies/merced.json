@@ -51,5 +51,12 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20260126",
   "lastRawArchiveKey": "unknown-7b6b16ee7a0ea733",
-  "lastFeedContentKey": "7107d0ba2220e212"
+  "lastFeedContentKey": "7107d0ba2220e212",
+  "dataLicense": {
+    "url": "https://www.mercedthebus.com/DocumentCenter/View/1393/GTFS-Web-Link--DISCLAIMER-202111-002",
+    "attribution": "required",
+    "name": "Merced The Bus data disclaimer",
+    "credit": "Data provided by Merced The Bus is not warranted by Merced The Bus for accuracy or completeness and data is subject to change without notice.",
+    "checkedOn": "2026-11-26"
+  }
 }

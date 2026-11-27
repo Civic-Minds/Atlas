@@ -4,9 +4,9 @@
   "websiteUrl": "https://www.drummondville.ca/mobilite/transport-en-commun/",
   "dataLicense": {
     "url": "https://www.drummondville.ca/wp-content/uploads/2019/02/Politique_donnees_ouvertes.pdf",
-    "attribution": "unread",
-    "name": "unknown",
-    "checkedOn": "2026-11-25"
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-26"
   },
   "region": "Quebec",
   "center": [

@@ -65,5 +65,11 @@
   "lastFeedStart": "20261115",
   "lastRawArchiveKey": "20261216-95313e475d2523d2",
   "lastFeedContentKey": "b03b87fdef0b57d3",
-  "refusedFeedSha256": "175cba0fdee4564f42871c03c883a6c524ea0487bc3c39bb9348499934ad33d3"
+  "refusedFeedSha256": "175cba0fdee4564f42871c03c883a6c524ea0487bc3c39bb9348499934ad33d3",
+  "dataLicense": {
+    "url": "https://gotriangle.org/developer-resources/",
+    "attribution": "required",
+    "name": "CC BY 3.0",
+    "checkedOn": "2026-11-26"
+  }
 }

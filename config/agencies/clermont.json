@@ -15,5 +15,13 @@
   "cities": [
     "Clermont-Ferrand, France"
   ],
-  "timezone": "Europe/Paris"
+  "timezone": "Europe/Paris",
+  "dataLicense": {
+    "url": "https://www.etalab.gouv.fr/wp-content/uploads/2017/04/ETALAB-Licence-Ouverte-v2.0.pdf",
+    "attribution": "required",
+    "name": "Licence Ouverte v2.0 (Etalab)",
+    "credit": "SMTC-AC / Clermont Auvergne Métropole - Données originales (T2C GTFS),",
+    "updatedLabel": "mise à jour du",
+    "checkedOn": "2026-11-26"
+  }
 }

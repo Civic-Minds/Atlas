@@ -15,5 +15,12 @@
   "cities": [
     "Lyon, France"
   ],
-  "timezone": "Europe/Paris"
+  "timezone": "Europe/Paris",
+  "dataLicense": {
+    "url": "https://data.grandlyon.com/portail/fr/assets/licences/Licence_mobilites_V_02_2021_EN.pdf",
+    "attribution": "required",
+    "name": "Mobility Data Licence",
+    "credit": "Contains information from the TCL theoretical timetables database (Métropole de Lyon / SYTRAL Mobilités), made available under the Mobility Data Licence",
+    "checkedOn": "2026-11-26"
+  }
 }

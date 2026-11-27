@@ -460,5 +460,11 @@
   "lastPeekedExpiry": "20270131",
   "lastServiceWeek": "dee53ee0ce5048af",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261102"
+  "lastFeedStart": "20261102",
+  "dataLicense": {
+    "url": "https://gotriangle.org/developer-resources/",
+    "attribution": "required",
+    "name": "CC BY 3.0",
+    "checkedOn": "2026-11-26"
+  }
 }

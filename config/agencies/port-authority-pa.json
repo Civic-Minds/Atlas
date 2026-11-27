@@ -87,5 +87,11 @@
   "lastPeekedExpiry": "20270220",
   "lastServiceWeek": "f3b68582fe16ff54",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261018"
+  "lastFeedStart": "20261018",
+  "dataLicense": {
+    "url": "https://www.rideprt.org/policies/developer-license-agreement/",
+    "attribution": "required",
+    "name": "PRT Developer License Agreement",
+    "checkedOn": "2026-11-26"
+  }
 }

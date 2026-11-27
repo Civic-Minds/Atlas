@@ -5,8 +5,10 @@
   "websiteUrl": "https://www.ladottransit.com/",
   "dataLicense": {
     "url": "https://www.ladottransit.com/dla.html",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "attribution": "required",
+    "name": "LADOT GTFS Feed & Developer License Agreement",
+    "credit": "LADOT Transit information provided on this site is subject to change without notice. For the most current information, go to ladottransit.com",
+    "checkedOn": "2026-11-26"
   },
   "center": [
     34.05,

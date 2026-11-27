@@ -4,9 +4,10 @@
   "websiteUrl": "http://www.calgarytransit.com",
   "dataLicense": {
     "url": "https://data.calgary.ca/stories/s/u45n-7awa/",
-    "attribution": "unread",
-    "name": "Open Data Terms of Use",
-    "checkedOn": "2026-11-21"
+    "attribution": "required",
+    "name": "Open Government Licence – City of Calgary",
+    "credit": "Contains information licensed under the Open Government Licence – City of Calgary.",
+    "checkedOn": "2026-11-26"
   },
   "region": "Alberta",
   "center": [

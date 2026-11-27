@@ -3,9 +3,11 @@
   "officialName": "Oakville Transit",
   "websiteUrl": "http://www.oakvilletransit.ca/",
   "dataLicense": {
-    "url": "http://www.oakville.ca/data/oakville-transit-route-information.html",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://www.oakville.ca/town-hall/town-studies-plans-projects/town-initiatives/open-data/open-data-licence/",
+    "attribution": "required",
+    "name": "Town of Oakville Open Data Licence",
+    "credit": "Contains information licensed under the Open Government Licence — Town of Oakville.",
+    "checkedOn": "2026-11-26"
   },
   "region": "Ontario",
   "center": [

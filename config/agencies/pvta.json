@@ -5,8 +5,9 @@
   "websiteUrl": "https://www.pvta.com",
   "dataLicense": {
     "url": "https://www.mass.gov/doc/developers-license-agreement-11132009/download",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "attribution": "required",
+    "name": "MassDOT Developers License Agreement",
+    "checkedOn": "2026-11-26"
   },
   "region": "Massachusetts",
   "center": [

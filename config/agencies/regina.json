@@ -55,5 +55,12 @@
   "lastPeekedExpiry": "20270109",
   "lastServiceWeek": "0529314c433de5a5",
   "feedObtainedAt": "20260831",
-  "lastFeedStart": "20260823"
+  "lastFeedStart": "20260823",
+  "dataLicense": {
+    "url": "https://www.regina.ca/residents/open-government/open-government-licence",
+    "attribution": "required",
+    "name": "City of Regina Open Government Licence v2",
+    "credit": "Contains information licensed under the Open Government Licence – City of Regina.",
+    "checkedOn": "2026-11-26"
+  }
 }

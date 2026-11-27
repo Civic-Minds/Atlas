@@ -3,9 +3,11 @@
   "officialName": "Kingston Transit",
   "websiteUrl": "https://www.kingstontransit.ca",
   "dataLicense": {
-    "url": "https://opendatakingston.cityofkingston.ca/pages/open-data-licence",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://cityofkingston.ca/media/wtpgpkb0/gis_license_opendata.pdf",
+    "attribution": "required",
+    "name": "City of Kingston Open Data Licence 1.0",
+    "credit": "Contains information licensed under the Open Data Licence – City of Kingston.",
+    "checkedOn": "2026-11-26"
   },
   "region": "Ontario",
   "center": [

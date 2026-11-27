@@ -59,5 +59,12 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20261117",
   "lastRawArchiveKey": "20270516-601c23ab7fb80d54",
-  "lastFeedContentKey": "a203a30d661f8e20"
+  "lastFeedContentKey": "a203a30d661f8e20",
+  "dataLicense": {
+    "url": "https://assets.metrolinx.com/image/upload/v1663237565/Documents/Metrolinx/Open-Government-Licence-Ontario-Metrolinx.pdf",
+    "attribution": "required",
+    "name": "Open Government Licence - Ontario - Metrolinx",
+    "credit": "Contains information licensed under the Open Government Licence - Ontario - Metrolinx.",
+    "checkedOn": "2026-11-26"
+  }
 }
