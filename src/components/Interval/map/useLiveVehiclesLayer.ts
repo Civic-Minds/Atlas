@@ -14,6 +14,7 @@ import { focusOpacity } from '../../../utils/routeFocus';
 import { buildRouteKey, splitRouteKey } from '../../../utils/routeKey';
 import { getNowDay } from '../../../../shared/dayTypes';
 import { metresPerPixel } from '../../../../shared/geoDistance';
+import { MAP_HALO } from '../../../../shared/rules/colours';
 
 // Kept exported from here for the escape test that imports it.
 export { vehicleTooltipHtml };
@@ -22,7 +23,7 @@ export { vehicleTooltipHtml };
  * #1813: the arrow a vehicle with a heading is drawn as, pointing up (north) before rotation; a mask, so each layer
  * fills it with its own colour.
  */
-const ARROW_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M32 4 L56 58 L32 45 L8 58 Z" fill="#fff"/></svg>';
+const ARROW_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M32 4 L56 58 L32 45 L8 58 Z" fill="${MAP_HALO.light}"/></svg>`;
 const ARROW_ATLAS = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(ARROW_SVG)}`;
 const ARROW_MAPPING = { arrow: { x: 0, y: 0, width: 64, height: 64, mask: true } };
 /** A heading the feed actually gives: a number in 0–360. */
