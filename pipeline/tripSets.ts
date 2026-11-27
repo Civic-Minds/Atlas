@@ -1917,10 +1917,14 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     // the trunk set the headline (B1), the branch's value is not in it, so the range's high end reads the slowest branch.
     const branches = known.map(d => d.period[key].branchValue).filter((v): v is number => v != null);
     const high = value != null && branches.length > 0 ? Math.max(value, ...branches) : value;
+    // #1902 (CIV-3113; consistency pick by the manager inside CIV-3080, matching the route list): when a branch sets the high
+    // end, the low end is the trunk's value, as the list reads it ("every 10–30" for TTC 102 midday). An uneven trunk's
+    // typical gap (#1142) stays on the main stretch's row ("every 5–10"), so one range never mixes the two readings.
+    const rangeLow = high != null && value != null && high > value ? value : low;
     period[key] = {
       value,
       coverage: value != null && coverages.every(v => v != null) ? Math.max(...(coverages as number[])) : null,
-      range: high != null && low != null && low !== high ? [Math.min(low, high), high] : null,
+      range: high != null && rangeLow != null && rangeLow !== high ? [Math.min(rangeLow, high), high] : null,
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
       // A route fails a grade any serving direction's edge wait breaks (the worst direction decides, as everywhere).
