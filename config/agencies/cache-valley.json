@@ -15,6 +15,5 @@
     -111.8322
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-80028/latest.zip",
-  "timezone": "America/Denver",
-  "hiddenInProduction": true
+  "timezone": "America/Denver"
 }
