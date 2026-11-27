@@ -1,0 +1,81 @@
+name: Process dry run (named agencies)
+
+# CIV-3114: a fresh look at named agencies, hidden ones included, without the Mac. For each slug it downloads the
+# agency's current feed (config/agencies/<slug>.json feedUrl) and runs `npm run process -- <zip> <slug> --dry-run`,
+# which writes only tmp/process-preview/<slug>/. The job gets no secrets at all, so it cannot write R2 or the repo.
+# The preview files and the downloaded zips are uploaded as one artifact for review.
+#
+#   gh workflow run process-dry-run.yml -f ref=main -f agencies="shore-transit benton-area"
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or full SHA to run.'
+        required: false
+        default: main
+        type: string
+      agencies:
+        description: 'Space-separated agency slugs.'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# Processing output depends on the machine's timezone; everything was reviewed on Toronto time.
+env:
+  TZ: America/Toronto
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      AGENCIES_INPUT: ${{ inputs.agencies }}
+    steps:
+      - name: Check the inputs
+        run: |
+          [ -n "$AGENCIES_INPUT" ] || { echo "Name at least one agency."; exit 1; }
+          for slug in $AGENCIES_INPUT; do
+            [[ "$slug" =~ ^[a-z0-9-]+$ ]] || { echo "Bad agencies value: $slug (expected an agency slug)"; exit 1; }
+          done
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Download each feed and process it (dry run)
+        run: |
+          mkdir -p tmp/feeds tmp/process-preview
+          failed=""
+          for slug in $AGENCIES_INPUT; do
+            echo "::group::$slug"
+            url=$(node -p "require('./config/agencies/$slug.json').feedUrl || ''" 2>/dev/null || true)
+            if [ -z "$url" ]; then echo "No feedUrl for $slug"; failed="$failed $slug"; echo "::endgroup::"; continue; fi
+            if ! curl -fsSL --retry 3 -A "Atlas transit map (GTFS check)" -o "tmp/feeds/$slug.zip" "$url"; then
+              echo "Download failed: $url"; failed="$failed $slug"; echo "::endgroup::"; continue
+            fi
+            nice -n 10 npm run -s process -- "tmp/feeds/$slug.zip" "$slug" --dry-run > "tmp/process-preview/$slug.log" 2>&1 || failed="$failed $slug"
+            tail -40 "tmp/process-preview/$slug.log"
+            echo "::endgroup::"
+          done
+          echo "**Agencies:** $AGENCIES_INPUT" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Failed:**${failed:- none}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the previews and the feeds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: process-dry-run
+          path: |
+            tmp/process-preview
+            tmp/feeds
+          retention-days: 14
