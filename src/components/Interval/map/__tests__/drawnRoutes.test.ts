@@ -14,7 +14,7 @@ const NOT_DRAWN_ROUTES: Record<string, string> = {
   'live-route-shape-layer': 'Live', 'live-stretch-layer': 'Live',
   'on-demand-service-area-fill': 'on-demand zone, not a route', 'on-demand-service-area-line': 'on-demand zone outline',
   'on-demand-stop-points': 'on-demand stops', 'stops-layer': 'stops',
-  'vehicles-dots': 'Live vehicles', 'vehicles-focus-ring': 'Live vehicles', 'vehicles-labels': 'Live vehicles',
+  'vehicles-dots': 'Live vehicles', 'vehicles-focus-ring': 'Live vehicles', 'vehicles-arrows': 'Live vehicles', 'vehicles-arrows-edge': 'Live vehicles',
 };
 
 const MAP_DIR = resolve(__dirname, '..');

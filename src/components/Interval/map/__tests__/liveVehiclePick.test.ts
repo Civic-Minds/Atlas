@@ -14,7 +14,7 @@ describe('CIV-332: picking Live vehicle dots under a click', () => {
     const pickMultipleObjects = vi.fn(() => [{ object: car('4502') }, { object: car('4515', '510') }]);
     const overlay = { pickMultipleObjects } as unknown as MapboxOverlay;
     expect(pickLiveVehicles(overlay, { x: 10, y: 20 }).map(v => v.id)).toEqual(['4502', '4515']);
-    expect(pickMultipleObjects).toHaveBeenCalledWith({ x: 10, y: 20, radius: LIVE_VEHICLE_PICK_RADIUS_PX, layerIds: ['vehicles-dots'] });
+    expect(pickMultipleObjects).toHaveBeenCalledWith({ x: 10, y: 20, radius: LIVE_VEHICLE_PICK_RADIUS_PX, layerIds: ['vehicles-arrows', 'vehicles-dots'] });
   });
 
   it('picks nothing when Live has no overlay or the overlay is not attached yet', () => {
