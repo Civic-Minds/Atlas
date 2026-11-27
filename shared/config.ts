@@ -136,3 +136,9 @@ export {
   DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, AGENCY_CHIP_PAD,
   MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY,
 } from './rules/limits';
+
+/**
+ * CIV-3115 (Ryan, 2026-11-27, word-for-word OK of the 12 months): a feed with no end date whose timetable hasn't changed
+ * for this many months or more may be out of date (DECISIONS 2026-11-27).
+ */
+export const TIMETABLE_STALE_MONTHS = 12;

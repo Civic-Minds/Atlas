@@ -727,7 +727,7 @@ export function liveReportFlagTitle(agency: string | null, loaded: boolean, rout
 /** The Live map's list of the routes it covers in view (CIV-1795: "covers", Atlas's own verb). */
 export const LIVE_COVERED_ROUTES_HEADING = 'Routes Live covers here';
 // N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
-export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
+export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed, NO_END_DATE_LEAD, timetableStaleLine } from '../../shared/agencyPages';
 
 /** CIV-1052: a stop's own route that has no trips at the stop in the whole chosen period (Ryan, wording approved 2026-10-27). */
 export function stopRouteNoTripsNotice(periodRange: string): string {

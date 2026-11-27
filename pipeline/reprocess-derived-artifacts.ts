@@ -63,6 +63,7 @@ import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, suppleme
 import { loadFareOverrides, manualBaseFareFor, type FareOverrides } from './fareOverrides.js';
 import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
 import { feedPeriodStart, recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
+import { timetableContentKey } from './feedPeek.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import { AGENCY_ARTIFACT_SUFFIXES, parseRunPrefixArg } from './runArtifacts.js';
@@ -177,7 +178,7 @@ const readBaseline = releaseBaselineReader(r2Get);
  * The processed feed's raw expiry dates (#837) and its quality rating (CIV-533) per agency, recorded in
  * index.json and the agency config once its artifacts are published.
  */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedStart: string | null; feedQuality: FeedQuality }>();
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedStart: string | null; feedQuality: FeedQuality; timetableKey: string | null; runDate: string }>();
 let qualityUpdates = 0;
 const expiryUpdates: string[] = [];
 
@@ -323,7 +324,8 @@ async function processAgency(agency: Agency, fareOverrides: FareOverrides): Prom
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry, pinnedExpiry: pinned ? agency.expiredFeedPin!.feedExpiry : null } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedStart: feedPeriodStart(processedDates), feedQuality: result.feedQuality });
+    // CIV-3115: the timetable key travels with the dates, for timetableChangedAt.
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedStart: feedPeriodStart(processedDates), feedQuality: result.feedQuality, timetableKey: timetableContentKey(body), runDate: todayYmd });
     row.feedQuality = { status: result.feedQuality.status, score: result.feedQuality.score };
     const countRules = assessByCounts({ ...result.feedQuality.metrics, checkedAt: result.feedQuality.checkedAt });
     row.feedQualityCountRules = { status: countRules.status, score: countRules.score };
