@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The map's credit line names an agency only while one of its routes is drawn**: at Terrace, BC it credited BC Transit with 0 routes on screen, because it credited any agency whose area was in view
 - **About → Sources credits about 200 more agencies whose data licence requires it**: French, ODbL, Creative Commons and city open-data feeds were shown without the credit their licence asks for
 - **The MCP's agency list no longer gives a "schedule added" date**: it was Atlas's last refresh, so a schedule from 2019 read as added this month
 - **The MCP no longer answers for Embark, UTA and IndyGo**: their data terms need the agency's written permission for other uses, as TriMet's do; the map and History keep them

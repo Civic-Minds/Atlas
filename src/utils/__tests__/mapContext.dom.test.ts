@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dedupeMapContextByDisplay, getMapContextAgencies, getMapContextAgenciesFromFeatures, isMapContextOutsideClick } from '../mapContext';
+import { dedupeMapContextByDisplay, drawnAgencySlugs, getMapContextAgencies, getMapContextAgenciesFromFeatures, isMapContextOutsideClick } from '../mapContext';
+import { agencyCredits } from '../agencyCredits';
 import { routeLabels } from '../format';
 
 const agencies = [
@@ -104,5 +105,23 @@ describe('when the map count pills show (CIV-1967)', () => {
     expect(mapCountsReady({ showMapContext: true, isLoading: false, inViewRouteCount: null })).toBe(false);
     expect(mapCountsReady({ showMapContext: false, isLoading: true, inViewRouteCount: null })).toBe(false);
     expect(mapCountsReady({ showMapContext: false, isLoading: false, inViewRouteCount: null })).toBe(true);
+  });
+});
+
+describe("the map pill's agency credits follow the drawn routes (CIV-3120)", () => {
+  const line = (slug: string, routeId: string): GeoJSON.Feature => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] }, properties: { agencySlug: slug, routeId, routeShortName: routeId } });
+  const lic = { url: 'https://example.org/terms', attribution: 'required' as const, checkedOn: '2026-11-27', name: 'Terms' };
+  const credited = [{ slug: 'bct', name: 'BC Transit (Terrace)', dataLicense: lic }, { slug: 'ttc', name: 'Toronto Transit Commission', dataLicense: lic }] as any;
+
+  it('credits no agency when 0 routes are drawn, even with its area on screen', () => {
+    const slugs = drawnAgencySlugs(getMapContextAgenciesFromFeatures(credited, []));
+    expect(slugs).toEqual([]);
+    expect(agencyCredits(credited, slugs)).toEqual([]);
+  });
+
+  it('credits only the agencies with at least one route drawn', () => {
+    const slugs = drawnAgencySlugs(getMapContextAgenciesFromFeatures(credited, [line('ttc', '504')]));
+    expect(slugs).toEqual(['ttc']);
+    expect(agencyCredits(credited, slugs).map(c => c.slug)).toEqual(['ttc']);
   });
 });
