@@ -9,6 +9,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - [How a route's frequency is decided](#how-a-routes-frequency-is-decided)
 - [What the map shows and never shows](#what-the-map-shows-and-never-shows)
 - [How Atlas is built](#how-atlas-is-built)
+- [Licence fit](#licence-fit)
 - [Data and pipeline fixes](#data-and-pipeline-fixes)
 - [How Live reads](#how-live-reads)
 - [How we talk to riders and planners](#how-we-talk-to-riders-and-planners)
@@ -196,6 +197,13 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: one codebase shares the map's data and rules; the agency tier isn't ready to show.
   - Source: [decision log](#decision-log) (2026-11-15), Linear CIV-1680
 
+### Licence fit
+
+- **Atlas adds a layer; it doesn't change the agency's data**
+  - What: Atlas's readings (frequencies, grades, map colours, cards, History) are a layer on the agency's data, not changes to it, so licence clauses against modification or derivative works don't bar the map, cards or History. A fix that restores what the agency meant (a cut-off or garbled stop name, a wrong route type) is also a layer. Giving something a new name of Atlas's choosing is not. Licence fit is judged separately for the MCP, which passes figures on to other AIs: clauses on redistribution or API-style sharing are judged for it on their own, as the WMATA entry does.
+  - Why: Ryan: "Because we don't change the data - we just "add" a layer on to it". On fixes: "But those "small" corrections - like fixing a stop name (not renaming it!) I think would be fine". On the MCP: "So then we should treat the MCP as separate".
+  - Source: [decision log](#decision-log) (2026-11-26; extends 2026-11-22 "MTA and NJ Transit readings are reads, not changes"), CIV-3066
+
 ### Data and pipeline fixes
 
 - **Data integrity first**
@@ -372,6 +380,15 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — Licence fit: Atlas adds a layer; fixes count; the MCP is judged separately (CIV-3066; extends 2026-11-22 "MTA and NJ Transit readings are reads, not changes")
+Ryan, 2026-11-26, three rulings on CIV-3066:
+1. "Because we don't change the data - we just "add" a layer on to it".
+2. "But those "small" corrections - like fixing a stop name (not renaming it!) I think would be fine".
+3. "So then we should treat the MCP as separate".
+- The rule: (1) Atlas's readings (frequencies, grades, map colours, cards, History) are a layer on the agency's data, not changes to it, so licence clauses against modification or derivative works don't bar the map, cards or History. (2) A fix that restores what the agency meant (a cut-off or garbled stop name, a wrong route type) also counts as a layer; giving something a new name of Atlas's choosing does not. (3) Licence fit is judged separately for the MCP, since it passes figures on to other AIs: clauses on redistribution or API-style sharing are judged for it on their own, as the WMATA entry already does.
+- Extends, not supersedes: the 2026-11-22 "MTA and NJ Transit readings are reads, not changes" entry (and its Foothill Transit line) stands; this covers every agency's readings and adds the stop-name and route-type fixes. The WMATA and exclusion-list entries stand as written.
+- Why: the terms that bar modification or derivative works are about altering the published data; a reading or a restoring fix leaves the feed's meaning as published. The MCP's outside-AI sharing is a different act, so redistribution and API clauses still decide it.
 
 ### 2026-11-26 — A row's trip count counts every trip of the row, wherever it ends (CIV-2233, #1776)
 Ryan, 2026-11-26 (Questions chat, logged on CIV-2233): picked option 1, "Count every trip of the row, wherever it ends (Recommended)". Keeps the CIV-1069 guard.
