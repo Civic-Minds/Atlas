@@ -161,7 +161,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     || isOneGapRow(d, period)
     || fallbackUnsteady
     || (trips.noOwnService && variantH === undefined && allDayH == null)
-    || trips.waitNotCadence === true);
+    // #1909: a pooled row speaks for every pattern on its stretch, so its own trips' spacing is no verdict on it (Broome 35
+    // Saturday eastbound: two same-path patterns every 120 each, every 60 together).
+    || (trips.waitNotCadence === true && pooledH === undefined));
   const isLimited = rowNoRegular
     ? true
     : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
