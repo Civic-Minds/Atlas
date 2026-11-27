@@ -24,6 +24,7 @@ import { resolve } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { DRY_RUN_ENV_LABEL, LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from './agencyFeeds.js';
+import { downloadFeedBuffer } from './downloadFeed.js';
 import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
 import { loadFareOverrides, manualBaseFareFor } from './fareOverrides.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
@@ -93,23 +94,7 @@ const argCenter = centerArg
 
 async function downloadToBuffer(url: string): Promise<Buffer> {
   console.log(`  Downloading ${url} ...`);
-  try {
-    const res = await fetch(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-      signal: AbortSignal.timeout(180_000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return Buffer.from(await res.arrayBuffer());
-  } catch (fetchErr) {
-    // Fallback to curl for tricky TLS
-    const { execFileSync } = await import('child_process');
-    try {
-      return execFileSync('curl', ['-fsSL', url], { maxBuffer: 128 * 1024 * 1024, timeout: 180_000 });
-    } catch {
-      throw fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
-    }
-  }
+  return downloadFeedBuffer(url);
 }
 
 function loadAgencyRegistry(): AgencyCountrySource[] {

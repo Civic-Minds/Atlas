@@ -1,7 +1,6 @@
 /**
  * Download and peek a feed without processing it, and refresh's choice among an agency's sources.
  */
-import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import JSZip from 'jszip';
 import { calendarWithTrips, effectiveFeedExpiry } from './feedFreshness.js';
@@ -73,27 +72,8 @@ export async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | 
   }
 }
 
-export async function downloadFeed(url: string): Promise<Buffer> {
-  try {
-    const res = await fetch(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-      signal: AbortSignal.timeout(120_000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return Buffer.from(await res.arrayBuffer());
-  } catch (fetchErr) {
-    // Some agency hosts (e.g. NFTA) have TLS chains Node rejects; curl uses system trust store.
-    try {
-      return execFileSync('curl', ['-fsSL', url], {
-        maxBuffer: 64 * 1024 * 1024,
-        timeout: 120_000,
-      });
-    } catch {
-      throw fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
-    }
-  }
-}
+// CIV-2976 D4: refresh's download is the one copy (downloadFeed.ts), with its larger limits (180 s / 128 MB, was 120 s / 64 MB).
+export { downloadFeedBuffer as downloadFeed } from './downloadFeed.js';
 
 export interface PickedFeedSource {
   buf: Buffer | null;
