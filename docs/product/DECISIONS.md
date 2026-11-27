@@ -172,6 +172,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: the MCP may hold and give more detail than the map, cards and lists show end users, but it must never contradict them: the same question gets the same answer, and a different answer is a bug.
   - Why: Ryan asked "can the MCP use info if we don't show it to end users", and picked 1 over keeping the MCP to what end users see.
   - Source: [decision log](#decision-log) (2026-11-26)
+- **The hosted MCP deploys with every push to main**
+  - What: when CI passes on main, a workflow (`.github/workflows/mcp-deploy.yml`) rebuilds the hosted MCP's data from the published release with that commit's code and deploys the Worker, so the site and the MCP run the same code. A failed deploy fails the run; the build refuses to ship if agencies drop.
+  - Why: pushes deployed the site but not the MCP, so MCP fixes sat undeployed (CIV-3100, CIV-3102, CIV-3103 after fd05fd6).
+  - Source: [decision log](#decision-log) (2026-11-27), CIV-3111
 - **Modes come from GTFS route_type**
   - What: a route's mode is the feed's route_type; known mistakes are listed per-route overrides in the agency config, never guessed from names.
   - Why: one shared definition keeps the map menu, pages and counters agreeing.
@@ -389,6 +393,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-27 — The hosted MCP deploys automatically with every main push (CIV-3111)
+Ryan, 2026-11-27, picked "1": "Add a GitHub Actions step that deploys the MCP automatically whenever main is pushed and CI passes, so the site and the MCP always run the same code." And: "ideally the MCP never gives information that differs from the website". Before this, pushes deployed the site (Vercel) but not the hosted MCP Worker, so CIV-3100, CIV-3102 and CIV-3103 sat undeployed after fd05fd6. The workflow rebuilds the Worker's bundled data from the published release (read only) and stops if more than 5 of the release's MCP agencies are missing.
 
 ### 2026-11-27 — Live's timetable measure reads "Lateness"; Studio's Measure menu has one entry for it (CIV-2924; supersedes 2026-11-25 "Schedule adherence")
 Ryan, 2026-11-27, in the Questions chat: "Ideally those would all be 1 word though" and "Lateness might work", then confirmed option 1. "Schedule adherence" becomes "Lateness" everywhere: the measure, Live's section (once "Where delays start") and the stretch it marks. Studio's Measure menu has one entry, "Lateness" (the "Falls behind" measure); "Delays start" leaves Studio's menu (it stays as Live's map toggle, named "Lateness"). This also settles the open Studio menu question in the 2026-11-25 entry. "Typical deviation" is unchanged. The label lives once in shared/liveWording.ts (`LATENESS_LABEL`); the style guard bans "Schedule adherence" as it does "Delays start".
