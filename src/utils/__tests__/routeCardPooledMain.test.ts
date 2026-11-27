@@ -4,6 +4,9 @@ import { buildRouteCardModel } from '../routeCardRows';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import it9x from './fixtures/intercitytransit-9x-weekday.json';
 import rtd15 from './fixtures/rtd-15-weekday.json';
+import go40 from './fixtures/go-40-weekday.json';
+import broome35 from './fixtures/broome-35-saturday.json';
+import { PUBLIC_TIER_MAXES } from '../../../shared/rules/frequency';
 
 // TTC 29 Dufferin, weekday midday (#1185): two patterns run the whole main stretch every 16 each, together every 8.
 const stops = (n: number) => Array.from({ length: n }, (_, i) => `s${i}`);
@@ -72,7 +75,7 @@ describe('a main stretch several patterns share (#1185)', () => {
 });
 
 // Published weekday features (release-mwyirpo2): Intercity Transit 9X and RTD 15.
-function publishedCard(directions: ShapeProperties[], period: 'midday' | 'pmPeak') {
+function publishedCard(directions: ShapeProperties[], period: 'amPeak' | 'midday' | 'pmPeak') {
   const name = directions[0].routeShortName ?? '';
   const current = { routeShortName: name, routeLongName: directions[0].routeLongName, directions };
   return buildRouteCardModel({
@@ -90,5 +93,22 @@ describe('published routes (#1909)', () => {
   it('RTD 15 eastbound: Tower Rd, a branch past Billings, keeps its own every 30 beside the span pattern', () => {
     const lines = publishedCard(rtd15 as unknown as ShapeProperties[], 'midday').reportServiceLines;
     expect(lines).toContain('- to Tower Rd: every 30 min');
+  });
+  it('Broome 35 Saturday midday eastbound: the merged row reads every 60, as its two patterns run together', () => {
+    const lines = publishedCard(broome35 as unknown as ShapeProperties[], 'midday').reportServiceLines;
+    expect(lines).toContain('- to BC Junction via Main: every 60 min');
+  });
+  // Guard: a merged (pooled) row never grades faster than its direction's filter value, so the card cannot overstate the map.
+  it('no merged row reads faster than its direction\'s filter value (GO 40 southbound PM: its own 15, the route 17 from northbound)', () => {
+    const grade = (v: number) => PUBLIC_TIER_MAXES.findIndex(m => v <= m);
+    for (const [features, period] of [[go40, 'amPeak'], [go40, 'pmPeak'], [it9x, 'pmPeak'], [broome35, 'midday']] as const) {
+      const directions = features as unknown as ShapeProperties[];
+      for (const g of buildDirectionGroups({ directions }, period)) {
+        if (!g.pooledMain) continue;
+        const filter = g.pooledMain.feature.directionFilterHeadwayByPeriod?.[period];
+        if (typeof filter === 'number') expect(grade(g.pooledMain.headway)).toBeGreaterThanOrEqual(grade(filter));
+      }
+    }
+    expect(publishedCard(go40 as unknown as ShapeProperties[], 'pmPeak').reportServiceLines).toContain('- to Hamilton GO: every 15 min');
   });
 });
