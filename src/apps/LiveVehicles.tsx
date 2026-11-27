@@ -790,7 +790,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const onRowEvery = useCallback((dir: number, rows: ReadonlyMap<string, MockRowReading>) => {
     setMockRows(prev => {
       const next = new Map(prev);
-      for (const [k, f] of rows) next.set(`${dir}|${k}`, f);
+      // The analysis's direction number isn't always the card's (TTC 505: analysis 0 is the card's 1); a destination
+      // row's key starts with the card's own, so the shared row takes it from there.
+      const cardDir = [...rows.keys()].map(k => /^(\d+):/.exec(k)?.[1]).find(d => d != null) ?? String(dir);
+      for (const [k, f] of rows) next.set(`${cardDir}|${k}`, f);
       return JSON.stringify([...next]) === JSON.stringify([...prev]) ? prev : next;
     });
   }, []);

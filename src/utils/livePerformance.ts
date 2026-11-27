@@ -309,6 +309,12 @@ export interface LiveGapsOptions {
    * (from the map's own direction for each vehicle, see liveTripDirections). Treated like listed trips.
    */
   extraTrips?: ReadonlySet<string>;
+  /**
+   * The snapshots hold one card row's cars only, picked from a whole-line result that already passed the
+   * missing-cars check (#1895). That check counts cars against the whole route's timetable, every branch
+   * together, so a branch row could never pass it; it is skipped for the row.
+   */
+  rowSubset?: boolean;
 }
 
 /** The analysis's direction for each trip its timetable lists. */
@@ -480,7 +486,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     if (b && g) expectedWhole += b.actualMedianSec / g;
   });
   const expected = whole ? expectedWhole : sched ? sharedSec / sched : 0;
-  if (unplaceable > 0 || (expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars, carIds: counted, gapsMin: [], scheduledSec: sched, ...extra };
+  if (unplaceable > 0 || (!opts.rowSubset && expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars, carIds: counted, gapsMin: [], scheduledSec: sched, ...extra };
   if (now.length < 2) return opts.countFewCars ? { cars, carIds: counted, gapsMin: [], scheduledSec: sched, ...extra } : null;
   now.sort((a, b) => b.m - a.m);
   const gapsMin = now.slice(1).map((car, i) => {

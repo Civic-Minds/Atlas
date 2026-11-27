@@ -296,7 +296,7 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
       const mine = r.key === 'shared' ? cars : groups.get(r.key) ?? [];
       if (r.key !== 'shared' && !only.has(r.key)) continue;
       const ids = new Set(mine.map(v => v.id));
-      const sub = r.key === 'shared' ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
+      const sub = r.key === 'shared' ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
       const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
       // MOCK (#1877 mock C): the average measured gap (the time from the first car to the last over the gaps between them, so
       // a bunched pair doesn't pull it down as the middle gap did), under the same "more than half measured" rule as gapExtremes.
