@@ -124,7 +124,7 @@ const FREQUENCY_REASON_LABELS: Record<string, string> = {
 const REPORT_CATEGORIES = [
   {
     key: 'route',
-    label: 'Route',
+    label: 'This route',
     description: 'Name, branch, line, frequency or schedule',
     reasons: [
       REPORT_REASON.missing,
@@ -144,8 +144,8 @@ const REPORT_CATEGORIES = [
   },
   {
     key: 'filter',
-    label: 'Map, filter or search',
-    description: 'Search, filter or route selection',
+    label: 'Finding routes',
+    description: 'Search, filters or what the map shows',
     reasons: [REPORT_REASON.filter],
   },
   {
