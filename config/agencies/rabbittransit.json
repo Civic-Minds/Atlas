@@ -17,5 +17,45 @@
   "feedUrl": "https://realtime.rabbittransit.org/InfoPoint/GTFS-Zip.ashx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-223/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://realtime.rabbittransit.org/InfoPoint/GTFS-Zip.ashx",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270531",
+  "feedQuality": {
+    "status": "review",
+    "score": 100,
+    "reasons": [
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 6,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 150,
+      "feedExpiry": "20270531",
+      "routeCount": 28,
+      "problemShapes": 1,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270531-0829c6a43eef3ece",
+  "lastFeedContentKey": "1855e6dec6916aef",
+  "lastFeedExpiry": "20270531",
+  "lastPeekedExpiry": "20270531",
+  "lastFeedStart": "20261122",
+  "lastFeedVersion": "20261119",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "aa6bdf3d739f9f58",
+  "feedObtainedAt": "20261127"
 }

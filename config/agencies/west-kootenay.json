@@ -23,5 +23,43 @@
     -116.8955
   ],
   "timezone": "America/Vancouver",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=20",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270331",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 87,
+      "feedExpiry": "20270331",
+      "routeCount": 33,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270331-2c4d12a7acd82d8c",
+  "lastFeedContentKey": "b88a36807995d91c",
+  "lastFeedExpiry": "20270331",
+  "lastPeekedExpiry": "20270331",
+  "lastFeedStart": "20261125",
+  "lastFeedVersion": "202611270/20261126 21:00:00/20261127 04:00:00",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "2028d6855a31d6cb",
+  "feedObtainedAt": "20261127"
 }

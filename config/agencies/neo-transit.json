@@ -22,5 +22,45 @@
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/northeast-or-us/northeast-or-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3652/latest.zip",
   "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/northeast-or-us/northeast-or-us--flex-v2.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270301",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 minor schedule issues found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 3,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 10,
+      "feedExpiry": "20270301",
+      "routeCount": 7,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270301-3ec1a749782b3287",
+  "lastFeedContentKey": "3f66c97c79e1371a",
+  "lastFeedExpiry": "20270301",
+  "lastPeekedExpiry": "20270301",
+  "lastFeedStart": "20261105",
+  "lastFeedVersion": "UTC: 05-Nov-2026 19:41",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "6acaef05f496ff1c",
+  "feedObtainedAt": "20261127"
 }

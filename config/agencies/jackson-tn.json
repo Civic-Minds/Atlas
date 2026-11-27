@@ -16,5 +16,45 @@
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11658/jta_tn_gtfs.zip",
   "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11658/jta_tn_gtfs.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270131",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 22,
+      "feedExpiry": "20270131",
+      "routeCount": 11,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270131-fe505a20c3a6ffe6",
+  "lastFeedContentKey": "042415d352199f24",
+  "lastFeedExpiry": "20270131",
+  "lastPeekedExpiry": "20270131",
+  "lastFeedStart": "20251201",
+  "lastFeedVersion": "20260114",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "0a7f4674db28a83f",
+  "feedObtainedAt": "20261127"
 }

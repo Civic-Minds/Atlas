@@ -15,5 +15,45 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/mason-wa-us/mason-wa-us.zip",
   "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/mason-wa-us/mason-wa-us.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270201",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33,
+      "feedExpiry": "20270201",
+      "routeCount": 13,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270201-ded643d02673d999",
+  "lastFeedContentKey": "d72cb465c6d26a0c",
+  "lastFeedExpiry": "20270201",
+  "lastPeekedExpiry": "20270201",
+  "lastFeedStart": "20260915",
+  "lastFeedVersion": "UTC: 15-Sep-2026 16:50",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "b1ca0c9b9201d423",
+  "feedObtainedAt": "20261127"
 }
