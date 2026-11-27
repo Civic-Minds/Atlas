@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useR
 import { useSidebarFrame } from '../context/SidebarFrame';
 import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
-import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
+import { Info, Moon, Sun, ChevronRight, Clock } from 'lucide-react';
 import { useLiveFeedsDown, useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute } from '../../shared/livePollingConfig';
@@ -782,6 +782,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // MOCK for Ryan's review (#1877, not for merge): ?mock1877=a keeps "every X min" with the bus count under it;
   // ?mock1877=b puts the bus count in its place. Both leave out "Right now", so each destination shows once.
   const mock1877 = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mock1877') : null;
+  // MOCK (CIV-3047 page B): ?mockStaleIcon=1 a clock beside the flag with the wording in its hover, no note; 2 no icon and no note
+  // (the bottom pill only). Either, or ?mockStale, shows the route as having no recent reports: liveGaps marks such a route
+  // incomplete (newest report over LIVE_STALE_SEC old), so no row has "every X min" (3047 A test).
+  const mockStaleIcon = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mockStaleIcon') : null;
+  const mockStaleAny = !!mockStaleIcon || (typeof window !== 'undefined' && !!new URLSearchParams(window.location.search).get('mockStale'));
   // ?mock1877=c: every row of the card is live, Shared stretch included: "every X min" from the vehicles on the road now
   // (a new number: the average gap between the row's vehicles over the last half hour, from the same gap calculation as
   // "Right now"'s longest gap), with the vehicle count and late count on the line under it, in the same type, where
@@ -807,7 +812,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const line = 'text-sm font-black text-[var(--text-primary)] whitespace-nowrap';
       const value = (
         <span className="flex flex-col items-end text-right">
-          {f?.every != null && <span className={line}>{headwayEvery(f.every)}</span>}
+          {f?.every != null && !mockStaleAny && <span className={line}>{headwayEvery(f.every)}</span>}
           <span className={line}>{count}</span>
         </span>
       );
@@ -824,7 +829,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
     if (!key || !vehicles?.length) return null;
     return { key, subLabel: directionSummary(vehicles, selectedRouteModeWord), onClick: () => setSelectedDirection(key) };
-  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877, mockRows]);
+  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877, mockRows, mockStaleAny]);
   // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
   // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
   const liveRouteSections = (claimed: ReadonlySet<string>) => {
@@ -989,6 +994,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       onInfoOpen={onInfoOpen}
       extra={liveRouteSections}
       rowLive={liveRowFor}
+      headerIcon={mockStaleIcon === '1' && selectedGroup ? (() => {
+        const newest = Math.max(0, ...selectedGroup.vehicles.map(v => v.tsEpoch ?? 0));
+        const word = selectedRouteModeWord === 'bus' ? 'bus' : 'vehicle';
+        const text = newest ? `No ${word} has reported its position since ${agencyTime(selectedGroup.agencySlug, new Date(newest * 1000))}` : `No ${word} has reported its position recently`;
+        return <span title={text} aria-label={text} className="shrink-0 p-1 inline-flex" style={{ color: 'var(--status-caution-text)' }}><Clock className="w-4 h-4" /></span>;
+      })() : undefined}
     />
   ) : selectedGroup ? (
     // The route layer hasn't loaded (or has no such route): Live's own header over the same sections.

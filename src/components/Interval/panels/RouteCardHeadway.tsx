@@ -126,6 +126,8 @@ export interface RouteCardHeadwayProps {
   /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
    *  destination (its key) carries it. */
   rowLive?: (feature: ShapeProperties | undefined, row?: { dirId: number; key: string }) => { key: string; claim?: string; subLabel?: string; onClick?: () => void; value?: React.ReactNode } | null;
+  /** MOCK (CIV-3047 page B, not for merge): an icon just before the card's flag. */
+  headerIcon?: React.ReactNode;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -153,6 +155,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
   extra,
   rowLive,
+  headerIcon,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
@@ -309,6 +312,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               back={back}
             />
           </div>
+          {headerIcon}
           <CardReportButton
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
