@@ -15,6 +15,5 @@
     -85.3855
   ],
   "feedUrl": "https://www.mitsbus.org/wp-content/uploads/2026/04/MITS2026GTFS.zip",
-  "timezone": "America/Indiana/Indianapolis",
-  "hiddenInProduction": true
+  "timezone": "America/Indiana/Indianapolis"
 }

@@ -22,6 +22,5 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/startransit-va-us/startransit-va-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2444/latest.zip",
-  "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "timezone": "America/New_York"
 }

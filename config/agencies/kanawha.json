@@ -16,6 +16,5 @@
   ],
   "feedUrl": "https://gtfs.krt.cadavl.com/KRT/GTFS/GTFS_KRT.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5769/latest.zip",
-  "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "timezone": "America/New_York"
 }

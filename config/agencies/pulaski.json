@@ -15,6 +15,5 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/pulaski-va-us/pulaski-va-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2442/latest.zip",
-  "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "timezone": "America/New_York"
 }

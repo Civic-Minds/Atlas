@@ -16,6 +16,5 @@
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/baytowntrolley-fl-us/baytowntrolley-fl-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-337/latest.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }

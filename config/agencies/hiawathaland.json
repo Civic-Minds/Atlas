@@ -22,6 +22,5 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/threerivers-mn-us/threerivers-mn-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2859/latest.zip",
   "timezone": "America/Chicago",
-  "timezoneOverride": "America/Chicago",
-  "hiddenInProduction": true
+  "timezoneOverride": "America/Chicago"
 }

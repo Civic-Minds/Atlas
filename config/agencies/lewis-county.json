@@ -20,6 +20,5 @@
     -121.669
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-5579/latest.zip",
-  "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezone": "America/Los_Angeles"
 }

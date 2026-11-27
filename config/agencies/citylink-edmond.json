@@ -14,6 +14,5 @@
     -97.4789
   ],
   "feedUrl": "https://passio3.com/edmond/passioTransit/gtfs/google_transit.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }

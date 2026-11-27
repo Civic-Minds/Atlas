@@ -22,6 +22,5 @@
     55.3526,
     -127.1648
   ],
-  "timezone": "America/Vancouver",
-  "hiddenInProduction": true
+  "timezone": "America/Vancouver"
 }

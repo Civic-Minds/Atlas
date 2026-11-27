@@ -22,6 +22,5 @@
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/easternsierra-ca-us/easternsierra-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-25/latest.zip",
-  "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezone": "America/Los_Angeles"
 }

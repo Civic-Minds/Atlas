@@ -15,6 +15,5 @@
   ],
   "feedUrl": "https://content.mankatomn.gov/transit/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-50205/latest.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }

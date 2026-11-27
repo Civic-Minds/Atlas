@@ -14,6 +14,5 @@
     -91.4867
   ],
   "feedUrl": "https://gtfs.ect.cadavl.com/ECT/GTFS/GTFS_ECT.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }

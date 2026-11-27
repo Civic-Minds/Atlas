@@ -16,6 +16,5 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=18",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2567/latest.zip",
-  "timezone": "America/Vancouver",
-  "hiddenInProduction": true
+  "timezone": "America/Vancouver"
 }

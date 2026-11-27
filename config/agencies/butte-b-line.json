@@ -15,6 +15,5 @@
     -121.8248
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-90208/latest.zip",
-  "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezone": "America/Los_Angeles"
 }

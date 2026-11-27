@@ -20,6 +20,5 @@
     -87.54
   ],
   "feedUrl": "https://danvillemasstransit.tripshot.com/v1/gtfs.zip",
-  "timezone": "America/Chicago",
-  "hiddenInProduction": true
+  "timezone": "America/Chicago"
 }
