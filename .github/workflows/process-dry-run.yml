@@ -2,7 +2,8 @@ name: Process dry run (named agencies)
 
 # CIV-3114: a fresh look at named agencies, hidden ones included, without the Mac. For each slug it downloads the
 # agency's current feed (config/agencies/<slug>.json feedUrl) and runs `npm run process -- <zip> <slug> --dry-run`,
-# which writes only tmp/process-preview/<slug>/. The job gets no secrets at all, so it cannot write R2 or the repo.
+# which writes only tmp/process-preview/<slug>/. The job gets only the READ-ONLY R2 keys (the fare overrides are read
+# through R2: the public URL challenges runners, #1367) and a read-only token, so it cannot write R2 or the repo.
 # The preview files and the downloaded zips are uploaded as one artifact for review.
 #
 #   gh workflow run process-dry-run.yml -f ref=main -f agencies="shore-transit benton-area"
@@ -60,6 +61,13 @@ jobs:
       - run: npm ci
 
       - name: Download each feed and process it (dry run)
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
         run: |
           mkdir -p tmp/feeds tmp/process-preview
           failed=""
@@ -76,6 +84,7 @@ jobs:
           done
           echo "**Agencies:** $SLUGS" >> "$GITHUB_STEP_SUMMARY"
           echo "**Failed:**${failed:- none}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$failed" ]; then echo "::error::Failed:$failed"; exit 1; fi
 
       - name: Upload the previews and the feeds
         if: always()
