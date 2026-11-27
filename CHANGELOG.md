@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Sound Transit's 556 heads "to Issaquah Highlands Park & Ride", as the agency names it**: King County Metro's file runs the destination and a stop on the way together ("Issaquah Highlands Park & Ride Issaquah Transit Center")
 - **About → Sources credits about 200 more agencies whose data licence requires it**: French, ODbL, Creative Commons and city open-data feeds were shown without the credit their licence asks for
 - **The MCP's agency list no longer gives a "schedule added" date**: it was Atlas's last refresh, so a schedule from 2019 read as added this month
 - **Studio's schedule comparison gives a route's length from its whole branches**: TTC 52 read 2–80 stops because a 2-stop piece between Lawrence Station's bays counted as a branch; it reads 41–80

@@ -13,6 +13,7 @@ import { splitLeadingRouteNumber } from '../transforms/leading-route-number.js';
 import { headsignsFromLastStop } from '../transforms/last-stop-destinations.js';
 import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
 import { renameStops, type StopRename } from '../transforms/stop-renames.js';
+import { renameHeadsigns, type HeadsignRename } from '../transforms/headsign-renames.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
@@ -43,6 +44,8 @@ export interface GtfsTransformOptions {
   headsignFromLastStop?: boolean;
   /** CIV-3021: the agency's hand-checked stop renames (transforms/stop-renames.ts). */
   stopRenames?: StopRename[];
+  /** CIV-3124: the agency's hand-checked trip headsign renames (transforms/headsign-renames.ts). */
+  headsignRenames?: HeadsignRename[];
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
@@ -90,6 +93,13 @@ export function normalizeGtfs(
     gtfs = result.gtfs;
     onStatus?.(`Stop renames: ${result.renamed} of ${options.stopRenames.length} applied (CIV-3021)`);
     if (result.stale.length) onStatus?.(`Stop renames: ${result.stale.length} no longer match the feed, left as published: ${result.stale.map(r => r.stopId).join(', ')}`);
+  }
+  if (options?.headsignRenames?.length) {
+    // CIV-3124: before anything groups or fills trips by headsign, so every step reads the checked name.
+    const result = renameHeadsigns(gtfs, options.headsignRenames);
+    gtfs = result.gtfs;
+    onStatus?.(`Headsign renames: ${options.headsignRenames.length - result.stale.length} of ${options.headsignRenames.length} applied to ${result.renamed} trip(s) (CIV-3124)`);
+    if (result.stale.length) onStatus?.(`Headsign renames: ${result.stale.length} no longer match the feed, left as published: ${result.stale.map(r => `${r.routeId} "${r.from}"`).join(', ')}`);
   }
   if (options?.agencyName) {
     gtfs = filterGtfsByAgencyName(gtfs, options.agencyName);
