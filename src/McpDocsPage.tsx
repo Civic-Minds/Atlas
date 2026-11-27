@@ -9,7 +9,7 @@ import { countText } from '../shared/numberText';
 import { dateRange } from '../shared/dateText';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PAGE_LEAD } from './components/ui/PageSection';
-import { PageTitle, SectionTitle, SubsectionTitle } from './components/ui/PageTitle';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
 import CopyButton from './components/ui/CopyButton';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
@@ -101,6 +101,7 @@ const ACTION = 'rounded-md border border-[var(--border-primary)] bg-[var(--bg-pr
 /** CIV-2202: a name and "Make link"; the new link shows once, with the copy button, and is kept nowhere. */
 function NewLink({ onMade }: { onMade: () => void }) {
   const N = T.newLink;
+  const [formOpen, setFormOpen] = useState(false);
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [made, setMade] = useState<{ name: string; link: string } | null>(null);
@@ -113,11 +114,13 @@ function NewLink({ onMade }: { onMade: () => void }) {
     setBusy(false);
     if (r.ok && r.link) { setMade({ name: who, link: r.link }); setName(''); onMade(); } else setError(r.error || N.failed);
   };
+  // CIV-2944 (Ryan, 2026-11-27, picked 1: "A 'New link' button under the table, with the form opening in place"):
+  // the form no longer sits open under the table.
+  if (!formOpen) return <button type="button" className={`${ACTION} mt-4`} onClick={() => setFormOpen(true)}>{N.heading}</button>;
   return (
-    <div className="mt-6">
-      <SubsectionTitle>{N.heading}</SubsectionTitle>
-      <form className="mt-2 flex max-w-md items-center gap-2" onSubmit={e => { e.preventDefault(); void make(); }}>
-        <input type="text" value={name} onChange={e => setName(e.target.value)} aria-label={N.name} placeholder={N.name} maxLength={60} className={FIELD} />
+    <div className="mt-4">
+      <form className="flex max-w-md items-center gap-2" onSubmit={e => { e.preventDefault(); void make(); }}>
+        <input type="text" value={name} onChange={e => setName(e.target.value)} aria-label={N.name} placeholder={N.name} maxLength={60} className={FIELD} autoFocus />
         <button type="submit" className={ACTION} disabled={busy || !name.trim()}>{N.make}</button>
       </form>
       {error && <p className={PARAGRAPH} role="alert">{error}</p>}
