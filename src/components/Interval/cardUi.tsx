@@ -421,11 +421,9 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               {validationError && <p className="text-xs font-bold text-[var(--status-negative-text)]" role="alert">{validationError}</p>}
             </div>
 
-            {selectedCategory && (
-              <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
-                <Pill submit selected className="!h-8 !px-3 !py-0 !rounded-lg !font-black hover:opacity-90">{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</Pill>
-              </div>
-            )}
+            <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
+              {selectedCategory && <Pill submit selected className="!h-8 !px-3 !py-0 !rounded-lg !font-black hover:opacity-90">{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</Pill>}
+            </div>
           </form>
         </div>,
         document.body
