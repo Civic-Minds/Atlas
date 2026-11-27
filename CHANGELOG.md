@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
 - **About → Sources credits about 200 more agencies whose data licence requires it**: French, ODbL, Creative Commons and city open-data feeds were shown without the credit their licence asks for
 - **The MCP's agency list no longer gives a "schedule added" date**: it was Atlas's last refresh, so a schedule from 2019 read as added this month
 - **The MCP no longer answers for Embark, UTA and IndyGo**: their data terms need the agency's written permission for other uses, as TriMet's do; the map and History keep them

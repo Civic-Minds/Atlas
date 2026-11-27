@@ -108,3 +108,23 @@ describe('rollupDirection: the one-gap reading only where the period runs', () =
     expect(r.period.midday.gap).toEqual({ every: 10, gap: 45 });
   });
 });
+
+// CIV-3121 (#1906, Ryan 2026-11-27: "every 8 mins from 310 but the period begins at 3 pm lol so"): TransLink R2 toward
+// Park Royal runs every 8 straight through 3 PM. The wait from 3:00 to the 3:10 bus is the period line, not a late start.
+describe('service that runs on across the period line (CIV-3121)', () => {
+  const pm = Array.from({ length: 30 }, (_, i) => 910 + i * 8); // 3:10 PM on, every 8
+  it('no "from" when the row ran at the same spacing just before the period started', () => {
+    expect(periodEdge([886, 894, 902, ...pm], 900, 1140, 10)).toBeNull();
+  });
+  it('still a late start when nothing ran before the period (the same times, no midday service)', () => {
+    expect(periodEdge(pm, 900, 1140, 10)).toEqual({ from: 910, every: 8 });
+  });
+  it('still a late start after a long break before the period', () => {
+    expect(periodEdge([780, ...pm], 900, 1140, 10)).toEqual({ from: 910, every: 8 });
+  });
+  it('no "until" when the row runs on at the same spacing after the period ends', () => {
+    const t = Array.from({ length: 28 }, (_, i) => 900 + i * 8); // to 6:36 PM, then the next at 7:04 PM is 28 later
+    expect(periodEdge([...t, 1124 + 8, 1124 + 16], 900, 1140, 16)).toBeNull();
+    expect(periodEdge(t, 900, 1140, 24)).toEqual({ until: 1116, every: 8 });
+  });
+});
