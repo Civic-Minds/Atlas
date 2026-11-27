@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board
 - **The MCP points to King County Metro, Pierce Transit or Community Transit when asked for a Sound Transit bus**: it said Sound Transit had no route 556, because ST Express buses are in those agencies' files, not Sound Transit's
 - **The map's credit line names an agency only while one of its routes is drawn**: at Terrace, BC it credited BC Transit with 0 routes on screen, because it credited any agency whose area was in view
 - **Sound Transit's 556 heads "to Issaquah Highlands Park & Ride", as the agency names it**: King County Metro's file runs the destination and a stop on the way together ("Issaquah Highlands Park & Ride Issaquah Transit Center")
