@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A branch's own stops no longer take the other branch's buses on the map**: Spokane 20's Clarke and Riverside stops were coloured every 15 though each branch runs every 30, because buses on the other road were counted as passing them
 - **The MCP points to King County Metro, Pierce Transit or Community Transit when asked for a Sound Transit bus**: it said Sound Transit had no route 556, because ST Express buses are in those agencies' files, not Sound Transit's
 - **The map's credit line names an agency only while one of its routes is drawn**: at Terrace, BC it credited BC Transit with 0 routes on screen, because it credited any agency whose area was in view
 - **Sound Transit's 556 heads "to Issaquah Highlands Park & Ride", as the agency names it**: King County Metro's file runs the destination and a stop on the way together ("Issaquah Highlands Park & Ride Issaquah Transit Center")
