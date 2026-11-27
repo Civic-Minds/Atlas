@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Long destination names no longer squeezed**: a reading that doesn't fit beside the name sits right-aligned on the line below.
 - **About > Measurements is one row per measure, and Live shows no "figures updated" date**: "Bunching ›" opens its definition; the date was when summary figures were built, not when buses were seen, so it read as stale live data
 - **The MCP's live readings cover YRT, DRT, Brampton and Burlington**: it called their recording paused although the cloud recorder has recorded them every minute since November 24
 - **The MCP says when a route's grade is slower than its listed frequency**: RTD 31 weekday mornings read "every 10 min" beside a 60-minute grade with no word on why, so a model could drop either figure
