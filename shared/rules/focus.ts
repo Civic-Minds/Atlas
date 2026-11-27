@@ -42,7 +42,7 @@ export const STUDIO_FOCUS_AGENCIES = ['kingston', 'hamilton', 'rtd-denver', 'gue
  * from here, or when an agency or consultant asks for it; the main map and History have no such limit.
  */
 export const PRODUCT_FOCUS = {
-  /** Recorded every minute (TTC, Hamilton and the MBTA, plus Kingston for Studio only): the archive shards marked `recording`. */
+  /** Recorded now: the agencies in the archive shards marked `recording` (since CIV-2217, the cloud recorder's). */
   live: RECORDING_SLUGS,
   /** Agencies with a Schedules file. */
   studio: STUDIO_FOCUS_AGENCIES,
