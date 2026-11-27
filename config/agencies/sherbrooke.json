@@ -3,9 +3,10 @@
   "officialName": "Société de transport de Sherbrooke",
   "websiteUrl": "http://www.sts.qc.ca/",
   "dataLicense": {
-    "url": "https://www.donneesquebec.ca/recherche/fr/dataset/transport-sts",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://www.donneesquebec.ca/licence/#cc-by",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-26"
   },
   "center": [
     45.398,

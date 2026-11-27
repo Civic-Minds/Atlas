@@ -14,5 +14,12 @@
   "cities": [
     "Argentan, France"
   ],
-  "timezone": "Europe/Paris"
+  "timezone": "Europe/Paris",
+  "dataLicense": {
+    "url": "https://www.etalab.gouv.fr/wp-content/uploads/2017/04/ETALAB-Licence-Ouverte-v2.0.pdf",
+    "attribution": "required",
+    "name": "Licence Ouverte v2.0 (Etalab)",
+    "updatedLabel": "Dernière mise à jour :",
+    "checkedOn": "2026-11-26"
+  }
 }

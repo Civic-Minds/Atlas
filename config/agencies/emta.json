@@ -53,5 +53,11 @@
   "lastServiceWeek": "b6b3dee36001f154",
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20261016",
-  "lastFeedContentKey": "3656838c3b3a3da1"
+  "lastFeedContentKey": "3656838c3b3a3da1",
+  "dataLicense": {
+    "url": "https://ride-the-e.com/developerlicenseagreement/",
+    "attribution": "required",
+    "name": "EMTA Developer License Agreement",
+    "checkedOn": "2026-11-26"
+  }
 }

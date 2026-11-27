@@ -49,5 +49,11 @@
   "feedObtainedAt": "20261031",
   "lastFeedStart": "20261008",
   "lastRawArchiveKey": "unknown-621622e2efcea431",
-  "lastFeedContentKey": "a08d827ebe719619"
+  "lastFeedContentKey": "a08d827ebe719619",
+  "dataLicense": {
+    "url": "https://gotriangle.org/developer-resources/",
+    "attribution": "required",
+    "name": "CC BY 3.0",
+    "checkedOn": "2026-11-26"
+  }
 }

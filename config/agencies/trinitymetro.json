@@ -62,5 +62,12 @@
   "lastPeekedExpiry": "20270130",
   "lastServiceWeek": "b02ede6daed0ea22",
   "feedObtainedAt": "20261014",
-  "lastFeedStart": "20260927"
+  "lastFeedStart": "20260927",
+  "dataLicense": {
+    "url": "https://ridetrinitymetro.org/gtfs",
+    "attribution": "required",
+    "name": "Trinity Metro GTFS data notice",
+    "credit": "Data provided by Trinity Metro is not warranted by Trinity Metro for accuracy or completeness and data is subject to change without notice.",
+    "checkedOn": "2026-11-26"
+  }
 }

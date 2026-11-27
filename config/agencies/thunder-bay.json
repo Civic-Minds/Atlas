@@ -49,5 +49,12 @@
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20261109",
   "lastRawArchiveKey": "20270220-cec83807710a48e4",
-  "lastFeedContentKey": "b55560c2bb782af2"
+  "lastFeedContentKey": "b55560c2bb782af2",
+  "dataLicense": {
+    "url": "https://www.thunderbay.ca/media/inmjquon/city-of-thunder-bay-open-data-licence.pdf",
+    "attribution": "required",
+    "name": "City of Thunder Bay Open Data Licence 1.0",
+    "credit": "Contains information licensed under the Open Data Licence – The Corporation of the City of Thunder Bay.",
+    "checkedOn": "2026-11-26"
+  }
 }

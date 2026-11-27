@@ -62,5 +62,11 @@
   "feedObtainedAt": "20261020",
   "lastFeedStart": "20260412",
   "lastRawArchiveKey": "20270109-6190d89f9e601601",
-  "lastFeedContentKey": "dc6e2bf7dc9ad3d3"
+  "lastFeedContentKey": "dc6e2bf7dc9ad3d3",
+  "dataLicense": {
+    "url": "https://marintransit.gov/developers",
+    "attribution": "required",
+    "name": "ODC-By 1.0",
+    "checkedOn": "2026-11-26"
+  }
 }

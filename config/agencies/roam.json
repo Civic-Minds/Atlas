@@ -4,9 +4,9 @@
   "websiteUrl": "https://roamtransit.com/",
   "dataLicense": {
     "url": "https://roamtransit.com/",
-    "attribution": "unread",
-    "name": "unknown",
-    "checkedOn": "2026-11-25"
+    "attribution": "required",
+    "credit": "Roam Transit / Bow Valley Regional Transit Services Commission (GTFS)",
+    "checkedOn": "2026-11-26"
   },
   "region": "Alberta",
   "center": [

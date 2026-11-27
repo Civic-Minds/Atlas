@@ -56,5 +56,11 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "03c7f2cab8e4f320",
   "feedObtainedAt": "20260109",
-  "lastFeedStart": "20260101"
+  "lastFeedStart": "20260101",
+  "dataLicense": {
+    "url": "https://www.nyc.gov/html/dot/html/about/datafeeds.shtml",
+    "attribution": "required",
+    "name": "NYC DOT Data Feeds disclaimer",
+    "checkedOn": "2026-11-26"
+  }
 }

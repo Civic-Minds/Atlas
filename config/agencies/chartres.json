@@ -15,5 +15,12 @@
   "cities": [
     "Chartres, France"
   ],
-  "timezone": "Europe/Paris"
+  "timezone": "Europe/Paris",
+  "dataLicense": {
+    "url": "https://www.data.gouv.fr/datasets/reseau-filibus",
+    "attribution": "required",
+    "name": "Licence Ouverte v2.0 (Etalab)",
+    "updatedLabel": "Dernière mise à jour :",
+    "checkedOn": "2026-11-26"
+  }
 }
