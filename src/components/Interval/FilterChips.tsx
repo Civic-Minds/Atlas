@@ -62,9 +62,10 @@ interface FilterChipsProps {
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
    * as the full bar either way. 'history': Frequency and Time, with the map's own Time menu (CIV-389,
    * CIV-392; no "All day" since CIV-1097), and the Day chip only behind the beta day picker flag (CIV-1425);
-   * without it History is weekday only.
+   * without it History is weekday only. 'studio': Frequency, Day, Time and Mode, no Agencies, for Studio's map with no
+   * page open (CIV-2940, #1814; Ryan: "no need for the agency toggle", "We could have mode too").
    */
-  variant?: 'full' | 'shared' | 'side' | 'history';
+  variant?: 'full' | 'shared' | 'side' | 'history' | 'studio';
   /** History's Day chip (CIV-1646): the flag, and the open agency having weekend values; defaults to the flag. */
   historyDayPicker?: boolean;
   /** The connections top bar (CIV-1353, local only): replaces the filters while set. */
@@ -481,6 +482,17 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         {frequencyChip('')}
         {dayChip('')}
         {periodChip('')}
+      </div>
+    );
+  }
+
+  if (variant === 'studio') {
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        {frequencyChip('')}
+        {dayChip('')}
+        {periodChip('')}
+        {modeChip('')}
       </div>
     );
   }
