@@ -17,5 +17,45 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/montachusett-ma-us/montachusett-ma-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-433/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/montachusett-ma-us/montachusett-ma-us.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261231",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 54,
+      "feedExpiry": "20261231",
+      "routeCount": 22,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20261231-3bb56a9316f46526",
+  "lastFeedContentKey": "a4c99f142d8a314c",
+  "lastFeedExpiry": "20261231",
+  "lastPeekedExpiry": "20261231",
+  "lastFeedStart": "20261012",
+  "lastFeedVersion": "UTC: 12-Oct-2026 15:56",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "60e784e85cb7104f",
+  "feedObtainedAt": "20261127"
 }

@@ -24,7 +24,7 @@
   "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/columbiacounty-or-us/columbiacounty-or-us.zip",
-  "lastFeedCheckAt": "20261123",
+  "lastFeedCheckAt": "20261127",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270501",
@@ -45,7 +45,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-23",
+    "scoredAt": "2026-11-27"
   },
   "lastRawArchiveKey": "20270501-9bb2be59ec0e4c95",
   "lastFeedContentKey": "41736f5c33ea4334",

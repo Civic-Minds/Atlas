@@ -23,5 +23,45 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/startransit-va-us/startransit-va-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2444/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/startransit-va-us/startransit-va-us--flex-v2.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270501",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 minor schedule issues found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 3,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 9,
+      "feedExpiry": "20270501",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270501-55d09405a6216c04",
+  "lastFeedContentKey": "e12574d8221f8e7e",
+  "lastFeedExpiry": "20270501",
+  "lastPeekedExpiry": "20270501",
+  "lastFeedStart": "20261001",
+  "lastFeedVersion": "UTC: 12-Oct-2026 22:01",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "bf268a5a05dab333",
+  "feedObtainedAt": "20261127"
 }

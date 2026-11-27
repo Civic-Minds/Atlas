@@ -16,5 +16,45 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/petersburg-va-us/petersburg-va-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2441/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/petersburg-va-us/petersburg-va-us--flex-v2.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270201",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 minor schedule issues found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 3,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 40,
+      "feedExpiry": "20270201",
+      "routeCount": 10,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270201-214d83ece5915396",
+  "lastFeedContentKey": "86e1f976953ea2de",
+  "lastFeedExpiry": "20270201",
+  "lastPeekedExpiry": "20270201",
+  "lastFeedStart": "20260719",
+  "lastFeedVersion": "UTC: 20-Jul-2026 03:32",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "eca8b1b59fa27087",
+  "feedObtainedAt": "20261127"
 }
