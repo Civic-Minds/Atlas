@@ -101,8 +101,8 @@
       "slug": "siskiyou",
       "check": "headway-lost",
       "firstHeld": "2026-11-02",
-      "lastHeld": "2026-11-23",
-      "runs": 4,
+      "lastHeld": "2026-11-27",
+      "runs": 5,
       "message": "3 of 4 weekday route/directions with a headway live have none now (75%; 10985 d1, 32882 d0, 32882 d1)",
       "outcome": "held"
     },
@@ -151,8 +151,8 @@
       "slug": "start",
       "check": "duplicate",
       "firstHeld": "2026-11-02",
-      "lastHeld": "2026-11-23",
-      "runs": 4,
+      "lastHeld": "2026-11-27",
+      "runs": 5,
       "message": "route output is identical to modesto",
       "outcome": "held"
     },
@@ -209,8 +209,8 @@
       "slug": "ycat",
       "check": "day-lost",
       "firstHeld": "2026-11-02",
-      "lastHeld": "2026-11-23",
-      "runs": 4,
+      "lastHeld": "2026-11-27",
+      "runs": 5,
       "message": "no route lines on Sunday now (Sunday 12 -> 0)",
       "outcome": "held"
     },
@@ -218,8 +218,8 @@
       "slug": "ycat",
       "check": "drop",
       "firstHeld": "2026-11-02",
-      "lastHeld": "2026-11-23",
-      "runs": 4,
+      "lastHeld": "2026-11-27",
+      "runs": 5,
       "message": "output would drop sharply against live data (stops 174 -> 68) (pass --allow-drop after review)",
       "outcome": "held"
     },

@@ -22,5 +22,46 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/vatransit-va-us/vatransit-va-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2445/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/vatransit-va-us/vatransit-va-us--flex-v2.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270301",
+  "feedQuality": {
+    "status": "review",
+    "score": 62,
+    "reasons": [
+      "3 minor schedule issues found while reading the feed.",
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 3,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 33,
+      "feedExpiry": "20270301",
+      "routeCount": 12,
+      "problemShapes": 1,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270301-2e9608f988332870",
+  "lastFeedContentKey": "a8e510633ffed70f",
+  "lastFeedExpiry": "20270301",
+  "lastPeekedExpiry": "20270301",
+  "lastFeedStart": "20260901",
+  "lastFeedVersion": "UTC: 29-Sep-2026 20:57",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "cf272e35f3afb665",
+  "feedObtainedAt": "20261127"
 }
