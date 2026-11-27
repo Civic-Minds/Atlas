@@ -12,7 +12,8 @@
     38.28,
     -122.58
   ],
-  "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=PE",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=PE",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2947/latest.zip",
   "lastFeedExpiry": "20991231",
   "lastFeedVersion": "20261116",

@@ -19,7 +19,8 @@
     38.49,
     -122.57
   ],
-  "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=SR",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SR",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2948/latest.zip",
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "20261109",

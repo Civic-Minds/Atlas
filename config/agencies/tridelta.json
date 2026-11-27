@@ -20,7 +20,8 @@
     38.04,
     -121.69
   ],
-  "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=3D",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=3D",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1974/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260810",
