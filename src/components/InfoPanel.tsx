@@ -27,8 +27,8 @@ import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PL
 import { BUNCHING_LABEL, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
-import SourceCredits from './SourceCredits';
-import { useSourcesFocus } from '../utils/sourcesFocus';
+import SourceCredits, { SourceCreditPage, useSourceCredits } from './SourceCredits';
+import { sourceCreditId, useSourcesFocus } from '../utils/sourcesFocus';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
@@ -39,7 +39,7 @@ import { loadHistoryConfig } from '../utils/historyConfig';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'late-limit' | 'sources' | 'measurements' | 'measure-bunching';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'late-limit' | 'sources' | 'source-credit' | 'measurements' | 'measure-bunching';
 /** 'sources': About → Schedule sources, from the map's credit pill (CIV-461). */
 export type Tab = 'about' | 'agencies' | 'history' | 'live' | 'sources';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
@@ -130,6 +130,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const FEATURES = { ...BASE_FEATURES, history: BASE_FEATURES.history && phoneModeFlags(isPhone).history };
   const [view, setView] = useState<View>('home');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  /** CIV-3119: the agency whose credit page Sources has open. */
+  const [creditSlug, setCreditSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
   const [agencyFeatureFilters, setAgencyFeatureFilters] = useState<Set<AgencyListFilter>>(() => new Set());
@@ -206,12 +208,24 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     }
   }, [open, defaultTab, featureFilter, helpContext, scrollToLive]);
 
-  // CIV-461: a name in the map's credit pill opens Schedule sources at that agency's credit.
+  // CIV-461: a name in the map's credit pill opens Schedule sources at that agency's credit (CIV-3119: its own page).
   const sourcesFocus = useSourcesFocus();
+  const credits = useSourceCredits(agencies, FEATURES.live);
+  const sourcesAskSeen = useRef(0);
   useEffect(() => {
-    if (!sourcesFocus.n || !open) return;
-    setView('sources');
-  }, [sourcesFocus, open]);
+    if (!sourcesFocus.n || !open || sourcesFocus.n === sourcesAskSeen.current) return;
+    sourcesAskSeen.current = sourcesFocus.n;
+    const known = sourcesFocus.slug && credits.some(c => c.slug === sourcesFocus.slug);
+    setCreditSlug(known ? sourcesFocus.slug : null);
+    setView(known ? 'source-credit' : 'sources');
+  }, [sourcesFocus, open, credits]);
+  const openCredit = credits.find(c => c.slug === creditSlug) ?? null;
+  // Back from a credit page lands on that agency's row, not the top of the list.
+  useEffect(() => {
+    if (view !== 'sources' || !creditSlug) return;
+    const t = window.setTimeout(() => document.getElementById(sourceCreditId(creditSlug))?.scrollIntoView?.({ block: 'center' }), 0);
+    return () => window.clearTimeout(t);
+  }, [view, creditSlug]);
 
   useEffect(() => {
     if (view === 'agencies') {
@@ -322,7 +336,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     view === 'agencies' ? PAGE_NAMES.agencies
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
-    : view === 'sources' ? 'Sources'
+    : view === 'sources' ? BACK_PLACES.sources
+    // The row's own words (name · place), so the many "BC Transit" pages say which one.
+    : view === 'source-credit' ? (openCredit ? [openCredit.label.primary, openCredit.label.secondary].filter(Boolean).join(' · ') : '')
     : view === 'measurements' ? MEASUREMENTS_TITLE
     : view === 'measure-bunching' ? BUNCHING_LABEL
     : null;
@@ -356,9 +372,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               onClick={() => {
                 if (view === 'agency-detail') setView('agencies');
                 else if (view === 'measure-bunching') setView('measurements');
+                else if (view === 'source-credit') setView('sources');
                 else setView('home');
               }}
-              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : view === 'measure-bunching' ? MEASUREMENTS_TITLE : BACK_PLACES.aboutAtlas)}
+              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : view === 'measure-bunching' ? MEASUREMENTS_TITLE : view === 'source-credit' ? BACK_PLACES.sources : BACK_PLACES.aboutAtlas)}
             />
             <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}
@@ -522,6 +539,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 {SOURCES_LEAD}
               </p>
+              {/* CIV-3119 (Ryan: "being at teh bottom of the 200 item list is not ideal"): with the intro, above the list. */}
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                {feedRefreshCountdownLabel(feedRefreshMeta)}
+              </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {SOURCES_FALLBACK}
               </p>
@@ -535,11 +556,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
               {/* CIV-461: each agency whose data licence requires credit, and MBTA's MassDOT credit where Live is on: one pill each. */}
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_CREDITS_HEADING}</p>
-              <SourceCredits agencies={agencies} massDot={FEATURES.live} focusSlug={open ? sourcesFocus.slug : null} focusN={sourcesFocus.n} />
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {feedRefreshCountdownLabel(feedRefreshMeta)}
-              </p>
+              <SourceCredits credits={credits} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />
               {/* CIV-2084: when Live's figures were built is in the Live status pill's hover now, not here. */}
+            </div>
+          )}
+
+          {view === 'source-credit' && openCredit && (
+            <div className="h-full overflow-y-auto px-5 py-4">
+              <SourceCreditPage credit={openCredit} />
             </div>
           )}
 

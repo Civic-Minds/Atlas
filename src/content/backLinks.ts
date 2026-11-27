@@ -27,6 +27,8 @@ export const BACK_PLACES = {
   settings: 'Settings',
   /** About Atlas, from its inner pages and the privacy settings. */
   aboutAtlas: PAGE_NAMES.aboutPage,
+  /** About's Sources page, from an agency's credit page (CIV-3119); also that page's title. */
+  sources: 'Sources',
 } as const;
 
 /** The Night service list, from a route opened on it: noticeCopy's MAP_KEY_NIGHT (a test keeps them equal; no import, as noticeCopy imports this file). */
