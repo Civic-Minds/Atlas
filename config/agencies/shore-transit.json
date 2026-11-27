@@ -21,5 +21,6 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3149/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "keepLongShapeJumps": true
 }
