@@ -199,6 +199,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### Licence fit
 
+- **Sources has one line above the agency credits: "Licences and attributions."**
+  - What: About > Sources puts exactly that text above the agency pills, in the page's intro style. It claims nothing about which agencies are listed (the list is the agencies whose licence requires credit, plus MBTA's MassDOT credit).
+  - Why: Ryan approved it word for word. He rejected the three drafted sentences ("Feel like all those options sound gossipy") and "Agencies that ask for a credit" ("sounds bad tho"), and wants wording that doesn't imply every agency is listed.
+  - Source: [decision log](#decision-log) (2026-11-26), CIV-3096
+
 - **Atlas adds a layer; it doesn't change the agency's data**
   - What: Atlas's readings (frequencies, grades, map colours, cards, History) are a layer on the agency's data, not changes to it, so licence clauses against modification or derivative works don't bar the map, cards or History. A fix that restores what the agency meant (a cut-off or garbled stop name, a wrong route type) is also a layer. Giving something a new name of Atlas's choosing is not. Licence fit is judged separately for the MCP, which passes figures on to other AIs: clauses on redistribution or API-style sharing are judged for it on their own, as the WMATA entry does.
   - Why: Ryan: "Because we don't change the data - we just "add" a layer on to it". On fixes: "But those "small" corrections - like fixing a stop name (not renaming it!) I think would be fine". On the MCP: "So then we should treat the MCP as separate".
@@ -390,6 +395,9 @@ Ryan, 2026-11-26: "I'm confused here too because are these HSR routes not Live-e
 
 ### 2026-11-26 — Live shows no "figures updated" date; Measurements is one row per measure (CIV-3055, #1822; supersedes CIV-1814 item 41 and CIV-2084's pill-hover date)
 Ryan, 2026-11-26, on About > Measurements and the Live pill: "Grey within normal is a legend thing not a about page thin", "in live what does the updated date even mean idgi", "Is the date of it not confusing", then "1". The date was when Live's summary figures were built, not when bus positions came in, so it read as stale live data. Now: no "Figures updated" line on the Measurements page, none in the Live status pill's hover (the per-agency "positions last came in" lines and the retry countdown stay), the grey key only under the Live week table, and one row per measure ("Bunching ›") on Measurements. The route card's "Right now · last updated <time>" stays, shown only when data is stale.
+
+### 2026-11-26 — Sources intro reads "Licences and attributions." (CIV-3096)
+Ryan, 2026-11-26, on CIV-3096: "Feel like above the agency names here we need a lilttle sentence or para too". He rejected the manager's three drafted sentences: "Feel like all those options sound gossipy"; rejected "Agencies that ask for a credit": "sounds bad tho"; on the plainer drafts: "But like that doesnt include all of them so shouldnt say it does so i think 3 might be best? idk" and "remove the word "below" maybe? idk". Approved word for word: "Licences and attributions." Rejected wordings: the three drafted sentences ("These agencies' data licences ask us to credit them...", "Some agencies require credit for their schedules...", "Agencies whose schedule data comes with a credit requirement...") and "Agencies that ask for a credit".
 
 ### 2026-11-26 — Licence fit: Atlas adds a layer; fixes count; the MCP is judged separately (CIV-3066; extends 2026-11-22 "MTA and NJ Transit readings are reads, not changes")
 Ryan, 2026-11-26, three rulings on CIV-3066:
