@@ -5,8 +5,9 @@
   "websiteUrl": "http://www.rtl-longueuil.qc.ca",
   "dataLicense": {
     "url": "https://www.rtl-longueuil.qc.ca/CMS/MediaFree/file/GTFS/Conditions_GTFS.pdf",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "attribution": "required",
+    "name": "Conditions d'utilisation des données GTFS du RTL",
+    "checkedOn": "2026-11-26"
   },
   "region": "Quebec",
   "center": [

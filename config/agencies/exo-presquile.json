@@ -60,5 +60,11 @@
   "feedObtainedAt": "20260803",
   "lastFeedStart": "20261110",
   "lastRawArchiveKey": "20270103-bcf9c4958f85e717",
-  "lastFeedContentKey": "f6603fe06d5164f8"
+  "lastFeedContentKey": "f6603fe06d5164f8",
+  "dataLicense": {
+    "url": "https://exo.quebec/fr/a-propos/donnees-ouvertes",
+    "attribution": "required",
+    "name": "CC BY",
+    "checkedOn": "2026-11-26"
+  }
 }

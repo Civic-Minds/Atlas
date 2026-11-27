@@ -4,9 +4,11 @@
   "commonName": "UTA",
   "websiteUrl": "http://www.rideuta.com",
   "dataLicense": {
-    "url": "http://developer.rideuta.com/TermsOfUse.aspx",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://developer.rideuta.com/TermsOfUse.aspx",
+    "attribution": "required",
+    "name": "UTA Developer Site Terms of Use",
+    "credit": "Route and departure data provided by permission of UTA",
+    "checkedOn": "2026-11-26"
   },
   "center": [
     40.76,

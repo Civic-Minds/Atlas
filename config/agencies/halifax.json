@@ -4,9 +4,11 @@
   "displayArea": "Halifax",
   "websiteUrl": "http://www.halifax.ca/transit",
   "dataLicense": {
-    "url": "http://www.halifax.ca/opendata/OD_TermsOfUse.php",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://data-hrm.hub.arcgis.com/pages/open-data-licence",
+    "attribution": "required",
+    "name": "Open Government Licence – Halifax",
+    "credit": "Contains information licenced under the Open Government Licence—Halifax.",
+    "checkedOn": "2026-11-26"
   },
   "region": "Nova Scotia",
   "center": [

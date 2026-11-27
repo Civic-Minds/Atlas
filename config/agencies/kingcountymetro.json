@@ -70,5 +70,12 @@
   "feedObtainedAt": "20261102",
   "lastFeedStart": "20261029",
   "lastRawArchiveKey": "20270326-ff9b26cf8dc49558",
-  "lastFeedContentKey": "f7c177636f1ad8e5"
+  "lastFeedContentKey": "f7c177636f1ad8e5",
+  "dataLicense": {
+    "url": "https://kingcounty.gov/en/dept/metro/rider-tools/mobile-and-web-apps",
+    "attribution": "required",
+    "name": "King County Transit Data Terms of Use",
+    "credit": "Transit scheduling, geographic, and real-time data provided by permission of King County",
+    "checkedOn": "2026-11-26"
+  }
 }

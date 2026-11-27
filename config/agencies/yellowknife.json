@@ -50,5 +50,12 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "8a75b1f38c6cbb5b",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20241001"
+  "lastFeedStart": "20241001",
+  "dataLicense": {
+    "url": "https://www.yellowknife.ca/open-data-terms-use",
+    "attribution": "required",
+    "name": "City of Yellowknife Open Data License v.1",
+    "credit": "Contains public sector Datasets made available under the City of Yellowknife's Open Data License v.1",
+    "checkedOn": "2026-11-26"
+  }
 }
