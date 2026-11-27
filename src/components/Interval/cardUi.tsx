@@ -27,7 +27,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 import { CARD_SECTION } from '../../styles';
 import { PanelCloseButton } from '../ui/PanelHeader';
-import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, reportFormHint, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, reportFormHint, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -124,7 +124,7 @@ const FREQUENCY_REASON_LABELS: Record<string, string> = {
 const REPORT_CATEGORIES = [
   {
     key: 'route',
-    label: 'Route',
+    label: 'This route',
     description: 'Name, branch, line, frequency or schedule',
     reasons: [
       REPORT_REASON.missing,
@@ -144,8 +144,8 @@ const REPORT_CATEGORIES = [
   },
   {
     key: 'filter',
-    label: 'Map, filter or search',
-    description: 'Search, filter or route selection',
+    label: 'Finding routes',
+    description: 'Search, filters or what the map shows',
     reasons: [REPORT_REASON.filter],
   },
   {
@@ -333,12 +333,12 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
               ...(reportCardPosition ? { width: `${reportCardPosition.width}px` } : {}),
             }}
           >
-            <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
-              <div>
+            <div className={CARD_HEADER_BLOCK}>
+              <div className="flex items-center justify-between">
                 <h2 id={dialogTitleId} className={CARD_TITLE}>{REPORT_A_PROBLEM}</h2>
-                <p className={`${CARD_NOTICE} mt-0.5`}>{reportFormHint(FEATURES.cardClickToFlag)}</p>
+                <PanelCloseButton onClick={reset} label={closeLabel(CLOSE_PLACES.reportForm)} className="shrink-0 -mr-1.5 -my-1" />
               </div>
-              <PanelCloseButton onClick={reset} label={closeLabel(CLOSE_PLACES.reportForm)} />
+              <p className={`${CARD_NOTICE} mt-0.5`}>{reportFormHint(FEATURES.cardClickToFlag)}</p>
             </div>
 
             <div className="px-4 py-3 space-y-2">
@@ -422,7 +422,6 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             </div>
 
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
-              <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-xs font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">{CANCEL_LABEL}</button>
               {selectedCategory && <Pill submit selected className="!h-8 !px-3 !py-0 !rounded-lg !font-black hover:opacity-90">{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</Pill>}
             </div>
           </form>

@@ -1017,7 +1017,6 @@ export const SOURCE_LINK_LABEL = 'Source';
 export const SOURCE_LINK_ARIA_LABEL = 'Source (opens in a new tab)';
 export const OPENS_IN_NEW_TAB_HINT = 'Opens in a new tab';
 /** The report form's buttons. */
-export const CANCEL_LABEL = 'Cancel';
 export const CHANGE_LABEL = 'Change';
 export const MAP_LEGEND_LABEL = 'Map legend';
 /** A map key's screen-reader name. */
