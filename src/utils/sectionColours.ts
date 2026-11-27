@@ -76,8 +76,10 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   const last = values.findLastIndex(v => v != null);
   const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
   // CIV-2994: a direction that is one piece (the pipeline's pieceReadings: a trunk and no branch) colours every stop as the piece's reading.
-  const pieces = p.pieceReadings?.pieces;
-  const piece = pieces?.length === 1 ? pieces[0].periods?.[period] : undefined;
+  // Read per period: a direction whose other pieces run no trip in this period is one piece in it (OC Transpo 60 midday: its branch runs
+  // only at other times, so the whole-day piece count of 2 left 2 stops infrequent beside 29 at the piece's every 30).
+  const active = (p.pieceReadings?.pieces ?? []).filter(pc => pc.periods?.[period] != null);
+  const piece = active.length === 1 ? active[0].periods?.[period] : undefined;
   const pieceValue = piece && piece.t !== 'limited' ? piece.v : null;
   stops.forEach((stopId, i) => {
     const v = values[i];

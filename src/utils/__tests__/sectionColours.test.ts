@@ -280,6 +280,12 @@ describe('period section colours (CIV-321 S3)', () => {
     // Two pieces (a branch): each stop keeps its own value.
     const branched = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: { pieces: [...piece(30).pieces, { ...piece(15).pieces[0], kind: 'branch', index: 1 }] } }).features[0].properties as unknown as ShapeProperties;
     expect(periodSectionProps(branched, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '15', u: '15' });
+    // Two pieces, but the branch runs no trip in this period: the direction is one piece in it, so one colour.
+    const branchOff = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: { pieces: [...piece(30).pieces, { ...piece(15).pieces[0], kind: 'branch', index: 1, periods: { amPeak: { t: 'reading', v: 15 } } }] } }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(branchOff, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '30', u: '30' });
+    // One piece that has no reading in the period ("limited"): each stop keeps its own value, as before.
+    const limited = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: { pieces: [{ ...piece(30).pieces[0], periods: { midday: { t: 'limited' } } }] } }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(limited, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '15', u: '15' });
   });
 
   it('reads the same run-length values the pipeline writes', () => {
