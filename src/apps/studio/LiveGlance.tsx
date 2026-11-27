@@ -24,7 +24,7 @@ export default function LiveGlance({ s }: { s: AgencySummary }) {
   if (!bar) return null;
   const splitBar = <SplitBar segments={bar} label={`${G.barTitle}: ${G.onTime} ${onTimeText}, ${G.late} ${lateText}`} />;
   // CIV-3098: inside Studio's panel, a section of the panel under the shared section heading, with no box.
-  if (sections) return <PanelSection label={G.barTitle}>{splitBar}</PanelSection>;
+  if (sections) return <PanelSection label={G.barTitle}><p className="m-0 text-sm">{G.barTitle}</p>{splitBar}</PanelSection>;
   return (
     <Card as="section" tone="surface" aria-label={G.barTitle} className="mb-3 px-3 py-2.5 text-sm">
       <p className="m-0">{G.barTitle}</p>
