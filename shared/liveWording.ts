@@ -1,7 +1,6 @@
 import { noDataText } from './noDataText';
 import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
-import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
 import { minutesText } from './liveFormat';
@@ -222,27 +221,6 @@ export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readon
  */
 export function coveredRoutesText(/** The agency's short name (useLiveAgencyName). */ agency: string, routes: ReadonlyArray<unknown>): string {
   return `${routes.length} ${agency} ${plural(routes.length, 'route')}`;
-}
-
-/**
- * "Figures updated Oct 16, 6:12 PM" from an ISO timestamp: when Live's figures were last built. It sits in the About panel
- * beside the schedule refresh line (CIV-1814 item 41, Ryan: "put into the about area similar to how the last date GTFS was
- * updated is"; was "Built Oct 16, 6:12 PM" in each page's method section).
- * CIV-2976 N5: read on the viewer's own clock, like the positions lines beside it in the Live pill. One build covers every
- * Live agency, and Toronto time read wrong beside San Francisco, Los Angeles, Vancouver, Edmonton and Halifax figures.
- * `timeZone` pins a zone (tests).
- */
-function figuresBuiltAt(iso: string, timeZone?: string): string {
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date(iso));
-  const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
-  return `${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
-}
-export function figuresUpdatedText(iso: string, timeZone?: string): string {
-  return `Figures updated ${figuresBuiltAt(iso, timeZone)}`;
-}
-/** CIV-2084 (Ryan's words): the Live status pill's hover line for when Live's figures were built. */
-export function liveFiguresUpdatedText(iso: string, timeZone?: string): string {
-  return `Live figures updated ${figuresBuiltAt(iso, timeZone)}`;
 }
 
 /** The heading at the foot of every Live page (MethodFootnote), and the name its draw error uses. */
