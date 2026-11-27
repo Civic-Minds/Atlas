@@ -93,7 +93,7 @@ Every entry in this section is **on feature/live-local-poc, not main yet**, unle
 ### Metrics on the card
 
 - **typical extra running time**: `gainedMedianSec`, the median of (actual minus scheduled) per pass.
-  - Card wording: "Time lost: {X}" (the Schedule adherence cards' own line), plus the pass count and day count.
+  - Card wording: "Time lost: {X}" (the Lateness cards' own line), plus the pass count and day count.
   - Never use: "late", "delay of", "at least".
   - Rounding: nearest ½ min (`halfMinutes`). Colour and flags test the raw seconds: amber from 30 s, red from 60 s. A stop pair is listed only from 30 s.
   - Minimum sample: 30 passes and 5 days (`MIN_SEGMENT_TRIPS`, `MIN_DAYS`).
@@ -154,7 +154,7 @@ These measures are different things. Never combine them, convert one into anothe
 5. **"stood still"** is a count of events, never a duration, a delay or a "hold".
 6. Use "+" or "at least" only on a value that was rounded down (the 1-in-10). Values rounded to nearest get a plain number.
 7. Name the period and the sample ("31 trips, 9 days") with every number.
-8. **"Delay"** is kept for the clear-street measure. The timetable measures read **"Schedule adherence"** (the measure and its Live section, once "Falls behind" / "Delays start" / "Where delays start") and **"Typical deviation"** (once "Typical delay"). Ryan, 2026-11-25, CIV-2924; supersedes CIV-1602's "Delays start".
+8. **"Delay"** is kept for the clear-street measure. The timetable measures read **"Lateness"** (the measure, its Live section and Studio's one menu entry, once "Falls behind" / "Delays start" / "Where delays start", then "Schedule adherence") and **"Typical deviation"** (once "Typical delay"). Ryan, 2026-11-27, CIV-2924: "Ideally those would all be 1 word though", "Lateness might work"; supersedes his 2026-11-25 "Schedule adherence" and CIV-1602's "Delays start".
 
 ## Internal term to UI wording
 
