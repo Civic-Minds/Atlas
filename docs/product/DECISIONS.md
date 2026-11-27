@@ -165,9 +165,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ### How Atlas is built
 
 - **The MCP leaves out agencies whose terms bar an API**
-  - What: an agency on the exclusion list (`shared/rules/redistribution.ts`: WMATA; DART, NYC Ferry and Bee-Line, whose terms bar sharing; and 12 agencies that need written permission first) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
+  - What: an agency on the exclusion list (`shared/rules/redistribution.ts`: WMATA; DART, NYC Ferry and Bee-Line, whose terms bar sharing; and 15 agencies that need written permission first) is answered for by no Atlas Studio MCP tool, local or hosted, and any data download Atlas adds reads the same list. It stays on the map and in History. Asked about it, the MCP says Atlas can't serve that agency here; the Status page's MCP cell shows "Removed", with the reason on hover.
   - Why: WMATA's Transit Data Terms of Use bar "creating an application programming interface that enables access to Transit Data". Ryan: "Then remove it from MCP and note this somewhere internally".
-  - Source: [decision log](#decision-log) (2026-11-22, twice; C-TRAN removed from the list 2026-11-26), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693), CIV-2124, CIV-2125, CIV-3051
+  - Source: [decision log](#decision-log) (2026-11-22, twice; C-TRAN removed from the list 2026-11-26), [#1693](https://github.com/Civic-Minds/Atlas/issues/1693), CIV-2124, CIV-2125, CIV-3051, CIV-3100
 - **The MCP may say more than the map, never something different**
   - What: the MCP may hold and give more detail than the map, cards and lists show end users, but it must never contradict them: the same question gets the same answer, and a different answer is a bug.
   - Why: Ryan asked "can the MCP use info if we don't show it to end users", and picked 1 over keeping the MCP to what end users see.
@@ -633,7 +633,7 @@ Ryan (2026-11-22, relayed by Atlas Questions), to keep Atlas's readings of MTA a
 ### 2026-11-22 — 15 more agencies left out of the MCP: terms that bar sharing or need written permission (CIV-2124)
 Ryan (2026-11-22, on CIV-2124): "2 and update Coverage as "Removed" then have the reason when you hover over the Removed pill".
 - Group A, terms that don't allow sharing the data with other tools: Des Moines DART, NYC Ferry, Bee-Line.
-- Group C, terms that need the agency's consent, so each is left out until the agency gives written permission: NORTA, CATA Lansing, Spokane, TriMet, VRE, RTC Washoe, MTA Flint, MAX Birmingham, CityBus Lafayette, Topeka, Cherriots, C-TRAN (superseded 2026-11-26, CIV-3051: back in the MCP), and Whitehorse Transit (added by CIV-2125: the City of Whitehorse's open data terms allow internal and personal use only, with no publishing for commercial purposes without its written consent).
+- Group C, terms that need the agency's consent, so each is left out until the agency gives written permission: NORTA, CATA Lansing, Spokane, TriMet, VRE, RTC Washoe, MTA Flint, MAX Birmingham, CityBus Lafayette, Topeka, Cherriots, C-TRAN (superseded 2026-11-26, CIV-3051: back in the MCP), and Whitehorse Transit (added by CIV-2125: the City of Whitehorse's open data terms allow internal and personal use only, with no publishing for commercial purposes without its written consent), and Embark, UTA and IndyGo (added by CIV-3100, 2026-11-27: their terms use TriMet's template, where site content may be used only as displayed and any other use needs express written consent, so the TriMet ruling applies; Strategy's CIV-3066 verdict, group 4. The map and History keep them by this ruling, not because the wording allows it).
 - Each has its own reason in `shared/rules/redistribution.ts`, shown on hover over its "Removed" tag on the Status page. The clauses are in `_reports/civ-462/agencies-v2.tsv` (CIV-462 v2, from CIV-468).
 - The map and History keep them, as with WMATA.
 

@@ -25,6 +25,11 @@ export const NO_REDISTRIBUTION: readonly RedistributionExclusion[] = [
   { slug: 'citybus-lafayette', reason: 'CityBus’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
   { slug: 'topeka', reason: 'Topeka Metro’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
   { slug: 'cherriots', reason: 'Cherriots’ data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
+  // CIV-3100: Embark, UTA and IndyGo use TriMet's terms template (site content usable only as displayed; any other use
+  // needs the agency's express written consent), so the TriMet ruling of 2026-11-22 applies: out until it gives it in writing.
+  { slug: 'embark', reason: 'Embark’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
+  { slug: 'uta', reason: 'UTA’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
+  { slug: 'indygo', reason: 'IndyGo’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
   // CIV-2125, group C: the City of Whitehorse's open data terms limit use to internal and personal purposes without its written consent.
   { slug: 'whitehorse', reason: 'Whitehorse Transit’s data terms don’t allow sharing its data with other tools without its consent, so it’s left out until the agency gives written permission.' },
 ];
