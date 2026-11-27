@@ -1,7 +1,6 @@
 {
   "slug": "elmonte",
   "officialName": "El Monte Transit",
-  "hiddenInProduction": true,
   "center": [
     34.0689,
     -118.0362
