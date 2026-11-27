@@ -46,6 +46,7 @@ import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayTex
 import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance, { agencyHour } from '../components/Live/LiveRoutePerformance';
+import LiveStaleClock from '../components/Live/LiveStaleClock';
 import { RouteCardHeadway } from '../components/Interval/panels/RouteCardHeadway';
 import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../utils/routeCardRoute';
 import { buildDirectionGroups } from '../utils/routeCardDirectionGroups';
@@ -802,6 +803,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         scheduledRowsFor={scheduledRowsFor}
         onDestinationGaps={onRows && canGroupByDirection ? onDestinationGaps : undefined}
+        staleInHeading={false}
       />
       {!(grouped && unclaimed.length === 0) && <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
@@ -938,6 +940,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       onInfoOpen={onInfoOpen}
       extra={claimed => liveRouteSections(claimed, true)}
       rowLive={liveRowFor}
+      headerIcon={<LiveStaleClock slug={selectedGroup.agencySlug} vehicles={selectedGroup.vehicles} />}
     />
   ) : selectedGroup ? (
     // The route layer hasn't loaded (or has no such route): Live's own header over the same sections.
@@ -957,6 +960,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             </CardBackLink>
             {routeCardTitle}
           </div>
+          <LiveStaleClock slug={selectedGroup.agencySlug} vehicles={selectedGroup.vehicles} />
           <CardReportButton
             title={liveReportFlagTitle(reportAgencyName, agencies.length > 0, selectedGroup.routeShortName)}
             details={liveRouteReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, direction: selectedDirection, vehicles: allListed })}

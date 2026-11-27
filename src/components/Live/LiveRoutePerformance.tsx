@@ -87,6 +87,9 @@ interface Props {
   scheduledRows?: ReadonlyArray<LiveScheduledRow> | null;
   /** Main Live (CIV-2901 v3): each direction's own destination rows (liveScheduledRowsNow), so every direction shows at once. */
   scheduledRowsFor?: (directionId: number, label: string) => ReadonlyArray<LiveScheduledRow> | null;
+  /** "Right now · last updated 2:04 PM" once the reports are stale (CIV-1034); main Live's card passes false, its clock
+   *  beside the flag says it (CIV-3047 B). */
+  staleInHeading?: boolean;
   slug: string;
   routeShortName: string;
   /** The route's vehicles as the map shows them (every poll); "Right now" is built from these. */
@@ -164,7 +167,7 @@ export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: strin
  * as the regular card lists them, with no toggle; the card's own destination rows already give the schedule. Studio's panel
  * (CIV-2021) steers it to one direction with its own Direction chip and keeps the Scheduled lines, having no route card.
  */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled, onDestinationGaps }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled, onDestinationGaps, staleInHeading = true }: Props) {
   const steered = direction !== undefined;
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
@@ -211,9 +214,10 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   }
   if (!directions.length) return null;
 
-  // Fresh data needs no time; stale data says when it was last updated (by the newest vehicle report).
+  // Fresh data needs no time; stale data says when it was last updated (by the newest vehicle report). On main Live's
+  // route card the clock beside the flag says it instead (CIV-3047 B), so the heading stays "Right now" there.
   const newest = Math.max(0, ...vehicles.map(v => v.tsEpoch ?? 0));
-  const rightNowLabel = newest > 0 && now / 1000 - newest > RIGHT_NOW_STALE_SEC
+  const rightNowLabel = staleInHeading && newest > 0 && now / 1000 - newest > RIGHT_NOW_STALE_SEC
     ? `${RIGHT_NOW_LABEL} · last updated ${agencyTime(slug, new Date(newest * 1000))}`
     : RIGHT_NOW_LABEL;
   if (feedDegraded) return null;
