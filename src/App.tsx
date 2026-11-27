@@ -906,6 +906,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               agencyFilterSlugs={historyMapFilterOn ? historyFilterSlugs : inBustang ? bustangSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService || inStudio}
+              // CIV-2940 (#1814): Studio's map colours its lines by frequency with no page open, so the map's own
+              // Frequency, Day, Time and Mode chips show there (Ryan picked 5; no Agencies toggle).
+              studioFilters={studioNoPage}
               pageView={inStudio}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
@@ -940,7 +943,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onCompareActiveChange={setCompareActive}
               compareTabElsewhere={FEATURES.modeTransitions && compareOn && (inLive || inHistory) ? () => setActiveApp('frequency', COMPARE_PATH) : undefined}
               // Studio puts its own chips and tabs in these slots (CIV-1828).
-              headerPortalContainer={inStudio ? null : headerPortalEl}
+              headerPortalContainer={inStudio && !studioNoPage ? null : headerPortalEl}
               viewTabsPortalContainer={inStudio ? null : viewTabsPortalEl}
               moreMenuPortalContainer={inStudio ? null : moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}

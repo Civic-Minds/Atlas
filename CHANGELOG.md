@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's map has Frequency, Day, Time and Mode filters**: its lines were coloured by frequency with no way to filter them, as the main map can
 - **Live vehicles are arrows pointing the way they're heading**: the dots carried the route number, which made them hard to read; a vehicle that reports no heading stays a plain dot
 - **Long destination names no longer squeezed**: a reading that doesn't fit beside the name sits right-aligned on the line below.
 - **Live's list shows every route on the map**: after picking a place such as Burlington Transit, the list kept to that agency, so HSR routes drawn on the map in the Hamilton view were missing from it
