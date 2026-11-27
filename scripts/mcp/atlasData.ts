@@ -1135,7 +1135,7 @@ export async function routeHistory(agency: CatalogAgency, routeQuery: string, da
       const today = findRoute(await routeList(agency, day), route.routeShortName);
       if (today) {
         const cells = PERIOD_KEYS.flatMap(k => { const f = today.figures[k]; return f.waitMinutes != null ? [[PERIOD_LABELS[k], headwayEvery(f.waitMinutes)]] : f.shown === 'no service' ? [[PERIOD_LABELS[k], 'no service']] : []; });
-        const through = agency.lastFeedExpiry ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
+        const through = agency.lastFeedExpiry && !agency.noFeedEnd ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
         todayWait = Object.fromEntries(PERIOD_KEYS.flatMap(k => today.figures[k].waitMinutes != null ? [[k, today.figures[k].waitMinutes!]] : []));
         current = { schedule: `Today's schedule on Atlas's map (History's newest is ${newest.label}${through})`, ...Object.fromEntries(cells) };
       }

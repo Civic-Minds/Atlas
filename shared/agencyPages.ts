@@ -738,6 +738,13 @@ export const listingEndedPageLine = (through: string, date: string, ended: boole
 // for TIMETABLE_STALE_MONTHS (shared/config). Without the warning, only the first sentence.
 export const NO_END_DATE_LEAD = 'Based on the agency’s published schedule, which has no end date.';
 export const timetableStaleLine = (monthYearText: string) => `The agency hasn’t changed its timetable since ${monthYearText}, so it may be out of date.`;
+// CIV-3115 (Ryan's exact text, 2026-11-27): the MCP's "schedule valid through" for a feed with no end date, with the same
+// warning as the page once its timetable hasn't changed for TIMETABLE_STALE_MONTHS.
+export const NO_END_DATE_SHORT = 'no end date';
+export function noEndDateValidThrough(a: { timetableChangedAt?: string | null }, todayYmd: string): string {
+  const changed = isTimetableStale(a.timetableChangedAt, todayYmd) ? monthYear(a.timetableChangedAt) : null;
+  return changed ? `${NO_END_DATE_SHORT}; ${timetableStaleLine(changed).replace(/^The /, 'the ').replace(/\.$/, '')}` : NO_END_DATE_SHORT;
+}
 
 export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn' | 'timezone' | 'noFeedEnd' | 'timetableChangedAt'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd(a)): string {
   const published = shortDate(a.lastRefreshedAt);

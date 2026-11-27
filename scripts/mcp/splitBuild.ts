@@ -37,7 +37,8 @@ export async function agencyFiles(a: McpAgency): Promise<Files> {
 /** The catalog with only the fields the tools use (the config behind it is about 90 fields an agency). */
 export const slimCatalog = (catalog: McpAgency[]): McpAgency[] => catalog.map(a => ({
   slug: a.slug, name: a.name, ...(a.region != null ? { region: a.region } : {}), ...(a.cities ? { cities: a.cities } : {}),
-  ...(a.lastFeedExpiry != null ? { lastFeedExpiry: a.lastFeedExpiry } : {}), ...(a.lastRefreshedAt != null ? { lastRefreshedAt: a.lastRefreshedAt } : {}),
+  ...(a.lastFeedExpiry != null ? { lastFeedExpiry: a.lastFeedExpiry } : {}), ...(a.noFeedEnd ? { noFeedEnd: true } : {}),
+  ...(a.timetableChangedAt != null ? { timetableChangedAt: a.timetableChangedAt } : {}), ...(a.lastRefreshedAt != null ? { lastRefreshedAt: a.lastRefreshedAt } : {}),
   ...(a.betaOnly ? { betaOnly: a.betaOnly } : {}), ...(a.center ? { center: a.center } : {}), ...(a.feedCredit ? { feedCredit: a.feedCredit } : {}),
   ...(a.dataLicense ? { dataLicense: a.dataLicense } : {}),
 }));
