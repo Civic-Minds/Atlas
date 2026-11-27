@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Agency } from '../App';
-import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
+import { AgencyFileNotFoundError, fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
 import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { DETAIL_GEOJSON_MIN_ZOOM } from '../../shared/rules/limits';
 import type { HeadwayByPeriod } from '../../shared/config';
@@ -51,6 +51,14 @@ interface AgencyLoadSession {
   /** Set once any fetch has settled, which lets the low-priority queue widen. */
   anySettled: boolean;
   activeFetches: number;
+}
+
+/**
+ * #1899: a hidden agency (shown only in dev) whose route file isn't in the data release was never published, which is
+ * normal for a hidden agency, not a load failure: no retry and no "couldn't load" pill.
+ */
+export function isUnpublishedHiddenAgency(agency: Pick<Agency, 'hiddenInProduction'>, err: unknown): boolean {
+  return agency.hiddenInProduction === true && err instanceof AgencyFileNotFoundError;
 }
 
 /** Stamp agencySlug on feature properties once so stats/search can reuse objects without recloning. */
@@ -136,6 +144,7 @@ export function useAgencyData(
   const [loadedCount, setLoadedCount] = useState(0);
   const [requestedCount, setRequestedCount] = useState(0);
   const [failedSlugs, setFailedSlugs] = useState<Set<string>>(new Set());
+  const [unpublishedSlugs, setUnpublishedSlugs] = useState<Set<string>>(new Set());
   const loadSession = useRef<AgencyLoadSession | null>(null);
   const loadedCorridorSlugs = useRef(new Set<string>());
 
@@ -157,6 +166,7 @@ export function useAgencyData(
     setLoadedCount(0);
     setRequestedCount(0);
     setFailedSlugs(new Set());
+    setUnpublishedSlugs(new Set());
     return () => {
       session.cancelled = true;
       if (loadSession.current === session) loadSession.current = null;
@@ -182,6 +192,10 @@ export function useAgencyData(
       })
       .catch(err => {
         if (session.cancelled) return;
+        if (isUnpublishedHiddenAgency(agency, err)) {
+          setUnpublishedSlugs(prev => new Set(prev).add(agency.slug));
+          return;
+        }
         console.error(`Failed to load ${agency.slug}${isRetry ? ' (retry)' : ''}`, err);
         if (!isRetry) return attemptFetchAgency(agency, true, session);
         setFailedSlugs(prev => new Set(prev).add(agency.slug));
@@ -367,5 +381,5 @@ export function useAgencyData(
   }, [agencyLayerCount, agencies, bounds, priorityKey, searchQuery, selectedAgencySlug]);
 
   const isLoading = loadedCount < requestedCount;
-  return { layers, loadedCount, requestedCount, isLoading, failedSlugs };
+  return { layers, loadedCount, requestedCount, isLoading, failedSlugs, unpublishedSlugs };
 }

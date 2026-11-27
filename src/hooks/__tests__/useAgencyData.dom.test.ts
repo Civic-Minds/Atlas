@@ -5,7 +5,10 @@ import type { ViewportBounds } from '../useIntervalStats';
 
 const fetchAgencyGeo = vi.fn();
 
+class AgencyFileNotFoundError extends Error {}
+
 vi.mock('../../lib/agencyGeo', () => ({
+  AgencyFileNotFoundError,
   fetchAgencyGeo: (...args: unknown[]) => fetchAgencyGeo(...args),
   getCachedAgencyGeo: () => undefined,
   fetchAgencyCorridors: vi.fn(),
@@ -196,5 +199,35 @@ describe('useAgencyData failure handling', () => {
     await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(1));
     resolvers.shift()!();
     await waitFor(() => expect(fetchAgencyGeo).toHaveBeenCalledTimes(4));
+  });
+
+  // #1899: Ontario Northland is hidden and was never published, so the dev map's "1 agency couldn't load" pill was wrong.
+  it('does not count a hidden agency with no published route file as failed, and does not retry it', async () => {
+    fetchAgencyGeo.mockRejectedValue(new AgencyFileNotFoundError('ontario-northland geo 404'));
+    const agencies = [{ ...agency('ontario-northland'), hiddenInProduction: true }];
+    const { result } = renderHook(() => useAgencyData(agencies, viewport));
+
+    await waitFor(() => expect(result.current.unpublishedSlugs.has('ontario-northland')).toBe(true));
+    expect(fetchAgencyGeo).toHaveBeenCalledTimes(1);
+    expect(result.current.failedSlugs.size).toBe(0);
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it('still counts a public agency whose route file is missing as failed (#757, #759)', async () => {
+    fetchAgencyGeo.mockRejectedValue(new AgencyFileNotFoundError('ttc geo 404'));
+    const agencies = [agency('ttc')];
+    const { result } = renderHook(() => useAgencyData(agencies, viewport));
+
+    await waitFor(() => expect(result.current.failedSlugs.has('ttc')).toBe(true));
+    expect(result.current.unpublishedSlugs.size).toBe(0);
+  });
+
+  it('still counts a hidden agency as failed when its load fails for another reason', async () => {
+    fetchAgencyGeo.mockRejectedValue(new Error('network down'));
+    const agencies = [{ ...agency('hidden-agency'), hiddenInProduction: true }];
+    const { result } = renderHook(() => useAgencyData(agencies, viewport));
+
+    await waitFor(() => expect(result.current.failedSlugs.has('hidden-agency')).toBe(true));
+    expect(fetchAgencyGeo).toHaveBeenCalledTimes(2);
   });
 });

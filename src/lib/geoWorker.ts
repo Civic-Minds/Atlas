@@ -15,7 +15,9 @@ self.addEventListener('message', async (e: MessageEvent) => {
 
     const r = await fetch(withVersionParam(url, weekVer), { cache: 'default', signal: typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(60_000) : undefined });
     if (!r.ok) {
-      throw new Error(`HTTP ${r.status}`);
+      // The status goes back with the error so a missing file (404) can be told apart from a failed load (#1899).
+      self.postMessage({ slug, type, success: false, error: `HTTP ${r.status}`, status: r.status });
+      return;
     }
 
     const data = await r.json() as GeoJSON.FeatureCollection;
