@@ -37,7 +37,8 @@ import { LIVE_SURFACE_PREFIX } from './live-store-surface-gtfs.js';
 const addDays = (day: string, n: number) => new Date(Date.parse(`${day}T12:00:00Z`) + n * 86400_000).toISOString().slice(0, 10);
 
 /** Where an agency's service date ends (TTC: 4 a.m. Toronto). */
-export interface WindowClock { timeZone: string; serviceDayEndHour: number }
+/** `unscheduledTripId` (#1801): live trip ids with no scheduled trip by design, left out of the match. */
+export interface WindowClock { timeZone: string; serviceDayEndHour: number; unscheduledTripId?: RegExp | null }
 
 /** The last `n` Toronto (or the agency's local) service dates before the local date of `nowMs`, oldest first. */
 export function windowServiceDates(n: number, nowMs: number, clock?: WindowClock): string[] {
@@ -63,7 +64,7 @@ export function serviceDateTripIds(files: readonly string[], read: (file: string
         if (!line) continue;
         const snap = JSON.parse(line) as { ts?: number; v: unknown[][] };
         if (typeof snap.ts !== 'number' || snap.ts < from || snap.ts >= to) continue;
-        for (const v of snap.v) if (typeof v[1] === 'string' && v[1]) ids.add(v[1]);
+        for (const v of snap.v) if (typeof v[1] === 'string' && v[1] && !clock?.unscheduledTripId?.test(v[1])) ids.add(v[1]);
       }
     }
   }
@@ -198,7 +199,7 @@ function checkAndReport(archiveDir: string, dates: string[], feeds: FeedCoverage
 async function otherAgency(agency: string, days: number, minShare: number, args: Record<string, string>): Promise<void> {
   if (!args['feeds-dir']) { console.error('live-gtfs-window: give --feeds-dir <dir>'); process.exit(2); }
   const live = loadLiveAgencyConfig(agency);
-  const clock: WindowClock = { timeZone: live.timeZone, serviceDayEndHour: live.serviceDayEndHour };
+  const clock: WindowClock = { timeZone: live.timeZone, serviceDayEndHour: live.serviceDayEndHour, unscheduledTripId: live.unscheduledTripId };
   const feedsDir = resolve(args['feeds-dir']);
   const archiveDir = resolve(args.archive ?? join(process.env.LIVE_DATA ?? '../_live-data', `archive-${agency}`));
   const cache = resolve(args.cache ?? join(process.env.RUNNER_TEMP ?? '../_feeds', 'archive-cache'), agency);
