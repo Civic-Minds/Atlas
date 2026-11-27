@@ -1068,7 +1068,8 @@ export const HISTORY_TAG = 'History';
 export const clearAgencyFiltersTitle = (pills: readonly string[]): string => `Clear the ${joinList(pills)} filters`;
 /** The agency list's Sources view (CIV-1795: no "GTFS feed" jargon, as About Atlas says "published agency schedules"). */
 export const SOURCES_LEAD = 'We use the schedules transit agencies publish, usually downloaded directly from each agency.';
-export const SOURCES_FALLBACK = 'When we can’t rely on an agency’s own copy, we may use a public copy from:';
+/** Ryan, 2026-11-27, word for word (CIV-3118): not blame-y. */
+export const SOURCES_FALLBACK = 'For some agencies, we use their schedule from one of these public sources:';
 /** Above the agency credits in Sources (CIV-3096, Ryan, 2026-11-26, word for word). */
 export const SOURCES_CREDITS_HEADING = 'Licences and attributions.';
 export const NEW_TAG = 'New';
