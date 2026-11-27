@@ -13,7 +13,14 @@
     38.26,
     -121.61
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip",
+  "dataLicense": {
+    "url": "https://511.org/sites/default/files/pdfs/511_Data_Agreement_Final.pdf",
+    "attribution": "unread",
+    "name": "511 Data Disseminator Agreement",
+    "checkedOn": "2026-11-27"
+  },
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=RV",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-81/latest.zip",
   "lastFeedExpiry": "20250131",
   "lastFeedVersion": "UTC: 23-Feb-2024 22:27",
