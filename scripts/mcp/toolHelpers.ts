@@ -13,6 +13,7 @@ import { MAP_URL } from '../../src/utils/urlSchema';
 import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
 import { buildRouteKey } from '../../src/utils/routeKey';
 import { isoDate } from '../../shared/dateText';
+import { noEndDateValidThrough } from '../../shared/agencyPages';
 import { FEED_EXPIRING_DAYS } from '../../shared/rules/limits';
 import { PERIODS } from './toolDefs';
 
@@ -35,7 +36,9 @@ export function mapLink(view: { route?: { agency: string; routeId: string }; age
 
 // The early-morning window rule lives with the hour-by-hour view that also reads it (#1868).
 export { startsInWindow, windowHas } from './atlasData';
-export const validThrough = (a: { lastFeedExpiry?: string | null }) => isoDate(a.lastFeedExpiry);
+/** The schedule's end date, or for a feed that gives none Ryan's "no end date" words (CIV-3115), never the placeholder cap. */
+export const validThrough = (a: { lastFeedExpiry?: string | null; noFeedEnd?: boolean; timetableChangedAt?: string | null }, today = new Date().toISOString().slice(0, 10)) =>
+  a.noFeedEnd ? noEndDateValidThrough(a, today) : isoDate(a.lastFeedExpiry);
 
 /**
  * CIV-2081: an answer whose schedule ends within FEED_EXPIRING_DAYS (scheduleValidThrough, YYYY-MM-DD) carries a
@@ -104,7 +107,8 @@ export async function withAlso(a: Awaited<ReturnType<typeof needAgency>>, args: 
   return [a, ...more].filter((x, i, all) => all.findIndex(y => y.slug === x.slug) === i);
 }
 /** Trip times read the schedule file on this Mac, which can be older than the schedule behind the map's figures: say so first. */
-export const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | null) => (ends && a.lastFeedExpiry && ends < a.lastFeedExpiry
+// CIV-3115: no note for a feed with no end date, whose lastFeedExpiry is only the placeholder cap.
+export const staleNote = (a: { lastFeedExpiry?: string | null; noFeedEnd?: boolean }, ends: string | null) => (ends && a.lastFeedExpiry && !a.noFeedEnd && ends < a.lastFeedExpiry
   ? { scheduleWarning: `These trip times come from an older schedule file on this Mac (service to ${isoDate(ends)}); the map's figures use the current one (to ${validThrough(a)}). Times may have changed since.` }
   : {});
 export const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;
