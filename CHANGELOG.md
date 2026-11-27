@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **About > Measurements is one row per measure, and Live shows no "figures updated" date**: "Bunching ›" opens its definition; the date was when summary figures were built, not when buses were seen, so it read as stale live data
 - **The MCP's live readings cover YRT, DRT, Brampton and Burlington**: it called their recording paused although the cloud recorder has recorded them every minute since November 24
 - **The MCP says when a route's grade is slower than its listed frequency**: RTD 31 weekday mornings read "every 10 min" beside a 60-minute grade with no word on why, so a model could drop either figure
 - **TTC stop names are whole again and use current station names**: TTC's file cuts names at 60 characters ("... - Bayview Statio") and still says "Dundas Station" and "Eglinton West"; a hand-checked list of 41 stops now gives the full name, TMU and Cedarvale

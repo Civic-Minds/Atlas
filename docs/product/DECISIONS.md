@@ -307,10 +307,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: stops as dots on a line, a 3-step colour scale, the marked stretch as a bracket, "less exact" stops hatched.
   - Why: Ryan liked it; reach for it before bar charts or prose.
   - Source: [VISUAL.md](../style/VISUAL.md) (Live)
-- **Share changes read with an arrow; the build time sits in About**
-  - What: a share before and after reads "10% → 41%" (was "10% to 41%"); where a summary lacks both shares, nothing shows (the "+31 pt" points fallback is gone). "Figures updated Oct 16, 6:12 PM" (was "Built …" in each Live page's method section) sits in the About panel beside the schedule refresh line, and in Studio's About under its Live part.
-  - Why: Ryan, 2026-11-21: "Should the "built XYZ" be reworded then put into the about area similar to how the last date GTFS was updated is?", "Why would we not put +31%", "10% arrow 31%?", then "1" to "Use the arrow, "10% → 41%"; move the "Figures updated" line to About; drop "+31 pt" (Recommended)."
-  - Source: Linear CIV-1814 (item 41), CIV-2038
+- **Share changes read with an arrow; Live shows no "figures updated" date**
+  - What: a share before and after reads "10% → 41%" (was "10% to 41%"); where a summary lacks both shares, nothing shows (the "+31 pt" points fallback is gone). No "Figures updated" or "Live figures updated" date shows anywhere: not on About's Measurements page, not in the Live status pill's hover. The route card's "Right now · last updated <time>" stays, shown only when the data is stale. About > Measurements is one row per measure ("Bunching ›"); the grey key stays only under the Live week table.
+  - Why: Ryan, 2026-11-21: "Why would we not put +31%", "10% arrow 31%?", then "1" to "Use the arrow, "10% → 41%"". Ryan, 2026-11-26: "in live what does the updated date even mean idgi", "Is the date of it not confusing" (the date is when the summary figures were built, not the bus positions, so it reads as stale live data), "Grey within normal is a legend thing not a about page thin".
+  - Source: Linear CIV-3055 (supersedes the 2026-11-21 "build time sits in About" line, CIV-1814 item 41, and CIV-2084's date in the pill hover), CIV-2038
 - **Studio's cities, and the same Live cities in Studio and the main app**
   - What: Studio's Schedules and vehicles-needed agencies are Kingston, Hamilton, RTD Denver, Guelph, TTC, YRT and the MBTA (TransLink and OC Transpo out). Studio's Live and the main app's Live list the same cities from one shared list; a city without recordings shows the no-data note.
   - Why: Ryan, 2026-11-21: "I think Live in Studio and Live in main app should have the same cities available", and "1" to the four focus agencies plus TTC, YRT and the MBTA.
@@ -380,6 +380,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — Live shows no "figures updated" date; Measurements is one row per measure (CIV-3055, #1822; supersedes CIV-1814 item 41 and CIV-2084's pill-hover date)
+Ryan, 2026-11-26, on About > Measurements and the Live pill: "Grey within normal is a legend thing not a about page thin", "in live what does the updated date even mean idgi", "Is the date of it not confusing", then "1". The date was when Live's summary figures were built, not when bus positions came in, so it read as stale live data. Now: no "Figures updated" line on the Measurements page, none in the Live status pill's hover (the per-agency "positions last came in" lines and the retry countdown stay), the grey key only under the Live week table, and one row per measure ("Bunching ›") on Measurements. The route card's "Right now · last updated <time>" stays, shown only when data is stale.
 
 ### 2026-11-26 — Licence fit: Atlas adds a layer; fixes count; the MCP is judged separately (CIV-3066; extends 2026-11-22 "MTA and NJ Transit readings are reads, not changes")
 Ryan, 2026-11-26, three rulings on CIV-3066:
