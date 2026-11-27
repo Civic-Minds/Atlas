@@ -81,6 +81,7 @@ import {
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
   selectByFeedDates,
+  liveExpiryToCompare,
   type PeekedArchive,
   type ArtifactCounts,
 } from './archiveSelection.js';
@@ -300,7 +301,7 @@ async function processAgency(agency: Agency, fareOverrides: FareOverrides): Prom
     const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = processedDates;
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
-    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null, todayYmd);
+    const dateRefusal = feedDateRefusal(feedExpiry, liveExpiryToCompare(sourceKey, agency), agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null, todayYmd);
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
