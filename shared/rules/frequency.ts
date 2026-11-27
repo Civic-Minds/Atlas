@@ -104,6 +104,13 @@ export const POOLED_MAX_GAP_RATIO = 1.75;
  */
 export const POOLED_MAX_GAP_GRACE_MINUTES = 5;
 /**
+ * CIV-2976 F6: the period range (computePeriodHeadwayRanges) leaves out one exceptional hole: its largest gap, when that is at
+ * least RANGE_HOLE_MIN_EXTRA_MINUTES longer than the next largest and at least RANGE_HOLE_MIN_RATIO times it. Named here from
+ * the numbers the function already used; not yet shared with typicalOfGaps' own long-gap rule.
+ */
+export const RANGE_HOLE_MIN_EXTRA_MINUTES = 10;
+export const RANGE_HOLE_MIN_RATIO = 1.6;
+/**
  * CIV-2232 (Ryan, 2026-11-24, "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular"): a route
  * card row read from its own trips shows a number only with at least this many of them in the period. Card wording only.
  */

@@ -1,7 +1,7 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, SPARKLINE_HOURS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
-import { headwayGradeOn, TIER_MAXES } from '../shared/rules/frequency.js';
+import { headwayGradeOn, RANGE_HOLE_MIN_EXTRA_MINUTES, RANGE_HOLE_MIN_RATIO, TIER_MAXES } from '../shared/rules/frequency.js';
 import {
   FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS,
   RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN, RESEARCH_FREQUENT_SERVICE_START_MIN,
@@ -942,7 +942,7 @@ export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByP
     const gaps = times.slice(1).map((time, i) => time - times[i]).sort((a, b) => a - b);
     const last = gaps[gaps.length - 1];
     const next = gaps[gaps.length - 2];
-    if (gaps.length >= 3 && last - next >= 10 && last / next >= 1.6) gaps.pop();
+    if (gaps.length >= 3 && last - next >= RANGE_HOLE_MIN_EXTRA_MINUTES && last / next >= RANGE_HOLE_MIN_RATIO) gaps.pop();
     result[key] = { min: Math.round(gaps[0]), max: Math.round(gaps[gaps.length - 1]) };
   }
   return result;
