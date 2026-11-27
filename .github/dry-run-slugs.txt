@@ -1,0 +1,14 @@
+# Slugs for a dryrun/process-* tag push (process-dry-run.yml), one per line. CIV-3114 groups D and F.
+shore-transit
+virginia-regional
+benton-area
+cripple-creek
+river-valley
+elmonte
+siskiyou
+start
+ycat
+sun-tran
+wvu-prt
+southportlandme
+scat
