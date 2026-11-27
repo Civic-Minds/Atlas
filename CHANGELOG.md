@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A stop card no longer gives a destination a number its own buses don't run**: on a shared stretch, a destination with no trips of its own in the period showed every bus passing the stop under its name (TTC 102 midday "to Sheppard every 7" from 12 trips a day); the Shared stretch row carries that number, and the MCP's stop answers follow
 - **The MCP no longer answers for Embark, UTA and IndyGo**: their data terms need the agency's written permission for other uses, as TriMet's do; the map and History keep them
 - **The MCP gives the credit each agency's data licence asks for, as the site's Sources do**: it credited only 511.org agencies, so answers about the TTC, TransLink, VIA and 30 others carried no credit their licence requires
 - **Studio Live's late bar follows the time of day you pick, like the table under it**: the bar showed the whole day while the table showed the picked time, so the two late figures disagreed with nothing saying why

@@ -15,6 +15,7 @@ import { routeCardNoNumberWords } from './routeCardNotices';
 import type { DayType } from '../../shared/dayTypes';
 import type { PeriodKey } from '../../shared/config';
 import { headwayRangeShown } from './headwayText';
+import { stretchRowWithoutOwnTrips } from '../../shared/ownDepartures';
 
 /**
  * The stop card's routes and destination rows, and the rule for the frequency each row shows (CIV-997). One
@@ -178,7 +179,14 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       // No cadence at the stop for a period the route card says has no regular cadence (#750), where the
       // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips), or where the
       // card's row reads its unsteady direction's worst wait as no regular service (#962).
-      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService || unsteadyDirectionFallback(p, period, trips))) continue;
+      // #1904: nor where a main or tail row's own trips don't run in the period (the pipeline leaves those rows unmarked, as
+      // the route card reads their stretch): the stop card reads own trips, so the row would show every trip passing the stop
+      // under one destination's name (TTC 102 midday "to Sheppard every 7" from 12 trips a day). The direction's other trips
+      // keep their rows, and the Shared stretch row carries the pooled number.
+      // Only a row with no number of its own: one the route card gives a number keeps it.
+      const ownless = period !== 'all' && period !== 'overnight' && stretchRowWithoutOwnTrips(p, period as PeriodKey)
+        && branchDisplayPeriodHeadway(p, period) == null;
+      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService || ownless || unsteadyDirectionFallback(p, period, trips))) continue;
 
       // Only include features whose shape actually covers any of the sibling stops.
       let stopHw: number | undefined = undefined;
