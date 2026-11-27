@@ -39,6 +39,18 @@ function archiveStem(key: string): string {
   return (key.split('/').pop() ?? key).replace(/\.zip$/, '');
 }
 
+/**
+ * The live expiry a rebuild's source zip must not fall before (feedDateRefusal), or null when the zip is
+ * the exact file the last refresh processed (`lastRawArchiveKey`). That file cannot be older than itself:
+ * its end date only differs when the expiry rule changed after it was recorded (CIV-3091: Kingston,
+ * recorded 20271115 before #1768 dropped services with no trips, now 20270103; MNR 20270523 vs 20270522).
+ * The ended-before-today check still applies to it.
+ */
+export function liveExpiryToCompare(sourceKey: string | null | undefined, agency: { lastFeedExpiry?: string | null; lastRawArchiveKey?: string | null }): string | null {
+  if (sourceKey && agency.lastRawArchiveKey && archiveStem(sourceKey) === agency.lastRawArchiveKey) return null;
+  return agency.lastFeedExpiry ?? null;
+}
+
 function refuse(reason: string): ArchiveSelection {
   return { ok: false, noArchive: false, reason: `cannot tell which archived zip is newest: ${reason}` };
 }

@@ -9,6 +9,7 @@ import {
   isReprocessTarget,
   feedDateRefusal,
   matchesExpiredFeedPin,
+  liveExpiryToCompare,
   pinnedFeedExpiry,
   outputDropRefusal,
   peekFeedDates,
@@ -272,6 +273,27 @@ describe('feedDateRefusal', () => {
     expect(feedDateRefusal('20281102', '20991231', '20261103', null, '20261102')).toBeNull();
     // Capping the live side on the agency date would read the same feed as one day older.
     expect(feedDateRefusal('20281102', '20991231', '20261103')).toMatch(/older than the live data/);
+  });
+});
+
+describe('liveExpiryToCompare (CIV-3091, #1890)', () => {
+  const kingston = { lastFeedExpiry: '20271115', lastRawArchiveKey: '20271115-d9ac3c697d060b79' };
+
+  it('skips the older-than-live check only for the exact file the last refresh processed', () => {
+    // Kingston: the same file now ends 20270103 under #1768's rule, recorded as 20271115 before it.
+    const key = 'gtfs/archive/kingston/20271115-d9ac3c697d060b79.zip';
+    expect(liveExpiryToCompare(key, kingston)).toBeNull();
+    expect(feedDateRefusal('20270103', liveExpiryToCompare(key, kingston), '20261126')).toBeNull();
+    // An ended file is still refused.
+    expect(feedDateRefusal('20261101', liveExpiryToCompare(key, kingston), '20261126')).toMatch(/before today/);
+  });
+
+  it('keeps the live expiry for any other file, a pinned or local input, or a record with no archive key', () => {
+    expect(liveExpiryToCompare('gtfs/archive/kingston/20271115-aaaaaaaaaaaaaaaa.zip', kingston)).toBe('20271115');
+    expect(feedDateRefusal('20270103', liveExpiryToCompare('gtfs/archive/kingston/20270103-bbbb.zip', kingston), '20261126')).toMatch(/older than the live data/);
+    expect(liveExpiryToCompare(null, kingston)).toBe('20271115');
+    expect(liveExpiryToCompare('gtfs/archive/kingston/20271115-d9ac3c697d060b79.zip', { lastFeedExpiry: '20271115' })).toBe('20271115');
+    expect(liveExpiryToCompare('x.zip', {})).toBeNull();
   });
 });
 
