@@ -175,6 +175,16 @@ describe('livePerformance', () => {
     expect(liveGaps(slow, line, withStats(line, 'all'), 'all', snaps, 1_000)!.incomplete).toBe(true);
   });
 
+  it('measures one card row\'s cars without counting them against the whole route (#1895)', () => {
+    // The same 2 of 8 cars, but as one branch row's cars picked from a whole-line result that passed the check.
+    const slow = { ...data, segments: data.segments.map(s => ({ ...s, bands: { all: { ...s.bands.all!, actualMedianSec: 600 } } })) } as typeof data;
+    const line = lineModel(slow, 0)!;
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5]])];
+    const g = liveGaps(slow, line, withStats(line, 'all'), 'all', snaps, 1_000, { rowSubset: true })!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(2);
+  });
+
   it('returns nothing with fewer than two placed cars', () => {
     const line = lineModel(data, 0)!;
     expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5)).toBeNull();

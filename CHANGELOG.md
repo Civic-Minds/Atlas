@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live shows the longest gap on a small branch's row**: a branch was measured against the whole route's vehicle count, so a row like 501B to Kingston Rd never had enough vehicles to show one
 - **Live vehicles are arrows pointing the way they're heading**: the dots carried the route number, which made them hard to read; a vehicle that reports no heading stays a plain dot
 - **Long destination names no longer squeezed**: a reading that doesn't fit beside the name sits right-aligned on the line below.
 - **Live's list shows every route on the map**: after picking a place such as Burlington Transit, the list kept to that agency, so HSR routes drawn on the map in the Hamilton view were missing from it
