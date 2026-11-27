@@ -167,12 +167,28 @@ describe('livePerformance', () => {
     expect(g.cars).toBe(2);
   });
 
+  it('the Live card runs each branch row with rowSubset, so the fix stays wired in (#1895, CIV-3174)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const src = readFileSync(new URL('../../components/Live/LiveRoutePerformance.tsx', import.meta.url), 'utf8');
+    expect(src).toMatch(/liveGaps\([^;]*rowSubset: true[^;]*\)/);
+  });
+
   it('marks the feed incomplete when fewer than half the scheduled cars are placed', () => {
     // 4 shared stop pairs of 10 min each, every 5 min: 8 cars expected, 2 placed.
     const slow = { ...data, segments: data.segments.map(s => ({ ...s, bands: { all: { ...s.bands.all!, actualMedianSec: 600 } } })) } as typeof data;
     const line = lineModel(slow, 0)!;
     const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5]])];
     expect(liveGaps(slow, line, withStats(line, 'all'), 'all', snaps, 1_000)!.incomplete).toBe(true);
+  });
+
+  it('measures one card row\'s cars without counting them against the whole route (#1895)', () => {
+    // The same 2 of 8 cars, but as one branch row's cars picked from a whole-line result that passed the check.
+    const slow = { ...data, segments: data.segments.map(s => ({ ...s, bands: { all: { ...s.bands.all!, actualMedianSec: 600 } } })) } as typeof data;
+    const line = lineModel(slow, 0)!;
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5]])];
+    const g = liveGaps(slow, line, withStats(line, 'all'), 'all', snaps, 1_000, { rowSubset: true })!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(2);
   });
 
   it('returns nothing with fewer than two placed cars', () => {

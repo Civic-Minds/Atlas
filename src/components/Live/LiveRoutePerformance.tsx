@@ -318,7 +318,7 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
       const mine = all ? cars : groups.get(r.key) ?? [];
       if (!all && !only.has(r.key)) continue;
       const ids = new Set(mine.map(v => v.id));
-      const sub = all ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
+      const sub = all ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
       const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
       out.set(r.key, { cars: mine.length, extremes: ext });
     }
