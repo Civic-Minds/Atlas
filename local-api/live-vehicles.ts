@@ -209,6 +209,13 @@ export function upcomingStops(stops: readonly StopUpdate[] | null | undefined, p
  * Live's vehicles from joined records (CIV-2073), whether polled here or read from the recorder's v2 snapshot: route
  * names from `routeOf`, stop names from the agency's stops file, speed from movement between reports.
  */
+/** #1877: a trip's last stop by name and place, from the timetable; null where the trips file or stops file has none. */
+export function tripLastStop(tripId: string | null | undefined, schedule: ScheduleTrips | null | undefined, places: ReadonlyMap<string, StopPlace>): UpcomingStop | null {
+  const id = tripId ? schedule?.get(tripId)?.e : undefined;
+  const p = id ? places.get(id) : undefined;
+  return p?.lonLat ? { name: p.name, lonLat: p.lonLat } : null;
+}
+
 export function vehiclesFromRecords(
   agency: string,
   records: readonly LiveRecord[],
@@ -254,6 +261,8 @@ export function vehiclesFromRecords(
       ...(stop?.at ? { atStop: true } : {}),
       // CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern.
       upcomingStops: rec.tripId ? upcomingStops(own?.stopTimeUpdate, places, nowSec) : [],
+      // #1877: where its trip ends, from the timetable (the trips file's last stop), to put it under that destination.
+      lastStop: tripLastStop(rec.tripId, schedule, places),
       status: statusForDelay(delayMin, agency),
       statusLabel: null,
       headwayGapMin: null,

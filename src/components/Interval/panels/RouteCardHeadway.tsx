@@ -128,6 +128,8 @@ export interface RouteCardHeadwayProps {
   rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; onClick: () => void } | null;
   /** Live (CIV-3047 B): an icon just before the card's flag (the clock shown while the route's vehicles aren't reporting). */
   headerIcon?: React.ReactNode;
+  /** Live (#1877): rows after a direction's own rows, for live vehicles whose trips end at a stop no row goes to. */
+  directionExtra?: (dirId: number) => React.ReactNode;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -156,6 +158,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   extra,
   rowLive,
   headerIcon,
+  directionExtra,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
@@ -514,6 +517,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       {...liveProps(span.feature)}
                     />
                   ))}
+                  {directionExtra?.(group.dirId)}
                 </div>
               </React.Fragment>
             );

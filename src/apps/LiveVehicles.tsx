@@ -26,7 +26,7 @@ import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors, vehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { effectiveMode, knownModeLabel, type EffectiveModeInput } from '../../shared/modes';
-import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel, GENERIC_VEHICLE } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel, GENERIC_VEHICLE, formatBranchLabel } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { liveScheduledHeadway, liveScheduledRowsNow } from '../utils/liveScheduledHeadway';
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
@@ -35,7 +35,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { liveAgencyStatus, newestReportSec, worstLiveStatus, type LiveAgencyFeed } from '../../shared/liveStatus';
 import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
 import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -765,6 +765,19 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const summary = directionSummary(vehicles, selectedRouteModeWord);
     return { key, subLabel: gap != null ? `${summary} · ${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(gap)}` : summary, onClick: () => setSelectedDirection(key) };
   }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, destinationGaps]);
+  // #1877: live vehicles whose trips end at a stop none of the card's rows goes to (destinationKeys names that group by
+  // the stop) sit in their own direction's section, as a row of their own, never in a list after the card.
+  const sectionGroups = useMemo(() => {
+    const out = new Map<number, [string, LiveVehicle[]][]>();
+    if (!routeCard || !selectedGroup || !vehiclesByDirection || !canGroupByDirection) return out;
+    const rowKeys = new Set(routeCard.currentRoute.directions.map(d => rowDirectionKey(d.headsign, selectedGroup.routeShortName)).filter((k): k is string => !!k));
+    for (const [key, vehicles] of orderDirectionGroups(vehiclesByDirection, directionLabels)) {
+      const dir = vehicles[0]?.directionId;
+      if (rowKeys.has(key) || key === DIRECTION_UNCLEAR || dir == null || !vehicles.every(v => v.directionId === dir && v.lastStop)) continue;
+      (out.get(dir) ?? out.set(dir, []).get(dir)!).push([key, vehicles]);
+    }
+    return out;
+  }, [routeCard, selectedGroup, vehiclesByDirection, canGroupByDirection, directionLabels]);
   // Hooks stay above this return (hooksBeforeEarlyReturn guard, #1812).
   if (!active) return null;
 
@@ -792,9 +805,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
   // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
   // `onRows`: the route card's rows carry the destinations (#1877), so "Right now" draws nothing and passes its gaps up.
+  const directionExtra = (dirId: number) => (sectionGroups.get(dirId) ?? []).map(([key, vehicles]) => (
+    <CardDirectionRow
+      key={`live:${key}`}
+      labelWeight="regular"
+      label={formatBranchLabel(key, selectedGroup?.routeShortName ?? '', routeCard?.currentRoute.routeLongName ?? '')}
+      subLabel={directionSummary(vehicles, selectedRouteModeWord)}
+      onClick={() => setSelectedDirection(key)}
+      chevron
+    />
+  ));
+  const inSections = new Set([...sectionGroups.values()].flat().map(([key]) => key));
   const liveRouteSections = (claimed: ReadonlySet<string>, onRows = false) => {
     if (!selectedGroup) return null;
-    const unclaimed = orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).filter(([dirKey]) => !claimed.has(dirKey));
+    const unclaimed = orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).filter(([dirKey]) => !claimed.has(dirKey) && !(onRows && inSections.has(dirKey)));
     const grouped = selectedGroup.vehicles.length > 0 && canGroupByDirection && !destination;
     return (
     <>
@@ -944,6 +968,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       extra={claimed => liveRouteSections(claimed, true)}
       rowLive={liveRowFor}
       headerIcon={<LiveStaleClock slug={selectedGroup.agencySlug} vehicles={selectedGroup.vehicles} />}
+      directionExtra={directionExtra}
     />
   ) : selectedGroup ? (
     // The route layer hasn't loaded (or has no such route): Live's own header over the same sections.

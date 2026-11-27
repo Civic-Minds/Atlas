@@ -8,19 +8,20 @@ import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
  */
 const KEEP_MS = 6 * 60 * 60 * 1000;
 const RETRY_MS = 5 * 60 * 1000;
-export interface ScheduleTrip { d: number | null; h: string | null }
+/** `e`: the trip's last stop id (#1877), where the trips file has it. */
+export interface ScheduleTrip { d: number | null; h: string | null; e?: string }
 export type ScheduleTrips = ReadonlyMap<string, ScheduleTrip>;
 const cache = new Map<string, { at: number; ok: boolean; trips: Promise<Map<string, ScheduleTrip>> }>();
 
 async function load(slug: string): Promise<Map<string, ScheduleTrip>> {
   const res = await fetch(getAgencyDataUrl(slug, '-trips'));
   if (!res.ok) throw new Error(`trips file ${res.status}`);
-  const data = await res.json() as Record<string, { d?: unknown; h?: unknown } | undefined>;
+  const data = await res.json() as Record<string, { d?: unknown; h?: unknown; e?: unknown } | undefined>;
   const trips = new Map<string, ScheduleTrip>();
   for (const [id, t] of Object.entries(data)) {
     if (!t) continue;
     const d = Number(t.d);
-    trips.set(id, { d: t.d == null || !Number.isFinite(d) ? null : d, h: typeof t.h === 'string' && t.h.trim() ? t.h : null });
+    trips.set(id, { d: t.d == null || !Number.isFinite(d) ? null : d, h: typeof t.h === 'string' && t.h.trim() ? t.h : null, ...(typeof t.e === 'string' && t.e ? { e: t.e } : {}) });
   }
   return trips;
 }
