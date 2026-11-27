@@ -379,6 +379,38 @@ export function firstVisitStopTimes<T extends { stop_id: string; stop_sequence?:
   return out;
 }
 
+/** A trip runs a drawn line when it serves at least two thirds of the line's stops (the branch pool's test). */
+export function servesMostOfLine(servedStops: number, lineStops: number): boolean {
+  return servedStops * 3 >= lineStops * 2;
+}
+
+/**
+ * CIV-2233 (#1776; Ryan, 2026-11-26, option 1: "Count every trip of the row, wherever it ends"): a row's trip count
+ * is read at its end stop, so a trip that ends without reaching it was counted nowhere (RTD FreeRide toward Union
+ * Station: 41 of 296 weekday trips end at Union Station Loop). Per row of one route, direction and day, how many trips
+ * reach no row's end stop but run most of that row's line; each such trip goes to the one row it covers best (ties:
+ * the first). A trip that reaches any row's end stop is already in that row's count and is left alone, which keeps
+ * the CIV-1069 rule that a row never takes another pattern's trips. `trips` holds each trip's stops (with parents).
+ */
+export function offEndTripsPerRow(rowStops: ReadonlyArray<readonly string[]>, trips: Iterable<ReadonlySet<string>>): number[] {
+  const added = rowStops.map(() => 0);
+  const lines = rowStops.map(order => [...new Set(order)]);
+  const ends = new Set(rowStops.filter(order => order.length > 0).map(order => order[order.length - 1]));
+  for (const served of trips) {
+    if ([...ends].some(id => served.has(id))) continue;
+    let best = -1;
+    let bestShare = 0;
+    lines.forEach((line, i) => {
+      if (line.length === 0) return;
+      const hit = line.filter(id => served.has(id)).length;
+      const share = hit / line.length;
+      if (servesMostOfLine(hit, line.length) && share > bestShare) { best = i; bestShare = share; }
+    });
+    if (best >= 0) added[best] += 1;
+  }
+  return added;
+}
+
 /**
  * Use all departures for the feature's destination at its terminal stop.
  * Different shapes can add or omit an intermediate stop while still providing
@@ -1926,7 +1958,7 @@ export async function processGtfsBuffer(
     const outerThird = shapeStopIds.slice(Math.floor(shapeStopIds.length * 2 / 3));
     const trips = new Map<string, Map<string, number>>();
     for (const [tid, byStop] of served) {
-      if (byStop.size * 3 < shapeStops.size * 2) continue;
+      if (!servesMostOfLine(byStop.size, shapeStops.size)) continue;
       if (fullOuterThird) {
         const missed = outerThird.filter(id => !byStop.has(id));
         if (missed.length > 1 || (missed.length === 1 && !skippable?.has(missed[0]))) continue;
@@ -1947,6 +1979,51 @@ export async function processGtfsBuffer(
   };
   const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string, fullOuterThird = false, skippable?: ReadonlySet<string>): number[] =>
     branchPoolTimesAt(hsKey, shapeStopIds, terminalId, fullOuterThird, undefined, skippable);
+
+  /**
+   * CIV-2233 (#1776): each row's whole-day trip count (departuresInDay, the count the MCP gives as a branch's trips) also
+   * counts its trips that end without reaching its end stop (offEndTripsPerRow). Only the count: the hour counts, span
+   * and every frequency value keep reading the end stop. A route-direction-day with a counted row that has no stop list
+   * is skipped, since its trips can't be told apart.
+   */
+  const addOffEndTripsToDayCounts = () => {
+    const rowsByGroup = new Map<string, GeoJsonFeature[]>();
+    for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
+      if (typeof feature.properties.departuresInDay !== 'number') continue;
+      const k = `${shortName}::${dirId}::${day}`;
+      const list = rowsByGroup.get(k) ?? rowsByGroup.set(k, []).get(k)!;
+      list.push(feature);
+    }
+    const tripsByGroup = new Map<string, Set<string>>();
+    for (const [tid, grps] of tripGroupByTripId) {
+      for (const g of grps) {
+        if (!g.inGroup) continue;
+        const k = `${g.shortName}::${g.dirId}::${g.dayType}`;
+        if (!rowsByGroup.has(k)) continue;
+        (tripsByGroup.get(k) ?? tripsByGroup.set(k, new Set()).get(k)!).add(tid);
+      }
+    }
+    if (tripsByGroup.size === 0) return;
+    if (!stopTimeIdxByTrip) buildBranchIndex();
+    const sts = gtfs.stopTimes ?? [];
+    for (const [k, rows] of rowsByGroup) {
+      const rowStops = rows.map(f => (f.properties.stopOrder as string[] | undefined) ?? []);
+      if (rowStops.some(order => order.length === 0)) continue;
+      const trips = [...(tripsByGroup.get(k) ?? [])].map(tid => {
+        const served = new Set<string>();
+        for (const i of stopTimeIdxByTrip!.get(tid) ?? []) {
+          const id = sts[i].stop_id;
+          served.add(id);
+          const parent = childToParent.get(id);
+          if (parent) served.add(parent);
+        }
+        return served;
+      }).filter(served => served.size > 0);
+      offEndTripsPerRow(rowStops, trips).forEach((n, i) => {
+        if (n > 0) rows[i].properties.departuresInDay = (rows[i].properties.departuresInDay as number) + n;
+      });
+    }
+  };
 
   const pushUnique = (map: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
     let stopMap = map.get(key);
@@ -4037,6 +4114,7 @@ export async function processGtfsBuffer(
   // A day where one origin of a slot is drawn alone gets its plain row back (CIV-221).
   clearLoneOriginRows(features as Array<{ properties: Record<string, unknown> }>);
   annotateShortTurnVariants(features, shapes);
+  addOffEndTripsToDayCounts();
   stampWorstDirectionHeadways(features);
   // CIV-1331 review: rows without stretch data are graded one by one above; a route runs through the night only when
   // every direction does (the settled rule: never one direction alone), so combine them here, before any surface reads
