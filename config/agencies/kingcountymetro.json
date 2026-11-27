@@ -19,6 +19,13 @@
     "South Lake Union Streetcar",
     "First Hill Streetcar"
   ],
+  "headsignRenames": [
+    {
+      "routeId": "100451",
+      "from": "Issaquah Highlands Park & Ride Issaquah Transit Center",
+      "to": "Issaquah Highlands Park & Ride"
+    }
+  ],
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "FAL26-161.5",
   "lastRefreshedAt": "2026-11-16",
