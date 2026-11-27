@@ -25,7 +25,7 @@ import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
 import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetPeriodCountText, notOnTripValueText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetNetworkTitle, fleetPeriodCountText, notOnTripValueText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
 import { CARD_NOTE } from '../../styles';
@@ -100,7 +100,7 @@ export function FleetNowTable({ modes, runningNow, scheduledNow }: { modes: read
   ].flatMap(r => (r.n == null ? [] : [{ key: r.key, label: r.label, value: r.key === 'noTrip' ? notOnTripValueText(r.n, runningNow?.atGarage) : countText(r.n) }]));
   if (!rows.length) return null;
   return (
-    <DataTable caption={vehiclesNeededTitle(modes)} layout="fill" rows={rows} rowKey={r => r.key} rowMuted={r => r.key === 'noTrip'} columns={[
+    <DataTable caption={fleetNetworkTitle(modes)} layout="fill" rows={rows} rowKey={r => r.key} rowMuted={r => r.key === 'noTrip'} columns={[
       { key: 'label', header: TIME_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
       { key: 'value', header: <span className="block text-right">{N.count}</span>, className: 'text-right', cell: r => r.value },
     ]} />
@@ -411,7 +411,7 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
       ) : view === 'fleet' ? (
         // CIV-1922: Fleet opens on the fleet itself, the vehicles the whole agency needs at the time of day. CIV-2002 (Ryan:
         // "This panel looks different than any other panel in Atlas"): Live's agency panel, a plain body and one Widget card.
-        <StudioPanel ref={cardRef} style={frameStyle} aria-label={vehiclesNeededTitle(agencyModes)}>
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={fleetNetworkTitle(agencyModes)}>
           {/* CIV-2003: PanelBody is the shared scroll area; an empty panel says so in the shared line, a lead line is card body text. */}
           <PanelBody className={vehicles === 'missing' ? undefined : 'px-4 pt-3 pb-3'}>
             {vehicles === 'missing' ? <PanelEmpty>{C.noData}</PanelEmpty>
@@ -422,7 +422,7 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
                   {fleet && <p className={`m-0 mb-1 ${CARD_NOTE}`}>{STUDIO_REDESIGN_TEXT.fleetCaption(agencyRouteCount(vehicles, period))}</p>}
                   {/* CIV-2182 (Ryan: the card inside a card looks odd): sections of the panel, as Studio's Live route panel (CIV-2021). */}
                   <PanelSectionsProvider>
-                    <Widget title={vehiclesNeededTitle(agencyModes)}>
+                    <Widget title={fleetNetworkTitle(agencyModes)}>
                       <FleetNowTable modes={agencyModes} runningNow={runningNow} scheduledNow={nowFleet?.scheduled ?? null} />
                     </Widget>
                     <FleetPeriodSparkline vehicles={vehicles} period={period} setPeriod={setPeriod} modes={agencyModes} />
