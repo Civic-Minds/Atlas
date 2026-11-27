@@ -48,6 +48,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a branch counts in a period only if it runs steadily through it; stray trips and bursts never set the value.
   - Why: a straggler or a rare short turn is not service a rider can plan around.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) rules 1, 3 and 5
+- **A card's range runs to the slowest far end with regular service, for every agency**
+  - What: where the trunk sets the card's headline, the card's range runs to the slowest far end that has regular service (up to an hour), whether the far end is a fork, a branch or a short-turn tail. Cards only: the headline, filter and map colour don't change.
+  - Why: the route list, the map colour and the filter already count these tails, so the card was the only place that disagreed. Rare short turns stay out through the rule above (3 or more evenly spaced trips).
+  - Source: [decision log](#decision-log) (2026-11-27, #1775, CIV-3080)
 - **A value needs 3 departures, not a percentage**
   - What: 3 departures (2 gaps) is the minimum to read a pattern; after an edge allowance it is 4.
   - Why: 2 trips cannot show a cadence; 4 would reject real half-hourly service. Riders feel frequency, not share of trips.
@@ -404,6 +408,15 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-27 — A card's range runs to the slowest far end with regular service, for every agency, short-turn tails included (#1775, CIV-3080; extends 2026-11-24 / CIV-2232, which covered RTD)
+Ryan, 2026-11-27, answering the Questions chat after Strategy's critique, picked "1": keep the fix, so any far end with regular service counts in the card's range, matching the route list. He did not pick option 2, a size minimum (far end of at least 5 stops and 1 km). Earlier the same day, on whether to keep the fix for every agency or limit it to true branches, he said: "I think we need to have a chat do more research, exploration, and thinking about this"; the research (Data 2) and Strategy's critique followed.
+- The rule: where the trunk sets the card's headline, the card's range runs to the slowest far end with regular service, up to an hour (a wait over an hour keeps its own row, 2026-11-24). It applies to every agency, and short-turn tails count like branches.
+- Counts (cloud dry-run pair, 9 agencies in 3 countries, only the card range changes, no range lost): 129 routes outside RTD in 8 agencies (TTC 39, SEPTA 36, OC Transpo 16, TransLink 12, MBTA 11, STM 7, CTA 6, AC Transit 2), plus RTD's 7. 17 cells that already had a range get wider.
+- Examples: RTD 15 weekday midday 10–30 (Ryan's 2026-11-24 pick); TTC 102 weekday midday 5–10 becomes 5–30 (102D to Major Mackenzie), matching the route list's 10–30.
+- Why: Strategy found the route list, the map colour and the filter already count these tails (TTC 102's list reads "every 10–30", its wait is 30), so only the card disagreed. No rule built from the schedule data separates the flagged short turns (TTC 102D, CTA Blue, SEPTA 26) from RTD 15 and 31 without also dropping one of Ryan's picks. The 5-stop / 1 km minimum he called "an arbritrary number for branches" (CIV-1959) stays out. D2 would have dropped 140 card ranges, 85 of them TTC.
+- Supersedes nothing: it extends the 2026-11-24 entry from RTD to every agency. The data change goes out with the next rebuild batch.
+- Separate: #1902 (the card's fast end doesn't match the route list: TTC 102 midday card 5, MCP "busiest part" 10). It is true before and after this fix and doesn't block it.
+
 ### 2026-11-27 — The hosted MCP deploys automatically with every main push (CIV-3111)
 Ryan, 2026-11-27, picked "1": "Add a GitHub Actions step that deploys the MCP automatically whenever main is pushed and CI passes, so the site and the MCP always run the same code." And: "ideally the MCP never gives information that differs from the website". Before this, pushes deployed the site (Vercel) but not the hosted MCP Worker, so CIV-3100, CIV-3102 and CIV-3103 sat undeployed after fd05fd6. The workflow deploys the Worker's code (it reads the release itself) and then checks the live MCP reports that commit and at least 500 agencies.
 
@@ -576,7 +589,7 @@ Ryan, 2026-11-24 (relayed by Atlas Manager): "1", picking the periods' existing 
 Ryan, 2026-11-24 (relayed by Atlas Manager): "1", picking option B of the side-by-side test: always the slower number. No new number.
 - The rule: where the route list can't show the card's words and they name a change partway through the period ("every 4 min until 9:17 AM, then every 6 min"), the list's number is the slower of the two. STM 1 weekday midday reads "every 6 min" (was "every 4"), matching its wait and the schedule.
 - Counts (published release, 8 agencies: STM, TTC, MBTA, TransLink, Hamilton, OC Transpo, CTA, YRT): 128 of 19,146 list cells change. CTA 53 Saturday late reads "every 20–31 min" (was "every 7–20").
-### 2026-11-24 — A card's range still runs to the slowest branch when the trunk sets the headline (#1775, CIV-2232)
+### 2026-11-24 — A card's range still runs to the slowest branch when the trunk sets the headline (#1775, CIV-2232; extended to every agency by 2026-11-27 / CIV-3080)
 Ryan (2026-11-24, relayed by the manager) picked option 1 for RTD 15: the card should say "every 10–30" (main stretch every 10, east branch past Colfax & Billings every 30), matching how 15L and 12 already show a branch (frequency rule 3).
 - The rule: where CIV-1959 B1 reads a direction's headline from the trunk alone, the card's range still runs from the main stretch to the slowest branch that counts in the period (rule 3). A branch whose reading is only its wait to the period's edge (#1749) adds no range, and nor does a branch over an hour (PERIOD_COVERAGE_MAX_HEADWAY): it keeps its own row (Ryan on RTD 31, CIV-2232: "For the branch we wouldn't show 10-71"). A branch at exactly an hour does count: Ryan, 2026-11-27 (relayed by the manager, CIV-3080), picked "1": RTD 31 weekday PM reads "every 10–60", the same as RTD 15, over a new "60 or more" cut. This supersedes his CIV-2232 "1" to the card reading "every 10" with the far-north branch on its own line. The headline number, the filter and the map colour do not change.
 - Why it was missing: B1 took the branches out of the value the range is built from, so the range's two ends were both the trunk's number and no range showed. B1's own guard (a rider never sees a branch hidden behind a faster trunk number) was not met.
