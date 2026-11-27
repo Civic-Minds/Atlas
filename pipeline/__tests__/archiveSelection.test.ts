@@ -9,6 +9,7 @@ import {
   isReprocessTarget,
   feedDateRefusal,
   matchesExpiredFeedPin,
+  pinnedFeedExpiry,
   outputDropRefusal,
   peekFeedDates,
   zipFileDate,
@@ -293,6 +294,15 @@ describe('expiredFeedPin (#1036, Rockford)', () => {
     expect(feedDateRefusal('20261010', '20261010', '20261027')).toMatch(/before today/);
     // The older-than-live check still holds for the pinned feed.
     expect(feedDateRefusal('20261010', '20261128', '20261027', '20261010')).toMatch(/older than the live data/);
+  });
+
+  it('gives the publish gate the pinned expiry only when the recorded feed is the pinned one (CIV-3090, #1889)', () => {
+    // Rockford's index record: built from S1000085, ended 20261010.
+    expect(pinnedFeedExpiry(pin, { feedVersion: 'S1000085', feedExpiry: '20261010' })).toBe('20261010');
+    // A different recorded feed, an unrecorded version, or no pin: no pinned expiry, so the gate stays red.
+    expect(pinnedFeedExpiry(pin, { feedVersion: 'S1000090', feedExpiry: '20270110' })).toBeNull();
+    expect(pinnedFeedExpiry(pin, { feedVersion: null, feedExpiry: '20261010' })).toBeNull();
+    expect(pinnedFeedExpiry(undefined, { feedVersion: 'S1000085', feedExpiry: '20261010' })).toBeNull();
   });
 });
 

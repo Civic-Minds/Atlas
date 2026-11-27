@@ -266,6 +266,15 @@ export function matchesExpiredFeedPin(pin: ExpiredFeedPin | null | undefined, fe
 }
 
 /**
+ * The pinned expiry when the feed an agency was last built from is the exact feed its
+ * expiredFeedPin approves, else null. The publish gate reads the agency's recorded
+ * lastFeedVersion/lastFeedExpiry; it is the same check the reprocess gate applies (CIV-3090).
+ */
+export function pinnedFeedExpiry(pin: ExpiredFeedPin | null | undefined, feed: { feedVersion: string | null; feedExpiry: string | null }): string | null {
+  return pin && matchesExpiredFeedPin(pin, feed) ? pin.feedExpiry : null;
+}
+
+/**
  * A live expiry stamped before placeholder capping (e.g. 20991231) compared as today + 2 years,
  * the same cap recordedFeedExpiry puts on the source zip. Without this, a rebuild of the same
  * feed reads as older than live and is refused on every run (CIV-1245: Waukesha, Whitehorse,

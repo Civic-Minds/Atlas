@@ -55,6 +55,7 @@ import {
   type ReleaseManifest,
 } from './releaseGuard.js';
 import { assertKnownFlags } from './cliFlags.js';
+import { pinnedFeedExpiry, type ExpiredFeedPin } from './archiveSelection.js';
 
 assertKnownFlags(process.argv.slice(2), { '--allow-drop': 'flag', '--prune-dry-run': 'flag', '--prune-search': 'flag', '--allow': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const overrides = parseGateOverrides(process.argv.slice(2));
@@ -140,12 +141,17 @@ const getPublic = publicBucketGetter(base);
 const newPrefix = manifest.agencyPrefix.replace(/\/$/, '');
 const livePrefixes = currentRelease?.agencyPrefix ? [currentRelease.agencyPrefix.replace(/\/$/, '')] : ['atlas'];
 const expiryBySlug = new Map(indexAgencies.map(a => [String(a.slug), (a.lastFeedExpiry as string | undefined) ?? null]));
+// An expiredFeedPin covering the exact feed the agency was built from keeps its expiry yellow, as in the reprocess gate (CIV-3090, #1889).
+const pinnedExpiryBySlug = new Map(indexAgencies.map(a => [String(a.slug), pinnedFeedExpiry(a.expiredFeedPin as ExpiredFeedPin | undefined, {
+  feedVersion: (a.lastFeedVersion as string | undefined) ?? null,
+  feedExpiry: (a.lastFeedExpiry as string | undefined) ?? null,
+})]));
 console.log(`Release diff gate: comparing ${includedSlugs.length} agencies in ${manifest.releaseId} with ${currentRelease?.releaseId ?? 'atlas/<slug>.json'}...`);
 const candidates: GateCandidate[] = await runWithConcurrency(includedSlugs.map(slug => async () => ({
   slug,
   // A snapshot missing from the new release counts as empty output.
   next: await readLiveSummary(slug, getPublic, [newPrefix]) ?? summarizeArtifact('{"features":[]}', null),
-  service: { end: expiryBySlug.get(slug) ?? null },
+  service: { end: expiryBySlug.get(slug) ?? null, pinnedExpiry: pinnedExpiryBySlug.get(slug) ?? null },
 })), 6);
 const gateFlags = acceptRecordedSameSeason(await evaluateRun({
   candidates,
