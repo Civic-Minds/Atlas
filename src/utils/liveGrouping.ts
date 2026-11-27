@@ -3,6 +3,7 @@ import { compareRouteNumber } from '../../shared/sortCompare';
 import { projectOntoSegment } from '../../shared/geoDistance';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { feedPlaceName } from './nameCase';
+import { streetJoin } from './stopLabel';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -110,6 +111,15 @@ export function groupVehiclesByDirection(vehicles: readonly LiveVehicle[], direc
     (groups.get(key) ?? groups.set(key, []).get(key)!).push(v);
   }
   return groups;
+}
+
+/**
+ * The Live direction group a route card's destination row stands for (#1877): its shape's headsign, named the way a
+ * vehicle's is, so the row can carry that destination's vehicles. Null for a row with no headsign or a short turn.
+ */
+export function rowDirectionKey(headsign: unknown, routeShortName: string): string | null {
+  const name = typeof headsign === 'string' ? riderHeadsign(headsign, routeShortName) : null;
+  return name ? streetJoin(name) : null;
 }
 
 /** The direction group a vehicle belongs to (see groupVehiclesByDirection). */

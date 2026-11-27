@@ -120,8 +120,12 @@ export interface RouteCardHeadwayProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   onInfoOpen?: OpenInfoFn;
-  /** A research view's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none. */
-  extra?: React.ReactNode;
+  /** A research view's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none.
+   *  Live passes a function of the destinations its rows already carry (rowLive), to list only the rest (#1877). */
+  extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
+  /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
+   *  destination (its key) carries it. */
+  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; onClick: () => void } | null;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -148,6 +152,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   setHoveredBranch,
   onInfoOpen,
   extra,
+  rowLive,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
@@ -176,6 +181,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     sectionColours: FEATURES.segmentColours,
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { displayGroups, showDirectionSections, primaryMultiBranch } = model;
+  // The destinations whose live vehicles a row carries this render (rowLive, #1877).
+  const claimedLive = new Set<string>();
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/style/TEXT.md "Card notices").
   const notices = routeCardNotices({
@@ -408,6 +415,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               branchDimmed: !!hoveredBranch && !isHovered,
             };
           };
+          // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
+          const liveProps = (feature: ShapeProperties | undefined) => {
+            const live = rowLive && feature ? rowLive(feature) : null;
+            if (!live || claimedLive.has(live.key)) return {};
+            claimedLive.add(live.key);
+            return { subLabel: live.subLabel, onClick: live.onClick, chevron: true };
+          };
           return model.groups.map((group, gi) => {
             const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);
             return (
@@ -475,6 +489,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           dimmed={shown.value.dimmed}
                           limited={shown.value.isLimited}
                           {...hoverProps(group.dirId, d, row.hover)}
+                          {...liveProps(d)}
                           holdLayout={hoveredHour != null}
                         />
                       </FlaggableValue>
@@ -492,6 +507,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                       limited
                       limitedLabel={model.limitedWord}
                       {...hoverProps(group.dirId, span.feature, span.hover)}
+                      {...liveProps(span.feature)}
                     />
                   ))}
                 </div>
@@ -529,7 +545,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
       </SidebarCardList>
-      {extra}
+      {/* After the rows, so claimedLive holds every destination they carry. */}
+      {typeof extra === 'function' ? extra(claimedLive) : extra}
       </>)}
     </SidebarCardShell>
   );

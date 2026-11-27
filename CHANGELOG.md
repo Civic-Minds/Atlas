@@ -27,6 +27,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The Data saver, analytics and update notices sit just above the map’s bottom pills on desktop**: they floated two rows up, out of line with everything else
 - **Studio's assistant answers questions about C-TRAN again**: its data licence allows sharing with the credit it requires, which now shows in C-TRAN's Schedule sources pill; it had been left out pending written permission
 - **An on-demand zone card no longer says "Running during …" or "Not running at this time"**: its hours bars already say when it runs, and fixed routes have no such line; "Hours unavailable" stays
+- **Live's route card shows each destination once**: the card listed each destination up to three times (its frequency, then "Right now", then its buses); now one row holds the frequency, the buses with their longest gap, and opens them
 - **A link to a Live route opens its card again**: a Burlington 1 link read "This route couldn't be found" because the map looked the route up by its feed id, not by the number Live links use
 - **Clicking a route on the Live map opens its route card again**: Burlington 1 and HSR 2 Barton took no click, because Live draws its routes as thin lines that the map's click rule didn't include
 - **Live's vehicle list and vehicle panel are no longer all bold**: only the early, late or on-time reading stands out, as the frequency does on a route card
