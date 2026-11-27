@@ -112,6 +112,9 @@ interface Props {
    * itself (useLiveFeeds(true)); left out, Live mode decides (main Live, the map card).
    */
   liveEnabled?: boolean;
+  /** MOCK (#1877 mock C, not for merge): each destination row's live gap now, the median of its measured gaps in minutes,
+   *  keyed by the row's headsign. A new number: needs Ryan's word-for-word OK before any build. */
+  onRowEvery?: (directionId: number, every: ReadonlyMap<string, number>) => void;
 }
 
 /**
@@ -156,7 +159,7 @@ export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: strin
  * as the regular card lists them, with no toggle; the card's own destination rows already give the schedule. Studio's panel
  * (CIV-2021) steers it to one direction with its own Direction chip and keeps the Scheduled lines, having no route card.
  */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled, onRowEvery }: Props) {
   const steered = direction !== undefined;
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
@@ -232,6 +235,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             scheduledRows={steered ? scheduledRows : scheduledRowsFor?.(id, label) ?? null}
             scheduledBlock={scheduledBlock}
             onCounted={steered ? onCounted : undefined}
+            onRowEvery={onRowEvery}
           />
         ))}
       </div>
@@ -240,7 +244,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
 }
 
 /** One direction's "Right now": its vehicles by destination row, each with its longest gap (CIV-2047). */
-function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted }: {
+function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted, onRowEvery }: {
   data: SegmentDelayData & { tripDirections?: Record<string, string[]> };
   directionId: number;
   directionLabel: string;
@@ -256,6 +260,7 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   scheduledRows: ReadonlyArray<LiveScheduledRow> | null | undefined;
   scheduledBlock: ReactNode;
   onCounted?: Props['onCounted'];
+  onRowEvery?: Props['onRowEvery'];
 }) {
   const line: LineModel | null = useMemo(() => lineModel(data, directionId), [data, directionId]);
   // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
@@ -282,17 +287,24 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     const cars = vehicles.filter(v => ids0.has(v.id));
     const only = branchOnlyStops(stopPatterns?.[String(directionId)] ?? [], scheduledRows);
     const groups = vehiclesByPattern(cars, only);
-    const out = new Map<string, { cars: number; extremes: ReturnType<typeof gapExtremes> }>();
+    const out = new Map<string, { cars: number; extremes: ReturnType<typeof gapExtremes>; every: number | null }>();
     for (const r of scheduledRows) {
       const mine = r.key === 'shared' ? cars : groups.get(r.key) ?? [];
       if (r.key !== 'shared' && !only.has(r.key)) continue;
       const ids = new Set(mine.map(v => v.id));
       const sub = r.key === 'shared' ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
       const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
-      out.set(r.key, { cars: mine.length, extremes: ext });
+      // MOCK (#1877 mock C): the median measured gap, under the same "more than half measured" rule as gapExtremes.
+      const measured = sub && !sub.incomplete ? sub.gapsMin.filter((g): g is number => g != null).sort((a, b) => a - b) : [];
+      const every = sub && measured.length > 0 && measured.length * 2 > sub.gapsMin.length ? Math.round(measured[Math.floor((measured.length - 1) / 2)] + (measured.length % 2 ? 0 : (measured[measured.length / 2] - measured[(measured.length - 1) >> 1]) / 2)) : null;
+      out.set(r.key, { cars: mine.length, extremes: ext, every });
     }
     return out;
   }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const everyKey = rowFigures && scheduledRows ? scheduledRows.filter(r => r.headsign && rowFigures.get(r.key)?.every != null).map(r => `${r.headsign}\t${rowFigures.get(r.key)!.every}`).join('\n') : '';
+  useEffect(() => {
+    onRowEvery?.(directionId, new Map(everyKey ? everyKey.split('\n').map(l => { const [h, m] = l.split('\t'); return [h, Number(m)] as const; }) : []));
+  }, [onRowEvery, everyKey, directionId]);
   if (!line || !live) return null;
 
   const extremes = !live.incomplete ? gapExtremes(live) : null;

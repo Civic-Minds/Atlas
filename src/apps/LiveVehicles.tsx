@@ -35,6 +35,8 @@ import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
+import { agencyTime } from '../components/Live/LiveRoutePerformance';
+import { RIGHT_NOW_STALE_SEC } from '../../shared/rules/live';
 import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
@@ -92,6 +94,13 @@ function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
   const count = vehicleModeCount(vehicles.length, modeWord);
   const late = vehicles.filter(v => vehicleStatus(v) === 'late').length;
   return late > 0 ? `${count} · ${late} late` : count;
+}
+
+/** MOCK (#1877 mock C): the count and the late count, "0 late" included, left out only when no vehicle reports how late it is. */
+function mockCountLine(vehicles: LiveVehicle[], modeWord: string): string {
+  const count = vehicleModeCount(vehicles.length, modeWord);
+  if (!vehicles.some(v => v.delayMin != null)) return count;
+  return `${count} · ${vehicles.filter(v => vehicleStatus(v) === 'late').length} late`;
 }
 
 function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
@@ -780,10 +789,32 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // MOCK for Ryan's review (#1877, not for merge): ?mock1877=a keeps "every X min" with the bus count under it;
   // ?mock1877=b puts the bus count in its place. Both leave out "Right now", so each destination shows once.
   const mock1877 = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mock1877') : null;
+  // ?mock1877=c: "every X min" from the vehicles on the road now (a new number: each row's median live gap, the same gap
+  // calculation as "Right now"'s longest gap), with the vehicle count and late count under it where "until 9:37 AM" goes.
+  const [mockEvery, setMockEvery] = useState<ReadonlyMap<string, number>>(new Map());
+  const onRowEvery = useCallback((_dir: number, every: ReadonlyMap<string, number>) => {
+    if (!selectedGroup) return;
+    setMockEvery(prev => {
+      const next = new Map(prev);
+      for (const [h, m] of every) { const k = rowDirectionKey(h, selectedGroup.routeShortName); if (k) next.set(k, m); }
+      return next.size === prev.size && [...next].every(([k, v]) => prev.get(k) === v) ? prev : next;
+    });
+  }, [selectedGroup]);
   const liveRowFor = useCallback((feature: { headsign?: unknown }) => {
     if (!selectedGroup || !vehiclesByDirection || !canGroupByDirection) return null;
     const key = rowDirectionKey(feature.headsign, selectedGroup.routeShortName);
     const vehicles = key ? vehiclesByDirection.get(key) : undefined;
+    if (mock1877 === 'c') {
+      const every = key ? mockEvery.get(key) : undefined;
+      const value = (
+        <span className="flex flex-col items-end text-right whitespace-nowrap">
+          {every != null && <span className="text-sm font-black text-[var(--text-primary)]">{headwayEvery(every)}</span>}
+          <span className={every != null ? 'text-xs font-medium text-[var(--text-secondary)]' : 'text-sm font-black text-[var(--text-primary)]'}>{mockCountLine(vehicles ?? [], selectedRouteModeWord)}</span>
+        </span>
+      );
+      if (!key || !vehicles?.length) return { key: `none:${String(feature.headsign)}`, value };
+      return { key, value, onClick: () => setSelectedDirection(key) };
+    }
     if (mock1877 === 'b') {
       const count = <span className="text-sm font-black text-[var(--text-primary)] whitespace-nowrap">{directionSummary(vehicles ?? [], selectedRouteModeWord)}</span>;
       if (!key || !vehicles?.length) return { key: `none:${String(feature.headsign)}`, value: count };
@@ -791,7 +822,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
     if (!key || !vehicles?.length) return null;
     return { key, subLabel: directionSummary(vehicles, selectedRouteModeWord), onClick: () => setSelectedDirection(key) };
-  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877]);
+  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877, mockEvery]);
   // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
   // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
   const liveRouteSections = (claimed: ReadonlySet<string>) => {
@@ -800,14 +831,27 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const grouped = selectedGroup.vehicles.length > 0 && canGroupByDirection && !destination;
     return (
     <>
-      {!mock1877 && <LiveRoutePerformance
+      {(!mock1877 || mock1877 === 'c') && <div className={mock1877 === 'c' ? 'hidden' : undefined}><LiveRoutePerformance
         key={selectedRoute ?? ''}
         slug={selectedGroup.agencySlug}
         routeShortName={selectedGroup.routeShortName}
         vehicles={selectedGroup.vehicles}
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         scheduledRowsFor={scheduledRowsFor}
-      />}
+        onRowEvery={mock1877 === 'c' ? onRowEvery : undefined}
+      /></div>}
+      {mock1877 === 'c' && (() => {
+        // MOCK (#1877 mock C): with "Right now" gone, its stale note sits here, under the destination rows. It shows when the
+        // newest vehicle report (each vehicle's own timestamp in the agency's feed) is over 2 min old; ?mockStale=1|2|3 forces
+        // one of the wording options for the review page.
+        const opt = new URLSearchParams(window.location.search).get('mockStale');
+        const newest = Math.max(0, ...selectedGroup.vehicles.map(v => v.tsEpoch ?? 0));
+        if (!newest || (!opt && Date.now() / 1000 - newest <= RIGHT_NOW_STALE_SEC)) return null;
+        const at = agencyTime(selectedGroup.agencySlug, new Date(newest * 1000));
+        const word = selectedRouteModeWord === 'bus' ? 'bus' : 'vehicle';
+        const text = opt === '2' ? `Live positions as of ${at}` : opt === '3' ? `Last ${word} report ${at}` : `No ${word} has reported its position since ${at}`;
+        return <CardHelpNotice message={text} />;
+      })()}
       {!(grouped && unclaimed.length === 0) && <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (
