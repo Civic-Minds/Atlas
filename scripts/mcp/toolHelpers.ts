@@ -60,14 +60,14 @@ export function agencyNamesIn(result: unknown): string[] {
   walk(result);
   return out;
 }
-/** #1694: an answer that uses an agency whose feed publisher requires a credit carries it, to give at the end with its link. */
+/** #1694, CIV-3102: an answer that uses an agency whose licence or feed publisher requires a credit carries it, to give at the end with its link. */
 export async function withFeedCredits(result: unknown): Promise<unknown> {
   if (!result || typeof result !== 'object' || Array.isArray(result)) return result;
   const names = agencyNamesIn(result);
   if (!names.length) return result;
-  const credits = await data.feedCreditsFor(names);
+  const credits = await data.creditsFor(names);
   if (!credits.length) return result;
-  return { ...(result as object), credit: credits.map(c => `${c.label} (${c.href})`).join('; '), creditNote: 'Give this credit, with its link, at the end of the answer: the data publisher requires it.' };
+  return { ...(result as object), credit: credits.map(c => `${c.label} (${c.href})`).join('; '), creditNote: 'Give this credit word for word, with its link, at the end of the answer: the data\'s licence requires it.' };
 }
 /** Every tool's answer, with the schedule-ending warning (CIV-2081) and any credit a feed publisher requires (#1694). */
 export function withScheduleWarning<T extends Record<string, (args: Args) => unknown | Promise<unknown>>>(handlers: T): T {

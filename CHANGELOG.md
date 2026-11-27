@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The MCP no longer answers for Embark, UTA and IndyGo**: their data terms need the agency's written permission for other uses, as TriMet's do; the map and History keep them
+- **The MCP gives the credit each agency's data licence asks for, as the site's Sources do**: it credited only 511.org agencies, so answers about the TTC, TransLink, VIA and 30 others carried no credit their licence requires
 - **Studio Live's late bar follows the time of day you pick, like the table under it**: the bar showed the whole day while the table showed the picked time, so the two late figures disagreed with nothing saying why
 - **The internal MCP page's New link form opens from a "New link" button under the Testers table**: the form sat open there all the time
 - **Live's timetable figure is named "Lateness", and Studio's Measure menu lists it once**: "Schedule adherence" was long for a label, and Studio showed two entries for the same idea

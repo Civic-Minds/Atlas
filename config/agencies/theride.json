@@ -3,6 +3,13 @@
   "officialName": "TheRide",
   "nameQualifier": "Ann Arbor",
   "websiteUrl": "http://www.theride.org",
+  "dataLicense": {
+    "url": "https://www.theride.org/business/software-developers",
+    "attribution": "required",
+    "name": "AAATA/TheRide Data Terms of Use",
+    "credit": "Transit scheduling, geographic, and real-time data provided by permission of AAATA/TheRide",
+    "checkedOn": "2026-11-26"
+  },
   "region": "Michigan",
   "center": [
     42.2808,

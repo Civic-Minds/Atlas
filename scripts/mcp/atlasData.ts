@@ -40,7 +40,7 @@ import { placeParts, stopMatchText } from '../../shared/stopNameText';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { mayRedistribute, redistributionExclusion } from '../../shared/rules/redistribution';
 import { feedPlaceName } from '../../src/utils/nameCase';
-import { FEED_CREDITS, type FeedCreditKey } from '../../shared/feedCredits';
+import { agencyCredit } from '../../src/utils/agencyCredits';
 import { OVERNIGHT_NIGHT_GRADE, routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
@@ -542,15 +542,19 @@ export async function agencyNotOnThisServer(query: string): Promise<{ name: stri
 }
 
 /**
- * #1694: the credits the feed publishers of the named agencies require (shared/feedCredits.ts: "Data provided by 511.org" for
- * the agencies read through the 511 API), once each. Names are as the tools give them; a name may begin a longer line.
+ * The credits the named agencies' data requires, once each, built as the site builds them (agencyCredit): the agency's
+ * licence credit from its config's dataLicense (CIV-3102, #1897), then its feed publisher's (#1694: "Data provided by
+ * 511.org"). Names are as the tools give them; a name may begin a longer line.
  */
-export async function feedCreditsFor(names: readonly string[]): Promise<Array<{ label: string; href: string }>> {
-  const keys = new Set<FeedCreditKey>();
+export async function creditsFor(names: readonly string[]): Promise<Array<{ label: string; href: string }>> {
+  const out = new Map<string, { label: string; href: string }>();
   for (const a of await store.catalog()) {
-    if (a.feedCredit && names.some(n => n === a.name || n.startsWith(`${a.name} |`))) keys.add(a.feedCredit);
+    if (!names.some(n => n === a.name || n.startsWith(`${a.name} |`))) continue;
+    const c = agencyCredit(a);
+    if (!c) continue;
+    for (const x of [{ label: c.text, href: c.url }, ...(c.feedLink ? [{ label: c.feedLink.text, href: c.feedLink.href }] : [])]) out.set(`${x.label}|${x.href}`, x);
   }
-  return [...keys].map(k => ({ label: FEED_CREDITS[k].label, href: FEED_CREDITS[k].href }));
+  return [...out.values()];
 }
 
 /** A ranking file's wait as a filter reading (RankWait). */
