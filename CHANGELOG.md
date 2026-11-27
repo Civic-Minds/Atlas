@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's list shows every route on the map**: after picking a place such as Burlington Transit, the list kept to that agency, so HSR routes drawn on the map in the Hamilton view were missing from it
 - **About > Measurements is one row per measure, and Live shows no "figures updated" date**: "Bunching ›" opens its definition; the date was when summary figures were built, not when buses were seen, so it read as stale live data
 - **The MCP's live readings cover YRT, DRT, Brampton and Burlington**: it called their recording paused although the cloud recorder has recorded them every minute since November 24
 - **The MCP says when a route's grade is slower than its listed frequency**: RTD 31 weekday mornings read "every 10 min" beside a 60-minute grade with no word on why, so a model could drop either figure

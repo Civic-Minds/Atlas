@@ -311,6 +311,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a share before and after reads "10% → 41%" (was "10% to 41%"); where a summary lacks both shares, nothing shows (the "+31 pt" points fallback is gone). No "Figures updated" or "Live figures updated" date shows anywhere: not on About's Measurements page, not in the Live status pill's hover. The route card's "Right now · last updated <time>" stays, shown only when the data is stale. About > Measurements is one row per measure ("Bunching ›"); the grey key stays only under the Live week table.
   - Why: Ryan, 2026-11-21: "Why would we not put +31%", "10% arrow 31%?", then "1" to "Use the arrow, "10% → 41%"". Ryan, 2026-11-26: "in live what does the updated date even mean idgi", "Is the date of it not confusing" (the date is when the summary figures were built, not the bus positions, so it reads as stale live data), "Grey within normal is a legend thing not a about page thin".
   - Source: Linear CIV-3055 (supersedes the 2026-11-21 "build time sits in About" line, CIV-1814 item 41, and CIV-2084's date in the pill hover), CIV-2038
+- **Live's list always matches the map**
+  - What: the Live list shows every route with a vehicle on screen, from every agency the map draws there. Picking a place in the zoomed-out list only flies the map to it; it no longer narrows the list to that agency.
+  - Why: Ryan, 2026-11-26: "I'm confused here too because are these HSR routes not Live-enabled? They're showing on the Live map but not in this list." Picking Burlington Transit kept the list to Burlington in the Hamilton view while the map drew HSR. He picked option 1, "The list always matches the map (Recommended)".
+  - Source: [decision log](#decision-log) (2026-11-26, CIV-3049, #1879)
 - **Studio's cities, and the same Live cities in Studio and the main app**
   - What: Studio's Schedules and vehicles-needed agencies are Kingston, Hamilton, RTD Denver, Guelph, TTC, YRT and the MBTA (TransLink and OC Transpo out). Studio's Live and the main app's Live list the same cities from one shared list; a city without recordings shows the no-data note.
   - Why: Ryan, 2026-11-21: "I think Live in Studio and Live in main app should have the same cities available", and "1" to the four focus agencies plus TTC, YRT and the MBTA.
@@ -380,6 +384,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-26 — Live's list always matches the map; picking a place only flies there (CIV-3049, #1879)
+Ryan, 2026-11-26: "I'm confused here too because are these HSR routes not Live-enabled? They're showing on the Live map but not in this list.", then option 1, "The list always matches the map (Recommended)": picking a place only flies the map there, and the list shows every route with a bus on screen. This replaces the place filter's design (picking an agency kept the list to it until you left its area or zoomed out, because Toronto's and York Region's areas overlap). Options not picked: 2, the map shows only the picked agency; 3, keep the filter with an "only" chip.
 
 ### 2026-11-26 — Live shows no "figures updated" date; Measurements is one row per measure (CIV-3055, #1822; supersedes CIV-1814 item 41 and CIV-2084's pill-hover date)
 Ryan, 2026-11-26, on About > Measurements and the Live pill: "Grey within normal is a legend thing not a about page thin", "in live what does the updated date even mean idgi", "Is the date of it not confusing", then "1". The date was when Live's summary figures were built, not when bus positions came in, so it read as stale live data. Now: no "Figures updated" line on the Measurements page, none in the Live status pill's hover (the per-agency "positions last came in" lines and the retry countdown stay), the grey key only under the Live week table, and one row per measure ("Bunching ›") on Measurements. The route card's "Right now · last updated <time>" stays, shown only when data is stale.
