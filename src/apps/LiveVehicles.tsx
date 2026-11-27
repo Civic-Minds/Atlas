@@ -738,29 +738,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     selectedGroup ? liveScheduledRowsNow(routeLayer(selectedGroup.agencySlug), agencies, selectedGroup.agencySlug, selectedGroup.routeShortName, { directionId, label }) : null
   ), [selectedGroup, routeLayer, agencies]);
 
-  if (!active) return null;
-
-  const hasLiveElsewhere = offScreenOnly && !query;
-  const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
-
-  const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
-  // The vehicle card is a few lines: on phones its sheet is only as tall as they are, up to the route card's short height (CIV-1413 D).
-  const vehicleCardOpen = !!(selectedGroup && cardVehicle);
-  // The report flag's title names the agency as the card's back link does (CIV-1795), never the address.
-  const reportAgency = selectedGroup ? agencies.find(a => a.slug === selectedGroup.agencySlug) : undefined;
-  const reportAgencyName = reportAgency ? agencyShortNameBySlug(agencies, reportAgency.slug) : null;
-  // The same title on the vehicle card and the direction list.
-  const routeCardTitle = selectedGroup ? (
-    <RouteCardTitle
-      routeShortName={selectedGroup.routeShortName}
-      routeLongName={selectedRouteLongName}
-      routeType={selectedRouteType}
-      agencySlug={selectedGroup.agencySlug}
-      agencyName={selectedAgencyName}
-      onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
-      showAgency={false}
-    />
-  ) : null;
   // #1877 (Ryan: "I don't like how the Live vehicles is separate here from the regular destinations"; "Even inside Live mode
   // you are proposing we show every destination twice?"): each destination shows once, on the route card's own row. Under
   // its name: its vehicles (the same group the row opens, so the count is the one the list shows) and its longest gap.
@@ -784,6 +761,30 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const summary = directionSummary(vehicles, selectedRouteModeWord);
     return { key, subLabel: gap != null ? `${summary} · ${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(gap)}` : summary, onClick: () => setSelectedDirection(key) };
   }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, destinationGaps]);
+  // Hooks stay above this return (hooksBeforeEarlyReturn guard, #1812).
+  if (!active) return null;
+
+  const hasLiveElsewhere = offScreenOnly && !query;
+  const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
+
+  const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
+  // The vehicle card is a few lines: on phones its sheet is only as tall as they are, up to the route card's short height (CIV-1413 D).
+  const vehicleCardOpen = !!(selectedGroup && cardVehicle);
+  // The report flag's title names the agency as the card's back link does (CIV-1795), never the address.
+  const reportAgency = selectedGroup ? agencies.find(a => a.slug === selectedGroup.agencySlug) : undefined;
+  const reportAgencyName = reportAgency ? agencyShortNameBySlug(agencies, reportAgency.slug) : null;
+  // The same title on the vehicle card and the direction list.
+  const routeCardTitle = selectedGroup ? (
+    <RouteCardTitle
+      routeShortName={selectedGroup.routeShortName}
+      routeLongName={selectedRouteLongName}
+      routeType={selectedRouteType}
+      agencySlug={selectedGroup.agencySlug}
+      agencyName={selectedAgencyName}
+      onAgencyClick={onAgencyClick ? () => onAgencyClick(selectedGroup.agencySlug) : undefined}
+      showAgency={false}
+    />
+  ) : null;
   // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
   // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
   // `onRows`: the route card's rows carry the destinations (#1877), so "Right now" draws nothing and passes its gaps up.
