@@ -8,7 +8,6 @@ import { PERIOD_KEYS, PERIOD_LABELS, formatPeriodRange } from '../../shared/conf
 import { clockTime } from '../../shared/timeText';
 import { countryForRegion } from '../../shared/regionCountry';
 import * as data from './atlasData';
-import { isoDate } from '../../shared/dateText';
 import { headwayEvery } from '../../shared/headwayText';
 import { NEARBY_ROUTES_RADIUS_M, RANK_AGENCIES_MAX } from '../../shared/rules/limits';
 import { LIVE_TOOLS, liveHandlers } from './liveTools';
@@ -87,10 +86,11 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     };
     const hitGroups = entries.filter(matches);
     const earliest = (xs: Array<string | null>) => xs.filter((x): x is string => !!x).sort()[0] ?? null;
-    // CIV-2081: when its schedule was added (the earliest of a parent's feeds) beside when it runs out.
-    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, added: earliest(g.members.map(m => isoDate(m.lastRefreshedAt))), end: earliest(g.members.map(m => validThrough(m))), parts: g.parent ? g.members : null }));
+    // CIV-2081: when its schedule runs out (the earliest of a parent's feeds). #1905: no "schedule added" date: Atlas records
+    // when it last refreshed an agency, not when the schedule changed, so an old schedule read as new.
+    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, end: earliest(g.members.map(m => validThrough(m))), parts: g.parent ? g.members : null }));
     // include_parts (#1625): a parent agency's feeds too, each with its own schedule end, as rank_agencies lists them.
-    const parts = include_parts === true ? Object.fromEntries(hits.slice(0, 40).filter(h => h.parts).map(h => [h.name, h.parts!.map(m => `${m.name} | ${isoDate(m.lastRefreshedAt) ?? ''} | ${validThrough(m) ?? ''}`)])) : null;
+    const parts = include_parts === true ? Object.fromEntries(hits.slice(0, 40).filter(h => h.parts).map(h => [h.name, h.parts!.map(m => `${m.name} | ${validThrough(m) ?? ''}`)])) : null;
     if (!hits.length && q) {
       const excluded = await data.excludedAgencyNote(q);
       if (excluded) return { matches: 0, note: excluded };
@@ -119,7 +119,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const haveAll = new Set(all.map(a => a.slug));
     const others = hits.length ? groupAgencies((await data.publicAgencies()).filter(a => !haveAll.has(a.slug))).filter(matches).length : 0;
     const othersNote = others ? { notOnThisServer: await data.notOnThisServerNote([`The ${others} other ${others === 1 ? 'agency' : 'agencies'} this filter finds`]) } : {};
-    return { matches: hits.length, ...othersNote, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.added ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule added | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule added | schedule valid through' } : {}), ...(operator ? { operatorNote: `${operator.name} runs ${operator.members.map(a => a.name).join(' and ')}; Atlas lists each as its own agency.` } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+    return { matches: hits.length, ...othersNote, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule valid through' } : {}), ...(operator ? { operatorNote: `${operator.name} runs ${operator.members.map(a => a.name).join(' and ')}; Atlas lists each as its own agency.` } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
   },
   rank_agencies: async (args) => {
     const feeds = await data.rankAgencies();
