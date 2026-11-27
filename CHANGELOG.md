@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The internal MCP page's New link form opens from a "New link" button under the Testers table**: the form sat open there all the time
+- **Live's timetable figure is named "Lateness", and Studio's Measure menu lists it once**: "Schedule adherence" was long for a label, and Studio showed two entries for the same idea
 - **Live vehicles are arrows pointing the way they're heading**: the dots carried the route number, which made them hard to read; a vehicle that reports no heading stays a plain dot
 - **Long destination names no longer squeezed**: a reading that doesn't fit beside the name sits right-aligned on the line below.
 - **Live's list shows every route on the map**: after picking a place such as Burlington Transit, the list kept to that agency, so HSR routes drawn on the map in the Hamilton view were missing from it

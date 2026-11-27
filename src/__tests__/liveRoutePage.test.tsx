@@ -77,7 +77,7 @@ describe('Live route dashboard', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: /max-width: (479|639)px/.test(q), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     renderPage(ready);
     expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
-    for (const [topic, name] of [[DELAY_STARTS_TITLE, /Schedule Adherence/], [BUNCHING_FORMS_TITLE, /Where Bunching Forms/]] as const) {
+    for (const [topic, name] of [[DELAY_STARTS_TITLE, /Lateness/], [BUNCHING_FORMS_TITLE, /Where Bunching Forms/]] as const) {
       openTopic(topic);
       const section = fa().getByRole('region', { name });
       expect(section.querySelectorAll('[aria-roledescription="route strip"]').length).toBe(2);
@@ -339,7 +339,7 @@ describe('Live route dashboard', () => {
     renderPage(broken);
     await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
     openTopic(DELAY_STARTS_TITLE);
-    expect(await screen.findByText(/Schedule adherence could not be drawn/)).toBeTruthy();
+    expect(await screen.findByText(/Lateness could not be drawn/)).toBeTruthy();
     openTopic(LATE_BY_HOUR_TITLE);
     expect(fa().getByRole('region', { name: /Late Departures by Hour/ })).toBeTruthy();
     openTopic(METHOD_TITLE);

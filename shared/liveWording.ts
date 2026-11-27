@@ -138,19 +138,20 @@ export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 export const LATE_THRESHOLD = `${LATE_LIMIT_TEXT} late`;
 
 /**
- * CIV-2924 (Ryan, 2026-11-25, picking "1"; supersedes CIV-1602's "Delays start"): the timetable measure and its Live section
- * are one name, "Schedule adherence" ("Why not just Schedule adherence wtf does by stretch mean"). Written once, here.
+ * CIV-2924 (Ryan, 2026-11-27: "Ideally those would all be 1 word though", "Lateness might work", then "1"; supersedes his
+ * 2026-11-25 "Schedule adherence", which superseded CIV-1602's "Delays start"): the timetable measure, its Live section and
+ * Studio's one menu entry for it are one name, "Lateness". Written once, here.
  */
-export const SCHEDULE_ADHERENCE_LABEL = 'Schedule adherence';
-/** The title of every Schedule adherence section (was "Where delays start") and the name of the stretch it marks (one name, CIV-1448). */
-export const DELAY_STARTS_TITLE = SCHEDULE_ADHERENCE_LABEL;
+export const LATENESS_LABEL = 'Lateness';
+/** The title of every Lateness section (was "Schedule adherence", before that "Where delays start") and the name of the stretch it marks (one name, CIV-1448). */
+export const DELAY_STARTS_TITLE = LATENESS_LABEL;
 /** The column and figure label for the typical minutes a stretch adds (CIV-1448; CIV-1795: "Usually", as the Live column; was "Typical added"). */
 export const TYPICAL_ADDED = 'Usually adds';
 /** Delays start: the minutes added on the way into a stop that aren't made back over the next 3 stops, on the Live map's stop and stretch cards (Ryan, CIV-1795 question 9: "Time lost: 2 min"). */
 export const TIME_LOST_LABEL = 'Time lost';
 export const timeLostLine = (min: number): string => `${TIME_LOST_LABEL}: ${minutesText(min)}`;
-/** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (CIV-2924: "Schedule adherence"; was CIV-1602's "Delays start"). */
-export const DELAY_STARTS_LABEL = SCHEDULE_ADHERENCE_LABEL;
+/** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (CIV-2924: "Lateness"; was "Schedule adherence", before that CIV-1602's "Delays start"). */
+export const DELAY_STARTS_LABEL = LATENESS_LABEL;
 /** The Live map's name: its page title and the title on a saved image of it (Ryan, CIV-1602; "Live", not "Live vehicles", 2026-11-17). */
 export const LIVE_MAP_TITLE = 'Live';
 
@@ -334,8 +335,8 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
  * shows the rest).
  */
 export const STUDIO_LIVE_PENDING = {
-  /** The measure pill. */
-  fallsBehindPill: 'Falls behind',
+  /** The measure pill: "Lateness", Studio's one entry for the timetable measure (CIV-2924, Ryan 2026-11-27, "1"; was "Falls behind"). */
+  fallsBehindPill: LATENESS_LABEL,
   /** A stop pair's lines in a route's view: its time lost (timeLostLine), then the sample (CIV-1878: the manager's suggested wording, PENDING RYAN'S OK). */
   sample: (trips: number, days: number): string => `Based on ${countOf(trips, 'trip')} over ${countOf(days, 'day')}`,
   /** The collapsed list of stop pairs whose schedule allows more than vehicles need. */

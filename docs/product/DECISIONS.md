@@ -275,10 +275,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar (in Studio's Live, Measure sits with the filters: Agency, Route, Time of day; Ryan, 2026-11-19), with the map key as a card floating at the map's bottom left (since CIV-1821).
   - Why: the panels need a desktop's room, and controls in two places read as clutter.
   - Source: [decision log](#decision-log) (2026-11-16)
-- **Timetable measures are "Schedule adherence"; the speed view is "Speed"**
-  - What: the measure once called "Falls behind" / "Delays start" and its section (once "Where delays start") read "Schedule adherence"; "Typical delay" reads "Typical deviation". The new positions-only view is named "Speed" (average speed, no baseline), not "Delay".
-  - Why: Ryan: ""delays start" and "behind schedule" sounds fucking stupid in a professional product"; "Delay" implies a baseline the picked method doesn't have.
-  - Source: [decision log](#decision-log) (2026-11-25, CIV-2924; 2026-11-26, CIV-2917)
+- **Timetable measures are "Lateness"; the speed view is "Speed"**
+  - What: the measure once called "Falls behind" / "Delays start", then "Schedule adherence", and its section (once "Where delays start") read "Lateness"; Studio's Measure menu has one entry for it, "Lateness" (the "Falls behind" measure), and "Delays start" leaves that menu. "Typical delay" reads "Typical deviation". The new positions-only view is named "Speed" (average speed, no baseline), not "Delay".
+  - Why: Ryan: ""delays start" and "behind schedule" sounds fucking stupid in a professional product"; then "Ideally those would all be 1 word though" / "Lateness might work"; "Delay" implies a baseline the picked method doesn't have.
+  - Source: [decision log](#decision-log) (2026-11-25, CIV-2924; 2026-11-26, CIV-2917; 2026-11-27, CIV-2924)
 - **Speed's minimums are starting values, to be checked**
   - What: Speed shows a stretch's average speed (total distance over total time of its recorded weekday trips, per time-of-day slot) only when the stretch is at least 400 m long, has at least 7 weekdays recorded, at least 30 trips in total and at least 10 trips in that slot; below any of them it shows no figure ("Not measured"). The numbers live in SPEED_MINIMUMS (shared/rules/live.ts).
   - Why: 400 m, 30 and 10 are untested prototype guesses and 7 weekdays is Strategy's proposal; Ryan took them as starting values, to be tested on TTC, HSR and MBTA routes, with counts of how many stretches go blank, before anything ships.
@@ -390,6 +390,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-27 — Live's timetable measure reads "Lateness"; Studio's Measure menu has one entry for it (CIV-2924; supersedes 2026-11-25 "Schedule adherence")
+Ryan, 2026-11-27, in the Questions chat: "Ideally those would all be 1 word though" and "Lateness might work", then confirmed option 1. "Schedule adherence" becomes "Lateness" everywhere: the measure, Live's section (once "Where delays start") and the stretch it marks. Studio's Measure menu has one entry, "Lateness" (the "Falls behind" measure); "Delays start" leaves Studio's menu (it stays as Live's map toggle, named "Lateness"). This also settles the open Studio menu question in the 2026-11-25 entry. "Typical deviation" is unchanged. The label lives once in shared/liveWording.ts (`LATENESS_LABEL`); the style guard bans "Schedule adherence" as it does "Delays start".
+
 ### 2026-11-26 — Live's list always matches the map; picking a place only flies there (CIV-3049, #1879)
 Ryan, 2026-11-26: "I'm confused here too because are these HSR routes not Live-enabled? They're showing on the Live map but not in this list.", then option 1, "The list always matches the map (Recommended)": picking a place only flies the map there, and the list shows every route with a bus on screen. This replaces the place filter's design (picking an agency kept the list to it until you left its area or zoomed out, because Toronto's and York Region's areas overlap). Options not picked: 2, the map shows only the picked agency; 3, keep the filter with an "only" chip.
 
@@ -499,6 +502,7 @@ Ryan, 2026-11-25, on E11's body, word for word: "We check each vehicle's locatio
 
 ### 2026-11-25 — Live's timetable measures read "Schedule adherence" and "Typical deviation"; "Delay" is kept for the clear-street measure (CIV-2924; supersedes CIV-1602's "Delays start")
 Superseded in part by 2026-11-26 (CIV-2917): the clear-street view is named "Speed", not "Delay".
+"Schedule adherence" superseded by 2026-11-27 / CIV-2924: the label is "Lateness".
 Ryan, 2026-11-25, picking "1" after rejecting "Behind schedule" (""delays start" and "behind schedule" sounds fucking stupid in a professional product"), and on the section: "Why not just Schedule adherence wtf does by stretch mean". The timetable measures "Falls behind" and "Delays start" become one label, "Schedule adherence"; "Typical delay" becomes "Typical deviation"; the Live section "Where delays start" becomes "Schedule adherence". CIV-1602's "Delays start" (never logged here; recorded in the code and the style guard) is superseded. Labels live once in shared/liveWording.ts. Open: Studio's Measure menu lists "Falls behind" and "Delays start" as two measures, so it keeps "Falls behind" until Ryan says whether Studio drops one (asked on CIV-2924).
 
 ### 2026-11-24 — E10 (Official data) drops "The agency's website has its current schedule." and its link
