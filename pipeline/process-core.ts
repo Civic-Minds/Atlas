@@ -3941,7 +3941,7 @@ export async function processGtfsBuffer(
         // a period D8 calls unsteady reads its wait on the card, so its edge is read here (TTC 510 weekday evening to Queens Quay:
         // "every 10 min until 10:03 PM", not a bare 57).
         const steady = period.sustained === true && (feature.properties.headwayByPeriodSustainedMid as HeadwayByPeriodSustained | undefined)?.[pk] !== false;
-        const edgeValue = periodFilterValue({ headway: period.headway, coverage: period.coverage, steady }) as number;
+        const edgeValue = periodFilterValue({ headway: period.headway, coverage: period.coverage, sustained: steady }) as number;
         const edge = periodEdge(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end, edgeValue);
         if (edge) rowEdges[pk] = edge;
         else {

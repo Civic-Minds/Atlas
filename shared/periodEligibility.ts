@@ -4,17 +4,17 @@ import type { HeadwayByPeriod, PeriodKey } from './config.js';
 export const PERIOD_COVERAGE_MAX_HEADWAY = 60;
 
 /**
- * The filter's value for one period (CIV-2976 F4/F5, the one copy): a steady period whose wait is within
+ * The filter's value for one period (CIV-2976 F4/F5, the one copy): a consistent period whose wait is within
  * PERIOD_COVERAGE_MAX_HEADWAY reads its spacing (headway), any other its full-window wait (coverage).
  * `capWait` is the wait the cap tests, when it is not `coverage` itself (CIV-1958: stretches test the clock-minute wait).
  */
-export function periodFilterValue({ headway, coverage, steady, capWait = coverage }: {
+export function periodFilterValue({ headway, coverage, sustained, capWait = coverage }: {
   headway: number | null;
   coverage: number | null | undefined;
-  steady: boolean;
+  sustained: boolean;
   capWait?: number | null;
 }): number | null | undefined {
-  return steady && coverage != null && capWait != null && capWait <= PERIOD_COVERAGE_MAX_HEADWAY ? headway : coverage;
+  return sustained && coverage != null && capWait != null && capWait <= PERIOD_COVERAGE_MAX_HEADWAY ? headway : coverage;
 }
 
 export interface PeriodEligibilityFields {

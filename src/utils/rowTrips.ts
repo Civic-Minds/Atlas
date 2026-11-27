@@ -303,7 +303,7 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
 export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number } | null {
   if (period === 'all' || period === 'overnight' || d.noOwnServiceByPeriod?.includes(period) || !rowOwnTripsEven(d, period)) return null;
   const hw = d.headwayByPeriod?.[period] as number, cov = d.periodCoverageHeadway?.[period];
-  const v = typeof cov !== 'number' ? hw : periodFilterValue({ headway: hw, coverage: cov, steady: d.headwayByPeriodSustained?.[period] === true }) as number;
+  const v = typeof cov !== 'number' ? hw : periodFilterValue({ headway: hw, coverage: cov, sustained: d.headwayByPeriodSustained?.[period] === true }) as number;
   const edge = d.rowPeriodEdge?.[period];
   const edgeWords = edge != null && (edge.from != null || edge.until != null);
   // #1827: CIV-2232's 4-trip minimum (Ryan, 2026-11-24), as rowTrips has it: a row whose period wait is over an hour, with fewer than

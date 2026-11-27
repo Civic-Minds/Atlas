@@ -789,7 +789,7 @@ export function stretchFilterValue(p: StretchPeriod): number | null {
   if (p.uneven) return p.value;
   // CIV-1958: the cap's yes/no reads the wait in clock minutes (coverageClock); the published wait stays exact, rounded up.
   const capWait = p.coverageClock !== undefined ? p.coverageClock : p.coverage;
-  return periodFilterValue({ headway: p.headway, coverage: p.coverage, steady: p.sustained === true, capWait }) ?? null;
+  return periodFilterValue({ headway: p.headway, coverage: p.coverage, sustained: p.sustained === true, capWait }) ?? null;
 }
 
 /**
