@@ -42,4 +42,18 @@ describe('hand-checked stop renames (CIV-3021, #1855)', () => {
       if (r.from.length === 60) expect(r.to.length).toBeGreaterThan(60);
     }
   });
+
+  // CIV-3095 (Ryan, 2026-11-26, picked 1: "hand-checked rename lists for the worst feeds only ... leave the rest"): each
+  // full name is the agency's own, from its InfoPoint stop list (GoDurham, MVTA) or its earlier feed file (Norwalk), so
+  // every entry only completes the cut-off name: it starts with the feed's name and is longer.
+  it.each(['godurham', 'mvta', 'norwalktransit'])('%s list: one entry per stop, and each name only completes the cut-off one', slug => {
+    const cfg = JSON.parse(readFileSync(new URL(`../../../config/agencies/${slug}.json`, import.meta.url), 'utf8')) as { stopRenames: StopRename[] };
+    const ids = cfg.stopRenames.map(r => r.stopId);
+    expect(ids.length).toBeGreaterThan(0);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const r of cfg.stopRenames) {
+      expect(r.to.startsWith(r.from)).toBe(true);
+      expect(r.to.length).toBeGreaterThan(r.from.length);
+    }
+  });
 });
