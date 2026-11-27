@@ -59,7 +59,7 @@ const REGION_BOUNDARIES = 'shared/data/region-boundaries.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
-type CatalogAgency = AgencyPageIdentity & SupplementalFeedExpiryEntry & { lastRefreshedAt?: string | null; listingEndedOn?: string | null; displayArea?: string; timezone?: string | null };
+type CatalogAgency = AgencyPageIdentity & SupplementalFeedExpiryEntry & { lastRefreshedAt?: string | null; listingEndedOn?: string | null; displayArea?: string; timezone?: string | null; noFeedEnd?: boolean; timetableChangedAt?: string | null };
 type Catalog = { agencies: CatalogAgency[] };
 type Feature = { geometry: { type: string }; properties: Record<string, unknown> };
 
@@ -282,6 +282,9 @@ function identityFor(a: CatalogAgency) {
     validThrough: effectiveFeedExpiry(a),
     ...(a.timezone ? { timezone: a.timezone } : {}),
     ...(a.listingEndedOn ? { listingEndedOn: a.listingEndedOn } : {}),
+    // CIV-3115: no end date given, and when the timetable last changed.
+    ...(a.noFeedEnd ? { noFeedEnd: true } : {}),
+    ...(a.timetableChangedAt ? { timetableChangedAt: a.timetableChangedAt } : {}),
   };
 }
 
