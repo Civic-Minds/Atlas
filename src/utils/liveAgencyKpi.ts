@@ -8,12 +8,17 @@ import { FIXED_NOISE, dailyNoise, weekForBand, type DashboardBand } from '../../
 import { runTimeOver, type AgencySummary } from '../../shared/liveAgency';
 import { kpiDelta, kpiTiles, type Kpi } from './liveKpi';
 
-import { onTimeWindowWords, runTimeShareText, TRIP_TIME_LABEL } from '../../shared/liveWording';
+import { onTimeWindowWords, runTimeShareText, TRIP_TIME_LABEL, weekScopeText } from '../../shared/liveWording';
+import { PERIOD_LABELS } from '../../shared/config';
+import { ALL_ROUTES_LABEL } from '../content/noticeCopy';
 export { runTimeShareText };
 /** The row's name on All routes, so the share reads against the timetable (wording to confirm, CIV-945). */
 export const NETWORK_RUN_TIME_LABEL = `${TRIP_TIME_LABEL} vs schedule`;
 /** The tile's caption and hover text (wording to confirm, CIV-945). */
 export const NETWORK_RUN_TIME_SUB = 'typical trip against the schedule, all routes';
+
+/** The network's week heading, "All routes · <time of day>": the week table's scope line and, since CIV-2929, the bar's title. */
+export const agencyWeekScope = (band: DashboardBand): string => weekScopeText(ALL_ROUTES_LABEL, band === 'all' ? null : PERIOD_LABELS[band]);
 
 /** `band` is the time of day picked (CIV-1459): no tiles when the file has no figures for it, never the whole day's in its place. */
 export function agencyKpiTiles(s: AgencySummary, band: DashboardBand = 'all'): Kpi[] {

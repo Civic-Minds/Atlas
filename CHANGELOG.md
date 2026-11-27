@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio Live's late bar follows the time of day you pick, like the table under it**: the bar showed the whole day while the table showed the picked time, so the two late figures disagreed with nothing saying why
 - **The internal MCP page's New link form opens from a "New link" button under the Testers table**: the form sat open there all the time
 - **Live's timetable figure is named "Lateness", and Studio's Measure menu lists it once**: "Schedule adherence" was long for a label, and Studio showed two entries for the same idea
 - **Studio's map has Frequency, Day, Time and Mode filters**: its lines were coloured by frequency with no way to filter them, as the main map can

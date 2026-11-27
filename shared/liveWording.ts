@@ -349,7 +349,6 @@ export const STUDIO_LIVE_PENDING = {
  * how departures split this week between on time and more than 5½ min late.
  */
 export const STUDIO_GLANCE = {
-  barTitle: 'Departures this week',
   onTime: 'On time',
   late: LATE_THRESHOLD.charAt(0).toUpperCase() + LATE_THRESHOLD.slice(1),
 } as const;
