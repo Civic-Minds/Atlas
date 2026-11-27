@@ -88,7 +88,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
  */
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
-/** CIV-3040 MOCK (not for merge): localStorage.rowmock 'b' = a two-part reading stays on the name's line when both fit, else takes the line below, from the left, wrapped if needed (Ryan's layout). */
+/** CIV-3040 MOCK (not for merge): localStorage.rowmock 'b' = a two-part reading stays on the name's line when both fit, else takes the line below, right-aligned, wrapped if needed (Ryan's layout; "the every x to x should be right justified though"). */
 const rowMock = (): string | null => { try { return window.localStorage.getItem('rowmock'); } catch { return null; } };
 
 export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
@@ -148,10 +148,10 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
         >
           {routeName ? <><RouteRowName shortName={routeName.shortName} name={routeName.name} />{routeNameNote && <span className={`${LIST_ROW_DIM} ml-1.5`}>{routeNameNote}</span>}</> : singleLine ? label : keepLastWord(label)}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center ${fitOrBelow ? 'justify-start' : 'justify-end'} gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
+        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd || fitOrBelow ? 'ml-auto' : ''}`}>
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
-            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} start={fitOrBelow} />
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />
           )}
           {/* The trunk-to-branch range ("every 15–54 min") is the shared badge (CIV-1000), coloured by its slower number, never
               the main stretch's: it must never look better than riders get (Ryan, CIV-1447). Where the row has its own colour
