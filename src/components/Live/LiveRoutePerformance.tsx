@@ -33,7 +33,7 @@ export function schedText(st: { scheduledMedianGapSec: number; scheduledP10Sec?:
   return headwayEveryRange(tenthMin(lo), tenthMin(hi));
 }
 
-const AMBER = 'var(--status-caution-text)';
+export const AMBER = 'var(--status-caution-text)';
 
 /** The agency's hour (LIVE_AGENCY_TIMEZONES); the browser's clock when the agency has no zone listed. */
 export function agencyHour(slug: string, d = new Date()): number {
@@ -82,7 +82,7 @@ function Stats({ items }: { items: [string, string, /** A colour for the figure 
  * layout, so the compact one-line form can be shown instead for Ryan's review.
  */
 /** MOCK (#1877 mock C). */
-export interface MockRowReading { every: number | null; cars: number; late: number | null }
+export interface MockRowReading { every: number | null; cars: number; late: number | null; longest: number | null; tooFar: boolean; schedMin: number | null }
 
 interface Props {
   /** CIV-2045: the main map card's own Scheduled lines for the picked direction (liveScheduledRows); none shows nothing. */
@@ -308,10 +308,10 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     }
     return out;
   }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId]); // eslint-disable-line react-hooks/exhaustive-deps
-  const everyKey = rowFigures && scheduledRows ? scheduledRows.filter(r => rowFigures.has(r.key)).map(r => { const f = rowFigures.get(r.key)!; return `${r.key}\t${f.every ?? ''}\t${f.cars}\t${f.late ?? ''}`; }).join('\n') : '';
+  const everyKey = rowFigures && scheduledRows ? scheduledRows.filter(r => rowFigures.has(r.key)).map(r => { const f = rowFigures.get(r.key)!; return `${r.key}\t${f.every ?? ''}\t${f.cars}\t${f.late ?? ''}\t${f.extremes?.longest.min ?? ''}\t${f.extremes?.longest.tooFar ? 1 : ''}\t${r.headwayMin ?? ''}`; }).join('\n') : '';
   useEffect(() => {
     const num = (x: string) => (x === '' ? null : Number(x));
-    onRowEvery?.(directionId, new Map(everyKey ? everyKey.split('\n').map(l => { const [k, e, c, la] = l.split('\t'); return [k, { every: num(e), cars: Number(c), late: num(la) }] as const; }) : []));
+    onRowEvery?.(directionId, new Map(everyKey ? everyKey.split('\n').map(l => { const [k, e, c, la, lo, tf, sh] = l.split('\t'); return [k, { every: num(e), cars: Number(c), late: num(la), longest: num(lo), tooFar: tf === '1', schedMin: num(sh) }] as const; }) : []));
   }, [onRowEvery, everyKey, directionId]);
   if (!line || !live) return null;
 

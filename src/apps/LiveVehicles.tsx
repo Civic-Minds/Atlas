@@ -45,7 +45,10 @@ import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
 import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
-import LiveRoutePerformance, { agencyHour, type MockRowReading } from '../components/Live/LiveRoutePerformance';
+import LiveRoutePerformance, { AMBER, agencyHour, type MockRowReading } from '../components/Live/LiveRoutePerformance';
+import Mock2901Week from '../components/Live/Mock2901Week';
+import { LONGEST_GAP_LABEL } from '../../shared/liveWording';
+import { gapText } from '../../shared/liveFormat';
 import { RouteCardHeadway } from '../components/Interval/panels/RouteCardHeadway';
 import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../utils/routeCardRoute';
 import { buildDirectionGroups } from '../utils/routeCardDirectionGroups';
@@ -56,7 +59,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL, liveListTitle } from '../content/noticeCopy';
+import { loadingText, liveReportFlagTitle, SCHEDULED_COLUMN, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL, liveListTitle } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -782,6 +785,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // MOCK for Ryan's review (#1877, not for merge): ?mock1877=a keeps "every X min" with the bus count under it;
   // ?mock1877=b puts the bus count in its place. Both leave out "Right now", so each destination shows once.
   const mock1877 = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mock1877') : null;
+  // MOCK (CIV-2901 on mock C): ?mockGap=1|2 a gap line under each row; ?mockWeek=1|2 the week section under the rows.
+  const mockGap = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mockGap') : null;
+  const mockWeek = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('mockWeek') : null;
   // ?mock1877=c: every row of the card is live, Shared stretch included: "every X min" from the vehicles on the road now
   // (a new number: the average gap between the row's vehicles over the last half hour, from the same gap calculation as
   // "Right now"'s longest gap), with the vehicle count and late count on the line under it, in the same type, where
@@ -805,10 +811,18 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const cars = f?.cars ?? (headKey ? vehiclesByDirection.get(headKey)?.length ?? 0 : 0);
       const count = vehicleModeCount(cars, selectedRouteModeWord) + (f?.late != null ? ` · ${f.late} late` : '');
       const line = 'text-sm font-black text-[var(--text-primary)] whitespace-nowrap';
+      // MOCK (CIV-2901 A on mock C): ?mockGap=1 the longest gap in amber, shown here on every row only to show the look
+      // (live it shows only when the gap breaks the too-far rule); 2 the gap with the row's timetable gap beside it.
+      const gapText2901 = f?.longest != null ? `${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(f.longest)}` : null;
+      const gapLine = gapText2901 == null ? null : mockGap === '1'
+        ? <span className="text-xs font-semibold whitespace-nowrap" style={{ color: AMBER }}>{gapText2901}</span>
+        : mockGap === '2' ? <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">{gapText2901}{f?.schedMin != null ? ` · ${SCHEDULED_COLUMN.toLowerCase()} ${headwayEvery(f.schedMin)}` : ''}</span>
+        : null;
       const value = (
         <span className="flex flex-col items-end text-right">
           {f?.every != null && <span className={line}>{headwayEvery(f.every)}</span>}
           <span className={line}>{count}</span>
+          {gapLine}
         </span>
       );
       const key = `c:${row?.dirId ?? ''}|${row?.key ?? String(feature?.headsign)}`;
@@ -824,7 +838,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     }
     if (!key || !vehicles?.length) return null;
     return { key, subLabel: directionSummary(vehicles, selectedRouteModeWord), onClick: () => setSelectedDirection(key) };
-  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877, mockRows]);
+  }, [selectedGroup, vehiclesByDirection, canGroupByDirection, selectedRouteModeWord, mock1877, mockRows, mockGap]);
   // Live's own sections of the route card, the same in the map's route card and in the fallback while its route layer
   // loads. `claimed`: the destinations the card's rows already carry (#1877); only the rest are listed here.
   const liveRouteSections = (claimed: ReadonlySet<string>) => {
@@ -854,6 +868,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const text = opt === '2' ? `Live positions as of ${at}` : opt === '3' ? `Last ${word} report ${at}` : `No ${word} has reported its position since ${at}`;
         return <CardHelpNotice message={text} />;
       })()}
+      {mock1877 === 'c' && mockWeek && <Mock2901Week slug={selectedGroup.agencySlug} route={selectedGroup.routeShortName} option={mockWeek} />}
       {!(grouped && unclaimed.length === 0) && <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
         {selectedGroup.vehicles.length === 0 ? (
