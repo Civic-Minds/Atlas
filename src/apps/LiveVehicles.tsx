@@ -711,10 +711,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // current period; Live's "Right now" and the vehicle list sit in the card's own section slot.
   const [cardPeriod, setCardPeriod] = useState<TimePeriod>('all');
   const [hoveredBranch, setHoveredBranch] = useState<HoveredBranch | null>(null);
+  // Also once the route's vehicles arrive: a link that opens a route (route=ttc::505) sets the route before its vehicles
+  // load, and the card stayed on the whole day (no period picked, no period label) until the route was picked again.
+  const selectedSlug = selectedGroup?.agencySlug ?? null;
   useEffect(() => {
-    setCardPeriod(selectedGroup ? (periodKeyForHour(agencyHour(selectedGroup.agencySlug)) ?? 'all') : 'all');
+    setCardPeriod(selectedSlug ? (periodKeyForHour(agencyHour(selectedSlug)) ?? 'all') : 'all');
     setHoveredBranch(null);
-  }, [selectedRoute]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedRoute, selectedSlug]);
   const routeCard = useMemo(() => {
     if (!selectedGroup) return null;
     const slug = selectedGroup.agencySlug;
