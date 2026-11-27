@@ -1344,6 +1344,12 @@ export interface DirectionRollup {
     value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
     /** The main stretch's best reading for the range's low end: its typical gap when uneven (#1142), else mainValue. */
     mainLow: number | null;
+    /**
+     * #1775: when CIV-1959 B1 read the value from the trunk alone, the slowest counting branch's value (rule 3's range
+     * high end), leaving out a tail whose reading is only its wait to the period's edge (#1749) or is over an hour
+     * (PERIOD_COVERAGE_MAX_HEADWAY, CIV-3080); otherwise null.
+     */
+    branchValue?: number | null;
     /** The direction value comes from a counting stretch whose value is one gap (isOneGapPeriod). */
     oneGap: boolean;
     /**
@@ -1673,7 +1679,8 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
   const turnTaking = (p: StretchPeriod): StretchPeriod => ({ ...p, coverage: p.headway });
   const handover = Object.fromEntries(READ_WINDOWS.map(({ key, start, end }) => [key, d.tails.map((_, i) => handsOver(i, key, start, end))])) as Record<ReadKey, boolean[]>;
   const period = {} as DirectionRollup['period'];
-  for (const { key } of READ_WINDOWS) {
+  for (const window of READ_WINDOWS) {
+    const { key } = window;
     const counting = [main[key], ...(trunkOnly ? [] : tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key])))].filter(p => p.counts && p.value != null);
     period[key] = {
       value: counting.length > 0 ? Math.max(...counting.map(p => p.value!)) : null,
@@ -1684,6 +1691,14 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
       oneGap: counting.length > 0 && counting.some(p => p.oneGap && p.value === Math.max(...counting.map(c => c.value!))),
       mainValue: main[key].counts ? main[key].value : null,
       mainLow: !main[key].counts ? null : main[key].uneven ? main[key].headway : main[key].value,
+      branchValue: !trunkOnly ? null : (() => {
+        const branches = tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))
+          // CIV-3080: a branch over an hour stays on its own row and never stretches the range (Ryan on RTD 31, CIV-2232:
+          // "For the branch we wouldn't show 10-71"; the card reads "every 10" with the branch on its own line).
+          .filter((p, i) => p.counts && p.value != null && p.value <= PERIOD_COVERAGE_MAX_HEADWAY
+            && !edgeOnlyReading(d.tails[i].times, window.start, window.end, p));
+        return branches.length > 0 ? Math.max(...branches.map(p => p.value!)) : null;
+      })(),
       filterValue: null,
       trunkFilterValue: null,
       edgeWaitFail: 0,
@@ -1898,10 +1913,14 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     const serving = known.filter(d => d.period[key].hasService);
     const filterValues = serving.map(d => d.period[key].filterValue);
     const trunkValues = serving.map(d => d.period[key].trunkFilterValue);
+    // #1775 (CIV-2232, Ryan 2026-11-24: "every 10–30"): rule 3's range runs from the main stretch to the slowest branch. When
+    // the trunk set the headline (B1), the branch's value is not in it, so the range's high end reads the slowest branch.
+    const branches = known.map(d => d.period[key].branchValue).filter((v): v is number => v != null);
+    const high = value != null && branches.length > 0 ? Math.max(value, ...branches) : value;
     period[key] = {
       value,
       coverage: value != null && coverages.every(v => v != null) ? Math.max(...(coverages as number[])) : null,
-      range: value != null && low != null && low !== value ? [Math.min(low, value), value] : null,
+      range: high != null && low != null && low !== high ? [Math.min(low, high), high] : null,
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
       // A route fails a grade any serving direction's edge wait breaks (the worst direction decides, as everywhere).
