@@ -10,7 +10,7 @@ import { liveRouteNumber, type AgencySummary } from '../../../../shared/liveAgen
 import { GAP_MEASURES, NOISE_RULE, weekDailyValues, weekForBand, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
 import { useLiveDashboard } from '../../../hooks/useLiveDashboard';
 import { excludingDays, kpiTiles } from '../../../utils/liveKpi';
-import { agencyKpiTiles } from '../../../utils/liveAgencyKpi';
+import { agencyKpiTiles, agencyWeekScope } from '../../../utils/liveAgencyKpi';
 import { stretchLabel } from '../../../utils/stopLabel';
 import { TYPICAL_ADDED, GROWS_LABEL, LATE_STOPS_TITLE, excludingText, timeLostLine, STUDIO_LIVE_PENDING, STUDIO_ROUTE_PANEL_PENDING, onTimeWindowWords, weekScopeText } from '../../../../shared/liveWording';
 import { PERIOD_LABELS } from '../../../../shared/config';
@@ -104,7 +104,7 @@ function summaryWidgets(s: AgencySummary, band: DashboardBand, inStudio: boolean
   const weekLeft = excludingDays(s.weekly);
   const tiles = agencyKpiTiles(s, band);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={weekScopeText(ALL_ROUTES_LABEL, band === 'all' ? null : PERIOD_LABELS[band])} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lateNote={lateNote} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={agencyWeekScope(band)} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lateNote={lateNote} /> }] : []),
   ];
 }
 
