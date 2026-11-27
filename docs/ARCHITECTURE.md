@@ -92,8 +92,7 @@ restored provider contract before Live can be re-enabled.
 - The archived formats use the `atlas.live.v1` normalized envelope where snapshots exist.
 
 Written by small Cloudflare Workers (only ttc-positions runs now) sharing `workers/gtfs-rt-archiver/src/index.ts`.
-The local-only `history-adherence` handler (`local-api/`, never deployed) can read the archive; the former live snapshot/replay routes
-are no longer in the repository.
+The former live snapshot/replay routes and the `history-adherence` handler are no longer in the repository.
 
 Read by the Live page's vehicles (CIV-2894): the `atlas-live-read` Worker (`workers/atlas-live-read/`, workers.dev,
 `https://atlas-live-read.rhanna-334.workers.dev/live/vehicles?agency=<slug>`) reads the recorder's newest v2 snapshot through
@@ -169,7 +168,7 @@ Triggered by: the `refresh-feeds.yml` GitHub Actions workflow (Mondays 06:00 UTC
 ## Vercel API routes
 
 Every file in `api/` is deployed as a Vercel function at `/api/{name}`; they do not run in the Vite dev server.
-Local: `npm run dev:api` (custom tsx server on port 5001; registers `privacy-region` and, for dev only, `carto-tiles` (the basemap with the server key, since localhost is not on the public key) plus the local-only handlers in `local-api/`: `live-vehicles`, `live-segments`, `live-recent`, `live-stop`, `live-dashboard`, `live-agency`, and `history-adherence`). To run Live, use `npm run live` (starts this server and Vite together).
+Local: `npm run dev:api` (custom tsx server on port 5001; registers `privacy-region` and, for dev only, `carto-tiles` (the basemap with the server key, since localhost is not on the public key) plus the local-only handlers in `local-api/`: `live-vehicles`, `live-segments`, `live-recent`, `live-stop`, `live-dashboard`, and `live-agency`). To run Live, use `npm run live` (starts this server and Vite together).
 Production-like: `vercel dev` if preferred.
 
 Used by the deployed app:
@@ -177,7 +176,7 @@ Used by the deployed app:
 - `/api/version` — current build ID for the app-update banner
 - `/api/privacy-region` — country lookup for the analytics consent prompt (rewritten in `vercel.json` to `/api/geo?mode=privacy-region`)
 
-Local only, never deployed (in `local-api/`): the Live handlers and `history-adherence` (aggregates trip-delay archives from `atlas-live` into hourly buckets). `vercel.json` also proxies `/beta-data/*` to the staging bucket for beta-only agencies.
+Local only, never deployed (in `local-api/`): the Live handlers. `vercel.json` also proxies `/beta-data/*` to the staging bucket for beta-only agencies.
 
 
 ## Environment variables

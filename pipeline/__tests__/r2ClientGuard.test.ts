@@ -12,7 +12,6 @@ const ALLOWED = new Set([
   'scripts/mcp/liveNowData.ts', // Worker-side, MCP read keys
   'shared/liveArchive.ts',
   'local-api/privateBucket.ts', // read-only keys
-  'local-api/history-adherence.ts',
   'local-api/liveStore.ts',
 ]);
 
