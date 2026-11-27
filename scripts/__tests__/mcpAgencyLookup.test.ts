@@ -88,3 +88,29 @@ describe('agency lookup', () => {
     expect((await data.findAgency('MTA New York'))?.slug).toBe('nyct-subway');
   });
 });
+
+describe("an agency's routes in other agencies' files (#1911)", () => {
+  const cat = [{ slug: 'soundtransit', name: 'Sound Transit (Seattle)' }, { slug: 'kingcountymetro', name: 'King County Metro (Seattle)' }, { slug: 'piercetransit', name: 'Pierce Transit' }, { slug: 'owen-sound', name: 'Owen Sound Transit' }];
+  const routes: Record<string, string[]> = { kingcountymetro: ['556', '2'], piercetransit: ['2'], soundtransit: ['1 Line'], 'owen-sound': [] };
+  const st = { ...store, catalog: async () => cat, available: async () => new Set(cat.map(a => a.slug)), summaries: async (slug: string) => (routes[slug] ?? []).map(n => ({ shortName: n, name: n, longName: null, mode: 'Bus' })) } as unknown as AtlasStore;
+  const sound = cat[0] as unknown as Parameters<typeof data.routeInOtherFileNote>[0];
+
+  it("points Sound Transit's 556 to King County Metro's file, not answering for it", async () => {
+    data.useStore(st);
+    const note = await data.routeInOtherFileNote(sound, '556', 'Weekday');
+    expect(note).toMatch(/Sound Transit \(Seattle\)'s own file has no route "556" on Weekday/);
+    expect(note).toMatch(/ST Express buses are in other agencies' schedule files here: King County Metro \(Seattle\) and Pierce Transit\./);
+    expect(note).toMatch(/King County Metro \(Seattle\) has a route "556": if it's the one meant, call again with that agency\./);
+  });
+
+  it('names every file with a route of that number, since the rows do not say who runs it', async () => {
+    data.useStore(st);
+    expect(await data.routeInOtherFileNote(sound, '2', 'Weekday')).toMatch(/King County Metro \(Seattle\) and Pierce Transit have a route "2"/);
+  });
+
+  it('says none has it, and leaves other agencies to the usual message', async () => {
+    data.useStore(st);
+    expect(await data.routeInOtherFileNote(sound, '999', 'Weekday')).toMatch(/None of them has a route "999" on Weekday either/);
+    expect(await data.routeInOtherFileNote(cat[3] as unknown as Parameters<typeof data.routeInOtherFileNote>[0], '556', 'Weekday')).toBeNull();
+  });
+});
