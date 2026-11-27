@@ -1,5 +1,5 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
+import { PERIOD_COVERAGE_MAX_HEADWAY, periodFilterValue } from '../../shared/periodEligibility';
 import { periodEdgeText, routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeGap, routeCardPeriodShapeThen, routeCardPeriodShapeText, infrequentRowNoCadence, rowCarriesStretchWords, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
 import { isOneGapRow, rowStretchReading, SHARED_STRETCH_RATIO, type StretchRowReading } from './stretchCard';
@@ -303,8 +303,7 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
 export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number } | null {
   if (period === 'all' || period === 'overnight' || d.noOwnServiceByPeriod?.includes(period) || !rowOwnTripsEven(d, period)) return null;
   const hw = d.headwayByPeriod?.[period] as number, cov = d.periodCoverageHeadway?.[period];
-  const consistent = d.headwayByPeriodSustained?.[period] === true && typeof cov === 'number' && cov <= PERIOD_COVERAGE_MAX_HEADWAY;
-  const v = consistent || typeof cov !== 'number' ? hw : cov;
+  const v = typeof cov !== 'number' ? hw : periodFilterValue({ headway: hw, coverage: cov, steady: d.headwayByPeriodSustained?.[period] === true }) as number;
   const edge = d.rowPeriodEdge?.[period];
   const edgeWords = edge != null && (edge.from != null || edge.until != null);
   // #1827: CIV-2232's 4-trip minimum (Ryan, 2026-11-24), as rowTrips has it: a row whose period wait is over an hour, with fewer than
