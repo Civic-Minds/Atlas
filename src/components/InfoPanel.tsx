@@ -337,7 +337,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
     : view === 'sources' ? BACK_PLACES.sources
-    : view === 'source-credit' ? openCredit?.label.primary ?? ''
+    // The row's own words (name · place), so the many "BC Transit" pages say which one.
+    : view === 'source-credit' ? (openCredit ? [openCredit.label.primary, openCredit.label.secondary].filter(Boolean).join(' · ') : '')
     : view === 'measurements' ? MEASUREMENTS_TITLE
     : view === 'measure-bunching' ? BUNCHING_LABEL
     : null;
