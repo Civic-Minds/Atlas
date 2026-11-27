@@ -15,5 +15,6 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-4548/latest.zip",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "keepLongShapeJumps": true
 }
