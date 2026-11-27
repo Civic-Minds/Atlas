@@ -58,7 +58,7 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     const { day } = serviceDayOf(clock.dow, clock.hour);
     const period = periodKeyForHour(clock.hour);
     const s = data.findRoute(await data.routeList(a, day), String(route ?? ''));
-    if (!s) throw new Error(`No route matches "${route}" at ${a.name} on a ${day.toLowerCase()}.`);
+    if (!s) throw new Error(await data.routeInOtherFileNote(a, String(route ?? ''), day) ?? `No route matches "${route}" at ${a.name} on a ${day.toLowerCase()}.`);
     const rows = (await data.routeWithRows(a, day, s)).rows;
     const stops = new Map((await data.stopsOf(a)).map(x => [x.id, x]));
     const directions = nowDirections(rows as unknown as NowRouteRow[], stops, period);

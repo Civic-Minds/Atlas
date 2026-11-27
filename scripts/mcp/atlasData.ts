@@ -134,6 +134,33 @@ export function operatorNamed(query: string, list: CatalogAgency[]): { name: str
 }
 
 /**
+ * #1911: an agency some of whose routes are in other agencies' schedule files here, not its own. Sound Transit's own file
+ * holds Link and Sounder; its ST Express buses are in King County Metro's, Pierce Transit's and Community Transit's.
+ */
+export const ROUTES_IN_OTHER_FILES: ReadonlyArray<{ slug: string; routes: string; hosts: readonly string[] }> = [
+  { slug: 'soundtransit', routes: 'ST Express buses', hosts: ['kingcountymetro', 'piercetransit', 'communitytransit'] },
+];
+
+/**
+ * #1911: a route the agency's own file doesn't have, where that agency's routes are partly in other agencies' files: which
+ * of those files has a route of that exact number or name on that day, or null. Exact names only, and worded as what
+ * the file has: the route rows don't say which agency runs a route, so a match is offered, never answered for silently.
+ */
+export async function routeInOtherFileNote(agency: CatalogAgency, route: string, day: DayType): Promise<string | null> {
+  const entry = ROUTES_IN_OTHER_FILES.find(x => x.slug === agency.slug);
+  const q = route.trim().toLowerCase();
+  if (!entry || !q) return null;
+  const list = await availableAgencies();
+  const hosts = entry.hosts.map(slug => list.find(a => a.slug === slug)).filter((a): a is CatalogAgency => !!a);
+  if (!hosts.length) return null;
+  const having: CatalogAgency[] = [];
+  for (const h of hosts) if ((await routeList(h, day)).some(r => [r.shortName, r.name].some(n => n.toLowerCase() === q))) having.push(h);
+  const where = `${agency.name}'s ${entry.routes} are in other agencies' schedule files here: ${joinList(hosts.map(h => h.name))}.`;
+  if (!having.length) return `${agency.name} has no route matching "${route}" on ${day} in its own file. ${where} None of them has a route "${route}" on ${day} either.`;
+  return `${agency.name}'s own file has no route "${route}" on ${day}. ${where} ${joinList(having.map(h => h.name))} ${having.length > 1 ? 'have' : 'has'} a route "${route}": if it's the one meant, call again with that agency.`;
+}
+
+/**
  * #1693: asked about an agency Atlas may not serve to other tools, say so instead of "no agency matches". Exact names
  * first (before other agencies are matched); then, when nothing else matched, names that start with the words asked.
  */

@@ -206,7 +206,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const dayType = now && args.day == null ? now.day : data.parseDay(args.day);
     const list = await data.routeList(a, dayType);
     const found = data.findRoute(list, String(args.route ?? ''));
-    if (!found) throw new Error(`${a.name} has no route matching "${args.route}" on ${dayType}.`);
+    if (!found) throw new Error(await data.routeInOtherFileNote(a, String(args.route ?? ''), dayType) ?? `${a.name} has no route matching "${args.route}" on ${dayType}.`);
     const also = data.otherExactMatches(list, String(args.route ?? ''), found);
     const r = await data.routeWithRows(a, dayType, found);
     const sameRoutes = await data.sameNameRoutes(a, dayType, r);
