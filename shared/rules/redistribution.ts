@@ -11,6 +11,11 @@ export const NO_REDISTRIBUTION: readonly RedistributionExclusion[] = [
   { slug: 'wmata', reason: 'WMATA’s terms don’t allow an API that gives other tools access to its data.' },
   // CIV-2124, group A: the terms don't allow sharing the data with other tools (_reports/civ-462/agencies-v2.tsv has each clause).
   { slug: 'des-moines', reason: 'DART’s data terms don’t allow sharing its data with other tools.' },
+  // NYC Ferry (#1898): its Developer Terms (ferry.nyc/developer-tools) only grant "revocable rights to use the provided
+  // Developer Tools to test, design, and support your products and services", "Subject to the Terms and Conditions of
+  // this Website" (ferry.nyc/legal). Those say, Item 3: "Any copying, redistribution, use or publication by you of any
+  // such content or any part of the Site is prohibited"; Item 5: a licence "solely for your own personal use … not for
+  // republication, distribution, assignment, sublicense, sale, preparation of derivative works, or other use."
   { slug: 'nyc-ferry', reason: 'NYC Ferry’s data terms don’t allow sharing its data with other tools.' },
   { slug: 'beeline', reason: 'Westchester County’s Bee-Line data terms don’t allow sharing its data with other tools.' },
   // CIV-2124, group C: the terms need the agency's consent; out until it gives it in writing.
