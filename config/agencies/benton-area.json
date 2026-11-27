@@ -21,6 +21,5 @@
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/benton-or-us/benton-or-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3109/latest.zip",
-  "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezone": "America/Los_Angeles"
 }
