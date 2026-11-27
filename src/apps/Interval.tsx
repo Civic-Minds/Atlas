@@ -685,7 +685,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       .filter((slug, index, slugs) => slugs.indexOf(slug) === index)
       .concat(compareBSlugKey ? compareBSlugKey.split('|') : []);
   }, [selectedRoute, selectedStop, stopBackTargetState, pendingLiveRoute?.slug, pendingNightRoute?.slug, pendingBustangRoute?.slug, pendingRouteChooser, compareBSlugKey]);
-  const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
+  const { layers, loadedCount, requestedCount, isLoading, failedSlugs, unpublishedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
     zoom: mapZoom,
@@ -1698,6 +1698,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             {...agencyCardProps}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             loadFailed={failedSlugs.has(agency.slug)}
+            unpublished={unpublishedSlugs.has(agency.slug)}
           />
         ) : null;
       })()}

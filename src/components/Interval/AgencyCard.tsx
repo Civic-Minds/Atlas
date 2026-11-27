@@ -15,7 +15,7 @@ import Panel, { PanelBody } from '../ui/Panel';
 import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
 import ModeFilterPillRow from '../ui/ModeFilterPillRow';
-import { hiddenAgencyNoteFor } from '../../../shared/hiddenAgencyNote';
+import { HIDDEN_AGENCY_NOTE, hiddenAgencyNoteFor } from '../../../shared/hiddenAgencyNote';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilter, type RouteModeFilterKey, type RouteModeFilterRoute } from '../../utils/routeModeFilters';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { agencyCardTitle } from '../../utils/agencyName';
@@ -363,6 +363,8 @@ interface Props {
   onClose: () => void;
   /** The agency's route data failed to load (N27). */
   loadFailed?: boolean;
+  /** #1899: a hidden agency whose route file was never published; its card shows the hidden-agency note. */
+  unpublished?: boolean;
 }
 
 function RouteListSection({
@@ -426,6 +428,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onSelectOnDemandZone,
   onClose,
   loadFailed = false,
+  unpublished = false,
 }, ref) {
   const routes = useMemo(
     () => getRoutes(layers, agency.slug, day, period, { maxHeadway, selectedModes, hideSpan, hideLimitedService }),
@@ -501,7 +504,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);
   // CIV-1060: a hidden agency's note says why nothing shows, in the one approved pattern; no Learn more.
-  const hiddenNote = hiddenAgencyNoteFor(agency.hiddenReason);
+  const hiddenNote = hiddenAgencyNoteFor(agency.hiddenReason) ?? (unpublished ? HIDDEN_AGENCY_NOTE : null);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
   const hasOnDemandPill = !agency.onDemandOnly && coverageNote?.kind === 'not-mapped';

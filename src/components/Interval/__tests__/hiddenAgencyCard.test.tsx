@@ -21,4 +21,15 @@ describe('hidden agency card (CIV-1060)', () => {
     expect(screen.getAllByText(HIDDEN_AGENCY_NOTE)).toHaveLength(1);
     expect(screen.queryByText(AGENCY_ROUTES_FAILED)).toBeNull();
   });
+
+  // #1899: a hidden agency never published to a release (Ontario Northland) gets the same note, with no hiddenReason.
+  it('shows the note for an unpublished hidden agency with no hiddenReason', () => {
+    const unpublished = { slug: 'ontario-northland', name: 'Ontario Northland', region: 'Ontario', center: [47, -81], url: '', hiddenInProduction: true } as unknown as Agency;
+    render(
+      <AgencyCard agency={unpublished} layers={{}} day="Weekday" period="midday" maxHeadway={Infinity} selectedModes={new Set()}
+        hideSpan={false} hideLimitedService={false} onRouteSelect={() => {}} onClose={() => {}} unpublished />,
+    );
+    expect(screen.getAllByText(HIDDEN_AGENCY_NOTE)).toHaveLength(1);
+    expect(screen.queryByText(AGENCY_ROUTES_FAILED)).toBeNull();
+  });
 });
