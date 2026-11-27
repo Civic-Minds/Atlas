@@ -46,6 +46,7 @@ import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayTex
 import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance, { agencyHour } from '../components/Live/LiveRoutePerformance';
+import LiveStaleClock from '../components/Live/LiveStaleClock';
 import { RouteCardHeadway } from '../components/Interval/panels/RouteCardHeadway';
 import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../utils/routeCardRoute';
 import { buildDirectionGroups } from '../utils/routeCardDirectionGroups';
@@ -710,10 +711,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // current period; Live's "Right now" and the vehicle list sit in the card's own section slot.
   const [cardPeriod, setCardPeriod] = useState<TimePeriod>('all');
   const [hoveredBranch, setHoveredBranch] = useState<HoveredBranch | null>(null);
+  // Also once the route's vehicles arrive: a link that opens a route (route=ttc::505) sets the route before its vehicles
+  // load, and the card stayed on the whole day (no period picked, no period label) until the route was picked again.
+  const selectedSlug = selectedGroup?.agencySlug ?? null;
   useEffect(() => {
-    setCardPeriod(selectedGroup ? (periodKeyForHour(agencyHour(selectedGroup.agencySlug)) ?? 'all') : 'all');
+    setCardPeriod(selectedSlug ? (periodKeyForHour(agencyHour(selectedSlug)) ?? 'all') : 'all');
     setHoveredBranch(null);
-  }, [selectedRoute]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedRoute, selectedSlug]);
   const routeCard = useMemo(() => {
     if (!selectedGroup) return null;
     const slug = selectedGroup.agencySlug;
@@ -802,6 +806,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         scheduledRowsFor={scheduledRowsFor}
         onDestinationGaps={onRows && canGroupByDirection ? onDestinationGaps : undefined}
+        staleInHeading={false}
       />
       {!(grouped && unclaimed.length === 0) && <SidebarCardSection label={destination ?? (vehiclesOpen ? selectedRouteHeadwayLine : null) ?? undefined}>
         {/* Match static route cards: destinations first, live vehicles second. */}
@@ -938,6 +943,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       onInfoOpen={onInfoOpen}
       extra={claimed => liveRouteSections(claimed, true)}
       rowLive={liveRowFor}
+      headerIcon={<LiveStaleClock slug={selectedGroup.agencySlug} vehicles={selectedGroup.vehicles} />}
     />
   ) : selectedGroup ? (
     // The route layer hasn't loaded (or has no such route): Live's own header over the same sections.
@@ -957,6 +963,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             </CardBackLink>
             {routeCardTitle}
           </div>
+          <LiveStaleClock slug={selectedGroup.agencySlug} vehicles={selectedGroup.vehicles} />
           <CardReportButton
             title={liveReportFlagTitle(reportAgencyName, agencies.length > 0, selectedGroup.routeShortName)}
             details={liveRouteReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, direction: selectedDirection, vehicles: allListed })}
