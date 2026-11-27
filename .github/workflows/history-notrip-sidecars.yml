@@ -6,6 +6,7 @@ name: History no-trips sidecars
 #
 #   gh workflow run history-notrip-sidecars.yml -f ref=<ref> -f slugs="ttc septa"                 (dry run)
 #   gh workflow run history-notrip-sidecars.yml -f ref=main -f mode=write -f ticket=CIV-1850     (needs Ryan's go)
+#   gh workflow run history-notrip-sidecars.yml -f ref=main -f mode=write -f ticket=CIV-1862     (re-downloaded feeds; needs Ryan's go)
 #
 # A workflow not on the default branch cannot be dispatched, so pushing a tag dryrun/civ-1850-* starts a DRY RUN of
 # every CIV-1850 slug plus the build proof (History built at the tag and at its merge base with main must be
@@ -124,17 +125,9 @@ jobs:
       - name: Plan (dry run, CIV-1862 re-downloaded feeds, per-route match)
         if: env.TICKET == 'CIV-1862'
         env:
-          ATLAS_HISTORY_WEEKEND_PERIODS: ${{ matrix.slug }}
           # CIV-1862: read-only Mobility Database API token (public datasets), for periods the archive has no zip for.
           MDB_REFRESH_TOKEN: ${{ secrets.MDB_REFRESH_TOKEN }}
-        run: |
-          set -o pipefail
-          mkdir -p "$OUT"
-          npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT/fetch" 2>&1 | tee "$OUT/$SLUG-fetch.log"
-          bus=(); node -e "const a=require('./public/data/index.json').agencies.find(a=>a.slug===process.env.SLUG);process.exit(a&&a.supplementalFeedUrls&&a.supplementalFeedUrls.length?0:1)" && bus=(--bus-only)
-          npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/fetch/zips" --out-dir "$OUT/rebuilt" --pin-from "$OUT/fetch/published" --notrip-out "$OUT" "${bus[@]}" > "$OUT/$SLUG.log" 2>&1 || { tail -50 "$OUT/$SLUG.log"; exit 1; }
-          grep -E "no-trips|No-trips plan|NOT PINNABLE|FAILED" "$OUT/$SLUG.log" || true
-          node -e "const r=require('./$OUT/'+process.env.SLUG+'-notrip-report.json');const t=r.totals;console.log(['### '+r.slug+' (CIV-1862 dry run)','- Periods published: '+t.periodsPublished+'; read: '+t.periodsRead+'; to add the flag: '+t.periodsToAdd,'- Route records: '+t.routeRecords+'; matching exactly: '+t.routesMatched,'- Routes flagged: '+t.routesFlagged+'; flagged but skipped as mismatched: '+t.flaggedButMismatched+'; disagree: '+t.disagree,''].join('\\n'))" > "$OUT/$SLUG-summary.md" || true
+        run: scripts/history-notrip-civ1862-plan.sh "$SLUG" "$OUT"
       - name: Upload plan with the add-only check (dry run, read-only)
         run: |
           set -o pipefail
@@ -207,7 +200,8 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
-  # Write. Only the tip of main, only with the CIV-1850 ticket, and only after Ryan's go-ahead.
+  # Write. Only the tip of main, only with an approved ticket (CIV-1850 archived zips, or CIV-1862 re-downloaded feeds,
+  # planned by the same script as its dry run), and only after Ryan's go-ahead.
   write:
     needs: slugs
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'write'
@@ -227,10 +221,12 @@ jobs:
       R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      # CIV-1862: read-only Mobility Database API token (public datasets), for periods the archive has no zip for.
+      MDB_REFRESH_TOKEN: ${{ secrets.MDB_REFRESH_TOKEN }}
     steps:
       - name: Check the inputs
         run: |
-          [ "$TICKET" = "CIV-1850" ] || { echo "write mode needs ticket CIV-1850, got: '$TICKET'"; exit 1; }
+          [ "$TICKET" = "CIV-1850" ] || [ "$TICKET" = "CIV-1862" ] || { echo "write mode needs ticket CIV-1850 or CIV-1862, got: '$TICKET'"; exit 1; }
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref || 'main' }}
@@ -258,7 +254,11 @@ jobs:
           set -o pipefail
           mkdir -p "$OUT"
           for s in $(echo "$SLUG_LIST" | jq -r '.[]'); do
-            npx tsx pipeline/history-v2-notrip-backfill.ts --slug "$s" --out "$OUT/$s" --max-disagree-pct 20 2>&1 | tee -a "$OUT/write.log"
+            if [ "$TICKET" = "CIV-1862" ]; then
+              scripts/history-notrip-civ1862-plan.sh "$s" "$OUT/$s" 20 2>&1 | tee -a "$OUT/write.log"
+            else
+              npx tsx pipeline/history-v2-notrip-backfill.ts --slug "$s" --out "$OUT/$s" --max-disagree-pct 20 2>&1 | tee -a "$OUT/write.log"
+            fi
             if ls "$OUT/$s/full-rebuild/history-v2/$s/"*.json > /dev/null 2>&1; then
               npx tsx pipeline/history-v2-upload.ts --slug "$s" --dir "$OUT/$s/full-rebuild" --replace-approved "$TICKET" --write 2>&1 | tee -a "$OUT/write.log"
             else
