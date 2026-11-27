@@ -970,7 +970,7 @@ export function featureStretchMeta(
 ) {
   return {
     main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main), ...(role === 'main' ? { rows: rowsOf(stretches.main) } : {}) } : null,
-    tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t), ...(role === 'tail' && index === i ? { rows: rowsOf(t) } : {}) })),
+    tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t), ...(t.byTrips ? { byTrips: true as const } : {}), ...(role === 'tail' && index === i ? { rows: rowsOf(t) } : {}) })),
   };
 }
 

@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  compareFeedSides, comparisonMarkdown, periodFigures, dateInWeek, dateReadProblem, dayCoverage, DateNotReadError, headwayText, readFeedSide, routeLines, servicesListedOn,
+  compareFeedSides, comparisonMarkdown, periodFigures, dateInWeek, dateReadProblem, dayCoverage, DateNotReadError, headwayText, lengthRole, readFeedSide, routeLines, servicesListedOn,
 } from '../feedCompare';
 import { processGtfsBuffer } from '../process-core';
 import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
@@ -187,5 +187,23 @@ describe('route lines for the Studio map (CIV-1731)', () => {
     expect(routeLines({ type: 'MultiLineString', coordinates: [[[0, 0], [1, 1]], [[2, 2], [3, 3]]] })).toHaveLength(2);
     expect(routeLines({ type: 'Point', coordinates: [0, 0] })).toEqual([]);
     expect(routeLines(null)).toEqual([]);
+  });
+});
+
+describe("a route's length counts whole branches (#1710)", () => {
+  const meta = { main: null, tails: [{ refStop: 'a', stops: 30, km: 9, trips: 40 }, { refStop: 'b', stops: 2, km: 0.3, trips: 20, byTrips: true as const }] };
+  it("leaves out a by-trips piece that covers nothing else (TTC 52's 2-stop Lawrence pattern)", () => {
+    expect(lengthRole({ stretchRole: 'tail', stretchCovers: [1], stretchMeta: meta })).toBeNull();
+  });
+  it('reads a by-trips piece that also covers the main stretch as the main stretch, as with the switch off', () => {
+    expect(lengthRole({ stretchRole: 'tail', stretchCovers: ['main', 1], stretchMeta: meta })).toBe('main');
+  });
+  it('keeps a whole branch, including one that also covers a by-trips piece', () => {
+    expect(lengthRole({ stretchRole: 'tail', stretchCovers: [0], stretchMeta: meta })).toBe('branch');
+    expect(lengthRole({ stretchRole: 'tail', stretchCovers: ['main', 0, 1], stretchMeta: meta })).toBe('branch');
+  });
+  it('keeps the main row and leaves out a variant', () => {
+    expect(lengthRole({ stretchRole: 'main', stretchCovers: ['main'], stretchMeta: meta })).toBe('main');
+    expect(lengthRole({ stretchRole: 'variant', stretchMeta: meta })).toBeNull();
   });
 });
