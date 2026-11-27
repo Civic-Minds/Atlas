@@ -49,7 +49,7 @@ async function sameSecret(a: string, b: string): Promise<boolean> {
 let activeRelease: { id: string; checkedAt: number } | null = null;
 
 /** Test deployments only (wrangler.pilot-test.jsonc): the split files ship inside the Worker as static assets, for a first test with nothing uploaded to R2. */
-type TestEnv = Env & { TESTER_DAILY_CAPS?: Record<string, number> | string; ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
+type TestEnv = Env & { TESTER_DAILY_CAPS?: Record<string, number> | string; ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; BUILD_SHA?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
 
 /**
  * The Live tools read the private bucket (CIV-1860; scripts/mcp/releaseLivePrivate.ts writes it daily), with a short
@@ -228,7 +228,13 @@ export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url);
     try {
-      if (url.pathname === '/health') return json({ ok: true });
+      if (url.pathname === '/health') {
+        if (!url.searchParams.has('check')) return json({ ok: true });
+        // CIV-3111: the deploy workflow's smoke check. The commit it deployed (BUILD_SHA, set with --var) and how many
+        // agencies the current release serves, so CI can tell the new code is live and still answering.
+        const release = await useCurrentRelease(env);
+        return json({ ok: true, build: env.BUILD_SHA ?? null, release, agencies: (await data.availableAgencies()).length });
+      }
       if (url.pathname.startsWith('/admin/')) return await handleAdmin(request, env, url);
       const token = linkToken(request, url);
       if (token !== undefined) {

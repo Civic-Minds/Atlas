@@ -21,7 +21,6 @@ const MAC_PATH_ALLOWED: Record<string, string> = {
   'local-api/live-dashboard.ts': 'a developer hint naming the analysis command, not a read',
   'scripts/mcp/diskStore.ts': 'used only behind ATLAS_MCP_DATA_DIR (an opt-in test folder) and by the cloud rebuild\'s split builder',
   'scripts/mcp/releaseMcpFiles.ts': 'runs in the cloud rebuild (its work folder)',
-  'scripts/mcp/workerAssets.ts': 'runs in the MCP deploy workflow (its work folder)',
   'scripts/mcp/weeklyReview.ts': 'a developer report, not a reader',
 };
 
@@ -43,7 +42,6 @@ const FS_ALLOWED: Record<string, string> = {
   'scripts/mcp/releaseLivePrivate.ts': 'runs in the cloud job (studio-live-refresh / mcp-live)',
   'scripts/mcp/releaseMcpFiles.ts': 'runs in the cloud rebuild',
   'scripts/mcp/splitRelease.ts': 'runs in the cloud rebuild',
-  'scripts/mcp/workerAssets.ts': 'runs in the MCP deploy workflow',
   'scripts/mcp/weeklyReview.ts': 'a developer report, not a reader',
   'src/data/onDemandServiceAreas.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
   'src/data/onDemandExport.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
