@@ -213,6 +213,16 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: Ryan: "Because we don't change the data - we just "add" a layer on to it". On fixes: "But those "small" corrections - like fixing a stop name (not renaming it!) I think would be fine". On the MCP: "So then we should treat the MCP as separate".
   - Source: [decision log](#decision-log) (2026-11-26; extends 2026-11-22 "MTA and NJ Transit readings are reads, not changes"), CIV-3066
 
+- **Purpose-limit, non-commercial and LA Metro picks (2026-11-27, CIV-3066)**
+  - What: map, cards and History fit, and the MCP fits, for Madison, VIA, Green Bay, CTA, CUMTD and TheRide (purpose limit); Fairfax is on the MCP only with its credit line "Visit fairfaxconnector.com for more information" in the answers. NICE and Pace fit the map, and the MCP while Studio is free; they come off it or get permission before Studio charges or ads run (CIV-3112). LA Metro fits the MCP. Bee-Line stays on the map, cards and History by Ryan's override ("Honestly that seems dumb so I am ok overriding that one"), not because its terms allow it; its MCP exclusion stays.
+  - Why: Ryan picked Strategy's verdicts for groups 1, 3 and 5; credit lines go in the map's info panel (CIV-3003).
+  - Source: [decision log](#decision-log) (2026-11-27), CIV-3066
+
+- **Published studies name agencies with restrictive terms**
+  - What: a published study (the coverage study, CIV-3110 C) counts and names the agencies with restrictive licence terms. No agency is excluded or anonymised.
+  - Why: Ryan: "But naming them is just journalism is it not?"
+  - Source: [decision log](#decision-log) (2026-11-27), CIV-3110 C
+
 ### Data and pipeline fixes
 
 - **Data integrity first**
@@ -396,6 +406,27 @@ Dated, newest first. The rules above are the short form; this is the reasoning.
 
 ### 2026-11-27 — The hosted MCP deploys automatically with every main push (CIV-3111)
 Ryan, 2026-11-27, picked "1": "Add a GitHub Actions step that deploys the MCP automatically whenever main is pushed and CI passes, so the site and the MCP always run the same code." And: "ideally the MCP never gives information that differs from the website". Before this, pushes deployed the site (Vercel) but not the hosted MCP Worker, so CIV-3100, CIV-3102 and CIV-3103 sat undeployed after fd05fd6. The workflow deploys the Worker's code (it reads the release itself) and then checks the live MCP reports that commit and at least 500 agencies.
+
+### 2026-11-27 — Published studies name agencies with restrictive terms; no exclusion, no anonymising (CIV-3110 C)
+Ryan, 2026-11-27, on the coverage study (CIV-3110 C), picked "2": "But naming them is just journalism is it not?". In a published study, Atlas counts and names the agencies whose licence terms are restrictive. None is left out and none is anonymised.
+
+### 2026-11-27 — Licence fit, group 1 (purpose limit): map and MCP fit; Fairfax needs its credit line (CIV-3066)
+Ryan, 2026-11-27 (Questions chat): "Well we can have the credit line in the one screen in the info panel right then option 1?" He picked option 1, Strategy's verdict.
+- The rule: the map, cards and History fit for Madison, VIA, Green Bay, CTA, CUMTD and TheRide, and so does the MCP. Fairfax Connector is on the MCP only once its answers carry "Visit fairfaxconnector.com for more information". Credit lines go in the map's info panel (CIV-3003).
+- Open: MCP answers don't pass through the info panel, so Fairfax's line must also be in MCP answers; whether the MCP carries agency credits today is unconfirmed (Strategy's issue b).
+
+### 2026-11-27 — Licence fit, group 3 (non-commercial): NICE and Pace fit the map; the MCP while Studio is free (CIV-3066, CIV-3112)
+Ryan, 2026-11-27 (Questions chat): "Honestly I think even if we did have adds technically we would still be fine as long as it's not a enterprise". Offered "1. Strategy's version: map OK. MCP OK while Studio is free. Ads count as commercial too, so NICE and Pace come off or need permission before either starts" or "2. Your version", he picked "1".
+- The rule: NICE and Pace fit the map, cards and History, and the MCP while Studio is free. NICE and Pace come off the MCP, or Atlas gets their permission, before Studio charges or Atlas runs ads. NICE bans any "profit-making use"; Pace allows "non commercial use". Trigger: CIV-3112.
+
+### 2026-11-27 — Licence fit, group 5: LA Metro fits the MCP (CIV-3066)
+Ryan, 2026-11-27 (Questions chat): "1". Strategy's verdict: LA Metro's "limited to accessing and displaying or otherwise making available the Transport Information" covers MCP answers, and there is no WMATA-style API ban.
+- The rule: LA Metro is on the MCP, as well as the map, cards and History.
+
+### 2026-11-27 — Bee-Line stays on the map, cards and History by Ryan's call; its MCP exclusion stays (CIV-3066)
+Ryan, 2026-11-27 (Questions chat), on Bee-Line's terms, which allow only US-located persons and companies authorized to do business in New York: "Honestly that seems dumb so I am ok overriding that one".
+- The rule: Bee-Line stays on the map, cards and History by Ryan's override, not because its terms allow it. Its MCP exclusion (its terms bar sharing) stays as is.
+- Unanswered: whether Civic Minds is US-based. Ryan did not answer it.
 
 ### 2026-11-27 — Live's timetable measure reads "Lateness"; Studio's Measure menu has one entry for it (CIV-2924; supersedes 2026-11-25 "Schedule adherence")
 Ryan, 2026-11-27, in the Questions chat: "Ideally those would all be 1 word though" and "Lateness might work", then confirmed option 1. "Schedule adherence" becomes "Lateness" everywhere: the measure, Live's section (once "Where delays start") and the stretch it marks. Studio's Measure menu has one entry, "Lateness" (the "Falls behind" measure); "Delays start" leaves Studio's menu (it stays as Live's map toggle, named "Lateness"). This also settles the open Studio menu question in the 2026-11-25 entry. "Typical deviation" is unchanged. The label lives once in shared/liveWording.ts (`LATENESS_LABEL`); the style guard bans "Schedule adherence" as it does "Delays start".
