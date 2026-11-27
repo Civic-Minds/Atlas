@@ -5,6 +5,7 @@ import { clipLinestring } from './lineClip';
 import { getHeadwayTiers, getTierColor, headwayToTierColor, type ColorVisionMode } from './colors';
 import { decodeStopRuns } from '../../shared/stopRuns';
 import type { PeriodKey } from '../../shared/config';
+import { routeCardDisplayHeadway } from './effectiveHeadway';
 
 /**
  * Route lines coloured section by section (CIV-152, beta only: FEATURES.segmentColours).
@@ -80,7 +81,11 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   // only at other times, so the whole-day piece count of 2 left 2 stops infrequent beside 29 at the piece's every 30).
   const active = (p.pieceReadings?.pieces ?? []).filter(pc => pc.periods?.[period] != null);
   const piece = active.length === 1 ? active[0].periods?.[period] : undefined;
-  const pieceValue = piece && piece.t !== 'limited' ? piece.v : null;
+  // CIV-2994 B (Ryan, 2026-11-27, "1": "Yes, one colour, the card's figure; if the card has no figure, each stop keeps its own"): a
+  // one-piece direction whose piece has no reading in the period ("limited") is coloured with the card's figure for the row
+  // (routeCardDisplayHeadway, the number the route card shows); with none, each stop keeps its own value. BC Transit Nanaimo 40
+  // toward Downtown, weekday PM peak: the card says every 15, and the first 17 stops no longer read 30 over a one-minute gap.
+  const pieceValue = !piece ? null : piece.t !== 'limited' ? piece.v : routeCardDisplayHeadway(p, period);
   stops.forEach((stopId, i) => {
     const v = values[i];
     if (v == null) {
