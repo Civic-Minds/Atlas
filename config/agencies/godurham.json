@@ -3,6 +3,413 @@
   "officialName": "GoDurham",
   "websiteUrl": "https://godurhamtransit.org/",
   "region": "North Carolina",
+  "stopRenames": [
+    {
+      "stopId": "6611",
+      "from": "Ben Franklin Blvd at Medical Park Dr (WB",
+      "to": "Ben Franklin Blvd at Medical Park Dr (WB)"
+    },
+    {
+      "stopId": "6717",
+      "from": "Ben Franklin Blvd at William Penn Pl (NB",
+      "to": "Ben Franklin Blvd at William Penn Pl (NB)"
+    },
+    {
+      "stopId": "6726",
+      "from": "Ben Franklin Blvd at William Penn Pl (SB",
+      "to": "Ben Franklin Blvd at William Penn Pl (SB)"
+    },
+    {
+      "stopId": "6225",
+      "from": "Brier Creek Pkwy at Little Brier Creek L",
+      "to": "Brier Creek Pkwy at Little Brier Creek Ln"
+    },
+    {
+      "stopId": "6396",
+      "from": "Briggs Ave at Person St (UniFirst Unifor",
+      "to": "Briggs Ave at Person St (UniFirst Uniforms)"
+    },
+    {
+      "stopId": "5869",
+      "from": "Broad St at F St (NC School of Science a",
+      "to": "Broad St at F St (NC School of Science and Math)"
+    },
+    {
+      "stopId": "5722",
+      "from": "Carver St at Danube Ln (Carver Creek Apt",
+      "to": "Carver St at Danube Ln (Carver Creek Apts)"
+    },
+    {
+      "stopId": "6334",
+      "from": "Chapel Dr at Duke University Rd (Alumni",
+      "to": "Chapel Dr at Duke University Rd (Alumni House)"
+    },
+    {
+      "stopId": "6286",
+      "from": "Chapel Dr at Duke University Rd (Duke Ne",
+      "to": "Chapel Dr at Duke University Rd (Duke News)"
+    },
+    {
+      "stopId": "5730",
+      "from": "Chapel Hill Rd at Crosswind Ave (Lakewoo",
+      "to": "Chapel Hill Rd at Crosswind Ave (Lakewood YMCA)"
+    },
+    {
+      "stopId": "5754",
+      "from": "Chapel Hill Rd at Lakewood Ave (Shopping",
+      "to": "Chapel Hill Rd at Lakewood Ave (Shopping Center)"
+    },
+    {
+      "stopId": "6375",
+      "from": "Chapel Hill Rd at W Cornwallis Rd (Yates",
+      "to": "Chapel Hill Rd at W Cornwallis Rd (Yates Church)"
+    },
+    {
+      "stopId": "5522",
+      "from": "Dearborn Dr at Cannada Ave (Disciples Ch",
+      "to": "Dearborn Dr at Cannada Ave (Disciples Church)"
+    },
+    {
+      "stopId": "5833",
+      "from": "Dearborn Dr at Usher St (Lakeview School",
+      "to": "Dearborn Dr at Usher St (Lakeview School)"
+    },
+    {
+      "stopId": "5222",
+      "from": "Duke St at Morehead Ave (Henderson Tower",
+      "to": "Duke St at Morehead Ave (Henderson Towers)"
+    },
+    {
+      "stopId": "5574",
+      "from": "Durham-Chapel Hill Blvd at Hope Valley R",
+      "to": "Durham-Chapel Hill Blvd at Hope Valley Rd (EB)"
+    },
+    {
+      "stopId": "5650",
+      "from": "Durham-Chapel Hill Blvd at Hope Valley R",
+      "to": "Durham-Chapel Hill Blvd at Hope Valley Rd (WB)"
+    },
+    {
+      "stopId": "6503",
+      "from": "E Main St at Hood St (Durham Police Dept",
+      "to": "E Main St at Hood St (Durham Police Dept)"
+    },
+    {
+      "stopId": "6383",
+      "from": "E Main St at Morning Glory Ave (Golden B",
+      "to": "E Main St at Morning Glory Ave (Golden Belt)"
+    },
+    {
+      "stopId": "6012",
+      "from": "Erwin Rd at Fulton St (Duke University H",
+      "to": "Erwin Rd at Fulton St (Duke University Hospital)"
+    },
+    {
+      "stopId": "6153",
+      "from": "Fayetteville Rd at Dunhill Dr (Pine Ridg",
+      "to": "Fayetteville Rd at Dunhill Dr (Pine Ridge Center)"
+    },
+    {
+      "stopId": "5517",
+      "from": "Fayetteville Rd at Southpoint Crossing D",
+      "to": "Fayetteville Rd at Southpoint Crossing Dr (SB)"
+    },
+    {
+      "stopId": "6638",
+      "from": "Fayetteville Rd at Stratford Lakes Dr (N",
+      "to": "Fayetteville Rd at Stratford Lakes Dr (NB)"
+    },
+    {
+      "stopId": "6637",
+      "from": "Fayetteville Rd at Stratford Lakes Dr (S",
+      "to": "Fayetteville Rd at Stratford Lakes Dr (SB)"
+    },
+    {
+      "stopId": "6258",
+      "from": "Fayetteville Rd at Tralea Dr (Mt Zion Ch",
+      "to": "Fayetteville Rd at Tralea Dr (Mt Zion Church)"
+    },
+    {
+      "stopId": "6643",
+      "from": "Garrett Rd at Carillon Assisted Living C",
+      "to": "Garrett Rd at Carillon Assisted Living Center"
+    },
+    {
+      "stopId": "6620",
+      "from": "Garrett Rd at Durham-Chapel Hill Blvd (G",
+      "to": "Garrett Rd at Durham-Chapel Hill Blvd (Goodwill)"
+    },
+    {
+      "stopId": "5570",
+      "from": "Garrett Rd at Durham-Chapel Hill Blvd (N",
+      "to": "Garrett Rd at Durham-Chapel Hill Blvd (NB)"
+    },
+    {
+      "stopId": "6336",
+      "from": "Gregson St at Main St (Brightleaf Square",
+      "to": "Gregson St at Main St (Brightleaf Square)"
+    },
+    {
+      "stopId": "5845",
+      "from": "Hillandale Rd at Carver St (Durham Publi",
+      "to": "Hillandale Rd at Carver St (Durham Public Schools)"
+    },
+    {
+      "stopId": "5695",
+      "from": "Hillandale Rd at Fawn Ave (Croasdaile Of",
+      "to": "Hillandale Rd at Fawn Ave (Croasdaile Office Park)"
+    },
+    {
+      "stopId": "5468",
+      "from": "Hillsborough Rd at LaSalle St (Auto Zone",
+      "to": "Hillsborough Rd at LaSalle St (Auto Zone)"
+    },
+    {
+      "stopId": "6018",
+      "from": "Hillsborough Rd at Lawndale Ave (Food Li",
+      "to": "Hillsborough Rd at Lawndale Ave (Food Lion)"
+    },
+    {
+      "stopId": "5511",
+      "from": "Hillsborough Rd at US 15-501 SB (Krispy",
+      "to": "Hillsborough Rd at US 15-501 SB (Krispy Kreme)"
+    },
+    {
+      "stopId": "5429",
+      "from": "Hillsborough Rd at US 15-501 SB (Wendy's",
+      "to": "Hillsborough Rd at US 15-501 SB (Wendy's)"
+    },
+    {
+      "stopId": "6348",
+      "from": "Holloway St at Durham Ridge Assisted Liv",
+      "to": "Holloway St at Durham Ridge Assisted Living"
+    },
+    {
+      "stopId": "6479",
+      "from": "Holloway St at Ganyard Farm Way (Dollar",
+      "to": "Holloway St at Ganyard Farm Way (Dollar General)"
+    },
+    {
+      "stopId": "6709",
+      "from": "Horton Rd at Guess Rd (Willowdaile Apart",
+      "to": "Horton Rd at Guess Rd (Willowdaile Apartments)"
+    },
+    {
+      "stopId": "6442",
+      "from": "Lakewood Ave at Roxboro St (Southside Lo",
+      "to": "Lakewood Ave at Roxboro St (Southside Lofts)"
+    },
+    {
+      "stopId": "6045",
+      "from": "LaSalle St at Blue Crest Ln (Blue Crest",
+      "to": "LaSalle St at Blue Crest Ln (Blue Crest Apts)"
+    },
+    {
+      "stopId": "5718",
+      "from": "LaSalle St at Campus Walk Dr (Holly Hill",
+      "to": "LaSalle St at Campus Walk Dr (Holly Hill Apts)"
+    },
+    {
+      "stopId": "5770",
+      "from": "LaSalle St at Hillsborough Rd (Tire King",
+      "to": "LaSalle St at Hillsborough Rd (Tire King)"
+    },
+    {
+      "stopId": "6647",
+      "from": "LaSalle St at Kangaroo St (The Heights A",
+      "to": "LaSalle St at Kangaroo St (The Heights Apts)"
+    },
+    {
+      "stopId": "5773",
+      "from": "Lawson St at Durham Tech Community Colle",
+      "to": "Lawson St at Durham Tech Community College (WB)"
+    },
+    {
+      "stopId": "5111",
+      "from": "Lawson St at Merrick St (Pearson Cafeter",
+      "to": "Lawson St at Merrick St (Pearson Cafeteria)"
+    },
+    {
+      "stopId": "6053",
+      "from": "Lawson St at S Briggs Ave (Durham Exchan",
+      "to": "Lawson St at S Briggs Ave (Durham Exchange Club)"
+    },
+    {
+      "stopId": "6495",
+      "from": "Martin Luther King Jr Pkwy at Bay Point",
+      "to": "Martin Luther King Jr Pkwy at Bay Point Dr"
+    },
+    {
+      "stopId": "6592",
+      "from": "Martin Luther King Jr Pkwy at Cook Rd (E",
+      "to": "Martin Luther King Jr Pkwy at Cook Rd (EB)"
+    },
+    {
+      "stopId": "6590",
+      "from": "Martin Luther King Jr Pkwy at Cook Rd (W",
+      "to": "Martin Luther King Jr Pkwy at Cook Rd (WB)"
+    },
+    {
+      "stopId": "6501",
+      "from": "Martin Luther King Jr Pkwy at Fayettevil",
+      "to": "Martin Luther King Jr Pkwy at Fayetteville Rd (WB)"
+    },
+    {
+      "stopId": "5118",
+      "from": "Martin Luther King Jr Pkwy at Lake Camp",
+      "to": "Martin Luther King Jr Pkwy at Lake Camp Rd"
+    },
+    {
+      "stopId": "5859",
+      "from": "Martin Luther King Jr Pkwy at Lake Cook",
+      "to": "Martin Luther King Jr Pkwy at Lake Cook Dr (WB)"
+    },
+    {
+      "stopId": "6649",
+      "from": "Martin Luther King Jr Pkwy at Lakeside G",
+      "to": "Martin Luther King Jr Pkwy at Lakeside Gardens"
+    },
+    {
+      "stopId": "5210",
+      "from": "Martin Luther King Jr Pkwy at Shannon Rd",
+      "to": "Martin Luther King Jr Pkwy at Shannon Rd (EB)"
+    },
+    {
+      "stopId": "1901",
+      "from": "McFarland Dr at Witherspoon Blvd (Patter",
+      "to": "McFarland Dr at Witherspoon Blvd (Patterson Place"
+    },
+    {
+      "stopId": "6263",
+      "from": "Miami Blvd at Ellis Rd (Bethesda Element",
+      "to": "Miami Blvd at Ellis Rd (Bethesda Elementary)"
+    },
+    {
+      "stopId": "6261",
+      "from": "Miami Blvd at Stirrup Creek Dr (PBM Grap",
+      "to": "Miami Blvd at Stirrup Creek Dr (PBM Graphics)"
+    },
+    {
+      "stopId": "5881",
+      "from": "NC 54 at Southpoint Crossing Dr (Homeste",
+      "to": "NC 54 at Southpoint Crossing Dr (Homestead Market)"
+    },
+    {
+      "stopId": "6466",
+      "from": "New Castle Rd at Stadium Dr (Strawberry",
+      "to": "New Castle Rd at Stadium Dr (Strawberry Hill Apts)"
+    },
+    {
+      "stopId": "6251",
+      "from": "Renaissance Center at Southpoint Shoppin",
+      "to": "Renaissance Center at Southpoint Shopping Center"
+    },
+    {
+      "stopId": "5466",
+      "from": "Roxboro Rd at Argonne Dr (Northern High",
+      "to": "Roxboro Rd at Argonne Dr (Northern High School)"
+    },
+    {
+      "stopId": "5226",
+      "from": "Roxboro Rd at Old Oxford Rd (Oxford Comm",
+      "to": "Roxboro Rd at Old Oxford Rd (Oxford Commons)"
+    },
+    {
+      "stopId": "5787",
+      "from": "Roxboro Rd at Wellington Dr (Northern Hi",
+      "to": "Roxboro Rd at Wellington Dr (Northern High School)"
+    },
+    {
+      "stopId": "5497",
+      "from": "Roxboro St at Erie St (CC Spaulding Elem",
+      "to": "Roxboro St at Erie St (CC Spaulding Elementary)"
+    },
+    {
+      "stopId": "6275",
+      "from": "S Alston Ave at Kestrel Heights School (",
+      "to": "S Alston Ave at Kestrel Heights School (SB)"
+    },
+    {
+      "stopId": "5127",
+      "from": "Seven Oaks Rd at Riverview Shopping Cent",
+      "to": "Seven Oaks Rd at Riverview Shopping Center"
+    },
+    {
+      "stopId": "6128",
+      "from": "Stadium Dr at Wyldewood Rd (Foxfire Apts",
+      "to": "Stadium Dr at Wyldewood Rd (Foxfire Apts)"
+    },
+    {
+      "stopId": "5994",
+      "from": "SW Durham Dr at Durham-Chapel Hill Blvd",
+      "to": "SW Durham Dr at Durham-Chapel Hill Blvd (NB)"
+    },
+    {
+      "stopId": "6744",
+      "from": "Taylor St at Blacknall St (Eastway Eleme",
+      "to": "Taylor St at Blacknall St (Eastway Elementary)"
+    },
+    {
+      "stopId": "6345",
+      "from": "Taylor St at Driver St (Holton Career Ce",
+      "to": "Taylor St at Driver St (Holton Career Center)"
+    },
+    {
+      "stopId": "6745",
+      "from": "Taylor St at Holman St (Eastway Elementa",
+      "to": "Taylor St at Holman St (Eastway Elementary)"
+    },
+    {
+      "stopId": "5649",
+      "from": "Tower Blvd at Durham-Chapel Hill Blvd (M",
+      "to": "Tower Blvd at Durham-Chapel Hill Blvd (McDonalds)"
+    },
+    {
+      "stopId": "6499",
+      "from": "Trent Dr at Erwin Rd (Clipp Research Bld",
+      "to": "Trent Dr at Erwin Rd (Clipp Research Bldg)"
+    },
+    {
+      "stopId": "5379",
+      "from": "University Dr at Chapel Hill Rd (Colonia",
+      "to": "University Dr at Chapel Hill Rd (Colonial Apts)"
+    },
+    {
+      "stopId": "5980",
+      "from": "University Dr at Martin Luther King Jr P",
+      "to": "University Dr at Martin Luther King Jr Pkwy (WB)"
+    },
+    {
+      "stopId": "6036",
+      "from": "University Dr at Martin Luther King Jr P",
+      "to": "University Dr at Martin Luther King Jr Pkwy (EB)"
+    },
+    {
+      "stopId": "6538",
+      "from": "W Enterprise St at E Forest Hills Blvd (",
+      "to": "W Enterprise St at E Forest Hills Blvd (ATT)"
+    },
+    {
+      "stopId": "6693",
+      "from": "W Enterprise St at E Forest Hills Blvd (",
+      "to": "W Enterprise St at E Forest Hills Blvd (EB)"
+    },
+    {
+      "stopId": "6075",
+      "from": "Westgate Dr at South Square (Burger King",
+      "to": "Westgate Dr at South Square (Burger King)"
+    },
+    {
+      "stopId": "5559",
+      "from": "Willard St at Blackwell St (South Parkin",
+      "to": "Willard St at Blackwell St (South Parking Deck)"
+    },
+    {
+      "stopId": "6197",
+      "from": "Witherspoon Blvd at McFarland Dr (Patter",
+      "to": "Witherspoon Blvd at McFarland Dr (Patterson Place"
+    }
+  ],
   "center": [
     36.0014,
     -78.9382

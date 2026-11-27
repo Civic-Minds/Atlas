@@ -12,6 +12,473 @@
   "lastFeedExpiry": "20261206",
   "lastFeedVersion": "20261120",
   "region": "Minnesota",
+  "stopRenames": [
+    {
+      "stopId": "31677",
+      "from": "143 St at Irving Av S corner (before Irv",
+      "to": "143 St at Irving Av S corner (before Irving)"
+    },
+    {
+      "stopId": "30023",
+      "from": "157th St at Johnny Cake Ridge Rd NE Corn",
+      "to": "157th St at Johnny Cake Ridge Rd NE Corner"
+    },
+    {
+      "stopId": "30022",
+      "from": "157th St at Johnny Cake Ridge Rd SW Corn",
+      "to": "157th St at Johnny Cake Ridge Rd SW Corner"
+    },
+    {
+      "stopId": "3264",
+      "from": "6th St at Washington St/W 7th St N corne",
+      "to": "6th St at Washington St/W 7th St N corner"
+    },
+    {
+      "stopId": "31478",
+      "from": "Ames Crossing Rd at Shanahan Way SE Corn",
+      "to": "Ames Crossing Rd at Shanahan Way SE Corner"
+    },
+    {
+      "stopId": "31466",
+      "from": "Ames Crossing Rd at Shanahan Way SW Corn",
+      "to": "Ames Crossing Rd at Shanahan Way SW Corner"
+    },
+    {
+      "stopId": "30614",
+      "from": "Blue Cross Rd at Yankee Doodle Rd SE Cor",
+      "to": "Blue Cross Rd at Yankee Doodle Rd SE Corner"
+    },
+    {
+      "stopId": "30575",
+      "from": "Blue Cross Rd at Yankee Doodle Rd SW Cor",
+      "to": "Blue Cross Rd at Yankee Doodle Rd SW Corner"
+    },
+    {
+      "stopId": "30949",
+      "from": "Blue Gentian Rd at Blue Water Rd N Corne",
+      "to": "Blue Gentian Rd at Blue Water Rd N Corner"
+    },
+    {
+      "stopId": "30957",
+      "from": "Blue Gentian Rd at Blue Water Rd SW Corn",
+      "to": "Blue Gentian Rd at Blue Water Rd SW Corner"
+    },
+    {
+      "stopId": "30198",
+      "from": "Burnsville Pkwy at Gateway Blvd NE corn",
+      "to": "Burnsville Pkwy at Gateway Blvd NE corn (Harriet)"
+    },
+    {
+      "stopId": "30202",
+      "from": "Burnsville Pkwy at Girard Av NE corn (Br",
+      "to": "Burnsville Pkwy at Girard Av NE corn (Briar Ct)"
+    },
+    {
+      "stopId": "30183",
+      "from": "Burnsville Pkwy at Harriet Av SW corn (G",
+      "to": "Burnsville Pkwy at Harriet Av SW corn (Gateway Bl)"
+    },
+    {
+      "stopId": "30395",
+      "from": "Burnsville Pkwy at Pillsbury Av SW corne",
+      "to": "Burnsville Pkwy at Pillsbury Av SW corner"
+    },
+    {
+      "stopId": "30199",
+      "from": "Burnsville Pkwy at Travelers Trl NE corn",
+      "to": "Burnsville Pkwy at Travelers Trl NE corner"
+    },
+    {
+      "stopId": "31903",
+      "from": "Burnsville Pkwy at Travelers Trl SW corn",
+      "to": "Burnsville Pkwy at Travelers Trl SW corner"
+    },
+    {
+      "stopId": "31699",
+      "from": "Cedar Grove Pkwy at Cedar Grove Ln NW Co",
+      "to": "Cedar Grove Pkwy at Cedar Grove Ln NW Corner"
+    },
+    {
+      "stopId": "31698",
+      "from": "Cedar Grove Pkwy at Cedar Grove Ln SW Co",
+      "to": "Cedar Grove Pkwy at Cedar Grove Ln SW Corner"
+    },
+    {
+      "stopId": "31941",
+      "from": "Cliff Rd at Cliff Lake Dr (Rahncliff Rd)",
+      "to": "Cliff Rd at Cliff Lake Dr (Rahncliff Rd) NW corner"
+    },
+    {
+      "stopId": "31947",
+      "from": "Cliff Rd at Rahncliff Rd (Cliff Lake Rd)",
+      "to": "Cliff Rd at Rahncliff Rd (Cliff Lake Rd) SW corner"
+    },
+    {
+      "stopId": "31743",
+      "from": "Co Rd 21 (Eagle Creek) at Arcadia Ave SE",
+      "to": "Co Rd 21 (Eagle Creek) at Arcadia Ave SE corner"
+    },
+    {
+      "stopId": "31704",
+      "from": "Co Rd 21 (Eagle Creek) at Main Ave NW co",
+      "to": "Co Rd 21 (Eagle Creek) at Main Ave NW corner"
+    },
+    {
+      "stopId": "30411",
+      "from": "Co Rd 42 at Co Rd 11 NE corner (Lac Lavo",
+      "to": "Co Rd 42 at Co Rd 11 NE corner (Lac Lavon)"
+    },
+    {
+      "stopId": "30353",
+      "from": "Co Rd 42 at Judicial Rd SW corner (Rosem",
+      "to": "Co Rd 42 at Judicial Rd SW corner (Rosemount Dr)"
+    },
+    {
+      "stopId": "30418",
+      "from": "Co Rd 42 at Lac Lavon Dr (Co Rd 11) SW c",
+      "to": "Co Rd 42 at Lac Lavon Dr (Co Rd 11) SW corner"
+    },
+    {
+      "stopId": "30420",
+      "from": "Co Rd 42 at Southcross Dr SW corner (Sum",
+      "to": "Co Rd 42 at Southcross Dr SW corner (Summit Oaks)"
+    },
+    {
+      "stopId": "30027",
+      "from": "Cobblestone Lake Pkwy at 157th St NE Cor",
+      "to": "Cobblestone Lake Pkwy at 157th St NE Corner"
+    },
+    {
+      "stopId": "30028",
+      "from": "Cobblestone Lake Pkwy at 157th St NW Cor",
+      "to": "Cobblestone Lake Pkwy at 157th St NW Corner"
+    },
+    {
+      "stopId": "30655",
+      "from": "Corporate Center Dr at Avalon Ave SW Cor",
+      "to": "Corporate Center Dr at Avalon Ave SW Corner"
+    },
+    {
+      "stopId": "30656",
+      "from": "Corporate Center Dr at Eagandale Blvd SW",
+      "to": "Corporate Center Dr at Eagandale Blvd SW Corner"
+    },
+    {
+      "stopId": "30549",
+      "from": "Corporate Ctr Dr at Corporate Ctr Curve",
+      "to": "Corporate Ctr Dr at Corporate Ctr Curve N Corner"
+    },
+    {
+      "stopId": "30546",
+      "from": "Corporate Ctr Dr at Eagandale Blvd NW Co",
+      "to": "Corporate Ctr Dr at Eagandale Blvd NW Corner"
+    },
+    {
+      "stopId": "31970",
+      "from": "Dean Lakes Blvd at Dean Lakes Tr NE Corn",
+      "to": "Dean Lakes Blvd at Dean Lakes Tr NE Corner"
+    },
+    {
+      "stopId": "31962",
+      "from": "Dean Lakes Blvd at Dean Lakes Tr SW Corn",
+      "to": "Dean Lakes Blvd at Dean Lakes Tr SW Corner"
+    },
+    {
+      "stopId": "30275",
+      "from": "Diffley Rd at Old Sibley Memorial Hwy NE",
+      "to": "Diffley Rd at Old Sibley Memorial Hwy NE Corner"
+    },
+    {
+      "stopId": "31463",
+      "from": "Diffley Rd at Old Sibley Memorial Hwy SE",
+      "to": "Diffley Rd at Old Sibley Memorial Hwy SE Corner"
+    },
+    {
+      "stopId": "30968",
+      "from": "Dodd Rd (Hwy 149) at Advantage Ln NW Cor",
+      "to": "Dodd Rd (Hwy 149) at Advantage Ln NW Corner"
+    },
+    {
+      "stopId": "30814",
+      "from": "Dodd Rd (Hwy 149) at Opperman Dr NE Corn",
+      "to": "Dodd Rd (Hwy 149) at Opperman Dr NE Corner"
+    },
+    {
+      "stopId": "30936",
+      "from": "Dodd Rd (Hwy 149) at Yankee Doodle Rd NE",
+      "to": "Dodd Rd (Hwy 149) at Yankee Doodle Rd NE Corner"
+    },
+    {
+      "stopId": "30029",
+      "from": "Embry Path at Cobblestone Lake Pkwy NE C",
+      "to": "Embry Path at Cobblestone Lake Pkwy NE Corner"
+    },
+    {
+      "stopId": "30030",
+      "from": "Embry Path at Cobblestone Lake Pkwy NW C",
+      "to": "Embry Path at Cobblestone Lake Pkwy NW Corner"
+    },
+    {
+      "stopId": "30974",
+      "from": "Gemini Rd at Neil Armstrong Blvd NW Corn",
+      "to": "Gemini Rd at Neil Armstrong Blvd NW Corner"
+    },
+    {
+      "stopId": "30977",
+      "from": "Gemini Rd at Neil Armstrong Blvd SW Corn",
+      "to": "Gemini Rd at Neil Armstrong Blvd SW Corner"
+    },
+    {
+      "stopId": "31864",
+      "from": "Lexington Ave at Crossroads Church SE Co",
+      "to": "Lexington Ave at Crossroads Church SE Corner"
+    },
+    {
+      "stopId": "31067",
+      "from": "Lexington Ave at Crossroads Church SW Co",
+      "to": "Lexington Ave at Crossroads Church SW Corner"
+    },
+    {
+      "stopId": "30539",
+      "from": "Lexington Ave at Neil Armstrong Blvd SE",
+      "to": "Lexington Ave at Neil Armstrong Blvd SE Corner"
+    },
+    {
+      "stopId": "31865",
+      "from": "Lexington Ave at Northview Park Rd NE Co",
+      "to": "Lexington Ave at Northview Park Rd NE Corner"
+    },
+    {
+      "stopId": "30859",
+      "from": "Lexington Ave at Northview Park Rd W Cor",
+      "to": "Lexington Ave at Northview Park Rd W Corner"
+    },
+    {
+      "stopId": "30665",
+      "from": "Lexington Ave at Northwood Pkwy NW Corne",
+      "to": "Lexington Ave at Northwood Pkwy NW Corner"
+    },
+    {
+      "stopId": "30538",
+      "from": "Lexington Ave at Yankee Doodle Rd NE Cor",
+      "to": "Lexington Ave at Yankee Doodle Rd NE Corner"
+    },
+    {
+      "stopId": "30666",
+      "from": "Lexington Ave at Yankee Doodle Rd NW Cor",
+      "to": "Lexington Ave at Yankee Doodle Rd NW Corner"
+    },
+    {
+      "stopId": "31767",
+      "from": "Marschall Rd at Eagle Creek Blvd SE Corn",
+      "to": "Marschall Rd at Eagle Creek Blvd SE Corner"
+    },
+    {
+      "stopId": "30704",
+      "from": "McAndrews Rd at Aldrich Av N corn (befor",
+      "to": "McAndrews Rd at Aldrich Av N corn (before Bryant)"
+    },
+    {
+      "stopId": "30109",
+      "from": "McAndrews Rd at Nicollet Av/Fairview Dr",
+      "to": "McAndrews Rd at Nicollet Av/Fairview Dr S corner"
+    },
+    {
+      "stopId": "30915",
+      "from": "Mendota Heights Rd at Enterprise Dr NE C",
+      "to": "Mendota Heights Rd at Enterprise Dr NE Corner"
+    },
+    {
+      "stopId": "30884",
+      "from": "Mendota Heights Rd at Enterprise Dr SW C",
+      "to": "Mendota Heights Rd at Enterprise Dr SW Corner"
+    },
+    {
+      "stopId": "30952",
+      "from": "Mendota Heights Rd at Pilot Knob Rd NE C",
+      "to": "Mendota Heights Rd at Pilot Knob Rd NE Corner"
+    },
+    {
+      "stopId": "30953",
+      "from": "Mendota Heights Rd at Pilot Knob Rd SE C",
+      "to": "Mendota Heights Rd at Pilot Knob Rd SE Corner"
+    },
+    {
+      "stopId": "30973",
+      "from": "Neil Armstrong Blvd at Aldrin Dr NE Corn",
+      "to": "Neil Armstrong Blvd at Aldrin Dr NE Corner"
+    },
+    {
+      "stopId": "30978",
+      "from": "Neil Armstrong Blvd at Aldrin Dr W Corne",
+      "to": "Neil Armstrong Blvd at Aldrin Dr W Corner"
+    },
+    {
+      "stopId": "30050",
+      "from": "Nicollet Av at 1 Av SE corner (FS Marcin",
+      "to": "Nicollet Av at 1 Av SE corner (FS Marcin Hill)"
+    },
+    {
+      "stopId": "30053",
+      "from": "Nicollet Av at 134 St SE corner (Woodcre",
+      "to": "Nicollet Av at 134 St SE corner (Woodcrest Dr)"
+    },
+    {
+      "stopId": "30094",
+      "from": "Nicollet Av at Burnsville Pkwy NW corner",
+      "to": "Nicollet Av at Burnsville Pkwy NW corner (HOC P&R)"
+    },
+    {
+      "stopId": "30057",
+      "from": "Nicollet Av at Civic Center Pkwy NE corn",
+      "to": "Nicollet Av at Civic Center Pkwy NE corner"
+    },
+    {
+      "stopId": "30099",
+      "from": "Nicollet Av at Civic Center Pkwy W corne",
+      "to": "Nicollet Av at Civic Center Pkwy W corner"
+    },
+    {
+      "stopId": "30096",
+      "from": "Nicollet Av at Ridgeview Apts NW corner",
+      "to": "Nicollet Av at Ridgeview Apts NW corner (#12900)"
+    },
+    {
+      "stopId": "30103",
+      "from": "Nicollet Av at Woodcrest Dr NW corner (1",
+      "to": "Nicollet Av at Woodcrest Dr NW corner (134 St)"
+    },
+    {
+      "stopId": "30451",
+      "from": "Nicollet Blvd at Fairview Ridges Hosp N",
+      "to": "Nicollet Blvd at Fairview Ridges Hosp N Corner"
+    },
+    {
+      "stopId": "30435",
+      "from": "Nicollet Blvd at Fairview Ridges Hosp S",
+      "to": "Nicollet Blvd at Fairview Ridges Hosp S Corner"
+    },
+    {
+      "stopId": "31966",
+      "from": "Old Carriage Ct at Old Carriage Rd SE Co",
+      "to": "Old Carriage Ct at Old Carriage Rd SE Corner"
+    },
+    {
+      "stopId": "31968",
+      "from": "Old Carriage Rd at Old Carriage Ct SW Co",
+      "to": "Old Carriage Rd at Old Carriage Ct SW Corner"
+    },
+    {
+      "stopId": "30786",
+      "from": "Pilot Knob Rd at Mendota Heights Rd SE C",
+      "to": "Pilot Knob Rd at Mendota Heights Rd SE Corner"
+    },
+    {
+      "stopId": "30779",
+      "from": "Pilot Knob Rd at Mendota Heights Rd SW C",
+      "to": "Pilot Knob Rd at Mendota Heights Rd SW Corner"
+    },
+    {
+      "stopId": "30041",
+      "from": "Portland Av at Nicollet Bl/McAndrews Rd",
+      "to": "Portland Av at Nicollet Bl/McAndrews Rd E corner"
+    },
+    {
+      "stopId": "31901",
+      "from": "Promenade Ave at Yankee Doodle Rd SE Cor",
+      "to": "Promenade Ave at Yankee Doodle Rd SE Corner"
+    },
+    {
+      "stopId": "31853",
+      "from": "S Park Dr at Hwy 13 Frontage Rd SE corne",
+      "to": "S Park Dr at Hwy 13 Frontage Rd SE corner"
+    },
+    {
+      "stopId": "30599",
+      "from": "Silver Bell Rd at Ballantrae Rd SW Corne",
+      "to": "Silver Bell Rd at Ballantrae Rd SW Corner"
+    },
+    {
+      "stopId": "30586",
+      "from": "Silver Bell Rd at Golden Hills Ter NE Co",
+      "to": "Silver Bell Rd at Golden Hills Ter NE Corner"
+    },
+    {
+      "stopId": "31965",
+      "from": "Southbridge Pkwy at Old Carriage Ct NE C",
+      "to": "Southbridge Pkwy at Old Carriage Ct NE Corner"
+    },
+    {
+      "stopId": "31878",
+      "from": "Town Centre Dr at Promenade Ave NW Corne",
+      "to": "Town Centre Dr at Promenade Ave NW Corner"
+    },
+    {
+      "stopId": "30520",
+      "from": "Town Centre Dr at Promenade Ave SW Corne",
+      "to": "Town Centre Dr at Promenade Ave SW Corner"
+    },
+    {
+      "stopId": "31529",
+      "from": "Travelers Trl at Madison Trlway Apt SW c",
+      "to": "Travelers Trl at Madison Trlway Apt SW corner (NS)"
+    },
+    {
+      "stopId": "30513",
+      "from": "Yankee Doodle Rd at Columbia Dr NE Corne",
+      "to": "Yankee Doodle Rd at Columbia Dr NE Corner"
+    },
+    {
+      "stopId": "30881",
+      "from": "Yankee Doodle Rd at Denmark Ave NE Corne",
+      "to": "Yankee Doodle Rd at Denmark Ave NE Corner"
+    },
+    {
+      "stopId": "30880",
+      "from": "Yankee Doodle Rd at Denmark Ave SW Corne",
+      "to": "Yankee Doodle Rd at Denmark Ave SW Corner"
+    },
+    {
+      "stopId": "30514",
+      "from": "Yankee Doodle Rd at Discovery Rd NE Corn",
+      "to": "Yankee Doodle Rd at Discovery Rd NE Corner"
+    },
+    {
+      "stopId": "30669",
+      "from": "Yankee Doodle Rd at Golfview Dr SW Corne",
+      "to": "Yankee Doodle Rd at Golfview Dr SW Corner"
+    },
+    {
+      "stopId": "30515",
+      "from": "Yankee Doodle Rd at Lexington Ave NE Cor",
+      "to": "Yankee Doodle Rd at Lexington Ave NE Corner"
+    },
+    {
+      "stopId": "30668",
+      "from": "Yankee Doodle Rd at Lexington Ave SE Cor",
+      "to": "Yankee Doodle Rd at Lexington Ave SE Corner"
+    },
+    {
+      "stopId": "30918",
+      "from": "Yankee Doodle Rd at Mike Collins Dr NW C",
+      "to": "Yankee Doodle Rd at Mike Collins Dr NW Corner"
+    },
+    {
+      "stopId": "30516",
+      "from": "Yankee Doodle Rd at Promenade Ave NE Cor",
+      "to": "Yankee Doodle Rd at Promenade Ave NE Corner"
+    },
+    {
+      "stopId": "30536",
+      "from": "Yankee Doodle Rd at Promenade Ave SW Cor",
+      "to": "Yankee Doodle Rd at Promenade Ave SW Corner"
+    },
+    {
+      "stopId": "30670",
+      "from": "Yankee Doodle Rd at Wescott Woodlands SW",
+      "to": "Yankee Doodle Rd at Wescott Woodlands SW Corner"
+    }
+  ],
   "lastRefreshedAt": "2026-11-23",
   "cities": [
     "Eagan, Minnesota",
