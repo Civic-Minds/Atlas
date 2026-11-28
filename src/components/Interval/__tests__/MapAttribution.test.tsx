@@ -97,4 +97,17 @@ describe('MapAttribution', () => {
     fireEvent.click(screen.getByRole('button', { name: 'and 2 other agencies' }));
     expect(opened).toEqual([null]);
   });
+
+  it('names a single agency left over instead of "and 1 other agency" (#1920)', () => {
+    const c = (slug: string, shortName: string) => ({ slug, name: `${shortName} full legal name`, shortName, url: `https://example.org/${slug}`, text: `${shortName} credit.`, label: { primary: shortName }, licenceName: 'CC BY 4.0', words: null });
+    const opened: (string | null)[] = [];
+    const { rerender } = render(<MapAttribution agencyCredits={[c('ttc', 'TTC'), c('go', 'GO Transit'), c('yrt', 'YRT')]} onCreditOpen={s => opened.push(s)} />);
+    expect(screen.getAllByRole('button').map(b => b.textContent)).toEqual(expect.arrayContaining(['TTC', 'GO Transit', 'YRT']));
+    expect(screen.queryByRole('button', { name: /other agenc/ })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'YRT' }));
+    expect(opened).toEqual(['yrt']);
+    // A name longer than the count it replaces stays counted, so the pill never grows past where the count fit.
+    rerender(<MapAttribution agencyCredits={[c('ttc', 'TTC'), c('go', 'GO Transit'), c('long', 'A Very Long Regional Transit Name')]} />);
+    expect(screen.getByRole('button', { name: 'and 1 other agency' })).toBeInTheDocument();
+  });
 });

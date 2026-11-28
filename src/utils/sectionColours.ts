@@ -63,7 +63,7 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   const lineValue = p.directionFilterHeadwayByPeriod?.[period];
   if (stops.length === 0 || values.length !== stops.length || typeof lineValue !== 'number') return null;
   // #1503: a section follows the route's rules (CIV-321 decision 1), so where the route has no regular service in the
-  // period (no filter value: the card reads "Runs irregularly in this period") no section is coloured as regular
+  // period (no filter value: the card reads "Irregular") no section is coloured as regular
   // (GO Barrie at PM peak: southbound has only stray trips, yet Union–Aurora read every 51-56 northbound).
   const routeValues = p.routeFilterHeadwayByPeriod;
   if (routeValues && typeof routeValues[period] !== 'number') return null;

@@ -52,7 +52,7 @@ const RULES: Rule[] = [
   // CIV-211, #933. The data value 'time-limited' is a code name.
   { name: '"Time-limited" (say "Part-time")', doc: 'TEXT.md', pattern: /\bTime-limited\b|\btime-limited (routes?|service)\b/, slip: "label: 'Time-limited routes'" },
   // CIV-1238 (Ryan): it read as if nothing runs.
-  { name: '"no regular service" (say "Irregular" or "Runs irregularly in this period")', doc: 'TEXT.md', pattern: /\b[Nn]o regular\b/, slip: "const label = 'no regular service';" },
+  { name: '"no regular service" (say "Irregular")', doc: 'TEXT.md', pattern: /\b[Nn]o regular\b/, slip: "const label = 'no regular service';" },
   // CIV-1238 (Ryan): "one-off sounds like it only runs once per day".
   { name: '"one-off" for the hidden route class (say "occasional")', doc: 'TEXT.md', pattern: /\b[Oo]ne-off (routes?|service)\b/, slip: "'Hide one-off routes'" },
   // CIV-1251: "Shared stretch" is the only name for the shared part.
@@ -248,6 +248,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
   'src/data/onDemandServiceAreas.ts': ['within 3 miles of Sandy'],
   // Live's notices, word for word (CIV-1045; item 40, Ryan 2026-11-17: "Live doesn’t cover TTC 512.").
   'src/content/noticeCopy.ts': ['It covers ${agencyName} routes ${joinList(followed)}.'],
+  // The no-end-date warning, approved word for word by Ryan (CIV-3115, DECISIONS 2026-11-27): "The agency hasn't changed its timetable since February 2022, so it may be out of date."
+  'shared/agencyPages.ts': ['The agency hasn’t changed its timetable since'],
 };
 
 // Block comments, and line comments that don't start inside a string or a URL.

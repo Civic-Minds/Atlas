@@ -61,7 +61,7 @@ describe('steady infrequent-tier patterns keep their cadence (#826)', () => {
   });
 
   // #773 (gap words): a real hole inside an hour is named on the card ("every 10 min, with one 45 min gap"); a hole over
-  // PERIOD_COVERAGE_MAX_HEADWAY is no cadence and the row reads "Runs irregularly in this period" (#962).
+  // PERIOD_COVERAGE_MAX_HEADWAY is no cadence and the row reads "Irregular" (#962).
   it('names a real hole inside an hour, and hides a row whose hole is over an hour', () => {
     const holed = (gap: number) => ({
       routeId: 'H', routeShortName: 'H', directionId: 0, tier: 'infrequent', headway: 10,

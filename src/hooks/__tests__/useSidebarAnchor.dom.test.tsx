@@ -60,8 +60,9 @@ describe('cards and top-bar notes share the card slot (#1792 guard)', () => {
   const read = (p: string) => readFileSync(resolve(root, p), 'utf8');
   it("the History/Live note opens at the cards' left edge, not the window's", () => {
     const note = read('src/components/ModeUnavailableNote.tsx');
-    expect(note).toContain('sm:left-[var(--sidebar-left)]');
-    expect(note).toContain('sidebarFrameStyle(sidebarLeft)');
+    // #1917: the shared left edge and the search bar's width, as every left card.
+    expect(note).toContain('${SIDEBAR_LEFT_EDGE}');
+    expect(note).toContain('sidebarFrameStyle(sidebarLeft, searchBarWidth)');
   });
   it("in Compare every card frame takes the shared compare placement, below map A's filter pill", async () => {
     const { sidebarFrameStyle } = await import('../../styles');

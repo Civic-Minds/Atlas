@@ -36,7 +36,7 @@ export default function StudioChips({ container, menus, settings }: { container:
   const { openChip, setOpenChip, toggle, rowRef } = useChipRow<string>();
   if (!container) return null;
   return createPortal(
-    <div ref={rowRef} className="hidden sm:flex items-center gap-2 pointer-events-auto">
+    <div ref={rowRef} className="hidden sm:flex min-w-0 flex-wrap justify-end items-center gap-2 pointer-events-auto">
       {menus.map(m => m && (
         <Fragment key={m.key}>
         <ChipMenu key={m.key} label={m.label} active={m.active ?? true} width={m.width} arrow={m.arrow}

@@ -77,8 +77,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933. (checked)
 - "Irregular" for a period with no regular cadence where the route still runs. CIV-1238.
-  - "Runs irregularly in this period" on cards.
-  - "Irregular" in table cells and list values.
+  - "Irregular" on cards, in table cells and in list values (CIV-3136). The Night card reads "Runs irregularly overnight".
   - Never "no regular service", which reads as if nothing runs. (checked)
 - "Report a problem" reasons are named once, in `REPORT_REASON` (`src/components/Interval/cardUi.tsx`); cards hide or pre-check them by that name. CIV-1591. (checked)
 - "Area" is a metro area (the Calgary area, the Greater Toronto and Hamilton Area), in text and in /area/ links. "Region" is only a state or province (/region/ pages). An agency page reads "Calgary, Alberta" (the area's name without a trailing lowercase "area"; "Greater Toronto and Hamilton Area, Ontario" keeps its name). Ryan, CIV-1614. (checked)
@@ -180,7 +179,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - Except a branch that is its direction's only row, which reads the range from the main stretch to itself ("every 15–54 min", NJ Transit 27 Sunday Midday toward Irvington; Ryan, CIV-1447).
     - Its dot is in the slower number's colour.
     - The route lists start their range at the same low number.
-  - A period with no number reads "Runs irregularly in this period" on cards and "Irregular" in tight spots (never "limited").
+  - A period with no number reads "Irregular" (never "limited").
   - The card has no All day row (CIV-1279: the map has no All day).
   - A route that doesn't run reads "no trips".
   - Part of a period reads "This route runs only from 7–9 AM." with the rest as a second sentence.

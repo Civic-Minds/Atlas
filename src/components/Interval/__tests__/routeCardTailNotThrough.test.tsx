@@ -51,7 +51,7 @@ const renderCard = (directions: ShapeProperties[], period: 'midday' | 'amPeak') 
     setHoveredBranch={() => {}}
   />,
 );
-const LONG = 'Runs irregularly in this period';
+const LONG = 'Irregular';
 
 describe('a branch that does not run through a period has no row for it (#1115, Ryan 2026-10-26)', () => {
   it('TTC 84 midday: no Pioneer Village row at all (no every 21, no notice line); Weston Rd keeps every 7', () => {
@@ -68,10 +68,10 @@ describe('a branch that does not run through a period has no row for it (#1115, 
     expect(screen.getByText(/every 20 min/)).toBeTruthy();
   });
 
-  it('data without the field keeps the row, as before the rebuild; its 313-minute wait from uneven trips reads Runs irregularly (#1239, CIV-1074; CIV-2232)', () => {
+  it('data without the field keeps the row, as before the rebuild; its 313-minute wait from uneven trips reads Irregular (#1239, CIV-1074; CIV-2232)', () => {
     renderCard(features(), 'midday');
     expect(screen.queryByText(/every 313 min/)).toBeNull();
-    expect(screen.getAllByText(/Runs irregularly/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(LONG).length).toBeGreaterThan(0);
     expect(screen.queryByText(/every 21 min/)).toBeNull();
   });
 
