@@ -386,7 +386,7 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
                     <CardDirectionRow
                       key={r.key}
                       {...sched}
-                      {...(f || shared ? liveOrScheduleProps(gap, sched) : {})}
+                      {...(f || shared ? liveOrScheduleProps(gap, sched, { firstLine: shared }) : {})}
                       labelEnd={f && !shared ? countOf(f.cars, 'vehicle') : undefined}
                     />
                   );
