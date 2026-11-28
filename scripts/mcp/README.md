@@ -14,7 +14,7 @@ For Atlas's own development and test rounds on this Mac only. Testers and everyo
 | `rank_agencies` | Agencies ranked by routes every N minutes or better in a period, filtered by country, region and size (or "similar to" an agency) |
 | `route_frequency` | A route's frequency in each period on a day type, with first and last trips and its branches; with a time window, hour by hour for each branch |
 | `routes_at_frequency` | An agency's routes that run every N minutes or better in a period |
-| `compare_agencies` | For several agencies, how many routes run every N minutes or better in a period |
+| `compare_agencies` | For several agencies, how many routes run every N minutes or better in a period; with `vs_day` (and `vs_period`), the same count on another day and the change (weekday to Sunday) |
 | `routes_near` | Routes that stop near a corner, station or stop, with the stops they use there |
 | `route_history` | How a route's frequency changed over the years, from Atlas's History data |
 | `network_history` | For each year in Atlas's History, how many of an agency's routes ran every N minutes or better in a part of the day, and which |
