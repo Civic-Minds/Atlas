@@ -59,7 +59,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "b5612c9f877e86db",
@@ -92,5 +92,7 @@
       "mode": 100,
       "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
     }
-  ]
+  ],
+  "lastTimetableKey": "5ef041e564b1cdb9",
+  "timetableChangedAt": "20261116"
 }

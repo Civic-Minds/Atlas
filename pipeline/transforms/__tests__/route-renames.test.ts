@@ -41,6 +41,15 @@ describe('hand-checked route name fixes (CIV-2237)', () => {
     expect(lines.get('Kemper Road - DCC')).toEqual(['1']);
   });
 
+  it('Lewiston/Asotin: routes read as the agency names them on ridethevalley.org/routes (CIV-3162)', () => {
+    const { routeRenames } = config('lewiston-asotin');
+    expect(routeRenames.map(r => r.to.shortName)).toEqual([
+      'Blue Line Route 1', 'Blue Line Route 2', 'Green Line Route 1', 'Green Line Route 2',
+      'Red Line Route 1', 'Red Line Route 2', 'East Route', 'West Route',
+    ]);
+    expect(new Set(routeRenames.map(r => r.routeId)).size).toBe(routeRenames.length);
+  });
+
   it('St. Joseph: every run of a line reads as the line', () => {
     const { routeRenames } = config('stjoseph-mo');
     const run = (sn: string) => routeRenames.find(r => r.from.shortName === sn)?.to.shortName;

@@ -106,7 +106,7 @@ export function frequentServiceColorExpression(mode: ColorVisionMode): unknown[]
 /** Opacity of a research overlay's lines when no route is selected. */
 export const OVERLAY_ROUTE_OPACITY = 0.9;
 
-/** The research views' own route overlays, with each one's line width when no route is selected. */
+/** The research modes' own route overlays, with each one's line width when no route is selected. */
 export const RESEARCH_OVERLAY_LAYERS = [
   { id: 'night-service-routes-layer', view: 'night', width: NIGHT_SERVICE_WIDTH_BY_ZOOM },
   { id: 'frequent-service-routes-layer', view: 'frequent', width: FREQUENT_SERVICE_WIDTH_BY_ZOOM },

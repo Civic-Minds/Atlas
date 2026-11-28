@@ -43,7 +43,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20270213",
   "feedRefreshStatus": "current",
@@ -60,5 +60,7 @@
     "name": "EMTA Developer License Agreement",
     "credit": "Reproduced with permission granted by Erie Metropolitan Transit Authority (EMTA). The information has been provided by means of a nonexclusive, limited, and revocable license granted by EMTA. EMTA does not guarantee the accuracy, adequacy, completeness, or usefulness of any information. EMTA provides this information “as is” without warranty of any kind, express or implied, including, but not limited to, warranties of merchantability or fitness for a particular purpose and assumes no responsibility for anyone’s use of the information.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "0bc26c24241a0169",
+  "timetableChangedAt": "20261116"
 }

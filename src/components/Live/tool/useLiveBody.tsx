@@ -89,6 +89,11 @@ function fallsBehindLines(report: TimeLossReport | undefined, band: DashboardBan
 /** What the route's week figures cover (the Run time tile's own scope wording). */
 const BOTH_DIRECTIONS = 'both directions';
 /**
+ * Studio's section notes (CIV-3159, Ryan: "The placement of 'both directions' differs so much lol"): the map's route card,
+ * whose chart covers both directions too, names no scope, so Studio's sections don't either; the time of day stays.
+ */
+export const studioScope = (band: DashboardBand): string | undefined => (band === 'all' ? undefined : PERIOD_LABELS[band]);
+/**
  * A picked route's week figures. Run time is its main pattern's alone (CIV-945: short turns and branches no longer blur
  * it; each has its own row in the Run time card), where the file has it.
  */
@@ -128,10 +133,10 @@ function routeWidgets({ data, v3, dir, band, setPick, route, inStudio, held, lat
   const hourLeftShown = excludingText(hourLeft) === weekLeft.text ? undefined : hourLeft;
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={weekScopeText(inStudio ? BOTH_DIRECTIONS : `${route} · ${BOTH_DIRECTIONS}`, band === 'all' ? null : PERIOD_LABELS[band])} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lead={held} lateNote={lateNote} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} period={inStudio ? studioScope(band) : undefined} scope={inStudio ? undefined : weekScopeText(`${route} · ${BOTH_DIRECTIONS}`, band === 'all' ? null : PERIOD_LABELS[band])} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lead={held} lateNote={lateNote} /> }] : []),
     ...(!tiles.length && held ? [{ key: 'held', size: 'medium' as const, node: <CardHelpNotice message={held} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
-    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
+    ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={inStudio ? undefined : BOTH_DIRECTIONS} period={inStudio ? studioScope(band) : undefined} height={40} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title={LATE_STOPS_TITLE} rows={worst} /> }] : []),
   ];
 }

@@ -70,7 +70,7 @@ export interface RouteCardRowValue {
 
 /**
  * #1267 (DECISIONS 2026-10-31): the number a row shows for Overnight, the route's Night Service number (`contract`, the route's
- * Overnight filter value) on a row the Night view lights, of a direction that passes; null on any other row. Never the row's own
+ * Overnight filter value) on a row the Night mode lights, of a direction that passes; null on any other row. Never the row's own
  * 2-6 AM trips. The route card and the stop card (CIV-1764) both read it, so the two never disagree.
  */
 export function overnightRowNumber(d: ShapeProperties, contract: Pick<RouteContract, 'filterValue'> | undefined): number | null {
@@ -129,7 +129,7 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     ? { typical, worst }
     : undefined;
   const pooledH = hoveredHour == null && allDayH == null && variantH === undefined ? ctx.pooledMainH : undefined;
-  // #1267: Overnight reads the Night Service verdict, which grades the whole route: a row the Night view lights, of a
+  // #1267: Overnight reads the Night Service verdict, which grades the whole route: a row the Night mode lights, of a
   // direction that passes, shows the route's number; any other row none (NYC subway S's 42 St shuttle stops at night
   // while its other pieces run). Never the row's own 2-6 AM trips, a range or part-period words, so a card cannot say
   // "every 71" beside Night Service 30 (TTC 301).

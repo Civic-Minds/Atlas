@@ -26,7 +26,7 @@ export interface RouteCardNoticeInput {
   directions: ShapeProperties[];
   /** The card's rows, built once (buildRouteCardModel). */
   model: Pick<RouteCardModel, 'contract' | 'doesNotRun' | 'hasPeriodService' | 'hasPartialPeriodService' | 'activeRangeDirections' | 'rowHeadways' | 'unevenGap' | 'groups' | 'showDirectionSections'>;
-  /** The Night view's card has no direction notes. */
+  /** The Night mode's card has no direction notes. */
   nightView?: boolean;
   agencyFeatures?: readonly GeoJSON.Feature[];
   period: TimePeriod;

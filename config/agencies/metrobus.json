@@ -50,7 +50,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://www.metrobustransit.ca/google/google_transit.zip",
@@ -63,5 +63,7 @@
   "feedObtainedAt": "20261021",
   "lastFeedStart": "20261026",
   "lastRawArchiveKey": "20270103-dc1b66d89e52377b",
-  "lastFeedContentKey": "224e510ec06082bc"
+  "lastFeedContentKey": "224e510ec06082bc",
+  "lastTimetableKey": "b60c38b68dc203f2",
+  "timetableChangedAt": "20261021"
 }

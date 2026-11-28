@@ -46,7 +46,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -66,5 +66,7 @@
     "name": "Open Government Licence – The Corporation of the City of Windsor v1.0",
     "credit": "Contains information licensed under the Open Government Licence – The Corporation of the City of Windsor.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "f0c08014697a5e07",
+  "timetableChangedAt": "20261123"
 }

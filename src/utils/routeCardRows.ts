@@ -41,7 +41,7 @@ export interface CardRow {
   label: string;
   /** What hovering the row sends (none for a row without a destination). */
   hover: HoveredBranch | null;
-  /** The Night view's grade (CIV-934): 30, 60, or none. */
+  /** The Night mode's grade (CIV-934): 30, 60, or none. */
   night?: { grade: NightServiceFrequency | null; partOfRoute: boolean };
   /** The daytime row's number, words, colour and layout, for the chart hour under the pointer (null: none). */
   display: (hoveredHour: number | null) => CardRowDisplay;

@@ -147,9 +147,13 @@ interface HourlySparklineProps {
   yAxis?: AxisTick[];
   /** The card chart's hover text for an hour, for a series that isn't a frequency (CIV-2182: Fleet's vehicles by time of day). */
   hourTitle?: (hour: number) => string | undefined;
+  /** Each hour's bar colour in place of its frequency tier (CountSparkline's own scale: Live's late share, CIV-3159). */
+  colorByHour?: Record<number, string>;
+  /** Name only a hovered period above the bars: the section's heading names the picked one (Studio's Live panel, CIV-3159). */
+  periodOnHoverOnly?: boolean;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = SCHEDULE_OVERVIEW_TITLE, titleLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = SCHEDULE_OVERVIEW_TITLE, titleLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle, colorByHour, periodOnHoverOnly = false }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -247,7 +251,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const litPeriod = hourChartLitPeriod(hoverPeriod, activePeriodKey, displayedByHour, HOURS);
   const bands = litPeriod ? PERIOD_BANDS[litPeriod] : null;
   // The full-day view names the hovered period on each chart's title line (CIV-1094), so only the card's chart names it here.
-  const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as PeriodKey | null;
+  const activeLabelKey = (expanded ? null : hoveredPeriod ?? (!periodOnHoverOnly && period && period !== 'all' ? period : null)) as PeriodKey | null;
   const legendSource = legendStackedByHour ?? stackedByHour;
   const stackedLegend = legendSource
     ? Array.from(new Map(
@@ -306,7 +310,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             const segmentTotalFreq = segments.reduce((sum, segment) => sum + 1 / segment.headway, 0);
             // One rule for every hour with trips (CIV-497): its colour (tier, or branch colours when
             // stacked), faded outside the selected period. Hours with no trips draw no bar.
-            const barColor = hasValue ? headwayToTierColor(hourBarColorHeadway(hw, maxGap), colorMode) : undefined;
+            const barColor = hasValue ? colorByHour?.[h] ?? headwayToTierColor(hourBarColorHeadway(hw, maxGap), colorMode) : undefined;
             const opacity = !hasValue ? undefined : BAR_OPACITY[hourBarEmphasis(h, activePeriodKey, litPeriod)];
             return (
               <div
@@ -528,18 +532,20 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
  * The chart's bars are trips per hour (1 / headway), so a count draws as 60 / count, in one colour, never expandable: none
  * of the chart's frequency wording ("every N min") can read a count. Hover text comes from `hourTitle`.
  */
-export function CountSparkline({ countByHour, color, label, ...rest }: Pick<HourlySparklineProps, 'period' | 'title' | 'hourTitle' | 'onPeriodChange' | 'onHourHover'> & {
+export function CountSparkline({ countByHour, color, ...rest }: Pick<HourlySparklineProps, 'period' | 'title' | 'hourTitle' | 'onPeriodChange' | 'onHourHover' | 'periodOnHoverOnly'> & {
   countByHour: Record<number, number | null>;
   /** One colour, or each hour's by its value (Live's late share by the lateness steps, CIV-3159). */
   color: string | ((value: number, hour: number) => string);
-  /** The counted thing ("buses"), named on each bar's segment. */
-  label: string;
+  /** The counted thing ("buses"); kept for callers, the hover text names it. */
+  label?: string;
 }) {
+  // CIV-3159 (Ryan: "redesign the sparkline here to be more like the one on the main map"): the card chart's own bars,
+  // the same width, spacing, height, baseline and label row; only the values and the colour scale are the caller's.
   const byHour: Record<number, number | null> = {};
-  const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
+  const colorByHour: Record<number, string> = {};
   for (const [h, n] of Object.entries(countByHour)) {
     byHour[+h] = n ? 60 / n : null;
-    if (n) stackedByHour[+h] = [{ label, headway: 60 / n, color: typeof color === 'function' ? color(n, +h) : color }];
+    if (n) colorByHour[+h] = typeof color === 'function' ? color(n, +h) : color;
   }
-  return <HeadwaySparkline {...rest} byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} />;
+  return <HeadwaySparkline {...rest} byHour={byHour} colorByHour={colorByHour} />;
 }

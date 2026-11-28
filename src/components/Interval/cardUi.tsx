@@ -6,7 +6,7 @@ import { fmtHeadway } from '../../utils/format';
 import { placeAlreadyInName } from '../../utils/agencyName';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { getTierColor } from '../../utils/colors';
-import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH } from '../../styles';
+import { CARD_NOTE, CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
 import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
@@ -872,15 +872,19 @@ export function SidebarCardListRows({ children, className = '' }: { children: Re
   return <div className={`space-y-2 ${className}`}>{children}</div>;
 }
 
-export function SidebarCardSection({ label, aside, children }: { label?: string; /** At the end of the label's line (Live's SectionNotes). */ aside?: React.ReactNode; children: React.ReactNode }) {
+/** What sits at the right end of a section's heading line: the chart's own period label style (HoveredPeriodName, CARD_NOTE). */
+export function SectionHeaderEnd({ children }: { children: React.ReactNode }) {
+  return <span className={`${CARD_NOTE} whitespace-nowrap`} data-testid="section-header-end">{children}</span>;
+}
+
+export function SidebarCardSection({ label, aside, end, children }: { label?: string; /** On the line under the label (Live's SectionNotes). */ aside?: React.ReactNode; /** At the right end of the label's line (Live's time of day, CIV-3159). */ end?: React.ReactNode; children: React.ReactNode }) {
+  const heading = label && <CardSectionLabel className={aside || end ? 'mb-0 whitespace-nowrap' : undefined}>{label}</CardSectionLabel>;
   return (
     <div className="mt-3 pt-3 border-t border-[var(--border-primary)]">
-      {aside ? (
-        <div className="flex items-start justify-between gap-2">
-          {label ? <CardSectionLabel>{label}</CardSectionLabel> : <span />}
-          {aside}
-        </div>
-      ) : label && <CardSectionLabel>{label}</CardSectionLabel>}
+      {/* The heading on its own line, never wrapped, the time of day at its right end (SectionHeaderEnd); the aside (Live's
+          SectionNotes) on the line under it (CIV-3159: Ryan, "The placement of 'both directions' differs so much lol"). */}
+      {label && end ? <div className={`flex items-baseline justify-between gap-2 ${aside ? '' : 'mb-2'}`}>{heading}<SectionHeaderEnd>{end}</SectionHeaderEnd></div> : heading}
+      {aside && <div className="mb-2">{aside}</div>}
       <SidebarCardListRows>{children}</SidebarCardListRows>
     </div>
   );

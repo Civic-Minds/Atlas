@@ -3,7 +3,7 @@ import * as maplibregl from 'maplibre-gl';
 
 /**
  * Route line visibility: the loaded-GeoJSON route layer (fed `localRouteData`) and the PMTiles
- * route layers, hidden for the Night and Frequent-service views and when PMTiles has no routes.
+ * route layers, hidden for the Night and Frequent-service modes and when PMTiles has no routes.
  */
 export function useRouteLayerVisibility(
   mapRef: React.RefObject<maplibregl.Map | null>,

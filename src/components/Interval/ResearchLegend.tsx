@@ -8,7 +8,7 @@ import { NIGHT_GRADES, type NightServiceFrequency } from '../../../shared/nightS
 import { MAP_COLOURS_LABEL } from '../../content/noticeCopy';
 
 /**
- * The colour key for a research view, drawn as a stat-pill beside the route and agency pills
+ * The colour key for a research mode, drawn as a stat-pill beside the route and agency pills
  * (the one placement rule for every view's legend). Night has one colour; Frequent Service has one
  * for 15 min and, in its 30 min view, a second for the 16 to 30 min routes.
  */

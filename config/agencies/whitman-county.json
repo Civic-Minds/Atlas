@@ -20,7 +20,7 @@
     "Whitman County, Washington"
   ],
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "resume regular service after football",
   "lastRefreshedAt": "2026-11-16",
   "feedQuality": {
@@ -33,14 +33,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 8,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 8,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
@@ -58,5 +58,8 @@
   "lastFeedStart": "20261114",
   "lastRawArchiveKey": "unknown-ee618e204a5e606b",
   "lastFeedContentKey": "ee73073ea422e803",
-  "refusedFeedSha256": "1a23a72d5554bada1991d0acc7274d743b7167871a4a6aa21b1051fde241bf27"
+  "refusedFeedSha256": "1a23a72d5554bada1991d0acc7274d743b7167871a4a6aa21b1051fde241bf27",
+  "noFeedEnd": true,
+  "lastTimetableKey": "51fff4bde0f2b16a",
+  "timetableChangedAt": "20261116"
 }

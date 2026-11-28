@@ -40,7 +40,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -60,5 +60,7 @@
     "name": "King County Transit Data Terms of Use",
     "credit": "Transit scheduling, geographic, and real-time data provided by permission of King County",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "c680d8b9b51669be",
+  "timetableChangedAt": "20261116"
 }

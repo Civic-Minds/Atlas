@@ -22,11 +22,11 @@ export const usePanelSectionHeadings = (): boolean => {
 };
 
 /** One section of the panel: its heading in the shared section label, then what it holds. */
-export function PanelSection({ label, title, aside, children, className = '' }: { label: string; title?: string; /** Beside the heading (SectionNotes). */ aside?: ReactNode; children: ReactNode; className?: string }) {
+export function PanelSection({ label, title, aside, end, children, className = '' }: { label: string; title?: string; /** Under the heading (SectionNotes). */ aside?: ReactNode; /** At the right end of the heading's line (the time of day). */ end?: ReactNode; children: ReactNode; className?: string }) {
   const headings = usePanelSectionHeadings();
   return (
     <section aria-label={label} title={title} className={`min-w-0 ${className}`.trim()}>
-      <SidebarCardSection label={headings ? label : undefined} aside={aside}>{children}</SidebarCardSection>
+      <SidebarCardSection label={headings ? label : undefined} aside={aside} end={headings ? end : undefined}>{children}</SidebarCardSection>
     </section>
   );
 }

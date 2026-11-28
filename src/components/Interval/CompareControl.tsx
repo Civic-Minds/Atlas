@@ -25,8 +25,8 @@ export function CompareSidePicker({ side, onChange }: { side: CompareSide; onCha
 }
 
 /**
- * Top-bar view tab beside History and Live. Compare swaps the whole map for two synced maps, so it
- * sits with the other views rather than with the filter chips. It toggles like the other view tabs:
+ * Top-bar app tab beside History and Live. Compare swaps the whole map for two synced maps, so it
+ * sits with the other apps rather than with the filter chips. It toggles like the other app tabs:
  * pressed while comparing, and pressing it again goes back to the single map.
  */
 export function CompareTab({ active, onStart, onExit }: { active: boolean; onStart: () => void; onExit: () => void }) {

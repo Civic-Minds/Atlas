@@ -146,7 +146,7 @@ export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCa
 /** The frequency map's zoomed-out note, in the map export (CIV-1337). */
 export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden.';
 /**
- * The research views' zoomed-out line (overnight and frequent service), where below the detail zoom no route is drawn at
+ * The research modes' zoomed-out line (overnight and frequent service), where below the detail zoom no route is drawn at
  * all (#1817, CIV-2946; Ryan, 2026-11-25: "1").
  */
 export const ZOOM_IN_TO_SEE_ROUTES = 'Zoom in to see the routes.';
@@ -208,7 +208,7 @@ export const LIMITED_SERVICE_LABEL = 'limited';
 export function noNumberRowLabel(options: { nightView?: boolean }): string {
   return options.nightView ? IRREGULAR_OVERNIGHT_LABEL : IRREGULAR_PERIOD_SHORT_LABEL;
 }
-/** CIV-1251: a Night card row with no grade. The Night view isn't a period in the picker, so not "in this period". */
+/** CIV-1251: a Night card row with no grade. The Night mode isn't a period in the picker, so not "in this period". */
 export const IRREGULAR_OVERNIGHT_LABEL = 'Runs irregularly overnight';
 // D3 irregular-period (Ryan's word, CIV-1238; on cards too since CIV-3136): the route runs in the period, but the filter
 // finds no regular cadence. Card rows, table cells and list values.
@@ -625,7 +625,7 @@ export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here 
 export const STOP_NOT_FOUND = "This stop couldn’t be found. It may have been moved or removed.";
 // N51 night-failed (Ryan)
 export const NIGHT_LOAD_FAILED = loadErrorText('overnight service');
-/** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
+/** N52 night-empty (Ryan): the Night mode's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
 export const nightNoRoutesNotice = (frequency: number) => `No routes here run ${headwayOrBetter(frequency)} from 2–5 AM.`;
 /** N129 frequent-empty (CIV-959 gap 11): the Frequent Service view's own rule, as N52 for Night ("…from 7 AM–7 PM on weekdays."). */
 export const frequentNoRoutesNotice = (frequency: number, windowLabel: string, days: readonly DayType[]) =>
@@ -1056,10 +1056,10 @@ export const COMPARE_LABEL = 'Compare';
 export const COMPARE_ARIA_LABEL = 'Compare two maps';
 export const ROUTES_IN_VIEW_LABEL = 'Routes in view';
 export const AGENCIES_IN_VIEW_LABEL = 'Agencies in view';
-/** The top bar's logo and views menu. */
+/** The top bar's logo and apps menu. */
 export const ATLAS_HOME_LABEL = 'Atlas home';
-export const MORE_VIEWS_LABEL = 'More Atlas views';
-/** The phone views menu's name when no named view is on. */
+export const MORE_APPS_LABEL = 'More Atlas apps';
+/** The phone apps menu's name when no named app is on. */
 export const MORE_LABEL = 'More';
 export const LIVE_TAB_LABEL = 'Live';
 /** The Live list's title with one agency in view: "Live · TTC" (CIV-2042, Ryan's wording as written). */
@@ -1122,8 +1122,9 @@ export const LAST_WEEK_COLUMN = 'Last week';
 export const STRETCH_COLUMN = 'Between stops';
 export const ROUTES_HEADING = 'Routes';
 export const DIRECTION_SHOWN_LABEL = 'Direction shown';
-export const VIEW_LABEL = 'View';
-export const MEASURE_LABEL = 'Measure';
+export const MEASURE_LABEL = 'Views';
+/** The week table's screen-reader header for its measures column (Late, Trip time…); not the Views pill (CIV-3163). */
+export const MEASURES_COLUMN_LABEL = 'Measure';
 export const LOADING_LABEL = 'Loading…';
 export const ROUTE_MENU_LABEL = 'Route';
 export const LIVE_AT_STOP_LABEL = 'Live at this stop';
@@ -1238,7 +1239,7 @@ export const COVERAGE_LIVE_PROGRESS = {
 } as const;
 
 /**
- * Studio's views in the Studio column. Studio's settled menu names (CIV-1834, CIV-1807) are Schedule and Vehicles; the
+ * Studio's apps in the Studio column. Studio's settled menu names (CIV-1834, CIV-1807) are Schedule and Vehicles; the
  * menu doesn't carry them on main yet, so they are named here until it does, and then this reads them from there.
  */
 export const COVERAGE_STUDIO_TAGS = { schedule: 'Schedule', vehicles: 'Vehicles' } as const;

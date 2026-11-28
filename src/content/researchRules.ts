@@ -5,9 +5,9 @@ import { joinList } from '../../shared/overflowText';
 import { headwayOrBetter } from '../../shared/headwayText';
 import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
-/** The rule shown in each research view's info panel, always using the numbers currently selected. */
+/** The rule shown in each research mode's info panel, always using the numbers currently selected. */
 
-/** The Overnight view's info panel heading: the story's heading (shared/researchStories.ts, CIV-1629). */
+/** The Overnight mode's info panel heading: the story's heading (shared/researchStories.ts, CIV-1629). */
 export const NIGHT_INFO_HEADING = OVERNIGHT_STORY.heading;
 /** The Night Service route list's title, also the back link of a route opened from it (#1326). */
 export const NIGHT_LIST_TITLE = OVERNIGHT_STORY.cardTitle;

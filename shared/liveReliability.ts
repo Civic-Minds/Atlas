@@ -1,6 +1,6 @@
 /**
  * Schedule adherence and bunching for one route, from its published Live summary (CIV-1860). Built once and shared: the
- * Atlas Studio MCP tools (route_reliability, route_bunching) and Studio's view call these same functions, so both say the
+ * Atlas Studio MCP tools (route_reliability, route_bunching) and Studio call these same functions, so both say the
  * same thing (Ryan's rule: MCP and Studio share every capability).
  *
  * Pure: the caller passes the route's summary in (the `v3` block of atlas/live/<agency>/<route>.json); nothing here
@@ -26,7 +26,7 @@ export const RELIABILITY_DEFINITIONS = {
   gappedFactor: GAPPED_FACTOR,
 } as const;
 
-/** What each Live figure means, in words, from the same shared rules: the MCP's answers and Studio's view say it the same way. */
+/** What each Live figure means, in words, from the same shared rules: the MCP's answers and Studio say it the same way. */
 export const RELIABILITY_DEFINITION_TEXT = {
   late: lateText(DEFAULT_CUTOFFS.lateAfterMin),
   early: earlyText(DEFAULT_CUTOFFS.earlyBeforeMin),

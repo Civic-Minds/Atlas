@@ -42,7 +42,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
@@ -56,5 +56,7 @@
   "lastServiceWeek": "072865fee0420736",
   "feedObtainedAt": "20261116",
   "lastRawArchiveKey": "20270101-b9f9bbf3f9f85d6c",
-  "lastFeedContentKey": "095acc7f4768be56"
+  "lastFeedContentKey": "095acc7f4768be56",
+  "lastTimetableKey": "f96776bb71adb1a9",
+  "timetableChangedAt": "20261116"
 }

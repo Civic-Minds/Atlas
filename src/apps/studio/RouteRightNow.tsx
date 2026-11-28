@@ -5,12 +5,13 @@ import { CardDirectionRow, CardHelpNotice, SidebarCardList, type CardReportButto
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveFeeds } from '../../hooks/useLiveFeeds';
 import { useAgencyGeo } from '../../hooks/useAgencyGeo';
+import { useLiveTripDirections } from '../../hooks/useLiveTripDirections';
+import { resolveLiveVehicles } from '../../utils/liveResolveVehicles';
 import { STUDIO_ROUTE_PANEL_PENDING } from '../../../shared/liveWording';
-import { LIVE_UNMATCHED_DESTINATION } from '../../content/noticeCopy';
 import { liveCardModelNow, liveCardRowKeys, liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey } from '../../utils/liveGrouping';
 import { streetJoin } from '../../utils/stopLabel';
-import { vehicleModeWord } from '../../utils/format';
+import { formatBranchLabel, vehicleModeWord } from '../../utils/format';
 import { effectiveMode, type EffectiveModeInput } from '../../../shared/modes';
 import { directionSummary } from '../LiveVehicles';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
@@ -25,15 +26,22 @@ import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 export default function RouteRightNow({ slug, routeShortName }: { slug: string; routeShortName: string; /** Not used: every direction shows, as on the map's card (#1921). */ direction?: number | null }) {
   const { agencies } = useAgencies();
   const { vehiclesBySlug, degradedBySlug, errorBySlug } = useLiveFeeds(true, [slug], slug);
-  const vehicles = useMemo(() => (vehiclesBySlug[slug] ?? []).filter(v => v.routeShortName === routeShortName), [vehiclesBySlug, slug, routeShortName]);
+  const polled = useMemo(() => (vehiclesBySlug[slug] ?? []).filter(v => v.routeShortName === routeShortName), [vehiclesBySlug, slug, routeShortName]);
   const geo = useAgencyGeo(slug);
+  // CIV-3159 (same route, different gaps on the map and here): the vehicles read as the map's card reads them, one
+  // resolver for both (resolveLiveVehicles), with the trips' own directions winning over the shape guess.
+  const guessed = useMemo(() => resolveLiveVehicles(polled, geo), [polled, geo]);
+  const trips = useLiveTripDirections(slug, routeShortName, guessed, true);
+  const vehicles = useMemo(() => resolveLiveVehicles(polled, geo, trips.byVehicle), [polled, geo, trips.byVehicle]);
   const reportRef = useRef<CardReportButtonHandle>(null);
   const model = useMemo(() => liveCardModelNow(geo, agencies, slug, routeShortName), [geo, agencies, slug, routeShortName]);
+  const routeFeature = useMemo(() => geo?.features.find(x => (x.properties as ShapeProperties | null)?.routeShortName === routeShortName), [geo, routeShortName]);
+  const routeLongName = (routeFeature?.properties as ShapeProperties | null | undefined)?.routeLongName ?? '';
   const modeWord = useMemo(() => {
-    const f = geo?.features.find(x => (x.properties as ShapeProperties | null)?.routeShortName === routeShortName);
+    const f = routeFeature;
     const props = f?.properties as EffectiveModeInput | null | undefined;
     return vehicleModeWord(props?.routeType == null ? null : effectiveMode({ ...props, agencySlug: slug }));
-  }, [geo, routeShortName, slug]);
+  }, [routeFeature, slug]);
   // The same grouping as main Live: by destination, then under the card's own rows (mergeIntoCardRows, #1877).
   const rowKeys = useMemo(() => liveCardRowKeys(model, routeShortName), [model, routeShortName]);
   const groups = useMemo(() => {
@@ -83,14 +91,22 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
       {reading}
       {/* The map card's own list spacing around its direction headings. */}
       <SidebarCardList><RouteCardRows model={model} reportRef={reportRef} rowLive={rowLive} /></SidebarCardList>
-      <Unmatched groups={groups} rowKeys={new Set(rowKeys.map(r => r.key))} modeWord={modeWord} />
+      <Unclaimed groups={groups} rowKeys={new Set(rowKeys.map(r => r.key))} modeWord={modeWord} routeShortName={routeShortName} routeLongName={routeLongName} />
     </>
   );
 }
 
-/** Vehicles no destination row carries, in one row at the end (as main Live's "No destination"). */
-function Unmatched({ groups, rowKeys, modeWord }: { groups: ReadonlyMap<string, LiveVehicle[]>; rowKeys: ReadonlySet<string>; modeWord: string }) {
-  const left = [...groups].filter(([k]) => !rowKeys.has(k) || k === DIRECTION_UNCLEAR).flatMap(([, vs]) => vs);
-  if (!left.length) return null;
-  return <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} labelEnd={directionSummary(left, modeWord)} />;
+/**
+ * CIV-3169 (#1937): the destinations none of the card's rows carries (overnight, before the card has rows for the hour), one
+ * row each named by its destination, as main Live's card lists them (LiveVehicles' directionExtra). Vehicles with no
+ * destination make no row: there is no placeholder ("No destination") row.
+ */
+export function unclaimedGroups(groups: ReadonlyMap<string, LiveVehicle[]>, rowKeys: ReadonlySet<string>): [string, LiveVehicle[]][] {
+  return [...groups].filter(([k, vs]) => vs.length > 0 && k !== DIRECTION_UNCLEAR && !rowKeys.has(k));
+}
+
+function Unclaimed({ groups, rowKeys, modeWord, routeShortName, routeLongName }: { groups: ReadonlyMap<string, LiveVehicle[]>; rowKeys: ReadonlySet<string>; modeWord: string; routeShortName: string; routeLongName: string }) {
+  return <>{unclaimedGroups(groups, rowKeys).map(([key, vs]) => (
+    <CardDirectionRow key={`live:${key}`} labelWeight="regular" label={formatBranchLabel(key, routeShortName, routeLongName)} labelEnd={directionSummary(vs, modeWord)} />
+  ))}</>;
 }

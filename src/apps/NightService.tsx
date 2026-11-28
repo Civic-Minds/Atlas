@@ -54,7 +54,7 @@ function nightReportDetails(
   bounds: { n: number; s: number; e: number; w: number } | null | undefined,
 ): string {
   return reportDetails([
-    ['View', `routes ${headwayOrBetter(frequency)} from 2–5 AM`],
+    ['Mode', `routes ${headwayOrBetter(frequency)} from 2–5 AM`],
     ['Map bounds', bounds ? `${bounds.s.toFixed(4)},${bounds.w.toFixed(4)} to ${bounds.n.toFixed(4)},${bounds.e.toFixed(4)}` : 'unknown'],
     '**Listed:**',
     ...(agencies.length > 0 ? agencies.flatMap(agency => [`- ${agency.name}`, ...agency.routes.map(route => `  - ${route}`)]) : ['- Nothing listed']),

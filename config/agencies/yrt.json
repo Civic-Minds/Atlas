@@ -63,7 +63,7 @@
       "mismatchRoutes": 5,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.yrt.ca/google/google_transit.zip",
@@ -76,5 +76,7 @@
   "feedObtainedAt": "20261101",
   "lastFeedStart": "20261101",
   "lastRawArchiveKey": "20261219-4486ee2b5656dd7d",
-  "lastFeedContentKey": "f5f9d2ea6aea33ca"
+  "lastFeedContentKey": "f5f9d2ea6aea33ca",
+  "lastTimetableKey": "cb61512b0a2ddbd0",
+  "timetableChangedAt": "20261101"
 }

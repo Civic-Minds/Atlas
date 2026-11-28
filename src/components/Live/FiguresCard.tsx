@@ -27,15 +27,15 @@ const FOOTNOTE = `${CARD_NOTICE} leading-relaxed`;
 const RULED = 'mt-1 border-t border-[var(--border-primary)] pt-1';
 
 /** The card. `title` is a heading above the table, for a table whose first column is not its subject (Right now). */
-export function FiguresCard({ label, title, action, children }: { label: string; title?: ReactNode; /** At the end of the title row (SectionNotes), placed as Widget places it. */ action?: ReactNode; children: ReactNode }) {
+export function FiguresCard({ label, title, action, end, children }: { label: string; title?: ReactNode; /** Under the title (SectionNotes), placed as Widget places it. */ action?: ReactNode; /** At the right end of the title's line (the time of day, CIV-3159), as Widget places it. */ end?: ReactNode; children: ReactNode }) {
   // CIV-2021: in Studio's route panel, a section of the panel headed by its label, with no box.
-  if (usePanelSections()) return <PanelSection label={typeof title === 'string' ? title : label} aside={action}>{children}</PanelSection>;
+  if (usePanelSections()) return <PanelSection label={typeof title === 'string' ? title : label} aside={action} end={end}>{children}</PanelSection>;
   return (
     <Card as="section" tone="surface" aria-label={label} className="min-w-0 px-2.5 py-1.5">
       {(title || action) && (
-        <div className="flex items-start justify-between gap-2 pt-0.5">
-          {title && <h3 className="m-0 text-sm font-bold text-[var(--text-primary)]">{title}</h3>}
-          {action && <div className="ml-auto">{action}</div>}
+        <div className="pt-0.5">
+          {title && <h3 className="m-0 whitespace-nowrap text-sm font-bold text-[var(--text-primary)]">{title}</h3>}
+          {action}
         </div>
       )}
       {children}

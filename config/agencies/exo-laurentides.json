@@ -67,10 +67,12 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "1baa51f8550c5d03",
   "feedObtainedAt": "20261026",
-  "lastFeedStart": "20261026"
+  "lastFeedStart": "20261026",
+  "lastTimetableKey": "a1941ec196880c00",
+  "timetableChangedAt": "20261026"
 }

@@ -69,7 +69,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL, COMPARE_LABEL, MORE_LABEL, explainerFor } from './content/noticeCopy';
+import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_APPS_LABEL, COMPARE_LABEL, MORE_LABEL, explainerFor } from './content/noticeCopy';
 import ViewLoadingPanel from './components/ViewLoadingPanel';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
@@ -256,7 +256,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     setInfoOpen(false);
     setInfoHelpContext(null);
   }, []);
-  // Studio's Live view: Learn more opens About at its Live part.
+  // Studio's Live app: Learn more opens About at its Live part.
   // CIV-2021: the request is kept here and handed to the panel, which may not be loaded yet when the link fires (it loads
   // lazily on first open, so a listener of its own missed the first click and About opened at the top).
   const [aboutLiveAsk, setAboutLiveAsk] = useState(0);
@@ -291,7 +291,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [pendingHistoryRoute, setPendingHistoryRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [headerPortalEl, setHeaderPortalEl] = useState<Element | null>(null);
   const headerPortalRef = useCallback((el: HTMLDivElement | null) => { setHeaderPortalEl(el); }, []);
-  // Interval renders its Compare view tab here, beside History and Live.
+  // Interval renders its Compare app tab here, beside History and Live.
   const [viewTabsPortalEl, setViewTabsPortalEl] = useState<Element | null>(null);
   const viewTabsPortalRef = useCallback((el: HTMLDivElement | null) => { setViewTabsPortalEl(el); }, []);
 
@@ -802,7 +802,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <ModeTab
                 variant="menu-trigger"
                 label={liveTabOn ? LIVE_TAB_LABEL : inHistory ? HISTORY_BUTTON_LABEL : compareActive ? COMPARE_LABEL : MORE_LABEL}
-                ariaLabel={MORE_VIEWS_LABEL}
+                ariaLabel={MORE_APPS_LABEL}
                 expanded={appLinksOpen}
                 active={appLinksOpen || inHistory || inLive || compareActive}
                 onClick={() => setAppLinksOpen(open => !open)}

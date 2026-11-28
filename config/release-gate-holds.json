@@ -353,8 +353,8 @@
       "slug": "unitrans",
       "check": "drop",
       "firstHeld": "2026-11-23",
-      "lastHeld": "2026-11-27",
-      "runs": 5,
+      "lastHeld": "2026-11-28",
+      "runs": 6,
       "message": "output would drop sharply against live data (stops 71 -> 49) (pass --allow-drop after review)",
       "outcome": "held"
     },
@@ -362,8 +362,8 @@
       "slug": "unitrans",
       "check": "headway-lost",
       "firstHeld": "2026-11-23",
-      "lastHeld": "2026-11-27",
-      "runs": 5,
+      "lastHeld": "2026-11-28",
+      "runs": 6,
       "message": "28 of 34 weekday route/directions with a headway live have none now (82%; A d0, A d1, B d0, B d1, C d0, C d1, D d0, D d1, E d0, E d1, ...)",
       "outcome": "held"
     },
@@ -371,8 +371,8 @@
       "slug": "unitrans",
       "check": "headway-shift",
       "firstHeld": "2026-11-23",
-      "lastHeld": "2026-11-27",
-      "runs": 5,
+      "lastHeld": "2026-11-28",
+      "runs": 6,
       "message": "4 of 7 routes' filter headway halves or doubles in some day and period (57%; K Weekday all 30->60 min, M Weekday pmPeak 25->60 min, P Weekday all 30->60 min, Q Weekday all 30->60 min)",
       "outcome": "held",
       "cause": "seasonal: likely Thanksgiving break service"
