@@ -69,6 +69,10 @@ export interface PageMapOverlay {
 interface ContextValue {
   overlay: PageMapOverlay | null;
   setOverlay: (overlay: PageMapOverlay | null) => void;
+  /** A page's loading words while its code is still arriving (CIV-3216: Studio's cold open): the map shows them in its
+   *  own loading pill, in the loading pill's spot, before the page has set any overlay. */
+  pageLoading: string | null;
+  setPageLoading: (label: string | null) => void;
 }
 
 const PageMapOverlayContext = createContext<ContextValue | null>(null);
@@ -76,7 +80,8 @@ const PageMapOverlayContext = createContext<ContextValue | null>(null);
 export function PageMapOverlayProvider({ children }: { children: React.ReactNode }) {
   const [overlay, setOverlayState] = useState<PageMapOverlay | null>(null);
   const setOverlay = useCallback((o: PageMapOverlay | null) => setOverlayState(o), []);
-  const value = useMemo(() => ({ overlay, setOverlay }), [overlay, setOverlay]);
+  const [pageLoading, setPageLoading] = useState<string | null>(null);
+  const value = useMemo(() => ({ overlay, setOverlay, pageLoading, setPageLoading }), [overlay, setOverlay, pageLoading]);
   return <PageMapOverlayContext.Provider value={value}>{children}</PageMapOverlayContext.Provider>;
 }
 

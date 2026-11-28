@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Clicking a route on Studio's map opens its route card**: with no Studio page open, the map showed every route but a click did nothing
+- **Opening Studio shows the map's loading pill, not a "Loading Studio…" card under the search bar**: it now loads the way the map does
 - **Atlas Studio says when an agency's schedule has already ended**: Moose Jaw's ended in March 2024, and its answers read as current service with no warning
 - **Atlas Studio's route history answers for the route asked**: asking for Halifax route 1 returned route 21's history, because any route whose name contained "1" could match
 - **Live destination rows with vehicles running show their live gaps**: on routes like the TTC 504, rows listing 8 vehicles showed only the timetable, because the gaps were measured over a different grouping of vehicles than the row counts
