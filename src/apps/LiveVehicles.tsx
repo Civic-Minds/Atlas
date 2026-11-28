@@ -565,11 +565,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const fc = routeLayer(slug);
     const day = getNowDay();
     const key = fc ? routeKeyForShortName(slug, fc.features, selectedGroup.routeShortName, day) : null;
-    const current = fc && key ? buildCurrentRoute(key, { [slug]: fc }, day, 'all') : null;
-    // The rows the card draws now first (the same model Studio draws), then any other row of the day.
-    const now = liveCardRowKeys(liveCardModelNow(fc, agencies, slug, selectedGroup.routeShortName), selectedGroup.routeShortName);
-    const day_ = (current?.directions ?? []).flatMap(d => { const k = rowDirectionKey(d.headsign, selectedGroup.routeShortName); return k ? [{ key: k, directionId: d.directionId }] : []; });
-    return [...now, ...day_.filter(r => !now.some(n => n.key === r.key))];
+    // Only the rows the card draws now (the same model Studio draws). The whole day's shapes also name "Broadview Ave"
+    // (505's short trips), a row the card doesn't draw, so a group by that name matched it and stayed a row of its own.
+    return fc && key ? liveCardRowKeys(liveCardModelNow(fc, agencies, slug, selectedGroup.routeShortName), selectedGroup.routeShortName) : [];
   }, [selectedGroup, routeLayer, agencies]);
   const vehiclesByDirection = useMemo(
     () => (selectedGroup ? mergeIntoCardRows(groupVehiclesByDirection(listVehicles, directionLabels), cardRows) : null),
