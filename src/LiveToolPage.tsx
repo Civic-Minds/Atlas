@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
-import { loadingText, ATLAS_BYLINE, MEASURE_LABEL, ROUTE_MENU_LABEL, MAP_COLOURS_LABEL, explainerFor } from './content/noticeCopy';
+import { loadingText, ATLAS_BYLINE, MEASURE_LABEL, ROUTE_MENU_LABEL, explainerFor } from './content/noticeCopy';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
@@ -13,13 +13,12 @@ import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { LIVE_TOOL_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
-import { DIRECTION_LABEL, OPEN_LATE_LIMIT_EVENT, TIME_OF_DAY_LABEL } from '../shared/liveWording';
+import { DIRECTION_LABEL, OPEN_LATE_LIMIT_EVENT, TIME_OF_DAY_LABEL, onTimeWindowWords } from '../shared/liveWording';
 /** CIV-2222: this page has no map info panel of its own, so the late-limit note's Learn more opens one here. */
 const InfoPanel = lazy(() => import('./components/InfoPanel'));
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
-import { MapLegendCard } from './components/ui/MapLegendCard';
 import { type MapMeasure } from './components/Live/routeMapModel';
 import WidgetPanel from './components/Live/tool/WidgetPanel';
 import { PERIOD_BANDS_ONLY } from './components/Live/sections/figures';
@@ -27,9 +26,9 @@ import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import Pill from './components/ui/Pill';
 import PillGroup from './components/ui/PillGroup';
-import LiveMapKey from './components/Live/LiveMapKey';
+import { LiveMapKeyPill } from './components/Live/LiveMapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
-import { PHONE_TAP_AREA } from './styles';
+import { MAP_LEGEND_SLOT, PHONE_TAP_AREA, Z_MAP_OVERLAY } from './styles';
 import { useLiveBody } from './components/Live/tool/useLiveBody';
 import { MAP_MEASURES } from './components/Live/routeMapModel';
 import { DataUpTo } from './LiveRoutePage';
@@ -82,7 +81,8 @@ export function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setR
   const upTo = dataSlot ? createPortal(<DataUpTo dates={m.dataDates} route={m.dataRoute} />, dataSlot) : null;
   // The measures sit in the top bar with the other switchers; the map key sits in the regular map's key card and slot (CIV-1821).
   const measureBar = measureSlot ? createPortal(<MeasurePills measure={measure} setMeasure={setMeasure} options={measures} />, measureSlot) : null;
-  const mapOverlay = <><MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>{note}</>;
+  // The map's key as one bottom pill that opens the full key (Ryan, 2026-11-27, picked 1), in the key's slot.
+  const mapOverlay = <><div className={`${MAP_LEGEND_SLOT} ${Z_MAP_OVERLAY} pointer-events-none`}><LiveMapKeyPill measure={measure} window={onTimeWindowWords(agency)} /></div>{note}</>;
   // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
   return (
     <MapAppLayout

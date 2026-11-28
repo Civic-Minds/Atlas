@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { MAP_COLOURS_LABEL, MEASURE_LABEL, TIME_LABEL } from '../../content/noticeCopy';
+import { MEASURE_LABEL, TIME_LABEL } from '../../content/noticeCopy';
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
 import { PanelBody } from '../../components/ui/Panel';
 import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
 import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
-import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { MapNote } from '../../components/ui/MapNote';
-import LiveMapKey from '../../components/Live/LiveMapKey';
+import { LiveMapKeyPill } from '../../components/Live/LiveMapKey';
 import { STUDIO_MAP_MEASURES, type MapMeasure } from '../../components/Live/routeMapModel';
 import { PERIOD_BANDS_ONLY } from '../../components/Live/sections/figures';
 import { periodMenuOptions } from '../../components/Interval/pickers';
@@ -24,7 +23,7 @@ import type { LiveAgencyState } from '../../LiveAgencyPage';
 import { DataUpTo } from '../../LiveRoutePage';
 import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
-import { DIRECTION_LABEL } from '../../../shared/liveWording';
+import { DIRECTION_LABEL, onTimeWindowWords } from '../../../shared/liveWording';
 import { GAP_MEASURES } from '../../../shared/liveDashboard';
 import LiveGlance from './LiveGlance';
 import RouteRightNow from './RouteRightNow';
@@ -90,7 +89,9 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   onMapPick.current = m.onMapPick;
   const { setOverlay } = usePageMapOverlay();
   // "Data up to" sits in the map's loading-pill spot (the counts row), shown once loading finishes.
-  const statusPill = useMemo(() => <DataUpTo pill dates={m.dataDates} route={m.dataRoute} />, [m.dataDates, m.dataRoute]);
+  const shownMeasure = m.held && measure && !GAP_MEASURES.has(measure) ? null : measure;
+  // The bottom pills: "Data up to…", then the map's key as one pill that opens the full key (Ryan, 2026-11-27, picked 1).
+  const statusPill = useMemo(() => <><DataUpTo pill dates={m.dataDates} route={m.dataRoute} />{shownMeasure && <LiveMapKeyPill measure={shownMeasure} window={onTimeWindowWords(slug)} />}</>, [m.dataDates, m.dataRoute, shownMeasure, slug]);
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
   // Studio's frame owns where the map is framed (CIV-1925); Live only says when what it draws is still loading.
   const { frameKey, framedMemory, holdFrame } = useStudioMapFrame(m.frameKey !== (route ? `route-${route}` : 'network-all'));
@@ -103,7 +104,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     ? { key: 'direction', label: DIRECTION_LABEL, value: String(m.shown), options: m.ids.map(id => [String(id), m.v3!.directionLabels[String(id)]] as const), onPick: d => { setDir(Number(d)); setPick(null); }, panelClassName: 'w-56' }
     : null;
   // CIV-2000: a held route has only the measures read from gaps between vehicles.
-  const shownMeasure = m.held && measure && !GAP_MEASURES.has(measure) ? null : measure;
   const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: shownMeasure ?? '', options: m.held ? STUDIO_MAP_MEASURES.filter(([k]) => GAP_MEASURES.has(k)) : STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === shownMeasure ? null : k as MapMeasure), active: shownMeasure != null, panelClassName: '', width: 'w-36' };
   const menus: (StudioMenu | null)[] = [
     // CIV-1960 (Ryan: "Measure should be on the left side of the filters"; "And no need for the drop down arrow beside the word Measure").
@@ -165,7 +165,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
           </PanelBody>
         </StudioPanel>
       )}
-      {shownMeasure && <MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={shownMeasure} variant="card" /></MapLegendCard>}
       {m.note && <MapNote>{m.note}</MapNote>}
     </>
   );

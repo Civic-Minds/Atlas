@@ -129,6 +129,8 @@ const halfMinText = (n: number): string => (Number.isInteger(n) ? String(n) : `$
 /** "more than 5½ min" for Atlas's window; the agency's own late limit where it publishes one ("more than 5 min", TTC). */
 export const lateLimitText = (t?: OnTimeWords | null): string =>
   t?.lateAtOrAboveMin != null && t.lateAtOrAboveMin !== LATE_ABOVE_MIN ? `more than ${halfMinText(t.lateAtOrAboveMin)} min` : LATE_LIMIT_TEXT;
+/** The late limit as the map's key says it: "5½+ min" for Atlas's window, the agency's own where it publishes one (CIV-3151). */
+export const lateKeyLimit = (t?: OnTimeWords | null): string => `${halfMinText(t?.lateAtOrAboveMin ?? LATE_ABOVE_MIN)}+ min`;
 /** LATE_THRESHOLD at a page's window. */
 export const lateThreshold = (t?: OnTimeWords | null): string => `${lateLimitText(t)} late`;
 /** An agency's own on-time window in Ryan's words (2026-11-24, CIV-2222: ">1 min early or >5 min late"). */
