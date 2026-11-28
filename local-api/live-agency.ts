@@ -38,7 +38,7 @@ async function handler(req: Request): Promise<Response> {
     if (Number.isFinite(built)) for (const f of routeFiles) if (Number(await files.stamp(f)) > built) throw new Error('stale summary');
     return json({ status: 'ready', summary });
   } catch {
-    return json({ status: 'no_analysis', reason: `No agency summary for ${await liveAgencyName(agency)} yet. Build it with "npx tsx scripts/live-agency-summary.ts ${agency}" after the route analyses (npm run live:analyze).` });
+    return json({ status: 'no_analysis', reason: `No agency summary for ${await liveAgencyName(agency)} yet.` });
   }
 }
 
