@@ -69,3 +69,17 @@ describe('slow start: "every N from <time>" (CIV-1411)', () => {
     expect(periodEdge(every(9, 437, 539), AM.start, AM.end, 77)).toEqual({ from: 437, every: 9 });
   });
 });
+
+// CIV-3135 (Ryan, 2026-11-28, "1"): a slow start carries the wait before it, so the card reads "every 32 min, then every 17 from 4:37 PM".
+describe('slow start keeps the wait before it (CIV-3135)', () => {
+  const PM = { start: 15 * 60, end: 19 * 60 };
+  const at437 = 16 * 60 + 37;
+  it('the pipeline marks a slow start with the wait before it, and a late start with none', () => {
+    // Every 35 or so from 3:00, then every 17 from 4:37 to the end of the peak.
+    const times = [900, 935, 970, at437, ...Array.from({ length: 8 }, (_, i) => at437 + 17 * (i + 1))].filter(t => t < PM.end);
+    const value = Math.ceil(Math.max(...times.slice(1, 4).map((t, i) => t - times[i])));
+    expect(slowStartEdge(times, PM.start, PM.end, value)).toMatchObject({ from: at437, before: value });
+    const late = Array.from({ length: 8 }, (_, i) => at437 + 17 * i);
+    expect(periodEdge(late, PM.start, PM.end, at437 - PM.start)).not.toHaveProperty('before');
+  });
+});

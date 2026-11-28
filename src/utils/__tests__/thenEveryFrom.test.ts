@@ -4,12 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { headwayPeriodShape, periodShapeParts } from '../../../shared/headwayText';
 import { clockTime } from '../../../shared/timeText';
 import { periodEdgeText } from '../effectiveHeadway';
-import { periodEdge, slowStartEdge } from '../../../pipeline/tripSets';
 
 // CIV-3135 (Ryan, 2026-11-28, "1"): service that comes more often partway through a period names the slower part first,
-// "every 32 min, then every 17 from 4:37 PM", so a plain "from" only ever means the first bus.
+// "every 32 min, then every 17 from 4:37 PM", so a plain "from" only ever means the first bus. The pipeline side (slowStartEdge's
+// `before`) is tested in pipeline/__tests__/slowStartEdge.test.ts: src tests can't import pipeline code (.vercelignore).
 const plain = (text: string) => text.replace(/⁠/g, '').replace(/[  ]/g, ' ');
-const PM = { start: 15 * 60, end: 19 * 60 };
 const at437 = 16 * 60 + 37;
 
 describe('"every N min, then every M from <time>" (CIV-3135)', () => {
@@ -25,15 +24,6 @@ describe('"every N min, then every M from <time>" (CIV-3135)', () => {
 
   it('a table splits it into the slower spacing and the change', () => {
     expect(periodShapeParts('every 32 min, then every 17 from 4:37 PM')).toEqual({ main: 'every 32 min', note: 'then every 17 from 4:37 PM' });
-  });
-
-  it('the pipeline marks a slow start with the wait before it, and a late start with none', () => {
-    // Every 35 or so from 3:00, then every 17 from 4:37 to the end of the peak.
-    const times = [900, 935, 970, at437, ...Array.from({ length: 8 }, (_, i) => at437 + 17 * (i + 1))].filter(t => t < PM.end);
-    const value = Math.ceil(Math.max(...times.slice(1, 4).map((t, i) => t - times[i])));
-    expect(slowStartEdge(times, PM.start, PM.end, value)).toMatchObject({ from: at437, before: value });
-    const late = Array.from({ length: 8 }, (_, i) => at437 + 17 * i);
-    expect(periodEdge(late, PM.start, PM.end, at437 - PM.start)).not.toHaveProperty('before');
   });
 });
 
