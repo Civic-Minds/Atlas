@@ -3877,7 +3877,7 @@ export async function processGtfsBuffer(
       : terminalReadTimes(terminalStopId);
     // Frequent Network (#294 follow-on): entirely within normal (non-extended-hour) GTFS notation,
     // so unlike Night Service this needs no service_id union across the midnight boundary --
-    // terminalRawTimes alone is the right input. Weekday only, per docs/research/frequent-service-research-2026-09/CRITERIA.md.
+    // terminalRawTimes alone is the right input. Weekday only, per Atlas-Editorial research/frequent-service-research-2026-09/CRITERIA.md.
     feature.properties.researchFrequentService = terminalRawTimes
       ? computeResearchFrequentService(terminalRawTimes)
       : { daytime15: false, daytime30: false, extended15: false, extended30: false };

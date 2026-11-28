@@ -293,6 +293,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How Live reads
 
+- **A Live destination row reads vehicles, then live, then schedule**
+  - What: each destination row with live vehicles is three lines: the destination with "3 vehicles" right-aligned (no dot); "live 10–13 min" in bold with the coloured dot; "schedule 10 min" in normal weight. Both figures carry their unit ("live 40 sec" under a minute). It replaces "every 10 min · gaps 10–13 min", on the map's Live card and in Studio alike. The dot takes the frequency-tier colour of the typical (median) live gap, in the map's colours.
+  - Why: Ryan: "Why does it say both of these"; then "1 because sometimes it might not be in minutes right but maybe like 2 where they're on separate lines?"; then "1" to bolding the live line with the dot on it; on the dot's colour, option 3 (the median live gap): "Feel like using a colour for a single gap isn't ideal".
+  - Source: [decision log](#decision-log) (2026-11-28, CIV-3158, #1931)
 - **Fleet's "Not on a trip" says how many are parked at garages**
   - What: the count stays whole and nothing is hidden; beneath it, an indented row counts those vehicles at a garage ("Not on a trip | 294", then "At garages | 230", both in the Fleet figures' column). A vehicle with no trip is at a garage when it stands still (under 1 m/s, or no speed reported) in a group of 5 or more such vehicles within 100 m. No garage list: a garage is where parked vehicles gather.
   - Why: Ryan: "Well those 622 buses aren't operating technically right so I have no clue"; most of the TTC's evening count is buses pulled in for the night.
@@ -427,6 +431,13 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-28 — A Live destination row reads vehicles, then live, then schedule, each on its own line (CIV-3158, #1931)
+Ryan, 2026-11-27, on "Westbound to Keele, every 10 min · gaps 10–13 min, 3 vehicles": "Why does it say both of these". Then "schedule: 10 - live: 10-13 ? idk we can mock up a few options maybe?". On the shortlist, 2026-11-28: "Re 1 feels weird if schedule doesnt use the word mins but live does. idk"; then "1 because sometimes it might not be in minutes right but maybe like 2 where they're on separate lines?" (wording 1, units on both, on separate lines). Asked whether the live times should be bold instead: "1" ("Bold the live line and move the dot to it, coloured by how the buses are actually doing"). Order, through the manager: vehicles, then live, then schedule; his standing ask "Why is the number of vehicles on a third line instead of on the fist line like i asked" keeps the count on the destination's line.
+- Line 1: the destination, "3 vehicles" right-aligned, no dot. Line 2: "live 10–13 min", bold, with the dot. Line 3: "schedule 10 min", normal weight.
+- One builder for the map's card, Studio's Live panel and Live's own rows, so all three change together.
+- The dot's colour (Ryan, 2026-11-28, through the manager): option 3 of "1. the longest live gap's tier colour, 2. amber on the bunching cut-offs, 3. the typical (median) live gap's tier colour". He turned down the longest gap: "Feel like using a colour for a single gap isn't ideal". The dot takes the map's frequency-tier colour of the median live gap (LIVE_ROW_DOT_GAP).
+- The schedule line keeps the row's settled words: "schedule 10 min until 5:05 PM", "schedule 15 min, with one 32 min gap" (CIV-3121, CIV-3135).
 
 ### 2026-11-28 — "every 32 min, then every 17 from 4:37 PM" for service that comes more often partway through (CIV-3135)
 Ryan, 2026-11-28 (Questions chat), on the review page _review/civ-3135 (OC Transpo 41 westbound, weekday PM peak). Question: "how should a route card say that buses start coming more often partway through a time of day? … Today the card says only 'every 17 min from 4:37 PM', which reads as if the first bus is at 4:37." Options: 1 "every 32 min, then every 17 from 4:37 PM" (Recommended); 2 "every 32 min until 4:37 PM, then every 17"; 3 "every 17 min from 4:37 PM, less often before"; 4 keep today's wording. His exact words: "1". Earlier (2026-11-27) he had found "every 30 before" awkward and asked for more information first.

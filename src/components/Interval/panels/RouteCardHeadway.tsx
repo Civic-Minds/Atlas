@@ -39,6 +39,8 @@ import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvai
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { directionBranchFallback } from '../../../../shared/headsignDisplay';
 import { correctionNoteForRoute } from '../../../../shared/correctionNotices';
+import type { LiveRowGap } from '../../../../shared/liveWording';
+import { liveRowValueProps, type RowSchedule } from '../../../utils/liveRowValue';
 
 /**
  * Labels for the full-day schedule's direction pills. Uses the bound label
@@ -125,7 +127,7 @@ export interface RouteCardHeadwayProps {
   extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
   /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
    *  destination (its key) carries it. */
-  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; /** Live gaps, beside the row's frequency ("· gaps 3–20 min"). */ gap?: string; onClick?: () => void; /** The row's vehicles, listed right under it when opened (Ryan, 2026-11-27: never a separate list). */ below?: React.ReactNode } | null;
+  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; /** Live gaps: the row's bold live line over its timetable (CIV-3158). */ gap?: LiveRowGap; onClick?: () => void; /** The row's vehicles, listed right under it when opened (Ryan, 2026-11-27: never a separate list). */ below?: React.ReactNode } | null;
   /** Live (CIV-3047 B): an icon just before the card's flag (the clock shown while the route's vehicles aren't reporting). */
   headerIcon?: React.ReactNode;
   /** Live (#1877): rows after a direction's own rows, for live vehicles whose trips end at a stop no row goes to. */
@@ -487,14 +489,15 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
       };
     };
     // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
-    const liveProps = (feature: ShapeProperties | undefined): { props: { labelEnd?: string; valueBelow?: boolean; headwaySuffix?: string; onClick?: () => void; chevron?: boolean }; below: React.ReactNode } => {
+    const liveProps = (feature: ShapeProperties | undefined, schedule: RowSchedule): { props: Partial<React.ComponentProps<typeof CardDirectionRow>>; below: React.ReactNode } => {
       const live = rowLive && feature ? rowLive(feature) : null;
       if (!live || claimedLive.has(live.key)) return { props: {}, below: null };
       claimedLive.add(live.key);
-      // Ryan, 2026-11-27: "Why is the number of vehicles on a third line instead of on the fist line like i asked", then
-            // "why would there be a dot here if the number of vehicles is right justified": the destination with its vehicles at
-            // the right, then the frequency and live gaps.
-            return { props: { labelEnd: live.subLabel, valueBelow: true, headwaySuffix: live.gap ? `· ${live.gap}` : undefined, onClick: live.onClick, chevron: !!live.onClick }, below: live.below ?? null };
+      // Ryan, 2026-11-27: "Why is the number of vehicles on a third line instead of on the fist line like i asked": the
+      // destination with its vehicles at the right on line 1. CIV-3158 (Ryan, 2026-11-28): then the live gaps, bold with
+      // the dot, then the timetable ("live 10–13 min" over "schedule 10 min"), never "every 10 min · gaps 10–13 min".
+      const value = live.gap ? liveRowValueProps(live.gap, schedule) : { valueBelow: true };
+      return { props: { labelEnd: live.subLabel, ...value, onClick: live.onClick, chevron: !!live.onClick }, below: live.below ?? null };
     };
     return model.groups.map((group, gi) => {
       const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);
@@ -547,7 +550,7 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
               }
               const shown = row.display(hoveredHour);
               if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
-              const live = liveProps(d);
+              const live = liveProps(d, { headway: shown.value.headway, trunkHeadway: shown.value.trunkHeadway, headwayLabel: shown.value.headwayLabel, limited: shown.value.isLimited, limitedLabel: shown.limitedLabel });
               return (
                 <React.Fragment key={`r${i}`}>
                 <FlaggableValue reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
@@ -575,7 +578,7 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
             })}
             {/* Span-only branches use the same limited row whether or not the irregular-service
                 filter is on: the filter hides them from the map, not from the route's own card. */}
-            {group.spanRows.map((span, si) => { const live = liveProps(span.feature); return (
+            {group.spanRows.map((span, si) => { const live = liveProps(span.feature, { limited: true, limitedLabel: model.limitedWord }); return (
               <React.Fragment key={span.feature ? `s${si}` : 'smulti'}>
               <CardDirectionRow
                 labelWeight="regular"

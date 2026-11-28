@@ -167,12 +167,28 @@ describe('livePerformance', () => {
     expect(g.cars).toBe(2);
   });
 
+  it('the Live card runs each branch row with rowSubset, so the fix stays wired in (#1895, CIV-3174)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const src = readFileSync(new URL('../../components/Live/LiveRoutePerformance.tsx', import.meta.url), 'utf8');
+    expect(src).toMatch(/liveGaps\([^;]*rowSubset: true[^;]*\)/);
+  });
+
   it('marks the feed incomplete when fewer than half the scheduled cars are placed', () => {
     // 4 shared stop pairs of 10 min each, every 5 min: 8 cars expected, 2 placed.
     const slow = { ...data, segments: data.segments.map(s => ({ ...s, bands: { all: { ...s.bands.all!, actualMedianSec: 600 } } })) } as typeof data;
     const line = lineModel(slow, 0)!;
     const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5]])];
     expect(liveGaps(slow, line, withStats(line, 'all'), 'all', snaps, 1_000)!.incomplete).toBe(true);
+  });
+
+  it('measures one card row\'s cars without counting them against the whole route (#1895)', () => {
+    // The same 2 of 8 cars, but as one branch row's cars picked from a whole-line result that passed the check.
+    const slow = { ...data, segments: data.segments.map(s => ({ ...s, bands: { all: { ...s.bands.all!, actualMedianSec: 600 } } })) } as typeof data;
+    const line = lineModel(slow, 0)!;
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5]])];
+    const g = liveGaps(slow, line, withStats(line, 'all'), 'all', snaps, 1_000, { rowSubset: true })!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(2);
   });
 
   it('returns nothing with fewer than two placed cars', () => {
@@ -304,15 +320,15 @@ describe('the route card\'s longest and shortest gap (CIV-2045)', () => {
 // CIV-1828 (Ryan, 2026-11-27): a destination row reads its live gaps as a range, leaving out gaps under a minute.
 describe('live gap range', () => {
   it('starts at the shortest gap of a minute or more', async () => {
-    const { gapRangeText } = await import('../../../shared/liveWording');
+    const { liveLineText } = await import('../../../shared/liveWording');
     const ext = gapExtremes({ gapsMin: [0.7, 3, 20, 8], scheduledSec: 300 })!;
     expect(ext.rangeFrom).toBe(3);
-    expect(gapRangeText(ext.rangeFrom, ext.longest.min)).toBe('gaps 3–20 min');
+    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min, median: 0 })).toBe('live 3–20 min');
   });
   it('falls back to the longest gap when no other gap is a minute or more', async () => {
-    const { gapRangeText } = await import('../../../shared/liveWording');
+    const { liveLineText } = await import('../../../shared/liveWording');
     const ext = gapExtremes({ gapsMin: [0.5, 12], scheduledSec: 300 })!;
-    expect(gapRangeText(ext.rangeFrom, ext.longest.min)).toBe('longest gap 12 min');
-    expect(gapRangeText(null, 0.5)).toBe('longest gap 30 sec');
+    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min, median: 0 })).toBe('live 12 min');
+    expect(liveLineText({ from: null, longest: 0.5, median: 0.5 })).toBe('live 30 sec');
   });
 });

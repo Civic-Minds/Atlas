@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef } from 'react';
+import type { LiveRowGap } from '../../shared/liveWording';
+import { sameLiveRowGap } from '../utils/liveRowValue';
 import { useSidebarFrame } from '../context/SidebarFrame';
 import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
@@ -731,12 +733,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // its name: its vehicles (the same group the row opens, so the count is the one the list shows) and its longest gap.
   // "Right now" and the vehicle list then repeat no destination: "Right now" hands its gaps over (onDestinationGaps) and
   // the list keeps only vehicles no row names (Direction unclear, an unmatched headsign).
-  const [destinationGaps, setDestinationGaps] = useState<ReadonlyMap<number, ReadonlyMap<string, string>>>(new Map());
+  const [destinationGaps, setDestinationGaps] = useState<ReadonlyMap<number, ReadonlyMap<string, LiveRowGap>>>(new Map());
   useEffect(() => setDestinationGaps(new Map()), [selectedRoute]);
-  const onDestinationGaps = useCallback((directionId: number, gaps: ReadonlyMap<string, string>) => {
+  const onDestinationGaps = useCallback((directionId: number, gaps: ReadonlyMap<string, LiveRowGap>) => {
     setDestinationGaps(prev => {
       const old = prev.get(directionId);
-      if (old && old.size === gaps.size && [...gaps].every(([k, m]) => old.get(k) === m)) return prev;
+      if (old && old.size === gaps.size && [...gaps].every(([k, m]) => sameLiveRowGap(old.get(k), m))) return prev;
       return new Map(prev).set(directionId, gaps);
     });
   }, []);

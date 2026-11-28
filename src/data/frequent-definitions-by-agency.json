@@ -1,10 +1,10 @@
 {
   "builtAt": "2026-10-11",
   "sources": {
-    "catalog": "docs/research/frequent-service-research-2026-09/catalog.json",
-    "audit": "docs/research/system-map-audit-2026-09/data.json",
-    "agencyMap": "docs/research/frequent-service-research-2026-09/atlas-agency-map.json",
-    "quotes": "docs/research/frequent-service-research-2026-09/definition-quotes-2026-10-11.json"
+    "catalog": "Atlas-Editorial: research/frequent-service-research-2026-09/catalog.json",
+    "audit": "Atlas-Editorial: research/system-map-audit-2026-09/data.json",
+    "agencyMap": "Atlas-Editorial: research/frequent-service-research-2026-09/atlas-agency-map.json",
+    "quotes": "Atlas-Editorial: research/frequent-service-research-2026-09/definition-quotes-2026-10-11.json"
   },
   "rules": {
     "unit": "One row per Atlas registry slug. A research record that covers several registry feeds (NJ Transit, MTA New York City Transit) appears on each of them.",

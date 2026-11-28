@@ -4,8 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-// One index, one row per doc: docs/README.md. Studies under docs/research/ are covered by
-// docs/research/INDEX.md instead. A new doc without a row here fails this test.
+// One index, one row per doc: docs/README.md. A new doc without a row here fails this test. Research studies moved
+// to the private Atlas-Editorial repo (CIV-3184); docs/research/README.md points there.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const indexPath = path.join(root, 'docs', 'README.md');
 
@@ -32,12 +32,12 @@ function indexLinks(): string[] {
 }
 
 describe('docs index (docs/README.md)', () => {
-  it('has a row for every root markdown file and every markdown file under docs/ outside docs/research/', () => {
+  it('has a row for every root markdown file and every markdown file under docs/', () => {
     const linked = new Set(indexLinks());
     const needsRow = markdownFiles().filter((file) => {
       if (file === 'docs/README.md') return false; // the index itself
       if (!file.includes('/')) return true; // root .md
-      return file.startsWith('docs/') && !file.startsWith('docs/research/');
+      return file.startsWith('docs/');
     });
     const missing = needsRow.filter((file) => !linked.has(file));
     expect(missing, `Add a row to docs/README.md for: ${missing.join(', ')}`).toEqual([]);
@@ -48,7 +48,4 @@ describe('docs index (docs/README.md)', () => {
     expect(broken, `Broken links in docs/README.md: ${broken.join(', ')}`).toEqual([]);
   });
 
-  it('lists docs/research/INDEX.md, which covers every study folder', () => {
-    expect(indexLinks()).toContain('docs/research/INDEX.md');
-  });
 });

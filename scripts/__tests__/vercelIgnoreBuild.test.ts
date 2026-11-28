@@ -46,7 +46,7 @@ describe('vercel-ignore-build.sh', { timeout: 30_000 }, () => {
   it('skips commits that only touch docs, the changelog, pipeline or unbuilt scripts', () => {
     expect(exitFor({ 'docs/data/X.md': 'b', 'CHANGELOG.md': 'b', 'README.md': 'b' })).toBe(0);
     expect(exitFor({ 'pipeline/process-core.ts': 'b', '.github/workflows/x.yml': 'b' })).toBe(0);
-    expect(exitFor({ 'scripts/audit.ts': 'b', 'docs/research/x/data.json': 'b' })).toBe(0);
+    expect(exitFor({ 'scripts/audit.ts': 'b', 'docs/x/data.json': 'b' })).toBe(0);
   });
 
   it('builds when site code, data, legal pages or build scripts change', () => {
