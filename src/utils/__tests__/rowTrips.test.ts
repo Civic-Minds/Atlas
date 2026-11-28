@@ -35,7 +35,7 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
 
   it('a period that is not steady, off a stretch, reads its full-window wait, not the median (CIV-1074 2a)', () => {
     const r = row({ headwayByPeriod: { midday: 13 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 256 }, maxGapByPeriod: { midday: 256 } });
-    // CIV-2232: a wait over an hour from uneven trips is no number (Ryan, 2026-11-24): Runs irregularly in this period.
+    // CIV-2232: a wait over an hour from uneven trips is no number (Ryan, 2026-11-24): Irregular.
     expect(rowTrips(r, 'midday')).toMatchObject({ value: null, longestGap: 256, waitNotCadence: true });
     expect(rowTrips({ ...r, headwayByPeriodSustained: { midday: true } } as ShapeProperties, 'midday').value).toBe(13);
   });
@@ -53,7 +53,7 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
     expect(rowTrips(main, 'midday')).toMatchObject({ value: 10, longestGap: 10 });
     // A stretch with no regular cadence in the period leaves the row its own full-window wait.
     const noRegular = { ...main, stretchMeta: { ...main.stretchMeta!, main: { ...main.stretchMeta!.main!, noRegular: ['midday'] } } } as ShapeProperties;
-    // CIV-2232: over an hour from uneven trips, it reads Runs irregularly in this period.
+    // CIV-2232: over an hour from uneven trips, it reads Irregular.
     expect(rowTrips(noRegular, 'midday')).toMatchObject({ value: null, waitNotCadence: true });
   });
 
