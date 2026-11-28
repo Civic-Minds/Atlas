@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio Live offers only cities it has figures for, and says so when one has none**: Kingston and the MBTA opened on an empty box with no message, and the menu listed 9 cities when 4 had figures
 - **Live's All routes trip-time arrow follows the number shown**: "5% faster" to "4% faster" drew an up arrow, because the arrow followed the trip getting longer rather than the share written
 - **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
 - **Studio's Live panel is shorter and plainer**: the week table is headed "This week vs. last" without the "Recorded past service, not live." line, and the late-by-hour chart is left out when too few days were measured
