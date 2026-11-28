@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio flags routes it lists as every N min or better whose own route list says otherwise**: the TTC 87 on Sunday evenings counted as every 10 while its list said Irregular, with nothing to say the two disagree
 - **Studio Live explains its late colours in Measurements, under a "Late" row beside Bunching**: the bottom "Late · 5+ min" pill is gone, and the row says the agency's own limit where it has one
 - **Studio Fleet's vehicles with no trip read "294 not on a trip", with "230 at garages" on the line below**: the count wrapped out of line beside its label
 - **Studio's Live, Fleet and Schedules tabs fold to their icons once you open one, as the map's tabs do**: the top bar has more room and reads the same across Atlas
