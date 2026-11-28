@@ -5,6 +5,7 @@ import { routeKeyForShortName } from './routeKey';
 import { periodKeyForHour } from '../../shared/config';
 import { getNowDay } from '../../shared/dayTypes';
 import { buildRouteCardModel, cardGroupLines, type RouteCardModel } from './routeCardRows';
+import { rowDirectionKey, type CardRowKey } from './liveGrouping';
 
 /** The main map's route card model for a route now, the one source Live reads its scheduled figures from (#1234, CIV-2045). */
 function liveCardModel(fc: GeoJSON.FeatureCollection, routeKey: string, day: DayType, period: TimePeriod, overrides: RouteDirectionOverrides): RouteCardModel | null {
@@ -145,4 +146,9 @@ export function liveCardModelNow(
   const period = periodKeyForHour(new Date().getHours());
   if (!fc || !routeKey || !period) return null;
   return liveCardModel(fc, routeKey, getNowDay(), period, routeDirectionOverrides(agencies, slug, routeShortName));
+}
+
+/** The destination rows the route card draws now (every row and span row, by direction), for placing live vehicles under them (#1877). */
+export function liveCardRowKeys(model: RouteCardModel | null, routeShortName: string): CardRowKey[] {
+  return (model?.groups ?? []).flatMap(g => [...g.rows, ...g.spanRows].flatMap(r => { const k = rowDirectionKey(r.feature?.headsign, routeShortName); return k ? [{ key: k, directionId: g.dirId }] : []; }));
 }

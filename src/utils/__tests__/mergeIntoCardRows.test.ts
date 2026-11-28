@@ -31,3 +31,15 @@ describe('no second row for a destination', () => {
     });
   }
 });
+
+// TTC 505 on the main map (critic round 3, 2026-11-27): "Broadview Ave · 1 vehicle" stayed under "to Broadview".
+describe('TTC 505 "Broadview Ave"', () => {
+  it('joins "Broadview" when a longer "Broadview Station" row is also in its direction', () => {
+    const rows = [{ key: 'Broadview', directionId: 0 }, { key: 'Broadview Station', directionId: 0 }, { key: 'Dundas West', directionId: 1 }];
+    expect([...mergeIntoCardRows(new Map([['Broadview Ave', [car('x', 0)]]]), rows).keys()]).toEqual(['Broadview']);
+  });
+  it('joins "Broadview" when the feed gives it the other direction id', () => {
+    const rows = [{ key: 'Broadview', directionId: 1 }, { key: 'Dundas West', directionId: 0 }, { key: 'Parliament', directionId: 0 }];
+    expect([...mergeIntoCardRows(new Map([['Broadview Ave', [car('x', 0)]]]), rows).keys()]).toEqual(['Broadview']);
+  });
+});
