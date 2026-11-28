@@ -18,6 +18,7 @@ import { branchReadingsEnabled, headlineFromTrunkEnabled, pieceReadingEnabled } 
 import type { PieceReadingEntry, PieceReadings, PieceTreatment } from '../shared/pieceReadings.js';
 import { PERIOD_MINUTES, type PeriodKey } from '../shared/rules/periods.js';
 import { headwayGradeOn, PUBLIC_TIER_MAXES } from '../shared/rules/frequency.js';
+import { copyPeriodEdge } from '../shared/periodEdge.js';
 import { departuresInWindow, HEADLINE_MIN_DEPARTURES, isSteadyPeriodGaps, medianHeadwayInWindow } from './headway-utils.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { collapseBunched, computeStopSharers, gapFitsMean, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, pooledListIsEven, type StopSharers } from './stopPools.js';
@@ -332,7 +333,7 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
   // or starts slowly says when, with its in-service spacing, never the bare wait (periodEdge is the settled test, the one stretches use).
   // Its value stays the wait: colour and the filter are unchanged (CIV-1411: card wording only).
   const settled = readingValue != null ? periodEdge(times, start, end, readingValue) : null;
-  if (settled) return { t: 'tail', v: readingValue!, every: settled.every, ...(settled.from != null ? { from: settled.from } : {}), ...(settled.until != null ? { until: settled.until } : {}), ...(settled.then != null ? { then: settled.then } : {}), ...(settled.thenGap != null ? { thenGap: settled.thenGap } : {}), ...(settled.before != null ? { before: settled.before } : {}) };
+  if (settled) return { t: 'tail', v: readingValue!, ...copyPeriodEdge(settled) };
   const typical = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (typical == null || typical <= 0) return { t: 'limited' };
   const gaps = gapsOf(t);

@@ -37,6 +37,7 @@ import DocsPageLayout from '../components/ui/DocsPageLayout';
 import { AgencyModeTable } from './AgencyGroupSection';
 import { parentAgencyPagePath } from '../../shared/pagePaths';
 import type { ParentAgencyPageData } from '../../shared/parentAgencies';
+import { copyPeriodEdge, type PeriodEdge } from '../../shared/periodEdge';
 import ArrowLink from '../components/ui/ArrowLink';
 import { SubsectionTitle, PageTitle, SectionTitle } from '../components/ui/PageTitle';
 import EmptyPage from '../components/ui/EmptyPage';
@@ -113,13 +114,13 @@ function Intro({ data }: { data: AgencyPageData }) {
  * CIV-1605 (Ryan, pick 1): with the hours bar, a "from" equal to the bar's first time or an "until" equal to its last
  * leaves the cell, since the bar's end says it; a time that differs (one direction's later start) keeps its words.
  */
-function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number }, runs: AgencyPageRoute['runs']): { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number } {
+function edgeWithoutBarEnds(edge: PeriodEdge, runs: AgencyPageRoute['runs']): PeriodEdge {
   if (!runs) return edge;
+  const { from, until, ...rest } = copyPeriodEdge(edge);
   return {
-    every: edge.every,
-    ...(edge.from != null && edge.from !== runs.first ? { from: edge.from } : {}),
-    ...(edge.until != null && edge.until !== runs.last ? { until: edge.until } : {}),
-    ...(edge.then != null ? { then: edge.then } : {}), ...(edge.thenGap != null ? { thenGap: edge.thenGap } : {}), ...(edge.before != null ? { before: edge.before } : {}),
+    ...rest,
+    ...(from != null && from !== runs.first ? { from } : {}),
+    ...(until != null && until !== runs.last ? { until } : {}),
   };
 }
 

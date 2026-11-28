@@ -12,10 +12,11 @@
  * A period with no trips has no entry.
  */
 import type { PeriodKey } from './rules/periods.js';
+import type { PeriodEdge } from './periodEdge.js';
 
 export type PieceTreatment =
   | { t: 'reading'; v: number }
-  | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number; before?: number }
+  | ({ t: 'tail'; v: number } & PeriodEdge)
   | { t: 'limited' };
 
 export interface PieceReadingEntry {

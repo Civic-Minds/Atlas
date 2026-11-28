@@ -26,6 +26,7 @@ import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from '
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { HEADWAY_TIERS, PERIOD_KEYS } from '../shared/config.js';
+import type { PeriodEdge } from '../shared/periodEdge.js';
 import { pipelineRunDateYmd } from '../pipeline/pipelineTimeZone.js';
 
 type Figures = Record<string, number | null | undefined>;
@@ -68,7 +69,7 @@ export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<
   return rows;
 }
 
-type Edge = { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number; stretch?: 'main' | number };
+type Edge = PeriodEdge & { stretch?: 'main' | number };
 type EdgeMap = Partial<Record<string, Edge>>;
 type StretchMeta = { main?: { edge?: EdgeMap } | null; tails?: Array<{ edge?: EdgeMap }> };
 const clock = (m: number) => { const t = Math.round(m) % 1440; return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };

@@ -28,6 +28,7 @@ import { splitRegistryName } from './agencyRegistryName';
 import { countText } from './numberText';
 import { metresBetween } from './geoDistance';
 import { SITE_NAME } from './pageNames';
+import type { PeriodEdge } from './periodEdge';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -57,7 +58,7 @@ export interface AgencyPageRoute {
   shared?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', number>>;
   /** #1292: a period whose value is a late start or early end: the card's reading of it ("every 9 min from 7:12 AM"). */
   /** #1510: `partOfRoute` when the time was read on a short tail (the cell says "on part of the route"). */
-  edge?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number; partOfRoute?: boolean }>>;
+  edge?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', PeriodEdge & { partOfRoute?: boolean }>>;
   /**
    * CIV-1300 (#1311): a period whose route card reads differently from the filter's number: the card's own words, range or
    * "Irregular", as the map's lists show them ("every 15 min, with one 32 min gap"). The number above stays the filter's.

@@ -8,6 +8,7 @@ import { PERIOD_KEYS, type PeriodKey } from './config';
 import { frequencyChange } from './frequencyChange';
 import { pairChanges, routePairKey } from './scheduleChangePairing';
 import type { DayType } from './dayTypes';
+import type { PeriodEdge } from './periodEdge';
 
 /** One route on the compared day, on one side. Minutes after midnight for first/last (past 1440 runs into the night). */
 export interface StudioRouteDay {
@@ -22,11 +23,8 @@ export interface StudioRouteDay {
   stops?: [number, number];
   ends?: [string, string];
   /** A period's late start or early end, as the route card reads it (CIV-1806); missing in older files. */
-  edge?: Partial<Record<PeriodKey, StudioPeriodEdge>>;
+  edge?: Partial<Record<PeriodKey, PeriodEdge>>;
 }
-
-/** A late start (`from`) or early end (`until`) in minutes after midnight, and the frequency where the period runs. */
-export interface StudioPeriodEdge { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number }
 
 /**
  * How big a route's change is, which decides where the page puts it:
@@ -85,7 +83,7 @@ export const studioBeforeAfterDevUrl = (slug: string) => `/dev-studio/${slug}-be
 
 // ---- Building the file from a comparison ----
 
-interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number>; edge?: Partial<Record<PeriodKey, StudioPeriodEdge>>; stops?: [number, number]; ends?: [string, string] }
+interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number>; edge?: Partial<Record<PeriodKey, PeriodEdge>>; stops?: [number, number]; ends?: [string, string] }
 interface InputRoute { route: string; longName: string | null; days: Partial<Record<DayType, InputDay>> }
 /** The parts of pipeline/feedCompare.ts's FeedComparison this file reads. */
 export interface StudioComparisonInput {

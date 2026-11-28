@@ -7,6 +7,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import type { PeriodKey } from '../../shared/config';
 import { pieceAtStop, type PieceReadings, type PieceTreatment } from '../../shared/pieceReadings';
+import { copyPeriodEdge } from '../../shared/periodEdge';
 import { periodEdgeText } from './effectiveHeadway';
 import type { RouteCardRowValue } from './routeCardRowValue';
 import { noNumberRowLabel } from '../content/noticeCopy';
@@ -41,7 +42,7 @@ export function directionPieceTreatments(features: readonly ShapeProperties[] | 
 
 /** The words after "every N" for a tail: "every 30 min until 12:16 PM" (headwayPeriodShape, as every other part-period row). */
 export function tailText(t: Extract<PieceTreatment, { t: 'tail' }>): string {
-  return periodEdgeText({ every: t.every, ...(t.from != null ? { from: t.from } : {}), ...(t.until != null ? { until: t.until } : {}), ...(t.then != null ? { then: t.then } : {}), ...(t.thenGap != null ? { thenGap: t.thenGap } : {}), ...(t.before != null ? { before: t.before } : {}) });
+  return periodEdgeText(copyPeriodEdge(t));
 }
 
 /**

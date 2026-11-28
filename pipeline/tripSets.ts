@@ -55,6 +55,7 @@ import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
 import { ROW_GAP_WORDS_RATIO, SLOW_START_MIN_DEPARTURES, SLOW_START_STEADY_RATIO } from '../shared/rules/frequency.js';
 import { DAYTIME_PERIOD_KEYS, FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, NIGHT_MIDPOINT_MIN, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
+import type { PeriodEdge } from '../shared/periodEdge.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -1422,19 +1423,7 @@ export interface DirectionRollup {
  * AM: every 8-11 from 7:17, so a 77-minute wait). `from` is the first departure when the start gap
  * sets the value, `until` the last when the end gap does, `every` the median gap between them.
  */
-export interface StretchPeriodEdge {
-  from?: number;
-  until?: number;
-  every: number;
-  /** CIV-1913: the longest wait after `until` when the period slows down rather than ends ("every 15 until 8:57 PM, then every 30"). */
-  then?: number;
-  /** #1724: the one long wait after `until` that `then` leaves out ("then every 25 min, with one 37 min gap"). */
-  thenGap?: number;
-  /**
-   * CIV-3135 (Ryan, 2026-11-28, "1"): a slow start's longest wait before `from` (the period's value), so the card reads
-   * "every 32 min, then every 17 from 4:37 PM" and a plain "from" only ever means the first bus.
-   */
-  before?: number;
+export interface StretchPeriodEdge extends PeriodEdge {
   /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
   stretch?: 'main' | number;
 }

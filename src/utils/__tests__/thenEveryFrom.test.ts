@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { headwayPeriodShape, periodShapeParts } from '../../../shared/headwayText';
 import { clockTime } from '../../../shared/timeText';
 import { periodEdgeText } from '../effectiveHeadway';
+import { copyPeriodEdge, type PeriodEdge } from '../../../shared/periodEdge';
 
 // CIV-3135 (Ryan, 2026-11-28, "1"): service that comes more often partway through a period names the slower part first,
 // "every 32 min, then every 17 from 4:37 PM", so a plain "from" only ever means the first bus. The pipeline side (slowStartEdge's
@@ -27,9 +28,11 @@ describe('"every N min, then every M from <time>" (CIV-3135)', () => {
   });
 });
 
-// Guard: every place that copies an edge field by field ("...(e.thenGap != null ? { thenGap: e.thenGap } : {})") copies
-// `before` too, so no card, list, agency page or Studio comparison drops the slower part's number.
+// Guard (CIV-3186, replacing CIV-3135's per-copy check): an edge is copied field by field in one place only,
+// copyPeriodEdge in shared/periodEdge.ts, and its type is written out only there, so a new edge field ("before") is added once
+// and no card, list, agency page or Studio comparison can drop it.
 const ROOTS = ['src', 'shared', 'pipeline', 'scripts'];
+const EDGE_HOME = join('shared', 'periodEdge.ts');
 function sources(dir: string): string[] {
   return readdirSync(dir).flatMap(name => {
     const path = join(dir, name);
@@ -39,16 +42,23 @@ function sources(dir: string): string[] {
   });
 }
 
-describe('edge copies keep "before" (CIV-3135 guard)', () => {
-  it('every field-by-field copy of thenGap also copies before', () => {
-    const missing: string[] = [];
+describe('one period edge type and copy (CIV-3186)', () => {
+  it('no field-by-field edge copy or inline edge type outside shared/periodEdge.ts', () => {
+    const copies: string[] = [];
     for (const file of ROOTS.flatMap(sources)) {
+      if (file === EDGE_HOME) continue;
       readFileSync(file, 'utf8').split('\n').forEach((line, i) => {
-        for (const m of line.matchAll(/\{ thenGap: (\w+)\.thenGap \}/g)) {
-          if (!line.includes(`before: ${m[1]}.before`)) missing.push(`${file}:${i + 1}`);
-        }
+        if (/\{ thenGap: \w+\.thenGap \}|from\?: number; until\?: number; every: number/.test(line)) copies.push(`${file}:${i + 1}`);
       });
     }
-    expect(missing).toEqual([]);
+    expect(copies).toEqual([]);
+  });
+
+  it('copyPeriodEdge keeps every edge field, drops absent ones and anything else', () => {
+    const full = { from: 400, until: 1200, every: 15, then: 30, thenGap: 37, before: 32 };
+    expect(copyPeriodEdge({ ...full, stretch: 2, partOfRoute: true } as PeriodEdge)).toEqual(full);
+    const plain = copyPeriodEdge({ every: 24, from: 760, until: undefined });
+    expect(plain).toEqual({ from: 760, every: 24 });
+    expect(Object.keys(plain)).toEqual(['from', 'every']);
   });
 });
