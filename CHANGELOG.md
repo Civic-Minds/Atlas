@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Live route panel opens with late departures by hour, drawn like the route card's chart**: the same bars, period highlight and hover as the map, coloured by how often trips are late, above the destination rows; the colour key pill shows from the start, and each section's notes sit beside its title
 - **The Live map's colour key is one small pill at the bottom, "Late · 5½+ min", that opens the full key when tapped**: the key box covered the map; the limit shown is the agency's own where it publishes one
 - **Live's week table and late-by-hour chart say what they cover in the same place**: "both directions" and the days left out sit top right beside each title, and the tables' footnotes use the app's notice style
 - **A Live destination row is two lines: the destination with its vehicle count at the right, then its frequency and live gaps**: the count sat on a third line

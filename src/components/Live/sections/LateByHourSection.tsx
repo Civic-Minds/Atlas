@@ -8,6 +8,8 @@ import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods'
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
 import ErrorBoundary from '../../ErrorBoundary';
 import HourSpark, { type HourValue } from '../../charts/HourSpark';
+import { CountSparkline } from '../../Interval/HeadwaySparkline';
+import { hourTime } from '../../../../shared/timeText';
 import LegendItem from '../../ui/LegendItem';
 import Widget from '../tool/Widget';
 import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
@@ -210,18 +212,19 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
 function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<MiniProps, 'chart'>) {
   // Ryan, 2026-11-27 ("1"): with too few measurements the whole section is hidden, not dimmed.
   if (!hours.length || isThin(days)) return null;
-  // The bars fill the chart's height relative to its own tallest hour, which is labelled.
-  const max = Math.max(0.01, ...hours.filter(h => h.n >= MIN_N).map(h => h.value));
   return (
     <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined}
       // The scope and the days left out top right, as on the week table (SectionNotes).
       action={<SectionNotes scope={scope} excluding={leftOut?.length ? <LeftOutDays dates={leftOut} /> : null} />}>
-      <HourSpark
-        idleText={isThin(days) ? THIN_HINT : undefined} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
-        hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= MIN_N))}
-        shade={band === 'all' ? undefined : h => periodKeyForHour(h) === band}
-        hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)}
-        ariaLabel={`Share of departures late by hour of the day${overall != null ? `, ${percentText(overall)} late overall` : ''}.`}
+      {/* Ryan, 2026-11-27 ("redesign the sparkline here to be more like the one on the main map"): the route card's own
+          chart, fed the late share by hour (in percent) and coloured by the lateness steps; its hover names the hour. */}
+      <CountSparkline
+        countByHour={Object.fromEntries(hours.filter(x => x.n >= MIN_N).map(x => [x.hour, Math.round(x.value * 1000) / 10]))}
+        color={pct => lateShareColor(pct / 100)}
+        label={LATE_LABEL}
+        title={LATE_BY_HOUR_TITLE}
+        period={band === 'all' ? undefined : band}
+        hourTitle={h => { const x = hours.find(v => v.hour === h); return x ? lateHourLine(hourTime(h), lateCount(x.value, x.n), x.n) : undefined; }}
       />
     </Widget>
   );
