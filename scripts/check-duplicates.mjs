@@ -21,8 +21,8 @@ import { join, relative } from 'node:path';
 
 const ROOT = join(import.meta.dirname, '..');
 const DIRS = ['src', 'shared'];
-/** Data tables (agency lists, service areas): rows look alike by design. */
-const SKIP_DIRS = new Set(['src/data']);
+/** Data tables (agency lists, service areas; shared/onDemand since CIV-3189): rows look alike by design. */
+const SKIP_DIRS = new Set(['src/data', 'shared/onDemand']);
 const BASELINE = join(ROOT, 'scripts', 'duplicates-baseline.json');
 /** Code lines in a row that make a copy. */
 const WINDOW = 10;

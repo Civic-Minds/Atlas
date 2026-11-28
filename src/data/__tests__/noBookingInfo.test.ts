@@ -9,7 +9,8 @@ import * as Services from '../../../shared/onDemand/onDemandServiceAreas';
 const root = resolve(__dirname, '../../..');
 const read = (p: string) => readFileSync(resolve(root, p), 'utf8');
 const onDemandConfigs = readdirSync(resolve(root, 'config/on-demand')).filter(f => f.endsWith('.json')).map(f => `config/on-demand/${f}`);
-const dataFiles = readdirSync(resolve(root, 'src/data')).filter(f => /\.tsx?$/.test(f)).map(f => `src/data/${f}`);
+// shared/onDemand holds the on-demand data since CIV-3189; it is read with src/data, so the move never left it unchecked.
+const dataFiles = ['src/data', 'shared/onDemand'].flatMap(dir => readdirSync(resolve(root, dir)).filter(f => /\.tsx?$/.test(f)).map(f => `${dir}/${f}`));
 const codeFiles = ['src/App.tsx', 'shared/onDemandAvailability.ts', 'src/components/Interval/AgencyCard.tsx', 'scripts/mcp/onDemandTools.ts'];
 
 // Zone text fields a rider reads on the zone card or in the MCP's on_demand_zones answer.

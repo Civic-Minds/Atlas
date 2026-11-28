@@ -89,8 +89,8 @@ describe('everything else stays sentence case', () => {
     expect(LEAK.test('Report A Problem')).toBe(true);
     expect(LEAK.test('Read the Privacy Policy')).toBe(false);
     const bad: string[] = [];
-    // src/data holds agencies' own service names ("Calgary Transit On Demand").
-    for (const path of [...files(join(ROOT, 'src')), ...files(join(ROOT, 'shared'))].filter(p => !/[\\/]src[\\/]data[\\/]/.test(p))) {
+    // src/data and shared/onDemand (its on-demand tables, CIV-3189) hold agencies' own service names ("Calgary Transit On Demand").
+    for (const path of [...files(join(ROOT, 'src')), ...files(join(ROOT, 'shared'))].filter(p => !/[\\/](src[\\/]data|shared[\\/]onDemand)[\\/]/.test(p))) {
       readFileSync(path, 'utf8').split('\n').forEach((line, i) => {
         if (/^\s*(\/\/|\*|\/\*)/.test(line)) return;
         for (const [, s] of line.matchAll(/'([^'\n]{3,})'|"([^"\n]{3,})"|`([^`\n]{3,})`/g)) {
