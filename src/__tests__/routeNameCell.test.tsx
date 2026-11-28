@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
-import { RouteNameCell } from '../pageParts';
+import { RouteNameCell } from '../pages/pageParts';
 
 const text = (shortName: string, longName: string | null) =>
   render(<RouteNameCell shortName={shortName} longName={longName} mode={3} agencyName="Test" />).container.textContent;

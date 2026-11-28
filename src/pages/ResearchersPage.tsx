@@ -1,10 +1,10 @@
-import PageShell from './components/ui/PageShell';
-import { useHeadwayTiers } from './hooks/useHeadwayTiers';
-import { PAGE_NAMES } from '../shared/pageNames';
-import { ATLAS_INTRO_TEXT, RESEARCHERS_COPY } from './content/noticeCopy';
-import FeatureCard, { featureCardAsset, featureCardColours } from './components/FeatureCard';
-import RequestDemoCard from './components/RequestDemoCard';
-import { DataSourceSection, PageHero } from './components/FeaturePageSections';
+import PageShell from '../components/ui/PageShell';
+import { useHeadwayTiers } from '../hooks/useHeadwayTiers';
+import { PAGE_NAMES } from '../../shared/pageNames';
+import { ATLAS_INTRO_TEXT, RESEARCHERS_COPY } from '../content/noticeCopy';
+import FeatureCard, { featureCardAsset, featureCardColours } from '../components/FeatureCard';
+import RequestDemoCard from '../components/RequestDemoCard';
+import { DataSourceSection, PageHero } from '../components/FeaturePageSections';
 
 /**
  * "For Researchers" (CIV-1709), built around History (Ryan, 2026-11-15: "things like history might be good for

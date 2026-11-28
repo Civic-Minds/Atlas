@@ -1,6 +1,6 @@
 /** Dev server only: no prerendered HTML there, so build the page data from the summaries. Never in a production build. */
-import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
-import { buildRegionPageData, regionPages } from '../shared/regionPages';
+import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../../shared/agencyPagesData';
+import { buildRegionPageData, regionPages } from '../../shared/regionPages';
 
 export function devRegionPageData(slug: string | undefined) {
   const all = agencyPageSummaries();

@@ -1,15 +1,15 @@
-import { agencyEntryCount } from '../shared/agencyGroups';
+import { agencyEntryCount } from '../../shared/agencyGroups';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { useAgencies } from './hooks/useAgencies';
-import { ATLAS_MODE } from '../shared/config';
-import { getAtlasMark, markAtlasOnce } from './lib/performance';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import PageSection, { PageTable, PAGE_LEAD } from './components/ui/PageSection';
-import { PageTitle } from './components/ui/PageTitle';
-import DataTable, { type DataTableColumn } from './components/ui/DataTable';
-import { DIAGNOSTICS_PERFORMANCE_PATH, INTERNAL_GROUPS } from '../shared/internalPages';
-import Pill from './components/ui/Pill';
-import { clsFromShifts, clsText, goodThresholdText, inpFromEvents, vitalRating, type InteractionEvent, type LayoutShift, type VitalKey } from './lib/webVitals';
+import { useAgencies } from '../hooks/useAgencies';
+import { ATLAS_MODE } from '../../shared/config';
+import { getAtlasMark, markAtlasOnce } from '../lib/performance';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import PageSection, { PageTable, PAGE_LEAD } from '../components/ui/PageSection';
+import { PageTitle } from '../components/ui/PageTitle';
+import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
+import { DIAGNOSTICS_PERFORMANCE_PATH, INTERNAL_GROUPS } from '../../shared/internalPages';
+import Pill from '../components/ui/Pill';
+import { clsFromShifts, clsText, goodThresholdText, inpFromEvents, vitalRating, type InteractionEvent, type LayoutShift, type VitalKey } from '../lib/webVitals';
 
 interface PerformanceMetric {
   label: string;

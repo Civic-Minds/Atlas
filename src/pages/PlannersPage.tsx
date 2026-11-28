@@ -1,14 +1,14 @@
-import PageShell from './components/ui/PageShell';
-import ArrowLink from './components/ui/ArrowLink';
-import { useHeadwayTiers } from './hooks/useHeadwayTiers';
-import { PAGE_NAMES } from '../shared/pageNames';
-import { FEATURES } from '../shared/config';
-import { OPEN_LIVE_LABEL } from '../shared/liveWording';
-import { LIVE_PATH } from '../shared/pagePaths';
-import { PLANNERS_COPY } from './content/noticeCopy';
-import FeatureCard, { featureCardAsset, featureCardColours } from './components/FeatureCard';
-import RequestDemoCard from './components/RequestDemoCard';
-import { DataSourceSection, PageHero } from './components/FeaturePageSections';
+import PageShell from '../components/ui/PageShell';
+import ArrowLink from '../components/ui/ArrowLink';
+import { useHeadwayTiers } from '../hooks/useHeadwayTiers';
+import { PAGE_NAMES } from '../../shared/pageNames';
+import { FEATURES } from '../../shared/config';
+import { OPEN_LIVE_LABEL } from '../../shared/liveWording';
+import { LIVE_PATH } from '../../shared/pagePaths';
+import { PLANNERS_COPY } from '../content/noticeCopy';
+import FeatureCard, { featureCardAsset, featureCardColours } from '../components/FeatureCard';
+import RequestDemoCard from '../components/RequestDemoCard';
+import { DataSourceSection, PageHero } from '../components/FeaturePageSections';
 
 /**
  * "For Transit Planners" (CIV-1320). Local only (CIV-1704), so the beta cards 4-6 are too (CIV-1710: they stay local

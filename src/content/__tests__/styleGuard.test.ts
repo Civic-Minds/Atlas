@@ -77,7 +77,7 @@ const RULES: Rule[] = [
     only: /^src\/(AboutPage|PlannersPage|ResearchersPage|components\/(FeatureCard|RequestDemoCard|FeaturePageSections))\.tsx$/ },
   // CIV-1792 (Ryan, CIV-1751, CIV-1733): no "what Atlas isn't" disclaimers. Say what Atlas does. Legal pages may.
   { name: 'a "what Atlas isn’t" disclaimer (say what Atlas does)', doc: 'TEXT.md', pattern: /\b(not a trip planner|trip planning|live alerts|not live arrivals|not real-time|can be wrong|does(?: not|n[’']t) (replace|do)\b|Atlas (is not|isn[’']t) an?\b)/i, slip: "'Atlas is not a trip planner.'",
-    allowed: ['src/LegalPage.tsx'] },
+    allowed: ['src/pages/LegalPage.tsx'] },
 
   // Times (shared/timeText.ts)
   { name: 'a lowercase am/pm or a.m./p.m. (write "7 AM")', doc: 'TEXT.md', pattern: /\d ?(am|pm)\b|\b[ap]\.m\./, slip: "'Daily 6 a.m.–9 pm'" },
@@ -201,10 +201,10 @@ const RULES: Rule[] = [
     slip: '<div className="rounded-2xl p-6" style={{ background: featureTint(color) }}>',
     skipLine: /export const (FLOATING_CARD|SIDEBAR_CARD_SURFACE|DROPDOWN_PANEL|COMPARE_SIDE_GROUP) =/,
     allowed: ['src/components/ui/Card.tsx', 'src/components/AirportStoryMap.tsx', 'src/components/FrequentServiceStoryMap.tsx', 'src/components/PageContents.tsx', 'src/components/ui/ExpandDialog.tsx'] },
-  // CIV-1804: the research stories' heading, paragraph and chart-panel looks are one constant each in src/pageStyles.ts.
+  // CIV-1804: the research stories' heading, paragraph and chart-panel looks are one constant each in src/pages/pageStyles.ts.
   { name: 'a research story heading, paragraph or chart panel styled by hand (use STORY_HEADING, STORY_PARAGRAPH or STORY_CHART_PANEL)', doc: 'VISUAL.md',
     pattern: /text-3xl sm:text-4xl font-black tracking-tight|mt-5 text-base leading-8 text-\[var\(--text-muted\)\]|rounded-\[2rem\] border border-\[var\(--border-primary\)\] bg-\[var\(--bg-panel\)\]/,
-    slip: '<section className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">', allowed: ['src/pageStyles.ts'] },
+    slip: '<section className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">', allowed: ['src/pages/pageStyles.ts'] },
   // Commit 697af467: Live pages offer no CSV downloads.
   { name: 'a CSV download in Live code', doc: 'VISUAL.md', pattern: /\bCSV\b|\.csv\b|text\/csv/i, slip: "'Download CSV'", only: /(^|\/)[Ll]ive[^/]*$|\/Live\// },
 ];

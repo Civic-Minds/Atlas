@@ -1,11 +1,11 @@
-import { WhatsNewItemText } from './components/WhatsNewItemText';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import { buildChangelog } from './lib/changelog';
-import { visibleWhatsNew } from './data/whatsNew';
-import { FEATURES } from '../shared/config';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { PAGE_NAMES } from '../shared/pageNames';
-import { SCROLL_BELOW_HEADER } from './styles';
+import { WhatsNewItemText } from '../components/WhatsNewItemText';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import { buildChangelog } from '../lib/changelog';
+import { visibleWhatsNew } from '../data/whatsNew';
+import { FEATURES } from '../../shared/config';
+import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
+import { PAGE_NAMES } from '../../shared/pageNames';
+import { SCROLL_BELOW_HEADER } from '../styles';
 
 export default function ChangelogPage() {
   const entries = buildChangelog(visibleWhatsNew(FEATURES.whatsNewBetaItems));

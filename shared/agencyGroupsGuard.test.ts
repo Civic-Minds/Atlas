@@ -28,20 +28,20 @@ const SITES = [
   'src/apps/NightService.tsx', // Night list sections
   'src/apps/History.tsx', // History agency list and the open agency
   'src/utils/historyGroups.ts', // History's merge of a parent's feeds
-  'src/DiagnosticsPerformancePage.tsx', // diagnostics agency count
+  'src/pages/DiagnosticsPerformancePage.tsx', // diagnostics agency count
 ];
 
 /** Page modules that build a parent's own page from its members (its Services list): allowed to read members directly. */
-const PARENT_PAGE_MODULES = new Set(['shared/parentAgencies.ts', 'shared/parentSummary.ts', 'shared/agencyIndex.ts', 'shared/agencyPages.ts', 'shared/regionPages.ts', 'src/agencyPageDevData.ts', 'scripts/prerender-routes.ts']);
+const PARENT_PAGE_MODULES = new Set(['shared/parentAgencies.ts', 'shared/parentSummary.ts', 'shared/agencyIndex.ts', 'shared/agencyPages.ts', 'shared/regionPages.ts', 'src/pages/agencyPageDevData.ts', 'scripts/prerender-routes.ts']);
 
 /**
  * CIV-1991: pages that read the catalog (useAgencies) and list, filter or count it. Each must group through
  * shared/agencyGroups, or hand the list to a module that does (named here with the reason).
  */
-const PAGE_GLOBS = ['src/*Page.tsx', 'src/apps/**/*.tsx'];
+const PAGE_GLOBS = ['src/*Page.tsx', 'src/pages/*Page.tsx', 'src/apps/**/*.tsx'];
 const PAGE_EXCEPTIONS: Record<string, string> = {
-  'src/StudioCoveragePage.tsx': 'passes the catalog to coverageRows (shared/coverageRows.ts), which groups it',
-  'src/DiagnosticsUnevenPage.tsx': 'a per-feed diagnostic: loads each feed\'s own file, lists no agencies',
+  'src/pages/StudioCoveragePage.tsx': 'passes the catalog to coverageRows (shared/coverageRows.ts), which groups it',
+  'src/pages/DiagnosticsUnevenPage.tsx': 'a per-feed diagnostic: loads each feed\'s own file, lists no agencies',
 };
 
 describe('one entry per agency or region (CIV-1963)', () => {

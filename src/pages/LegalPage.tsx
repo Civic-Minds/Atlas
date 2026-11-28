@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
-import AppLink from './components/ui/AppLink';
-import { mailto } from '../shared/contact';
-import SiteContact from './components/SiteContact';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { parseLegalMarkdown, type LegalDoc, type LegalParagraph } from './lib/legalMarkdown';
-import privacySource from '../docs/legal/PRIVACY.md?raw';
-import termsSource from '../docs/legal/TERMS.md?raw';
-import { SCROLL_BELOW_HEADER } from './styles';
+import AppLink from '../components/ui/AppLink';
+import { mailto } from '../../shared/contact';
+import SiteContact from '../components/SiteContact';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
+import { parseLegalMarkdown, type LegalDoc, type LegalParagraph } from '../lib/legalMarkdown';
+import privacySource from '../../docs/legal/PRIVACY.md?raw';
+import termsSource from '../../docs/legal/TERMS.md?raw';
+import { SCROLL_BELOW_HEADER } from '../styles';
 
 type LegalDocument = 'terms' | 'privacy';
 

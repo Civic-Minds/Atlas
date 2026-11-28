@@ -13,7 +13,7 @@ const walk = (dir: string): string[] => readdirSync(dir).flatMap(n => {
   if (statSync(p).isDirectory()) return n === '__tests__' ? [] : walk(p);
   return /\.tsx?$/.test(n) ? [relative(ROOT, p)] : [];
 });
-const FILES = [...walk(join(ROOT, 'src/apps/studio')), 'src/StudioCoveragePage.tsx'];
+const FILES = [...walk(join(ROOT, 'src/apps/studio')), 'src/pages/StudioCoveragePage.tsx'];
 
 const RULES: { name: string; pattern: RegExp; use: string }[] = [
   // A scroll area in markup; a chip's dropdown size (ChipMenu's panelClassName) is the shared menu's own.

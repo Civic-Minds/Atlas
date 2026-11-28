@@ -17,7 +17,7 @@ import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COU
 import { countOf } from '../../shared/overflowText';
 import { FREE_CHILD_FARES_STORY } from '../../shared/researchStories';
 import Card from '../components/ui/Card';
-import { STORY_CHART_PANEL } from '../pageStyles';
+import { STORY_CHART_PANEL } from '../pages/pageStyles';
 
 /** The day the fare snapshot was taken (shared/dateText.ts writes it). */
 const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';

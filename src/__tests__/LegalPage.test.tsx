@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import LegalPage, { LEGAL_DOCS } from '../LegalPage';
+import LegalPage, { LEGAL_DOCS } from '../pages/LegalPage';
 import { parseLegalMarkdown } from '../lib/legalMarkdown';
 import privacySource from '../../docs/legal/PRIVACY.md?raw';
 import termsSource from '../../docs/legal/TERMS.md?raw';

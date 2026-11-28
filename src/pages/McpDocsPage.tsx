@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
-import { MISSING_VALUE } from '../shared/missingValue';
-import { dateTimeText } from '../shared/dateText';
-import { MCP_TESTERS_API_URL, MCP_TESTERS_CHANGE_HEADER, MCP_USAGE_DAY_CHOICES, MCP_USAGE_DAYS_DEFAULT, type McpUsageDayChoice, type McpTester, type McpTesterCall, type McpUsageResponse } from '../shared/mcpTesters';
-import LineChart from './components/charts/LineChart';
-import PillGroup from './components/ui/PillGroup';
+import { MISSING_VALUE } from '../../shared/missingValue';
+import { dateTimeText } from '../../shared/dateText';
+import { MCP_TESTERS_API_URL, MCP_TESTERS_CHANGE_HEADER, MCP_USAGE_DAY_CHOICES, MCP_USAGE_DAYS_DEFAULT, type McpUsageDayChoice, type McpTester, type McpTesterCall, type McpUsageResponse } from '../../shared/mcpTesters';
+import LineChart from '../components/charts/LineChart';
+import PillGroup from '../components/ui/PillGroup';
 import { STORY_CHART_PANEL } from './pageStyles';
-import { countText } from '../shared/numberText';
-import { dateRange } from '../shared/dateText';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import { PAGE_LEAD } from './components/ui/PageSection';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import Tag from './components/ui/Tag';
-import CopyButton from './components/ui/CopyButton';
-import DataTable, { type DataTableColumn } from './components/ui/DataTable';
-import { TOOLS, TOOL_SUMMARIES, SERVER_VERSION } from '../scripts/mcp/toolDefs';
-import { LIVE_TOOLS } from '../scripts/mcp/liveTools';
-import { MCP_DOCS as C } from '../shared/mcpDocsCopy';
-import { TOOL_GROUPS, type ToolGroup } from '../shared/mcpToolGroups';
-import { tabTitle } from '../shared/pageNames';
+import { countText } from '../../shared/numberText';
+import { dateRange } from '../../shared/dateText';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import { PAGE_LEAD } from '../components/ui/PageSection';
+import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
+import Tag from '../components/ui/Tag';
+import CopyButton from '../components/ui/CopyButton';
+import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
+import { TOOLS, TOOL_SUMMARIES, SERVER_VERSION } from '../../scripts/mcp/toolDefs';
+import { LIVE_TOOLS } from '../../scripts/mcp/liveTools';
+import { MCP_DOCS as C } from '../../shared/mcpDocsCopy';
+import { TOOL_GROUPS, type ToolGroup } from '../../shared/mcpToolGroups';
+import { tabTitle } from '../../shared/pageNames';
 
 /**
  * CIV-1900: the internal docs page for the Atlas Studio MCP (dev server only, linked from /internal). The tool list is

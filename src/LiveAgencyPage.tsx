@@ -12,7 +12,7 @@ import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { liveDashboardPath, liveToolPath } from './hooks/useLiveDashboard';
 import { routesByMode } from '../shared/agencyPages';
-import { RouteNameCell } from './pageParts';
+import { RouteNameCell } from './pages/pageParts';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { weekNotComparableLine } from './utils/liveKpi';
 import { syncUrlParams } from './utils/syncUrlParams';

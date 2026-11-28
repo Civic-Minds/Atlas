@@ -1,5 +1,5 @@
 /**
- * CIV-3197: the explain_method topics, each one or more Docs page sections (their ids in src/AboutDocsPage.tsx).
+ * CIV-3197: the explain_method topics, each one or more Docs page sections (their ids in src/pages/AboutDocsPage.tsx).
  * The text itself is generated from the page (buildDocsMethods.tsx), never typed here.
  */
 export const DOCS_METHOD_TOPICS = [

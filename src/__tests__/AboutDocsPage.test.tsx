@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import AboutDocsPage from '../AboutDocsPage';
+import AboutDocsPage from '../pages/AboutDocsPage';
 
 describe('Docs page Notices section (CIV-1236)', () => {
   it('sends its logos to the About home page; "Go to Atlas" is the way to the map (#1509)', () => {
@@ -60,7 +60,7 @@ describe('Docs page in the public build (CIV-1440)', () => {
     const features = Object.fromEntries(Object.keys(real).map(k => [k, on.includes(k)]));
     vi.resetModules();
     vi.doMock('../../shared/config', async importOriginal => ({ ...(await importOriginal<typeof import('../../shared/config')>()), FEATURES: features }));
-    const { default: Page } = await import('../AboutDocsPage');
+    const { default: Page } = await import('../pages/AboutDocsPage');
     const { container } = render(<Page />);
     vi.doUnmock('../../shared/config');
     return container.textContent ?? '';

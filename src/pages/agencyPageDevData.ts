@@ -1,8 +1,8 @@
 /** Dev server only: no prerendered HTML there, so read the full summary file and the area configs (as the prerender does). Never in a production build. */
-import { agencyPageData, agencyPagePath } from '../shared/agencyPages';
-import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../shared/agencyPagesData';
-import { parentAgency, parentAgencyPageData, parentHome, parentMembers } from '../shared/parentAgencies';
-import { parentAgencyPagePath } from '../shared/pagePaths';
+import { agencyPageData, agencyPagePath } from '../../shared/agencyPages';
+import { AGENCY_PAGE_DATA, agencyPageSummaries } from '../../shared/agencyPagesData';
+import { parentAgency, parentAgencyPageData, parentHome, parentMembers } from '../../shared/parentAgencies';
+import { parentAgencyPagePath } from '../../shared/pagePaths';
 import { DEV_AREA_CONFIGS } from './devAreaConfigs';
 
 /** The page at /agency/<slug>: a parent agency's (CIV-1277) first, else the agency whose page path it is. */

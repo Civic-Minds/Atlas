@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import AboutDocsPage from '../AboutDocsPage';
+import AboutDocsPage from '../pages/AboutDocsPage';
 import { FEATURES } from '../../shared/config';
 
 // CIV-1251: Ryan approved _review/card-wording word for word on 2026-11-01. The Docs glossary and Service section, as rendered (rows 2, 4, 5, 6, 9, 12).

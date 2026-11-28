@@ -2,23 +2,23 @@ import { useEffect, useId, useState } from 'react';
 import {
   ANALYTICS_API_URL, ANALYTICS_COPY as C, ANALYTICS_MAIN_DAYS, actionName, GA_REGION_ALIASES, PAGE_VIEWS_FIXED_ON, TILE_MAP_COUNTRIES, placeName, renamedRows, shortLabel, sourceName,
   type AnalyticsResponse, type AnalyticsRow, type AnalyticsTotals, type AnalyticsWindow,
-} from '../shared/analytics';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import PageSection, { PAGE_LEAD } from './components/ui/PageSection';
-import { PageTitle } from './components/ui/PageTitle';
-import Card from './components/ui/Card';
-import { type DataTableColumn } from './components/ui/DataTable';
-import LineChart from './components/charts/LineChart';
-import RankedBars from './components/charts/RankedBars';
-import TileMap, { type MapTile } from './components/charts/TileMap';
-import ChartTableDetails from './components/charts/ChartTableDetails';
+} from '../../shared/analytics';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import PageSection, { PAGE_LEAD } from '../components/ui/PageSection';
+import { PageTitle } from '../components/ui/PageTitle';
+import Card from '../components/ui/Card';
+import { type DataTableColumn } from '../components/ui/DataTable';
+import LineChart from '../components/charts/LineChart';
+import RankedBars from '../components/charts/RankedBars';
+import TileMap, { type MapTile } from '../components/charts/TileMap';
+import ChartTableDetails from '../components/charts/ChartTableDetails';
 import { STORY_CHART_PANEL } from './pageStyles';
-import { REGION_TILES } from './data/regionTileGrid';
-import { tabTitle } from '../shared/pageNames';
-import { countText, percentText, signedPercentText } from '../shared/numberText';
-import { minutesText } from '../shared/liveFormat';
-import { dateRange, isoDate, shortDate } from '../shared/dateText';
-import { MISSING_VALUE } from '../shared/missingValue';
+import { REGION_TILES } from '../data/regionTileGrid';
+import { tabTitle } from '../../shared/pageNames';
+import { countText, percentText, signedPercentText } from '../../shared/numberText';
+import { minutesText } from '../../shared/liveFormat';
+import { dateRange, isoDate, shortDate } from '../../shared/dateText';
+import { MISSING_VALUE } from '../../shared/missingValue';
 
 /**
  * CIV-2068: the internal Analytics page (dev server only, listed on /internal). Google Analytics figures read through the

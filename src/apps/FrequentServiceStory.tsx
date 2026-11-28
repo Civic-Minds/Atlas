@@ -14,7 +14,7 @@ import { frequentCoverageWindows, frequentServiceCoverageUpdated, frequentServic
 import FrequentServiceMapPile from '../components/FrequentServiceMapPile';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
-import { STORY_CHART_PANEL, STORY_HEADING, STORY_PARAGRAPH, UNDERLINED_LINK } from '../pageStyles';
+import { STORY_CHART_PANEL, STORY_HEADING, STORY_PARAGRAPH, UNDERLINED_LINK } from '../pages/pageStyles';
 import type { Agency } from '../App';
 import { headwayAmount, headwayFilterLabel, headwayOrBetter } from '../../shared/headwayText';
 import { countOf, joinList } from '../../shared/overflowText';

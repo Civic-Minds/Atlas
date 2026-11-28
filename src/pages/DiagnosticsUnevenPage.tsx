@@ -1,21 +1,21 @@
-import { MISSING_VALUE } from '../shared/missingValue';
-import { countText } from '../shared/numberText';
+import { MISSING_VALUE } from '../../shared/missingValue';
+import { countText } from '../../shared/numberText';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAgencies } from './hooks/useAgencies';
-import type { ShapeProperties } from './hooks/useAgencyData';
-import { isRiderMeaningfulGap } from './utils/routeCardUneven';
-import { PERIOD_LABELS, TIME_PERIODS, type PeriodKey } from '../shared/config';
-import { agencyNames } from './utils/agencyName';
-import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
-import Pill from './components/ui/Pill';
-import DataTable, { type DataTableColumn, type DataTableSort } from './components/ui/DataTable';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import PageSection, { PageTable, PAGE_SECTION_NOTE, PAGE_LEAD } from './components/ui/PageSection';
-import { PageTitle } from './components/ui/PageTitle';
-import PageLoadState from './components/ui/PageLoadState';
-import { DIAGNOSTICS_UNEVEN_PATH, INTERNAL_GROUPS } from '../shared/internalPages';
-import type { Agency } from './App';
-import { delayAmount, headwayAbout } from './utils/headwayText';
+import { useAgencies } from '../hooks/useAgencies';
+import type { ShapeProperties } from '../hooks/useAgencyData';
+import { isRiderMeaningfulGap } from '../utils/routeCardUneven';
+import { PERIOD_LABELS, TIME_PERIODS, type PeriodKey } from '../../shared/config';
+import { agencyNames } from '../utils/agencyName';
+import { DAY_TYPES, getNowDay, type DayType } from '../../shared/dayTypes';
+import Pill from '../components/ui/Pill';
+import DataTable, { type DataTableColumn, type DataTableSort } from '../components/ui/DataTable';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import PageSection, { PageTable, PAGE_SECTION_NOTE, PAGE_LEAD } from '../components/ui/PageSection';
+import { PageTitle } from '../components/ui/PageTitle';
+import PageLoadState from '../components/ui/PageLoadState';
+import { DIAGNOSTICS_UNEVEN_PATH, INTERNAL_GROUPS } from '../../shared/internalPages';
+import type { Agency } from '../App';
+import { delayAmount, headwayAbout } from '../utils/headwayText';
 
 const MAX_CONCURRENT_FETCHES = 8;
 

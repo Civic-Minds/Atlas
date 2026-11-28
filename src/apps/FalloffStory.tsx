@@ -9,7 +9,7 @@ import type { DataTableColumn } from '../components/ui/DataTable';
 import PageShell from '../components/ui/PageShell';
 import { REGION_TILES } from '../data/regionTileGrid';
 import { FALLOFF_MINUTES, FREQUENT_MORNING_MIN, FALLOFF_TIMES, HOLD_SHARE, MORNING, SUNDAY_EVENING, falloffStudy, gthaAgencies, holdingNetworks, noSundayRegions, noneOnSundayEvening, periodHours, steepestDrops, whenLabel, type FalloffAgency } from '../data/falloffStory';
-import { STORY_CHART_PANEL, STORY_HEADING, STORY_PARAGRAPH } from '../pageStyles';
+import { STORY_CHART_PANEL, STORY_HEADING, STORY_PARAGRAPH } from '../pages/pageStyles';
 import { longDate } from '../../shared/dateText';
 import { headwayOrBetter } from '../../shared/headwayText';
 import { countText, decimalText, percentText } from '../../shared/numberText';

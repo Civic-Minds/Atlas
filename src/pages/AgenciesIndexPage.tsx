@@ -1,31 +1,31 @@
 import { useEffect, useState } from 'react';
-import AppLink from './components/ui/AppLink';
+import AppLink from '../components/ui/AppLink';
 import {
   AGENCY_INDEX_DATA_SCRIPT_ID,
   agencyIndexDescription,
   agencyIndexRegionId,
   resolveAgencyIndexSeo,
   type AgencyIndexData,
-} from '../shared/agencyIndex';
-import { agencyPagePath, parentAgencyPagePath, regionPagePath } from '../shared/pagePaths';
-import { fitAgencyName } from './utils/agencyName';
-import { areaPagePath } from '../shared/areas';
-import { ATLAS_MODE, FEATURES } from '../shared/config';
-import { plural } from '../shared/overflowText';
-import historyAgencies from '../shared/data/history-agencies.json';
-import type { HistoryAgencyList } from '../shared/historyEligibility';
-import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
-import { applySeoToDocument, seoOrigin } from './lib/seoDom';
-import { readEmbeddedJson } from './lib/embeddedData';
+} from '../../shared/agencyIndex';
+import { agencyPagePath, parentAgencyPagePath, regionPagePath } from '../../shared/pagePaths';
+import { fitAgencyName } from '../utils/agencyName';
+import { areaPagePath } from '../../shared/areas';
+import { ATLAS_MODE, FEATURES } from '../../shared/config';
+import { plural } from '../../shared/overflowText';
+import historyAgencies from '../../shared/data/history-agencies.json';
+import type { HistoryAgencyList } from '../../shared/historyEligibility';
+import { LIVE_AGENCY_SLUGS } from '../../shared/livePollingConfig';
+import { applySeoToDocument, seoOrigin } from '../lib/seoDom';
+import { readEmbeddedJson } from '../lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
-import Tag from './components/ui/Tag';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import PageShell from './components/ui/PageShell';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import { countText } from '../shared/numberText';
-import { PAGE_NAMES } from '../shared/pageNames';
-import { AREAS_HEADING, HISTORY_TAG, LIVE_TAG } from './content/noticeCopy';
-import { SCROLL_BELOW_HEADER } from './styles';
+import Tag from '../components/ui/Tag';
+import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
+import PageShell from '../components/ui/PageShell';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import { countText } from '../../shared/numberText';
+import { PAGE_NAMES } from '../../shared/pageNames';
+import { AREAS_HEADING, HISTORY_TAG, LIVE_TAG } from '../content/noticeCopy';
+import { SCROLL_BELOW_HEADER } from '../styles';
 
 /** Shared multi-column layout for the Areas list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';

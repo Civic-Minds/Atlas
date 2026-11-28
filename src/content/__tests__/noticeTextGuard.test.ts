@@ -31,7 +31,7 @@ const RULES: Array<{ name: string; pattern: RegExp }> = [
 
 // Live is Atlas Live's own app and lane; its texts move here when that work is scheduled. The Diagnostics pages are
 // internal tools, not rider-facing.
-const ALLOWED = [/^Diagnostics[A-Za-z]*\.tsx$/, /^apps\/LiveVehicles\.tsx$/, /^Live[A-Za-z]*\.tsx$/, /^components\/Live\//, /^components\/LiveOffNotice\.tsx$/, /^components\/Interval\/panels\/LiveStopArrivals\.tsx$/];
+const ALLOWED = [/^(pages\/)?Diagnostics[A-Za-z]*\.tsx$/, /^apps\/LiveVehicles\.tsx$/, /^Live[A-Za-z]*\.tsx$/, /^components\/Live\//, /^components\/LiveOffNotice\.tsx$/, /^components\/Interval\/panels\/LiveStopArrivals\.tsx$/];
 
 describe('notice text lives in noticeCopy.ts', () => {
   for (const rule of RULES) {

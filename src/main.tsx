@@ -2,13 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router';
 import App from './App';
-import LegalPage from './LegalPage';
-import AboutDocsPage from './AboutDocsPage';
-import AboutPage from './AboutPage';
-import PlannersPage from './PlannersPage';
-import ResearchersPage from './ResearchersPage';
-import ChangelogPage from './ChangelogPage';
-import NotFoundPage from './NotFoundPage';
+import LegalPage from './pages/LegalPage';
+import AboutDocsPage from './pages/AboutDocsPage';
+import AboutPage from './pages/AboutPage';
+import PlannersPage from './pages/PlannersPage';
+import ResearchersPage from './pages/ResearchersPage';
+import ChangelogPage from './pages/ChangelogPage';
+import NotFoundPage from './pages/NotFoundPage';
 import './styles/index.css';
 import { FEATURES, FEATURE_ROUTES } from '../shared/config';
 import { inject } from '@vercel/analytics';
@@ -31,7 +31,7 @@ import { findSeoRoute } from '../shared/seo';
 import { stripUtmAfterLoad } from './utils/stripUtm';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, AGENCY_PATH_PREFIX, AREA_PATH_PREFIX, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, REGION_PATH_PREFIX, RESEARCHERS_PATH, TERMS_PATH } from '../shared/pagePaths';
 
-const AgencyPage = React.lazy(() => import('./AgencyPage'));
+const AgencyPage = React.lazy(() => import('./pages/AgencyPage'));
 const LiveRoutePage = React.lazy(() => import('./LiveRoutePage'));
 const LiveAgencyPage = React.lazy(() => import('./LiveAgencyPage'));
 const LiveToolPage = React.lazy(() => import('./LiveToolPage'));
@@ -39,17 +39,17 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const FreeChildFaresPage = React.lazy(() => import('./apps/FreeChildFaresPage'));
 const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentServiceStoryPage'));
 const FalloffStory = React.lazy(() => import('./apps/FalloffStory'));
-const AreaPage = React.lazy(() => import('./AreaPage'));
-const RegionPage = React.lazy(() => import('./RegionPage'));
-const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
+const AreaPage = React.lazy(() => import('./pages/AreaPage'));
+const RegionPage = React.lazy(() => import('./pages/RegionPage'));
+const AgenciesIndexPage = React.lazy(() => import('./pages/AgenciesIndexPage'));
 // Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
-const InternalHomePage = import.meta.env.DEV ? React.lazy(() => import('./InternalHomePage')) : () => null;
-const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./StudioCoveragePage')) : () => null;
-const McpDocsPage = import.meta.env.DEV ? React.lazy(() => import('./McpDocsPage')) : () => null;
-const AnalyticsPage = import.meta.env.DEV ? React.lazy(() => import('./AnalyticsPage')) : () => null;
+const InternalHomePage = import.meta.env.DEV ? React.lazy(() => import('./pages/InternalHomePage')) : () => null;
+const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./pages/StudioCoveragePage')) : () => null;
+const McpDocsPage = import.meta.env.DEV ? React.lazy(() => import('./pages/McpDocsPage')) : () => null;
+const AnalyticsPage = import.meta.env.DEV ? React.lazy(() => import('./pages/AnalyticsPage')) : () => null;
 // The diagnostics pages are maintainer-only (#1518): the same DEV check as Studio keeps them out of built bundles entirely.
-const DiagnosticsUnevenPage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsUnevenPage')) : () => null;
-const DiagnosticsPerformancePage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsPerformancePage')) : () => null;
+const DiagnosticsUnevenPage = import.meta.env.DEV ? React.lazy(() => import('./pages/DiagnosticsUnevenPage')) : () => null;
+const DiagnosticsPerformancePage = import.meta.env.DEV ? React.lazy(() => import('./pages/DiagnosticsPerformancePage')) : () => null;
 
 /** Night Service moved from /apps/night to /research/night; keep old links and their filters working. */
 function NightServiceRedirect() {

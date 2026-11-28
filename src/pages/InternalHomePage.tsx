@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import Card from './components/ui/Card';
-import AppLink from './components/ui/AppLink';
-import { SectionTitle } from './components/ui/PageTitle';
-import { INTERNAL_GROUPS, INTERNAL_HOME_TITLE } from '../shared/internalPages';
-import { tabTitle } from '../shared/pageNames';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import Card from '../components/ui/Card';
+import AppLink from '../components/ui/AppLink';
+import { SectionTitle } from '../components/ui/PageTitle';
+import { INTERNAL_GROUPS, INTERNAL_HOME_TITLE } from '../../shared/internalPages';
+import { tabTitle } from '../../shared/pageNames';
 
 /**
  * CIV-1872: the local-only home page, on the content-page layout, headings and card the rest of the site uses (Ryan: no new

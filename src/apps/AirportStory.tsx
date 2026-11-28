@@ -8,7 +8,7 @@ import AirportStoryMap, { ZOOMS } from '../components/AirportStoryMap';
 import { AIRPORTS, landableAt, landableCount } from '../data/airportHourly';
 import { useColorVision } from '../context/ColorVisionContext';
 import { AIRPORT_STORY_DRAFT } from '../../shared/researchStories';
-import { STORY_HEADING, STORY_PARAGRAPH } from '../pageStyles';
+import { STORY_HEADING, STORY_PARAGRAPH } from '../pages/pageStyles';
 import { DevPlaceholder, devPlaceholder } from '../content/devPlaceholder';
 
 /**

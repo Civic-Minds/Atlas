@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { livePills, type LiveDays } from '../StudioCoveragePage';
+import { livePills, type LiveDays } from '../pages/StudioCoveragePage';
 import { COVERAGE_LIVE_TAGS } from '../content/noticeCopy';
 import { studioPath } from '../../shared/studioAgencies';
 import type { CoverageRow } from '../../shared/coverageRows';
