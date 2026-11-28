@@ -74,12 +74,24 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
   });
 
   it('shows a gap as soon as the card opens, from the recorded half hour (CIV-2047)', async () => {
-    // The recording saw car a at stop 1 two minutes ago; now car b is there and car a is at stop 2.
-    const recorded = { snapshots: [{ capturedAt: T0 - 120, v: [['a', 't1', LAT, lon(1), T0 - 120]] }, { capturedAt: T0 - 60, v: [['a', 't1', LAT, lon(1.5), T0 - 60]] }] };
+    // The recording saw car a at stop 1 two minutes ago; now car b is there and car a is at stop 2. CIV-3173 part 2: the
+    // recordings are the card's one feed where they answer (the map's polls only stand in without them).
+    const recorded = { now: T0, snapshots: [{ capturedAt: T0 - 120, v: [['a', 't1', LAT, lon(1), T0 - 120]] }, { capturedAt: T0 - 60, v: [['a', 't1', LAT, lon(1.5), T0 - 60]] }, { capturedAt: T0, v: [['a', 't1', LAT, lon(2), T0], ['b', 't2', LAT, lon(1), T0]] }] };
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => recorded })));
     card([car('a', 't1', 2, T0), car('b', 't2', 1, T0)]);
     await act(async () => {});
     expect(screen.getByText('Longest gap').nextElementSibling?.textContent).toBe('2 min');
+    vi.unstubAllGlobals();
+  });
+
+  it('reads gaps from the recordings only, not the map\'s own polls, so the map and Studio agree (CIV-3173 part 2)', async () => {
+    // The recordings have only car a; the map's poll also has car b. The card counts what the recordings hold.
+    const recorded = { now: T0, snapshots: [{ capturedAt: T0 - 120, v: [['a', 't1', LAT, lon(1), T0 - 120]] }, { capturedAt: T0, v: [['a', 't1', LAT, lon(2), T0]] }] };
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => recorded })));
+    card([car('a', 't1', 2, T0), car('b', 't2', 1, T0)]);
+    await act(async () => {});
+    expect(screen.getByText('Vehicles').nextElementSibling?.textContent).toBe('1');
+    expect(screen.queryByText('Longest gap')).toBeNull();
     vi.unstubAllGlobals();
   });
 

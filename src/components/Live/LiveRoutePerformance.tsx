@@ -21,7 +21,7 @@ import { LIVE_SHARED_GAP_KEY, LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LAB
 import { liveOrScheduleProps } from '../../utils/liveRowValue';
 import { median } from '../../../shared/segmentDelay';
 import { rowDirectionKey } from '../../utils/liveGrouping';
-import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
+import { LIVE_RECENT_REFRESH_SEC, LIVE_STALE_SEC, RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
 const tenthMin = (sec: number): number => Math.round(sec / 6) / 10;
@@ -133,14 +133,15 @@ interface Props {
 }
 
 /**
- * The route's recent positions: the recorded last half hour (CIV-2047, Ryan: gaps as soon as the card opens; local-api
- * live-recent, route_now's reader), then the map's polls since the card opened, up to the last 30 min. A gap needs the car
- * ahead's recent track: how long ago it passed the spot where the car behind is now. Without the recordings (no read
- * token, a route not recorded) the polls alone build it up, as before.
+ * The route's recent positions. CIV-3173 part 2 (one feed, one clock): the recorded last half hour (local-api live-recent,
+ * route_now's reader), re-read every LIVE_RECENT_REFRESH_SEC, is the only source where it answers, so the map, Studio and
+ * route_now measure the same recordings; its clock is the newest recording's time, the same wherever the card is open.
+ * Without the recordings (no read token, a route not recorded) the map's polls build it up, as before, on the browser's
+ * clock. `clockSec` is null then.
  */
-export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, routeShortName: string): { recent: RecentSnapshot[]; seedSettled: boolean } {
+export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, routeShortName: string): { recent: RecentSnapshot[]; seedSettled: boolean; clockSec: number | null } {
   const [polls, setPolls] = useState<RecentSnapshot[]>([]);
-  const [seed, setSeed] = useState<RecentSnapshot[]>([]);
+  const [seed, setSeed] = useState<{ snapshots: RecentSnapshot[]; serverNow: number | null; fetchedAt: number } | null>(null);
   // #1833: whether the recorded half hour has come back (or failed). Until then a thin first poll is loading, not a failure.
   const [seedSettled, setSeedSettled] = useState(false);
   useEffect(() => {
@@ -148,23 +149,28 @@ export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: strin
   }, [vehicles]);
   useEffect(() => {
     let live = true;
-    setSeed([]);
+    setSeed(null);
     setSeedSettled(false);
-    Promise.resolve()
+    const read = () => Promise.resolve()
       .then(() => liveCloudFetch('recent', { agency: slug, route: routeShortName }))
-      .then(r => (r.ok ? r.json() as Promise<{ snapshots?: RecentSnapshot[] }> : null))
-      .then(j => { if (live && j?.snapshots?.length) setSeed(j.snapshots); })
+      .then(r => (r.ok ? r.json() as Promise<{ now?: number; snapshots?: RecentSnapshot[] }> : null))
+      .then(j => { if (live && j?.snapshots?.length) setSeed({ snapshots: j.snapshots, serverNow: j.now ?? null, fetchedAt: Date.now() }); })
       .catch(() => {})
       .finally(() => { if (live) setSeedSettled(true); });
-    return () => { live = false; };
+    void read();
+    const t = setInterval(() => void read(), LIVE_RECENT_REFRESH_SEC * 1000);
+    return () => { live = false; clearInterval(t); };
   }, [slug, routeShortName]);
-  const recent = useMemo(() => {
-    if (!seed.length) return polls;
-    // The recordings up to the first poll, then the polls: one history, oldest first.
-    const first = polls[0]?.capturedAt ?? Infinity;
-    return [...seed.filter(sn => sn.capturedAt < first), ...polls].reduce<RecentSnapshot[]>((b, sn) => addSnapshot(b, sn), []);
-  }, [seed, polls]);
-  return { recent, seedSettled };
+  const recent = useMemo(() => (seed ? seed.snapshots : polls), [seed, polls]);
+  // The newest recording's time, unless the recordings have stopped coming (by the server's clock) or the last answer is
+  // old (by the browser's): then the real time, so the card shows the reading as stale instead of frozen.
+  const newest = seed ? Math.max(...seed.snapshots.map(s => s.capturedAt)) : null;
+  const clockSec = seed && newest != null
+    ? (seed.serverNow != null && seed.serverNow - newest > LIVE_STALE_SEC) || Date.now() - seed.fetchedAt > LIVE_STALE_SEC * 1000
+      ? Math.floor(Date.now() / 1000)
+      : newest
+    : null;
+  return { recent, seedSettled, clockSec };
 }
 
 
@@ -179,14 +185,16 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
-  const { recent, seedSettled } = useRecentPositions(vehicles, slug, routeShortName);
+  const { recent, seedSettled, clockSec } = useRecentPositions(vehicles, slug, routeShortName);
   // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     setNow(Date.now());
-    const t = setInterval(() => setNow(Date.now()), 30_000);
+    const t = setInterval(() => setNow(Date.now()), LIVE_RECENT_REFRESH_SEC * 1000);
     return () => clearInterval(t);
   }, [recent]);
+  // CIV-3173 part 2: the card measures on the recordings' own clock where it reads them, so the map and Studio agree.
+  const clockMs = clockSec != null ? clockSec * 1000 : now;
 
   // CIV-2045 (Ryan: "1"), CIV-2901: Studio's Scheduled lines, the main map card's own destination rows in its own row
   // component, with its headway dot.
@@ -223,7 +231,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       <>
         {shown.map(([id, label]) => (
           <DirectionRightNow key={id} data={data} directionId={id} directionLabel={label} heading={null} slug={slug} routeShortName={routeShortName}
-            vehicles={vehicles} recent={recent} seedSettled={seedSettled} now={now} scheduledRows={scheduledRowsFor?.(id, label) ?? null}
+            vehicles={vehicles} recent={recent} seedSettled={seedSettled} now={clockMs} scheduledRows={scheduledRowsFor?.(id, label) ?? null}
             scheduledBlock={null} onDestinationGaps={onDestinationGaps} rowVehicles={rowVehicles} />
         ))}
       </>
@@ -245,7 +253,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             vehicles={vehicles}
             recent={recent}
             seedSettled={seedSettled}
-            now={now}
+            now={clockMs}
             scheduledRows={steered ? scheduledRows : scheduledRowsFor?.(id, label) ?? null}
             scheduledBlock={scheduledBlock}
             onCounted={steered ? onCounted : undefined}

@@ -163,6 +163,12 @@ export const FEED_AGE_LIMITS_SEC = { fresh: 90, degraded: 300, stale: 900 } as c
 export const LIVE_POLL_SEC = 15;
 
 /**
+ * CIV-3173 part 2 (one feed, one clock): the Live route card re-reads the recorded last half hour this often, on the map
+ * and in Studio alike, so both measure the same recordings. Two polls: the recorder writes about once a minute.
+ */
+export const LIVE_RECENT_REFRESH_SEC = 2 * LIVE_POLL_SEC;
+
+/**
  * Each Live feed's pace in seconds (CIV-2073, measured 2026-11-21 over 4 min at 5 s polling; docs/operations/LIVE_POLLING.md):
  * the slower of the feed's own refresh and its vehicles' GPS reports, by median; SF 90 s, positions only, inside 511's limit (Ryan, CIV-2074 to revisit). The recorder polls at it, and Live's status
  * pill calls positions late past twice it (CIV-2084). An agency not measured uses LIVE_POLL_SEC.
