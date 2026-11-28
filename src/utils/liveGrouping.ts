@@ -231,3 +231,32 @@ export function orderAlongRoute<V extends Pick<LiveVehicle, 'lat' | 'lon' | 'dir
   });
   return placed.sort((a, b) => a.dir - b.dir || a.along - b.along || a.i - b.i).map(x => x.v);
 }
+
+/** One destination row the route card draws: its key (rowDirectionKey) and its direction. */
+export interface CardRowKey { key: string; directionId: number }
+
+const words = (s: string) => s.toLowerCase().split(/\s+/).filter(Boolean);
+/** "St Clair" and "St Clair Station": one name is the other's first words. */
+const leadsWith = (a: string, b: string) => { const x = words(a), y = words(b); const n = Math.min(x.length, y.length); return n > 0 && x.slice(0, n).join(' ') === y.slice(0, n).join(' '); };
+
+/**
+ * #1877, 2026-11-27 (Ryan, a fifth time: vehicles listed apart from their destination): every vehicle group goes under one
+ * of the route card's own rows where it can, so no destination gets a second row. A group whose key isn't a row's joins
+ * the only row of its direction; else the one row whose name leads with the group's (or its trips' last stop's) name,
+ * or the other way round ("St Clair" → "to St Clair Station"). A group that fits no row, or several, keeps its own.
+ */
+export function mergeIntoCardRows(groups: ReadonlyMap<string, LiveVehicle[]>, rows: readonly CardRowKey[]): Map<string, LiveVehicle[]> {
+  const rowKeys = new Set(rows.map(r => r.key));
+  const out = new Map<string, LiveVehicle[]>();
+  const add = (k: string, vs: readonly LiveVehicle[]) => out.set(k, [...(out.get(k) ?? []), ...vs]);
+  for (const [key, vs] of groups) {
+    if (rowKeys.has(key) || key === DIRECTION_UNCLEAR) { add(key, vs); continue; }
+    const dir = vs[0]?.directionId;
+    const same = dir != null && vs.every(v => v.directionId === dir) ? [...new Set(rows.filter(r => r.directionId === dir).map(r => r.key))] : [];
+    const stops = [...new Set(vs.map(v => v.lastStop?.name).filter((n): n is string => !!n))];
+    const named = same.filter(k => leadsWith(k, key) || stops.some(s => leadsWith(k, s)));
+    const target = same.length === 1 ? same[0] : named.length === 1 ? named[0] : null;
+    add(target ?? key, vs);
+  }
+  return out;
+}
