@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Schedules is a full page**: the list of changed routes filled a narrow panel over the map; it now has the page's width, and a route picked from it opens its card on the map
 - **About → Sources has the agency list's search box**: finding one agency's credit meant scrolling a list of about 200
 - **The map's credit pill names a single remaining agency instead of "and 1 other agency"**: "TTC · and 1 other agency" hid a name behind a click that opened the full sources list
 - **Route card rows with no number read "Irregular"**: the same word as route lists and agency pages, instead of the longer "Runs irregularly in this period"

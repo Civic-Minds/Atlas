@@ -4,7 +4,7 @@ import { vehiclesWord } from '../../../shared/modeVehicles';
 import { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import { dashedLineSwatch } from '../../styles';
-import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
+import { PanelBody } from '../../components/ui/Panel';
 import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
 import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
@@ -28,7 +28,8 @@ import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/s
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetNetworkTitle, fleetPeriodCountText, notOnTripValueText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
-import { CARD_NOTE } from '../../styles';
+import { CARD_NOTE, Z_PANEL } from '../../styles';
+import { PageTitle } from '../../components/ui/PageTitle';
 import SplitBar from '../../components/charts/SplitBar';
 import DataTable from '../../components/ui/DataTable';
 import { countText } from '../../../shared/numberText';
@@ -435,17 +436,25 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
           </PanelBody>
         </StudioPanel>
       ) : (
-        <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>
-          <PanelTitleBar title={PAGE_NAMES.studioSchedules} />
-          <div className="shrink-0 px-4 pt-2">
-            <CardBodyText>{intro}</CardBodyText>
-            {seasonNote && <CardBodyText>{seasonNote}</CardBodyText>}
-            {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
+        // CIV-2182 (Ryan, 2026-11-25: "Maybe scehedules should be a full page too idk"; 2026-11-26: "Feel like the Schedules page
+        // isn't ideal as a panel like it currently is and I think we were considering making that a full-page tool"): the list is a
+        // full page under Studio's top bar, as the review mock-up showed; a route picked from it opens its card on the map.
+        <section aria-label={PAGE_NAMES.studioSchedules} className={`fixed inset-0 ${Z_PANEL} overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]`}>
+          <div className="mx-auto flex w-full max-w-3xl flex-col px-4 pt-20 pb-10 sm:px-6">
+            <PageTitle>{PAGE_NAMES.studioSchedules}</PageTitle>
+            <div className="mt-3">
+              <CardBodyText>{intro}</CardBodyText>
+              {seasonNote && <CardBodyText>{seasonNote}</CardBodyText>}
+              {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
+            </div>
+            <div className="mt-4 flex flex-col">
+              <ChangeList file={file} period={period} onPick={setRoute} design={schedulesDesign()} />
+            </div>
           </div>
-          <ChangeList file={file} period={period} onPick={setRoute} design={schedulesDesign()} />
-        </StudioPanel>
+        </section>
       )}
-      {view === 'schedules' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
+      {/* The map's key, only while the map shows (a route's card); the full page has no map. */}
+      {view === 'schedules' && route && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
     </>
   );
 }
