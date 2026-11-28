@@ -20,3 +20,14 @@ describe('mergeIntoCardRows', () => {
     expect([...mergeIntoCardRows(new Map([[DIRECTION_UNCLEAR, [car('a', null)]]]), rows).keys()]).toEqual([DIRECTION_UNCLEAR]);
   });
 });
+
+// Guard (manager, 2026-11-27): no vehicle group keeps a row of its own when a destination row in its direction matches it.
+describe('no second row for a destination', () => {
+  const rows = [{ key: 'Broadview', directionId: 0 }, { key: 'Dundas West', directionId: 1 }, { key: 'Queen', directionId: 0 }];
+  for (const [group, dir] of [['Broadview Ave', 0], ['Broadview & Queen', 0], ['Broadview Station', null], ['to Dundas West', 1], ['Dundas West Stn', 1]] as const) {
+    it(`"${group}" goes under its destination's row`, () => {
+      const out = mergeIntoCardRows(new Map([[group, [car('x', dir)]]]), rows);
+      expect([...out.keys()].every(k => rows.some(r => r.key === k))).toBe(true);
+    });
+  }
+});
