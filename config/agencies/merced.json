@@ -8,7 +8,7 @@
     -120.48
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "PASAT 8 Route Update",
   "region": "California",
   "lastRefreshedAt": "2026-11-23",
@@ -34,14 +34,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 69,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 15,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -58,5 +58,8 @@
     "name": "Merced The Bus data disclaimer",
     "credit": "Data provided by Merced The Bus is not warranted by Merced The Bus for accuracy or completeness and data is subject to change without notice.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "noFeedEnd": true,
+  "lastTimetableKey": "f85ed1c755e8e4c6",
+  "timetableChangedAt": "20261123"
 }

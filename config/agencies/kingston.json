@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "lastFeedExpiry": "20271115",
+  "lastFeedExpiry": "20270103",
   "lastFeedVersion": "1/20261115 19:18:20/20261116 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-733/latest.zip",
   "lastRefreshedAt": "2026-11-16",
@@ -52,16 +52,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 144,
-      "feedExpiry": "20271115",
+      "featureCount": 141,
+      "feedExpiry": "20270103",
       "routeCount": 26,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -75,5 +74,7 @@
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20261114",
   "lastRawArchiveKey": "20271115-d9ac3c697d060b79",
-  "lastFeedContentKey": "953cc9dd232e01c3"
+  "lastFeedContentKey": "953cc9dd232e01c3",
+  "lastTimetableKey": "ff122969440fa42c",
+  "timetableChangedAt": "20261116"
 }

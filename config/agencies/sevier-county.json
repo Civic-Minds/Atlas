@@ -30,7 +30,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
@@ -47,5 +47,7 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20261120",
   "lastRawArchiveKey": "20271231-27e60a66de5c3271",
-  "lastFeedContentKey": "5c8ba89d9b25479c"
+  "lastFeedContentKey": "5c8ba89d9b25479c",
+  "lastTimetableKey": "d3383d5b6c27ea9c",
+  "timetableChangedAt": "20261123"
 }

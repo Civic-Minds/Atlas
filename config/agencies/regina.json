@@ -44,7 +44,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -62,5 +62,7 @@
     "name": "City of Regina Open Government Licence v2",
     "credit": "Contains information licensed under the Open Government Licence – City of Regina.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "fe65e3d39df4a310",
+  "timetableChangedAt": "20260831"
 }

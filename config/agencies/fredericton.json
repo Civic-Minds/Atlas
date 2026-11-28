@@ -43,7 +43,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Halifax",
   "feedRefreshStatus": "current",
@@ -62,5 +62,7 @@
     "url": "https://www.arcgis.com/home/item.html?id=0bc9093b47c744fdb82af7e830ed8590",
     "attribution": "unread",
     "checkedOn": "2026-11-21"
-  }
+  },
+  "lastTimetableKey": "0c513a745d350bdb",
+  "timetableChangedAt": "20261123"
 }

@@ -35,7 +35,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -55,5 +55,7 @@
     "attribution": "required",
     "name": "BC Transit Open Data Terms of Use",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "5753a5a6b6afd004",
+  "timetableChangedAt": "20261123"
 }

@@ -14,7 +14,7 @@
     -77.35
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2885/latest.zip",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": null,
   "region": "Virginia",
   "lastRefreshedAt": "2026-11-02",
@@ -41,14 +41,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 12,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 4,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20501230",
   "feedRefreshStatus": "current",
@@ -57,5 +57,8 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "8dbc067917d8dd97",
   "feedObtainedAt": "20240429",
-  "lastFeedStart": "20230828"
+  "lastFeedStart": "20230828",
+  "noFeedEnd": true,
+  "lastTimetableKey": "0b3e02ad995879b9",
+  "timetableChangedAt": "20240429"
 }

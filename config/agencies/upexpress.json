@@ -46,7 +46,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -66,5 +66,7 @@
     "name": "Open Government Licence - Ontario - Metrolinx",
     "credit": "Contains information licensed under the Open Government Licence - Ontario - Metrolinx.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "dbdeb727cefc44c2",
+  "timetableChangedAt": "20261123"
 }

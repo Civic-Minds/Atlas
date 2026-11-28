@@ -40,7 +40,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -94,5 +94,7 @@
     "name": "PRT Developer License Agreement",
     "credit": "Reproduced with permission granted by Pittsburgh Regional Transit (PRT). The information has been provided by means of a nonexclusive, limited, and revocable license granted by PRT. PRT does not guarantee the accuracy, adequacy, completeness, or usefulness of any information. PRT provides this information \"as is\" without warranty of any kind, express or implied, including, but not limited to, warranties of merchantability or fitness for a particular purpose and assumes no responsibility for anyone's use of the information.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "880abc927c5d4c5e",
+  "timetableChangedAt": "20261101"
 }

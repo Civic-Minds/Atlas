@@ -23,7 +23,7 @@
   "expiredFeedCheckExpiry": "20271231",
   "feedQuality": {
     "status": "review",
-    "score": 86,
+    "score": 85,
     "reasons": [
       "1 minor schedule issue found while reading the feed.",
       "1 route has stops whose frequency differs from the overall route schedule."
@@ -33,15 +33,15 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 84,
+      "featureCount": 80,
       "feedExpiry": "20271231",
-      "routeCount": 23,
+      "routeCount": 22,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
@@ -55,5 +55,7 @@
   "feedObtainedAt": "20260824",
   "lastFeedStart": "20260821",
   "lastRawArchiveKey": "20271231-83fc42d626c6ce5d",
-  "lastFeedContentKey": "acd53322e898e3ec"
+  "lastFeedContentKey": "acd53322e898e3ec",
+  "lastTimetableKey": "a8239ded56781d7f",
+  "timetableChangedAt": "20260824"
 }

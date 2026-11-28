@@ -37,7 +37,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Detroit",
   "feedRefreshStatus": "current",
@@ -56,5 +56,7 @@
     "name": "CATA GTFS License Agreement",
     "credit": "CATA information provided on this site is subject to change without notice. For most current information, please click here.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "7350a00f7337c1fe",
+  "timetableChangedAt": "20260917"
 }

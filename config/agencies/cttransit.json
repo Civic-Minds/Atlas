@@ -47,7 +47,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -61,5 +61,7 @@
     "attribution": "none",
     "name": "CTTRANSIT License Agreement",
     "checkedOn": "2026-11-21"
-  }
+  },
+  "lastTimetableKey": "8b6935e618303f9a",
+  "timetableChangedAt": "20261019"
 }

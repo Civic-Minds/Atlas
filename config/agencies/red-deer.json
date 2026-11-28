@@ -35,7 +35,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Edmonton",
   "lastFeedSourceKind": "configured",
@@ -55,5 +55,7 @@
     "name": "Open Government Licence - The City of Red Deer",
     "credit": "Contains information licensed under the Open Government Licence – The City of Red Deer",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "abff466fef4f7ab9",
+  "timetableChangedAt": "20260813"
 }

@@ -50,7 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -69,5 +69,7 @@
     "name": "City of Hamilton Open Data Licence v1.1",
     "credit": "Contains public sector Data made available under the City of Hamilton’s Open Data Licence",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "0ebfa2c51de231a0",
+  "timetableChangedAt": "20261001"
 }

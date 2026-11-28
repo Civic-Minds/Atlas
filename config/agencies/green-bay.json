@@ -51,11 +51,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20270504",
   "lastServiceWeek": "7c251cd0df4bd2d9",
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20261105",
-  "lastFeedContentKey": "a268a4f10cc08b23"
+  "lastFeedContentKey": "a268a4f10cc08b23",
+  "lastTimetableKey": "45657c3d2194e6b5",
+  "timetableChangedAt": "20261116"
 }

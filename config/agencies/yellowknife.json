@@ -42,7 +42,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -57,5 +57,7 @@
     "name": "City of Yellowknife Open Data License v.1",
     "credit": "Contains public sector Datasets made available under the City of Yellowknife's Open Data License v.1",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "c64789f8942f4de3",
+  "timetableChangedAt": "20261102"
 }

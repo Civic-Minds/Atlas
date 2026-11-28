@@ -49,7 +49,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
@@ -60,5 +60,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "cc4ce406879a6abd",
   "feedObtainedAt": "20260902",
-  "lastFeedStart": "20260906"
+  "lastFeedStart": "20260906",
+  "lastTimetableKey": "659fd79b108b6861",
+  "timetableChangedAt": "20260902"
 }

@@ -36,7 +36,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "Pacific/Honolulu",
   "feedRefreshStatus": "current",
@@ -48,5 +48,7 @@
   "lastPeekedExpiry": "20261205",
   "lastServiceWeek": "b6ccd7bccb4fb16a",
   "feedObtainedAt": "20260724",
-  "lastFeedStart": "20260809"
+  "lastFeedStart": "20260809",
+  "lastTimetableKey": "64f2cfe785e73f5f",
+  "timetableChangedAt": "20260724"
 }

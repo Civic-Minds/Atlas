@@ -36,15 +36,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 27,
+      "featureCount": 54,
       "feedExpiry": "20270411",
-      "routeCount": 6,
+      "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastRawArchiveKey": "20270411-fd735b0d46848dc3",
   "lastFeedContentKey": "6bfcfcd83d27e8ad",
@@ -58,5 +58,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "c6d70b908147e42d",
-  "feedObtainedAt": "20261123"
+  "feedObtainedAt": "20261123",
+  "lastTimetableKey": "905c1ff5310451ee",
+  "timetableChangedAt": "20261123"
 }

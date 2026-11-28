@@ -8,7 +8,7 @@
     -111.65
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1979/latest.zip",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "11/17/2026",
   "region": "Arizona",
   "lastRefreshedAt": "2026-11-23",
@@ -32,14 +32,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 39,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 9,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -50,5 +50,8 @@
   "lastServiceWeek": "e28199187bffc3b7",
   "feedObtainedAt": "20261123",
   "lastRawArchiveKey": "unknown-de0e0abdf928ba36",
-  "lastFeedContentKey": "278595ed04e2e7a5"
+  "lastFeedContentKey": "278595ed04e2e7a5",
+  "noFeedEnd": true,
+  "lastTimetableKey": "1dc4a775d32d5346",
+  "timetableChangedAt": "20261123"
 }
