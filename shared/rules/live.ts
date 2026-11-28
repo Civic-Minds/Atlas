@@ -44,6 +44,11 @@ export function onTimeWindow(slug: string | null | undefined): OnTimeWindow & { 
 
 /** A stop, stretch, hour or route needs at least this many departures, gaps or trips before Live states a figure for it. */
 export const LIVE_MIN_SAMPLE = 30;
+/**
+ * Late departures by hour draws only when at least this share of the chart's hours each have LIVE_MIN_SAMPLE departures
+ * (CIV-3159, Ryan: "If there's few measurements then should we hide the chart"); with fewer, the section is hidden.
+ */
+export const LIVE_MIN_CHART_HOUR_SHARE = 0.5;
 
 // ---- Minimum days (CIV-1812 item 9) ----
 // Five rules, each its own meaning and value; they are not one number set five ways, so each keeps its own name.

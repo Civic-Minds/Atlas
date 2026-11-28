@@ -528,18 +528,20 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
  * The chart's bars are trips per hour (1 / headway), so a count draws as 60 / count, in one colour, never expandable: none
  * of the chart's frequency wording ("every N min") can read a count. Hover text comes from `hourTitle`.
  */
-export function CountSparkline({ countByHour, color, label, ...rest }: Pick<HourlySparklineProps, 'period' | 'title' | 'hourTitle' | 'onPeriodChange' | 'onHourHover'> & {
+export function CountSparkline({ countByHour, color, label, faded, ...rest }: Pick<HourlySparklineProps, 'period' | 'title' | 'hourTitle' | 'onPeriodChange' | 'onHourHover'> & {
   countByHour: Record<number, number | null>;
+  /** Hours drawn at the chart's out-of-period fade (Live's hours with too few departures to state, CIV-3159). */
+  faded?: (hour: number) => boolean;
   /** One colour, or each hour's by its value (Live's late share by the lateness steps, CIV-3159). */
   color: string | ((value: number, hour: number) => string);
   /** The counted thing ("buses"), named on each bar's segment. */
   label: string;
 }) {
   const byHour: Record<number, number | null> = {};
-  const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
+  const stackedByHour: Record<number, { label: string; headway: number; color: string; faded?: boolean }[]> = {};
   for (const [h, n] of Object.entries(countByHour)) {
     byHour[+h] = n ? 60 / n : null;
-    if (n) stackedByHour[+h] = [{ label, headway: 60 / n, color: typeof color === 'function' ? color(n, +h) : color }];
+    if (n) stackedByHour[+h] = [{ label, headway: 60 / n, color: typeof color === 'function' ? color(n, +h) : color, faded: faded?.(+h) || undefined }];
   }
   return <HeadwaySparkline {...rest} byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} />;
 }

@@ -32,8 +32,8 @@ import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
 import { liveAgencyStatus, newestReportSec, worstLiveStatus, type LiveAgencyFeed } from '../../shared/liveStatus';
 import { LiveStatusDot } from '../components/Live/LiveStatusPill';
-import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, mergeIntoCardRows, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey, type CardRowKey } from '../utils/liveGrouping';
+import { resolveLiveVehicles } from '../utils/liveResolveVehicles';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, mergeIntoCardRows, orderAlongRoute, orderDirectionGroups, routeDirectionLabels, rowDirectionKey, type CardRowKey } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
 import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -111,8 +111,6 @@ function SheetPortal({ on, children }: { on: boolean; children: React.ReactNode 
 
 const MIN_LIVE_ZOOM = 9;
 
-/** Direction work per polled vehicle, kept across zoom steps (see resolvedVehiclesBySlug). */
-const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
 const NO_VEHICLES: LiveVehicle[] = [];
 
 export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, selectionActive = false, routeRequest = null, onAgencyClick }: Props) {
@@ -183,35 +181,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Fill missing direction metadata from static directional route shapes. Some
   // GTFS-RT feeds provide vehicle positions without direction_id or headsign.
+  // One reading for every Live view (resolveLiveVehicles, CIV-3159): Studio's panel resolves its vehicles the same way.
   const resolvedVehiclesBySlug = useMemo(() => {
     const resolved: Record<string, LiveVehicle[]> = {};
     for (const [slug, vehicles] of Object.entries(vehiclesBySlug)) {
-      const fc = routeLayer(slug);
-      if (!fc) { resolved[slug] = vehicles; continue; }
-      // Group the route shapes once, not once per vehicle.
-      const featuresByRoute = new Map<string, GeoJSON.Feature[]>();
-      for (const feature of fc.features) {
-        const name = (feature.properties as any)?.routeShortName;
-        const list = featuresByRoute.get(name);
-        if (list) list.push(feature); else featuresByRoute.set(name, [feature]);
-      }
-      resolved[slug] = vehicles.map(vehicle => {
-        // `layers` is rebuilt on every zoom step, but a vehicle's direction doesn't change until the next
-        // poll gives a new vehicle object, so work it out once per vehicle.
-        const routeFeatures = featuresByRoute.get(vehicle.routeShortName) ?? [];
-        // A direction the trip itself gives wins over the nearest-shape guess, which can pick the other
-        // direction's shape where the two run close together, as at a terminal loop (#1164).
-        const known = vehicle.directionId == null && buildRouteKey(slug, vehicle.routeShortName) === selectedRoute ? tripDirections?.get(vehicle.id) : undefined;
-        const cached = resolvedDirections.get(vehicle);
-        if (cached && (known == null || cached.directionId === known)) return cached;
-        const match = inferLiveDirection(known == null ? vehicle : { ...vehicle, directionId: known }, routeFeatures);
-        // Destinations read with "&" between two street names, like the direction labels below (CIV-1043); an
-        // internal headsign ("506 Carlton Short Turn") never reaches the list or the card (CIV-1062).
-        const headsign = riderHeadsign(match.headsign, vehicle.routeShortName);
-        const out = { ...vehicle, directionId: match.directionId, headsign: headsign && streetJoin(headsign) };
-        if (routeFeatures.length > 0) resolvedDirections.set(vehicle, out);
-        return out;
-      });
+      resolved[slug] = resolveLiveVehicles(vehicles, routeLayer(slug), tripDirections, v => buildRouteKey(slug, v.routeShortName) === selectedRoute);
     }
     return resolved;
   }, [vehiclesBySlug, routeLayer, selectedRoute, tripDirections]);

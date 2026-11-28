@@ -21,6 +21,9 @@ const v3 = {
   bands: { all: { adherence: { timepoints: { all: block('all'), weekday: block('weekday'), weekend: block('weekend') } } } },
 } as unknown as LiveV3;
 
+/** A day measured hour by hour, 6 AM to 11 PM: enough hours for the chart to draw (MIN_CHART_HOURS). */
+const DAY = Array.from({ length: 18 }, (_, i) => ({ hour: 6 + i, value: 0.05, n: 200 }));
+
 describe('one good-days basis for late figures', () => {
   it('counts only good days by kind of day, so every surface gets the same figure', () => {
     expect(healthyCounts(block('all').byDate, ['2026-10-09', '2026-10-10'], 'all')).toMatchObject({ n: 200, late: 40, lateShare: 0.2, days: 2 });
@@ -61,9 +64,9 @@ describe('a figure on fewer than 3 good days is dimmed', () => {
     expect(tile('Weekdays')?.getAttribute('title')).toBe('Few measurements: treat with care.'); // 2026-10-09 only
   });
   it('hides the planner chart on fewer than 3 days and shows it on 3 (Ryan, 2026-11-27: "1")', () => {
-    const { container, rerender } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={2} />);
+    const { container, rerender } = render(<LateByHourSection chart="mini" hours={DAY} band="all" overall={0.2} days={2} />);
     expect(within(container).queryByRole('region', { name: 'Late departures by hour' })).toBeNull();
-    rerender(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={3} />);
+    rerender(<LateByHourSection chart="mini" hours={DAY} band="all" overall={0.2} days={3} />);
     expect(within(container).getByRole('region', { name: 'Late departures by hour' }).className).not.toMatch(/opacity-60/);
   });
 });
@@ -71,21 +74,21 @@ describe('a figure on fewer than 3 good days is dimmed', () => {
 describe('visible days, peak label and run time wording', () => {
   beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); });
   it('names the days left out, and says nothing when every day counts', () => {
-    const hours = [{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }];
+    const hours = DAY;
     const { container, rerender } = render(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={4} leftOut={['2026-10-11']} />);
     expect(screen.getByText('Excluding Oct 11').getAttribute('title')).toBe('Oct 11 left out: gaps in our recordings that day');
     rerender(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={7} leftOut={[]} />);
     expect(container.textContent).not.toMatch(/Excluding|of 7|counted/);
   });
   it("draws the route card's own chart (HeadwaySparkline), the picked time of day lit, with no chart of its own (CIV-3159)", () => {
-    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 19, value: 0.05, n: 200 }, { hour: 20, value: 0.2, n: 5 }]} band="evening" overall={0.07} days={6} />);
+    const { container } = render(<LateByHourSection chart="mini" hours={[...DAY.filter(h => h.hour !== 20), { hour: 20, value: 0.2, n: 5 }]} band="evening" overall={0.07} days={6} />);
     expect(container.querySelectorAll('[data-peak]')).toHaveLength(0);
     expect(container.querySelector('[data-testid="sparkline-hover-band"]')).not.toBeNull();
   });
   it('draws the hours after midnight at the end of the chart, as the route card does (CIV-3159)', () => {
-    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 1, value: 0.2, n: 200 }]} band="all" overall={0.1} days={6} />);
+    const { container } = render(<LateByHourSection chart="mini" hours={[...DAY, { hour: 1, value: 0.2, n: 200 }]} band="all" overall={0.1} days={6} />);
     const titles = [...container.querySelectorAll('[title]')].map(e => e.getAttribute('title') ?? '');
-    expect(titles.filter(t => /late/i.test(t))).toHaveLength(2);
+    expect(titles.filter(t => /late/i.test(t))).toHaveLength(DAY.length + 1);
   });
   it('writes a share before and after with the arrow, and nothing without both shares (CIV-1814 item 41)', () => {
     expect(shareRiseText({ value: 0.31, fromShare: 0.1, toShare: 0.41 })).toBe('10% → 41%');
