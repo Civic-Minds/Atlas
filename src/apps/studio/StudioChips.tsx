@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { StudioSettingsGear } from './StudioSettings';
+import type { SettingsSection } from '../../components/Interval/FilterPanel';
 import { ChipMenu, ChipOptions, useChipRow, type ChipOption } from '../../components/Interval/ChipMenu';
 
 /** One of Studio's menus in the top bar: what its chip shows, its choices and the current one. */
@@ -24,20 +25,31 @@ export interface StudioMenu {
   width?: string;
   /** The chip's dropdown chevron, for a menu that sits among the tabs (Live's Measure, CIV-1889). */
   arrow?: boolean;
-  /** Shown right after the chip, outside its dropdown (the agency chip's Source link, CIV-1890). */
+  /** Shown right after the chip, outside its dropdown (the agency chip's Source link, CIV-1890); in Settings, under the choices. */
   after?: ReactNode;
+  /**
+   * CIV-3179 (Ryan, 2026-11-28, picked 1: "Then should we have an internal settings menu for now instead?" / "Similar to the
+   * settings menu in the main app perhaps but local only?"): a section of Studio's Settings menu, not a chip in the top bar
+   * (the agency choice and its Source link).
+   */
+  inSettings?: boolean;
 }
 
 /**
  * Studio's menus (agency, route, time of day) in App's top bar, where the main map's chips sit (CIV-1828): the main map's
  * chip and dropdown (ChipMenu), one open at a time.
  */
-export default function StudioChips({ container, menus, settings }: { container: Element | null; menus: ReadonlyArray<StudioMenu | null>; /** The page's own Settings section (CIV-2006). */ settings?: { title: string; content: ReactNode; active?: boolean } }) {
+export default function StudioChips({ container, menus, settings }: { container: Element | null; menus: ReadonlyArray<StudioMenu | null>; /** The page's own Settings section (CIV-2006). */ settings?: SettingsSection }) {
   const { openChip, setOpenChip, toggle, rowRef } = useChipRow<string>();
   if (!container) return null;
+  // CIV-3179: menus that live in Settings come first there, then the page's own section.
+  const sections: SettingsSection[] = [
+    ...menus.flatMap(m => (m?.inSettings ? [{ title: m.label, content: <div className="flex flex-col gap-1"><ChipOptions value={m.value} onPick={m.onPick} options={chipOptions(m)} />{m.after && <div className="pt-2">{m.after}</div>}</div> }] : [])),
+    ...(settings ? [settings] : []),
+  ];
   return createPortal(
     <div ref={rowRef} className="hidden sm:flex min-w-0 flex-wrap justify-end items-center gap-2 pointer-events-auto">
-      {menus.map(m => m && (
+      {menus.map(m => m && !m.inSettings && (
         <Fragment key={m.key}>
         <ChipMenu key={m.key} label={m.label} active={m.active ?? true} width={m.width} arrow={m.arrow}
           open={openChip === m.key} onToggle={() => toggle(m.key)} panelClassName={m.panelClassName ?? 'w-56 max-h-[70vh] overflow-y-auto'}>
@@ -49,7 +61,7 @@ export default function StudioChips({ container, menus, settings }: { container:
         </Fragment>
       ))}
       {/* CIV-2006: the main app's Settings gear, last in the row as on the main map. */}
-      <StudioSettingsGear section={settings} />
+      <StudioSettingsGear section={sections} />
     </div>,
     container,
   );

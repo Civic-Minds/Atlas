@@ -118,8 +118,8 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const noDataRows = useMemo(() => (withData ?? []).map(s => ({ slug: s, ...cardNameOf(s) })), [agencyCatalog, withData]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new page or agency starts with no route open.
   const selected = useMemo(() => agencyCatalog.find(a => a.slug === slug) ?? null, [agencyCatalog, slug]);
-  // The selected agency's own source sits beside the agency chip, the agency card's Source link (CIV-1890).
-  const agencyMenu: StudioMenu | null = page && slug ? { key: 'agency', label: AGENCY_COLUMN, value: slug, options: agencyOptions, onPick: s => go({ agency: s, route: null }), after: selected ? <AgencyDataSourceLink agency={{ slug: selected.slug, websiteUrl: selected.websiteUrl ?? undefined }} /> : null } : null;
+  // The agency choice and its own source (the agency card's Source link, CIV-1890) sit in Studio's Settings menu (CIV-3179).
+  const agencyMenu: StudioMenu | null = page && slug ? { key: 'agency', label: AGENCY_COLUMN, value: slug, options: agencyOptions, onPick: s => go({ agency: s, route: null }), inSettings: true, after: selected ? <AgencyDataSourceLink agency={{ slug: selected.slug, websiteUrl: selected.websiteUrl ?? undefined }} /> : null } : null;
   // The active page's tab toggles its panel off, like the main map's mode tabs (#1588): Studio stays open on its own map with the
   // agency still chosen and no panel (?panel=closed); any tab opens its page again.
   // Opening Studio with no page in the address is the same state: its map, the remembered agency, no panel (Ryan: Live and Fleet open only when clicked).
