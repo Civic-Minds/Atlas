@@ -1,39 +1,95 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import LiveRoutePerformance from '../../components/Live/LiveRoutePerformance';
+import { RouteCardRows } from '../../components/Interval/panels/RouteCardHeadway';
+import { CardDirectionRow, CardHelpNotice, type CardReportButtonHandle } from '../../components/Interval/cardUi';
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveFeeds } from '../../hooks/useLiveFeeds';
 import { useAgencyGeo } from '../../hooks/useAgencyGeo';
 import { STUDIO_ROUTE_PANEL_PENDING } from '../../../shared/liveWording';
-import { liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
+import { LIVE_UNMATCHED_DESTINATION } from '../../content/noticeCopy';
+import { liveCardModelNow, liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey, type CardRowKey } from '../../utils/liveGrouping';
+import { streetJoin } from '../../utils/stopLabel';
+import { vehicleModeWord } from '../../utils/format';
+import { effectiveMode, type EffectiveModeInput } from '../../../shared/modes';
+import { directionSummary } from '../LiveVehicles';
+import type { ShapeProperties } from '../../hooks/useIntervalStats';
+import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 
 /**
- * CIV-2021 (Ryan: the right-now card shared between main Live and Studio): Studio's Live route panel shows main Live's own
- * route card (LiveRoutePerformance) over the same live vehicles, polled here as the map polls them, with the same Scheduled
- * lines (liveScheduledRowsNow) and the same per-branch vehicles and gaps (CIV-2047). Studio's week figures stay below it.
- * The panel's Direction chip picks the card's direction.
+ * CIV-2021, CIV-3047 (Ryan, 2026-11-27: "Then this should use a similar/same design for that part", "Using the same code
+ * perhaps"): Studio's Live route panel draws the main map card's own row list (RouteCardRows) for the route now, every
+ * direction, each destination once with its live vehicles and gaps, as main Live's card does. Live's "Right now" reading
+ * runs behind it only to hand each destination its gaps. Studio's week figures stay below it.
  */
-export default function RouteRightNow({ slug, routeShortName }: { slug: string; routeShortName: string; /** Not used: the card shows every direction, as the map's does (#1921). */ direction?: number | null }) {
+export default function RouteRightNow({ slug, routeShortName }: { slug: string; routeShortName: string; /** Not used: every direction shows, as on the map's card (#1921). */ direction?: number | null }) {
   const { agencies } = useAgencies();
   const { vehiclesBySlug, degradedBySlug, errorBySlug } = useLiveFeeds(true, [slug], slug);
   const vehicles = useMemo(() => (vehiclesBySlug[slug] ?? []).filter(v => v.routeShortName === routeShortName), [vehiclesBySlug, slug, routeShortName]);
-  // The agency's route shapes, for the card's Scheduled lines (useAgencyGeo: the map's copy when it has one).
   const geo = useAgencyGeo(slug);
-  // #1921 and Ryan, 2026-11-27 ("Then this should use a similar/same design for that part"): every direction, each with
-  // the map card's own destination rows, as the main map's Live card shows them.
+  const reportRef = useRef<CardReportButtonHandle>(null);
+  const model = useMemo(() => liveCardModelNow(geo, agencies, slug, routeShortName), [geo, agencies, slug, routeShortName]);
+  const modeWord = useMemo(() => {
+    const f = geo?.features.find(x => (x.properties as ShapeProperties | null)?.routeShortName === routeShortName);
+    const props = f?.properties as EffectiveModeInput | null | undefined;
+    return vehicleModeWord(props?.routeType == null ? null : effectiveMode({ ...props, agencySlug: slug }));
+  }, [geo, routeShortName, slug]);
+  // The same grouping as main Live: by destination, then under the card's own rows (mergeIntoCardRows, #1877).
+  const rowKeys = useMemo((): CardRowKey[] => (model?.groups ?? []).flatMap(g => [...g.rows, ...g.spanRows].flatMap(r => { const k = rowDirectionKey(r.feature?.headsign, routeShortName); return k ? [{ key: k, directionId: g.dirId }] : []; })), [model, routeShortName]);
+  const groups = useMemo(() => {
+    const labels = geo ? new Map([...routeDirectionLabels(geo.features, routeShortName)].map(([d, l]) => [d, streetJoin(l)])) : new Map<number, string>();
+    return mergeIntoCardRows(groupVehiclesByDirection(vehicles, labels), rowKeys);
+  }, [geo, routeShortName, rowKeys, vehicles]);
+  // Each destination's live gaps, handed up by Live's own reading (onDestinationGaps), as on main Live's card.
+  const [gaps, setGaps] = useState<ReadonlyMap<number, ReadonlyMap<string, string>>>(new Map());
+  const onDestinationGaps = useCallback((directionId: number, g: ReadonlyMap<string, string>) => {
+    setGaps(prev => {
+      const old = prev.get(directionId);
+      if (old && old.size === g.size && [...g].every(([k, t]) => old.get(k) === t)) return prev;
+      return new Map(prev).set(directionId, g);
+    });
+  }, []);
   const scheduledRowsFor = useCallback(
     (directionId: number, label: string) => liveScheduledRowsNow(geo, agencies, slug, routeShortName, { directionId, label }),
     [geo, agencies, slug, routeShortName],
   );
-  return (
+  const rowLive = (feature: ShapeProperties) => {
+    const key = rowDirectionKey(feature.headsign, routeShortName);
+    const vs = key ? groups.get(key) : undefined;
+    if (!key || !vs?.length) return null;
+    const gap = [...gaps.values()].map(g => g.get(key)).find(t => t != null);
+    return { key, subLabel: directionSummary(vs, modeWord), gap };
+  };
+  const feedDown = !!degradedBySlug[slug] || !!errorBySlug[slug];
+  const reading = (
     <LiveRoutePerformance
       key={`${slug}::${routeShortName}`}
       slug={slug}
       routeShortName={routeShortName}
       vehicles={vehicles}
-      feedDegraded={!!degradedBySlug[slug] || !!errorBySlug[slug]}
+      feedDegraded={feedDown}
       scheduledRowsFor={scheduledRowsFor}
+      // With the card's rows to carry them, the reading only hands up each destination's gaps; while the route's shapes
+      // load, it draws its own rows.
+      onDestinationGaps={model ? onDestinationGaps : undefined}
       unavailableMessage={STUDIO_ROUTE_PANEL_PENDING.noReading}
       liveEnabled
     />
   );
+  if (!model) return reading;
+  if (vehicles.length === 0) return <CardHelpNotice message={STUDIO_ROUTE_PANEL_PENDING.noReading} />;
+  return (
+    <>
+      {reading}
+      <RouteCardRows model={model} reportRef={reportRef} rowLive={rowLive} />
+      <Unmatched groups={groups} rowKeys={new Set(rowKeys.map(r => r.key))} modeWord={modeWord} />
+    </>
+  );
+}
+
+/** Vehicles no destination row carries, in one row at the end (as main Live's "No destination"). */
+function Unmatched({ groups, rowKeys, modeWord }: { groups: ReadonlyMap<string, LiveVehicle[]>; rowKeys: ReadonlySet<string>; modeWord: string }) {
+  const left = [...groups].filter(([k]) => !rowKeys.has(k) || k === DIRECTION_UNCLEAR).flatMap(([, vs]) => vs);
+  if (!left.length) return null;
+  return <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} subLabel={directionSummary(left, modeWord)} subLabelWeight="medium" />;
 }
