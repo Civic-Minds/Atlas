@@ -973,11 +973,22 @@ export async function routesNear(agency: CatalogAgency, place: string, metres = 
   const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
   const { stops, seeds, corner } = await placeStops(agency, place);
   const near = stops.filter(s => seeds.some(t => withinMetres({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }, metres)));
+  // #1950: a station's stops can spread a few hundred metres, and the radius counts from each of them, so each route says
+  // how far its closest stop is from the nearest matched stop, and lists its stops closest first.
+  const away = (s: { lat: number; lon: number }) => Math.round(Math.min(...seeds.map(t => metresBetween({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }))));
   const routeNames = await routeIdNames(agency);
-  const byRoute = new Map<string, Set<string>>();
-  for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
+  const byRoute = new Map<string, Map<string, number>>();
+  for (const s of near) {
+    const m = away(s);
+    for (const id of s.routeIds) {
+      const n = routeNames.get(id);
+      if (!n) continue;
+      const at = byRoute.get(n.name) ?? byRoute.set(n.name, new Map()).get(n.name)!;
+      at.set(s.name, Math.min(at.get(s.name) ?? Infinity, m));
+    }
+  }
   const info = new Map([...routeNames.values()].map(v => [v.name, v]));
-  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), ...(corner ? { matchedAs: `No stop is named for both streets; these are the closest stops on each, ${corner.apart} m apart.` } : {}), within: metres, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), ...(corner ? { matchedAs: `No stop is named for both streets; these are the closest stops on each, ${corner.apart} m apart.` } : {}), within: metres, withinNote: `Counted from each matched stop. metresAway is how far the route's closest stop is from the nearest matched stop; give it when you say a route is nearby.`, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); const closest = [...at.entries()].sort((x, y) => x[1] - y[1]); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, metresAway: closest[0][1], stops: closest.slice(0, 4).map(([n]) => n), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
 }
 
 /** How many different stop names a place may match before stopFrequency asks which one is meant. */
