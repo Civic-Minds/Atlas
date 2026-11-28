@@ -20,10 +20,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How a route's frequency is decided
 
-- **On-demand zones show only with no frequency filter**
-  - What: under any frequency filter (every 10, 15, 20, 30 or 60) the map hides on-demand zones and stops; with no filter (all service) they show by their hours as before. One rule (shared/viewLayers.ts mapDrawsOnDemand), so the failed-to-load notice follows it too.
-  - Why: on-demand service has no headway, so it can't pass a frequency filter.
-  - Source: Ryan, 2026-11-24 (CIV-2898): "on demand doens't have deadways so why do they show up if i select 10 mins lol", then "1"
+- **On-demand zones show only with no frequency filter, and the map opens with no filter**
+  - What: under any frequency filter (every 10, 15, 20, 30 or 60) the map hides on-demand zones and stops; with no filter (all service) they show by their hours as before. One rule (shared/viewLayers.ts mapDrawsOnDemand), so the failed-to-load notice follows it too. The map's default filter is All (DEFAULT_MAX_HEADWAY), so zones show on a fresh map.
+  - Why: on-demand service has no headway, so it can't pass a frequency filter; with an every-60 default, zones never showed on a fresh map.
+  - Source: Ryan, 2026-11-24 (CIV-2898): "on demand doens't have deadways so why do they show up if i select 10 mins lol", then "1"; the All default 2026-11-27 (CIV-2898), "1"
 - **Atlas is not a trip-planning tool; no booking info**
   - What: no on-demand booking info anywhere: no app names, booking links, phone numbers, call-centre hours or booking-ahead rules on zone cards, other UI or the MCP's on_demand_zones answer. The bookingInfo and bookingUrl fields are deleted from the data, and a guard test (noBookingInfo.test.ts) fails if a booking field or booking text comes back.
   - Why: Atlas shows how often service runs, not how to ride it.
@@ -415,6 +415,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-27 — The map opens with no frequency filter (All), so on-demand zones show on a fresh map (CIV-2898; extends 2026-11-24, replaces CIV-1812 item 8's every-60 default)
+Ryan, 2026-11-27 (Studio chat). He first picked "Hide when tighter than 60", then asked "But the same issue would still exist right" (zones would still show at the default 60 although they don't run every 60) and "So should the default be "all" then". Offered "1. Make "All" the default and hide zones under any filter (Recommended)", with the trade-off that a fresh map also shows routes slower than every 60 min, in the slowest tier colour. His words: "1". The 2026-11-24 rule (zones hidden under any frequency filter) stays. The saved filter moves to a new key, so returning viewers, whose old every-60 default had been saved automatically, open on All once; a filter picked after that is kept.
 
 ### 2026-11-27 — No "from"/"until" on a card row where buses keep the same spacing across the period's edge (CIV-3121, #1906)
 Ryan, 2026-11-27, on TransLink R2 toward Park Royal ("every 8 mins from 310 but the period begins at 3 pm lol so"), then in the manager window: "Why are we saying "until" or "from" if the frequency doesn't change here". In the data chat he said "Please ask Manager then decide"; the manager found no rule against it (CIV-1241 and CIV-1411 cover real starts and stops only) and the data chat kept both sides.
