@@ -1,5 +1,6 @@
 import { LIVE_ARCHIVE_TRIP_FEEDS, LIVE_MAP_ARCHIVE_FEEDS } from './liveArchiveFeeds.js';
 import scheduledHeadways from './data/live-scheduled-headways.json';
+import { LIVE_TTC_ANALYSED_ROUTES } from './rules/live.js';
 
 /**
  * CIV-2897 (Ryan, 2026-11-24): agencies whose Live routes take their scheduled headway from the published schedule (the
@@ -474,12 +475,22 @@ export function liveMapArchiveFeed(slug: string) {
 }
 
 /**
+ * CIV-3146 (Ryan, "1"): Live shows the vehicles of every route it analyses, not only its polled ones: the TTC's analysed
+ * routes (LIVE_TTC_ANALYSED_ROUTES) by short name, from the recorder, which keeps every TTC route. The one list the Worker's
+ * answer (liveRouteIdNames) and the pages (liveFollowsRoute) both read.
+ */
+export const LIVE_ANALYSED_ROUTES_BY_SLUG: Readonly<Record<string, readonly string[]>> = { ttc: LIVE_TTC_ANALYSED_ROUTES };
+export const liveShowsAnalysedRoute = (slug: string, routeShortName: string): boolean =>
+  !!LIVE_ANALYSED_ROUTES_BY_SLUG[slug]?.includes(routeShortName);
+
+/**
  * CIV-2056: Live reads every vehicle of this route: one of its polled routes, or an agency whose whole feed the Live map
  * shows (Kingston). A route of a filtered feed (the MBTA's) can't be told by its short name, so it isn't.
  */
 export function liveFollowsRoute(slug: string, routeShortName: string): boolean {
   const polled = getPolledRoute(slug, routeShortName);
   if (polled) return isLiveEligibleRoute(polled);
+  if (liveShowsAnalysedRoute(slug, routeShortName)) return true;
   return liveMapArchiveFeed(slug)?.positions.routeFilterSource === '.+';
 }
 
@@ -592,6 +603,8 @@ export function liveRouteIdNames(
     if (route.slug !== slug) continue;
     for (const routeId of liveConfigRouteIds(route, routeFile)) out.set(routeId, { shortName: route.displayRouteShortName, displayName: route.displayName ?? '' });
   }
+  // CIV-3146: the analysed routes the agency's route file names, whose short name Live shows without polling them.
+  for (const [routeId, r] of routeFile ?? []) if (!out.has(routeId) && liveShowsAnalysedRoute(slug, r.shortName)) out.set(routeId, { shortName: r.shortName, displayName: '' });
   return out;
 }
 

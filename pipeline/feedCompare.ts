@@ -63,7 +63,7 @@ export interface RouteDay {
    * A period's late start or early end on the route's main stretch (stretchPeriodEdge), as the route card reads it: "every
    * 15 min from 10:12 AM" (CIV-1806). Labels only; not compared.
    */
-  edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number }>>;
+  edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number }>>;
   /**
    * The route's length that day (CIV-1827, display only, not compared): the fewest and most stops on its patterns
    * (short turns left out), and the end stops' names of its longest pattern in the first direction.
@@ -352,9 +352,9 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     // The main stretch's edge, as the route card's main-stretch row reads it (rowReadsPeriodEdge): the first one found.
     if (p.stretchRole === 'main') {
       for (const k of PERIOD_KEYS) {
-        const e = (p.stretchPeriodEdge ?? {})[k] as { from?: number; until?: number; every: number; then?: number; thenGap?: number; stretch?: 'main' | number } | undefined;
+        const e = (p.stretchPeriodEdge ?? {})[k] as { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number; stretch?: 'main' | number } | undefined;
         if (!e || (e.from == null && e.until == null) || (e.stretch !== undefined && e.stretch !== 'main') || day.edge?.[k]) continue;
-        (day.edge ??= {})[k] = { ...(e.from != null ? { from: e.from } : {}), ...(e.until != null ? { until: e.until } : {}), every: e.every, ...(e.then != null ? { then: e.then } : {}), ...(e.thenGap != null ? { thenGap: e.thenGap } : {}) };
+        (day.edge ??= {})[k] = { ...(e.from != null ? { from: e.from } : {}), ...(e.until != null ? { until: e.until } : {}), every: e.every, ...(e.then != null ? { then: e.then } : {}), ...(e.thenGap != null ? { thenGap: e.thenGap } : {}), ...(e.before != null ? { before: e.before } : {}) };
       }
     }
     const order = Array.isArray(p.stopOrder) ? (p.stopOrder as unknown[]).map(String) : [];

@@ -16,7 +16,8 @@ describe('Fleet: in service now (CIV-2056)', () => {
   });
   it('counts only routes Live reads every vehicle of', () => {
     expect(liveFollowsRoute('ttc', '501')).toBe(true);
-    expect(liveFollowsRoute('ttc', '29')).toBe(false);
+    expect(liveFollowsRoute('ttc', '7')).toBe(true);
+    expect(liveFollowsRoute('ttc', '9999')).toBe(false);
     expect(liveFollowsRoute('kingston', '502')).toBe(true);
     expect(liveFollowsRoute('nowhere', '1')).toBe(false);
   });

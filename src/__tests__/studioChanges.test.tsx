@@ -1,6 +1,8 @@
 import { render, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { changeSize, periodChange, studioBeforeAfterFile, type StudioComparisonInput, type StudioRouteDay } from '../../shared/studioBeforeAfter';
+import { MISSING_VALUE } from '../../shared/missingValue';
+import type { PeriodKey } from '../../shared/rules/periods';
 
 const flags = vi.hoisted(() => ({ studio: true }));
 vi.mock('../../shared/config', async (importOriginal) => {
@@ -156,6 +158,29 @@ describe('Studio map page (CIV-1731)', () => {
     expect(periodCell(day, 'midday')).toEqual({ main: '15 min', note: null });
     expect(periodCell(day, 'pmPeak')).toEqual({ main: '10 min', note: 'until 7:32 PM' });
     expect(periodCell(null, 'midday')).toEqual({ main: '—', note: null });
+  });
+
+  it('a time of day run only part of the period reads "—" with the route card\'s "N min from/until <time>" under it (CIV-3164)', () => {
+    const at = (h: number, m: number) => h * 60 + m;
+    // The 7 cases on CIV-3164: each part-time side has an edge and no map figure for that time of day.
+    const cases: Array<[string, PeriodKey, { every: number; from?: number; until?: number }, string]> = [
+      ['TTC 985 Midday, Oct 21', 'midday', { every: 15, from: at(14, 26) }, '15 min from 2:26 PM'],
+      ['TTC 902 Evening, Oct 21', 'evening', { every: 10, until: at(19, 32) }, '10 min until 7:32 PM'],
+      ['TTC 995 Evening, Oct 21', 'evening', { every: 8, until: at(19, 33) }, '8 min until 7:33 PM'],
+      ['TTC 995 Evening, Nov 18', 'evening', { every: 10, until: at(21, 47) }, '10 min until 9:47 PM'],
+      ['Guelph 98 AM peak, before', 'amPeak', { every: 25, from: at(7, 56) }, '25 min from 7:56 AM'],
+      ['Guelph 98 PM peak, before', 'pmPeak', { every: 25, until: at(15, 51) }, '25 min until 3:51 PM'],
+      ['RTD AB2 Evening, before', 'evening', { every: 59, until: at(21, 38) }, '59 min until 9:38 PM'],
+      ['RTD 32 Evening, after', 'evening', { every: 59, until: at(21, 48) }, '59 min until 9:48 PM'],
+    ];
+    for (const [name, k, edge, note] of cases) {
+      const day = { headway: {}, trips: 40, first: 360, last: 1300, runMinutes: [20], edge: { [k]: edge } } as unknown as StudioRouteDay;
+      const cell = periodCell(day, k);
+      expect(cell, name).toEqual({ main: MISSING_VALUE, note });
+      // Never the stop card's "Runs only from X–<period end>", nor a bare "from/until <time>" beside a figure the map doesn't have.
+      expect(`${cell.main} ${cell.note}`, name).not.toMatch(/Runs only/);
+      expect(cell.note, name).toMatch(/^\d+ min (from|until) /);
+    }
   });
 
   it('draws newer shapes, a removed route\'s older one dashed, and the picked route\'s older shape under it', () => {

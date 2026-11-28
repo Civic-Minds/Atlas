@@ -148,10 +148,16 @@ export function runTimeAmount(minutes: number | null | undefined): string {
  * A period's service where it runs, for the route card's time-of-day rows (#934, D6; Ryan,
  * 2026-10-16). `from` and `until` are clock text already formatted for the app. The frequency comes
  * first, then its limit (Ryan, 2026-10-30, #962): "every 9 min from 7:17 AM", "every 10 min until
- * 5:40 PM", "every 10 min, with a 45 min gap", "every 15 min until 8:57 PM, then every 30 min" (CIV-1913).
+ * 5:40 PM", "every 10 min, with a 45 min gap", "every 15 min until 8:57 PM, then every 30 min" (CIV-1913),
+ * "every 32 min, then every 17 from 4:37 PM" (CIV-3135).
  */
-export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number; then?: number; thenGap?: number }): string {
+export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number; then?: number; thenGap?: number; before?: number }): string {
   if (shape.gap != null) return withOneGap(headwayEvery(shape.every), shape.gap);
+  // CIV-3135 (Ryan, 2026-11-28, "1"): service that comes more often partway through names the slower part first, so a plain
+  // "from" only ever means the first bus: "every 32 min, then every 17 from 4:37 PM".
+  if (shape.before != null && shape.from != null && shape.until == null && isUsable(shape.before) && isUsable(shape.every)) {
+    return `${headwayEvery(shape.before)}, then every ${num(shape.every)} from ${shape.from}`;
+  }
   const text = [
     headwayEvery(shape.every),
     shape.from != null ? `from ${shape.from}` : null,
@@ -171,8 +177,9 @@ export function headwayPeriodShape(shape: { from?: string; until?: string; every
  * of headwayPeriodShape, which writes the text the agency summaries store.
  */
 export function periodShapeParts(text: string): { main: string; note: string | null } {
-  const m = /^(.*?)(?:, with (.*)| ((?:from|until) .*))$/.exec(text);
-  return m ? { main: m[1], note: m[2] ?? m[3] } : { main: text, note: null };
+  // CIV-3135: "every 32 min, then every 17 from 4:37 PM" is "every 32 min" and "then every 17 from 4:37 PM".
+  const m = /^(.*?)(?:, with (.*)|, (then .*)| ((?:from|until) .*))$/.exec(text);
+  return m ? { main: m[1], note: m[2] ?? m[3] ?? m[4] } : { main: text, note: null };
 }
 
 /** D6's one-gap note after a frequency ("every 26–45 min" -> "every 26–45 min, with one 45 min gap"; #1856, a list range keeps it). */
