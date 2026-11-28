@@ -46,6 +46,7 @@ import {
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
   clockTimes,
+  keepingStartUpTrips,
 } from './headway-utils.js';
 import { LEGACY_PIECE_MINIMUM } from './pieceParams.js';
 import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadingsFromEnv, directionPieceReadings, headlineTrunk, pieceReadingsForFeature, trunkLongEnough, nameUnnamedPiece, piecePeriodTreatments, busiestStop } from './pieces.js';
@@ -53,7 +54,7 @@ import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
 import { ROW_GAP_WORDS_RATIO, SLOW_START_MIN_DEPARTURES, SLOW_START_STEADY_RATIO } from '../shared/rules/frequency.js';
-import { DAYTIME_PERIOD_KEYS, FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
+import { DAYTIME_PERIOD_KEYS, FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, NIGHT_MIDPOINT_MIN, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -236,7 +237,8 @@ function runsSteadily(trips: readonly DirectionTrip[], stop: string, periods: re
     const visit = trip.visits.find(v => v.stopId === stop);
     if (visit && visit.counted !== false) times.push(visit.minutes);
   }
-  const steady = periodSustainedMid(times);
+  // CIV-1764: the pattern pick reads Overnight as before the start-up rule, so the rule moves Overnight figures only.
+  const steady = keepingStartUpTrips(() => periodSustainedMid(times));
   return periods.some(period => steady[period] === true);
 }
 
@@ -1242,7 +1244,6 @@ export function nightOnlyStretch(s: Pick<Stretch, 'times'>): boolean {
  * 2-5am window's midpoint (3:30, which counts as the later side). `nightTimes` are GTFS minutes
  * as nightServiceDepartureTimes builds them.
  */
-const NIGHT_MIDPOINT_MIN = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
 export function runsAcrossNightMidpoint(nightTimes: readonly number[]): boolean {
   const mid = NIGHT_MIDPOINT_MIN;
   return nightTimes.some(x => x >= STRETCH_NIGHT_START_MIN && x < mid) && nightTimes.some(x => x >= mid && x <= STRETCH_NIGHT_END_MIN);

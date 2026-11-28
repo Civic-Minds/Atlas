@@ -624,9 +624,11 @@ describe('D8 midpoint shadow (YRT Viva Weekday overnight)', () => {
       }
     }
     expect(row(r, 'yellow', 'Weekday', 0).headwayByPeriodSustained.overnight).not.toBe(true);
-    expect(row(r, 'orange', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(true);
-    // D8: the row's own flag now applies the midpoint test: purple dir 1's overnight starts too late.
-    expect(row(r, 'purple', 'Weekday', 1).headwayByPeriodSustained.overnight).toBe(false);
+    // CIV-1764: orange dir 1 runs nothing before 3:30, so its 2-6 AM trips are start-up and overnight has no flag.
+    expect(row(r, 'orange', 'Weekday', 1).headwayByPeriodSustained.overnight ?? null).toBeNull();
+    // D8: the row's own flag applies the midpoint test: purple dir 1's overnight starts too late. CIV-1764: it starts
+    // after 3:30, so those trips are start-up and overnight has no flag at all.
+    expect(row(r, 'purple', 'Weekday', 1).headwayByPeriodSustained.overnight ?? false).toBe(false);
   });
 });
 

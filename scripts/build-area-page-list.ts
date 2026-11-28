@@ -85,16 +85,32 @@ export function otherRedirects(current: readonly Redirect[], formerSlugs: Record
   return current.filter(r => !r.source.startsWith(AREA_PATH_PREFIX) && !generated.has(r.source));
 }
 
+/**
+ * vercel.json's text with only `redirects` replaced (#1930): every other key (ignoreCommand, headers, rewrites, any
+ * added later) keeps its value and its place, so a rerun on unchanged inputs gives the same file. Generated redirects
+ * come first, then the hand-added ones, as the file holds them.
+ */
+export function nextVercelJson(text: string, summaries: AgencyPageSummaries, formerSlugs: Record<string, FormerSlug>): string {
+  const config = JSON.parse(text) as Record<string, unknown> & { redirects?: Redirect[] };
+  const current = config.redirects ?? [];
+  const pages = areaPageStatus(summaries.agencies).pages;
+  const redirects = [...mergeAreaRedirects(current, areaRedirects(summaries), pages), ...agencyRedirects(formerSlugs), ...otherRedirects(current, formerSlugs)];
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(config)) {
+    // A file with no redirects yet gets them just before `rewrites`, the order Vercel applies them in.
+    if (key === 'rewrites' && !('redirects' in config) && redirects.length) out.redirects = redirects;
+    if (key === 'redirects') { if (redirects.length) out.redirects = redirects; continue; }
+    out[key] = value;
+  }
+  if (!('redirects' in out) && redirects.length) out.redirects = redirects;
+  return JSON.stringify(out, null, 2) + '\n';
+}
+
 export function writeAreaPageList(summaries: AgencyPageSummaries, formerSlugs: Record<string, FormerSlug> = readFormerSlugs()): void {
   const status = areaPageStatus(summaries.agencies);
   writeFileSync(AREA_PAGE_SLUGS, JSON.stringify([...status.pages].sort()) + '\n');
   writeFileSync(FORMER_SLUGS, JSON.stringify(formerSlugs, null, 2) + '\n');
-  const config = JSON.parse(readFileSync(VERCEL, 'utf8')) as Record<string, unknown> & { redirects?: Redirect[] };
-  const other = otherRedirects(config.redirects ?? [], formerSlugs);
-  const redirects = [...other, ...mergeAreaRedirects(config.redirects ?? [], areaRedirects(summaries), status.pages), ...agencyRedirects(formerSlugs)];
-  // `redirects` sits before `rewrites`, the order Vercel applies them in.
-  const { headers, rewrites, redirects: _old, ...rest } = config;
-  writeFileSync(VERCEL, JSON.stringify({ headers, ...(redirects.length ? { redirects } : {}), rewrites, ...rest }, null, 2) + '\n');
+  writeFileSync(VERCEL, nextVercelJson(readFileSync(VERCEL, 'utf8'), summaries, formerSlugs));
 }
 
 if (process.argv[1]?.endsWith('build-area-page-list.ts')) {
