@@ -68,6 +68,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Irregular", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
   - Why: 2 or 3 trips are not a pattern a rider can plan around, even when evenly spaced.
   - Source: Ryan, 2026-11-24, on CIV-2232: "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1" to "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words"
+- **"Hide irregular routes" also hides the lines whose card reads "Irregular" in the period**
+  - What: with the setting on, a line whose route card row reads "Irregular" for the chosen period leaves the map, the route count and the lists, read from the card's own model (cardIrregularFeatures), so the card and the map agree. All day hides nothing more.
+  - Why: a line the card calls Irregular was still drawn and counted as if it ran to a pattern.
+  - Source: [decision log](#decision-log) (2026-11-27, CIV-2925)
 - **A direction running every 60 min or better always has a card row**
   - What: when every line of a direction is a branch that stops partway through the period (hidden by #1115) and no branch reading gives one back, a direction whose main stretch runs every 60 min or better (the last public grade, `PUBLIC_TIER_MAXES`) keeps one row, read as its main stretch. The row needs a destination name and a number of its own.
   - Why: a card that shows one direction only reads as a one-way route (Winnipeg 31 weekday PM showed only "to Riverbend" while The Forks runs every 28).
@@ -416,6 +420,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-27 — "Hide irregular routes" also hides lines whose card reads "Irregular" (CIV-2925, follow-up to CIV-2232)
+Ryan, 2026-11-24, on CIV-2232: lines whose card reads irregular are hidden "(unless the user turns off irregular routes)", his pick "1". Counts were put to him on CIV-2925 (options 1 ship as measured, 2 check NJT first, 3 don't hide); the manager settled it on his earlier "1" (2026-11-27) and the NJT check was done here.
+- Counts (19 large agencies, release of 2026-11-24, every day type and period, lines the setting already hides left out): 4,010 of 86,574 line-periods hide (4.6%); in 594 of 35,178 route-periods the whole route leaves the map. NJT 1,296 of 10,998 (11.8%, 196 whole routes), SEPTA 511, MBTA 383, TransLink 307, LA Metro 196, RTD 176, King County Metro 157, OC Transpo 150, Metro Transit 121, TTC 113, WMATA 107, MARTA 106, CTA 102, AC Transit 72, YRT 69, DRT 50, GRT 45, MiWay 27, Hamilton 22.
+- Why NJT is high: of its 1,296, 527 have no steady cadence in the period and 430 run less often than every 60 min (its many suburban and commuter routes with a few trips a period); 246 are 31–60 min with gaps over an hour, 78 are variant patterns whose own trips are few while the street is served by others (as TTC 25's through trips to Steeles in the AM peak), 15 have no trips of their own.
 ### 2026-11-27 — Card rows with no number read "Irregular" (CIV-3136; card wording of 2026-10-31 / CIV-1238 superseded)
 Ryan, 2026-11-27, on CIV-3121: "1 but should it say \"Irregular\" instead of runs irregularly in this period", then, on changing it on every card: "I'd need to see it". After the before/after page (SEPTA 20 Sunday evening) he picked "1": "Use \"Irregular\" on every card".
 - The rule: every route and stop card row with no number reads "Irregular", the same one label (`IRREGULAR_PERIOD_SHORT_LABEL`) as route lists, tables and agency pages. "Runs irregularly in this period" is gone.

@@ -133,3 +133,16 @@ export function liveScheduledRowsNow(
   if (!period) return null;
   return liveScheduledRows(fc, routeKey, getNowDay(), period, counted?.directionId ?? null, routeDirectionOverrides(agencies, slug, routeShortName), counted?.label ?? null);
 }
+
+/** The main map's route card model for a route now (today, the clock hour's period): what Studio's Live panel draws its rows from, as the map's card does. */
+export function liveCardModelNow(
+  fc: GeoJSON.FeatureCollection | undefined,
+  agencies: Parameters<typeof routeDirectionOverrides>[0],
+  slug: string,
+  routeShortName: string,
+): RouteCardModel | null {
+  const routeKey = fc ? routeKeyForShortName(slug, fc.features, routeShortName, getNowDay()) : null;
+  const period = periodKeyForHour(new Date().getHours());
+  if (!fc || !routeKey || !period) return null;
+  return liveCardModel(fc, routeKey, getNowDay(), period, routeDirectionOverrides(agencies, slug, routeShortName));
+}
