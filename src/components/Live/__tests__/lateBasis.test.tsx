@@ -82,6 +82,11 @@ describe('visible days, peak label and run time wording', () => {
     expect(container.querySelectorAll('[data-peak]')).toHaveLength(0);
     expect(container.querySelector('[data-testid="sparkline-hover-band"]')).not.toBeNull();
   });
+  it('draws the hours after midnight at the end of the chart, as the route card does (CIV-3159)', () => {
+    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 1, value: 0.2, n: 200 }]} band="all" overall={0.1} days={6} />);
+    const titles = [...container.querySelectorAll('[title]')].map(e => e.getAttribute('title') ?? '');
+    expect(titles.filter(t => /late/i.test(t))).toHaveLength(2);
+  });
   it('writes a share before and after with the arrow, and nothing without both shares (CIV-1814 item 41)', () => {
     expect(shareRiseText({ value: 0.31, fromShare: 0.1, toShare: 0.41 })).toBe('10% → 41%');
     expect(shareRiseText({ value: 0.31 })).toBe('');
