@@ -72,7 +72,8 @@ export const STUDIO_REVIEW_URL = {
 /** Development-only switches for review mock-ups; never written into a link. */
 export const DEV_URL = {
   /** CIV-3142: which candidate line the short credit list shows (SOURCES_ON_MAP_LINES), until Ryan picks one. */
-  mockCredit: oneOf('mockCredit', ['a', 'b', 'c'] as const, 'a'),
+  // 'chip': Ryan's search-box idea (the full list, filtered by an "On my screen" chip in the search box).
+  mockCredit: oneOf('mockCredit', ['a', 'b', 'c', 'chip'] as const, 'a'),
 };
 
 /** The map (Frequency and Frequent Service; it stays mounted under every other view). */

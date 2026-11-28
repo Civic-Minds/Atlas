@@ -25,7 +25,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, SOURCES_ON_MAP_LINES, SOURCES_ALL_LINK, type SourcesOnMapLineKey, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, SOURCES_ON_MAP_LINES, SOURCES_ALL_LINK, SOURCES_ON_SCREEN_CHIP, type SourcesOnMapLineKey, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
 import { BUNCHING_LABEL, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
@@ -128,8 +128,11 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
 }
 
 
-/** CIV-3142: which candidate line the short credit list shows; ?mockCredit=a|b|c switches it in development only. */
-function sourcesOnMapLineKey(): SourcesOnMapLineKey {
+/**
+ * CIV-3142: which mock-up "and N other agencies" opens; ?mockCredit=a|b|c|chip switches it in development only.
+ * a/b/c: the short list with that candidate line. chip: the full list, filtered by an "On my screen" chip in its search box.
+ */
+function creditMock(): SourcesOnMapLineKey | 'chip' {
   if (!import.meta.env.DEV || typeof window === 'undefined') return 'a';
   return readUrlParam(window.location.search, DEV_URL.mockCredit) ?? 'a';
 }
@@ -236,10 +239,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [sourcesFocus, open, credits]);
   const openCredit = credits.find(c => c.slug === creditSlug) ?? null;
   // CIV-3143: Sources' credits by the agency list's own search (name, slug or city), or the credit's own name where it has no agency.
+  const onScreenChip = !!onMapSlugs && creditMock() === 'chip';
   const shownCredits = useMemo(() => credits.filter(c => {
+    if (onScreenChip && !onMapSlugs!.includes(c.slug)) return false;
     const a = agencies.find(x => x.slug === c.slug);
     return a ? agencyMatchesQuery(a, sourcesQuery) : agencyMatchesQuery({ name: [c.label.primary, c.label.secondary].filter(Boolean).join(' '), slug: c.slug }, sourcesQuery);
-  }), [credits, agencies, sourcesQuery]);
+  }), [credits, agencies, sourcesQuery, onScreenChip, onMapSlugs]);
   // Back from a credit page lands on that agency's row, not the top of the list.
   useEffect(() => {
     if (view !== 'sources' || !creditSlug) return;
@@ -550,18 +555,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             </div>
           )}
 
-          {view === 'sources' && onMapSlugs && (
+          {view === 'sources' && onMapSlugs && !onScreenChip && (
             // CIV-3142 (Ryan, 2026-11-27, "1"): only the agencies credited on screen, a line saying so, and a way to all sources.
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4" data-testid="sources-on-map">
               <div className="flex items-baseline justify-between gap-3">
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_ON_MAP_LINES[sourcesOnMapLineKey()]}</p>
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_ON_MAP_LINES[creditMock() as SourcesOnMapLineKey]}</p>
                 <ArrowLink as="button" type="button" tone="inline" size="xs" onClick={() => setOnMapSlugs(null)}>{SOURCES_ALL_LINK}</ArrowLink>
               </div>
               <SourceCredits credits={credits.filter(c => onMapSlugs.includes(c.slug))} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />
             </div>
           )}
 
-          {view === 'sources' && !onMapSlugs && (
+          {view === 'sources' && (!onMapSlugs || onScreenChip) && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 {SOURCES_LEAD}
@@ -583,7 +588,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
               {/* CIV-461: each agency whose data licence requires credit, and MBTA's MassDOT credit where Live is on: one pill each. */}
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_CREDITS_HEADING}</p>
-              <SearchBox value={sourcesQuery} onChange={setSourcesQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER} />
+              <SearchBox value={sourcesQuery} onChange={setSourcesQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER}
+                chip={onScreenChip ? { label: SOURCES_ON_SCREEN_CHIP, onClear: () => setOnMapSlugs(null) } : undefined} />
               {shownCredits.length === 0
                 ? <PanelEmpty>{NO_AGENCIES_MATCH}</PanelEmpty>
                 : <SourceCredits credits={shownCredits} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />}

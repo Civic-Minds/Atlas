@@ -1088,6 +1088,11 @@ export const SOURCES_ON_MAP_LINES = {
   c: 'Data from the agencies on screen',
 } as const;
 export type SourcesOnMapLineKey = keyof typeof SOURCES_ON_MAP_LINES;
+/**
+ * CIV-3142 mock-up (Ryan, 2026-11-27: "populate the search bar with \"On My Screen\" or smth then have a \"X\" or clear
+ * button"): the filter set in Sources' search box instead of the short list. His wording is a placeholder, not approved.
+ */
+export const SOURCES_ON_SCREEN_CHIP = 'On my screen';
 /** CIV-3142: the link from that short list back to every source. */
 export const SOURCES_ALL_LINK = 'All sources';
 export const NEW_TAG = 'New';
