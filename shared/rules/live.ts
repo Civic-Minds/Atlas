@@ -97,6 +97,9 @@ export const SAME_STOP_M = 30;
 
 /** A gap under this many seconds is bunched. */
 export const BUNCHED_GAP_SEC = 120;
+/** The live gap range ("gaps 3–20 min") starts at the shortest gap of at least this many seconds, so it never reads "0.7"
+ * (Ryan, 2026-11-27, CIV-1828: picked "Show the range here too, e.g. \"gaps 3–20 min\", with gaps under a minute left out"). */
+export const GAP_RANGE_FROM_SEC = 60;
 /** A gap over this many times the scheduled gap is too long. */
 export const GAPPED_FACTOR = 2;
 /** A rise counts as a step (bunching "forms" there) when the bad share jumps by at least this much (0.10 = 10 points)... */

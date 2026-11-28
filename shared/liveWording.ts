@@ -3,7 +3,7 @@ import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
-import { minutesText } from './liveFormat';
+import { gapText, minutesText, tenth } from './liveFormat';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow, type OnTimeWindow } from './rules/live';
 
 /**
@@ -84,6 +84,31 @@ export const updatedAgoText = (ageSec: number): string => {
 /** The Live route card's gap rows, under Scheduled (CIV-2045, Ryan's words; replaced "Gaps, front to back (min)"). */
 export const LONGEST_GAP_LABEL = 'Longest gap';
 export const SHORTEST_GAP_LABEL = 'Shortest gap';
+/**
+ * The gaps between the vehicles on the road now, shortest to longest: "gaps 3–20 min" (CIV-1828). With no shortest gap
+ * to show (see GAP_RANGE_FROM_SEC), or one that rounds to the longest, the longest alone: "longest gap 20 min".
+ */
+export const gapRangeText = (from: number | null, longest: number): string =>
+  from != null && tenth(from) !== tenth(longest) ? `gaps ${tenth(from)}–${minutesText(longest)}` : `${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(longest)}`;
+/** The period picker's label. */
+export const TIME_OF_DAY_LABEL = 'Time of day';
+/** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
+export const LINKED_TO_TITLE = 'Also measured in this stretch';
+/** A link verdict: its figure passes the set level, or not (Ryan, CIV-1795 question 8, option a; was "Linked" / "Not linked"). */
+export const LINKED_LABEL = 'High';
+export const NOT_LINKED_LABEL = 'Low';
+/** A trip that ends before the line's end: a vehicle card tag and a trip pattern's kind. */
+export const SHORT_TURN_LABEL = 'Short turn';
+/** The two kinds of bunching gap, in charts, legends and figures. */
+export const TOO_CLOSE_LABEL = 'Too close together';
+export const TOO_FAR_LABEL = 'Too far apart';
+/** The share of gaps too short or too long, as a figure and column (CIV-1795: Live's two bunching words; was "Gaps off the schedule"). */
+export const GAPS_OFF_SCHEDULE_LABEL = 'Too close or too far apart';
+export const EARLY_STEP_LABEL = '1+ min ahead';
+/** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
+/** A vehicle or stop on schedule; the delay legend's first step (CIV-1601). */
+export const ON_TIME_LABEL = 'On time';
+export const DELAY_STEP_LABELS = [ON_TIME_LABEL, '1–3 min', '3+ min behind'] as const;
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
