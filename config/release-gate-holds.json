@@ -67,7 +67,8 @@
       "lastHeld": "2026-11-02",
       "runs": 1,
       "message": "service ended 20250531, before today (20261102)",
-      "outcome": "held"
+      "outcome": "cleared",
+      "outcomeOn": "2026-11-28"
     },
     {
       "slug": "njt",
@@ -396,6 +397,24 @@
       "message": "service ended 20261010, before today (20261126)",
       "outcome": "cleared",
       "outcomeOn": "2026-11-26"
+    },
+    {
+      "slug": "max-transit",
+      "check": "day-lost",
+      "firstHeld": "2026-11-28",
+      "lastHeld": "2026-11-28",
+      "runs": 1,
+      "message": "no route lines on Sunday now (Sunday 37 -> 0)",
+      "outcome": "held"
+    },
+    {
+      "slug": "max-transit",
+      "check": "drop",
+      "firstHeld": "2026-11-28",
+      "lastHeld": "2026-11-28",
+      "runs": 1,
+      "message": "output would drop sharply against live data (stops 1220 -> 947, stopPoints 1224 -> 951, routes 18 -> 14) (pass --allow-drop after review)",
+      "outcome": "held"
     }
   ]
 }
