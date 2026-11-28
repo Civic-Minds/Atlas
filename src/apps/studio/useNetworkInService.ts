@@ -3,7 +3,7 @@ import { liveCloudNetworkCountUrl } from '../../../shared/liveCloud';
 import { networkCountFrom, type NetworkCount, type NetworkCountBody } from '../../../shared/liveNetworkCount';
 import { LIVE_POLL_SEC } from '../../../shared/rules/live';
 
-export { networkCountFrom, type NetworkCount, type NetworkCountBody } from '../../../shared/liveNetworkCount';
+export { networkCountFrom, type NetworkCount } from '../../../shared/liveNetworkCount';
 
 /**
  * CIV-2182, CIV-2939: the agency's vehicles on the road right now across its whole network, from the cloud recorder's
