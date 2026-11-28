@@ -3,6 +3,7 @@ import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { liveVehiclesEqual } from '../utils/liveVehiclesFingerprint';
 import { LIVE_POLL_SEC } from '../../shared/rules/live';
 import { liveCloudVehiclesUrl } from '../../shared/liveCloud';
+import { liveRead } from '../lib/liveCloudFetch';
 
 export const POLL_INTERVAL_MS = LIVE_POLL_SEC * 1000;
 
@@ -40,7 +41,7 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
     try {
       // CIV-2894 (Ryan, 2026-11-24): Live reads the cloud recorder, so it needs nothing running on the Mac. The Worker
       // knows which agencies are recorded: one it doesn't cover (404) has no cloud vehicles, and no error is shown.
-      const res = await fetch(liveCloudVehiclesUrl(slug));
+      const res = await liveRead(liveCloudVehiclesUrl(slug));
       if (res.status === 404) return;
       if (!res.ok) {
         const errData = (await res.json().catch(() => ({}))) as { error?: string };

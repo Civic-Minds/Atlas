@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { liveGapsDataUrl } from '../lib/liveReportData';
+import { liveRead } from '../lib/liveCloudFetch';
 
 /** One stop's gaps: minutes after the service day's start, the gap and the timetable's typical gap, in seconds. */
 export interface StopGaps { m: number[]; g: number[]; s: number[] }
@@ -12,7 +13,7 @@ export function useLiveGaps(agency: string | null | undefined, route: string | n
     const url = agency && route ? liveGapsDataUrl(agency, route) : null;
     if (!url) return;
     let live = true;
-    fetch(url)
+    liveRead(url)
       .then(r => (r.ok ? r.json() as Promise<{ status?: string; directions?: unknown }> : null))
       .then(d => { if (live) setData(d && d.status !== 'no_analysis' && d.directions ? d as LiveGaps : null); })
       .catch(() => { if (live) setData(null); });

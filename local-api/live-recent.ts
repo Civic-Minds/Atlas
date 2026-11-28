@@ -8,6 +8,7 @@
 import { nowSource, nowSec } from '../scripts/mcp/liveNowData.js';
 import { NOW_WINDOW_MIN } from '../shared/liveNow.js';
 import { getPolledRoute, matchesLiveRouteId } from '../shared/livePollingConfig.js';
+import { recentFromSnapshots } from '../shared/liveCore.js';
 
 const CACHE_MS = 20_000;
 const cache = new Map<string, { at: number; body: string }>();
@@ -37,10 +38,7 @@ async function handler(req: Request): Promise<Response> {
     const now = nowSec();
     const snaps = await source.snapshots(cfg.slug, now - NOW_WINDOW_MIN * 60, now);
     // Compact rows, as the card keeps its polls: [vehicleId, tripId, lat, lon, reportedAt].
-    const snapshots = snaps.map(s => ({
-      capturedAt: s.capturedAt,
-      v: s.vehicles.filter(v => matchesLiveRouteId(cfg, v.r)).map(v => [v.id, v.tripId ?? '', v.lat, v.lon, v.t ?? s.capturedAt]),
-    }));
+    const snapshots = recentFromSnapshots(snaps, r => matchesLiveRouteId(cfg, r));
     const body = JSON.stringify({ agency: cfg.slug, route, windowMin: NOW_WINDOW_MIN, snapshots });
     cache.set(key, { at: Date.now(), body });
     return json(withNow(body));

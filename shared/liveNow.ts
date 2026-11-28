@@ -13,18 +13,18 @@
 import { buildShape } from './shapeProjection.js';
 import { projectRun, stopPassages, SEGMENT_DEFAULTS, type Pattern, type PositionSample } from './segmentDelay.js';
 import { DEFAULT_CUTOFFS, type Cutoffs } from './liveCutoffs.js';
-import { LIVE_STALE_SEC } from './rules/live.js';
+import { LIVE_MOVED_M, LIVE_MOVED_WITHIN_SEC, LIVE_NOW_WINDOW_MIN, LIVE_PLACE_ON_STOP_LINE_MAX_M, LIVE_STALE_SEC } from './rules/live.js';
 import type { PeriodKey } from './rules/periods.js';
 import { directionBranchFallback } from './headsignDisplay.js';
 
 /** How far back a "right now" answer looks for vehicles passing stops. */
-export const NOW_WINDOW_MIN = 30;
+export const NOW_WINDOW_MIN = LIVE_NOW_WINDOW_MIN;
 /** Bunched "now" means the last two vehicles at a stop passed within the cut-off, the later one at most this long ago. */
-export const NOW_RECENT_MIN = 10;
+export const NOW_RECENT_MIN = LIVE_MOVED_WITHIN_SEC / 60;
 /** The line is drawn through its stops, so a vehicle between two stops on a curve sits a little off it. */
-const NOW_MAX_OFF_LINE_M = 150;
+const NOW_MAX_OFF_LINE_M = LIVE_PLACE_ON_STOP_LINE_MAX_M;
 /** A vehicle counts as running when it moved at least this far along its line in the last NOW_RECENT_MIN minutes. */
-const NOW_MOVING_M = 200;
+const NOW_MOVING_M = LIVE_MOVED_M;
 /** One vehicle passing a stop twice this close together (a trip id changing at a terminal) counts once. */
 const SAME_VEHICLE_SEC = 120;
 
@@ -57,6 +57,8 @@ export interface NowDirectionFigures {
   vehiclesNow: number;
   /** Vehicles in the newest snapshot on this direction that haven't moved lately (at a terminal, held, out of service). */
   standingNow: number;
+  /** The vehicle ids behind vehiclesNow and standingNow (CIV-3173: pairs this direction with the Live core's). */
+  vehicleIdsNow: string[];
   /** Where the last two vehicles passed within the bunched cut-off, the later one in the last NOW_RECENT_MIN minutes. */
   bunchedNow: NowStretch[];
   /** Where riders have waited more than the gapped factor times the scheduled gap since the last vehicle seen there. */
@@ -160,7 +162,7 @@ export function routeNow(input: {
 
   const patterns = input.directions.flatMap(d => d.patterns.map((p, i) => ({ dir: d.directionId, pattern: patternOf(`${d.directionId}-${i}`, d.directionId, p) })));
   const passed = new Map<number, Map<string, Array<{ t: number; vid: string }>>>(input.directions.map(d => [d.directionId, new Map()]));
-  const counts = new Map<number, { moving: number; standing: number }>(input.directions.map(d => [d.directionId, { moving: 0, standing: 0 }]));
+  const counts = new Map<number, { moving: number; standing: number; ids: string[] }>(input.directions.map(d => [d.directionId, { moving: 0, standing: 0, ids: [] }]));
   for (const run of runs.values()) {
     // The pattern the vehicle was seen passing most stops on (feeds' direction ids don't always match the timetable's);
     // the feed's own direction only settles a tie, such as a vehicle that has passed no stop yet.
@@ -172,7 +174,7 @@ export function routeNow(input: {
     if (!best || (!best.passages.length && run.d !== best.dir)) continue;
     const at = passed.get(best.dir)!;
     for (const x of best.passages) (at.get(x.stopId) ?? at.set(x.stopId, []).get(x.stopId)!).push({ t: x.t, vid: run.id });
-    if (run.now) { const n = counts.get(best.dir)!; if (best.moving) n.moving++; else n.standing++; }
+    if (run.now) { const n = counts.get(best.dir)!; if (best.moving) n.moving++; else n.standing++; n.ids.push(run.id); }
   }
 
   const directions = input.directions.map((dir): NowDirectionFigures => {
@@ -242,6 +244,7 @@ export function routeNow(input: {
       direction: dir.label,
       vehiclesNow: cnt.moving,
       standingNow: cnt.standing,
+      vehicleIdsNow: cnt.ids,
       bunchedNow,
       gappedNow,
       noneSeen,

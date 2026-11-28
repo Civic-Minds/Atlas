@@ -41,6 +41,9 @@ const CONTEXT_OPTIONS = [
   { key: 'income', label: CONTEXT_OPTION_INCOME },
 ] as const;
 
+/** A section of the page's own at the end of Settings (CIV-2006, CIV-3179). */
+export interface SettingsSection { title: string; content: React.ReactNode; active?: boolean }
+
 interface FilterPanelProps {
   lightMode: boolean;
   setLightMode: (v: boolean | ((prev: boolean) => boolean)) => void;
@@ -82,8 +85,9 @@ interface FilterPanelProps {
   contextMetric?: ContextMetric | null;
   setContextMetric?: (metric: ContextMetric | null) => void;
   /** CIV-2006: a section of the page's own after the general settings (Studio's planner cut-offs), and whether it has
-   *  anything set (the gear's dot). Without the routes-shown setters the Routes shown section is left out (Studio). */
-  extraSection?: { title: string; content: React.ReactNode; active?: boolean };
+   *  anything set (the gear's dot). Without the routes-shown setters the Routes shown section is left out (Studio).
+   *  CIV-3179: several, in order (Studio's agency, then the page's own). */
+  extraSection?: SettingsSection | readonly SettingsSection[];
   /** Compare mode controls (phones reach them here); undefined when compare is unavailable. */
   compare?: {
     side: CompareSide | null;
@@ -318,7 +322,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     + (period !== undefined && period !== 'all' ? 1 : 0)
     + (selectedModes && selectedModes.size > 0 ? 1 : 0)
     + (compare?.side ? 1 : 0);
-  const hasActiveFilters = hideSpan || hideLimitedService || livePollingOnly || hasActiveCoreFilter || hideLowQuality || !!extraSection?.active;
+  const extraSections: readonly SettingsSection[] = !extraSection ? [] : Array.isArray(extraSection) ? extraSection : [extraSection as SettingsSection];
+  const hasActiveFilters = hideSpan || hideLimitedService || livePollingOnly || hasActiveCoreFilter || hideLowQuality || extraSections.some(s => s.active);
   // Studio (CIV-2006) passes no routes-shown setters: its map has no Routes shown filters.
   const routesShown = !!setHideSpan;
 
@@ -637,14 +642,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               </div>
               </>)}
 
-              {extraSection && (
-                <>
+              {extraSections.map(section => (
+                <Fragment key={section.title}>
                   <div className="px-5 pt-4 pb-1">
-                    <p className={CARD_NOTE}>{extraSection.title}</p>
+                    <p className={CARD_NOTE}>{section.title}</p>
                   </div>
-                  <div className="px-5 pb-4">{extraSection.content}</div>
-                </>
-              )}
+                  <div className="px-5 pb-4">{section.content}</div>
+                </Fragment>
+              ))}
 
               </>
               )}

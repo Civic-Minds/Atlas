@@ -41,5 +41,18 @@ export function liveRowValueProps(gap: LiveRowGap, s: RowSchedule) {
   };
 }
 
+/**
+ * A row on Live with no live range to show (too few vehicles, or none measured): only the timetable line, in normal weight,
+ * never a bold "● every N min" that reads as the live figure (CIV-3158 follow-up, Ryan's line order).
+ */
+export function scheduleOnlyProps(s: RowSchedule) {
+  return { headway: undefined, trunkHeadway: undefined, limited: false, valueBelow: true, valueNote: scheduleLine(s) };
+}
+
+/** A row on Live: the live and schedule lines when there is a live range, else the schedule line alone. */
+export function liveOrScheduleProps(gap: LiveRowGap | null | undefined, s: RowSchedule) {
+  return gap ? liveRowValueProps(gap, s) : scheduleOnlyProps(s);
+}
+
 /** Two readings of a row's live gaps match (the callers keep their state when nothing changed). */
 export const sameLiveRowGap = (a: LiveRowGap | undefined, b: LiveRowGap): boolean => !!a && a.from === b.from && a.longest === b.longest && a.median === b.median;
