@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's panels line up with the search bar**: they were a fixed wider size, so the 505 Dundas panel ran under the Live button
 - **About → Sources has the agency list's search box**: finding one agency's credit meant scrolling a list of about 200
 - **The map's credit pill names a single remaining agency instead of "and 1 other agency"**: "TTC · and 1 other agency" hid a name behind a click that opened the full sources list
 - **Route card rows with no number read "Irregular"**: the same word as route lists and agency pages, instead of the longer "Runs irregularly in this period"

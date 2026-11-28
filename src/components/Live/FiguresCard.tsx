@@ -10,16 +10,16 @@ import { PanelSection, usePanelSections } from './panelSections';
 
 /** The first column's header (what the rows cover, "510 · both directions"). */
 export const FIGURE_SCOPE_HEAD = 'font-bold text-[var(--text-primary)]';
-/** A figure column's header ("This week"). */
-export const FIGURE_HEAD = 'block text-right font-normal text-[var(--text-dim)]';
+/** A figure column's header ("This week"); figures and their headers stay on one line (#1917: "1.4 / min" broke). */
+export const FIGURE_HEAD = 'block text-right font-normal whitespace-nowrap text-[var(--text-dim)]';
 /** The row-name column's header when it only names the rows ("Direction"). */
 export const FIGURE_ROW_HEAD = 'font-normal text-[var(--text-dim)]';
 /** A row's name (the row header cell). */
 export const FIGURE_ROW_LABEL = 'font-bold text-[var(--text-muted)]';
 /** The main figure, bold. */
-export const FIGURE_MAIN = 'text-right text-sm font-black tracking-tight';
+export const FIGURE_MAIN = 'text-right text-sm font-black tracking-tight whitespace-nowrap';
 /** The figure it is compared with, muted. */
-export const FIGURE_OTHER = 'text-right text-sm text-[var(--text-muted)]';
+export const FIGURE_OTHER = 'text-right text-sm whitespace-nowrap text-[var(--text-muted)]';
 const FOOTNOTE = 'text-xs leading-4 text-[var(--text-dim)] opacity-75';
 const RULED = 'mt-1 border-t border-[var(--border-primary)] pt-1';
 
