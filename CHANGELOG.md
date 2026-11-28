@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board
 - **A one-stretch route takes its card's colour on the map where its trips are uneven**: a one-minute timetable difference between neighbouring stops split the line into two colours (Nanaimo 40 toward Downtown, PM peak, drew its first 17 stops every 30 while the card said every 15)
 - **A route whose branch doesn't run at that time of day is one colour on the map then too**: the one-colour rule looked at the whole day, so a branch running only at other times left the trunk's stops in mixed colours
 - **A branch's own stops no longer take the other branch's buses on the map**: Spokane 20's Clarke and Riverside stops were coloured every 15 though each branch runs every 30, because buses on the other road were counted as passing them
