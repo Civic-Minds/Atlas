@@ -142,10 +142,22 @@ export function liveCardModelNow(
   slug: string,
   routeShortName: string,
 ): RouteCardModel | null {
-  const routeKey = fc ? routeKeyForShortName(slug, fc.features, routeShortName, getNowDay()) : null;
   const period = periodKeyForHour(new Date().getHours());
-  if (!fc || !routeKey || !period) return null;
-  return liveCardModel(fc, routeKey, getNowDay(), period, routeDirectionOverrides(agencies, slug, routeShortName));
+  return period ? liveCardModelAt(fc, agencies, slug, routeShortName, getNowDay(), period) : null;
+}
+
+/** The same model for a given day and period. */
+export function liveCardModelAt(
+  fc: GeoJSON.FeatureCollection | undefined,
+  agencies: Parameters<typeof routeDirectionOverrides>[0],
+  slug: string,
+  routeShortName: string,
+  day: DayType,
+  period: TimePeriod,
+): RouteCardModel | null {
+  const routeKey = fc ? routeKeyForShortName(slug, fc.features, routeShortName, day) : null;
+  if (!fc || !routeKey) return null;
+  return liveCardModel(fc, routeKey, day, period, routeDirectionOverrides(agencies, slug, routeShortName));
 }
 
 /** The destination rows the route card draws now (every row and span row, by direction), for placing live vehicles under them (#1877). */
