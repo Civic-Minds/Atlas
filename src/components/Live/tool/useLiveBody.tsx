@@ -61,7 +61,7 @@ function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStri
   // a stop the map measures (never a terminal stretch or one with too few trips).
   const heat = measure === 'delayStarts' ? delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(p => p.stopId === stop.stopId) : undefined;
   // Two labelled groups (CIV-946): vehicles against their timetable, then a rider's wait against the scheduled gaps.
-  return [...(heat ? [{ heading: measureLabel('delayStarts'), lines: [timeLostLine(heat.addedMin), ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] }] : []), ...stopCardGroups(stop, extra ? extra.extraWaitMin : null)];
+  return [...(heat ? [{ heading: measureLabel('delayStarts'), lines: [timeLostLine(heat.addedMin), ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] }] : []), ...stopCardGroups(stop, extra ? extra.extraWaitMin : null, v3.thresholds)];
 }
 
 /** The lines of a segment's card: only the segment, never its start stop. */
