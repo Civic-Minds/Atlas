@@ -4,7 +4,7 @@ import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
 import { LATE_BY_HOUR_TITLE, LATE_LABEL, lateThreshold, excludingText, fadedNoteText, lateCount, lateHourLine } from '../../../../shared/liveWording';
 import { KPI_TILE } from '../kpiTileStyle';
-import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
+import { LIVE_DAY_HOURS, liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
 import ErrorBoundary from '../../ErrorBoundary';
 import HourSpark, { type HourValue } from '../../charts/HourSpark';
@@ -208,6 +208,9 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
   );
 }
 
+/** A Live hour (0-23) on the chart's 5am-4am axis. */
+const chartHour = (hour: number): number => LIVE_DAY_HOURS.find(h => h % 24 === hour) ?? hour;
+
 /** The tool panel's card: late share by hour over the whole 5am-4am day, the chosen time of day shaded. */
 function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<MiniProps, 'chart'>) {
   // Ryan, 2026-11-27 ("1"): with too few measurements the whole section is hidden, not dimmed.
@@ -218,13 +221,14 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
       action={<SectionNotes scope={scope} excluding={leftOut?.length ? <LeftOutDays dates={leftOut} /> : null} />}>
       {/* Ryan, 2026-11-27 ("redesign the sparkline here to be more like the one on the main map"): the route card's own
           chart, fed the late share by hour (in percent) and coloured by the lateness steps; its hover names the hour. */}
+      {/* The chart's hours run 5am to 4am, after midnight as 24-28 (LIVE_DAY_HOURS); Live keys those hours 0-4. */}
       <CountSparkline
-        countByHour={Object.fromEntries(hours.filter(x => x.n >= MIN_N).map(x => [x.hour, Math.round(x.value * 1000) / 10]))}
+        countByHour={Object.fromEntries(hours.filter(x => x.n >= MIN_N).map(x => [chartHour(x.hour), Math.round(x.value * 1000) / 10]))}
         color={pct => lateShareColor(pct / 100)}
         label={LATE_LABEL}
         title={LATE_BY_HOUR_TITLE}
         period={band === 'all' ? undefined : band}
-        hourTitle={h => { const x = hours.find(v => v.hour === h); return x ? lateHourLine(hourTime(h), lateCount(x.value, x.n), x.n) : undefined; }}
+        hourTitle={h => { const x = hours.find(v => v.hour === h % 24); return x ? lateHourLine(hourTime(h % 24), lateCount(x.value, x.n), x.n) : undefined; }}
       />
     </Widget>
   );
