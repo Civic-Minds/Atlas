@@ -124,3 +124,14 @@ describe('Live coverage: one answer per agency (CIV-3173)', () => {
     }
   });
 });
+
+describe('Live rows: gaps over the vehicles each row counts (#1958)', () => {
+  it('the map and Studio hand the card their rows\' vehicles, and the card measures each row over them', () => {
+    // TTC 504's analysis has one pattern per direction, so the pattern grouping put no vehicle on any row and rows with
+    // 8 vehicles showed only the schedule. A row's gaps must come from the same vehicles as its count.
+    for (const f of ['src/apps/LiveVehicles.tsx', 'src/apps/studio/RouteRightNow.tsx']) expect(read(f), f).toMatch(/rowVehicles=\{/);
+    const card = read('src/components/Live/LiveRoutePerformance.tsx');
+    expect(card).toMatch(/rowVehicles!?\.get\(/);
+    expect(card).toContain('rowVehicles={rowVehicles}');
+  });
+});

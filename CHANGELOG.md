@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live destination rows with vehicles running show their live gaps**: on routes like the TTC 504, rows listing 8 vehicles showed only the timetable, because the gaps were measured over a different grouping of vehicles than the row counts
 - **The panel footer fits on one line: "Docs · Terms · Privacy · © 2026 Civic Minds"**: it took two lines on every screen, now only on a phone
 - **The Docs glossary is one A–Z list, Live's terms included**: its terms were in no order, with Live's added at the end
 - **Atlas Studio's nearby routes say how far each route's closest stop is**: a station's stops spread a few hundred metres, so "within 300 m" of Waterfront reached Granville Station, and assistants called it next door

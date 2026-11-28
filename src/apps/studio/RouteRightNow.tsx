@@ -81,6 +81,7 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
       // With the card's rows to carry them, the reading only hands up each destination's gaps; while the route's shapes
       // load, it draws its own rows.
       onDestinationGaps={model ? onDestinationGaps : undefined}
+      rowVehicles={groups}
       unavailableMessage={STUDIO_ROUTE_PANEL_PENDING.noReading}
       liveEnabled
     />
