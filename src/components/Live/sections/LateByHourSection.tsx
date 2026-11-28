@@ -215,24 +215,13 @@ const chartHour = (hour: number): number => LIVE_DAY_HOURS.find(h => h % 24 === 
 export const MIN_CHART_HOURS = Math.ceil(SPARKLINE_HOURS.length * LIVE_MIN_CHART_HOUR_SHARE);
 
 /**
- * The tool panel chart's bars, on the route card chart's 5am-4am axis, in percent: every hour with departures, as the
- * map's chart draws every hour with service. An hour with too few departures is faded and capped at the top of the
- * measured hours, so it can't flatten them (the dashboard chart's rule). Null when too few hours are measured to draw.
+ * The tool panel chart's bars, on the route card chart's 5am-4am axis, in percent. An hour with too few departures to
+ * state draws no bar, as the map's chart draws none for an hour without service. Null when too few hours are measured.
  */
-export function miniChartBars(hours: readonly HourValue[]): { countByHour: Record<number, number>; faded: ReadonlySet<number> } | null {
+export function miniChartBars(hours: readonly HourValue[]): Record<number, number> | null {
   const measured = hours.filter(h => h.n >= MIN_N);
   if (measured.length < MIN_CHART_HOURS) return null;
-  const top = Math.max(...measured.map(h => h.value));
-  const pct = (v: number) => Math.round(v * 1000) / 10;
-  const countByHour: Record<number, number> = {};
-  const faded = new Set<number>();
-  for (const h of hours) {
-    if (!(h.n > 0)) continue;
-    const thin = h.n < MIN_N;
-    countByHour[chartHour(h.hour)] = pct(thin ? Math.min(h.value, top) : h.value);
-    if (thin) faded.add(chartHour(h.hour));
-  }
-  return { countByHour, faded };
+  return Object.fromEntries(measured.map(h => [chartHour(h.hour), Math.round(h.value * 1000) / 10]));
 }
 
 /** The tool panel's card: late share by hour over the whole 5am-4am day, the chosen time of day shaded. */
@@ -248,8 +237,7 @@ function Mini({ hours, band, days, leftOut, scope }: Omit<MiniProps, 'chart'>) {
       {/* Ryan, 2026-11-27 ("redesign the sparkline here to be more like the one on the main map"): the route card's own
           chart (CountSparkline is HeadwaySparkline), fed the late share by hour and coloured by the lateness steps. */}
       <CountSparkline
-        countByHour={bars.countByHour}
-        faded={h => bars.faded.has(h)}
+        countByHour={bars}
         color={pct => lateShareColor(pct / 100)}
         label={LATE_LABEL}
         title={LATE_BY_HOUR_TITLE}
