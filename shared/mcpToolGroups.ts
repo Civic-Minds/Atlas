@@ -7,5 +7,5 @@ export const TOOL_GROUPS: Record<ToolGroup, readonly string[]> = {
   schedules: ['route_frequency', 'routes_at_frequency', 'routes_by_hours', 'stop_frequency', 'trip_time', 'combined_frequency', 'night_service', 'frequent_coverage'],
   changes: ['route_history', 'network_history', 'schedule_changes'],
   planning: ['buses_needed'],
-  live: ['route_now', 'route_reliability', 'route_bunching'],
+  live: ['route_now', 'network_now', 'route_reliability', 'route_bunching'],
 };

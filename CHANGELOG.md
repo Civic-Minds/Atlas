@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio can say how many of an agency's vehicles are out right now**: the same "In service now" and "Not on a trip" counts Studio Fleet shows, where it could only answer one route at a time
 - **Live's Shared stretch rows show their own direction's live gaps**: on routes like the TTC 504, each direction's Shared stretch showed the other direction's figure, on the map and in Studio
 - **Live's map and Studio show the same live gaps for a route at the same minute**: each measured its own browser polls on its own clock, so the TTC 504 could read "live 2–13 min" on the map and "live 1–18 min" in Studio
 - **Atlas Studio can say how an agency's whole network changed over the years**: how many routes ran every 10 minutes or better in each year of History, and which, where it could only answer one route at a time

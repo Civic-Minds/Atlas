@@ -8,7 +8,7 @@
  */
 import type { LiveSnapshotV2 } from './liveContract';
 import { latDegreesFor, withinMetres, type LatLon } from './geoDistance';
-import { GARAGE_MIN_VEHICLES, GARAGE_RADIUS_M, GARAGE_STANDING_SPEED_MS } from './rules/live';
+import { GARAGE_MIN_VEHICLES, GARAGE_RADIUS_M, GARAGE_STANDING_SPEED_MS, LIVE_STALE_PACES } from './rules/live';
 
 /** How old a count can be: every snapshot carries one, and every recorded agency snapshots at least once a minute. */
 export const LIVE_COUNT_STEP_SEC = 60;
@@ -56,4 +56,21 @@ export function atGarageCount(standing: readonly LatLon[]): number {
 export function networkCountAnswer(snap: LiveSnapshotV2 | null, nowSec: number): { agency: string; at: number; vehicles: number; noTrip: number; atGarage?: number; ageSec: number } | null {
   if (!snap?.network) return null;
   return { agency: snap.agency, at: snap.capturedAt, vehicles: snap.network.onTrip, noTrip: snap.network.noTrip, ...(snap.network.atGarage != null ? { atGarage: snap.network.atGarage } : {}), ageSec: Math.max(0, nowSec - snap.capturedAt) };
+}
+
+// CIV-3207: moved here from Studio's useNetworkInService.ts, so Fleet and the MCP's network_now read the count one way.
+export interface NetworkCountBody { vehicles?: number; noTrip?: number; atGarage?: number; ageSec?: number }
+
+/** Fleet's two live figures: vehicles on a trip ("In service now") and, where the feed reports any, those with none. */
+export interface NetworkCount { onTrip: number; noTrip: number | null; /** CIV-2990: of noTrip, those at a garage, where the count has it and any are. */ atGarage?: number }
+
+/**
+ * The counts to show from the reader's answer: null when there is none or it is older than two one-minute steps.
+ * CIV-2939: noTrip is null (its row left out, never 0) where the feed reports no vehicle without a trip.
+ */
+export function networkCountFrom(body: NetworkCountBody | null): NetworkCount | null {
+  if (!body || typeof body.vehicles !== 'number' || (body.ageSec ?? Infinity) > LIVE_STALE_PACES * LIVE_COUNT_STEP_SEC) return null;
+  const noTrip = typeof body.noTrip === 'number' && body.noTrip > 0 ? body.noTrip : null;
+  const atGarage = noTrip != null && typeof body.atGarage === 'number' && body.atGarage > 0 ? Math.min(body.atGarage, noTrip) : undefined;
+  return { onTrip: body.vehicles, noTrip, ...(atGarage != null ? { atGarage } : {}) };
 }
