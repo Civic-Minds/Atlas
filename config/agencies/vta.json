@@ -63,7 +63,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip",
@@ -96,5 +96,7 @@
   "feedObtainedAt": "20261027",
   "lastFeedStart": "20261026",
   "lastRawArchiveKey": "20270110-815b448ad640c55f",
-  "lastFeedContentKey": "e5837123ea3441b2"
+  "lastFeedContentKey": "e5837123ea3441b2",
+  "lastTimetableKey": "e8cbd70b81a58d4b",
+  "timetableChangedAt": "20261027"
 }

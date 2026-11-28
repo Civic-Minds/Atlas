@@ -42,7 +42,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip",
@@ -54,5 +54,7 @@
   "lastServiceWeek": "b8ae5db90169eb8e",
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20260817",
-  "lastFeedContentKey": "0c2aebcd53360b7d"
+  "lastFeedContentKey": "0c2aebcd53360b7d",
+  "lastTimetableKey": "c8b158126b773809",
+  "timetableChangedAt": "20261116"
 }

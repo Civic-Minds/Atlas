@@ -51,7 +51,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20270110",
   "feedRefreshStatus": "current",
@@ -68,5 +68,7 @@
     "attribution": "required",
     "name": "ODC-By 1.0",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "a2f8354e6966e333",
+  "timetableChangedAt": "20261020"
 }

@@ -15,7 +15,7 @@
     -118.24
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1210/latest.zip",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,47-7/9/2026 Changes,45-CE 142 Detour and Southeast Regular Route,183-Downtown DASH eff 7-11-2026",
   "region": "California",
   "lastRefreshedAt": "2026-11-16",
@@ -48,14 +48,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 225,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 51,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -66,5 +66,8 @@
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20260519",
   "lastRawArchiveKey": "unknown-b842821b724faeed",
-  "lastFeedContentKey": "6ac6431149d377b8"
+  "lastFeedContentKey": "6ac6431149d377b8",
+  "noFeedEnd": true,
+  "lastTimetableKey": "361549d4d1838999",
+  "timetableChangedAt": "20261116"
 }

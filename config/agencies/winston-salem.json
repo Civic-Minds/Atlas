@@ -10,7 +10,7 @@
   "feedUrl": "https://ridewsta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://ridewsta.com/gtfs",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "Aug 30 start - Rev 1",
   "lastRefreshedAt": "2026-11-23",
   "cities": [
@@ -31,14 +31,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 124,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 24,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +51,8 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20260901",
   "lastRawArchiveKey": "unknown-6fc163f5f331f7b1",
-  "lastFeedContentKey": "19e933a082d0980a"
+  "lastFeedContentKey": "19e933a082d0980a",
+  "noFeedEnd": true,
+  "lastTimetableKey": "cfdb7603bfe0ca69",
+  "timetableChangedAt": "20261123"
 }

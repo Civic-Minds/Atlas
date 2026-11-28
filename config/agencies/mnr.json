@@ -23,7 +23,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-524/latest.zip",
   "preprocess": "mnr-bus-pairs",
-  "lastFeedExpiry": "20270523",
+  "lastFeedExpiry": "20270522",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-23",
   "cities": [
@@ -57,20 +57,20 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 6,
       "featureCount": 69,
-      "feedExpiry": "20270523",
+      "feedExpiry": "20270522",
       "routeCount": 6,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20270523",
+  "lastPeekedExpiry": "20270522",
   "lastServiceWeek": "3234ce464ee868ff",
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20261119",
@@ -93,5 +93,7 @@
     }
   ],
   "lastRawArchiveKey": "20270523-809ec7aed2c6a072",
-  "lastFeedContentKey": "7569c044731eb2be"
+  "lastFeedContentKey": "7569c044731eb2be",
+  "lastTimetableKey": "ff2aa346e942a34a",
+  "timetableChangedAt": "20261123"
 }

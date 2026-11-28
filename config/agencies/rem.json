@@ -58,7 +58,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -86,5 +86,7 @@
       "mode": 100,
       "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
     }
-  ]
+  ],
+  "lastTimetableKey": "e3a32fc313cd6410",
+  "timetableChangedAt": "20260525"
 }

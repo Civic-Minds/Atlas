@@ -37,7 +37,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx",
@@ -48,5 +48,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "8a0df6be66844376",
   "feedObtainedAt": "20260907",
-  "lastFeedStart": "20260906"
+  "lastFeedStart": "20260906",
+  "lastTimetableKey": "2c7ede0d93c0d5a3",
+  "timetableChangedAt": "20260907"
 }

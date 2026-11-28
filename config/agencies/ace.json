@@ -58,7 +58,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -69,5 +69,7 @@
   "feedObtainedAt": "20261109",
   "lastFeedStart": "20250101",
   "lastRawArchiveKey": "20271231-2ab27930a69218f9",
-  "lastFeedContentKey": "c3337f93ec4822f5"
+  "lastFeedContentKey": "c3337f93ec4822f5",
+  "lastTimetableKey": "009f63d464657d61",
+  "timetableChangedAt": "20261109"
 }

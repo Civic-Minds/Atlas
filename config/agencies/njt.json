@@ -96,7 +96,7 @@
       "mismatchRoutes": 9,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedExpiry": "20270516",
   "lastPeekedExpiry": "20270516",
@@ -127,5 +127,7 @@
     }
   ],
   "lastRawArchiveKey": "20270516-53ef75e0dbd62e53",
-  "lastFeedContentKey": "35591de8c444eb48"
+  "lastFeedContentKey": "35591de8c444eb48",
+  "lastTimetableKey": "ba367b76a88f5337",
+  "timetableChangedAt": "20261123"
 }
