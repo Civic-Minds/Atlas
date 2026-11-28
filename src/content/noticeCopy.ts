@@ -672,6 +672,8 @@ export function liveRouteEmptyNotice(agencyName: string, routeShortName: string,
   return `No ${agencyName} ${routeShortName} vehicles are running right now.`;
 }
 export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
+/** CIV-3047 B (Ryan, 2026-11-27, his words): the Live route card's clock beside the flag, shown once the route's vehicles stop reporting. */
+export const liveLocationsUpdatedAt = (time: string) => `Locations last updated at ${time}`;
 export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
 /** CIV-1795: the approved "can’t be shown right now" line (CIV-941). */
 export const LIVE_FEED_INCOMPLETE = 'These figures can’t be shown right now.';
