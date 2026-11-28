@@ -33,7 +33,7 @@ describe('the coverage page reads its columns from their sources (CIV-1871)', ()
     const code = readFileSync('local-api/mcp-coverage.ts', 'utf8');
     expect(code).not.toMatch(/R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY/);
     // Only these settings are picked out of the main .env.local, and none is copied into process.env.
-    expect(code).toContain("MCP_COVERAGE_ENV_KEYS = ['R2_ACCOUNT_ID', 'R2_RO_ACCESS_KEY_ID', 'R2_RO_SECRET_ACCESS_KEY', 'MCP_LIVE_BUCKET']");
+    expect(code).toContain("MCP_COVERAGE_ENV_KEYS = ['R2_ACCOUNT_ID', 'R2_LIVE_READ_ACCESS_KEY_ID', 'R2_LIVE_READ_SECRET_ACCESS_KEY', 'R2_RO_ACCESS_KEY_ID', 'R2_RO_SECRET_ACCESS_KEY', 'MCP_LIVE_BUCKET']");
     expect(code).not.toMatch(/process\.env\b/);
   });
 });

@@ -19,7 +19,9 @@ function json(body: unknown, status = 200): Response {
 }
 
 /** The four settings this handler may read, from the main checkout's .env.local (the checkout the worktrees were made from). */
-export const MCP_COVERAGE_ENV_KEYS = ['R2_ACCOUNT_ID', 'R2_RO_ACCESS_KEY_ID', 'R2_RO_SECRET_ACCESS_KEY', 'MCP_LIVE_BUCKET'] as const;
+// #1928: R2_LIVE_READ_* is a read-only token for the private Live bucket alone (the R2_RO_* token is scoped to the data and
+// archive buckets, so it is refused there); the reader prefers it and falls back to R2_RO_* while it is unset.
+export const MCP_COVERAGE_ENV_KEYS = ['R2_ACCOUNT_ID', 'R2_LIVE_READ_ACCESS_KEY_ID', 'R2_LIVE_READ_SECRET_ACCESS_KEY', 'R2_RO_ACCESS_KEY_ID', 'R2_RO_SECRET_ACCESS_KEY', 'MCP_LIVE_BUCKET'] as const;
 
 /** The main checkout's folder (a worktree has no tmp/ data of its own), or null outside git. */
 export function mainCheckoutRoot(): string | null {
