@@ -12,12 +12,12 @@ import { getSavedStudioAgency, saveStudioAgency, studioAgencyInView } from '../.
 import { useSidebarFrame } from '../../context/SidebarFrame';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
 import { STUDIO_LEGACY_PARAMS, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, parseStudioPath, studioAgencyFrom, studioAgencyListFrom, studioLegacyLocation, studioPageFor, studioPath, type StudioLocation, type StudioPageKey } from '../../../shared/studioAgencies';
-import { LIVE_AGENCY_BBOXES, LIVE_AGENCY_SLUGS } from '../../../shared/livePollingConfig';
+import { LIVE_AGENCY_BBOXES, LIVE_AGENCY_COUNT, LIVE_AGENCY_SLUGS } from '../../../shared/livePollingConfig';
 import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
 import Live from './Live';
-import { liveRouteCount, useLiveAgency } from '../../LiveAgencyPage';
+import { useLiveAgency } from '../../LiveAgencyPage';
 import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
 import { STUDIO_NO_SEARCH, StudioSearchProvider, type StudioSearchState } from './StudioSearch';
@@ -77,10 +77,12 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
   // CIV-2046 (Ryan: "I think Live in Studio and Live in main app should have the same cities available"): the Live map's
   // own list; a city without recordings opens with the no-data note (CIV-1883).
-  const liveList = useMemo(() => ({ agencies: [...LIVE_AGENCY_SLUGS] }), []);
   const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
   // The Live cities that have recorded figures (the recordings' own list), for the no-data note's "Live has:" rows (CIV-2054).
   const liveData = useDevFile<{ agencies: string[] }>(LIVE_STUDIO_AGENCIES_URL);
+  // #1922: Live's menu and default offer only those cities once their list is in (9 were offered, 4 with figures); the
+  // recorded agencies stand in only where that list can't be read.
+  const liveList = useMemo(() => ({ agencies: liveData && liveData !== 'missing' && liveData.agencies.length ? liveData.agencies : [...LIVE_AGENCY_SLUGS] }), [liveData]);
   // One reading and one default for both pages (CIV-1898): the same list rule, the same default agency.
   const listOf = studioAgencyListFrom;
   // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
@@ -108,8 +110,8 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const fullNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).full : s; };
   const cardNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).card : { primary: s }; };
   const agency = nameOf(slug);
-  // CIV-2193: the agency's recorded routes beside the Live tab's name. Read here, not by the Live page (#1764: the count was
-  // missing until Live had been opened for that agency, so never on Fleet or Schedules); the Live page gets this same answer.
+  // The agency's Live answer, read here so every page has it (#1764); the Live page gets this same answer. The Live tab's
+  // number is the agencies Live covers, as on the main map (#1926).
   const liveState = useLiveAgency(active && slug ? slug : '');
   const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, fullNameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
   const noDataRows = useMemo(() => (withData ?? []).map(s => ({ slug: s, ...cardNameOf(s) })), [agencyCatalog, withData]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -167,7 +169,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
           const Icon = PAGE_ICONS[k];
           return (
             <Fragment key={k}>
-              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' ? liveRouteCount(liveState) : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
+              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' ? LIVE_AGENCY_COUNT : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
             </Fragment>
           );
         }),

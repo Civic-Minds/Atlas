@@ -67,14 +67,6 @@ function sortValue(sort: Sort, r: AgencyRouteRow): number {
 /** What useLiveAgency gives: loading, an error, or the agency's answer. */
 export type LiveAgencyState = { kind: 'loading' } | { kind: 'error'; reason: string } | { kind: 'done'; data: LiveAgencyResponse };
 
-/**
- * CIV-2193 (Ryan: "similar to history we oculd put 9 beside live"): the agency's recorded routes, beside Studio's Live tab;
- * none until its figures load, or when Live has none for it.
- */
-export function liveRouteCount(state: LiveAgencyState): number | undefined {
-  return state.kind === 'done' && state.data.status === 'ready' ? state.data.summary.covered.length : undefined;
-}
-
 export function useLiveAgency(agency: string): LiveAgencyState {
   // Kept with the agency it is for (#1764): after a switch, the last agency's answer never shows as the new one's.
   const [held, setHeld] = useState<{ agency: string; state: LiveAgencyState }>({ agency, state: { kind: 'loading' } });

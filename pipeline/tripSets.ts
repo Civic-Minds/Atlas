@@ -1445,12 +1445,12 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
   if (value == null) return null;
   const t = departuresInWindow(stretchTimes, start, end, false);
   if (t.length < HEADLINE_MIN_DEPARTURES) return null;
-  return lateStartOrEarlyEnd(t, start, end, value)
+  return lateStartOrEarlyEnd(t, start, end, value, stretchTimes)
     ?? (slowStartFromEnabled() ? slowStartEdge(t, start, end, value) : null)
     ?? (slowEndUntilEnabled() ? slowEndEdge(t, start, end, value, stretchTimes.some(x => x >= end)) : null);
 }
 
-function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, value: number): StretchPeriodEdge | null {
+function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, value: number, all: readonly number[] = t): StretchPeriodEdge | null {
   const gaps = t.slice(1).map((x, i) => x - t[i]);
   const lead = t[0] - start;
   const trail = end - t[t.length - 1];
@@ -1461,6 +1461,13 @@ function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, v
   // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
   const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
   if (fromEdge === untilEdge) return null;
+  // CIV-3121 (#1906): service that runs on across the period's edge at the same spacing neither starts nor stops there.
+  // TransLink R2 toward Park Royal runs every 8 through 3 PM, so the wait from 3:00 to its 3:10 bus is the period line,
+  // not a late start: no "every 8 min from 3:10 PM". The same steadiness test, with the gap across the edge added.
+  const prev = fromEdge ? Math.max(-Infinity, ...all.filter(x => x < t[0] && x < start)) : -Infinity;
+  const next = untilEdge ? Math.min(Infinity, ...all.filter(x => x > t[t.length - 1] && x >= end)) : Infinity;
+  if (fromEdge && Number.isFinite(prev) && isSustainedHeadway([t[0] - prev, ...gaps], every)) return null;
+  if (untilEdge && Number.isFinite(next) && isSustainedHeadway([...gaps, next - t[t.length - 1]], every)) return null;
   return fromEdge ? { from: t[0], every } : { until: t[t.length - 1], every };
 }
 
