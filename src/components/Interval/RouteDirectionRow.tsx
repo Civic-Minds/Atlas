@@ -7,7 +7,7 @@ import { FLAG_LABEL_PART, HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { keepLastWord } from '../../utils/keepLastWord';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
-import { LIST_ROW_DIM } from '../../styles';
+import { CARD_NOTICE, LIST_ROW_DIM } from '../../styles';
 
 interface Props {
   label: string;
@@ -43,8 +43,10 @@ interface Props {
   /** A figure at the right of the label's line ("3 vehicles"), where the regular card puts its frequency; Live's rows
    *  (Ryan, 2026-11-27: the vehicles on the first line, "why would there be a dot here if the number of vehicles is right justified"). */
   labelEnd?: string;
-  /** The value on its own line under the label, at the right: Live's rows read "to Keele · 3 vehicles" over "every 13 min · gaps 9–13 min". */
+  /** The value on its own line under the label, at the right: Live's rows read "to Keele · 3 vehicles" over "live 9–13 min" (CIV-3158). */
   valueBelow?: boolean;
+  /** A line under the value, right-aligned in normal weight: Live's timetable line under its bold live line (CIV-3158). */
+  valueNote?: string;
   /** Text after the sub-label that always stays whole ("· 484 m away"); the sub-label shortens before it does (#1154). */
   subLabelTrailing?: string;
   /** The sub-label's weight: bold by default; 'medium' (the summary weight) for a stop name and distance (CIV-923). */
@@ -94,7 +96,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
 
-export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', labelEnd, valueBelow = false, live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
+export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', labelEnd, valueBelow = false, valueNote, live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -164,6 +166,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
           {!limited && rangeText && <HeadwayBadge headway={headway!} colorHeadway={Math.max(headway!, colorHeadway ?? headway!)} label={rangeText} />}
           {value}
         </span>}
+        {valueNote && <span className={`${CARD_NOTICE} basis-full text-right leading-snug`} data-testid="row-value-note">{valueNote}</span>}
         {chevron && <ChevronRight aria-hidden="true" className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
       </div>
       {subLabel && (subLabelTrailing ? (

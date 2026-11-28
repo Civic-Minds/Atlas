@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's destination rows say which figure is live and which is the timetable**: "live 10–13 min" in bold over "schedule 10 min", so the two no longer read as two answers to the same question
 - **A route card says when buses start coming more often partway through a time of day: "every 32 min, then every 17 from 4:37 PM"**: it read only "every 17 min from 4:37 PM", as if the first bus was at 4:37
 - **The Live map and Studio's Live show vehicles for every TTC route Live analyses, about 32 routes instead of 9**: routes like the 7 Bathurst showed no live reading because only the streetcars were followed
 - **Studio's Schedules shows "—" for a time of day a route ran only part of, with "15 min from 2:26 PM" under it**: the cell read "15 min" like a full period, so a route that now runs all midday looked unchanged
@@ -63,6 +64,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The internal MCP page's New link form opens from a "New link" button under the Testers table**: the form sat open there all the time
 - **Live's timetable figure is named "Lateness", and Studio's Measure menu lists it once**: "Schedule adherence" was long for a label, and Studio showed two entries for the same idea
 - **Studio's map has Frequency, Day, Time and Mode filters**: its lines were coloured by frequency with no way to filter them, as the main map can
+- **Live shows the live gaps on a small branch's row**: a branch was measured against the whole route's vehicle count, so a row like 501B to Kingston Rd never had enough vehicles to show any
 - **Live vehicles are arrows pointing the way they're heading**: the dots carried the route number, which made them hard to read; a vehicle that reports no heading stays a plain dot
 - **Long destination names no longer squeezed**: a reading that doesn't fit beside the name sits right-aligned on the line below
 - **Live's list shows every route on the map**: after picking a place such as Burlington Transit, the list kept to that agency, so HSR routes drawn on the map in the Hamilton view were missing from it
