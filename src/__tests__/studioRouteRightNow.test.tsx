@@ -11,11 +11,12 @@ vi.mock('../lib/agencyGeo', () => ({ getCachedAgencyGeo: () => undefined, fetchA
 import RouteRightNow from '../apps/studio/RouteRightNow';
 
 describe("Studio's Live route panel shows main Live's right-now card (CIV-2021)", () => {
-  it("hands the card the route's own live vehicles and the panel's direction", () => {
+  it("hands the card the route's own live vehicles and every direction's rows (#1921)", () => {
     render(<RouteRightNow slug="ttc" routeShortName="501" direction={1} />);
     const props = card.mock.calls.at(-1)![0];
     expect((props.vehicles as { id: string }[]).map(x => x.id)).toEqual(['a', 'c']);
-    expect(props.direction).toBe(1);
+    expect(props.direction).toBeUndefined();
+    expect(typeof props.scheduledRowsFor).toBe('function');
     expect(props.routeShortName).toBe('501');
   });
 
