@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Live panel is shorter and plainer**: the week table is headed "This week vs. last" without the "Recorded past service, not live." line, and the late-by-hour chart is left out when too few days were measured
 - **Live route rows show each destination once, with its vehicles under it and the live gaps beside its frequency**: a row reads "every 10 min · gaps 3–20 min" over "5 vehicles", and opening it lists its vehicles right there; the vehicles had sat in a separate list, and Studio repeated each destination under Right now and Scheduled
 - **The Live late-by-hour chart names what it covers top right, where the route card chart names its period**: "both directions" sat on its own line above the bars
 - **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board

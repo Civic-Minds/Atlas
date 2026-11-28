@@ -33,7 +33,8 @@ export const SERVICE_DELIVERED_TITLE = 'Service delivered';
 /** The late-stops section and widget on the agency and route pages. */
 export const LATE_STOPS_TITLE = 'Stops most often late';
 /** The week table's section and caption. */
-export const WEEK_COMPARE_TITLE = 'This week compared with last week';
+/** Ryan, 2026-11-27: "This Week vs. Last or smth" (sentence case). */
+export const WEEK_COMPARE_TITLE = 'This week vs. last';
 /**
  * #1831 (CIV-3001): the week table's scope line names the time of day its figures are for, where one is picked ("both
  * directions · Evening"), so they aren't read against the all-day late-by-hour chart below them (TTC 504: "Late 18%" for the
@@ -90,25 +91,6 @@ export const SHORTEST_GAP_LABEL = 'Shortest gap';
  */
 export const gapRangeText = (from: number | null, longest: number): string =>
   from != null && tenth(from) !== tenth(longest) ? `gaps ${tenth(from)}–${minutesText(longest)}` : `${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(longest)}`;
-/** The period picker's label. */
-export const TIME_OF_DAY_LABEL = 'Time of day';
-/** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
-export const LINKED_TO_TITLE = 'Also measured in this stretch';
-/** A link verdict: its figure passes the set level, or not (Ryan, CIV-1795 question 8, option a; was "Linked" / "Not linked"). */
-export const LINKED_LABEL = 'High';
-export const NOT_LINKED_LABEL = 'Low';
-/** A trip that ends before the line's end: a vehicle card tag and a trip pattern's kind. */
-export const SHORT_TURN_LABEL = 'Short turn';
-/** The two kinds of bunching gap, in charts, legends and figures. */
-export const TOO_CLOSE_LABEL = 'Too close together';
-export const TOO_FAR_LABEL = 'Too far apart';
-/** The share of gaps too short or too long, as a figure and column (CIV-1795: Live's two bunching words; was "Gaps off the schedule"). */
-export const GAPS_OFF_SCHEDULE_LABEL = 'Too close or too far apart';
-export const EARLY_STEP_LABEL = '1+ min ahead';
-/** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
-/** A vehicle or stop on schedule; the delay legend's first step (CIV-1601). */
-export const ON_TIME_LABEL = 'On time';
-export const DELAY_STEP_LABELS = [ON_TIME_LABEL, '1–3 min', '3+ min behind'] as const;
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
@@ -413,11 +395,6 @@ export const STUDIO_ROUTE_PANEL_PENDING = {
   noReading: 'No live reading for this route right now.',
   /** A reading with no vehicle of the route on the road. */
   noVehicles: 'No vehicles on this route right now.',
-  /**
-   * The route's week table, labelled as recorded past service so it isn't read as live (Ryan, CIV-2021: "I'm confused what
-   * I am looking at here if live information is unavailable"). Proposed item 8.
-   */
-  weekRecorded: 'Recorded past service, not live.',
   /** About, Live part: bunching in plain words (replaces the two-figure note now that Studio shows one figure). */
   bunchingAbout: (): string =>
     `Bunching is the share of gaps between vehicles at a stop that were under ${minutesText(BUNCHED_GAP_SEC / 60)} (vehicles running together) or more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap (a long wait).`,
