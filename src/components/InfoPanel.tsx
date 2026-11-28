@@ -24,7 +24,10 @@ import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
 import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, SOURCES_ON_SCREEN_CHIP, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
-import { BUNCHING_LABEL, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
+import { BUNCHING_LABEL, LATE_LABEL, STUDIO_ROUTE_PANEL_PENDING, lateOwnLimitSentence, onTimeWindowWords } from '../../shared/liveWording';
+import LiveMapKey from './Live/LiveMapKey';
+import { getSavedStudioAgency } from '../utils/studioAgency';
+import { agencyPossessive } from '../../shared/agencyArticle';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import SourceCredits, { SourceCreditPage, useSourceCredits } from './SourceCredits';
@@ -40,7 +43,7 @@ import { loadHistoryConfig } from '../utils/historyConfig';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'late-limit' | 'sources' | 'source-credit' | 'measurements' | 'measure-bunching';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'late-limit' | 'sources' | 'source-credit' | 'measurements' | 'measure-bunching' | 'measure-late';
 /** 'sources': About → Schedule sources, from the map's credit pill (CIV-461). */
 export type Tab = 'about' | 'agencies' | 'history' | 'live' | 'sources';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
@@ -342,6 +345,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   if (!open) return null;
 
   // Current page title (not the back destination — back is the arrow alone)
+  // CIV-3171: the agency whose late limit the Late page shows: Studio's own (Live's Learn more opens it there).
+  const lateSlug = inStudio ? getSavedStudioAgency() : null;
+  const lateAgency = lateSlug ? agencies.find(a => a.slug === lateSlug) : undefined;
+  const lateWindow = lateSlug ? onTimeWindowWords(lateSlug) : null;
   const headerTitle =
     view === 'agencies' ? PAGE_NAMES.agencies
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
@@ -351,6 +358,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     : view === 'source-credit' ? (openCredit ? [openCredit.label.primary, openCredit.label.secondary].filter(Boolean).join(' · ') : '')
     : view === 'measurements' ? MEASUREMENTS_TITLE
     : view === 'measure-bunching' ? BUNCHING_LABEL
+    : view === 'measure-late' ? LATE_LABEL
     : null;
 
   return (
@@ -381,11 +389,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <PanelBackButton
               onClick={() => {
                 if (view === 'agency-detail') setView('agencies');
-                else if (view === 'measure-bunching') setView('measurements');
+                else if (view === 'measure-bunching' || view === 'measure-late') setView('measurements');
                 else if (view === 'source-credit') setView('sources');
                 else setView('home');
               }}
-              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : view === 'measure-bunching' ? MEASUREMENTS_TITLE : view === 'source-credit' ? BACK_PLACES.sources : BACK_PLACES.aboutAtlas)}
+              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : view === 'measure-bunching' || view === 'measure-late' ? MEASUREMENTS_TITLE : view === 'source-credit' ? BACK_PLACES.sources : BACK_PLACES.aboutAtlas)}
             />
             <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}
@@ -535,6 +543,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             // #1751: Live's definitions, moved here from About's Live part; Live's Learn more opens this page.
             <div className="h-full overflow-y-auto px-5 py-4 space-y-2" data-testid="measurements">
               <LinkCard as="button" onClick={() => setView('measure-bunching')} icon="chevron">{BUNCHING_LABEL}</LinkCard>
+              {/* CIV-3171 (Ryan, 2026-11-28, picked 1; "Just "Late" no Late 5+ mins I think"): Live's late key lives here, in place of
+                  Studio Live's bottom pill, built like the Bunching row. */}
+              <LinkCard as="button" onClick={() => setView('measure-late')} icon="chevron">{LATE_LABEL}</LinkCard>
+            </div>
+          )}
+
+          {view === 'measure-late' && (
+            // CIV-3171: the key the bottom pill opened (its limit and colour steps), at Studio's agency's own limit where it
+            // publishes one; then that limit in words, or the 30-second buffer sentence for Atlas's own 5½ min.
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-3">
+              <LiveMapKey measure="late" variant="card" window={lateWindow} />
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                {lateWindow?.onTimeWindowPublished && lateAgency ? lateOwnLimitSentence(agencyPossessive(agencyNames({ name: lateAgency.name, cities: lateAgency.cities, displayArea: lateAgency.displayArea, nameQualifier: lateAgency.nameQualifier }).name), lateWindow) : LATE_LIMIT_LEAD}
+              </p>
             </div>
           )}
 

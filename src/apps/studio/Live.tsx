@@ -7,7 +7,6 @@ import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
 import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import { MapNote } from '../../components/ui/MapNote';
-import { LiveMapKeyPill } from '../../components/Live/LiveMapKey';
 import { STUDIO_MAP_MEASURES, type MapMeasure } from '../../components/Live/routeMapModel';
 import { PERIOD_BANDS_ONLY } from '../../components/Live/sections/figures';
 import { periodMenuOptions } from '../../components/Interval/pickers';
@@ -23,7 +22,7 @@ import type { LiveAgencyState } from '../../LiveAgencyPage';
 import { DataUpTo } from '../../LiveRoutePage';
 import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
-import { DIRECTION_LABEL, onTimeWindowWords } from '../../../shared/liveWording';
+import { DIRECTION_LABEL } from '../../../shared/liveWording';
 import { GAP_MEASURES } from '../../../shared/liveDashboard';
 import LiveGlance from './LiveGlance';
 import RouteRightNow from './RouteRightNow';
@@ -93,16 +92,15 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const shownMeasure = m.held && measure && !GAP_MEASURES.has(measure) ? null : measure;
   // CIV-2000: a held route has only the measures read from gaps between vehicles.
   const measureOptions = useMemo(() => (m.held ? STUDIO_MAP_MEASURES.filter(([k]) => GAP_MEASURES.has(k)) : STUDIO_MAP_MEASURES), [m.held]);
-  // The bottom pills: "Data up to…", then the map's key as one pill that opens the full key (Ryan, 2026-11-27, picked 1),
-  // then Views by the locate-me button (CIV-3160, Ryan, 2026-11-28: "1", "Bottom, by locate me"): it only changes what
+  // The bottom pills: "Data up to…", then Views (CIV-3171, Ryan, 2026-11-28, picked 1: the late key moved from a pill here to
+  // Measurements' Late row, which Learn more opens) by the locate-me button (CIV-3160, Ryan, 2026-11-28: "1", "Bottom, by locate me"): it only changes what
   // the map's lines are coloured to show, so it sits with the map's own controls, out of the top bar.
   const statusPill = useMemo(() => (
     <>
       <DataUpTo pill dates={m.dataDates} route={m.dataRoute} />
-      <LiveMapKeyPill measure={measure ?? 'late'} window={onTimeWindowWords(slug)} />
       <ViewsPill value={shownMeasure ?? ''} options={measureOptions} onPick={k => setMeasure(k === shownMeasure ? null : k as MapMeasure)} />
     </>
-  ), [m.dataDates, m.dataRoute, measure, slug, shownMeasure, measureOptions]);
+  ), [m.dataDates, m.dataRoute, shownMeasure, measureOptions]);
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
   // Studio's frame owns where the map is framed (CIV-1925); Live only says when what it draws is still loading.
   const { frameKey, framedMemory, holdFrame } = useStudioMapFrame(m.frameKey !== (route ? `route-${route}` : 'network-all'));

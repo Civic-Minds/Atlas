@@ -334,6 +334,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: both sidebars show everything at once; if it does not fit, show less rather than cram.
   - Why: Ryan: "I shouldn't need to scroll in the sidebar." (He never asked for collapsible cards.)
   - Source: Linear CIV-293, comments of 2026-10-17 (14:17, 14:20 and 14:27 UTC)
+- **Studio Live's late key is a "Late" row in Measurements, not a pill**
+  - What: Measurements (opened by Learn more) has a "Late" row built like Bunching's, showing the late limit and colour steps at the agency's own limit where it publishes one; Studio Live has no bottom late pill. The Live page keeps its pill.
+  - Why: Ryan: "put the 5+ minutes here in a Bunching thing"; "Just "Late" no Late 5+ mins I think".
+  - Source: [decision log](#decision-log) (2026-11-28, CIV-3171)
 - **Late has one shared wording and one threshold**
   - What: "Late: more than 5½ min behind the timetable: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute."
   - Why: two different numbers had been used for the same threshold.
@@ -431,6 +435,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-28 — Studio Live's late key moves to a "Late" row in Measurements; no bottom pill (CIV-3171)
+Ryan, 2026-11-28. First, on Studio's Measurements panel: "Just to be clear I meant put the 5+ minutes here in a Bunching thing". On the review page _review/civ-3171 ("Where should Studio Live explain 'Late · 5+ min'?"; 1 a Late row in Measurements and no bottom pill (Recommended), 2 the row and keep the pill, 3 keep today's pill only) he picked "1", adding "Just "Late" no Late 5+ mins I think".
+- The rule: Studio Live has no late key pill. Measurements (which Learn more opens) has a row labelled "Late", the same row as Bunching; it shows the key the pill opened (the limit and the colour steps) at the agency's own limit where it publishes one.
+- Then, on the sentence under the key (separate question), he picked "1": where the agency has its own limit, say that instead of the 30-second buffer sentence, which stays only where Atlas's 5½ min is used; "I don't like : but sure", so no colon. The exact sentence is pending his word-for-word OK (draft: "Late means more than 5 min behind schedule, the TTC’s own limit.").
+- Not changed: the Live page keeps its pill.
 
 ### 2026-11-28 — A Live destination row reads vehicles, then live, then schedule, each on its own line (CIV-3158, #1931)
 Ryan, 2026-11-27, on "Westbound to Keele, every 10 min · gaps 10–13 min, 3 vehicles": "Why does it say both of these". Then "schedule: 10 - live: 10-13 ? idk we can mock up a few options maybe?". On the shortlist, 2026-11-28: "Re 1 feels weird if schedule doesnt use the word mins but live does. idk"; then "1 because sometimes it might not be in minutes right but maybe like 2 where they're on separate lines?" (wording 1, units on both, on separate lines). Asked whether the live times should be bold instead: "1" ("Bold the live line and move the dot to it, coloured by how the buses are actually doing"). Order, through the manager: vehicles, then live, then schedule; his standing ask "Why is the number of vehicles on a third line instead of on the fist line like i asked" keeps the count on the destination's line.
