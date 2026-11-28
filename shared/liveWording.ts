@@ -351,6 +351,8 @@ export const STUDIO_LIVE_PENDING = {
 export const STUDIO_GLANCE = {
   onTime: 'On time',
   late: LATE_THRESHOLD.charAt(0).toUpperCase() + LATE_THRESHOLD.slice(1),
+  /** #1925: at the agency's own late limit where it publishes one ("More than 5 min late", TTC), as every other Late line. */
+  lateAt: (t?: OnTimeWords | null): string => { const s = lateThreshold(t); return s.charAt(0).toUpperCase() + s.slice(1); },
 } as const;
 
 /**

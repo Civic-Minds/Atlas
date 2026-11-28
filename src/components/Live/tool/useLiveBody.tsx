@@ -102,7 +102,7 @@ const weekCaptions = (inStudio: boolean) => inStudio ? { aboutLive: true } : { c
 
 function summaryWidgets(s: AgencySummary, band: DashboardBand, inStudio: boolean, lateNote: string | null): PanelWidget[] {
   const weekLeft = excludingDays(s.weekly);
-  const tiles = agencyKpiTiles(s, band);
+  const tiles = agencyKpiTiles(s, band, { oneBunchingFigure: inStudio });
   return [
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={agencyWeekScope(band)} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lateNote={lateNote} /> }] : []),
   ];

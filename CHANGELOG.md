@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's All routes trip-time arrow follows the number shown**: "5% faster" to "4% faster" drew an up arrow, because the arrow followed the trip getting longer rather than the share written
 - **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
 - **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board
 - **A one-stretch route takes its card's colour on the map where its trips are uneven**: a one-minute timetable difference between neighbouring stops split the line into two colours (Nanaimo 40 toward Downtown, PM peak, drew its first 17 stops every 30 while the card said every 15)
