@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { MapAttribution } from '../Interval/MapAttribution';
 import { MapNote } from '../ui/MapNote';
-import { MAP_FOOTER_ROW_SLOT } from '../../styles';
+import { MAP_COUNTS_PHONE_SLOT, MAP_FOOTER_ROW_SLOT, Z_PANEL } from '../../styles';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../../mapOverlayLayout';
 
 /** The gap kept between the footer and what the map frames above it: the overlay's inset plus a gap. */
@@ -21,7 +21,7 @@ export function framePadding<P extends { bottom: number }>(pad: P, footerHeight:
  * publishes the row's height (--map-footer-h) as the regular map does, so the key and the sidebar stop above it, and
  * reports it (onHeight) so the map frames what it draws above it.
  */
-export function MapAppFooter({ note, onHeight }: { note?: ReactNode; onHeight?: (px: number) => void }) {
+export function MapAppFooter({ note, pill, onHeight }: { note?: ReactNode; /** A page's bottom pill (the Live key, CIV-3159), in the regular map's pill slot, where Studio's pills sit. */ pill?: ReactNode; onHeight?: (px: number) => void }) {
   const [el, setEl] = useState<HTMLElement | null>(null);
   useEffect(() => {
     if (!el) return;
@@ -40,6 +40,7 @@ export function MapAppFooter({ note, onHeight }: { note?: ReactNode; onHeight?: 
     <>
       {note && <MapNote>{note}</MapNote>}
       <div ref={setEl} className={MAP_FOOTER_ROW_SLOT}><MapAttribution /></div>
+      {pill && <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 pointer-events-auto`}>{pill}</div>}
     </>
   );
 }

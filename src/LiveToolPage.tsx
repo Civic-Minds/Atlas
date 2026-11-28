@@ -28,7 +28,7 @@ import Pill from './components/ui/Pill';
 import PillGroup from './components/ui/PillGroup';
 import { LiveMapKeyPill } from './components/Live/LiveMapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
-import { MAP_LEGEND_SLOT, PHONE_TAP_AREA, Z_MAP_OVERLAY } from './styles';
+import { PHONE_TAP_AREA } from './styles';
 import { useLiveBody } from './components/Live/tool/useLiveBody';
 import { MAP_MEASURES } from './components/Live/routeMapModel';
 import { DataUpTo } from './LiveRoutePage';
@@ -64,7 +64,8 @@ export function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setR
   // The map note sits over the map's bottom edge: the route is framed above it (its measured height plus its inset and a gap).
   const [noteH, setNoteH] = useState(0);
   // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
-  const note = <MapAppFooter note={m.note} onHeight={setNoteH} />;
+  // The map's key as one bottom pill that opens the full key (Ryan, 2026-11-27, picked 1), in the footer's pill slot as in Studio.
+  const note = <MapAppFooter note={m.note} pill={<LiveMapKeyPill measure={measure} window={onTimeWindowWords(agency)} />} onHeight={setNoteH} />;
   const mapEl = (
     <MapAppMap
       layer={{ kind: 'segments', model: m.model, measure, heat: m.heat }} selected={pick} anchor={m.anchor} card={m.card} padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, noteH)}
@@ -81,8 +82,7 @@ export function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setR
   const upTo = dataSlot ? createPortal(<DataUpTo dates={m.dataDates} route={m.dataRoute} />, dataSlot) : null;
   // The measures sit in the top bar with the other switchers; the map key sits in the regular map's key card and slot (CIV-1821).
   const measureBar = measureSlot ? createPortal(<MeasurePills measure={measure} setMeasure={setMeasure} options={measures} />, measureSlot) : null;
-  // The map's key as one bottom pill that opens the full key (Ryan, 2026-11-27, picked 1), in the key's slot.
-  const mapOverlay = <><div className={`${MAP_LEGEND_SLOT} ${Z_MAP_OVERLAY} pointer-events-none`}><LiveMapKeyPill measure={measure} window={onTimeWindowWords(agency)} /></div>{note}</>;
+  const mapOverlay = note;
   // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
   return (
     <MapAppLayout
