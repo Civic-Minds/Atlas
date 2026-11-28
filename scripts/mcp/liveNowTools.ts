@@ -94,7 +94,11 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     const analysis = await routeAnalysis(a.slug, s.shortName || s.name);
     const ids = new Set(routeIds);
     const newest = snapshots.at(-1);
-    const core = analysis ? routeDirectionsNow(analysis, recentFromSnapshots(snapshots, id => ids.has(id)), now, period, (newest?.vehicles ?? []).filter(v => ids.has(v.r)).map(v => ({ tripId: v.tripId ?? '', directionId: v.d }))) : [];
+    // Each vehicle's direction as route_now placed it (the pattern it passed most stops on), as the map gives the core its own
+    // placed directions: feeds often send none (TTC), and trips the analysis's timetable doesn't list (504C replacement
+    // buses) are counted only through it.
+    const placedDir = new Map(r.directions.flatMap(d => d.vehicleIdsNow.map(id => [id, d.directionId] as const)));
+    const core = analysis ? routeDirectionsNow(analysis, recentFromSnapshots(snapshots, id => ids.has(id)), now, period, (newest?.vehicles ?? []).filter(v => ids.has(v.r)).map(v => ({ tripId: v.tripId ?? '', directionId: placedDir.get(v.id) ?? v.d }))) : [];
     // CIV-2055: each direction's Scheduled lines as the Live route card shows them (its shared stretch, each branch and
     // short turn), from the card's own reading, for the agency's day and period, not this server's clock.
     const fc = { type: 'FeatureCollection' as const, features: rows.map(properties => ({ type: 'Feature' as const, geometry: null, properties })) as unknown as GeoJSON.Feature[] };

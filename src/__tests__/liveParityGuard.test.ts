@@ -75,6 +75,9 @@ describe('Live right now: one way of reading a route (CIV-3177)', () => {
     const tool = read('scripts/mcp/liveNowTools.ts');
     expect(tool).toMatch(/routeDirectionsNow\(/);
     expect(tool).toMatch(/recentFromSnapshots\(/);
+    // The core gets each vehicle's direction as route_now placed it, never the feed's own field alone (TTC sends none,
+    // so unlisted trips such as replacement buses were dropped and route_now counted fewer vehicles than the map).
+    expect(tool).toMatch(/directionId: placedDir\.get\(v\.id\)/);
     expect(read('local-api/live-recent.ts')).toMatch(/recentFromSnapshots\(/);
   });
 
