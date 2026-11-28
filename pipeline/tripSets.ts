@@ -46,6 +46,7 @@ import {
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
   clockTimes,
+  keepingStartUpTrips,
 } from './headway-utils.js';
 import { LEGACY_PIECE_MINIMUM } from './pieceParams.js';
 import { isRegularPieceInPeriod, piecesByTripsFromEnv, pieceMinimum, branchReadingsFromEnv, directionPieceReadings, headlineTrunk, pieceReadingsForFeature, trunkLongEnough, nameUnnamedPiece, piecePeriodTreatments, busiestStop } from './pieces.js';
@@ -236,7 +237,8 @@ function runsSteadily(trips: readonly DirectionTrip[], stop: string, periods: re
     const visit = trip.visits.find(v => v.stopId === stop);
     if (visit && visit.counted !== false) times.push(visit.minutes);
   }
-  const steady = periodSustainedMid(times);
+  // CIV-1764: the pattern pick reads Overnight as before the start-up rule, so the rule moves Overnight figures only.
+  const steady = keepingStartUpTrips(() => periodSustainedMid(times));
   return periods.some(period => steady[period] === true);
 }
 

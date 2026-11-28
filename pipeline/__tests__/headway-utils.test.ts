@@ -659,3 +659,17 @@ describe('two departures a minute apart are one bus: no longest gap (CIV-1721, #
     expect(computePeriodMaxGaps([m(15, 32), m(15, 33), m(15, 34)]).pmPeak).toBe(1);
   });
 });
+
+describe('CIV-1764: start-up trips and the pattern pick', () => {
+  it('drops a direction\'s 3:30-6:00 start-up trips from Overnight, except inside keepingStartUpTrips', async () => {
+    const { withoutStartUpTrips, keepingStartUpTrips } = await import('../headway-utils');
+    const { PERIOD_MINUTES } = await import('../../shared/config');
+    const { start, end } = PERIOD_MINUTES.overnight;
+    // TTC 25 Steeles: 5:36, 5:48, 5:54, 6:00, nothing from 2:00 to 3:30 (GTFS minutes past the service day's midnight).
+    const startUp = [29 * 60 + 36, 29 * 60 + 48, 29 * 60 + 54, 30 * 60];
+    expect(withoutStartUpTrips(startUp, start, end)).toEqual([]);
+    expect(keepingStartUpTrips(() => withoutStartUpTrips(startUp, start, end))).toEqual(startUp);
+    // Outside keepingStartUpTrips the rule applies again.
+    expect(withoutStartUpTrips(startUp, start, end)).toEqual([]);
+  });
+});

@@ -144,6 +144,17 @@ export { HEADLINE_WINDOWS };
 /** A headline value needs at least this many departures in its window. */
 export const HEADLINE_MIN_DEPARTURES = 3;
 
+let keepStartUpTrips = false;
+/**
+ * CIV-1764: runs `read` with the Overnight period's start-up trips kept, as before the rule. Only the main/branch pattern
+ * pick uses it: it reads every period's steadiness to choose a night route's main pattern, and the rule was meant to change
+ * Overnight figures only, not which pattern is main (it moved 52 figures outside Overnight: TTC 320, STL 26).
+ */
+export function keepingStartUpTrips<T>(read: () => T): T {
+  const before = keepStartUpTrips;
+  keepStartUpTrips = true;
+  try { return read(); } finally { keepStartUpTrips = before; }
+}
 /**
  * CIV-1764 (Ryan, 2026-11-24: a service day's own first morning trips are not night service): the Overnight period's
  * departures, empty when none is before the night midpoint (3:30, NIGHT_MIDPOINT_MIN). A direction with nothing from
@@ -152,7 +163,7 @@ export const HEADLINE_MIN_DEPARTURES = 3;
  * is unchanged. `sorted` is the window's departures, ascending.
  */
 export function withoutStartUpTrips(sorted: number[], start: number, end: number): number[] {
-  if (start !== PERIODS.overnight.start || end !== PERIODS.overnight.end) return sorted;
+  if (keepStartUpTrips || start !== PERIODS.overnight.start || end !== PERIODS.overnight.end) return sorted;
   return sorted.length > 0 && sorted[0] < NIGHT_MIDPOINT_MIN ? sorted : [];
 }
 
