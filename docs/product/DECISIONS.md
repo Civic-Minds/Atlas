@@ -64,6 +64,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Irregular" on cards, in table cells and in list values, one label in src/content/noticeCopy.ts. The Night card keeps "Runs irregularly overnight".
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
   - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; card wording "Irregular" since 2026-11-27 (CIV-3136); [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
+- **A card row whose service comes more often partway through names the slower part first**
+  - What: a row whose period starts slowly and then runs more often reads "every 32 min, then every 17 from 4:37 PM" (the slower longest wait, then the faster one and when it starts). A plain "from" now only means the first bus, as a plain "until" means the last; "until …, then every N" (service slowing down) is unchanged. Ordinary, branch and Shared stretch rows alike; card wording only, the colour and the filter are unchanged.
+  - Why: "every 17 min from 4:37 PM" read as if the first bus was at 4:37.
+  - Source: [decision log](#decision-log) (2026-11-28, CIV-3135)
 - **A card row with a wait over an hour needs 4 of its own trips for a number**
   - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Irregular", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
   - Why: 2 or 3 trips are not a pattern a rider can plan around, even when evenly spaced.
@@ -423,6 +427,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-28 — "every 32 min, then every 17 from 4:37 PM" for service that comes more often partway through (CIV-3135)
+Ryan, 2026-11-28 (Questions chat), on the review page _review/civ-3135 (OC Transpo 41 westbound, weekday PM peak). Question: "how should a route card say that buses start coming more often partway through a time of day? … Today the card says only 'every 17 min from 4:37 PM', which reads as if the first bus is at 4:37." Options: 1 "every 32 min, then every 17 from 4:37 PM" (Recommended); 2 "every 32 min until 4:37 PM, then every 17"; 3 "every 17 min from 4:37 PM, less often before"; 4 keep today's wording. His exact words: "1". Earlier (2026-11-27) he had found "every 30 before" awkward and asked for more information first.
+- The rule: a slow-start reading (CIV-1411) carries the period's value as the wait before it, and the card names it first. The numbers are the ones the card already used: both longest waits rounded up, so neither part reads better than it runs.
+- Counts: about 120 card readings change (the 2026-11-27 count of "from" rows where buses also run earlier, TTC, Spokane, MBTA, TransLink, SEPTA, OC Transpo, RTD and Hamilton); plain "from" (887) and every "until" reading are unchanged. Checked on a local dry run of today's feeds: TTC 68 to Major Mackenzie, weekday AM peak (branch row), "every 33 min, then every 16 from 7:07 AM"; RTD 40 to Colorado Station, Saturday midday, "every 31 min, then every 15 from 10:45 AM".
+- Not changed: route lists, agency pages and the map keep their number (a list row still reads the faster figure where it shows no words). The new words show after the next data rebuild.
 
 ### 2026-11-27 — Apps and modes, not "views"; the Measure pill becomes "Views" (CIV-3163, CIV-3160)
 Ryan, 2026-11-27, in the Questions chat. First, with a screenshot of Studio's top-bar "Measure" pill: "should these be renamed to views". Then: ""Measure" but all of these just change the filter on the map - what the lines are coloured to show"; "There's "apps" and "modes" but not "views""; "Live, Fleet, and Schedules are apps, not "views"". Then "So then fix the name of the tabs firstly", then "Then 1": once the tabs are called apps, the Measure pill becomes "Views".
