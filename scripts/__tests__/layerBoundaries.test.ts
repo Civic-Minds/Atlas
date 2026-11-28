@@ -7,15 +7,13 @@ const tracked = (dir: string) => execSync(`git ls-files ${dir}`, { encoding: 'ut
 const isTest = (f: string) => /__tests__\/|\.test\.|\.spec\./.test(f);
 
 /**
- * The pipeline's own code that still reads the app's src/ (follow-up CIV-3189: move what they read into shared/). Shrink this
- * list; never add to it.
+ * The pipeline files that read the app's src/ on purpose (CIV-3189, manager's pick 3, 2026-11-28): both read a route the way the
+ * route card does (routeReading, effectiveHeadway), so the pipeline's figures and the card's always match. Moving that reading engine
+ * into shared/ would take src/content/noticeCopy.ts with it, which keeps its settled home. Never add to this list.
  */
 const PIPELINE_READS_SRC: Record<string, string> = {
-  'pipeline/publish-on-demand.ts': 'src/data/onDemandExport, onDemandRegistry: the on-demand release, to move into shared/',
-  'pipeline/check-on-demand-sources.ts': 'src/data/onDemandExport, onDemandSources: to move into shared/',
-  'pipeline/onDemandGate.ts': 'src/data/onDemandExport (agencyTimeZone): to move into shared/',
-  'pipeline/feedCompare.ts': 'src/utils/routeReading, the ShapeProperties type: to move into shared/',
-  'pipeline/historyV2.ts': 'src/utils/effectiveHeadway, the ShapeProperties and TimePeriod types: to move into shared/',
+  'pipeline/feedCompare.ts': "src/utils/routeReading and the ShapeProperties type: Studio's comparison reads each route as its card does",
+  'pipeline/historyV2.ts': "src/utils/effectiveHeadway and the ShapeProperties and TimePeriod types: History's low end is the route list's own",
 };
 
 describe('layer boundaries (CIV-3184)', () => {

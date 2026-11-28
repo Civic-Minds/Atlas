@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { AgencyCard } from '../AgencyCard';
 import type { Agency } from '../../../App';
 import { FEATURES } from '../../../../shared/config';
-import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../data/onDemandServiceAreas';
+import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../../shared/onDemand/onDemandServiceAreas';
 
 const card = (agency: Agency) => render(
   <AgencyCard

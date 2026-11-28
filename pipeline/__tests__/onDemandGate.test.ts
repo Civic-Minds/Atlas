@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { evaluateOnDemandRelease, heldBack, type OnDemandSnapshot } from '../onDemandGate';
 import type { OnDemandGeometry, OnDemandIndexEntry } from '../../shared/onDemandData';
-import { buildOnDemandRelease } from '../../src/data/onDemandExport';
+import { buildOnDemandRelease } from '../../shared/onDemand/onDemandExport';
 
 const NOW = new Date('2026-10-11T00:00:00Z');
 const square = (id: string, size = 0.1): GeoJSON.Feature<GeoJSON.Polygon> => ({

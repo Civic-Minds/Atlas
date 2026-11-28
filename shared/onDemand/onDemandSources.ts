@@ -21,7 +21,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import type { OnDemandArea } from './onDemandRegistry';
+import type { OnDemandArea } from '../onDemandAvailability';
 
 export const ON_DEMAND_SOURCE_DIR = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../config/on-demand');
 

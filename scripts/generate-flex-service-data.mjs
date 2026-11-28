@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 const [, , command, inputPath, outputPath] = process.argv;
 if (!command || !inputPath || !outputPath) {
-  console.error('Usage: node scripts/generate-flex-service-data.mjs <metro|ctran|ctran-stops> <input.geojson> <output>  (metro/ctran: config/on-demand-geometry/<slug>.json; ctran-stops: src/data/ctranCurrentFlexStops.ts)');
+  console.error('Usage: node scripts/generate-flex-service-data.mjs <metro|ctran|ctran-stops> <input.geojson> <output>  (metro/ctran: config/on-demand-geometry/<slug>.json; ctran-stops: shared/onDemand/ctranCurrentFlexStops.ts)');
   process.exit(1);
 }
 

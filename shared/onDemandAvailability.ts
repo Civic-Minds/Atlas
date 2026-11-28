@@ -377,3 +377,25 @@ export function onDemandRunningNote(availability: OnDemandAvailability | undefin
 export interface OnDemandPickupStop {
   serviceType?: string;
 }
+
+/** CIV-3189: an agency's on-demand service drawn as a boundary (its zones, stops and source), shared by the app and the pipeline's on-demand release. */
+export interface OnDemandArea {
+  features: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>[];
+  stopFeatures?: GeoJSON.Feature<GeoJSON.Point>[];
+  sourceUrl: string;
+  sourceLabel: string;
+  sourceRetrievedAt?: string;
+  /** Source wording for hours; shown only when structured availability is missing. */
+  serviceHours?: string;
+  /** Qualifiers structured hours can't express, e.g. holidays. */
+  hoursNote?: string;
+  /** The service's own name. */
+  serviceName?: string;
+  /** A trip restriction riders must know, e.g. which trips a zone can serve. */
+  tripRules?: string;
+  /** Who may ride, when the agency limits it, e.g. "Riders 13 and older." */
+  eligibility?: string;
+  availability?: OnDemandAvailability;
+  pickup?: OnDemandPickup;
+  zoneMetadata?: Record<string, OnDemandZoneDetails>;
+}

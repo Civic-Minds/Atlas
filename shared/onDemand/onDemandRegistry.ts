@@ -2,7 +2,7 @@
  * Every on-demand service in Atlas, for the export to R2 (CIV-50). The app no longer imports these
  * modules; it loads the published files instead (src/lib/onDemandLoader.ts).
  */
-import type { Agency } from '../App';
+import type { OnDemandArea } from '../onDemandAvailability';
 import {
   ALL_POINTS_DIAL_A_RIDE_SERVICE_AREA,
   ASPEN_DOWNTOWNER_SERVICE_AREA,
@@ -37,7 +37,6 @@ import {
   WINKLER_ON_DEMAND_AGENCY,
 } from './onDemandServiceAreas';
 
-export type OnDemandArea = NonNullable<Agency['onDemandServiceArea']>;
 
 /** Services drawn for an agency that already has a fixed-route catalog entry. */
 export const ATTACHED_ON_DEMAND_SERVICES: Readonly<Record<string, OnDemandArea>> = {

@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { AgencyCard } from '../AgencyCard';
 import type { Agency } from '../../../App';
-import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../data/onDemandServiceAreas';
+import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../../shared/onDemand/onDemandServiceAreas';
 
 const hamilton = {
   slug: 'hamilton',

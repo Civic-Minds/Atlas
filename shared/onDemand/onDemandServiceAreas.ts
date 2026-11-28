@@ -9,10 +9,9 @@ import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_SOURCE, HAMILTON_T
 import { GTFS_FLEX_METADATA } from './metroMicroFlexMetadata';
 import { C_TRAN_CURRENT_FLEX_STOPS } from './ctranCurrentFlexStops';
 import { ALL_POINTS_DIAL_A_RIDE_FEATURES, ASPEN_DOWNTOWNER_FEATURES, BAY_TRANSIT_EXPRESS_FEATURES, CAT_DIAL_A_RIDE_FEATURES, DURANGO_MICROTRANSIT_FEATURES, GLTC_FLEX_FEATURES, ISLAND_TRANSIT_GO_STOPS, SAM_RIDES_FEATURES, SNOQUALMIE_DOOR_TO_DOOR_FEATURES, TCTD_DIAL_A_RIDE_FEATURES, VALLEY_METRO_METROFLX_FEATURES } from './flexBatchData';
-import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../../shared/onDemandAvailability';
-import { BETA_SERVICE_ROLLOUT_NOTICE } from '../content/noticeCopy';
+import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../onDemandAvailability';
 import { CYRIDE_MOONLIGHT_EXPRESS_FEATURE, RFTA_CARBONDALE_DOWNTOWNER_FEATURE, UTA_NORTH_UTAH_COUNTY_FEATURE } from './onDemandOfficialLayers';
-import { ON_DEMAND_PUBLIC } from '../../shared/config';
+import { ON_DEMAND_PUBLIC } from '../config';
 
 /** GTFS-Flex zone polygons kept as JSON in config/on-demand-geometry/<slug>.json (written by scripts/generate-flex-service-data.mjs). */
 const ON_DEMAND_GEOMETRY_DIR = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../config/on-demand-geometry');
@@ -25,10 +24,13 @@ const C_TRAN_CURRENT_FLEX_FEATURES = loadFlexZones('ctran');
 /* RTD FlexRide zones: RTD's public FlexRide Areas layer (RTD_GIS_Current_Runboard, layer 7), retrieved 2026-10-26 (CIV-951). */
 const RTD_FLEXRIDE_FEATURES = loadFlexZones('rtd-denver');
 
-/** Standalone on-demand agencies stay out of the public catalog until the launch flag flips (CIV-23). */
-const ON_DEMAND_ROLLOUT: { hiddenInProduction?: true; betaOnly?: true; rolloutNotice?: string } = ON_DEMAND_PUBLIC
+/**
+ * Standalone on-demand agencies stay out of the public catalog until the launch flag flips (CIV-23). The data carries only the
+ * flags; the app adds the beta notice's words from noticeCopy when it loads them (onDemandLoader), so no text lives here (CIV-3189).
+ */
+const ON_DEMAND_ROLLOUT: { hiddenInProduction?: true; betaOnly?: true } = ON_DEMAND_PUBLIC
   ? {}
-  : { hiddenInProduction: true, betaOnly: true, rolloutNotice: BETA_SERVICE_ROLLOUT_NOTICE };
+  : { hiddenInProduction: true, betaOnly: true };
 
 /**
  * Agency-owned service-area geometry for services that do not publish route

@@ -47,8 +47,8 @@ async function main() {
   const { r2Get, r2Put } = await import('./r2.js');
   const { evaluateOnDemandRelease, heldBack } = await import('./onDemandGate.js');
   const { ON_DEMAND_PREFIX } = await import('../shared/onDemandData.js');
-  const { buildOnDemandRelease, releaseFiles, releaseWithHeldServices } = await import('../src/data/onDemandExport.js');
-  const { PROMOTED_ON_DEMAND_SLUGS } = await import('../src/data/onDemandRegistry.js');
+  const { buildOnDemandRelease, releaseFiles, releaseWithHeldServices } = await import('../shared/onDemand/onDemandExport.js');
+  const { PROMOTED_ON_DEMAND_SLUGS } = await import('../shared/onDemand/onDemandRegistry.js');
   type Snapshot = import('./onDemandGate.js').OnDemandSnapshot;
   type Geometry = import('../shared/onDemandData.js').OnDemandGeometry;
 

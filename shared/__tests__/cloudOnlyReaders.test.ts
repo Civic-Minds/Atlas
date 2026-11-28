@@ -43,9 +43,9 @@ const FS_ALLOWED: Record<string, string> = {
   'scripts/mcp/releaseMcpFiles.ts': 'runs in the cloud rebuild',
   'scripts/mcp/splitRelease.ts': 'runs in the cloud rebuild',
   'scripts/mcp/weeklyReview.ts': 'a developer report, not a reader',
-  'src/data/onDemandServiceAreas.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
-  'src/data/onDemandExport.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
-  'src/data/onDemandSources.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
+  'shared/onDemand/onDemandServiceAreas.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
+  'shared/onDemand/onDemandExport.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
+  'shared/onDemand/onDemandSources.ts': 'the on-demand registry\'s pipeline export, never imported by the app',
 };
 
 const files = execFileSync('git', ['ls-files'], { encoding: 'utf8' }).split('\n').filter(f => READERS.test(f) && !NOT_READERS.test(f));
