@@ -5,16 +5,19 @@ import { useSyncExternalStore } from 'react';
  * credit About → Schedule sources scrolls to when it opens from the map's credit pill. A small store of its own, so the
  * map and the About panel share it without new props through App.
  */
-let focus: { slug: string | null; n: number } = { slug: null, n: 0 };
+let focus: { slug: string | null; onMap: readonly string[] | null; n: number } = { slug: null, onMap: null, n: 0 };
 const listeners = new Set<() => void>();
 
-/** Ask Schedule sources to show this agency's credit (null: the top of the list). */
-export function focusSource(slug: string | null): void {
-  focus = { slug, n: focus.n + 1 };
+/**
+ * Ask Schedule sources to show this agency's credit (null: the top of the list). CIV-3142: `onMap`, the agencies credited
+ * on screen, opens the list narrowed to them ("and N other agencies").
+ */
+export function focusSource(slug: string | null, onMap: readonly string[] | null = null): void {
+  focus = { slug, onMap, n: focus.n + 1 };
   for (const l of listeners) l();
 }
 
-export function useSourcesFocus(): { slug: string | null; n: number } {
+export function useSourcesFocus(): { slug: string | null; onMap: readonly string[] | null; n: number } {
   return useSyncExternalStore(
     l => { listeners.add(l); return () => listeners.delete(l); },
     () => focus,
