@@ -328,16 +328,27 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
       const counted = rowVehicles ? rowDirectionKey(r.headsign, routeShortName) : null;
       const mine = all ? cars : counted ? rowVehicles!.get(counted) ?? [] : groups.get(r.key) ?? [];
       if (!all && !counted && !only.has(r.key)) continue;
-      // #1958: a destination row is measured along its own shape where the card has it, so cars on a branch past the
-      // split or on other streets (TTC 504C) are on its line. The shared stretch is measured over the
-      // cars on the direction's line only: one off every recorded street isn't on the shared stretch.
-      const own = !all && r.coordinates ? rowLineModel(directionId, r.coordinates) : null;
-      const off = new Set(all ? live.offCarIds ?? [] : []);
-      const ids = new Set(mine.map(v => v.id).filter(id => !off.has(id)));
-      const subset = recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) }));
-      const rowLine = own ?? line;
-      const sub = all && !off.size ? live : liveGaps(data, rowLine, own ? [] : withStats(line, liveBand), liveBand, subset, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
-      const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
+      // As main measures it: the shared stretch and a direction's only row over every car, other rows over their own
+      // cars, all along the direction's line.
+      const ids = new Set(mine.map(v => v.id));
+      const onLine = all ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
+      const reading = (g: typeof onLine) => (g && !g.incomplete ? gapExtremes({ gapsMin: g.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : g.scheduledSec }) : null);
+      let sub = onLine;
+      let ext = reading(onLine);
+      // #1958: only where that gives no reading, a second look. A destination row is measured along its own shape, so
+      // cars on a branch past the split or on other streets (TTC 504C) are on its line; the shared stretch over the cars
+      // on the direction's line only (one off every recorded street isn't on the shared stretch). A row that already
+      // reads live keeps exactly main's figure.
+      if (!ext) {
+        const own = !all && r.coordinates ? rowLineModel(directionId, r.coordinates) : null;
+        const off = new Set(all ? live.offCarIds ?? [] : []);
+        if (own || off.size) {
+          const keep = new Set([...ids].filter(id => !off.has(id)));
+          const alt = liveGaps(data, own ?? line, own ? [] : withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => keep.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
+          const altExt = reading(alt);
+          if (altExt) { sub = alt; ext = altExt; }
+        }
+      }
       out.set(r.key, { cars: mine.length, extremes: ext, median: ext && sub ? median(sub.gapsMin.filter((g): g is number => g != null)) : null });
     }
     return out;
