@@ -28,6 +28,7 @@ import { withoutMapPosition } from './lib/analytics';
 import { trackKeyboardFocus } from './lib/keyboardFocus';
 import { RESEARCH_DRAFTS } from './apps/researchDrafts';
 import { findSeoRoute } from '../shared/seo';
+import { stripUtmAfterLoad } from './utils/stripUtm';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, AGENCY_PATH_PREFIX, AREA_PATH_PREFIX, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, REGION_PATH_PREFIX, RESEARCHERS_PATH, TERMS_PATH } from '../shared/pagePaths';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
@@ -91,6 +92,8 @@ if (import.meta.env.PROD && !isInternalTestSession()) {
 loadUmami();
 
 trackKeyboardFocus();
+// CIV-3192: MCP answer links carry utm tags; the address bar drops them once the page view is sent.
+stripUtmAfterLoad();
 
 const rootElement = document.getElementById('root')!;
 // A prerendered page already has its text in #root. Keep showing that same HTML while the page's code chunk

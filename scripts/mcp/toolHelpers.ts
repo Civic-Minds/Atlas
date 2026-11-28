@@ -70,7 +70,47 @@ export async function withFeedCredits(result: unknown): Promise<unknown> {
   if (!names.length) return result;
   const credits = await data.creditsFor(names);
   if (!credits.length) return result;
-  return { ...(result as object), credit: credits.map(c => `${c.label} (${c.href})`).join('; '), creditNote: 'Give this credit word for word, with its link, at the end of the answer: the data\'s licence requires it.' };
+  return { ...(result as object), credit: credits.map(creditMarkdown).join('; '), creditNote: CREDIT_NOTE };
+}
+
+/** CIV-3192: how an assistant gives the credit: word for word, its link kept as a link on the licence's name. */
+export const CREDIT_NOTE = 'Give this credit word for word at the end of the answer, keeping its markdown link exactly as given (the linked words are the licence\'s name; show no bare address): the data\'s licence requires it.';
+
+/**
+ * CIV-3192 (Ryan: "like the text is the link i mean"): a credit as markdown, its words unchanged. The licence's name,
+ * where the credit says it, becomes the link; otherwise the whole line is the link. Never a bare address.
+ */
+export function creditMarkdown(c: { label: string; href: string; linkText?: string | null }): string {
+  const esc = (s: string) => s.replace(/([[\]])/g, '\\$1');
+  if (c.linkText && c.label.includes(c.linkText)) {
+    const i = c.label.indexOf(c.linkText);
+    return `${esc(c.label.slice(0, i))}[${esc(c.linkText)}](${c.href})${esc(c.label.slice(i + c.linkText.length))}`;
+  }
+  return `[${esc(c.label)}](${c.href})`;
+}
+
+/** CIV-3192: which assistant asked, from the MCP initialize clientInfo name; "mcp" when it doesn't say. */
+export type McpClient = 'claude' | 'chatgpt' | 'mcp';
+export const MCP_CLIENTS: readonly McpClient[] = ['claude', 'chatgpt', 'mcp'];
+export function mcpClientFrom(name: unknown): McpClient {
+  if (typeof name !== 'string') return 'mcp';
+  if (/claude|anthropic/i.test(name)) return 'claude';
+  if (/openai|chatgpt/i.test(name)) return 'chatgpt';
+  return 'mcp';
+}
+
+/** CIV-3192: every Atlas link in an answer carries utm_source=mcp and utm_medium=<the assistant>, so visits from MCP answers can be counted. */
+export function withMapLinkTags(value: unknown, client: McpClient): unknown {
+  if (typeof value === 'string') {
+    if (!value.startsWith(`${SITE_URL}/`)) return value;
+    const u = new URL(value);
+    u.searchParams.set('utm_source', 'mcp');
+    u.searchParams.set('utm_medium', client);
+    return u.toString();
+  }
+  if (Array.isArray(value)) return value.map(v => withMapLinkTags(v, client));
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, withMapLinkTags(v, client)]));
+  return value;
 }
 /** Every tool's answer, with the schedule-ending warning (CIV-2081) and any credit a feed publisher requires (#1694). */
 export function withScheduleWarning<T extends Record<string, (args: Args) => unknown | Promise<unknown>>>(handlers: T): T {

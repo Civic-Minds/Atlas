@@ -10,7 +10,7 @@ import { cloudLiveFiles, setLiveFilesSource } from '../../../local-api/liveFiles
 import * as data from '../../../scripts/mcp/atlasData';
 import { TOOLS, handlers as scheduleHandlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
 import { liveNowHandlers } from '../../../scripts/mcp/liveNowTools';
-import { withScheduleWarning } from '../../../scripts/mcp/toolHelpers';
+import { withScheduleWarning, withMapLinkTags, mcpClientFrom, MCP_CLIENTS, type McpClient } from '../../../scripts/mcp/toolHelpers';
 import { onDemandHandlers } from '../../../scripts/mcp/onDemandTools';
 import { nightHandlers } from '../../../scripts/mcp/nightTools';
 import { coverageHandlers } from '../../../scripts/mcp/coverageTools';
@@ -129,7 +129,18 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
 /** A tester behind a link, with their calls in the last 24 hours. */
 type Tester = { name: string; used: number };
 
-type JsonRpc = { jsonrpc?: string; id?: string | number | null; method?: string; params?: { name?: string; arguments?: Record<string, unknown>; protocolVersion?: string } };
+type JsonRpc = { jsonrpc?: string; id?: string | number | null; method?: string; params?: { name?: string; arguments?: Record<string, unknown>; protocolVersion?: string; clientInfo?: { name?: string } } };
+
+/**
+ * CIV-3192: the assistant is named only in initialize (clientInfo), and this server keeps no sessions, so the session id it
+ * hands back starts with the assistant ("claude-…"); every later request carries that id, and its map links are tagged by it.
+ */
+const SESSION_HEADER = 'Mcp-Session-Id';
+export const sessionIdFor = (client: McpClient) => `${client}-${b64url(crypto.getRandomValues(new Uint8Array(12)))}`;
+export function clientOfSession(id: string | null): McpClient {
+  const prefix = id?.split('-')[0] ?? '';
+  return (MCP_CLIENTS as readonly string[]).includes(prefix) ? prefix as McpClient : 'mcp';
+}
 const rpcResult = (id: unknown, result: unknown) => json({ jsonrpc: '2.0', id, result });
 const rpcError = (id: unknown, code: number, message: string, status = 200) => json({ jsonrpc: '2.0', id: id ?? null, error: { code, message } }, status);
 
@@ -150,11 +161,14 @@ async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, 
   const { id, method, params } = msg;
   if (id === undefined) return new Response(null, { status: 202 }); // notifications need no answer
   switch (method) {
-    case 'initialize':
-      return rpcResult(id, initializeResult(params?.protocolVersion, SERVER_VERSION, INSTRUCTIONS));
+    case 'initialize': {
+      const res = rpcResult(id, initializeResult(params?.protocolVersion, SERVER_VERSION, INSTRUCTIONS));
+      res.headers.set(SESSION_HEADER, sessionIdFor(mcpClientFrom(params?.clientInfo?.name)));
+      return res;
+    }
     case 'ping': return rpcResult(id, {});
     case 'tools/list': return rpcResult(id, { tools: TOOLS.filter(t => t.name in handlers && served(t.name, env)) });
-    case 'tools/call': useLiveBucket(env); return callTool(id, params ?? {}, env, ctx, tester);
+    case 'tools/call': useLiveBucket(env); return callTool(id, params ?? {}, env, ctx, tester, clientOfSession(request.headers.get(SESSION_HEADER)));
     default: return rpcError(id, -32601, `Method not found: ${method}`);
   }
 }
@@ -162,7 +176,7 @@ async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, 
 /** Live tools show on the hosted server where the LIVE_TOOLS var is "on" (CIV-1860; Ryan, 2026-11-21: "turn on live vehicles for cloud too"). */
 const served = (name: string, env: object) => !LIVE_TOOLS.includes(name) || (env as { LIVE_TOOLS?: string }).LIVE_TOOLS === 'on';
 
-async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: TestEnv, ctx: ExecutionContext, tester: Tester): Promise<Response> {
+async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: TestEnv, ctx: ExecutionContext, tester: Tester, client: McpClient): Promise<Response> {
   const name = params.name ?? '';
   const handler = served(name, env) ? handlers[name] : undefined;
   if (!handler) return rpcError(id, -32602, `Unknown tool ${name}`);
@@ -175,7 +189,7 @@ async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env
   const { question, question_id: questionId, ...args } = params.arguments ?? {};
   const started = Date.now();
   let releaseId: string | null = null;
-  const outcome = await runTool(async a => { releaseId = await useCurrentRelease(env); return handler(a); }, args);
+  const outcome = await runTool(async a => { releaseId = await useCurrentRelease(env); return withMapLinkTags(await handler(a), client); }, args);
   const { ok, text } = outcome;
   const ms = Date.now() - started;
   const logged = text.length > MAX_LOGGED_RESULT ? `${text.slice(0, MAX_LOGGED_RESULT)}\n[cut: the answer was ${text.length} characters]` : text;

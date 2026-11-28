@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Studio's route card shows both schedules in full**: the newer schedule's column was cut off at the card's edge
 - **The MCP's route_now counts each direction's vehicles and the gaps between them the way the Live map's route card does**: it used its own count, so at the same minute it could say 9 vehicles where the map said 8
 - **Studio Live shows Kingston**: it offered Kingston, then said "Live doesn’t cover any Kingston Transit routes", because only some of its reads looked in Studio's private files
+- **Atlas Studio answers link the licence's name in the credit**: the required credit read as words followed by a bare web address; the licence name is now the link, the words unchanged
 - **Live's destination rows say which figure is live and which is the timetable**: "live 10–13 min" in bold over "schedule 10 min", so the two no longer read as two answers to the same question
 - **Studio's agency choice is in its Settings menu**: the top bar keeps only the page's own menus, and Studio stays local only
 - **A route card says when buses start coming more often partway through a time of day: "every 32 min, then every 17 from 4:37 PM"**: it read only "every 17 min from 4:37 PM", as if the first bus was at 4:37

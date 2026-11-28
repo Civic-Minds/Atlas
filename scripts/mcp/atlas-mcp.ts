@@ -57,7 +57,9 @@ const { onDemandHandlers, useOnDemandBase } = await import('./onDemandTools');
 if (process.env.ATLAS_ON_DEMAND_BASE) useOnDemandBase(process.env.ATLAS_ON_DEMAND_BASE, process.env.ATLAS_ON_DEMAND_BETA !== '0');
 const { nightHandlers } = await import('./nightTools');
 const { coverageHandlers } = await import('./coverageTools');
-const { withScheduleWarning } = await import('./toolHelpers');
+const { withScheduleWarning, withMapLinkTags, mcpClientFrom } = await import('./toolHelpers');
+// CIV-3192: the assistant that connected (initialize clientInfo), for the map links' utm_medium.
+let client: import('./toolHelpers').McpClient = 'mcp';
 const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = withScheduleWarning({ ...tools.handlers, ...localHandlers, ...liveNowHandlers, ...onDemandHandlers, ...nightHandlers, ...coverageHandlers });
 // The tools this server answers, as the hosted server lists them.
 const TOOLS = tools.TOOLS.filter(t => t.name in handlers);
@@ -67,18 +69,19 @@ function fail(id: unknown, code: number, message: string) { process.stdout.write
 
 for await (const line of createInterface({ input: process.stdin })) {
   if (!line.trim()) continue;
-  let msg: { id?: unknown; method?: string; params?: { name?: string; arguments?: Args; protocolVersion?: string } };
+  let msg: { id?: unknown; method?: string; params?: { name?: string; arguments?: Args; protocolVersion?: string; clientInfo?: { name?: string } } };
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, initializeResult(params?.protocolVersion, tools.SERVER_VERSION, INSTRUCTIONS));
+  // CIV-3192: the assistant that connected, for the map links' utm_medium.
+  if (method === 'initialize') { client = mcpClientFrom(params?.clientInfo?.name); reply(id, initializeResult(params?.protocolVersion, tools.SERVER_VERSION, INSTRUCTIONS)); }
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
     const handler = handlers[params?.name ?? ''];
     if (!handler) { fail(id, -32602, `Unknown tool ${params?.name}`); continue; }
     try { await useCurrentData(); } catch (e) { reply(id, toolCallResult(await runTool(() => { throw e; }, {}))); continue; }
-    const result = toolCallResult(await runTool(handler, params?.arguments ?? {}));
+    const result = toolCallResult(await runTool(async a => withMapLinkTags(await handler(a), client), params?.arguments ?? {}));
     reply(id, result);
   } else fail(id, -32601, `Method not found: ${method}`);
 }
