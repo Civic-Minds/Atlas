@@ -71,7 +71,7 @@ export const routeLateDays = (v3: LiveV3): number => healthyCounts(v3.bands.all.
 
 export const routeLateOverall = (v3: LiveV3): number | null => healthyCounts(v3.bands.all.adherence.timepoints.all.byDate, healthyDatesOf(v3), 'all')?.lateShare ?? null;
 
-type MiniProps = { chart: 'mini'; hours: readonly HourValue[]; band: DashboardBand; overall: number | null; /** Good days behind the figure; fewer than 3 dims it. */ days?: number; /** Bar area height in px. */ height?: number; /** What the figures cover, before the days counted ("both directions"). */ scope?: string; /** The days left out, if any. */ leftOut?: string[] };
+type MiniProps = { chart: 'mini'; hours: readonly HourValue[]; band: DashboardBand; overall: number | null; /** Good days behind the figure; fewer than 3 dims it. */ days?: number; /** Bar area height in px. */ height?: number; /** What the figures cover, before the days counted ("both directions"). */ scope?: string; /** The time of day, at the right end of the title's line (Studio's route panel, CIV-3159); the chart then names only a hovered one. */ period?: string; /** The days left out, if any. */ leftOut?: string[] };
 type Props = {
   /**
    * `spark` is the dashboard's line chart per kind of day (`allOnly` keeps All days);
@@ -225,13 +225,13 @@ export function miniChartBars(hours: readonly HourValue[]): Record<number, numbe
 }
 
 /** The tool panel's card: late share by hour over the whole 5am-4am day, the chosen time of day shaded. */
-function Mini({ hours, band, days, leftOut, scope }: Omit<MiniProps, 'chart'>) {
+function Mini({ hours, band, days, leftOut, scope, period }: Omit<MiniProps, 'chart'>) {
   // Ryan, 2026-11-27 ("If there's few measurements then should we hide the chart", "1"): with too few measurements, on too
   // few days or in too few hours, the whole section is hidden.
   const bars = miniChartBars(hours);
   if (!bars || isThin(days)) return null;
   return (
-    <Widget title={LATE_BY_HOUR_TITLE} size="medium"
+    <Widget title={LATE_BY_HOUR_TITLE} size="medium" end={period}
       // The days left out (and, outside Studio, the scope) under the title, as on the week table (SectionNotes).
       action={<SectionNotes scope={scope} excluding={leftOut?.length ? <LeftOutDays dates={leftOut} /> : null} />}>
       {/* Ryan, 2026-11-27 ("redesign the sparkline here to be more like the one on the main map"): the route card's own
@@ -242,6 +242,7 @@ function Mini({ hours, band, days, leftOut, scope }: Omit<MiniProps, 'chart'>) {
         label={LATE_LABEL}
         title={LATE_BY_HOUR_TITLE}
         period={band === 'all' ? undefined : band}
+        periodOnHoverOnly={!!period}
         hourTitle={h => { const x = hours.find(v => v.hour === h % 24); return x ? lateHourLine(hourTime(h % 24), lateCount(x.value, x.n), x.n) : undefined; }}
       />
     </Widget>
@@ -253,7 +254,7 @@ function Mini({ hours, band, days, leftOut, scope }: Omit<MiniProps, 'chart'>) {
  * is drawn (see Props). The title is the caller's (the surfaces word it differently).
  */
 export default function LateByHourSection(props: Props | MiniProps): ReactNode {
-  if (props.chart === 'mini') return <Mini hours={props.hours} band={props.band} overall={props.overall} days={props.days} leftOut={props.leftOut} height={props.height} scope={props.scope} />;
+  if (props.chart === 'mini') return <Mini hours={props.hours} band={props.band} overall={props.overall} days={props.days} leftOut={props.leftOut} height={props.height} scope={props.scope} period={props.period} />;
   const { chart, v3, data, band, dir, title = LATE_BY_HOUR_TITLE, id, shrink, boundary, before, day } = props;
   if (chart === 'spark') return <Spark {...props} title={title} />;
   const body = day ? <BarsOne v3={v3} data={data} band={band} dir={dir} day={day} /> : <BarsAll v3={v3} data={data} dir={dir} />;

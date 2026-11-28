@@ -54,7 +54,7 @@ describe('CIV-3159 Studio and map parity', () => {
     expect(studioScope('all')).toBeUndefined();
     expect(studioScope('evening')).toBe(PERIOD_LABELS.evening);
     const body = read('src/components/Live/tool/useLiveBody.tsx');
-    expect(body).toContain('scope={inStudio ? studioScope(band)');
+    expect(body).toContain('scope={inStudio ? undefined : weekScopeText(');
     expect(body).toContain('scope={inStudio ? undefined : BOTH_DIRECTIONS}');
   });
 
@@ -74,5 +74,24 @@ describe('CIV-3159 Studio and map parity', () => {
     const v = { id: 'a', routeShortName: '512', lat: 43.68, lon: -79.43, directionId: 0, headsign: 'Keele' } as unknown as LiveVehicle;
     expect(resolveLiveVehicles([v], undefined)[0]).toBe(v);
     expect(resolveLiveVehicles([v], fc)[0].id).toBe('a');
+  });
+
+  it("gives both Studio sections one header: the time of day at the title line's end, Excluding under the title", () => {
+    const body = read('src/components/Live/tool/useLiveBody.tsx');
+    expect(body.match(/period=\{inStudio \? studioScope\(band\) : undefined\}/g)).toHaveLength(2);
+    const late = read('src/components/Live/sections/LateByHourSection.tsx');
+    expect(late).toContain('<Widget title={LATE_BY_HOUR_TITLE} size="medium" end={period}');
+    expect(read('src/LiveDashboardView.tsx')).toContain('end={period}');
+    // Both reach the one section heading (SidebarCardSection's end, in SectionHeaderEnd).
+    expect(read('src/components/Live/tool/Widget.tsx')).toContain('end={end}');
+    expect(read('src/components/Live/FiguresCard.tsx')).toContain('end={end}');
+    expect(read('src/components/Interval/cardUi.tsx')).toMatch(/<SectionHeaderEnd>\{end\}<\/SectionHeaderEnd>/);
+  });
+
+  it('writes the Bunching note in the app\'s shared notice ("is this the same font we use elsewhere for these notices?")', () => {
+    const week = read('src/LiveDashboardView.tsx');
+    expect(week).toMatch(/<CardHelpNotice message=\{bunchingShortNote\(\)\}/);
+    expect(week).not.toMatch(/<p[^>]*>\s*\{bunchingShortNote/);
+    expect(read('src/components/Interval/cardUi.tsx')).toMatch(/export function CardHelpNotice[\s\S]*?<p className=\{`\$\{CARD_NOTICE\}/);
   });
 });

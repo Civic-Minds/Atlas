@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardBandData, LiveV3 } from '../../../../shared/liveDashboard';
 import { healthyCounts, healthyLateByHour } from '../../../../shared/liveDashboard';
 import { excludingText, excludingWeeksText, leftOutReason, runTimeDiffText, shareRiseText } from '../../../../shared/liveWording';
+import { PanelSectionsProvider } from '../panelSections';
 import LateByHourSection, { isThin, leftOutOf, rowMax, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
 
 // 2026-10-10 and 2026-10-11 are a Saturday and a Sunday. 2026-10-11 has gaps in the recordings (not a good day).
@@ -84,6 +85,13 @@ describe('visible days, peak label and run time wording', () => {
     const { container } = render(<LateByHourSection chart="mini" hours={[...DAY.filter(h => h.hour !== 20), { hour: 20, value: 0.2, n: 5 }]} band="evening" overall={0.07} days={6} />);
     expect(container.querySelectorAll('[data-peak]')).toHaveLength(0);
     expect(container.querySelector('[data-testid="sparkline-hover-band"]')).not.toBeNull();
+  });
+  it("puts the time of day at the right end of the title's line in Studio's panel, named once (CIV-3159)", () => {
+    const { container } = render(<PanelSectionsProvider><LateByHourSection chart="mini" hours={DAY} band="evening" overall={0.05} days={6} period="Evening" leftOut={['2026-10-11']} /></PanelSectionsProvider>);
+    expect(within(container).getByTestId('section-header-end').textContent).toBe('Evening');
+    // The chart names only a hovered period, so the picked one isn't said twice.
+    expect(container.querySelector('[data-testid="hovered-period-name"]')).toBeNull();
+    expect(within(container).getByTestId('section-notes').textContent).toBe('Excluding Oct 11');
   });
   it('draws the hours after midnight at the end of the chart, as the route card does (CIV-3159)', () => {
     const { container } = render(<LateByHourSection chart="mini" hours={[...DAY, { hour: 1, value: 0.2, n: 200 }]} band="all" overall={0.1} days={6} />);
