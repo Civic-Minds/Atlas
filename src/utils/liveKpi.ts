@@ -116,6 +116,19 @@ export function weekNotComparableLine(w: NonNullable<LiveV3['weekly']>): string 
 /** The days a week left out (recorded too incompletely to count). */
 export const leftOutDates = (wk: WeekMetrics): string[] => wk.dates.filter(d => !wk.healthyDates.includes(d));
 
+/**
+ * #1924: the dates behind "Data up to", without the trailing days the week left out, so the pill never names a day the
+ * table says it excluded (TTC on Nov 27: "Data up to Nov 27" over "Excluding Nov 27", today's half-recorded day). The same
+ * array back when nothing is trimmed.
+ */
+export function datesUpToLastCounted(dates: readonly string[], wk: WeekMetrics | null | undefined): readonly string[] {
+  if (!wk) return dates;
+  const left = new Set(leftOutDates(wk));
+  let end = dates.length;
+  while (end > 0 && left.has(dates[end - 1])) end--;
+  return end === dates.length ? dates : dates.slice(0, end);
+}
+
 /** The days two weeks leave out, as the week table's "Excluding …" line (empty when none) and that line's hover text. */
 export function excludingDays(w: { thisWeek: WeekMetrics; lastWeek: WeekMetrics; leftOutEverywhere?: { thisWeek: string[]; lastWeek: string[] } } | null | undefined): { text: string | null; title: string | null } {
   // The network names only the days every route left out (CIV-910 Q2); a route names its own.

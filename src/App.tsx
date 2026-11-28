@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { Search, Info, History as HistoryIcon, ChevronDown } from 'lucide-react';
+import { LiveIcon } from './components/Live/LiveIcon';
 import { CompareTab } from './components/Interval/CompareControl';
 import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
@@ -13,7 +14,7 @@ import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/c
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
-import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
+import { LIVE_AGENCY_COUNT, LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { findSeoRoute } from '../shared/seo';
 import { PageTitle } from './components/ui/PageTitle';
 const Interval = React.lazy(() => import('./apps/Interval'));
@@ -533,7 +534,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // "Here" is the city at the map's centre right now: not every layer ever loaded, and not every agency whose wide area
   // touches the screen. Panning from a city with data to one without dims the tabs again, and back.
   const liveHere = inLive || centreAgencySlugs.some(slug => LIVE_AGENCY_SLUGS.includes(slug));
-  const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
+  const liveAgencyCount = LIVE_AGENCY_COUNT;
   const showHistoryControl = historyOn && !inStudio;
   const historyHere = inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
@@ -758,7 +759,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {showLiveControl && (
           <ModeTab
-            icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            icon={<LiveIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label={LIVE_TAB_LABEL} extra={liveAgencyCount} ariaLabel={LIVE_MAP_TITLE}
             active={liveTabOn} dimmed={!liveHere}
             onClick={() => liveHere ? setActiveApp(liveTabOn ? 'frequency' : 'live') : noteFor('Live')}
@@ -811,7 +812,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 <div className={`absolute top-10 right-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
                     <ModeTab
-                      variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
+                      variant="menu" icon={<LiveIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn} dimmed={!liveHere}
                       onClick={() => { if (liveHere) setActiveApp(liveTabOn ? 'frequency' : 'live'); else noteFor('Live'); setAppLinksOpen(false); }}
                     />

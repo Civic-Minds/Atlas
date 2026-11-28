@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle, frequentNoRoutesNotice, NO_SEARCH_MATCHES_NEAR_MAP, LIVE_STOP_ARRIVALS_UNAVAILABLE, officialDataOnlyNotice } from './noticeCopy';
+import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle, frequentNoRoutesNotice, NO_SEARCH_MATCHES_NEAR_MAP, LIVE_STOP_ARRIVALS_UNAVAILABLE, officialDataOnlyNotice } from './noticeCopy';
 import { timeLostLine } from '../../shared/liveWording';
 
 describe('expiredFeedNotice', () => {
@@ -113,7 +113,6 @@ describe('empty and loading states (CIV-957)', () => {
 describe('route labels and setting definitions (CIV-957)', () => {
   it('keep their wording', () => {
     expect(LIMITED_SERVICE_LABEL).toBe('limited');
-    expect(IRREGULAR_PERIOD_LABEL).toBe('Runs irregularly in this period');
     expect(IRREGULAR_PERIOD_SHORT_LABEL).toBe('Irregular');
     expect(HIDE_ONE_OFF_SETTING).toEqual({ label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' });
     expect(HIDE_PART_TIME_SETTING).toEqual({ label: 'Hide part-time routes', description: 'Only at rush hour, evenings or some days.' });
@@ -146,6 +145,8 @@ describe('CIV-1795 plain words', () => {
     expect(liveRouteEmptyNotice('TTC', '512', false, ['501', '504', '505'])).toBe('Live doesn’t cover TTC 512. It covers TTC routes 501, 504 and 505.');
     expect(liveRouteEmptyNotice('MiWay', '109', false, [])).toBe('Live doesn’t cover any MiWay routes.');
     expect(liveRouteEmptyNotice('TTC', '504', true, [])).toBe('No TTC 504 vehicles are running right now.');
+    // #1923: a failed feed is no reading, not "none running".
+    expect(liveRouteEmptyNotice('TTC', '505', true, [], true)).toBe('Unable to load');
   });
   it('titles a Live report flag by the card’s names', () => {
     expect(liveReportFlagTitle('TTC', true, '504', 'Bus 8123')).toBe('TTC 504 · Bus 8123');

@@ -4,7 +4,7 @@ import AppLink from './ui/AppLink';
 import { shortDate } from '../../shared/dateText';
 import { mailto } from '../../shared/contact';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { Radio } from 'lucide-react';
+import { LiveIcon } from './Live/LiveIcon';
 import { DROPDOWN_PANEL, dropdownAnim, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
@@ -33,6 +33,7 @@ import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList'
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
 import SearchBox from './ui/SearchBox';
+import { agencyMatchesQuery } from '../utils/agencySearch';
 import { DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 import { PAGE_NAMES } from '../../shared/pageNames';
 import { loadHistoryConfig } from '../utils/historyConfig';
@@ -133,6 +134,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   /** CIV-3119: the agency whose credit page Sources has open. */
   const [creditSlug, setCreditSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  // CIV-3143 (Ryan picked "1": "add the same search box the agency list already uses, filtering by agency or city"): Sources' own box.
+  const [sourcesQuery, setSourcesQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
   const [agencyFeatureFilters, setAgencyFeatureFilters] = useState<Set<AgencyListFilter>>(() => new Set());
   const [visible, setVisible] = useState(false);
@@ -204,7 +207,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
       setSelectedSlug(null);
     } else {
-      setQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
+      setQuery(''); setSourcesQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
     }
   }, [open, defaultTab, featureFilter, helpContext, scrollToLive]);
 
@@ -220,6 +223,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     setView(known ? 'source-credit' : 'sources');
   }, [sourcesFocus, open, credits]);
   const openCredit = credits.find(c => c.slug === creditSlug) ?? null;
+  // CIV-3143: Sources' credits by the agency list's own search (name, slug or city), or the credit's own name where it has no agency.
+  const shownCredits = useMemo(() => credits.filter(c => {
+    const a = agencies.find(x => x.slug === c.slug);
+    return a ? agencyMatchesQuery(a, sourcesQuery) : agencyMatchesQuery({ name: [c.label.primary, c.label.secondary].filter(Boolean).join(' '), slug: c.slug }, sourcesQuery);
+  }), [credits, agencies, sourcesQuery]);
   // Back from a credit page lands on that agency's row, not the top of the list.
   useEffect(() => {
     if (view !== 'sources' || !creditSlug) return;
@@ -270,7 +278,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [regionFilter, regionsInScope]);
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
     return agencies.filter(a => {
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
@@ -278,10 +285,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         || (filter === 'outdated' && isAgencyFeedExpired(a))
       )) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
-      if (!q) return true;
-      return a.name.toLowerCase().includes(q)
-        || a.slug.includes(q)
-        || (a.cities ?? []).some(city => city.toLowerCase().includes(q));
+      return agencyMatchesQuery(a, query);
     });
   }, [agencies, query, regionFilter, agencyFeatureFilters, liveBySlug, historyBySlug]);
 
@@ -556,7 +560,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
               {/* CIV-461: each agency whose data licence requires credit, and MBTA's MassDOT credit where Live is on: one pill each. */}
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_CREDITS_HEADING}</p>
-              <SourceCredits credits={credits} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />
+              <SearchBox value={sourcesQuery} onChange={setSourcesQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER} />
+              {shownCredits.length === 0
+                ? <PanelEmpty>{NO_AGENCIES_MATCH}</PanelEmpty>
+                : <SourceCredits credits={shownCredits} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />}
               {/* CIV-2084: when Live's figures were built is in the Live status pill's hover now, not here. */}
             </div>
           )}
@@ -626,7 +633,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                             onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
                             className="justify-start gap-2"
                           >
-                            <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                            <LiveIcon className="w-3 h-3 text-[var(--accent)] shrink-0" />
                             <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
                           </ListRow>
                         ))}

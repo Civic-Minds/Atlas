@@ -16,6 +16,5 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-688/latest.zip",
   "timezone": "America/Los_Angeles",
-  "timezoneOverride": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "timezoneOverride": "America/Los_Angeles"
 }

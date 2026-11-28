@@ -7,10 +7,27 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Studio's panels line up with the search bar**: they were a fixed wider size, so the 505 Dundas panel ran under the Live button
+- **About → Sources has the agency list's search box**: finding one agency's credit meant scrolling a list of about 200
+- **The map's credit pill names a single remaining agency instead of "and 1 other agency"**: "TTC · and 1 other agency" hid a name behind a click that opened the full sources list
+- **Route card rows with no number read "Irregular"**: the same word as route lists and agency pages, instead of the longer "Runs irregularly in this period"
+- **Every Live vehicle sits under its own destination row**: TTC 512 cars signed "St Clair" were listed as a row of their own while "to St Clair Station" showed none; Studio's Live panel now shows both directions in the same rows as the map, and the card's back link always reads "Live"
+- **Studio's Live tab has the same icon as the main map's**: Studio used a different icon for the same app
+- **A Live route card says "Unable to load" while its feed is down, not that no vehicles are running**: with the TTC feed failing for a minute, 505 read "No TTC 505 vehicles are running right now" though 20 were on the road
+- **The map opens showing all service, on-demand zones included**: it opened on every 60 min, a filter on-demand service can't meet, so zones never showed until the filter was cleared
+- **Studio's Live tab shows the same number as the main map's: the agencies Live covers**: it showed the open agency's recorded routes (22 on the TTC), so the same pill counted two different things
+- **Studio Live offers only cities it has figures for, and says so when one has none**: Kingston and the MBTA opened on an empty box with no message, and the menu listed 9 cities when 4 had figures
+- **Live's All routes trip-time arrow follows the number shown**: "5% faster" to "4% faster" drew an up arrow, because the arrow followed the trip getting longer rather than the share written
+- **Studio Live's "Data up to" date is the last day its figures count**: the TTC read "Data up to Nov 27" over a table excluding Nov 27, because today's half-recorded day was named
+- **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
+- **Studio's Live panel is shorter and plainer**: the week table is headed "This week vs. last" without the "Recorded past service, not live." line, and the late-by-hour chart is left out when too few days were measured
+- **Live route rows show each destination once, with its vehicles under it and the live gaps beside its frequency**: a row reads "every 10 min · gaps 3–20 min" over "5 vehicles", and opening it lists its vehicles right there; the vehicles had sat in a separate list, and Studio repeated each destination under Right now and Scheduled
+- **The Live late-by-hour chart names what it covers top right, where the route card chart names its period**: "both directions" sat on its own line above the bars
 - **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board
 - **A one-stretch route takes its card's colour on the map where its trips are uneven**: a one-minute timetable difference between neighbouring stops split the line into two colours (Nanaimo 40 toward Downtown, PM peak, drew its first 17 stops every 30 while the card said every 15)
 - **A route whose branch doesn't run at that time of day is one colour on the map then too**: the one-colour rule looked at the whole day, so a branch running only at other times left the trunk's stops in mixed colours
 - **A branch's own stops no longer take the other branch's buses on the map**: Spokane 20's Clarke and Riverside stops were coloured every 15 though each branch runs every 30, because buses on the other road were counted as passing them
+- **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
+- **A stop card says when a destination's buses start or stop, as its route card does**: TTC 102 "Steeles via Dynamic Dr" read "every 12" at midday at Markham Rd though its last bus is at 10:20 AM
 - **The MCP points to King County Metro, Pierce Transit or Community Transit when asked for a Sound Transit bus**: it said Sound Transit had no route 556, because ST Express buses are in those agencies' files, not Sound Transit's
 - **The map's credit line names an agency only while one of its routes is drawn**: at Terrace, BC it credited BC Transit with 0 routes on screen, because it credited any agency whose area was in view
 - **Sound Transit's 556 heads "to Issaquah Highlands Park & Ride", as the agency names it**: King County Metro's file runs the destination and a stop on the way together ("Issaquah Highlands Park & Ride Issaquah Transit Center")
@@ -109,6 +126,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Destinations read in normal case on Live and in Atlas Studio MCP's answers**: Hamilton's "HAMILTON GO CENTRE" now reads "Hamilton GO Centre", as it already did on the map, with short forms like GO, TTC and LRT kept in capitals
 - **Live's route card and Details no longer show a replacement-buses notice**: the warning on 503 Kingston Rd was never approved
 - **Live route cards show their destinations like the map's route cards**: "Right now" counts the vehicles heading to each destination, "Scheduled" uses the map card's own destination rows, and the vehicle list opens from "N vehicles"
+- **Live rates cars that start partway along the route**: a car that joined its trip at a middle stop, such as a short-turned streetcar, got no on-time rating; it is now rated at the first stop it served
 - **Live's panel says which agency can't be shown, each with its own status dot**: a failed agency's message sat under another agency's green "Live" dot
 - **On-demand zones are hidden when you filter by frequency**: on-demand service has no timetable frequency, so it no longer shows up under "every 10 min" or any other frequency filter
 - **Live follows Hamilton's 2 Barton, 20 A-Line Express and 51 University, and Burlington's 1 and 10 from the cloud**: more of Hamilton's frequent routes, and Burlington without anything running on a computer
@@ -120,6 +138,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **History shows 2026 on today's route after a renumbering**: TriMet 96, 10 and 29 and NFTA's Metro Rail kept their 2026 figure on the old route, which has no line on today's map
 - **TTC on-time figures use the TTC's own standard**: Live counts a departure on time from 1 minute early to 5 minutes late, as the TTC does, so Atlas's figures can be read beside the TTC's own
 - **A route's first time is when you can first board, at the start of the line**: it was read partway along the route, so on STM's metro and buses the first trip left 6 to 23 minutes before the time Atlas gave
+- **Studio's Schedules page says when it compares two different seasons**: Hamilton and RTD Denver compare a summer schedule with fall, and Guelph spring with fall, because no earlier schedule from the same season exists
 - **Seasonal timetables update without waiting for review**: a ski or school-term timetable whose frequencies match the same date last year now goes onto the map at the next refresh, instead of being held as a suspicious change
 - **Route cards show regular service over an hour as its range**: a branch every 65–70 minutes reads that instead of "Runs irregularly", while two or three trips, or uneven ones like TTC 101's 320-minute gap, read "Runs irregularly in this period"
 - **Atlas Studio MCP's schedule changes give the same figures as its route frequencies**: Kingston's route 2 was listed as cut to "no service" though it still runs every 30 minutes, because the change list read its figures another way

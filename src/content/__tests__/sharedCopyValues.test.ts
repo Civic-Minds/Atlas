@@ -30,7 +30,7 @@ describe('shared copy keeps the text the screens showed (CIV-1814)', () => {
     expect(FREQUENT_GRADES).toEqual([15, 30]);
     expect(MAP_ZOOM_HEADWAY_STEPS.at(-1)).toEqual([9, NO_HEADWAY_LIMIT]);
     expect(NO_HEADWAY_LIMIT).toBe(9999);
-    // CIV-1812 item 8: the map opens on every 60 min, and the phone Filters count leaves that default out.
-    expect(DEFAULT_MAX_HEADWAY).toBe(60);
+    // CIV-2898 (replaces CIV-1812 item 8's every 60): the map opens on All, and the phone Filters count leaves that default out.
+    expect(DEFAULT_MAX_HEADWAY).toBe(Infinity);
   });
 });

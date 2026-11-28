@@ -289,5 +289,12 @@ describe('buildStopRoutes: a main row whose own trips do not run in the period (
   });
   it('keeps the Sheppard row where its own trips run (late)', () => {
     expect(at('late').map(b => b.headsign)).toContain('Sheppard');
+  });  // CIV-3128 (#1914): a row whose own trips stop or start inside the period says when, as its route card row does.
+  it('Steeles via Dynamic Dr reads "until 10:20 AM" at midday, not a bare every 12, and Steeles its "from 10:31 AM"', () => {
+    const rows = at('midday');
+    const dynamic = rows.find(b => b.headsign === 'Steeles via Dynamic Dr')!;
+    expect(dynamic.periodText).toMatch(/^every 12 min until 10:20\sAM$/);
+    expect(stopRowHeadway(dynamic, 'midday')).toBeNull();
+    expect(rows.find(b => b.headsign === 'Steeles')!.periodText).toMatch(/^every 14 min from 10:31\sAM$/);
   });
 });

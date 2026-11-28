@@ -90,7 +90,7 @@ export function rowTooFewInPeriod(p: ShapeProperties, period: TimePeriod): boole
 /**
  * #773 (Ryan, 2026-11-22: "Look into it more"): the per-period stand-in for the old all-day "infrequent" grade, from tests
  * Atlas already uses. A row is irregular in a period when it has fewer of its own departures there than a schedule needs
- * (#720: MIN_SCHEDULE_DEPARTURES), when it has no regular service there (the card's "Runs irregularly in this period",
+ * (#720: MIN_SCHEDULE_DEPARTURES), when it has no regular service there (the card's "Irregular",
  * hasRegularServiceInPeriod), or when its value is one gap between a few departures (#955, isOneGapRow). On the internal 'all' path (no screen picks it) the all-day grade still decides.
  */
 export function rowIrregularInPeriod(p: ShapeProperties, period: TimePeriod): boolean {
@@ -493,7 +493,7 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
 /** The words every card and list shows where the filter says a route has no regular cadence in the period (D2, D3 in noticeCopy). */
 export { IRREGULAR_PERIOD_SHORT_LABEL };
 
-/** The filter says the route has no regular cadence in this period: lists say IRREGULAR_PERIOD_LABEL, never a number. */
+/** The filter says the route has no regular cadence in this period: lists and cards say IRREGULAR_PERIOD_SHORT_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {
   const contract = routeFilterContract(features, period);
   return (contract != null && contract.filterValue == null && contract.runs) || routeValueIsOneGap(features, period);

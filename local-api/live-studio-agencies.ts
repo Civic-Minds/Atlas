@@ -34,10 +34,12 @@ async function handler(): Promise<Response> {
   const names = await source.list();
   const files = (await Promise.all(names.map(n => readRouteFile(source, n).catch(() => null)))).filter((f): f is LiveRouteFile => !!f);
   const minDays = liveStudioMinDays(true);
+  // #1922: an agency whose summary isn't published opens to nothing (the cloud reader answers 404), so it isn't offered.
+  const summaries = new Set(names.filter(n => n.endsWith('-agency.json')).map(n => n.slice(0, -'-agency.json'.length)));
   const days: Record<string, number> = {};
   // Days recorded per agency, held routes included (CIV-2173: the Status page's progress towards the minimum).
   for (const f of files) days[f.slug] = Math.max(days[f.slug] ?? 0, f.days);
-  return new Response(JSON.stringify({ agencies: liveStudioAgencies(files, minDays), minDays, days }), {
+  return new Response(JSON.stringify({ agencies: liveStudioAgencies(files, minDays).filter(s => summaries.has(s)), minDays, days }), {
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 }

@@ -20,10 +20,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How a route's frequency is decided
 
-- **On-demand zones show only with no frequency filter**
-  - What: under any frequency filter (every 10, 15, 20, 30 or 60) the map hides on-demand zones and stops; with no filter (all service) they show by their hours as before. One rule (shared/viewLayers.ts mapDrawsOnDemand), so the failed-to-load notice follows it too.
-  - Why: on-demand service has no headway, so it can't pass a frequency filter.
-  - Source: Ryan, 2026-11-24 (CIV-2898): "on demand doens't have deadways so why do they show up if i select 10 mins lol", then "1"
+- **On-demand zones show only with no frequency filter, and the map opens with no filter**
+  - What: under any frequency filter (every 10, 15, 20, 30 or 60) the map hides on-demand zones and stops; with no filter (all service) they show by their hours as before. One rule (shared/viewLayers.ts mapDrawsOnDemand), so the failed-to-load notice follows it too. The map's default filter is All (DEFAULT_MAX_HEADWAY), so zones show on a fresh map.
+  - Why: on-demand service has no headway, so it can't pass a frequency filter; with an every-60 default, zones never showed on a fresh map.
+  - Source: Ryan, 2026-11-24 (CIV-2898): "on demand doens't have deadways so why do they show up if i select 10 mins lol", then "1"; the All default 2026-11-27 (CIV-2898), "1"
 - **Atlas is not a trip-planning tool; no booking info**
   - What: no on-demand booking info anywhere: no app names, booking links, phone numbers, call-centre hours or booking-ahead rules on zone cards, other UI or the MCP's on_demand_zones answer. The bookingInfo and bookingUrl fields are deleted from the data, and a guard test (noBookingInfo.test.ts) fails if a booking field or booking text comes back.
   - Why: Atlas shows how often service runs, not how to ride it.
@@ -61,11 +61,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: chosen from a census of 1,160 feeds and a review of example routes. Check these before asking.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) (Thresholds), [#567](https://github.com/Civic-Minds/Atlas/issues/567), [#568](https://github.com/Civic-Minds/Atlas/issues/568), [#570](https://github.com/Civic-Minds/Atlas/issues/570), [#571](https://github.com/Civic-Minds/Atlas/issues/571), PR [#584](https://github.com/Civic-Minds/Atlas/pull/584)
 - **A period with no regular cadence reads "Irregular"**
-  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Runs irregularly in this period" on cards, "Irregular" in tight spots (table cells, list values). Both come from src/content/noticeCopy.ts.
+  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Irregular" on cards, in table cells and in list values, one label in src/content/noticeCopy.ts. The Night card keeps "Runs irregularly overnight".
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
-  - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
+  - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; card wording "Irregular" since 2026-11-27 (CIV-3136); [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A card row with a wait over an hour needs 4 of its own trips for a number**
-  - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Runs irregularly in this period", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
+  - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Irregular", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
   - Why: 2 or 3 trips are not a pattern a rider can plan around, even when evenly spaced.
   - Source: Ryan, 2026-11-24, on CIV-2232: "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1" to "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words"
 - **A direction running every 60 min or better always has a card row**
@@ -415,6 +415,20 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-27 — Card rows with no number read "Irregular" (CIV-3136; card wording of 2026-10-31 / CIV-1238 superseded)
+Ryan, 2026-11-27, on CIV-3121: "1 but should it say \"Irregular\" instead of runs irregularly in this period", then, on changing it on every card: "I'd need to see it". After the before/after page (SEPTA 20 Sunday evening) he picked "1": "Use \"Irregular\" on every card".
+- The rule: every route and stop card row with no number reads "Irregular", the same one label (`IRREGULAR_PERIOD_SHORT_LABEL`) as route lists, tables and agency pages. "Runs irregularly in this period" is gone.
+- Not part of the pick: the Night card keeps "Runs irregularly overnight".
+
+### 2026-11-27 — The map opens with no frequency filter (All), so on-demand zones show on a fresh map (CIV-2898; extends 2026-11-24, replaces CIV-1812 item 8's every-60 default)
+Ryan, 2026-11-27 (Studio chat). He first picked "Hide when tighter than 60", then asked "But the same issue would still exist right" (zones would still show at the default 60 although they don't run every 60) and "So should the default be "all" then". Offered "1. Make "All" the default and hide zones under any filter (Recommended)", with the trade-off that a fresh map also shows routes slower than every 60 min, in the slowest tier colour. His words: "1". The 2026-11-24 rule (zones hidden under any frequency filter) stays. The saved filter moves to a new key, so returning viewers, whose old every-60 default had been saved automatically, open on All once; a filter picked after that is kept.
+
+### 2026-11-27 — No "from"/"until" on a card row where buses keep the same spacing across the period's edge (CIV-3121, #1906)
+Ryan, 2026-11-27, on TransLink R2 toward Park Royal ("every 8 mins from 310 but the period begins at 3 pm lol so"), then in the manager window: "Why are we saying "until" or "from" if the frequency doesn't change here". In the data chat he said "Please ask Manager then decide"; the manager found no rule against it (CIV-1241 and CIV-1411 cover real starts and stops only) and the data chat kept both sides.
+- The rule: a row's "from" ("until") words are dropped when the departure before the period's start (after its end) keeps the existing steadiness test (isSustainedHeadway) with the gap across the edge added. Service that really starts, stops or changes spacing in the period keeps its words. Card wording only: the filter value and map colour are unchanged. No new number.
+- Counts (same-zip local dry run, base vs fix, Spokane, TTC, MBTA, TransLink, SEPTA, OC Transpo, RTD): 72 card rows lose their words, 28 "from" and 44 "until" (the "until" side was not asked for). 21 of them then read "Runs irregularly in this period" under the 4-trip minimum (2026-11-24, CIV-2232: a wait over 60 min and 1–3 own trips; its exception is only for service that starts or ends in the period, which these rows don't). Rows list: Linear CIV-3121, comment of 2026-11-27.
+- Related, not settled here: "from"/"until" means both "service starts or stops" and "frequency changes" (CIV-3135).
 
 ### 2026-11-27 — Booked-route detection counts only stops where riders can board (CIV-3002, #1829)
 Ryan, 2026-11-27, asked in the Studio chat whether it should ship, picked "Ship it". The 85% rule (CIV-1006) now counts only boarding stop events (pickup_type other than 1), not every stop event.
@@ -901,7 +915,7 @@ Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that ru
 
 ### 2026-10-31 — "Irregular" for a period, "Occasional" for the hidden class
 
-Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards. This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
+Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards (card wording superseded by 2026-11-27 / CIV-3136: cards read "Irregular"). This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
 
 ### 2026-10-31 — The Overnight period reads the Night Service verdict
 

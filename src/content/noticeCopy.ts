@@ -202,16 +202,16 @@ export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 export const LIMITED_SERVICE_LABEL = 'limited';
 /**
  * CIV-1251: the one word a card row with no number reads, whichever check found it. The Night card: "Runs irregularly
- * overnight"; a time period: D2. The card has no All day row (CIV-1279: the map has no All day, so no rider reaches one).
+ * overnight"; a time period: D3, the same word as lists and tables (Ryan, CIV-3136). The card has no All day row
+ * (CIV-1279: the map has no All day, so no rider reaches one).
  */
 export function noNumberRowLabel(options: { nightView?: boolean }): string {
-  return options.nightView ? IRREGULAR_OVERNIGHT_LABEL : IRREGULAR_PERIOD_LABEL;
+  return options.nightView ? IRREGULAR_OVERNIGHT_LABEL : IRREGULAR_PERIOD_SHORT_LABEL;
 }
-// D2 irregular-period (Ryan's words, CIV-1238): the route runs in the period, but the filter finds no regular cadence. On cards.
-export const IRREGULAR_PERIOD_LABEL = 'Runs irregularly in this period';
 /** CIV-1251: a Night card row with no grade. The Night view isn't a period in the picker, so not "in this period". */
 export const IRREGULAR_OVERNIGHT_LABEL = 'Runs irregularly overnight';
-// D3 irregular-period-short: the same, in tight spots (table cells, list values).
+// D3 irregular-period (Ryan's word, CIV-1238; on cards too since CIV-3136): the route runs in the period, but the filter
+// finds no regular cadence. Card rows, table cells and list values.
 export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
 // D4 setting-hide-occasional (Ryan, CIV-1238: "Occasional", not "one-off")
 export const HIDE_ONE_OFF_SETTING = { label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' } as const;
@@ -662,13 +662,17 @@ export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
 /** The switched-off page's line, in parts around its two code snippets. */
 export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Start it with', command: 'npm run live', middle: 'and open', path: LIVE_PATH, end: 'on the address it prints.' } as const;
 
-/** Why a picked route has no vehicles on the Live map. */
-export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {
+/**
+ * Why a picked route has no vehicles on the Live map. `feedFailed`: the agency's feed isn't answering (the pill reads
+ * Unavailable), so Atlas has no reading, which is not "none running" (#1923): the pill's own "Unable to load".
+ */
+export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[], feedFailed = false): string {
   if (!polled) {
     return followed.length > 0
       ? `${liveDoesNotCover(agencyName, routeShortName)} It covers ${agencyName} routes ${joinList(followed)}.`
       : liveCoversNoRoutes(agencyName);
   }
+  if (feedFailed) return LIVE_UNABLE_TO_LOAD;
   return `No ${agencyName} ${routeShortName} vehicles are running right now.`;
 }
 export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';

@@ -38,6 +38,9 @@ export const STUDIO_MAP_TEXT = {
 
 export const STUDIO_CHANGES_TEXT = {
   intro: (agency: string, day: string, before: string, after: string) => `How the ${agency} ${day} schedule changed between ${before} and ${after}.`,
+  // CIV-2058 (Ryan, 2026-11-21: "If there's no earlier fall file, say on the page which two seasons are being compared"; the
+  // manager, 2026-11-27: his words settle it; no colon, per his 2026-11-27 "I don't like the use of the : though", CIV-3115).
+  seasons: (before: string, after: string) => `This compares a ${before} schedule with a ${after} one, because there’s no earlier ${after} schedule file.`,
   leftOut: (days: string, newer: boolean) => `${days} aren’t compared: the ${newer ? 'newer' : 'older'} schedule file’s calendar leaves out many of their trips.`,
   // The change list's group labels are map panel labels, so sentence case (docs/style/VISUAL.md Case; CIV-1922).
   frequencyTitle: 'Frequency or trips changed',

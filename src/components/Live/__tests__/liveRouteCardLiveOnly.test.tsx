@@ -58,7 +58,8 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     vi.setSystemTime(T0_MS + 120_000);
     // Car a moved from stop 1 to stop 2; car b is now where a was a minute ago.
     act(() => { view.rerender(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 2, T0 + 120), car('b', 't2', 1.5, T0 + 120)]} feedDegraded={false} />); });
-    expect(screen.getByText('Right now')).toBeTruthy();
+    // Ryan, 2026-11-27: no "Right now" heading while the reading is fresh.
+    expect(screen.queryByText('Right now')).toBeNull();
     expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('2')).toBeTruthy();
     // CIV-2045: the one gap measured is both the longest and the shortest; at 1 min it is too close (amber).
@@ -84,7 +85,8 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
 
   it('names no time while the data is fresh, and "last updated" once the newest report is over 2 minutes old (CIV-1034)', () => {
     const view = card([car('a', 't1', 2, T0)]);
-    expect(screen.getByText('Right now')).toBeTruthy();
+    // Ryan, 2026-11-27: no "Right now" heading while the reading is fresh.
+    expect(screen.queryByText('Right now')).toBeNull();
     view.unmount();
     // The newest report is 2½ min old at 9 AM: it was last updated at 8:57 AM.
     card([car('a', 't1', 2, T0 - 150)]);

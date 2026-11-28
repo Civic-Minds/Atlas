@@ -252,7 +252,7 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, v3: rich });
     await screen.findByRole('heading', { level: 1 });
     // This week against last week: the dashboard's own tiles (same labels and change rule as the dashboard view).
-    const weekRegion = screen.getAllByRole('region', { name: /This Week Compared With Last Week/ })[0];
+    const weekRegion = screen.getAllByRole('region', { name: /This week vs\. last/i })[0];
     for (const label of ['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     // The subtitle names both weeks, and counts this week's trips only (CIV-1445); no separate line under the tiles. The method says it once, in groups.

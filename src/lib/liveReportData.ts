@@ -44,8 +44,12 @@ export function liveGapsDataUrl(agency: string, route: string): string | null {
   return fromR2 ? null : liveCloudUrl('gaps', { agency, route });
 }
 
-/** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
-export const liveDataMissing = (r: Response) => fromR2 && !r.ok;
+/**
+ * R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. The cloud
+ * reader answers 404 with only an error ("Live has no cloud recording for this agency."): the same (#1922: Studio Live for
+ * Kingston and the MBTA was an empty box).
+ */
+export const liveDataMissing = (r: Response) => r.status === 404 || (fromR2 && !r.ok);
 
 /**
  * A Live page's route title in parts, for RouteTitleName (CIV-1128): the analysis file's title ("510 Spadina") starts

@@ -27,7 +27,7 @@ const renderRows = (directions: ShapeProperties[], period: 'midday' | 'pmPeak' |
   />,
 );
 
-const LONG = 'Runs irregularly in this period';
+const LONG = 'Irregular';
 
 // #954: SF Muni 8, weekday PM peak. The route value is empty (City College has no regular
 // service), and the card read every row as "Irregular", including the Fisherman's
