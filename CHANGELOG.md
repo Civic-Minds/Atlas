@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The panel footer fits on one line: "Docs · Terms · Privacy · © 2026 Civic Minds"**: it took two lines on every screen, now only on a phone
+- **The Docs glossary is one A–Z list, Live's terms included**: its terms were in no order, with Live's added at the end
 - **Atlas Studio's nearby routes say how far each route's closest stop is**: a station's stops spread a few hundred metres, so "within 300 m" of Waterfront reached Granville Station, and assistants called it next door
 - **Atlas Studio's route history no longer explains away a figure that disagrees with today's**: it said a long late-night figure came from Atlas's edge rule, which was wrong for the TTC 504; it now gives both figures and says they disagree
 - **Atlas Studio flags routes it lists as every N min or better whose own route list says otherwise**: the TTC 87 on Sunday evenings counted as every 10 while its list said Irregular, with nothing to say the two disagree
