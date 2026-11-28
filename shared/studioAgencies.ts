@@ -90,6 +90,12 @@ export function parseStudioPath(pathname: string): StudioLocation | null {
   return { page: parts[0] as StudioPageKey, agency: decode(parts[1]), route: decode(parts[2]) };
 }
 
+/**
+ * #1957: whether a Studio page draws on the map and takes its clicks (PageMapLayer). Only an open page does: `/studio`
+ * with no page shows the map's own route lines (#1744), so the map's own click rule and route card stay on there.
+ */
+export const studioPageOwnsMap = (pathname: string): boolean => !!parseStudioPath(pathname)?.page;
+
 /** The address for a place in Studio; a route without an agency is dropped, as the address has no place for it. */
 export function studioPath({ page, agency, route }: StudioLocation): string {
   if (!page) return STUDIO_PATH;
@@ -106,7 +112,9 @@ export const STUDIO_LEGACY_PARAMS = ['page', 'agency', 'route', 'panel'] as cons
  */
 export function studioLegacyLocation(search: string): StudioLocation | null {
   const q = new URLSearchParams(search);
-  if (!STUDIO_LEGACY_PARAMS.some(k => q.has(k))) return null;
+  // #1957: `route` alone is the map's own route card (Studio with no page opens one), never an old Studio address,
+  // which always named a page, an agency or the panel.
+  if (!STUDIO_LEGACY_PARAMS.some(k => k !== 'route' && q.has(k))) return null;
   const named = q.get('page');
   const page = q.get('panel') === 'closed' ? null : named === 'changes' ? 'schedules' : named && (STUDIO_PAGES as readonly string[]).includes(named) ? named as StudioPageKey : null;
   return { page, agency: q.get('agency'), route: page ? q.get('route') : null };
