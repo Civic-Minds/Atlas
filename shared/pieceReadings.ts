@@ -15,7 +15,7 @@ import type { PeriodKey } from './rules/periods.js';
 
 export type PieceTreatment =
   | { t: 'reading'; v: number }
-  | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number }
+  | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number; before?: number }
   | { t: 'limited' };
 
 export interface PieceReadingEntry {
