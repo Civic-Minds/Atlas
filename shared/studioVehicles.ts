@@ -1,7 +1,7 @@
 /**
- * CIV-1693: the Studio "buses needed" page's data, one file per agency. Written locally by
- * `scripts/vehicles-needed.ts --json tmp/studio/<slug>-vehicles.json` and served only by the Vite dev
- * server at STUDIO_VEHICLES_DEV_URL (vite.config.ts); never uploaded to R2 or built into a deployment.
+ * CIV-1693: the Studio "buses needed" page's data, one file per agency. Built by `scripts/vehicles-needed.ts` in the
+ * cloud rebuild (scripts/studio-builds.ts, CIV-1974), uploaded to the private Live bucket under studio/files/ and read
+ * from there by the dev server (STUDIO_VEHICLES_DEV_URL) and the MCP; never in a public deployment.
  */
 import { type PeriodKey } from './config';
 import { PUBLIC_TIER_MAXES } from './rules/frequency';

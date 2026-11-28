@@ -20,7 +20,22 @@ import { studioVehiclesFileName } from '../shared/studioVehicles';
 
 type FeedSource = { archive: string } | { mdb: string };
 type Side = { feed: FeedSource; date: string };
-type AgencyBuild = { vehicles: { feed: FeedSource; anchor: string }; before: Side; after: Side; dryRunOnly?: boolean };
+/**
+ * vehicles.feed and anchor are a fallback: buses needed reads the feed the map's current release processed (the
+ * agency's lastRawArchiveKey) unless `pinned` holds it on purpose (CIV-3172).
+ */
+type AgencyBuild = { vehicles: { feed: FeedSource; anchor: string; pinned?: boolean }; before: Side; after: Side; dryRunOnly?: boolean };
+
+/**
+ * CIV-3172 (Ryan, "1"): the feed buses needed reads. The map's current feed (config/agencies/<slug>.json's
+ * lastRawArchiveKey, archived at gtfs/archive/<slug>/) with today's rider week, so Fleet never lags the map; the pinned
+ * feed and anchor only where the build says `pinned`, or where the agency has no recorded feed.
+ */
+export function vehiclesSource(slug: string, b: Pick<AgencyBuild, 'vehicles'>, agencyConfig: { lastRawArchiveKey?: string | null } | null): { feed: FeedSource; anchor: string | null; current: boolean } {
+  if (!b.vehicles.pinned && agencyConfig?.lastRawArchiveKey) return { feed: { archive: agencyConfig.lastRawArchiveKey }, anchor: null, current: true };
+  return { feed: b.vehicles.feed, anchor: b.vehicles.anchor, current: false };
+}
+const agencyConfigOf = (slug: string) => (existsSync(`config/agencies/${slug}.json`) ? JSON.parse(readFileSync(`config/agencies/${slug}.json`, 'utf8')) as { lastRawArchiveKey?: string | null } : null);
 
 const args = process.argv.slice(2);
 const opt = (name: string) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };
@@ -64,8 +79,11 @@ async function main(): Promise<void> {
     if (slug.startsWith('_') || (only && !only.includes(slug))) continue;
     if (b.dryRunOnly && !dryRun) { console.log(`studio-builds: ${slug} skipped (dry run only)`); continue; }
     try {
-      const vehicles = await fetchFeed(slug, b.vehicles.feed);
-      run('scripts/vehicles-needed.ts', [vehicles, '--slug', slug, '--anchor', b.vehicles.anchor, '--json', join(out, studioVehiclesFileName(slug))]);
+      const source = vehiclesSource(slug, b, agencyConfigOf(slug));
+      const vehicles = await fetchFeed(slug, source.feed);
+      // Without --anchor, vehicles-needed reads today's rider week, the one the current feed covers.
+      run('scripts/vehicles-needed.ts', [vehicles, '--slug', slug, ...(source.anchor ? ['--anchor', source.anchor] : []), '--json', join(out, studioVehiclesFileName(slug))]);
+      console.log(`studio-builds: ${slug} buses needed from ${feedName(source.feed)}${source.current ? ' (the map\'s current feed)' : ' (pinned)'}`);
       const before = await fetchFeed(slug, b.before.feed);
       const after = await fetchFeed(slug, b.after.feed);
       run('scripts/compare-feed-dates.ts', ['--slug', slug, '--before', `${before}@${b.before.date}`, '--after', `${after}@${b.after.date}`, '--json', join(out, `${slug}-before-after.json`)]);

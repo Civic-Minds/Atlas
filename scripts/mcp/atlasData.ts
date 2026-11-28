@@ -1173,8 +1173,8 @@ export type BusesNeeded =
   | { cached: false }
   | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
 
-/** A route number to compare, without leading zeros: Studio's file names Hamilton's routes "01", "02" (#1617). */
-const routeKey = (r: string) => r.trim().toLowerCase().replace(/^0+(?=\d)/, '');
+/** A route number without leading zeros: Studio's file names Hamilton's routes "01", "02" (#1617). */
+const noLeadingZeros = (r: string) => r.trim().replace(/^0+(?=\d)/, '');
 
 /**
  * Buses needed to run a route in a period, from Studio's own buses-needed file (the same figures Studio's page shows).
@@ -1185,7 +1185,9 @@ export async function busesNeeded(slug: string, route: string, period: PeriodKey
   const v = await store.vehicles(slug);
   if (!v) return { cached: false };
   const newest = store.newestFeedName ? await store.newestFeedName(slug) : null;
-  const want = routeKey(route);
-  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => routeKey(r) === want));
+  // CIV-3172: the route is found with the same matcher every other tool uses (findRoute), over the file's route names.
+  const names = [...new Set(Object.values(v.periods).flatMap(gs => (gs ?? []).flatMap(g => g.routes)))];
+  const picked = findRoute(names.map(n => ({ shortName: noLeadingZeros(n), name: n, longName: null, mode: '' })), noLeadingZeros(route));
+  const groups = picked ? (v.periods[period] ?? []).filter(g => g.routes.includes(picked.name)) : [];
   return { cached: true, feed: v.feed, olderSchedule: !!newest && newest !== v.feed, referenceDate: v.referenceDate, groups };
 }
