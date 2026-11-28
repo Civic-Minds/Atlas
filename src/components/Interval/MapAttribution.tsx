@@ -28,7 +28,7 @@ function UnseenDot() {
 const PILL_CREDITS_MAX = 2;
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false, agencyCredits = [], feedCredits = [], onCreditOpen }: { /** #1692: feed publishers' credits for the agencies in view ("Data provided by 511.org"), linked to the publisher. */ feedCredits?: readonly FeedCreditKey[]; /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean; /** CIV-461: the agencies in view whose data licence requires credit, in the same pill (MassDOT's pattern). */ agencyCredits?: readonly AgencyCredit[]; /** CIV-461: a credited name (or the "and N other agencies" overflow, null) opens About → Schedule sources there. */ onCreditOpen?: (slug: string | null) => void } = {}) {
+export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false, agencyCredits = [], feedCredits = [], onCreditOpen }: { /** #1692: feed publishers' credits for the agencies in view ("Data provided by 511.org"), linked to the publisher. */ feedCredits?: readonly FeedCreditKey[]; /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean; /** CIV-461: the agencies in view whose data licence requires credit, in the same pill (MassDOT's pattern). */ agencyCredits?: readonly AgencyCredit[]; /** CIV-461: a credited name (or the "and N other agencies" overflow, null) opens About → Schedule sources there; CIV-3142: the overflow passes the agencies credited on screen. */ onCreditOpen?: (slug: string | null, onMap?: readonly string[]) => void } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   // The census credit lengthens the pill: on phones it narrows and ellipses. Agency credits never ellipse (CIV-461, Ryan:
   // "the crowding can just list the one(s) tequiring attribution then + more"): the names that fit, then "and N other agencies".
@@ -184,7 +184,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null, mas
                   </button>
                 )),
                 ...(hiddenCredits > 0 ? [(
-                  <button key="agency-more" type="button" className={`${BASEMAP_CREDIT_LINK} cursor-pointer`} onClick={() => onCreditOpen?.(null)}>
+                  <button key="agency-more" type="button" className={`${BASEMAP_CREDIT_LINK} cursor-pointer`} onClick={() => onCreditOpen?.(null, agencyCredits.map(c => c.slug))}>
                     {andOthers(hiddenAgencies, 'agency', 'agencies')}
                   </button>
                 )] : []),
