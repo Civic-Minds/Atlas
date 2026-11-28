@@ -14,6 +14,7 @@ import { headsignsFromLastStop } from '../transforms/last-stop-destinations.js';
 import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
 import { renameStops, type StopRename } from '../transforms/stop-renames.js';
 import { renameHeadsigns, type HeadsignRename } from '../transforms/headsign-renames.js';
+import { renameRoutes, type RouteRename } from '../transforms/route-renames.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
@@ -46,6 +47,8 @@ export interface GtfsTransformOptions {
   stopRenames?: StopRename[];
   /** CIV-3124: the agency's hand-checked trip headsign renames (transforms/headsign-renames.ts). */
   headsignRenames?: HeadsignRename[];
+  /** CIV-2237: the agency's hand-checked route name fixes (transforms/route-renames.ts). */
+  routeRenames?: RouteRename[];
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
@@ -111,6 +114,13 @@ export function normalizeGtfs(
   if (options?.agencyId) {
     gtfs = filterGtfsByAgencyId(gtfs, options.agencyId);
     onStatus?.(`Agency filter: kept agency_id=${options.agencyId}`);
+  }
+  if (options?.routeRenames?.length) {
+    // CIV-2237: after the agency filters, before anything reads, excludes or groups routes by short name.
+    const result = renameRoutes(gtfs, options.routeRenames);
+    gtfs = result.gtfs;
+    onStatus?.(`Route renames: ${result.renamed} of ${options.routeRenames.length} applied, ${result.merged} folded into a route with the same names (CIV-2237)`);
+    if (result.stale.length) onStatus?.(`Route renames: ${result.stale.length} no longer match the feed, left as published: ${result.stale.map(r => r.routeId).join(', ')}`);
   }
   if (options?.routeNumberFromLongName) {
     // Before the short-name exclusions, so a config can exclude a route by the number it now has.

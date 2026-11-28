@@ -1,0 +1,87 @@
+{
+  "slug": "lewiston-asotin",
+  "officialName": "Lewiston Transit System and Asotin County PTBA",
+  "websiteUrl": "https://ridethevalley.org",
+  "dataLicense": {
+    "url": "https://ridethevalley.org",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-27"
+  },
+  "region": "Idaho",
+  "center": [
+    46.3792,
+    -117.0214
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2298/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true,
+  "routeRenames": [
+    {
+      "routeId": "32518",
+      "from": {
+        "shortName": "1",
+        "longName": "Blue Line"
+      },
+      "to": {
+        "shortName": "Blue 1",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "32521",
+      "from": {
+        "shortName": "2",
+        "longName": "Blue Line"
+      },
+      "to": {
+        "shortName": "Blue 2",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "32516",
+      "from": {
+        "shortName": "1",
+        "longName": "Green Line"
+      },
+      "to": {
+        "shortName": "Green 1",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "32517",
+      "from": {
+        "shortName": "2",
+        "longName": "Green Line"
+      },
+      "to": {
+        "shortName": "Green 2",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "32514",
+      "from": {
+        "shortName": "1",
+        "longName": "Red Line"
+      },
+      "to": {
+        "shortName": "Red 1",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "32515",
+      "from": {
+        "shortName": "2",
+        "longName": "Red Line"
+      },
+      "to": {
+        "shortName": "Red 2",
+        "longName": ""
+      }
+    }
+  ]
+}
