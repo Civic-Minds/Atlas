@@ -23,13 +23,13 @@
     "Birmingham, Alabama",
     "Hoover, Alabama"
   ],
-  "lastFeedCheckAt": "20261123",
+  "lastFeedCheckAt": "20261128",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20350201",
+  "expiredFeedCheckExpiry": "20270729",
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2263/latest.zip",
+  "lastFeedSourceUrl": "https://maxtransit.org/wp-content/uploads/2026/11/Nov-2026.zip",
   "lastPeekedExpiry": "20350201",
   "feedQuality": {
     "status": "degraded",
@@ -51,12 +51,13 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02",
-    "scoredAt": "2026-11-23"
+    "scoredAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "e82d846cfea2d2eb",
-  "feedObtainedAt": "20240531"
+  "feedObtainedAt": "20240531",
+  "refusedFeedSha256": "c14be109d9258c1cfdc072ef5215a5e8ac01485f2a54caaf59bdb33a88a34896"
 }
