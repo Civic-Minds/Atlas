@@ -125,7 +125,7 @@ export interface RouteCardHeadwayProps {
   extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
   /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
    *  destination (its key) carries it. */
-  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; onClick: () => void } | null;
+  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; /** Live gaps, beside the row's frequency ("· gaps 3–20 min"). */ gap?: string; onClick: () => void; /** The row's vehicles, listed right under it when opened (Ryan, 2026-11-27: never a separate list). */ below?: React.ReactNode } | null;
   /** Live (CIV-3047 B): an icon just before the card's flag (the clock shown while the route's vehicles aren't reporting). */
   headerIcon?: React.ReactNode;
   /** Live (#1877): rows after a direction's own rows, for live vehicles whose trips end at a stop no row goes to. */
@@ -423,11 +423,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             };
           };
           // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
-          const liveProps = (feature: ShapeProperties | undefined) => {
+          const liveProps = (feature: ShapeProperties | undefined): { props: { subLabel?: string; headwaySuffix?: string; onClick?: () => void; chevron?: boolean }; below: React.ReactNode } => {
             const live = rowLive && feature ? rowLive(feature) : null;
-            if (!live || claimedLive.has(live.key)) return {};
+            if (!live || claimedLive.has(live.key)) return { props: {}, below: null };
             claimedLive.add(live.key);
-            return { subLabel: live.subLabel, onClick: live.onClick, chevron: true };
+            return { props: { subLabel: live.subLabel, headwaySuffix: live.gap ? `· ${live.gap}` : undefined, onClick: live.onClick, chevron: true }, below: live.below ?? null };
           };
           return model.groups.map((group, gi) => {
             const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);
@@ -480,8 +480,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     }
                     const shown = row.display(hoveredHour);
                     if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
+                    const live = liveProps(d);
                     return (
-                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
+                      <React.Fragment key={`r${i}`}>
+                      <FlaggableValue reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
                         <CardDirectionRow
                           labelWeight="regular"
                           singleLine={shown.singleLine}
@@ -496,27 +498,31 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           dimmed={shown.value.dimmed}
                           limited={shown.value.isLimited}
                           {...hoverProps(group.dirId, d, row.hover)}
-                          {...liveProps(d)}
+                          {...live.props}
                           holdLayout={hoveredHour != null}
                         />
                       </FlaggableValue>
+                      {live.below}
+                      </React.Fragment>
                     );
                   })}
                   {/* Span-only branches use the same limited row whether or not the irregular-service
                       filter is on: the filter hides them from the map, not from the route's own card. */}
-                  {group.spanRows.map((span, si) => (
+                  {group.spanRows.map((span, si) => { const live = liveProps(span.feature); return (
+                    <React.Fragment key={span.feature ? `s${si}` : 'smulti'}>
                     <CardDirectionRow
                       labelWeight="regular"
                       singleLine
                       wrapLongValue
-                      key={span.feature ? `s${si}` : 'smulti'}
                       label={span.label}
                       limited
                       limitedLabel={model.limitedWord}
                       {...hoverProps(group.dirId, span.feature, span.hover)}
-                      {...liveProps(span.feature)}
+                      {...live.props}
                     />
-                  ))}
+                    {live.below}
+                    </React.Fragment>
+                  ); })}
                   {directionExtra?.(group.dirId)}
                 </div>
               </React.Fragment>

@@ -78,6 +78,17 @@ async function deleteKeys(keys: string[]): Promise<void> {
   }
 }
 
+/** #1789 (CIV-2907): per agency, runs that started partway along their trip and the trip starts rated (counts only, for the public log). */
+const partway = new Map<string, { runs: number; starts: number }>();
+let currentSlug = '';
+function countPartway(stdout: string | null): void {
+  for (const m of (stdout ?? '').matchAll(/^#1789: (\d+) runs in the window started partway .*?of (\d+) rated trip starts/gm)) {
+    const c = partway.get(currentSlug) ?? { runs: 0, starts: 0 };
+    c.runs += Number(m[1]); c.starts += Number(m[2]);
+    partway.set(currentSlug, c);
+  }
+}
+
 /** Runs one of Live's scripts with its output in the private log only. */
 let lastStepError: string | null = null;
 function run(script: string, args: string[]): boolean {
@@ -87,6 +98,7 @@ function run(script: string, args: string[]): boolean {
   appendFileSync(log, `\n$ ${script} ${args.join(' ')}\n${r.stdout ?? ''}${r.stderr ?? ''}exit ${r.status}\n`);
   // CIV-2910 (as #1801): the timetable step's own one-line reason (dates, counts and storage keys only) for the public reason code.
   lastStepError = r.status === 0 ? null : (r.stderr ?? '').split('\n').reverse().find(l => l.startsWith('live-gtfs-window: '))?.slice(0, 300) ?? null;
+  countPartway(r.stdout);
   return r.status === 0;
 }
 
@@ -94,6 +106,7 @@ function run(script: string, args: string[]): boolean {
 function runShell(script: string, args: string[]): boolean {
   const r = spawnSync('bash', [script, ...args], { env: { ...process.env, LIVE_DATA: work, NODE_OPTIONS: '--max-old-space-size=8192' }, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
   appendFileSync(log, `\n$ ${script} ${args.join(' ')}\n${r.stdout ?? ''}${r.stderr ?? ''}exit ${r.status}\n`);
+  countPartway(r.stdout);
   return r.status === 0;
 }
 
@@ -128,6 +141,7 @@ const reasons = { push: (r: string) => appendFileSync(log, `\n${r} [${minutes()}
 // #1810: only agencies recorded now; a paused one (Halifax, Montréal) has no new positions and keeps its last files.
 for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => isRecordingNow(s) && (!only || only.includes(s)))) {
   agencyStart = Date.now();
+  currentSlug = slug;
   try {
     const a = slug === 'ttc' ? analyseTtc() : analyseArchivedAgency(slug, { work, days, run, lastError: () => lastStepError });
     const weeks = goodDaysByWeek([...a.routes.values()].map(r => r.v3));
@@ -156,6 +170,11 @@ const pointer = nextStudioLivePointer(previous, runId, new Date().toISOString(),
   Object.fromEntries(Object.entries(built).map(([slug, b]) => [slug, { files: b.files.map(f => basename(f)), thisWeekGoodDays: b.thisWeek, lastWeekGoodDays: b.lastWeek }])));
 const fileCount = Object.values(built).reduce((n, b) => n + b.files.length, 0);
 console.log(`Studio Live: ${Object.keys(built).length} agencies rebuilt (${fileCount} files), ${thin} kept their last files (thin week or no routes), ${failed} could not be built (see the private log); ${Object.keys(pointer.agencies).length} agencies in the new pointer.`);
+
+// #1811: agency names stay in the private log; the public log gets only the totals.
+for (const [slug, c] of [...partway].sort((a, b) => b[1].runs - a[1].runs)) appendFileSync(log, `\n#1789 ${slug}: ${c.runs} runs started partway, of ${c.starts} rated trip starts\n`);
+const partwayTotal = [...partway.values()].reduce((t, c) => ({ runs: t.runs + c.runs, starts: t.starts + c.starts }), { runs: 0, starts: 0 });
+if (partway.size) console.log(`#1789: ${partwayTotal.runs} runs started partway, of ${partwayTotal.starts} rated trip starts, in ${partway.size} agencies (per agency in the private log)`);
 
 if (dryRun) {
   const dir = join(work, 'dry-run');
