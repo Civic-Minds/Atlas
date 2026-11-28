@@ -77,10 +77,12 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
   // CIV-2046 (Ryan: "I think Live in Studio and Live in main app should have the same cities available"): the Live map's
   // own list; a city without recordings opens with the no-data note (CIV-1883).
-  const liveList = useMemo(() => ({ agencies: [...LIVE_AGENCY_SLUGS] }), []);
   const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
   // The Live cities that have recorded figures (the recordings' own list), for the no-data note's "Live has:" rows (CIV-2054).
   const liveData = useDevFile<{ agencies: string[] }>(LIVE_STUDIO_AGENCIES_URL);
+  // #1922: Live's menu and default offer only those cities once their list is in (9 were offered, 4 with figures); the
+  // recorded agencies stand in only where that list can't be read.
+  const liveList = useMemo(() => ({ agencies: liveData && liveData !== 'missing' && liveData.agencies.length ? liveData.agencies : [...LIVE_AGENCY_SLUGS] }), [liveData]);
   // One reading and one default for both pages (CIV-1898): the same list rule, the same default agency.
   const listOf = studioAgencyListFrom;
   // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
