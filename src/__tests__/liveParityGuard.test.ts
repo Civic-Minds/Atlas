@@ -77,7 +77,10 @@ describe('Live right now: one way of reading a route (CIV-3177)', () => {
     expect(tool).toMatch(/recentFromSnapshots\(/);
     // The core gets each vehicle's direction as route_now placed it, never the feed's own field alone (TTC sends none,
     // so unlisted trips such as replacement buses were dropped and route_now counted fewer vehicles than the map).
-    expect(tool).toMatch(/directionId: placedDir\.get\(v\.id\)/);
+    expect(tool).toMatch(/v\.d \?\? placedDir\.get\(v\.id\) \?\? inferLiveDirection\(/);
+    // ...and places the rest with the map's own placement, which lives in the core (shared/liveDirection.ts) only.
+    expect(read('src/utils/liveDirection.ts')).not.toMatch(/function /);
+    expect(read('src/utils/liveResolveVehicles.ts')).toMatch(/inferLiveDirection/);
     expect(read('local-api/live-recent.ts')).toMatch(/recentFromSnapshots\(/);
   });
 

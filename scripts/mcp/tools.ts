@@ -52,6 +52,17 @@ async function unknownRegion(reg: string): Promise<{ regionNote: string } | null
   return all.some(a => sameRegion(a.region, reg)) ? null : { regionNote: `Atlas has no agency in a state or province named "${reg}". Give its full name or its short form, such as "Ontario" or "ON".` };
 }
 
+/**
+ * #1952: a route the map's filter counts as every N or better while its own list words say Irregular, or give nothing
+ * that often (YRT 004 "every 18 min from 3:42 PM" in an every-15 list). Both figures and the disagreement, no cause.
+ */
+export function shownDisagrees(shown: string | null | undefined, every: number): { warning?: string } {
+  if (!shown || shown === 'no service') return {};
+  const mins = [...shown.matchAll(/every (\d+(?:\.\d+)?)/g)].map(m => Number(m[1]));
+  if (mins.length && Math.min(...mins) <= every) return {};
+  return { warning: `The map's filter counts this route as every ${every} min or better, but its route list shows "${shown}". Give both and say they disagree, with no cause.` };
+}
+
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   ...liveHandlers,
   ...docsHandlers,
@@ -131,7 +142,11 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     let lo = args.min_routes != null ? Number(args.min_routes) : 0, hi = args.max_routes != null ? Number(args.max_routes) : Infinity;
     let like: string | null = null;
     let kind: 'bus' | 'rail' | 'ferry' | null = args.kind === 'bus' || args.kind === 'rail' || args.kind === 'ferry' ? args.kind : null;
-    const KIND_TEXT = { bus: 'buses only', rail: 'with rail', ferry: 'ferries only' };
+    // #1949: kind follows kindOfAgency (CIV-2025: rail and ferry only when every weekday route is), so a "bus" agency can
+    // run some rail; its label says so instead of "buses only".
+    const KIND_TEXT = { bus: 'buses only', rail: 'rail only', ferry: 'ferries only' };
+    const kindText = (x: { kind: 'bus' | 'rail' | 'ferry'; hasRail: boolean }) => x.kind === 'bus' && x.hasRail ? 'buses and some rail' : KIND_TEXT[x.kind];
+    const KIND_FILTER_TEXT = { bus: 'agencies that run buses (some also run rail)', rail: 'agencies whose every route is rail', ferry: 'agencies whose every route is a ferry' };
     const ends = new Map((await data.publicAgencies()).map(x => [x.slug, validThrough(x)]));
     const waits = await data.rankWaits(dayType);
     const at = PERIOD_KEYS.indexOf(key);
@@ -143,18 +158,18 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const labelKey = ([route, name]: [string, string | null]) => `${route}\u0000${name ?? ''}`;
     const entries = await Promise.all(groups.map(async g => {
       const home = groupHome(g);
-      if (!g.parent) return { slug: home.slug, name: home.name, region: home.region, country: home.country, partOf: home.partOf, kind: home.kind, weekdayRoutes: home.weekdayRoutes, members: [home] };
+      if (!g.parent) return { slug: home.slug, name: home.name, region: home.region, country: home.country, partOf: home.partOf, kind: home.kind, hasRail: home.railRoutes > 0, weekdayRoutes: home.weekdayRoutes, members: [home] };
       const weekday = new Set<string>();
       for (const m of g.members) for (const l of await data.rankLabels(m.slug, 'Weekday')) weekday.add(labelKey(l));
       const kinds = g.members.map(m => m.kind);
-      return { slug: g.slug, name: g.parent.name, region: home.region, country: home.country, partOf: null, kind: kinds.includes('rail') ? 'rail' as const : kinds.every(k => k === 'ferry') ? 'ferry' as const : 'bus' as const, weekdayRoutes: weekday.size, members: g.members };
+      return { slug: g.slug, name: g.parent.name, region: home.region, country: home.country, partOf: null, kind: kinds.includes('rail') ? 'rail' as const : kinds.every(k => k === 'ferry') ? 'ferry' as const : 'bus' as const, hasRail: g.members.some(m => m.railRoutes > 0), weekdayRoutes: weekday.size, members: g.members };
     }));
     if (args.similar_to != null) {
       const a = await needAgency(args.similar_to);
       const self = entries.find(x => x.members.some(m => m.slug === a.slug));
       if (!self) throw new Error(`${a.name} is not in the index.`);
       kind ??= self.kind;
-      like = `${self.name}: ${self.weekdayRoutes} weekday routes, ${KIND_TEXT[self.kind]}`;
+      like = `${self.name}: ${self.weekdayRoutes} weekday routes, ${kindText(self)}`;
       lo = Math.ceil(self.weekdayRoutes / 2); hi = self.weekdayRoutes * 2;
     }
     const reg = String(args.region ?? '').trim().toLowerCase(), ctry = String(args.country ?? '').trim();
@@ -190,14 +205,14 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const shown = await Promise.all(counted.slice(0, limit).map(async ({ a, routesOnDay, meeting }) => {
       const labels = new Map(await Promise.all(a.members.map(async m => [m.slug, await data.rankLabels(m.slug, dayType)] as const)));
       const end = a.members.map(m => ends.get(m.slug)).filter((x): x is string => !!x).sort()[0] ?? null;
-      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: KIND_TEXT[a.kind], scheduleValidThrough: end, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => { const l = labels.get(r.slug)![r.i]; return `${l[0]}${l[1] ? ` ${l[1]}` : ''} (every ${r.wait})`; }) };
+      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: kindText(a), scheduleValidThrough: end, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => { const l = labels.get(r.slug)![r.i]; return `${l[0]}${l[1] ? ` ${l[1]}` : ''} (every ${r.wait})`; }) };
     }));
     // #1700: a region or country with agencies left out by their data terms says so (Yukon's only agency is left out,
     // so its ranking was empty with no reason).
     const leftOutNote = await leftOutIn('ranking', reg, ctry);
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
-      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
+      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_FILTER_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
       agenciesCompared: counted.length, ranking: shown, ...(leftOutNote ? { leftOutAgencies: leftOutNote } : {}), ...(await unknownRegion(String(args.region ?? '').trim()) ?? {}), ...(asked > limit ? { shownLimit: `The ranking shows ${RANK_AGENCIES_MAX} agencies at most; narrow it by country, region, kind or size to see others.` } : {}), source: SOURCE,
     };
   },
@@ -235,7 +250,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const { key, dayType, now } = await periodOrNow(a, p, d);
     const minutes = Number(n);
     const res = await data.routesMeeting(a, dayType, key, minutes);
-    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, figure: `waitMinutes is ${FIGURE_LABELS.typical}`, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), ...(res.leftOut.length ? { leftOutByRule: res.leftOut.map(m => ({ route: m.route, name: m.longName, shown: m.shown, waitMinutes: m.waitMinutes })), leftOutNote: `These routes' typical wait is every ${minutes} min or better, but some of their waits in this part of the day run longer, so the map's every-${minutes} filter leaves them out. Name them when you answer.` } : {}), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
+    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, figure: `waitMinutes is ${FIGURE_LABELS.typical}`, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes, ...shownDisagrees(m.shown, minutes) })), ...(res.leftOut.length ? { leftOutByRule: res.leftOut.map(m => ({ route: m.route, name: m.longName, shown: m.shown, waitMinutes: m.waitMinutes })), leftOutNote: `These routes' typical wait is every ${minutes} min or better, but some of their waits in this part of the day run longer, so the map's every-${minutes} filter leaves them out. Name them when you answer.` } : {}), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
     // #1700: an agency left out by its data terms is a note beside the others' rows, not the whole answer.
@@ -349,7 +364,8 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const h = await data.routeHistory(a, String(route ?? ''), dayType);
     if (!h) return { agency: a.name, history: null, note: "Atlas's History has no data for this agency." };
     if (!h.route) return { agency: a.name, history: null, note: `Atlas's History has ${h.routes} routes for this agency, none matching "${route}".` };
-    return { agency: a.name, day: dayType, figure: `Each figure is ${FIGURE_LABELS.grade}, not the typical wait route_frequency gives.`, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. Where a route starts or stops partway through a part of the day, Atlas counts the wait to the edge of that part, so a figure can be far longer than the gap between the trips that run (a route every 10 min until 1 AM shows every 61 min from 11 PM to 2 AM). That is the rule Atlas uses, not a data error.', source: "Atlas's History data." };
+    // #1951: the note gave a cause (the edge-of-period rule) that didn't hold for TTC 504 Late, which runs every 10 until 2 AM.
+    return { agency: a.name, day: dayType, figure: `Each figure is ${FIGURE_LABELS.grade}, not the typical wait route_frequency gives.`, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. A History figure for the current schedule can differ from route_frequency\'s for the same part of the day: give both and say they disagree, with no cause.', source: "Atlas's History data." };
   },
   routes_by_hours: async (args) => {
     const a = await needAgency(args.agency);

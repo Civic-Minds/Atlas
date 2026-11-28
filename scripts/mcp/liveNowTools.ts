@@ -15,6 +15,7 @@ import { bunchedText, cutoffsFrom, gappedText } from '../../shared/liveCutoffs';
 import { NOW_RECENT_MIN, NOW_WINDOW_MIN, nowDirections, routeNow, type NowRouteRow } from '../../shared/liveNow';
 import { LIVE_STALE_SEC } from '../../shared/rules/live';
 import { recentFromSnapshots, routeDirectionsNow, type DirectionNow } from '../../shared/liveCore';
+import { inferLiveDirection } from '../../shared/liveDirection';
 import type { SegmentDelayData } from '../../shared/liveSegmentData';
 import { liveLineText, type LiveRowGap } from '../../shared/liveWording';
 import { liveFiles } from '../../local-api/liveFiles';
@@ -94,11 +95,14 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     const analysis = await routeAnalysis(a.slug, s.shortName || s.name);
     const ids = new Set(routeIds);
     const newest = snapshots.at(-1);
-    // Each vehicle's direction as route_now placed it (the pattern it passed most stops on), as the map gives the core its own
-    // placed directions: feeds often send none (TTC), and trips the analysis's timetable doesn't list (504C replacement
-    // buses) are counted only through it.
+    // Each vehicle's direction, as the map gives the core its own: the feed's, else where route_now placed it (the pattern it
+    // passed most stops on), else the map's own placement on the route's directional lines (shared/liveDirection.ts,
+    // resolveLiveVehicles), here drawn through the route's stops. Feeds often send none (TTC), and trips the analysis's
+    // timetable doesn't list (504C replacement buses) are counted only through it.
     const placedDir = new Map(r.directions.flatMap(d => d.vehicleIdsNow.map(id => [id, d.directionId] as const)));
-    const core = analysis ? routeDirectionsNow(analysis, recentFromSnapshots(snapshots, id => ids.has(id)), now, period, (newest?.vehicles ?? []).filter(v => ids.has(v.r)).map(v => ({ tripId: v.tripId ?? '', directionId: placedDir.get(v.id) ?? v.d }))) : [];
+    const lines = directions.flatMap(d => d.patterns.map(p => ({ type: 'Feature' as const, properties: { directionId: d.directionId }, geometry: { type: 'LineString' as const, coordinates: p.map(x => [x.lon, x.lat]) } })));
+    const directionOf = (v: { id: string; d: number | null; lat: number; lon: number }) => v.d ?? placedDir.get(v.id) ?? inferLiveDirection({ lat: v.lat, lon: v.lon, directionId: null, headsign: null }, lines).directionId;
+    const core = analysis ? routeDirectionsNow(analysis, recentFromSnapshots(snapshots, id => ids.has(id)), now, period, (newest?.vehicles ?? []).filter(v => ids.has(v.r)).map(v => ({ tripId: v.tripId ?? '', directionId: directionOf(v) }))) : [];
     // CIV-2055: each direction's Scheduled lines as the Live route card shows them (its shared stretch, each branch and
     // short turn), from the card's own reading, for the agency's day and period, not this server's clock.
     const fc = { type: 'FeatureCollection' as const, features: rows.map(properties => ({ type: 'Feature' as const, geometry: null, properties })) as unknown as GeoJSON.Feature[] };
