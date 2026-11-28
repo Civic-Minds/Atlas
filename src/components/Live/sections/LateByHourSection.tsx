@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { MISSING_VALUE } from '../../../../shared/missingValue';
-import { periodKeyForHour } from '../../../../shared/config';
+import { periodKeyForHour, SPARKLINE_HOURS } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
 import { LATE_BY_HOUR_TITLE, LATE_LABEL, lateThreshold, excludingText, fadedNoteText, lateCount, lateHourLine } from '../../../../shared/liveWording';
 import { KPI_TILE } from '../kpiTileStyle';
@@ -21,7 +21,7 @@ import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPAR
 import { percentText, countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
 import Card from '../../ui/Card';
-import { LIVE_MIN_GOOD_DAYS, LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
+import { LIVE_MIN_CHART_HOUR_SHARE, LIVE_MIN_GOOD_DAYS, LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
 
 /** Fewer departures than this and an hour's bar is faded. */
 const MIN_N = LIVE_MIN_SAMPLE;
@@ -211,19 +211,45 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
 /** A Live hour (0-23) on the chart's 5am-4am axis. */
 const chartHour = (hour: number): number => LIVE_DAY_HOURS.find(h => h % 24 === hour) ?? hour;
 
+/** Hours with enough departures the chart needs before it draws (LIVE_MIN_CHART_HOUR_SHARE of the chart's hours). */
+export const MIN_CHART_HOURS = Math.ceil(SPARKLINE_HOURS.length * LIVE_MIN_CHART_HOUR_SHARE);
+
+/**
+ * The tool panel chart's bars, on the route card chart's 5am-4am axis, in percent: every hour with departures, as the
+ * map's chart draws every hour with service. An hour with too few departures is faded and capped at the top of the
+ * measured hours, so it can't flatten them (the dashboard chart's rule). Null when too few hours are measured to draw.
+ */
+export function miniChartBars(hours: readonly HourValue[]): { countByHour: Record<number, number>; faded: ReadonlySet<number> } | null {
+  const measured = hours.filter(h => h.n >= MIN_N);
+  if (measured.length < MIN_CHART_HOURS) return null;
+  const top = Math.max(...measured.map(h => h.value));
+  const pct = (v: number) => Math.round(v * 1000) / 10;
+  const countByHour: Record<number, number> = {};
+  const faded = new Set<number>();
+  for (const h of hours) {
+    if (!(h.n > 0)) continue;
+    const thin = h.n < MIN_N;
+    countByHour[chartHour(h.hour)] = pct(thin ? Math.min(h.value, top) : h.value);
+    if (thin) faded.add(chartHour(h.hour));
+  }
+  return { countByHour, faded };
+}
+
 /** The tool panel's card: late share by hour over the whole 5am-4am day, the chosen time of day shaded. */
-function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<MiniProps, 'chart'>) {
-  // Ryan, 2026-11-27 ("1"): with too few measurements the whole section is hidden, not dimmed.
-  if (!hours.length || isThin(days)) return null;
+function Mini({ hours, band, days, leftOut, scope }: Omit<MiniProps, 'chart'>) {
+  // Ryan, 2026-11-27 ("If there's few measurements then should we hide the chart", "1"): with too few measurements, on too
+  // few days or in too few hours, the whole section is hidden.
+  const bars = miniChartBars(hours);
+  if (!bars || isThin(days)) return null;
   return (
-    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined}
-      // The scope and the days left out under the title, as on the week table (SectionNotes).
+    <Widget title={LATE_BY_HOUR_TITLE} size="medium"
+      // The days left out (and, outside Studio, the scope) under the title, as on the week table (SectionNotes).
       action={<SectionNotes scope={scope} excluding={leftOut?.length ? <LeftOutDays dates={leftOut} /> : null} />}>
       {/* Ryan, 2026-11-27 ("redesign the sparkline here to be more like the one on the main map"): the route card's own
-          chart, fed the late share by hour (in percent) and coloured by the lateness steps; its hover names the hour. */}
-      {/* The chart's hours run 5am to 4am, after midnight as 24-28 (LIVE_DAY_HOURS); Live keys those hours 0-4. */}
+          chart (CountSparkline is HeadwaySparkline), fed the late share by hour and coloured by the lateness steps. */}
       <CountSparkline
-        countByHour={Object.fromEntries(hours.filter(x => x.n >= MIN_N).map(x => [chartHour(x.hour), Math.round(x.value * 1000) / 10]))}
+        countByHour={bars.countByHour}
+        faded={h => bars.faded.has(h)}
         color={pct => lateShareColor(pct / 100)}
         label={LATE_LABEL}
         title={LATE_BY_HOUR_TITLE}

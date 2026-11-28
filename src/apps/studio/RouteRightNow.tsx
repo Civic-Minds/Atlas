@@ -5,6 +5,8 @@ import { CardDirectionRow, CardHelpNotice, SidebarCardList, type CardReportButto
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveFeeds } from '../../hooks/useLiveFeeds';
 import { useAgencyGeo } from '../../hooks/useAgencyGeo';
+import { useLiveTripDirections } from '../../hooks/useLiveTripDirections';
+import { resolveLiveVehicles } from '../../utils/liveResolveVehicles';
 import { STUDIO_ROUTE_PANEL_PENDING } from '../../../shared/liveWording';
 import { liveCardModelNow, liveCardRowKeys, liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey } from '../../utils/liveGrouping';
@@ -24,8 +26,13 @@ import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 export default function RouteRightNow({ slug, routeShortName }: { slug: string; routeShortName: string; /** Not used: every direction shows, as on the map's card (#1921). */ direction?: number | null }) {
   const { agencies } = useAgencies();
   const { vehiclesBySlug, degradedBySlug, errorBySlug } = useLiveFeeds(true, [slug], slug);
-  const vehicles = useMemo(() => (vehiclesBySlug[slug] ?? []).filter(v => v.routeShortName === routeShortName), [vehiclesBySlug, slug, routeShortName]);
+  const polled = useMemo(() => (vehiclesBySlug[slug] ?? []).filter(v => v.routeShortName === routeShortName), [vehiclesBySlug, slug, routeShortName]);
   const geo = useAgencyGeo(slug);
+  // CIV-3159 (same route, different gaps on the map and here): the vehicles read as the map's card reads them, one
+  // resolver for both (resolveLiveVehicles), with the trips' own directions winning over the shape guess.
+  const guessed = useMemo(() => resolveLiveVehicles(polled, geo), [polled, geo]);
+  const trips = useLiveTripDirections(slug, routeShortName, guessed, true);
+  const vehicles = useMemo(() => resolveLiveVehicles(polled, geo, trips.byVehicle), [polled, geo, trips.byVehicle]);
   const reportRef = useRef<CardReportButtonHandle>(null);
   const model = useMemo(() => liveCardModelNow(geo, agencies, slug, routeShortName), [geo, agencies, slug, routeShortName]);
   const routeFeature = useMemo(() => geo?.features.find(x => (x.properties as ShapeProperties | null)?.routeShortName === routeShortName), [geo, routeShortName]);

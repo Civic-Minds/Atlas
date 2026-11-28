@@ -13,8 +13,10 @@ export function useLiveTripDirections(
   slug: string | null,
   routeShortName: string | null,
   vehicles: readonly Pick<LiveVehicle, 'id' | 'tripId' | 'directionId'>[],
+  /** Load even with Live mode off (Studio's panel, which polls its own vehicles; as LiveRoutePerformance's liveEnabled). */
+  liveEnabled?: boolean,
 ): { byVehicle: ReadonlyMap<string, number> | null; settled: boolean } {
-  const { data, settled } = useSegmentDelayStatus(slug, routeShortName);
+  const { data, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const tripDirections = (data as { tripDirections?: Record<string, string[]> } | null)?.tripDirections;
   // Only trips the timetable lists: a trip it doesn't list gets its direction from the map, the guess this corrects.
   // The map numbers directions its own way, so each is turned into the map's number through the learned pairing
