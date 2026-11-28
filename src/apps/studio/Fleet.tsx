@@ -13,7 +13,6 @@ import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { CardBodyText, CardSectionLabel, SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
 import { RouteListColumns, RouteListHeader } from '../../components/RouteListRow';
 import CardRouteList from '../../components/Interval/CardRouteList';
-import AgencyGroupHeader from '../../components/ui/AgencyGroupHeader';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
 import { useStudioMapFrame } from '../../context/StudioMapFrame';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
@@ -40,12 +39,11 @@ import { HOUR_TO_PERIOD, periodValuesByHour } from '../../utils/sparklinePeriods
 import { hourChartMaxFreq } from '../../utils/hourChartModel';
 import { SPARKLINE_HOURS } from '../../../shared/config';
 import type { HeadwayByHour } from '../../../shared/routeProperties';
-import { StudioRouteTable, pairFigures, periodCell, routeTitle } from './StudioRouteTable';
+import { StudioRouteTable, periodCell, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
-import { CHANGE_COLOR, DEFAULT_PERIOD, type ChangeGroup, agencyFleet, agencyRouteCount, changeGroups, modesFor, groupFor, rowChange, rowFigure, studioMapLines } from './fleetModel';
+import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, modesFor, groupFor, rowChange, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
-import { schedulesDesign, type SchedulesDesign } from './reviewDesign';
 import { agencyNow } from '../../../scripts/mcp/nowClock';
 import { useInServiceNow } from './useInServiceNow';
 import { useNetworkInService, type NetworkCount } from './useNetworkInService';
@@ -62,14 +60,8 @@ import { useNetworkInService, type NetworkCount } from './useNetworkInService';
 const T = STUDIO_MAP_TEXT;
 const C = STUDIO_CHANGES_TEXT;
 
-/** The change list: every changed route by group; a click opens the route. Only the rows scroll. */
-function ChangeList({ file, period, onPick, design = 'today' }: { file: StudioBeforeAfterFile; period: PeriodKey; onPick: (r: string) => void; design?: SchedulesDesign }) {
-  if (design === 'summary') return <SummaryChanges file={file} period={period} onPick={onPick} />;
-  return <GroupedChangeList file={file} period={period} onPick={onPick} design={design} />;
-}
-
 /**
- * CIV-2182 "summary" design, the route card: the route card's frequency chart (HeadwaySparkline) for each schedule, one
+ * CIV-2182 (summary first, Ryan picked 1), the route card: the route card's frequency chart (HeadwaySparkline) for each schedule, one
  * above the other on one scale, the top bar's time of day lit. Mock-up: each hour takes its time of day's figure (the files
  * carry one figure per time of day); a built version would carry each hour's.
  */
@@ -130,7 +122,7 @@ function FleetPeriodSparkline({ vehicles, period, setPeriod, modes }: { vehicles
   );
 }
 
-/** The kinds of change the "summary" design counts, at the top bar's time of day. */
+/** The kinds of change Schedules counts, at the top bar's time of day. */
 type SummaryKey = 'more' | 'less' | 'added' | 'removed';
 
 /** Each changed route under its kind at the time of day: added, removed, or running more or less often then. */
@@ -152,8 +144,8 @@ function periodRow(file: StudioBeforeAfterFile, c: StudioRouteChange, period: Pe
 }
 
 /**
- * CIV-2182 "summary" design (Ryan: "Yes i think but need to see a mokc up"): the panel opens on one bar counting each kind of
- * change at the time of day, and the map carries the detail; a part of the bar (or its legend) opens that kind's routes, a
+ * CIV-2182 (Ryan, 2026-11-23: "Yes i think but need to see a mokc up"; picked 1, summary first, 2026-11-27): Schedules opens on
+ * one bar counting each kind of change at the time of day; a part of the bar (or its legend) opens that kind's routes, a
  * route opens its card.
  */
 function SummaryChanges({ file, period, onPick }: { file: StudioBeforeAfterFile; period: PeriodKey; onPick: (r: string) => void }) {
@@ -179,83 +171,6 @@ function SummaryChanges({ file, period, onPick }: { file: StudioBeforeAfterFile;
       {file.unchanged.length > 0 && <CardBodyText>{C.unchangedCount(file.unchanged.length)}</CardBodyText>}
     </div>
   );
-}
-
-/** The list of every changed route under its group's heading (today's page, and the "period" and "byPeriod" designs). */
-function GroupedChangeList({ file, period, onPick, design }: { file: StudioBeforeAfterFile; period: PeriodKey; onPick: (r: string) => void; design: SchedulesDesign }) {
-  const groups = useMemo(() => designGroups(changeGroups(file), period, design), [file, period, design]);
-  // CIV-2057 (Ryan: "Why does the Schedules list look so different than a route list", then chose 1): the agency card's route
-  // rows (CardRouteList), a column per compared date at the right with the change colour's dot by the newer figure, and the
-  // time of day the figures are from at the end of the name line. Each value sits under its date (CIV-1806); the time of day
-  // is the top bar's.
-  return (
-    <section aria-label={T.routes} className="flex min-h-0 flex-1 flex-col">
-      <RouteListHeader label={T.routes} columns={[dateRange(file.before.date, file.before.date), dateRange(file.after.date, file.after.date)]} />
-      <PanelBody className="pb-2">
-        {groups.map((g, i) => (
-          <div key={g.key}>
-            <AgencyGroupHeader rule={i === 0 ? 'none' : 'above'}>{g.title}</AgencyGroupHeader>
-            <CardRouteList onSelect={onPick} rows={g.routes.map(c => {
-              // CIV-2182 "period" design: a route in this time of day's group shows this time of day's figures, no label.
-              const f = design === 'period' && g.key === 'frequency' ? { ...rowFigure(c, period), ...periodFigureOf(c, period) } : rowFigure(c, period);
-              // One short figure per cell, a late start or early end on its own line (CIV-1922). No bold on the newer
-              // figure (Ryan, CIV-1806: "Does bold mean better frequency?").
-              const [before, after] = (['before', 'after'] as const).map(side => (PERIOD_KEYS as readonly string[]).includes(f.key) ? periodCell(c[side], f.key as PeriodKey) : { main: f[side], note: null });
-              // #1746: the dot is the change at the time of day the figures are from (rowChange), never the top bar's alone.
-              const change = rowChange(file, c, f);
-              return {
-                key: c.route,
-                route: routeTitle(c),
-                // The group heading names the time of day in the "byPeriod" design, so the row doesn't repeat it.
-                nameNote: design === 'byPeriod' ? undefined : f.label ?? undefined,
-                value: <RouteListColumns cells={[before, { ...after, dot: change ? CHANGE_COLOR[change] : undefined }]} />,
-              };
-            })} />
-          </div>
-        ))}
-        {file.unchanged.length > 0 && <CardBodyText className="px-4">{C.unchangedCount(file.unchanged.length)}</CardBodyText>}
-      </PanelBody>
-    </section>
-  );
-}
-
-/** A route's figures at one time of day, as a row figure (CIV-2182 "period" design). */
-function periodFigureOf(c: StudioRouteChange, period: PeriodKey) {
-  return { key: period, label: null, ...pairFigures(c.before, c.after, period) };
-}
-
-/** Whether a route's frequency changed grade at this time of day, or it was added or removed (it runs then on one side). */
-function changedAt(c: StudioRouteChange, period: PeriodKey): boolean {
-  if (!c.before || !c.after) return c.before?.headway[period] != null || c.after?.headway[period] != null;
-  return periodChange(c.before, c.after, period) !== 'same' && periodChange(c.before, c.after, period) !== 'none';
-}
-
-/**
- * CIV-2182 review designs for the list's groups (#1746: "Rows mix periods ... under one heading with no grouping").
- * "period": the frequency group keeps only routes that changed at the top bar's time of day; the rest of it move under
- * one heading after it. "byPeriod": the frequency group splits by the time of day each row's figure is from, the top
- * bar's first. "today": as now.
- */
-function designGroups(groups: ChangeGroup[], period: PeriodKey, design: SchedulesDesign): ChangeGroup[] {
-  if (design === 'today') return groups;
-  return groups.flatMap(g => {
-    if (g.key !== 'frequency') return [g];
-    if (design === 'period') {
-      const here = g.routes.filter(c => changedAt(c, period)), other = g.routes.filter(c => !changedAt(c, period));
-      return [
-        { key: 'frequency', title: `${g.title} · ${PERIOD_LABELS[period]}`, routes: here },
-        { key: 'other-times', title: STUDIO_REDESIGN_TEXT.otherTimes, routes: other },
-      ].filter(x => x.routes.length > 0);
-    }
-    const byKey = new Map<string, StudioRouteChange[]>();
-    for (const c of g.routes) { const k = rowFigure(c, period).key; byKey.set(k, [...(byKey.get(k) ?? []), c]); }
-    const order = [period, ...PERIOD_KEYS.filter(k => k !== period), 'trips'];
-    return [...byKey.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b)).map(k => ({
-      key: `frequency-${k}`,
-      title: (PERIOD_KEYS as readonly string[]).includes(k) ? PERIOD_LABELS[k as PeriodKey] : STUDIO_CHANGES_TEXT.trips,
-      routes: byKey.get(k)!,
-    }));
-  });
 }
 
 /** The map key in the regular map's key card and slot, bottom left above the footer (CIV-1821). */
@@ -394,7 +309,7 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
               {view === 'schedules' && change && (
                 <SidebarCardSection label={PAGE_NAMES.studioSchedules}>
                   <StudioRouteTable change={change} beforeDate={file.before.date} afterDate={file.after.date} period={period} />
-                  {schedulesDesign() === 'summary' && <ScheduleSparklines change={change} period={period} beforeDate={file.before.date} afterDate={file.after.date} />}
+                  <ScheduleSparklines change={change} period={period} beforeDate={file.before.date} afterDate={file.after.date} />
                 </SidebarCardSection>
               )}
               {view === 'fleet' && (
@@ -448,7 +363,7 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
               {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
             </div>
             <div className="mt-4 flex flex-col">
-              <ChangeList file={file} period={period} onPick={setRoute} design={schedulesDesign()} />
+              <SummaryChanges file={file} period={period} onPick={setRoute} />
             </div>
           </div>
         </section>

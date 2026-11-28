@@ -78,8 +78,6 @@ export const notOnTripValueText = (noTrip: number, atGarage?: number) =>
 export const fleetPeriodCountText = (periodLabel: string, count: number, word: string) => `${periodLabel}: ${countText(count)} ${word}`;
 
 export const STUDIO_REDESIGN_TEXT = {
-  /** Schedules "period" design: the heading over routes that changed only at other times of day. */
-  otherTimes: 'Changed at other times of day',
   /** Schedules "summary" design: one count per kind of change at the time of day, each opening its routes. */
   summary: { more: (n: number) => `${n} more often`, less: (n: number) => `${n} less often`, added: (n: number) => `${n} added`, removed: (n: number) => `${n} removed` },
   /** The bar's accessible name. */

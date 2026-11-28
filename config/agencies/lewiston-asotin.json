@@ -24,7 +24,7 @@
         "longName": "Blue Line"
       },
       "to": {
-        "shortName": "Blue 1",
+        "shortName": "Blue Line Route 1",
         "longName": ""
       }
     },
@@ -35,7 +35,7 @@
         "longName": "Blue Line"
       },
       "to": {
-        "shortName": "Blue 2",
+        "shortName": "Blue Line Route 2",
         "longName": ""
       }
     },
@@ -46,7 +46,7 @@
         "longName": "Green Line"
       },
       "to": {
-        "shortName": "Green 1",
+        "shortName": "Green Line Route 1",
         "longName": ""
       }
     },
@@ -57,7 +57,7 @@
         "longName": "Green Line"
       },
       "to": {
-        "shortName": "Green 2",
+        "shortName": "Green Line Route 2",
         "longName": ""
       }
     },
@@ -68,7 +68,7 @@
         "longName": "Red Line"
       },
       "to": {
-        "shortName": "Red 1",
+        "shortName": "Red Line Route 1",
         "longName": ""
       }
     },
@@ -79,7 +79,29 @@
         "longName": "Red Line"
       },
       "to": {
-        "shortName": "Red 2",
+        "shortName": "Red Line Route 2",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "32620",
+      "from": {
+        "shortName": "",
+        "longName": "East"
+      },
+      "to": {
+        "shortName": "East Route",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "32621",
+      "from": {
+        "shortName": "",
+        "longName": "West"
+      },
+      "to": {
+        "shortName": "West Route",
         "longName": ""
       }
     }
