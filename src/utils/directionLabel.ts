@@ -19,7 +19,8 @@ export function cardinalBoundLabel(bearing: number): string {
 
 type LonLat = [number, number];
 
-function lineCoords(geometry: GeoJSON.Geometry | null | undefined): LonLat[] {
+/** A shape's points; none for anything but a single line. */
+export function lineCoords(geometry: GeoJSON.Geometry | null | undefined): LonLat[] {
   if (!geometry || geometry.type !== 'LineString') return [];
   return geometry.coordinates as LonLat[];
 }

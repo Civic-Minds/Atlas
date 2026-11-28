@@ -1,4 +1,4 @@
-import type { DayType, TimePeriod } from '../hooks/useIntervalStats';
+import type { DayType, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { buildCurrentRoute } from './routeCardRoute';
 import { buildDirectionGroups, routeDirectionOverrides, type RouteDirectionOverrides } from './routeCardDirectionGroups';
 import { routeKeyForShortName } from './routeKey';
@@ -6,6 +6,7 @@ import { periodKeyForHour } from '../../shared/config';
 import { getNowDay } from '../../shared/dayTypes';
 import { buildRouteCardModel, cardGroupLines, type RouteCardModel } from './routeCardRows';
 import { rowDirectionKey, type CardRowKey } from './liveGrouping';
+import { lineCoords } from './directionLabel';
 
 /** The main map's route card model for a route now, the one source Live reads its scheduled figures from (#1234, CIV-2045). */
 function liveCardModel(fc: GeoJSON.FeatureCollection, routeKey: string, day: DayType, period: TimePeriod, overrides: RouteDirectionOverrides): RouteCardModel | null {
@@ -53,6 +54,16 @@ export interface LiveScheduledRow {
   headsign: string | null;
   /** The row's own scheduled gap in minutes, what its gaps are judged against (CIV-2047); null when it gives no number. */
   headwayMin: number | null;
+  /** #1958: the row's own shape, so its live gaps are measured along the streets its vehicles run (a branch past the split,
+   *  replacement buses on other streets); null for the shared stretch or a row whose shape isn't a single line. */
+  coordinates?: [number, number][] | null;
+}
+
+/** The shape a card row stands for: the model copies a shape's properties, so it is found by what names it. */
+function rowShape(fc: GeoJSON.FeatureCollection, p: ShapeProperties): GeoJSON.Feature | undefined {
+  const same = (k: keyof ShapeProperties, q: GeoJSON.GeoJsonProperties) => (q?.[k as string] ?? null) === (p[k] ?? null);
+  return fc.features.find(f => f.properties === p)
+    ?? fc.features.find(f => (['routeId', 'day', 'directionId', 'headsign', 'routeVariant', 'stretchIndex'] as const).every(k => same(k, f.properties)));
 }
 
 export function liveScheduledRows(
@@ -75,11 +86,12 @@ export function liveScheduledRows(
   const rest = lines.filter(l => !l.shared);
   // The card's lines come shared first, then one per row in order, then span rows.
   return [
-    ...shared.map(l => ({ key: 'shared', label: l.label, value: l.value, headsign: null, headwayMin: group.shared?.headway ?? null })),
+    ...shared.map(l => ({ key: 'shared', label: l.label, value: l.value, headsign: null, headwayMin: group.shared?.headway ?? null, coordinates: null })),
     ...rest.map((l, i) => {
       const row = group.rows[i];
       const v = row && !row.night ? row.display(null).value : null;
-      return { key: row?.id ?? `span-${i}`, label: l.label, value: l.value, headsign: row?.feature.headsign ?? null, headwayMin: v && !v.isLimited ? v.headway ?? null : null };
+      const shape = row ? lineCoords(rowShape(fc, row.feature)?.geometry) : [];
+      return { key: row?.id ?? `span-${i}`, label: l.label, value: l.value, headsign: row?.feature.headsign ?? null, headwayMin: v && !v.isLimited ? v.headway ?? null : null, coordinates: shape.length >= 2 ? shape : null };
     }),
   ];
 }

@@ -237,6 +237,8 @@ export interface LiveGaps {
   gapsSchedSec?: (number | null)[];
   /** wholeLine: the stops' typical timetable gaps along the line in this period, lowest to highest. */
   scheduledRangeSec?: [number, number] | null;
+  /** wholeLine: the counted cars off every recorded street of this direction, which have no gap either side (#1958). */
+  offCarIds?: string[];
 }
 
 /**
@@ -511,7 +513,17 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     return null;
   });
   if (!whole) return { cars, carIds: counted, gapsMin, scheduledSec: sched };
-  return { cars, carIds: counted, gapsMin, scheduledSec: sched, gapsSchedSec: now.slice(1).map(car => schedAt(car.segIndex) ?? sched), scheduledRangeSec };
+  return { cars, carIds: counted, gapsMin, scheduledSec: sched, gapsSchedSec: now.slice(1).map(car => schedAt(car.segIndex) ?? sched), scheduledRangeSec, offCarIds: now.filter(c => c.off).map(c => c.key.split('|')[0]) };
+}
+
+/**
+ * #1958: a card row's own line, from its shape, to measure that row's gaps along the streets its vehicles run. The
+ * direction's line follows the analysis's main pattern, so a branch past the split (TTC 510 to Queens Quay) or
+ * replacement buses on other streets (504C, which the analysis leaves out) sit off it, and no gap next to them is claimed.
+ * One stretch with no stops: the row's gaps are judged against the row's own timetable gap, not the stops'.
+ */
+export function rowLineModel(directionId: number, coordinates: readonly [number, number][]): LineModel {
+  return { directionId, stops: [], sharedStreet: null, segments: [{ fromStopId: '', toStopId: '', fromName: '', toName: '', directionId, bands: {}, coordinates: [...coordinates] }] };
 }
 
 // ---- One route right now, for every reader (CIV-3173) ----

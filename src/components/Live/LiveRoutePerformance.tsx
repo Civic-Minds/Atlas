@@ -13,7 +13,7 @@ import type { LiveScheduledRow } from '../../utils/liveScheduledHeadway';
 import { branchOnlyStops, vehiclesByPattern } from '../../../shared/livePatterns';
 import { gapText } from '../../../shared/liveFormat';
 import { useRouteAnalysis } from '../../hooks/useRouteAnalysisPatterns';
-import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, rowLineModel, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LOADING_LABEL, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
@@ -328,8 +328,15 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
       const counted = rowVehicles ? rowDirectionKey(r.headsign, routeShortName) : null;
       const mine = all ? cars : counted ? rowVehicles!.get(counted) ?? [] : groups.get(r.key) ?? [];
       if (!all && !counted && !only.has(r.key)) continue;
-      const ids = new Set(mine.map(v => v.id));
-      const sub = all ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
+      // #1958: a destination row is measured along its own shape where the card has it, so cars on a branch past the
+      // split or on other streets (TTC 504C) are on its line. The shared stretch is measured over the
+      // cars on the direction's line only: one off every recorded street isn't on the shared stretch.
+      const own = !all && r.coordinates ? rowLineModel(directionId, r.coordinates) : null;
+      const off = new Set(all ? live.offCarIds ?? [] : []);
+      const ids = new Set(mine.map(v => v.id).filter(id => !off.has(id)));
+      const subset = recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) }));
+      const rowLine = own ?? line;
+      const sub = all && !off.size ? live : liveGaps(data, rowLine, own ? [] : withStats(line, liveBand), liveBand, subset, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
       const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
       out.set(r.key, { cars: mine.length, extremes: ext, median: ext && sub ? median(sub.gapsMin.filter((g): g is number => g != null)) : null });
     }
