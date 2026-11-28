@@ -9,6 +9,7 @@ import type {
 import type { RouteDataQualityWarning } from './routeDataQuality.js';
 import type { SharedStop, SharedStretch } from './sharedStops.js';
 import type { PieceReadings } from './pieceReadings.js';
+import type { PeriodEdge } from './periodEdge.js';
 
 export type HeadwayByHour = Partial<Record<number, number | null>>;
 
@@ -161,9 +162,9 @@ export interface RouteProperties {
   stretchPeriodRange?: Partial<Record<PeriodKey, [number, number] | null>>;
   /** #934: periods whose value is a late start or early end around steady service: the first or last departure (GTFS minutes) and the steady spacing. Card wording only. */
   /** #1276: stretch is the stretch the edge was read on ('main' or a tail index); rows whose stretchCovers include it carry the words. */
-  stretchPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number; stretch?: 'main' | number }>>;
+  stretchPeriodEdge?: Partial<Record<PeriodKey, PeriodEdge & { stretch?: 'main' | number }>>;
   /** CIV-1959 follow-up (ATLAS_BRANCH_READINGS=1): the row's own late start or early end, read from its own departures like stretchPeriodEdge (CIV-1241, CIV-1411, #934). Card wording only, behind the branch-readings switch. */
-  rowPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number }>>;
+  rowPeriodEdge?: Partial<Record<PeriodKey, PeriodEdge>>;
   /** CIV-1959 follow-up (ATLAS_BRANCH_READINGS=1): the row's own steady service with one gap in it (D6, like stretchPeriodGap), read from its own departures. Card wording only, behind the branch-readings switch. */
   rowPeriodGap?: Partial<Record<PeriodKey, { every: number; gap: number }>>;
   /** Narrow D6: periods the main stretch runs through, steady but for one gap inside: the median gap and the longest. Card wording only. */
@@ -186,8 +187,8 @@ export interface RouteProperties {
   stretchCovers?: ('main' | number)[];
   /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "Irregular" (one gap, or under three departures). */
   stretchMeta?: {
-    main: { stops: number; refStop: string; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number }>>; rows?: StretchRowValues } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number; before?: number }>>; notThrough?: PeriodKey[]; /** #1710: a tail that exists only because of ATLAS_PIECES_BY_TRIPS (a piece under the legacy size, not a branch). */ byTrips?: true; rows?: StretchRowValues }>;
+    main: { stops: number; refStop: string; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, PeriodEdge>>; rows?: StretchRowValues } | null;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, PeriodEdge>>; notThrough?: PeriodKey[]; /** #1710: a tail that exists only because of ATLAS_PIECES_BY_TRIPS (a piece under the legacy size, not a branch). */ byTrips?: true; rows?: StretchRowValues }>;
   };
   /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30, 60 or 90 minutes; nightService is the older 60. 90 is for the Night Service page only (CIV-1329); the Overnight mode counts 30 and 60. */
   nightService30?: boolean;
