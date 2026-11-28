@@ -49,7 +49,7 @@ async function sameSecret(a: string, b: string): Promise<boolean> {
 let activeRelease: { id: string; checkedAt: number } | null = null;
 
 /** Test deployments only (wrangler.pilot-test.jsonc): the split files ship inside the Worker as static assets, for a first test with nothing uploaded to R2. */
-type TestEnv = Env & { TESTER_DAILY_CAPS?: Record<string, number> | string; ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; BUILD_SHA?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
+type TestEnv = Env & { TESTER_DAILY_CAPS?: Record<string, number> | string; ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; BUILD_SHA?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket; ATLAS_DATA?: R2Bucket };
 
 /**
  * The Live tools read the private bucket (CIV-1860; scripts/mcp/releaseLivePrivate.ts writes it daily), with a short
@@ -76,6 +76,19 @@ function useLiveBucket(env: TestEnv): void {
   }));
 }
 
+/**
+ * CIV-3165: the release files through the Worker's R2 binding to the public data bucket (ATLAS_DATA), read only, so the
+ * site's bot protection never stands between the MCP and its data (a caller from a data centre made the public URL answer
+ * 403). A URL under DATA_ORIGIN maps to the bucket key of the same path. Without the binding, the public URL is fetched.
+ */
+export function bucketGet(bucket: R2Bucket): typeof fetch {
+  return (async (input: RequestInfo | URL) => {
+    const key = new URL(typeof input === 'string' || input instanceof URL ? input : input.url).pathname.replace(/^\/+/, '');
+    const obj = await bucket.get(key);
+    return obj ? new Response(obj.body, { headers: { 'content-type': 'application/json' } }) : new Response(null, { status: 404 });
+  }) as typeof fetch;
+}
+
 async function useCurrentRelease(env: TestEnv): Promise<string> {
   if (env.ASSETS && env.DATA_FROM_ASSETS) {
     const assets = env.ASSETS;
@@ -93,7 +106,8 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
   const now = Date.now();
   if (activeRelease && now - activeRelease.checkedAt < POINTER_TTL_SECONDS * 1000) return activeRelease.id;
   // shared/mcpRelease.ts: the pointer, then the release's manifest (the same check the local server makes).
-  const check = await checkMcpRelease(env.DATA_ORIGIN, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } });
+  const get = env.ATLAS_DATA ? bucketGet(env.ATLAS_DATA) : fetch;
+  const check = await checkMcpRelease(env.DATA_ORIGIN, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } }, get);
   if (activeRelease?.id !== check.releaseId) {
     // A new release counts only once its MCP files are up (the pointer can move before they are uploaded): until then the
     // release already loaded keeps answering. With none loaded yet there is nothing to answer from. A release this code
@@ -103,7 +117,7 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
       throw new Error('Atlas Studio has no schedule files for the current release yet. Try again later.');
     }
     // Files of one release never change, so they cache for a long time at the edge.
-    data.useStore(splitStore(urlReader(check.base, { cf: { cacheTtl: 86_400, cacheEverything: true } })));
+    data.useStore(splitStore(urlReader(check.base, { cf: { cacheTtl: 86_400, cacheEverything: true } }, get)));
   }
   activeRelease = { id: check.releaseId, checkedAt: now };
   return check.releaseId;

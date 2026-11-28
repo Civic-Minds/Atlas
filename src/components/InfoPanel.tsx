@@ -23,7 +23,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, SOURCES_ON_SCREEN_CHIP, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
 import { BUNCHING_LABEL, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
@@ -125,6 +125,8 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
   );
 }
 
+
+
 export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers, inStudio = false, scrollToLive = 0 }: Props) {
   // History is not offered on phones, so its filter, badges and wording step aside there.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
@@ -133,6 +135,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   /** CIV-3119: the agency whose credit page Sources has open. */
   const [creditSlug, setCreditSlug] = useState<string | null>(null);
+  // CIV-3142: the agencies credited on screen when Sources opened from the map's "and N other agencies"; null shows all.
+  const [onMapSlugs, setOnMapSlugs] = useState<readonly string[] | null>(null);
   const [query, setQuery] = useState('');
   // CIV-3143 (Ryan picked "1": "add the same search box the agency list already uses, filtering by agency or city"): Sources' own box.
   const [sourcesQuery, setSourcesQuery] = useState('');
@@ -207,7 +211,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
       setSelectedSlug(null);
     } else {
-      setQuery(''); setSourcesQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
+      setQuery(''); setSourcesQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set()); setOnMapSlugs(null);
     }
   }, [open, defaultTab, featureFilter, helpContext, scrollToLive]);
 
@@ -220,14 +224,16 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     sourcesAskSeen.current = sourcesFocus.n;
     const known = sourcesFocus.slug && credits.some(c => c.slug === sourcesFocus.slug);
     setCreditSlug(known ? sourcesFocus.slug : null);
+    setOnMapSlugs(!known && sourcesFocus.onMap?.length ? sourcesFocus.onMap : null);
     setView(known ? 'source-credit' : 'sources');
   }, [sourcesFocus, open, credits]);
   const openCredit = credits.find(c => c.slug === creditSlug) ?? null;
   // CIV-3143: Sources' credits by the agency list's own search (name, slug or city), or the credit's own name where it has no agency.
   const shownCredits = useMemo(() => credits.filter(c => {
+    if (onMapSlugs && !onMapSlugs.includes(c.slug)) return false;
     const a = agencies.find(x => x.slug === c.slug);
     return a ? agencyMatchesQuery(a, sourcesQuery) : agencyMatchesQuery({ name: [c.label.primary, c.label.secondary].filter(Boolean).join(' '), slug: c.slug }, sourcesQuery);
-  }), [credits, agencies, sourcesQuery]);
+  }), [credits, agencies, sourcesQuery, onMapSlugs]);
   // Back from a credit page lands on that agency's row, not the top of the list.
   useEffect(() => {
     if (view !== 'sources' || !creditSlug) return;
@@ -560,7 +566,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               </div>
               {/* CIV-461: each agency whose data licence requires credit, and MBTA's MassDOT credit where Live is on: one pill each. */}
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_CREDITS_HEADING}</p>
-              <SearchBox value={sourcesQuery} onChange={setSourcesQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER} />
+              <SearchBox value={sourcesQuery} onChange={setSourcesQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER}
+                chip={onMapSlugs ? { label: SOURCES_ON_SCREEN_CHIP, onClear: () => setOnMapSlugs(null) } : undefined} />
               {shownCredits.length === 0
                 ? <PanelEmpty>{NO_AGENCIES_MATCH}</PanelEmpty>
                 : <SourceCredits credits={shownCredits} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />}
