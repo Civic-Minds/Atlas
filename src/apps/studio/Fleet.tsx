@@ -28,7 +28,7 @@ import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/s
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetNetworkTitle, fleetPeriodCountText, notOnTripValueText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
-import { CARD_NOTE, Z_PANEL } from '../../styles';
+import { CARD_NOTE, MAP_APP_PAGE, MAP_APP_PAGE_COLUMN } from '../../styles';
 import { PageTitle } from '../../components/ui/PageTitle';
 import SplitBar from '../../components/charts/SplitBar';
 import DataTable from '../../components/ui/DataTable';
@@ -439,8 +439,8 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
         // CIV-2182 (Ryan, 2026-11-25: "Maybe scehedules should be a full page too idk"; 2026-11-26: "Feel like the Schedules page
         // isn't ideal as a panel like it currently is and I think we were considering making that a full-page tool"): the list is a
         // full page under Studio's top bar, as the review mock-up showed; a route picked from it opens its card on the map.
-        <section aria-label={PAGE_NAMES.studioSchedules} className={`fixed inset-0 ${Z_PANEL} overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]`}>
-          <div className="mx-auto flex w-full max-w-3xl flex-col px-4 pt-20 pb-10 sm:px-6">
+        <section aria-label={PAGE_NAMES.studioSchedules} className={MAP_APP_PAGE}>
+          <div className={MAP_APP_PAGE_COLUMN}>
             <PageTitle>{PAGE_NAMES.studioSchedules}</PageTitle>
             <div className="mt-3">
               <CardBodyText>{intro}</CardBodyText>
