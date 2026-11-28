@@ -133,5 +133,8 @@ describe('Live rows: gaps over the vehicles each row counts (#1958)', () => {
     const card = read('src/components/Live/LiveRoutePerformance.tsx');
     expect(card).toMatch(/rowVehicles!?\.get\(/);
     expect(card).toContain('rowVehicles={rowVehicles}');
+    // Each destination row is measured along its own shape (the card's rows carry it), not only the direction's line.
+    expect(card).toMatch(/rowLineModel\(directionId, r\.coordinates\)/);
+    expect(read('src/utils/liveScheduledHeadway.ts')).toMatch(/coordinates: shape\.length >= 2/);
   });
 });
