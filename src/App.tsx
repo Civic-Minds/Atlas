@@ -680,13 +680,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         onJump={slug => { setModeNote(null); handleLiveAgencyClick(slug); }}
         onClose={closeModeNote}
         sidebarLeft={sidebarLeft}
+        searchBarWidth={isPhone ? undefined : searchBarWidth}
       />
     )}
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <PageMapOverlayProvider>
-    {/* CIV-2001: Studio's panels keep their own width beside its search box; they start at the box's left edge as before. */}
-    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone || inStudio ? undefined : searchBarWidth}>
+    {/* #1917: every left card, Studio's included, takes the search bar's left edge and width (CIV-2001 had Studio's wider). */}
+    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth}>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
