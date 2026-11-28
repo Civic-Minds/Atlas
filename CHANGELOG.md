@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Live late-by-hour chart names what it covers top right, where the route card chart names its period**: "both directions" sat on its own line above the bars
 - **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board
 - **A one-stretch route takes its card's colour on the map where its trips are uneven**: a one-minute timetable difference between neighbouring stops split the line into two colours (Nanaimo 40 toward Downtown, PM peak, drew its first 17 stops every 30 while the card said every 15)
 - **A route whose branch doesn't run at that time of day is one colour on the map then too**: the one-colour rule looked at the whole day, so a branch running only at other times left the trunk's stops in mixed colours
