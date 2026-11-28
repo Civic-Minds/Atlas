@@ -96,6 +96,12 @@ export const HEADLINE_WINDOWS = {
  */
 export const STRETCH_NIGHT_START_MIN = 26 * 60;
 export const STRETCH_NIGHT_END_MIN = 29 * 60;
+/**
+ * The night window's midpoint, 3:30 (D8): service runs at night when it has departures on both sides of it, 3:30 counting
+ * as the later side. CIV-1764: a direction with no departure from 2:00 up to 3:30 doesn't run at night, so its departures
+ * later in the Overnight period are the day's own start-up trips, not night service (TTC 25 Steeles at 5:36-6:00).
+ */
+export const NIGHT_MIDPOINT_MIN = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
 
 /** Sustained frequent service reads 7am-7pm; the research flags read 7am-7pm (daytime) and 7am-midnight (extended). */
 export const FREQUENT_SERVICE_WINDOW_START_MIN = 7 * 60;

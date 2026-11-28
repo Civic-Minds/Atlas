@@ -191,7 +191,8 @@ describe('#896 review: lines outside the rule keep their values', () => {
     // Real feed, weekday: the drawn "Fremont BART" line is an evening-only pattern of an all-day
     // route; the values are those origin/main publishes.
     const p = (await props('actransit-211', 'actransit')).find((x: any) => x.day === 'Weekday' && x.directionId === 0 && x.headsign === 'Fremont BART');
-    expect(p.periodCoverageHeadway.overnight).toBe(176);
+    // CIV-1764: its only overnight-window trips come after 3:30, the day's start-up, so it has no overnight coverage.
+    expect(p.periodCoverageHeadway.overnight ?? null).toBeNull();
     expect(p.maxGapByPeriod.overnight).toBe(176);
     expect(p.headway).toBe(30);
   });

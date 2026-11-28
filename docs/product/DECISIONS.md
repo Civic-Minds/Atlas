@@ -420,6 +420,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-27 — Ship the start-up-trips rule (CIV-1764, #1927)
+Ryan, 2026-11-27 (Questions chat), picked "1, ship it" for the 2026-11-24 rule below (a day's own start-up trips are not overnight service). The count he saw still included TTC 320 Saturday to Eglinton's all-day headline going from 12 to 8. The final branch removes that change, so it ships less than he approved. Final count (cloud dry-run pair base 46095655047 / fix 46095661553, same service day, plus 7c1619c1f checked by a same-zip local run): 5,010 figures change on about 2,440 route directions in 148 agencies, 4,964 of them Overnight. The 46 outside Overnight are all Laval (STL) 26, 50 and 76 on weekdays, and they now match the timetable (route 26 to Montmorency reads its own 66 trips, every 30 in the evening, not both directions' 134 at the shared stop). TTC 320 is unchanged. No headline gets faster, and no grade or colour outside Overnight moves.
+
 ### 2026-11-27 — "Hide irregular routes" also hides lines whose card reads "Irregular" (CIV-2925, follow-up to CIV-2232)
 Ryan, 2026-11-24, on CIV-2232: lines whose card reads irregular are hidden "(unless the user turns off irregular routes)", his pick "1". Counts were put to him on CIV-2925 (options 1 ship as measured, 2 check NJT first, 3 don't hide); the manager settled it on his earlier "1" (2026-11-27) and the NJT check was done here.
 - Counts (19 large agencies, release of 2026-11-24, every day type and period, lines the setting already hides left out): 4,010 of 86,574 line-periods hide (4.6%); in 594 of 35,178 route-periods the whole route leaves the map. NJT 1,296 of 10,998 (11.8%, 196 whole routes), SEPTA 511, MBTA 383, TransLink 307, LA Metro 196, RTD 176, King County Metro 157, OC Transpo 150, Metro Transit 121, TTC 113, WMATA 107, MARTA 106, CTA 102, AC Transit 72, YRT 69, DRT 50, GRT 45, MiWay 27, Hamilton 22.
@@ -924,6 +927,10 @@ Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that ru
 ### 2026-10-31 — "Irregular" for a period, "Occasional" for the hidden class
 
 Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards (card wording superseded by 2026-11-27 / CIV-3136: cards read "Irregular"). This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
+
+### 2026-11-24 — A day's own start-up trips are not overnight service
+
+Ryan, 2026-11-24 (Linear CIV-1764): picked 1, a service day's own first morning trips (TTC 25 Steeles at 5:36, 5:48, 5:54 and 6:00) no longer count as overnight service, with a before-and-after review of every changed overnight figure before it goes live. The rule, built on the night midpoint D8 already uses (3:30): a departure list (a row or a stop) with nothing from 2:00 up to 3:30 doesn't run at night, so its 3:30-6:00 trips are start-up and every Overnight reader (value, coverage, steadiness, the sparse test) sees none of them. A list with a trip before 3:30 is unchanged. No new number. Shipped by Ryan's "1, ship it" (2026-11-27, entry above). The main/branch pattern pick and a night-only line's headline floor read Overnight as before the rule, so the rule moves only Overnight figures.
 
 ### 2026-10-31 — The Overnight period reads the Night Service verdict
 

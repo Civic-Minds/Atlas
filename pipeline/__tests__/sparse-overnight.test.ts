@@ -51,10 +51,19 @@ describe('sparse overnight window (#897)', () => {
     expect(isSparseOvernightWindow(at('26:35', '26:40', '29:29'))).toBe(true);
   });
 
-  it('keeps TTC 300 weekday\'s short turn to Victoria Park at 10 (gaps 15 and 4 are steady)', () => {
-    const times = at('04:38', '04:53', '04:57');
+  it('keeps a steady three-trip window at 10 (gaps 15 and 4 are steady, TTC 300 shape)', () => {
+    const times = at('03:08', '03:23', '03:27');
     expect(isSparseOvernightWindow(times)).toBe(false);
     expect(computePeriodHeadways(times).overnight).toBe(10);
+  });
+
+  it('reads no overnight value where every trip is after 3:30, the day\'s start-up (CIV-1764: TTC 25 Steeles)', () => {
+    const steeles = at('05:36', '05:48', '05:54', '06:00');
+    expect(computePeriodHeadways(steeles).overnight).toBeNull();
+    expect(computePeriodCoverageHeadways(steeles).overnight).toBeNull();
+    expect(computePeriodHeadways(at('04:38', '04:53', '04:57')).overnight).toBeNull();
+    // One trip before 3:30 and the direction runs at night: every trip counts.
+    expect(computePeriodHeadways(at('03:29', '05:36', '05:48', '05:54', '06:00')).overnight).not.toBeNull();
   });
 
   it('follows the settled steadiness thresholds, not a new ratio or clock floor', () => {
@@ -151,7 +160,7 @@ describe('sparse overnight window (#897)', () => {
   });
 
   it('keeps a steady three-trip overnight short turn at route and stop (TTC 300 shape)', async () => {
-    const p = await route(at('04:38', '04:53', '04:57'));
+    const p = await route(at('03:08', '03:23', '03:27'));
     expect(p.headwayByPeriod.overnight).toBe(10);
     expect(p.stopPeriodHeadways.s1.overnight).toBe(10);
   });
@@ -175,7 +184,9 @@ describe('three night departures plus a 06:00 trip (CIV-1746)', () => {
   });
 
   it('leaves steady three-plus-06:00 windows and every other count alone', () => {
-    expect(periodHeadwayInWindow(at('05:00', '05:20', '05:40', '06:00'), 'overnight')).toBe(20);
+    expect(periodHeadwayInWindow(at('03:00', '03:20', '03:40', '04:00'), 'overnight')).toBe(20);
+    // CIV-1764: with nothing before 3:30 the same shape is the day's start-up, so no value.
+    expect(periodHeadwayInWindow(at('05:00', '05:20', '05:40', '06:00'), 'overnight')).toBeNull();
     expect(isSparseOvernightWindow(at('02:00', '02:10', '05:00', '05:50'))).toBe(false);
     expect(isSparseOvernightWindow(at('02:00', '02:10', '02:20', '05:00', '06:00'))).toBe(false);
   });

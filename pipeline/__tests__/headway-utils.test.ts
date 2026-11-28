@@ -297,8 +297,10 @@ describe('computePeriodSustained', () => {
     // TTC Line 1 overnight-style case: 3 departures clustered near the tail of the overnight
     // window [1560,1800], nothing else. Internal gaps alone (5, 5) look clean; the 210-minute
     // void between window start and the first departure is what should fail this.
+    // CIV-1764: with nothing before 3:30 these are the day's start-up trips, so overnight has no reading at all.
     const result = computePeriodSustained([1770, 1775, 1780]);
-    expect(result.overnight).toBe(false);
+    expect(result.overnight ?? false).toBe(false);
+    expect(computePeriodSustained([1570, 1770, 1775, 1780]).overnight).toBe(false);
   });
 
   it('does not flag a period whose service legitimately starts partway through the window', () => {
@@ -655,5 +657,19 @@ describe('two departures a minute apart are one bus: no longest gap (CIV-1721, #
   it('keeps a short gap with service around it', () => {
     expect(computePeriodMaxGaps([m(14, 50), m(15, 32), m(15, 33)]).pmPeak).toBe(32);
     expect(computePeriodMaxGaps([m(15, 32), m(15, 33), m(15, 34)]).pmPeak).toBe(1);
+  });
+});
+
+describe('CIV-1764: start-up trips and the pattern pick', () => {
+  it('drops a direction\'s 3:30-6:00 start-up trips from Overnight, except inside keepingStartUpTrips', async () => {
+    const { withoutStartUpTrips, keepingStartUpTrips } = await import('../headway-utils');
+    const { PERIOD_MINUTES } = await import('../../shared/config');
+    const { start, end } = PERIOD_MINUTES.overnight;
+    // TTC 25 Steeles: 5:36, 5:48, 5:54, 6:00, nothing from 2:00 to 3:30 (GTFS minutes past the service day's midnight).
+    const startUp = [29 * 60 + 36, 29 * 60 + 48, 29 * 60 + 54, 30 * 60];
+    expect(withoutStartUpTrips(startUp, start, end)).toEqual([]);
+    expect(keepingStartUpTrips(() => withoutStartUpTrips(startUp, start, end))).toEqual(startUp);
+    // Outside keepingStartUpTrips the rule applies again.
+    expect(withoutStartUpTrips(startUp, start, end)).toEqual([]);
   });
 });
