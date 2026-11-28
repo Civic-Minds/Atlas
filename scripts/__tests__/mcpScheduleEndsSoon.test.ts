@@ -10,8 +10,15 @@ describe('schedule ending soon', () => {
     expect((scheduleEndsSoon({ scheduleValidThrough: '2026-11-28' }, today) as { scheduleEndsSoon?: string }).scheduleEndsSoon).toBeTruthy();
   });
 
-  it('leaves answers alone that end later, already ended, or carry no date', () => {
-    for (const r of [{ scheduleValidThrough: '2026-11-29' }, { scheduleValidThrough: '2026-11-20' }, { scheduleValidThrough: null }, 'text', null]) {
+  it('says when the schedule has already ended (#1955)', () => {
+    const r = scheduleEndsSoon({ scheduleValidThrough: '2024-03-31' }, today) as { scheduleEnded?: string; scheduleEndsSoon?: string };
+    expect(r.scheduleEnded).toMatch(/^This schedule ended on 2024-03-31\./);
+    expect(r.scheduleEndsSoon).toBeUndefined();
+    expect((scheduleEndsSoon({ scheduleValidThrough: '2026-11-20' }, today) as { scheduleEnded?: string }).scheduleEnded).toBeTruthy();
+  });
+
+  it('leaves answers alone that end later or carry no date', () => {
+    for (const r of [{ scheduleValidThrough: '2026-11-29' }, { scheduleValidThrough: null }, { scheduleValidThrough: 'no end date' }, 'text', null]) {
       expect(scheduleEndsSoon(r, today)).toBe(r);
     }
   });
