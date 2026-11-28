@@ -7,6 +7,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Live's destination rows say which figure is live and which is the timetable**: "live 10–13 min" in bold over "schedule 10 min", so the two no longer read as two answers to the same question
+- **The hosted Atlas Studio MCP answers callers running in the cloud**: its own read of Atlas's schedule files was blocked by the site's bot protection whenever the question came from a data centre, so those calls failed
+- **Studio Live's Views pill sits at the bottom by the locate-me button**: it only changes what the map's lines are coloured to show, so it moved out of the top bar, which keeps Agency, Direction and Time
+- **A problem report from the Night list is titled "Overnight · every 30 min or better"**: it named a "30 min view", and Atlas has modes, not views
+- **"And N other agencies" on the map's credit line opens Sources filtered to the agencies on screen**: it opened the full list of every agency, so the ones on the map were hard to find; the search box's X clears the filter
 - **Studio's Schedules opens on a summary of the changes: routes running more often, less often, added and removed at the time of day, each count opening its routes**: the full list of changed routes was hard to take in at a glance; a route's card shows its old and new frequency across the day
 - **A route's daily trip count includes the trips that skip a stop near its end**: Danville's North Main counted 11 of its 16 weekday loops and the RTD Flatiron Flyer 20 of 63, so the MCP undercounted their trips
 - **Studio's Live route panel opens with late departures by hour, drawn like the route card's chart**: the same bars, period highlight and hover as the map, coloured by how often trips are late, above the destination rows; the colour key pill shows from the start, and each section's notes sit beside its title

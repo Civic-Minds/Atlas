@@ -1078,6 +1078,11 @@ export const SOURCES_LEAD = 'We use the schedules transit agencies publish, usua
 export const SOURCES_FALLBACK = 'For some agencies, we use their schedule from one of these public sources:';
 /** Above the agency credits in Sources (CIV-3096, Ryan, 2026-11-26, word for word). */
 export const SOURCES_CREDITS_HEADING = 'Licences and attributions.';
+/**
+ * CIV-3142 (Ryan, 2026-11-27, picked option 1: "populate the search bar with \"On My Screen\" or smth then have a \"X\" or
+ * clear button"): the filter set in Sources' search box when the map's "and N other agencies" opens it. Wording awaits his OK.
+ */
+export const SOURCES_ON_SCREEN_CHIP = 'On my screen';
 export const NEW_TAG = 'New';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';
