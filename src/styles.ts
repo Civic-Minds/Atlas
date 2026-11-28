@@ -212,6 +212,11 @@ export const SIDEBAR_CARD_TOP = `top-[58px] ${SIDEBAR_CARD_TOP_DESKTOP}`;
 /** Every sidebar card's placement: SIDEBAR_CARD_TOP plus its left edge. */
 export const SIDEBAR_CARD_SLOT = `absolute ${SIDEBAR_CARD_TOP} ${SIDEBAR_CARD_TOP_BELOW_CONSENT} left-6 ${SIDEBAR_LEFT_EDGE}`;
 export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
+/** A full-page tool inside the map app (Studio Schedules, CIV-2182): covers the map under the app's own top bar and scrolls
+ *  itself. Not PageShell, which brings the site header of a separate content page. Its column: MAP_APP_PAGE_COLUMN. */
+export const MAP_APP_PAGE = `fixed inset-0 ${Z_PANEL} overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]`;
+/** The centred column of a MAP_APP_PAGE, starting below the app's top bar. */
+export const MAP_APP_PAGE_COLUMN = 'mx-auto flex w-full max-w-3xl flex-col px-4 pt-20 pb-10 sm:px-6';
 /** Every sidebar card's tallest size: it stops above the bottom pills, on sm and up however far the footer row wraps,
  *  and its list scrolls inside. */
 export const SIDEBAR_CARD_MAX_H = `${SIDEBAR_CARD_BOTTOM_LIMIT} max-sm:max-h-[calc(100dvh-118px)] ${SIDEBAR_CARD_MAX_H_BELOW_CONSENT}`;
