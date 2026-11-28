@@ -17,14 +17,16 @@ describe('WeekTable', () => {
   it('is a real table: measures as row headers, This week and Last week as column headers', () => {
     view();
     const table = screen.getByRole('table');
-    expect(within(table).getAllByRole('columnheader').map(h => h.textContent)).toEqual(['Measure TTC', 'This week', 'Last week']);
+    expect(within(table).getAllByRole('columnheader').map(h => h.textContent)).toEqual(['Measure', 'Last week', 'This week']);
+    // The scope and the days left out sit top right beside the title, as on the late-by-hour chart (Ryan, 2026-11-27).
+    expect(screen.getByTestId('section-notes').textContent).toBe('TTCExcluding Oct 11 and Oct 4');
     expect(within(table).getAllByRole('rowheader').map(h => h.textContent)).toEqual(['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']);
   });
   it('puts this week and last week in their own columns, bunching in two parts that add up to the total', () => {
     view();
     const row = (name: string) => within(screen.getByRole('row', { name: new RegExp(`^${name}`) })).getAllByRole('cell').map(c => c.textContent);
-    expect(row('Late')).toEqual(['▲12%', '7%']);
-    expect(row('Bunching')).toEqual(['▼14% · 8%', '20% · 10%']); // 21.5% rounds to 22%: 14 + 8; it fell from 30%
+    expect(row('Late')).toEqual(['7%', '▲12%']);
+    expect(row('Bunching')).toEqual(['20% · 10%', '▼14% · 8%']); // 21.5% rounds to 22%: 14 + 8; it fell from 30%
   });
   it('shows the arrow only where the rounded values differ; equal values say "same as last week" in the row\'s hover', () => {
     const { container } = view();

@@ -26,6 +26,7 @@ import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
 import { CardHelpNotice } from './components/Interval/cardUi';
 import { LIVE_MIN_SAMPLE } from '../shared/rules/live';
+import SectionNotes from './components/Live/SectionNotes';
 import { FIGURE_HEAD, FIGURE_MAIN, FIGURE_OTHER, FIGURE_ROW_HEAD, FIGURE_ROW_LABEL, FIGURE_SCOPE_HEAD, FigureFootnote, FigureNotes, FiguresCard } from './components/Live/FiguresCard';
 
 const MIN_N = LIVE_MIN_SAMPLE;
@@ -102,7 +103,9 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   const hasBunching = tiles.some(k => k.key === 'bunching');
   const notes = split && !aboutLive ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
-    <FiguresCard label={WEEK_COMPARE_TITLE} title={sections ? WEEK_COMPARE_TITLE : undefined}>
+    <FiguresCard label={WEEK_COMPARE_TITLE} title={sections ? WEEK_COMPARE_TITLE : undefined}
+      // The scope and the days left out sit top right, as on the late-by-hour chart (SectionNotes), not in the table's head.
+      action={<SectionNotes scope={scope} excluding={excluding ? <span title={excludingTitle}>{excluding}</span> : null} />}>
       {label && <FigureNotes lines={[label]} ruled={false} tone="secondary" />}
       <DataTable
         caption={WEEK_COMPARE_TITLE}
@@ -110,30 +113,30 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
         rowKey={k => k.key}
         rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}
         columns={[
-          { key: 'measure', header: <span className={sections ? FIGURE_ROW_HEAD : FIGURE_SCOPE_HEAD}><span className="sr-only">{MEASURE_LABEL} </span>{scope}</span>, rowHeader: true, className: FIGURE_ROW_LABEL, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
+          { key: 'measure', header: <span className={sections ? FIGURE_ROW_HEAD : FIGURE_SCOPE_HEAD}><span className="sr-only">{MEASURE_LABEL}</span></span>, rowHeader: true, className: FIGURE_ROW_LABEL, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
+          // Ryan, 2026-11-27, picked 1: last week, then this week at the right (left to right in time), its arrow beside it.
+          { key: 'last', header: <span className={FIGURE_HEAD}>{LAST_WEEK_COLUMN}</span>, className: FIGURE_OTHER, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
           { key: 'now', header: <span className={FIGURE_HEAD}>{THIS_WEEK_COLUMN}</span>, className: FIGURE_MAIN, cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
               {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className={FIGURE_HEAD}>{LAST_WEEK_COLUMN}</span>, className: FIGURE_OTHER, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* CIV-2021: a held route's line under the rows it explains, in the card notices' small grey style. */}
       {lead && <FigureNotes lines={[lead]} tone="secondary" />}
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}
-      {excluding && <FigureFootnote ruled title={excludingTitle}>{excluding}</FigureFootnote>}
-      {notes && notes.length > 0 && <FigureNotes lines={notes} ruled={!excluding} />}
-      {caption && <FigureFootnote title={captionTitle}>{caption}</FigureFootnote>}
+      {notes && notes.length > 0 && <FigureNotes lines={notes} />}
+      {caption && <FigureFootnote ruled={!notes?.length} title={captionTitle}>{caption}</FigureFootnote>}
       {lateNote && tiles.some(k => k.key === 'late') && (
         <CardHelpNotice message={lateNote} actionLabel={LEARN_MORE_LABEL} onLearnMore={() => window.dispatchEvent(new Event(OPEN_LATE_LIMIT_EVENT))}
-          className={`m-0 ${notes?.length || excluding || caption ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
+          className={`m-0 ${notes?.length || caption ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
       )}
       {aboutLive && hasBunching && (
         // The main map's notice and Learn more link (CardHelpNotice: its text size and its arrow), not a look of Studio's own.
         <CardHelpNotice message={bunchingShortNote()} actionLabel={LEARN_MORE_LABEL} onLearnMore={() => window.dispatchEvent(new Event(OPEN_ABOUT_LIVE_EVENT))}
-          className={`m-0 ${notes?.length || excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
+          className={`m-0 ${notes?.length ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
       )}
     </FiguresCard>
   );
