@@ -111,6 +111,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Destinations read in normal case on Live and in Atlas Studio MCP's answers**: Hamilton's "HAMILTON GO CENTRE" now reads "Hamilton GO Centre", as it already did on the map, with short forms like GO, TTC and LRT kept in capitals
 - **Live's route card and Details no longer show a replacement-buses notice**: the warning on 503 Kingston Rd was never approved
 - **Live route cards show their destinations like the map's route cards**: "Right now" counts the vehicles heading to each destination, "Scheduled" uses the map card's own destination rows, and the vehicle list opens from "N vehicles"
+- **Live rates cars that start partway along the route**: a car that joined its trip at a middle stop, such as a short-turned streetcar, got no on-time rating; it is now rated at the first stop it served
 - **Live's panel says which agency can't be shown, each with its own status dot**: a failed agency's message sat under another agency's green "Live" dot
 - **On-demand zones are hidden when you filter by frequency**: on-demand service has no timetable frequency, so it no longer shows up under "every 10 min" or any other frequency filter
 - **Live follows Hamilton's 2 Barton, 20 A-Line Express and 51 University, and Burlington's 1 and 10 from the cloud**: more of Hamilton's frequent routes, and Burlington without anything running on a computer
