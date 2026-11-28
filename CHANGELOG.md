@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's agency choice is in its Settings menu**: the top bar keeps only the page's own menus, and Studio stays local only
 - **A route card says when buses start coming more often partway through a time of day: "every 32 min, then every 17 from 4:37 PM"**: it read only "every 17 min from 4:37 PM", as if the first bus was at 4:37
 - **The Live map and Studio's Live show vehicles for every TTC route Live analyses, about 32 routes instead of 9**: routes like the 7 Bathurst showed no live reading because only the streetcars were followed
 - **Studio's Schedules shows "—" for a time of day a route ran only part of, with "15 min from 2:26 PM" under it**: the cell read "15 min" like a full period, so a route that now runs all midday looked unchanged
