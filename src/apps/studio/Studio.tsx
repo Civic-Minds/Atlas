@@ -12,12 +12,12 @@ import { getSavedStudioAgency, saveStudioAgency, studioAgencyInView } from '../.
 import { useSidebarFrame } from '../../context/SidebarFrame';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
 import { STUDIO_LEGACY_PARAMS, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, parseStudioPath, studioAgencyFrom, studioAgencyListFrom, studioLegacyLocation, studioPageFor, studioPath, type StudioLocation, type StudioPageKey } from '../../../shared/studioAgencies';
-import { LIVE_AGENCY_BBOXES, LIVE_AGENCY_SLUGS } from '../../../shared/livePollingConfig';
+import { LIVE_AGENCY_BBOXES, LIVE_AGENCY_COUNT, LIVE_AGENCY_SLUGS } from '../../../shared/livePollingConfig';
 import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
 import Live from './Live';
-import { liveRouteCount, useLiveAgency } from '../../LiveAgencyPage';
+import { useLiveAgency } from '../../LiveAgencyPage';
 import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
 import { STUDIO_NO_SEARCH, StudioSearchProvider, type StudioSearchState } from './StudioSearch';
@@ -108,8 +108,8 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
   const fullNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).full : s; };
   const cardNameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).card : { primary: s }; };
   const agency = nameOf(slug);
-  // CIV-2193: the agency's recorded routes beside the Live tab's name. Read here, not by the Live page (#1764: the count was
-  // missing until Live had been opened for that agency, so never on Fleet or Schedules); the Live page gets this same answer.
+  // The agency's Live answer, read here so every page has it (#1764); the Live page gets this same answer. The Live tab's
+  // number is the agencies Live covers, as on the main map (#1926).
   const liveState = useLiveAgency(active && slug ? slug : '');
   const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, fullNameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
   const noDataRows = useMemo(() => (withData ?? []).map(s => ({ slug: s, ...cardNameOf(s) })), [agencyCatalog, withData]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -167,7 +167,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
           const Icon = PAGE_ICONS[k];
           return (
             <Fragment key={k}>
-              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' ? liveRouteCount(liveState) : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
+              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' ? LIVE_AGENCY_COUNT : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
             </Fragment>
           );
         }),

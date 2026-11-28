@@ -1,14 +1,24 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { liveRouteCount, useLiveAgency } from '../../../LiveAgencyPage';
+import { useLiveAgency, type LiveAgencyState } from '../../../LiveAgencyPage';
+import { LIVE_AGENCY_COUNT, LIVE_AGENCY_SLUGS } from '../../../../shared/livePollingConfig';
+
+/** The agency's recorded routes, as its answer gives them (none until it arrives). */
+const liveRouteCount = (state: LiveAgencyState): number | undefined => (state.kind === 'done' && state.data.status === 'ready' ? state.data.summary.covered.length : undefined);
 
 vi.mock('../../../hooks/useLiveAgencyName', () => ({ useLiveAgencyName: (slug: string) => slug, useLiveAgencyNames: (slug: string) => ({ name: slug, title: slug }) }));
 
 const answer = (agency: string, covered: string[]) => ({ status: 'ready', summary: { agency, covered } });
 
-// #1764: the route count beside Studio's Live tab. Studio reads the agency's Live answer itself, on every page, and the
-// count belongs to the agency it was read for.
-describe('the Live tab’s route count (#1764)', () => {
+// #1926: the Live tab's number counts the agencies Live covers, the same on the main map and in Studio.
+describe('the Live tab’s number (#1926)', () => {
+  it('is the number of agencies on the Live map', () => {
+    expect(LIVE_AGENCY_COUNT).toBe(LIVE_AGENCY_SLUGS.length);
+  });
+});
+
+// #1764: Studio reads the agency's Live answer itself, on every page, and the answer belongs to the agency it was read for.
+describe('the agency’s Live answer (#1764)', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('shows the agency’s count once read, and none for a new agency until its own answer arrives', async () => {
