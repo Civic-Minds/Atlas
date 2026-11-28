@@ -7,7 +7,7 @@ import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import ModeUnavailableNote from './components/ModeUnavailableNote';
 import SearchClearButton from './components/ui/SearchClearButton';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SEARCH_ICON, CARD_NOTE, TOP_BAR_DIVIDER } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, SEARCH_BAR_MIN_WIDTH, TOP_BAR_KEEP_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SEARCH_ICON, CARD_NOTE, TOP_BAR_DIVIDER } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
@@ -693,7 +693,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
       <div className={`absolute ${MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
-      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
+      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${TOP_BAR_KEEP_WIDTH} ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <AtlasLogo
           hideByline
@@ -711,12 +711,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           ariaLabel={ATLAS_HOME_LABEL}
         />
 
-        {!inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
-        <div className="flex-1 min-w-0 sm:flex">
+        {!inResearch && <div className={`flex items-center gap-2 flex-1 ${TOP_BAR_KEEP_WIDTH} lg:flex-initial`}>
+        <div className={`flex-1 ${TOP_BAR_KEEP_WIDTH} sm:flex`}>
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
         {/* CIV-2001: Studio uses this same box for its page's routes (StudioSearch.tsx); the map's own search stays off there. */}
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`} style={isPhone ? undefined : { minWidth: SEARCH_BAR_MIN_WIDTH }}>
         <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${FEATURES.modeTransitions ? `transition-[max-width] ${MODE_EASE}` : ''}`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : FEATURES.modeTransitions ? { maxWidth: '100%' } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
@@ -835,7 +835,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
-      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-none [&>button]:pointer-events-auto`}>
+      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 min-w-0 sm:flex-wrap sm:justify-end sm:self-start pointer-events-none [&>button]:pointer-events-auto`}>
         {/* CIV-449: on every phone width the search rests as a round button in the right group, just left of the
             filter button (Ryan, 2026-10-30), and opens into the box, which takes the whole bar while the other
             buttons step aside (#698). */}
@@ -851,7 +851,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         )}
         {/* This group and the portal slot are click-through; only their buttons and what Interval portals in take clicks,
             so the empty space and the invisible filters in Live don't cover Live's own buttons under this bar (#1467). */}
-        <div ref={headerPortalRef} className="flex items-center gap-2 pointer-events-none" />
+        <div ref={headerPortalRef} className="flex items-center gap-2 min-w-0 sm:flex-wrap sm:justify-end pointer-events-none" />
         <button
           type="button"
           onClick={toggleInfo}

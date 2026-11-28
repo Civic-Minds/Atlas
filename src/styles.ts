@@ -250,8 +250,13 @@ export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: 
   } as CSSProperties;
 }
 
-/** #1187: a sidebar card's narrowest width on sm and up: the search bar's own width, kept 1.5rem inside the window. */
-export const SIDEBAR_CARD_MIN_WIDTH = 'min(18rem, calc(100vw - var(--sidebar-left) - 1.5rem))';
+/** #1917: the narrowest the search bar and every left card get on sm and up: one number, so a busy top bar can't squeeze
+ *  the bar narrower than the cards under it; the pills to its right wrap instead. */
+export const SEARCH_BAR_MIN_WIDTH = '18rem';
+/** #1187: a sidebar card's narrowest width on sm and up: the search bar's own minimum, kept 1.5rem inside the window. */
+export const SIDEBAR_CARD_MIN_WIDTH = `min(${SEARCH_BAR_MIN_WIDTH}, calc(100vw - var(--sidebar-left) - 1.5rem))`;
+/** #1917: a top-bar box on the search bar's side keeps its content's width on sm and up, so the bar keeps its minimum. */
+export const TOP_BAR_KEEP_WIDTH = 'min-w-0 sm:min-w-fit';
 
 /**
  * A dashed line's swatch, the key for a line the map draws dashed: its `color` and its `swatchClassName`. One look for every
