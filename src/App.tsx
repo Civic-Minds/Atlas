@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { Search, Info, History as HistoryIcon, ChevronDown } from 'lucide-react';
+import { LiveIcon } from './components/Live/LiveIcon';
 import { CompareTab } from './components/Interval/CompareControl';
 import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
@@ -757,7 +758,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {showLiveControl && (
           <ModeTab
-            icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            icon={<LiveIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label={LIVE_TAB_LABEL} extra={liveAgencyCount} ariaLabel={LIVE_MAP_TITLE}
             active={liveTabOn} dimmed={!liveHere}
             onClick={() => liveHere ? setActiveApp(liveTabOn ? 'frequency' : 'live') : noteFor('Live')}
@@ -810,7 +811,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 <div className={`absolute top-10 right-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
                     <ModeTab
-                      variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
+                      variant="menu" icon={<LiveIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn} dimmed={!liveHere}
                       onClick={() => { if (liveHere) setActiveApp(liveTabOn ? 'frequency' : 'live'); else noteFor('Live'); setAppLinksOpen(false); }}
                     />

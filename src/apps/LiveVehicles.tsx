@@ -33,7 +33,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { liveAgencyStatus, newestReportSec, worstLiveStatus, type LiveAgencyFeed } from '../../shared/liveStatus';
 import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { inferLiveDirection } from '../utils/liveDirection';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, mergeIntoCardRows, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey, type CardRowKey } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
 import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -557,9 +557,20 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const listVehicles = useMemo(() => selectedGroup?.vehicles ?? [], [selectedGroup]);
 
   // Group vehicles by destination; every listed vehicle lands in a group (see groupVehiclesByDirection).
+  // The route card's own destination rows, by direction: every group of vehicles goes under one of them where it can
+  // (mergeIntoCardRows), so no destination is listed twice (#1877).
+  const cardRows = useMemo((): CardRowKey[] => {
+    if (!selectedGroup) return [];
+    const slug = selectedGroup.agencySlug;
+    const fc = routeLayer(slug);
+    const day = getNowDay();
+    const key = fc ? routeKeyForShortName(slug, fc.features, selectedGroup.routeShortName, day) : null;
+    const current = fc && key ? buildCurrentRoute(key, { [slug]: fc }, day, 'all') : null;
+    return (current?.directions ?? []).flatMap(d => { const k = rowDirectionKey(d.headsign, selectedGroup.routeShortName); return k ? [{ key: k, directionId: d.directionId }] : []; });
+  }, [selectedGroup, routeLayer]);
   const vehiclesByDirection = useMemo(
-    () => (selectedGroup ? groupVehiclesByDirection(listVehicles, directionLabels) : null),
-    [selectedGroup, listVehicles, directionLabels],
+    () => (selectedGroup ? mergeIntoCardRows(groupVehiclesByDirection(listVehicles, directionLabels), cardRows) : null),
+    [selectedGroup, listVehicles, directionLabels, cardRows],
   );
 
   // Worth showing groups when there is more than one, or the one group has a real destination name.
@@ -648,8 +659,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
       return liveRouteEmptyNotice(agencyName, routeShortName, false, followed);
     }
-    return liveRouteEmptyNotice(agencyName, routeShortName, true, []);
-  }, [selectedRoute, selectedGroup, isLoading, agencies]);
+    return liveRouteEmptyNotice(agencyName, routeShortName, true, [], errorBySlug[slug] != null);
+  }, [selectedRoute, selectedGroup, isLoading, agencies, errorBySlug]);
 
   // A route or vehicle card opens in the map card's body; on phones, in its bottom sheet (as SidebarControls).
   const cardOpen = !!selectedGroup && pickVehicles.length <= 1;
@@ -952,9 +963,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       setSelectedAgencySlug={undefined}
       // A variant link names a map route key, which Live can't open; going back closes the card.
       setSelectedRoute={r => { if (r == null) { setSelectedRoute(null); setFocusedVehicle(null); } }}
-      back={destination
-        ? { to: agencyShortNameBySlug(agencies, selectedGroup.agencySlug), onClick: () => setSelectedDirection(null) }
-        : { to: LIVE_TAB_LABEL, onClick: () => { setSelectedRoute(null); setFocusedVehicle(null); } }}
+      // One back link, "Back to Live" (CIV-2041), however the card was opened: an open destination's vehicles sit under
+      // its row now, so there is no destination view to step back from.
+      back={{ to: LIVE_TAB_LABEL, onClick: () => { setSelectedDirection(null); setSelectedRoute(null); setFocusedVehicle(null); } }}
       // Live has no frequency filter, so every row shows as it is and no filter notice applies.
       maxHeadway={NO_HEADWAY_LIMIT}
       period={cardPeriod}
@@ -982,12 +993,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
             <CardBackLink
-              onClick={destination
-                ? () => setSelectedDirection(null)
-                : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
+              onClick={() => { setSelectedDirection(null); setSelectedRoute(null); setFocusedVehicle(null); }}
             >
-              {/* CIV-2041 (Ryan: "1", "← Back to Live"): the list's own title, not the route's agency. */}
-              {destination ? agencyShortNameBySlug(agencies, selectedGroup.agencySlug) : LIVE_TAB_LABEL}
+              {/* CIV-2041 (Ryan: "1", "← Back to Live"): the list's own title, one label however the card was opened. */}
+              {LIVE_TAB_LABEL}
             </CardBackLink>
             {routeCardTitle}
           </div>

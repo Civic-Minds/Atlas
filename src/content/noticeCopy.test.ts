@@ -145,6 +145,8 @@ describe('CIV-1795 plain words', () => {
     expect(liveRouteEmptyNotice('TTC', '512', false, ['501', '504', '505'])).toBe('Live doesn’t cover TTC 512. It covers TTC routes 501, 504 and 505.');
     expect(liveRouteEmptyNotice('MiWay', '109', false, [])).toBe('Live doesn’t cover any MiWay routes.');
     expect(liveRouteEmptyNotice('TTC', '504', true, [])).toBe('No TTC 504 vehicles are running right now.');
+    // #1923: a failed feed is no reading, not "none running".
+    expect(liveRouteEmptyNotice('TTC', '505', true, [], true)).toBe('Unable to load');
   });
   it('titles a Live report flag by the card’s names', () => {
     expect(liveReportFlagTitle('TTC', true, '504', 'Bus 8123')).toBe('TTC 504 · Bus 8123');
