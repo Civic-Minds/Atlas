@@ -4,7 +4,7 @@
  * the strip's stop hover (stopDetail); only the grouping and labels differ. Every heading and line here is wording to
  * confirm with Ryan.
  */
-import { DELAY_NOT_MEASURED, EXTRA_WAIT_LABEL, USUALLY_ON_TIME, usuallyOffBy } from '../../../shared/liveWording';
+import { DELAY_NOT_MEASURED, EXTRA_WAIT_LABEL, USUALLY_ON_TIME, lateKeyLimit, usuallyOffBy, type OnTimeWords } from '../../../shared/liveWording';
 import { tenth } from '../../../shared/liveFormat';
 import { bunchParts, type RouteStripStop } from './routeStripModel';
 import { LIVE_LESS_EXACT_HERE } from '../../content/noticeCopy';
@@ -15,7 +15,8 @@ export interface CardGroup { heading: string | null; lines: string[] }
 export const STOP_CARD_WORDS = {
   vehicles: 'Vehicles vs schedule',
   wait: 'Rider wait at this stop',
-  lateShare: (pct: string) => `${pct} are 5½+ min late`,
+  // The late limit from its one source, the map key's words: the agency's own where it publishes one ("5+ min", TTC).
+  lateShare: (pct: string, window?: OnTimeWords | null) => `${pct} are ${lateKeyLimit(window)} late`,
   // The measures keep the names the switcher and the table use, with the key's approved definitions.
   extraWait: (min: string) => `${EXTRA_WAIT_LABEL}: ${min} min beyond the scheduled gap`,
   noExtraWait: 'Extra wait: none beyond the scheduled gap',
@@ -26,13 +27,14 @@ export const STOP_CARD_WORDS = {
 } as const;
 
 
-/** `extraWaitMin`: the stop's extra wait (null where service is less frequent than every 15 min, or not measured). */
-export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null): CardGroup[] {
+/** `extraWaitMin`: the stop's extra wait (null where service is less frequent than every 15 min, or not measured).
+ *  `window`: the agency's on-time window (the Live file's thresholds), for the late limit. */
+export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null, window?: OnTimeWords | null): CardGroup[] {
   const W = STOP_CARD_WORDS;
   const vehicles: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
     vehicles.push(Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early'));
-    if (stop.lateShare != null) vehicles.push(W.lateShare(percentText(stop.lateShare)));
+    if (stop.lateShare != null) vehicles.push(W.lateShare(percentText(stop.lateShare), window));
   } else vehicles.push(W.notMeasured);
   const wait: string[] = [];
   if (extraWaitMin != null) {
