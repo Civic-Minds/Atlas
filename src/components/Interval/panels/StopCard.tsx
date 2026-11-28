@@ -83,7 +83,7 @@ export interface StopCardProps {
   /** The map hover for the destination rows (CIV-918). */
   hoveredBranch?: HoveredBranch | null;
   setHoveredBranch?: (branch: HoveredBranch | null) => void;
-  /** A research view's own section after "Nearby routes" (Bustang connections, CIV-101); the regular map passes none. */
+  /** A research mode's own section after "Nearby routes" (Bustang connections, CIV-101); the regular map passes none. */
   extra?: React.ReactNode;
 }
 

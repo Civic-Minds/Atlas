@@ -11,7 +11,7 @@ import PanelEmpty from './ui/PanelEmpty';
 import { ZOOM_IN_TO_SEE_ROUTES } from '../content/noticeCopy';
 
 /**
- * #1817: below the detail zoom a research view loads no route data, so it draws no route at all (not just the less
+ * #1817: below the detail zoom a research mode loads no route data, so it draws no route at all (not just the less
  * frequent ones); a search loads them at any zoom.
  */
 export function useResearchZoomedOut(query: string): boolean {
@@ -19,16 +19,16 @@ export function useResearchZoomedOut(query: string): boolean {
   return !shouldLoadAgencyDetails(zoom ?? undefined, query);
 }
 
-/** A research view with no list of its own (Frequent Service): a card under the info card saying to zoom in, while zoomed out. */
+/** A research mode with no list of its own (Frequent Service): a card under the info card saying to zoom in, while zoomed out. */
 export function ResearchZoomInCard({ query }: { query: string }) {
   if (!useResearchZoomedOut(query)) return null;
   return <Panel enter sidebarSurface className="shrink-0"><PanelEmpty>{ZOOM_IN_TO_SEE_ROUTES}</PanelEmpty></Panel>;
 }
 
 /**
- * The one info card every research view (Night, Frequent Service, future ones) shows in the same place
+ * The one info card every research mode (Night, Frequent Service, future ones) shows in the same place
  * with the same look: a heading and the rule in plain words, with the numbers the viewer has selected.
- * Always visible; its "← Frequency map" back link leaves the research view for the main map at the same
+ * Always visible; its "← Frequency map" back link leaves the research mode for the main map at the same
  * spot (CIV-929). Counts live in the map's stat pills, not here.
  * A view's own panel (e.g. Night's route list) goes in `below`, as a separate card under it.
  */

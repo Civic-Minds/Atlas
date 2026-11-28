@@ -136,7 +136,7 @@ interface Props {
    * built, gives its trips; the picked trip's connecting routes show on the map. Null hides the bar. */
   connectionsBar?: ConnectionsBarState | null;
   onPendingBustangRouteHandled?: () => void;
-  /** A research view's own sections on the route and stop cards (Bustang connections); none on the regular map. */
+  /** A research mode's own sections on the route and stop cards (Bustang connections); none on the regular map. */
   routeCardExtra?: (routeKey: string) => React.ReactNode;
   stopCardExtra?: (stop: StopCardExtraInput) => React.ReactNode;
   /** Where the map opens when its link names no place ([south, west, north, east]): Bustang connections opens on Colorado. */
@@ -171,7 +171,7 @@ interface Props {
   /** Tells the top bar when compare is on, so the other mode tabs can shrink to icons. */
   onCompareActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
-  /** Top-bar slot beside History and Live where the Compare view tab renders. */
+  /** Top-bar slot beside History and Live where the Compare app tab renders. */
   viewTabsPortalContainer?: Element | null;
   /**
    * CIV-1567 (beta): set while a mode with no compare view (Live, History) is on. The Compare tab stays mounted (folded
@@ -291,7 +291,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.route) ?? null));
   const [selectedStop, setSelectedStop] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.stop) ?? null));
-  // Research views never show on-demand, so a shared link's on-demand mode (or ?ondemand=) is dropped there.
+  // Research modes never show on-demand, so a shared link's on-demand mode (or ?ondemand=) is dropped there.
   const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
   const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? readUrlParam(searchParams, MAP_URL.onDemand) ?? null : null);
 
@@ -952,7 +952,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const compareSideAShown = useReadyOrTimeout(shownCountA != null && countAAfterSplit, compareActive, compareTransitions);
   const compareSideBShown = useReadyOrTimeout(shownCountB != null, compareActive, compareTransitions);
 
-  // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay
+  // Whole routes and agencies for the research modes' stat pills, counted from the routes each overlay
   // draws (the night index has no 30 minute data, so it cannot answer for both settings). Night counts the
   // routes in view, the same count as its list (#1233).
   const { bounds: viewBounds } = useViewport();
@@ -977,7 +977,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return { routes: routes.size, agencies: agencyEntryCount([...agencySlugs].map(slug => ({ slug, parentAgency: parentOf.get(slug) }))) };
   }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes, agencies]);
 
-  // A research view with nothing drawn once its networks have loaded says why on the map, where the count pills would
+  // A research mode with nothing drawn once its networks have loaded says why on the map, where the count pills would
   // be (CIV-959 gap 11): Night reuses its list's line (N52), Frequent Service states its own rule (N129).
   const researchEmptyNotice = (nightServiceView || frequentServiceView) && !researchCounts && !isLoading && Object.keys(layers).length > 0
     ? (nightServiceView
@@ -1574,7 +1574,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               </span>
             </button>
           )}
-          {/* Research views (Night, Frequent Service): their own whole-route and agency counts, then the colour key, in the same pills. */}
+          {/* Research modes (Night, Frequent Service): their own whole-route and agency counts, then the colour key, in the same pills. */}
           {researchCounts && (
             <div className="hidden sm:flex gap-2">
               <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
@@ -1590,7 +1590,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           {researchEmptyNotice && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}><span className={MAP_BADGE_LABEL}>{researchEmptyNotice}</span></div>
           )}
-          {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
+          {/* No key in the Night mode: every line is the same colour and width (Ryan, CIV-1070). */}
           {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
           {/* CIV-1329: the night grades' three shades. */}
           {nightServiceView && <ResearchLegend view="night" frequentFrequency={frequentServiceFrequency} nightFrequency={nightServiceFrequency} />}

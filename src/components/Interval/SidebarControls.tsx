@@ -97,13 +97,13 @@ interface SidebarControlsProps {
   routeBack?: { to: string; onClick: () => void };
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
-  /** A research view's own section on the route card (Bustang departures, CIV-101); none on the regular map. */
+  /** A research mode's own section on the route card (Bustang departures, CIV-101); none on the regular map. */
   routeCardExtra?: (routeKey: string) => React.ReactNode;
-  /** A research view's own section on the stop card (Bustang connections, CIV-101); none on the regular map. */
+  /** A research mode's own section on the stop card (Bustang connections, CIV-101); none on the regular map. */
   stopCardExtra?: (stop: StopCardExtraInput) => React.ReactNode;
 }
 
-/** What a research view reads to find a picked stop: the stop, its agency and the stops grouped with it. */
+/** What a research mode reads to find a picked stop: the stop, its agency and the stops grouped with it. */
 export interface StopCardExtraInput {
   agencySlug?: string;
   stopId?: string;
@@ -411,7 +411,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
   // Group directions by directionId so outbound/inbound are visually separated,
   // and collapse multiple span patterns in the same group into one row.
-  // The Night view's route card ignores the map's period (CIV-934): its rows are the route's own, read at night.
+  // The Night mode's route card ignores the map's period (CIV-934): its rows are the route's own, read at night.
   const cardPeriod: TimePeriod = nightServiceView ? 'all' : period;
   const directionGroups = useMemo(
     () => buildDirectionGroups(currentRoute, cardPeriod, directionLabelOverrides, directionHeadsigns),

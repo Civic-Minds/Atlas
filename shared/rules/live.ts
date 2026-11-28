@@ -193,7 +193,7 @@ export const CUTOFF_LIMITS = {
 } as const;
 
 /**
- * CIV-2919 (Ryan, 2026-11-26, option 1: "Use them as starting values and check later"): the Speed view's minimums. Below any
+ * CIV-2919 (Ryan, 2026-11-26, option 1: "Use them as starting values and check later"): the Speed app's minimums. Below any
  * of them a stretch shows no figure ("Not measured"). Starting values: 400 m, 30 trips and 10 per slot are untested prototype
  * guesses and 7 weekdays is Strategy's proposal; they are tested on TTC, HSR and MBTA routes before anything ships.
  */

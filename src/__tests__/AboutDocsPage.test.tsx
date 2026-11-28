@@ -97,7 +97,7 @@ describe('Docs page in the public build (CIV-1440)', () => {
     const text = await renderWith(['modeTransitions', 'researchApps']);
     expect(text).not.toContain('Trains are graded on their midday trips');
     expect(text).toContain('passes the filter for a time period only when its trips run the whole period');
-    expect(text).toContain('grades routes at every 30, 60 and 90 min or better, 2–5 AM. The main map’s Overnight view stops at every 60 min.');
+    expect(text).toContain('grades routes at every 30, 60 and 90 min or better, 2–5 AM. The main map’s Overnight mode stops at every 60 min.');
   });
 
   it('has a Studio section and contents link only where the studio switch is on', async () => {

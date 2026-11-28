@@ -19,7 +19,7 @@ export const BACK_ARROW = '←';
 export const BACK_PLACES = {
   /** The frequency map, from a card opened on it (agency, stop, on-demand area, a note in a card's place). */
   map: PAGE_NAMES.map,
-  /** The frequency map, from a research view (Frequent service, Night service) or the logo while History is open. */
+  /** The frequency map, from a research mode (Frequent service, Night service) or the logo while History is open. */
   frequencyMap: 'Frequency map',
   /** The agency list: About's agency pages and History's agency chooser (CIV-1462). */
   agencies: PAGE_NAMES.agencies,

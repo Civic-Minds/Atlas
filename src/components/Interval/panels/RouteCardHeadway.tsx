@@ -112,15 +112,15 @@ export interface RouteCardHeadwayProps {
   /** Night and Frequent Service ignore the period and speed filters, so the card shows no notice about them. */
   hideFilterNotices?: boolean;
   /**
-   * The Night view's card (CIV-934): no chart and no period, and each destination row reads its night grade (the 2am to
-   * 5am check the Night view runs), never a daytime value.
+   * The Night mode's card (CIV-934): no chart and no period, and each destination row reads its night grade (the 2am to
+   * 5am check the Night mode runs), never a daytime value.
    */
   nightView?: boolean;
   expDateStr: string;
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   onInfoOpen?: OpenInfoFn;
-  /** A research view's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none.
+  /** A research mode's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none.
    *  Live passes a function of the destinations its rows already carry (rowLive), to list only the rest (#1877). */
   extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
   /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
@@ -281,7 +281,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const routeLabel = currentRoute.label ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName });
   // Plain text keeps the dash (report details, the chart window's screen-reader name); on screen the title is RouteTitleName (CIV-1128).
   const routeTitle = routeLabel.text;
-  // CIV-1279: the map has no All day. The Night view reads the card on 'all', so its report names the Night view instead.
+  // CIV-1279: the map has no All day. The Night mode reads the card on 'all', so its report names the Night mode instead.
   const reportPeriod = nightView
     ? MAP_KEY_NIGHT
     : selectedPeriod && `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`;

@@ -13,7 +13,7 @@ import { DEFAULT_CUTOFFS, cutoffFactorText, cutoffMinutesText, figuresAtCutoffs,
 import { STUDIO_SETTINGS_TEXT as S } from '../../../shared/liveWording';
 
 /**
- * Planners' own cut-offs in Studio's Live view (CIV-1886, the Studio half of CIV-1869): a Studio section in the main app's Settings menu (CIV-2006; its rows in Ryan's approved words, STUDIO_SETTINGS_TEXT)
+ * Planners' own cut-offs in Studio's Live app (CIV-1886, the Studio half of CIV-1869): a Studio section in the main app's Settings menu (CIV-2006; its rows in Ryan's approved words, STUDIO_SETTINGS_TEXT)
  * and, in a picked route's card, the week's figures at those cut-offs beside the standard week table. The calculation is
  * the MCP's own (shared/liveCutoffs.ts figuresAtCutoffs); rankings and the standard figures stay on the standard cut-offs.
  */

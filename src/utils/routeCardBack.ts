@@ -6,7 +6,7 @@ export interface MapCamera {
   pitch: number;
 }
 
-/** A route opened from a research view's list (Night Service, Bustang connections), with the map's camera at the moment it was opened. */
+/** A route opened from a research mode's list (Night Service, Bustang connections), with the map's camera at the moment it was opened. */
 export interface ListOpenedRoute {
   routeKey: string;
   camera: MapCamera | null;
