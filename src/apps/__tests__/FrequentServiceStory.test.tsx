@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('../../lib/maplibreWorker', () => ({}));
 import FrequentServiceStory from '../FrequentServiceStory';
 import { frequentCoverageWindows, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../../data/frequentServiceStory';
-import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
 import recheck from '../../data/definition-recheck-2026-10-30.json';
 
 const agencies = [{ slug: 'ttc', name: 'Toronto Transit Commission' }] as any;
@@ -140,22 +139,6 @@ describe('FrequentServiceStory', () => {
     expect(screen.getByText(/at 428 agencies Atlas covers in Canada \(85\) and the United States \(343\)\. We couldn’t check 2 others because their websites block automated visits\./)).toBeInTheDocument();
   });
 
-  it('keeps the audit canonical and unique after alias merging', () => {
-    const canonicalIds = audit.records.map(record => record.canonicalAgencyId);
-    expect(canonicalIds.every(Boolean)).toBe(true);
-    expect(new Set(canonicalIds).size).toBe(audit.records.length);
-
-    const verified = audit.records.filter(record =>
-      record.status === 'numeric_definition_on_map' || record.status === 'qualitative_definition_on_map',
-    );
-    expect(verified).toHaveLength(97);
-    expect(new Set(verified.map(record => record.canonicalAgencyId)).size).toBe(97);
-  });
-
-  it('keeps one audit record per Atlas agency', () => {
-    const atlasSlugs = audit.records.flatMap(record => record.atlasSlugs);
-    expect(new Set(atlasSlugs).size).toBe(atlasSlugs.length);
-  });
 
   it('CIV-1603: shows the agencies checked, with a named network and with a number, from the method box’s counts', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);

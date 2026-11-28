@@ -1,6 +1,6 @@
 # Atlas documentation
 
-This is the one index of Atlas documentation: one row per tracked doc, with the one job it does. The root [README](../README.md) explains the product. Before creating any doc, check this page and extend the doc that already does the job instead of adding another. A test (`scripts/__tests__/docsIndex.test.ts`) fails when a tracked doc has no row here. Studies under `docs/research/` are covered by [their own index](research/INDEX.md).
+This is the one index of Atlas documentation: one row per tracked doc, with the one job it does. The root [README](../README.md) explains the product. Before creating any doc, check this page and extend the doc that already does the job instead of adding another. A test (`scripts/__tests__/docsIndex.test.ts`) fails when a tracked doc has no row here. Research studies live in the private Atlas-Editorial repo ([pointer](research/README.md)).
 
 Find the group that matches your task. Each group opens with the docs to read first, in order, then lists every doc for that kind of work.
 
@@ -112,7 +112,7 @@ Read first: [Decisions](product/DECISIONS.md) to check the behavior is not inten
 
 ## Reference, plans and research
 
-Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [Research index](research/INDEX.md) before starting any study.
+Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [research pointer](research/README.md) (studies live in the private Atlas-Editorial repo) before starting any study.
 
 | Doc | Job |
 |---|---|
@@ -120,7 +120,7 @@ Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [Rese
 | [How Atlas data flows](DATA.md) | Open for a short overview of how data moves from feeds to the published map, with a link to the doc for each step. |
 | [Pipeline stages](../pipeline/README.md) | Open when you need to find which module runs a pipeline stage. |
 | [Stretch fixtures](../pipeline/__tests__/fixtures/STRETCH-FIXTURES.md) | Open when you edit the trip-set selector tests and need to know what the fixtures are. |
-| [Research index](research/INDEX.md) | Open when you look for any study under `docs/research/`. |
+| [Research](research/README.md) | Open to find where Atlas's research studies live now (the private Atlas-Editorial repo). |
 | [Experiments](../EXPERIMENTS.md) | Open before you repeat an experiment, to see what was tried or validated but not enabled. |
 | [Stop-hub clustering](experiments/stop-hub-clustering.md) | Open when you revisit stop-hub clustering. |
 | [Fixed-period edge transition gap](experiments/fixed-period-edge-transition-gap/README.md) | Open when you consider enabling the fixed-period edge transition field. |
@@ -137,7 +137,6 @@ Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [Rese
 | [Factbook proposal](roadmap/experiments/FACTBOOK.md) | Open when you consider building the Factbook; it is only a proposal. |
 | [Changelog](../CHANGELOG.md) | Open when you check what changed in a release since 3.0.0. |
 | [Changelog archive](../CHANGELOG_ARCHIVE.md) | Open when you check a release before 3.0.0; never edit it. |
-| [Research archive](research/INDEX.md#superseded-and-historical) | Open only for old research snapshots under `docs/research/archive/`. |
 
 ## Agent files (local, untracked)
 

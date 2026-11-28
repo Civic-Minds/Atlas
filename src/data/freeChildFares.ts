@@ -1,5 +1,5 @@
 /**
- * Free child fares chart (CIV-1149), counted from docs/research/free-child-fares-2026-10-11/free-child-fare-ledger.csv
+ * Free child fares chart (CIV-1149), counted from Atlas-Editorial research/free-child-fares-2026-10-11/free-child-fare-ledger.csv
  * (policy_type and free_child_age), Canada and US agencies only (Ryan: "It should be in Canada US only"; the
  * ledger's France and Mexico rows are left out). The ledger is 1.2 MB, so the counts live here and
  * src/data/__tests__/freeChildFares.test.ts recounts them from the CSV.
