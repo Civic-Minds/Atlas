@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's agency rankings no longer call the TTC or TransLink "buses only"**: agencies that also run some rail say "buses and some rail", and the bus, rail and ferry choices are described the way they actually sort agencies
 - **Studio Fleet's vehicles with no trip read "294 not on a trip", with "230 at garages" on the line below**: the count wrapped out of line beside its label
 - **Studio's Live, Fleet and Schedules tabs fold to their icons once you open one, as the map's tabs do**: the top bar has more room and reads the same across Atlas
 - **The hosted Atlas Studio MCP no longer points to a tool it doesn't have**: its answer for a route with a same-name night or express version told the assistant to use combined_frequency, which only the local server offers
