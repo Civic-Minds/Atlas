@@ -16,7 +16,6 @@
   ],
   "feedUrl": "https://catabus.rideralerts.com/InfoPoint/gtfs-zip.ashx",
   "timezone": "America/New_York",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://catabus.rideralerts.com/InfoPoint/gtfs-zip.ashx",
   "lastFeedCheckAt": "20261128",
