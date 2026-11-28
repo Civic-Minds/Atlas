@@ -115,3 +115,13 @@ export function agencySlugsToPrefetchForSearch(
 ): string[] {
   return searchAgencyGroups(agencies, query, bounds).slice(0, maxGroups).map(g => g.slug);
 }
+
+/**
+ * The agency list's search, one rule for every list that has the box (the agency list, and About → Sources since CIV-3143):
+ * an agency matches when the typed text is in its name, its slug or one of its cities, ignoring case.
+ */
+export function agencyMatchesQuery(a: { name: string; slug: string; cities?: readonly string[] | null }, query: string): boolean {
+  const q = query.toLowerCase().trim();
+  if (!q) return true;
+  return a.name.toLowerCase().includes(q) || a.slug.includes(q) || (a.cities ?? []).some(city => city.toLowerCase().includes(q));
+}

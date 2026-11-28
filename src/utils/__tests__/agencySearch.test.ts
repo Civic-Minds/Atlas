@@ -42,3 +42,17 @@ describe('a parent agency is one search result (CIV-1963)', () => {
     expect(searchAgencyGroups(agencies, 'long island', null).map(g => g.name)).toEqual(['MTA New York']);
   });
 });
+
+// CIV-3143: one search rule for the agency list and About → Sources.
+describe('agencyMatchesQuery', () => {
+  const ttc = { name: 'Toronto Transit Commission', slug: 'ttc', cities: ['Toronto'] };
+  it('matches name, slug or city, ignoring case; empty matches all', async () => {
+    const { agencyMatchesQuery } = await import('../agencySearch');
+    expect(agencyMatchesQuery(ttc, 'transit')).toBe(true);
+    expect(agencyMatchesQuery(ttc, 'TTC')).toBe(true);
+    expect(agencyMatchesQuery(ttc, 'ttc')).toBe(true);
+    expect(agencyMatchesQuery(ttc, 'toronto ')).toBe(true);
+    expect(agencyMatchesQuery(ttc, '')).toBe(true);
+    expect(agencyMatchesQuery(ttc, 'boston')).toBe(false);
+  });
+});
