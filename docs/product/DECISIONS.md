@@ -424,6 +424,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-28 — Studio Live's Views pill sits at the bottom, by locate me (CIV-3160)
+Ryan, 2026-11-28, answering the Questions chat on the review page (both spots on 512 St Clair), picked "1": "Bottom, by locate me" over "2. Keep it in the top bar". Views joins the bottom pill row ("Data up to", the lateness key) beside the locate-me button; its list opens upwards. The top bar keeps Agency, Direction and Time.
+
 ### 2026-11-27 — Apps and modes, not "views"; the Measure pill becomes "Views" (CIV-3163, CIV-3160)
 Ryan, 2026-11-27, in the Questions chat. First, with a screenshot of Studio's top-bar "Measure" pill: "should these be renamed to views". Then: ""Measure" but all of these just change the filter on the map - what the lines are coloured to show"; "There's "apps" and "modes" but not "views""; "Live, Fleet, and Schedules are apps, not "views"". Then "So then fix the name of the tabs firstly", then "Then 1": once the tabs are called apps, the Measure pill becomes "Views".
 - Docs, code comments and copy that called the apps or the map's modes "views" now say "apps" or "modes". The top bar's menu name for screen readers reads "More Atlas apps" (was "More Atlas views"). "In view" (what the map shows now) and page views are unchanged.

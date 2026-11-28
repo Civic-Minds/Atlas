@@ -48,7 +48,7 @@ export function useChipRow<K extends string>() {
  * and its dropdown one shared width, so the chip is never narrower than its own list (CIV-1889). `arrow` adds the
  * chevron the phone "More" menu's button uses (ModeTab), for a chip that sits among the tabs and must not read as one.
  */
-export function ChipMenu({ label, active, open, onToggle, panelClassName, className = '', ariaLabel, width, arrow, children }: {
+export function ChipMenu({ label, active, open, onToggle, panelClassName, className = '', ariaLabel, width, arrow, up = false, children }: {
   label: ReactNode;
   active: boolean;
   open: boolean;
@@ -61,6 +61,8 @@ export function ChipMenu({ label, active, open, onToggle, panelClassName, classN
   width?: string;
   /** A dropdown chevron after the label, turning up while open. */
   arrow?: boolean;
+  /** The dropdown opens above the chip, for a chip in the map's bottom row (Studio Live's Views, CIV-3160). */
+  up?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -70,7 +72,7 @@ export function ChipMenu({ label, active, open, onToggle, panelClassName, classN
         {arrow && <ChevronDown className={`ml-1 w-3.5 h-3.5 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />}
         <ChipDot show={active} />
       </button>
-      {open && <div className={`${CHIP_PANEL} ${panelClassName} ${width ? 'left-0 w-full' : ''}`}>{children}</div>}
+      {open && <div className={`${up ? CHIP_PANEL.replace('top-10', 'bottom-full mb-2') : CHIP_PANEL} ${panelClassName} ${width ? 'left-0 w-full' : ''}`}>{children}</div>}
     </div>
   );
 }
