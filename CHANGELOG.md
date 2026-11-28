@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **"Hide irregular routes" also hides lines whose card reads "Irregular"**: the map, the route count and the lists drew those lines as if they ran to a pattern, while their card said they don't
 - **Studio's panels line up with the search bar**: they were a fixed wider size, so the 505 Dundas panel ran under the Live button
 - **Studio's Schedules is a full page**: the list of changed routes filled a narrow panel over the map; it now has the page's width, and a route picked from it opens its card on the map
 - **About → Sources has the agency list's search box**: finding one agency's credit meant scrolling a list of about 200

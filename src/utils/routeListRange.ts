@@ -138,8 +138,8 @@ function listRangeShown({ shown, ownNumbers }: { shown: number[]; ownNumbers: Ar
 }
 
 /**
- * CIV-2232 follow-up (Ryan, 2026-11-24, "1": hide irregular routes "(unless the user turns off irregular routes)"): the
- * lines whose route card row reads "Runs irregularly in this period" for the period, read from the card's own model, so the
+ * CIV-2925 (Ryan, 2026-11-24, "1": hide irregular routes "(unless the user turns off irregular routes)"): the
+ * lines whose route card row reads "Irregular" for the period, read from the card's own model, so the
  * map's hide-irregular setting and the card read one value. A line that isn't a card row of its own is never in it.
  */
 export function cardIrregularLines(features: readonly ShapeProperties[], period: TimePeriod): Set<ShapeProperties> {

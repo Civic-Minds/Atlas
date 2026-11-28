@@ -42,7 +42,7 @@ import { resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
 import { dedupeRouteKeysByDisplay } from '../../utils/routeKey';
-import { buildPartialMatchFilterExpression, cardIrregularRouteKeys, computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
+import { buildPartialMatchFilterExpression, cardIrregularFeatures, cardIrregularRouteKeys, computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { dedupeMapContextByDisplay, drawnAgencySlugs, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
@@ -1305,8 +1305,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     vehicleCardOpen: !selectedRoute && !!liveOverlay?.vehicleCardId,
   });
 
-  // CIV-2232 follow-up (preview): with "hide irregular routes" on, lines whose card reads "Runs irregularly" leave the map too.
-  const cardIrregularKeys = useMemo(() => (hideSpan && layers ? cardIrregularRouteKeys(layers, period) : []), [hideSpan, layers, period]);
+  // CIV-2925: with "hide irregular routes" on, lines whose card reads "Irregular" in the period leave the map too.
+  const cardIrregularKeys = useMemo(() => (hideSpan && layers ? cardIrregularRouteKeys(cardIrregularFeatures(layers, period)) : []), [hideSpan, layers, period]);
   const tileFilterWithCard = useMemo(() => (cardIrregularKeys.length === 0 ? tileFilter
     : ['all', tileFilter ?? true, ['!', buildPartialMatchFilterExpression(cardIrregularKeys)]]), [tileFilter, cardIrregularKeys]);
 

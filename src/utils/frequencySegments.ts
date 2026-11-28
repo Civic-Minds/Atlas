@@ -860,13 +860,13 @@ export function broadenFilterForPartialMatches(baseFilter: any, partialMatches: 
 }
 
 /**
- * CIV-2232 follow-up (preview, waits on Ryan): with "hide irregular routes" on, the lines whose card reads "Runs irregularly
- * in this period" (cardIrregularLines, the card's own model) leave the map too, so map and card read one value. Lines the
- * irregular setting already hides are left to it.
+ * CIV-2925 (Ryan, 2026-11-24, "1"): with "hide irregular routes" on, the lines whose card reads "Irregular" in the period
+ * (cardIrregularLines, the card's own model) leave the map, the route count and the lists too, so all of them and the card
+ * read one value. Lines the irregular setting already hides are left to it. Each line maps to its agency's slug.
  */
-export function cardIrregularRouteKeys(layers: AgencyLayers, period: TimePeriod): FrequencySegmentRouteKey[] {
-  const keys: FrequencySegmentRouteKey[] = [];
-  if (period === 'all') return keys;
+export function cardIrregularFeatures(layers: AgencyLayers, period: TimePeriod): Map<ShapeProperties, string> {
+  const out = new Map<ShapeProperties, string>();
+  if (period === 'all') return out;
   for (const [slug, fc] of Object.entries(layers)) {
     if (slug.endsWith('-corridors')) continue;
     const groups = new Map<string, ShapeProperties[]>();
@@ -877,11 +877,12 @@ export function cardIrregularRouteKeys(layers: AgencyLayers, period: TimePeriod)
       const k = `${routeGroupKey(p.routeShortName ?? null, p.routeId)}|${p.day ?? ''}`;
       groups.set(k, [...(groups.get(k) ?? []), p]);
     }
-    for (const rows of groups.values()) {
-      for (const p of cardIrregularLines(rows, period)) {
-        keys.push({ agencySlug: p.agencySlug ?? slug, routeId: p.routeId, directionId: p.directionId, headsign: p.headsign ?? null, day: p.day ?? null });
-      }
-    }
+    for (const rows of groups.values()) for (const p of cardIrregularLines(rows, period)) out.set(p, p.agencySlug ?? slug);
   }
-  return keys;
+  return out;
+}
+
+/** cardIrregularFeatures as the map's route keys, for its tile filter. */
+export function cardIrregularRouteKeys(lines: ReadonlyMap<ShapeProperties, string>): FrequencySegmentRouteKey[] {
+  return [...lines].map(([p, slug]) => ({ agencySlug: slug, routeId: p.routeId, directionId: p.directionId, headsign: p.headsign ?? null, day: p.day ?? null }));
 }
