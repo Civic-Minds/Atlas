@@ -416,6 +416,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-27 — Ship the start-up-trips rule (CIV-1764, #1927)
+Ryan, 2026-11-27 (Questions chat), picked "1, ship it" for the 2026-11-24 rule below (a day's own start-up trips are not overnight service). The count he saw still included TTC 320 Saturday to Eglinton's all-day headline going from 12 to 8. The final branch removes that change, so it ships less than he approved. Final count (cloud dry-run pair base 46095655047 / fix 46095661553, same service day, plus 7c1619c1f checked by a same-zip local run): 5,010 figures change on about 2,440 route directions in 148 agencies, 4,964 of them Overnight. The 46 outside Overnight are all Laval (STL) 26, 50 and 76 on weekdays, and they now match the timetable (route 26 to Montmorency reads its own 66 trips, every 30 in the evening, not both directions' 134 at the shared stop). TTC 320 is unchanged. No headline gets faster, and no grade or colour outside Overnight moves.
+
 ### 2026-11-27 — No "from"/"until" on a card row where buses keep the same spacing across the period's edge (CIV-3121, #1906)
 Ryan, 2026-11-27, on TransLink R2 toward Park Royal ("every 8 mins from 310 but the period begins at 3 pm lol so"), then in the manager window: "Why are we saying "until" or "from" if the frequency doesn't change here". In the data chat he said "Please ask Manager then decide"; the manager found no rule against it (CIV-1241 and CIV-1411 cover real starts and stops only) and the data chat kept both sides.
 - The rule: a row's "from" ("until") words are dropped when the departure before the period's start (after its end) keeps the existing steadiness test (isSustainedHeadway) with the gap across the edge added. Service that really starts, stops or changes spacing in the period keeps its words. Card wording only: the filter value and map colour are unchanged. No new number.
@@ -911,7 +914,7 @@ Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and
 
 ### 2026-11-24 — A day's own start-up trips are not overnight service
 
-Ryan, 2026-11-24 (Linear CIV-1764): picked 1, a service day's own first morning trips (TTC 25 Steeles at 5:36, 5:48, 5:54 and 6:00) no longer count as overnight service, with a before-and-after review of every changed overnight figure before it goes live. The rule, built on the night midpoint D8 already uses (3:30): a departure list (a row or a stop) with nothing from 2:00 up to 3:30 doesn't run at night, so its 3:30-6:00 trips are start-up and every Overnight reader (value, coverage, steadiness, the sparse test) sees none of them. A list with a trip before 3:30 is unchanged. No new number. PENDING: Ryan's OK on the review page `/_review/civ-1764/` before merge.
+Ryan, 2026-11-24 (Linear CIV-1764): picked 1, a service day's own first morning trips (TTC 25 Steeles at 5:36, 5:48, 5:54 and 6:00) no longer count as overnight service, with a before-and-after review of every changed overnight figure before it goes live. The rule, built on the night midpoint D8 already uses (3:30): a departure list (a row or a stop) with nothing from 2:00 up to 3:30 doesn't run at night, so its 3:30-6:00 trips are start-up and every Overnight reader (value, coverage, steadiness, the sparse test) sees none of them. A list with a trip before 3:30 is unchanged. No new number. Shipped by Ryan's "1, ship it" (2026-11-27, entry above). The main/branch pattern pick and a night-only line's headline floor read Overnight as before the rule, so the rule moves only Overnight figures.
 
 ### 2026-10-31 — The Overnight period reads the Night Service verdict
 
