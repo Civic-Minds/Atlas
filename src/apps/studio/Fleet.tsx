@@ -24,7 +24,7 @@ import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
 import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, studioSeason, type StudioBeforeAfterFile, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetNetworkTitle, fleetPeriodCountText, notOnTripValueText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetNetworkTitle, fleetPeriodCountText, notOnTripLines, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
 import { CARD_NOTE, MAP_APP_PAGE, MAP_APP_PAGE_COLUMN } from '../../styles';
@@ -90,7 +90,11 @@ export function FleetNowTable({ modes, runningNow, scheduledNow }: { modes: read
     // now", only where the feed reports any (never 0) and never added into a total.
     { key: 'noTrip', label: N.notOnTrip, n: runningNow?.noTrip ?? null },
     { key: 'now', label: R.scheduledNow, n: scheduledNow },
-  ].flatMap(r => (r.n == null ? [] : [{ key: r.key, label: r.label, value: r.key === 'noTrip' ? notOnTripValueText(r.n, runningNow?.atGarage) : countText(r.n) }]));
+  ].flatMap(r => (r.n == null ? [] : [r.key === 'noTrip'
+    // CIV-3180 (#1940; Ryan, 2026-11-28): number first, one line each, "294 not on a trip" then "230 at garages", so
+    // nothing wraps beside a label.
+    ? { key: r.key, label: notOnTripLines(r.n, runningNow?.atGarage).map(t => <span key={t} className="block">{t}</span>), value: '' }
+    : { key: r.key, label: r.label, value: countText(r.n) }]));
   if (!rows.length) return null;
   return (
     <DataTable caption={fleetNetworkTitle(modes)} layout="fill" rows={rows} rowKey={r => r.key} rowMuted={r => r.key === 'noTrip'} columns={[

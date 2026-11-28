@@ -68,11 +68,12 @@ export const STUDIO_CHANGES_TEXT = {
  * list's heading for routes whose change is at another time of day.
  */
 /**
- * Fleet's "Not on a trip" figure, with how many of them are parked at a garage (CIV-2990; Ryan, 2026-11-26, picked
- * "Not on a trip: 622, of which 521 at garages"): "622, of which 521 at garages"; the plain count where none are.
+ * Fleet's vehicles with no trip, and how many of them are parked at a garage (CIV-2990's count; CIV-3180, #1940: Ryan,
+ * 2026-11-28, "first line X not on trip then below it X at garage", number first on two lines): "294 not on a trip", then
+ * "230 at garages"; the first line alone where none are at a garage.
  */
-export const notOnTripValueText = (noTrip: number, atGarage?: number) =>
-  atGarage ? `${countText(noTrip)}, of which ${countText(atGarage)} at garages` : countText(noTrip);
+export const notOnTripLines = (noTrip: number, atGarage?: number): string[] =>
+  [`${countText(noTrip)} not on a trip`, ...(atGarage ? [`${countText(atGarage)} at garages`] : [])];
 
 /** Fleet's chart line for a time of day, "Midday: 1,790 buses" (CIV-2182; CIV-2973 moved it here, unchanged). */
 export const fleetPeriodCountText = (periodLabel: string, count: number, word: string) => `${periodLabel}: ${countText(count)} ${word}`;
