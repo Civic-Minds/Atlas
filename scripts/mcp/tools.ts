@@ -367,6 +367,27 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     // #1951: the note gave a cause (the edge-of-period rule) that didn't hold for TTC 504 Late, which runs every 10 until 2 AM.
     return { agency: a.name, day: dayType, figure: `Each figure is ${FIGURE_LABELS.grade}, not the typical wait route_frequency gives.`, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. A History figure for the current schedule can differ from route_frequency\'s for the same part of the day: give both and say they disagree, with no cause.', source: "Atlas's History data." };
   },
+  // CIV-3206: the agency-wide History view, year by year, by History's own frequency limit.
+  network_history: async ({ agency: q, period: p, every: n, day: d }) => {
+    const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
+    if (!a) throw new Error(`No agency matches "${q}".`);
+    const key = needPeriod(p);
+    const dayType = data.parseDay(d);
+    const minutes = Number(n);
+    if (!Number.isFinite(minutes) || minutes <= 0) throw new Error('Give every as minutes, such as 10.');
+    const net = await data.historyNetwork(a.slug);
+    // A release built before network_history has the routes' History but no network file: say so, not "no data".
+    if (!net) return { agency: a.name, history: null, note: await data.hasHistory(a.slug) ? "Atlas's History has this agency, but its whole-network view isn't published yet. Use route_history for each route asked about." : "Atlas's History has no data for this agency." };
+    const years = data.networkYears(net, dayType, key, minutes);
+    if (years.every(y => 'figures' in y)) return { agency: a.name, day: dayType, history: null, yearsWithHistory: net.years, note: `Atlas's History has no ${dayType} figures by part of the day for this agency${dayType === 'Weekday' ? '' : '; it has Weekday ones'}.` };
+    return {
+      agency: a.name, day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
+      figure: `Each route's figure is ${FIGURE_LABELS.grade}, not the typical wait routes_at_frequency gives.`,
+      yearsWithHistory: net.years, years,
+      note: "Only the years listed: Atlas's History has no schedule for this agency in other years. routesRunning counts the routes with service in this part of the day that year. A route carried from an older schedule hadn't changed since. Route numbers can change between years, so a route that leaves one year and one that joins may be the same service. For today's schedule use routes_at_frequency; its figure can differ.",
+      scheduleValidThrough: validThrough(a), source: "Atlas's History data.",
+    };
+  },
   routes_by_hours: async (args) => {
     const a = await needAgency(args.agency);
     const dayType = data.parseDay(args.day);

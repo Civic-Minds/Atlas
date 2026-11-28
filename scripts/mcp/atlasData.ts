@@ -29,6 +29,8 @@ import { andOthers, joinList } from '../../shared/overflowText';
 import { placesNamed } from './places';
 import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySnapshots';
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
+import { buildHistoryNetwork, passesHistoryLimit, valueOf as networkValue } from './historyNetwork';
+import type { HistoryNetwork } from '../../shared/historyNetwork';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
 import { headwayAboutRange, headwayEvery } from '../../shared/headwayText';
@@ -1115,6 +1117,47 @@ export function historyNow(todayWait: Partial<Record<PeriodKey, number>> | null,
 }
 /** Doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more (GitHub #1580). */
 export const isDoubtfulHistoryFigure = (old: number | null, now: number | null) => old != null && old <= 3 && now != null && now >= 30;
+
+/** CIV-3206: an agency's History network file: the store's own (the hosted split release), else built from its History routes. */
+export async function historyNetwork(slug: string): Promise<HistoryNetwork | null> {
+  if (store.historyNetwork) return store.historyNetwork(slug);
+  const names = await store.historyIndex(slug);
+  if (!names) return null;
+  const routes = (await Promise.all(names.map((_, i) => store.historyRoute(slug, i)))).filter((r): r is NonNullable<typeof r> => !!r);
+  return buildHistoryNetwork({ slug, routes });
+}
+
+/**
+ * CIV-3206: each History year, the routes that run every `minutes` or better in a part of the day on a day type, by
+ * History's own frequency limit (passesHistoryLimit, as its year view filters). A figure the doubtful rule marks
+ * (#1580: 3 min or less on a route that now runs every 30 or more) is not counted, and is listed.
+ */
+/** Whether History has any route for the agency (its route list), for when the network file isn't there. */
+export async function hasHistory(slug: string): Promise<boolean> { return !!(await store.historyIndex(slug))?.length; }
+
+export function networkYears(net: HistoryNetwork, day: DayType, key: PeriodKey, minutes: number) {
+  const k = PERIOD_KEYS.indexOf(key);
+  const name = (i: number) => net.routes[i][0];
+  // Each route's newest figure in this part of the day: its cell in the latest year it appears with one.
+  const newest = new Map<number, number | null>();
+  for (const year of [...net.years].reverse()) for (const [i, , days] of net.byYear[year] ?? []) if (!newest.has(i)) { const c = days[day]?.[k]; newest.set(i, typeof c === 'number' ? c : null); }
+  return net.years.map(year => {
+    const rows = (net.byYear[year] ?? []).filter(r => r[2][day]);
+    // A year whose schedules store no figure by part of the day on this day (only "no trips" rows): History shows none.
+    if (!rows.some(r => r[2][day]!.some(c => c != null && c !== 'none'))) return { year, figures: `none for ${day}` };
+    const cell = (r: typeof rows[number]) => r[2][day]![k];
+    const passing = rows.filter(r => passesHistoryLimit(networkValue(cell(r)), minutes, key));
+    const doubtful = passing.filter(r => { const c = cell(r); return isDoubtfulHistoryFigure(typeof c === 'number' ? c : null, newest.get(r[0]) ?? null); });
+    const meeting = passing.filter(r => !doubtful.includes(r));
+    const carried = meeting.filter(r => r[1] != null);
+    return {
+      year, routesMeeting: meeting.length, routesRunning: rows.filter(r => { const c = cell(r); return c != null && c !== 'none'; }).length,
+      routes: meeting.map(r => name(r[0])).sort(compareRouteNumber),
+      ...(carried.length ? { carriedFromOlderSchedule: carried.map(r => `${name(r[0])} (${r[1]})`) } : {}),
+      ...(doubtful.length ? { notCountedDoubtful: doubtful.map(r => `${name(r[0])}: every ${cell(r)} min`) } : {}),
+    };
+  });
+}
 
 /**
  * #1956: which History route a question names, by the rule route_frequency uses (findRoute), so the two tools pick the

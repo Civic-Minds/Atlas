@@ -8,6 +8,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { parentAgency } from '../../shared/parentAgencyList';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
 import { studioVehiclesFileName, type StudioVehiclesFile } from '../../shared/studioVehicles';
+import { buildHistoryNetwork } from './historyNetwork';
 import type { AtlasStore, IndexedAgency, McpAgency, McpAgencyMeta, McpFeature, McpHistoryAgency, McpStop } from '../../shared/mcpStore';
 
 /** The Atlas checkout the server reads (this file's repo by default). */
@@ -157,6 +158,8 @@ export function diskStore({ releaseCache = true }: { releaseCache?: boolean } = 
     },
     async newestFeedName(slug) { const f = feedFile(slug); return f ? basename(f) : null; },
     allHistory,
+    // CIV-3206: built from the History file this checkout reads, as the release build builds it.
+    async historyNetwork(slug) { const ag = (await allHistory())?.find(x => x.slug === slug); return ag ? buildHistoryNetwork(ag) : null; },
     evict(slug) { features.delete(slug); },
   };
 }

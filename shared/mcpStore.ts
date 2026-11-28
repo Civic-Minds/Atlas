@@ -11,6 +11,7 @@ import type { DayType } from './rules/days';
 import type { PeriodKey } from './config';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
 import type { StudioVehiclesFile } from './studioVehicles';
+import type { HistoryNetwork } from './historyNetwork';
 
 /** One public agency as the catalog lists it. */
 export interface McpAgency { slug: string; name: string; /** Its parent agency's slug (config/parent-agencies.json), when it is one feed of a larger agency. */ parentAgency?: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; /** CIV-3115: the feed gives no real end date (lastFeedExpiry is only the placeholder cap). */ noFeedEnd?: boolean; /** CIV-3115: when its timetable last changed (YYYYMMDD). */ timetableChangedAt?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number]; /** #1694: a credit the feed's publisher requires (shared/feedCredits.ts). */ feedCredit?: FeedCreditKey; /** CIV-3102: the agency's data licence (config dataLicense), for the credit it requires. */ dataLicense?: AgencyDataLicense }
@@ -58,7 +59,7 @@ export interface RankAgency { slug: string; name: string; region: string | null;
 export type RouteLabel = [route: string, name: string | null];
 
 export interface McpHistoryRoute { routeShortName: string; routeName?: string; snapshots: Array<{ label: string; year: number } & Record<string, unknown>> }
-export interface McpHistoryAgency { slug: string; routes: McpHistoryRoute[] }
+export interface McpHistoryAgency { slug: string; routes: McpHistoryRoute[]; /** The years History has a schedule for the agency, when published (routesForYear). */ coverageYears?: number[] }
 
 export interface AtlasStore {
   /** Every public agency (the catalog the public site shows), with or without route data here. */
@@ -87,6 +88,8 @@ export interface AtlasStore {
    * Optional, from here on: ready-made pieces a hosted store reads in small files (the split release). A store without
    * them is read through its route features and index and made on the fly, with the same functions.
    */
+  /** CIV-3206: an agency's whole network in each History year (shared/historyNetwork.ts), or null when none was built. */
+  historyNetwork?(slug: string): Promise<HistoryNetwork | null>;
   /** An agency's route summaries on one day. */
   summaries?(slug: string, day: DayType): Promise<RouteSummary[] | null>;
   /** One route's rows on a day, already normalised as the map normalises them. */

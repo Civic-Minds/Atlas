@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio can say how an agency's whole network changed over the years**: how many routes ran every 10 minutes or better in each year of History, and which, where it could only answer one route at a time
 - **Live's stop card gives the TTC's own late limit, "5+ min late"**: it said "5½+ min late", Atlas's limit, while its figure and the map key used the TTC's
 - **Clicking a route on Studio's map opens its route card**: with no Studio page open, the map showed every route but a click did nothing
 - **Opening Studio shows the map's loading pill, not a "Loading Studio…" card under the search bar**: it now loads the way the map does
