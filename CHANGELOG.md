@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The hosted Atlas Studio MCP no longer points to a tool it doesn't have**: its answer for a route with a same-name night or express version told the assistant to use combined_frequency, which only the local server offers
 - **Studio's route card shows both schedules in full**: the newer schedule's column was cut off at the card's edge
 - **The MCP's route_now counts each direction's vehicles and the gaps between them the way the Live map's route card does**: it used its own count, so at the same minute it could say 9 vehicles where the map said 8
 - **Studio Live shows Kingston**: it offered Kingston, then said "Live doesn’t cover any Kingston Transit routes", because only some of its reads looked in Studio's private files
