@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
+import { GlossaryTerms, sortGlossary, type GlossaryEntry } from './components/GlossaryTerms';
 import { FEATURES, PERIOD_LABELS, PUBLIC_TIER_MAXES, TIME_PERIODS } from '../shared/config';
 import { headwayAmount, headwayEvery, headwayEveryRange } from '../shared/headwayText';
 import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/rules/frequency';
@@ -58,6 +59,31 @@ const ROUTE_RATING_SECTIONS = 'A route’s line is coloured section by section. 
 const ROUTE_RATING = FEATURES.segmentColours ? ROUTE_RATING_SECTIONS : ROUTE_RATING_SHARED;
 
 const LiveGlossaryTerms = lazy(() => import('./components/LiveGlossaryTerms'));
+
+/**
+ * The Docs glossary's own terms (CIV-3191, Ryan, 2026-11-28, picked 1: one A–Z list). Shown through sortGlossary, merged with
+ * Live's terms where Live is on, so their order here doesn't matter. Wording unchanged.
+ */
+const DOCS_GLOSSARY: GlossaryEntry[] = [
+  { term: 'GTFS', node: <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars and shapes. Agencies publish it, and Atlas reads it.</p> },
+  { term: 'GTFS-Flex', node: <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops and booking rules.</p> },
+  { term: 'Headway', node: <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between one scheduled departure and the next. For a rider who just missed a bus, it is roughly the wait for the next one.</p> },
+  { term: 'Frequency', node: <p><strong className="text-[var(--text-primary)]">Frequency:</strong> How often a route runs. Atlas shows what the schedule promises, not what happened on the street.</p> },
+  { term: '“Every N min”', node: <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “{headwayEveryRange(8, 25)}” means your wait is between the two: on a card it’s one row’s waits, and in a list it runs from the shared stretch to the least frequent branch.</p> },
+  { term: 'Frequency tier', node: <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as {TIER_LIST.replace(/ and /, ' or ')}, used to colour and filter routes on the map. The filter and the legend show it as “≤10 min”.</p> },
+  { term: 'Route rating', node: <p><strong className="text-[var(--text-primary)]">Route rating:</strong> {ROUTE_RATING}</p> },
+  { term: 'Service period', node: <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} ({PERIOD_TIMES.amPeak}), {PERIOD_LABELS.midday} ({PERIOD_TIMES.midday}), {PERIOD_LABELS.pmPeak} ({PERIOD_TIMES.pmPeak}), {PERIOD_LABELS.evening} ({PERIOD_TIMES.evening}), {PERIOD_LABELS.late} ({PERIOD_TIMES.late}), or {PERIOD_LABELS.overnight} ({PERIOD_TIMES.overnight}). Each period is measured on its own. A quiet evening is not hidden by a busy midday.</p> },
+  { term: 'Branch', node: <p><strong className="text-[var(--text-primary)]">Branch:</strong> One of several paths under one route number, such as trips that split to different destinations or turn back early. The route card lists each one with its own frequency.</p> },
+  { term: 'Shared stretch', node: <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “{SHARED_STRETCH_LABEL}”. It sets the route’s colour and filter result, and each branch is read on its own.</p> },
+  { term: 'Irregular', node: <p><strong className="text-[var(--text-primary)]">Irregular:</strong> Shown for a time period when a route runs but its trips don’t come at a consistent gap, so there is no frequency to give. Route cards, tables and lists say “{IRREGULAR_PERIOD_SHORT_LABEL}”.</p> },
+  { term: 'Service class', node: <p><strong className="text-[var(--text-primary)]">Service class:</strong> The kind of service a route runs: regular, part-time or occasional.</p> },
+  { term: 'Occasional', node: <p><strong className="text-[var(--text-primary)]">Occasional:</strong> {HIDE_ONE_OFF_SETTING.description} “{HIDE_ONE_OFF_SETTING.label}” hides them.</p> },
+  { term: 'Consistent service', node: <p><strong className="text-[var(--text-primary)]">Consistent service:</strong> Service whose gaps stay within a small allowance across the whole time period, not only in a short burst.</p> },
+  { term: 'Uneven service', node: <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs through the whole time period, but with gaps that vary.{FEATURES.unevenBanner && ' The card names the longest gap.'}</p> },
+  ...(FEATURES.onDemand ? [{ term: 'On-demand zone', node: <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p> }] : []),
+  { term: 'Provenance', node: <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status and correction history attached to an Atlas result.</p> },
+  { term: 'PMTiles', node: <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p> },
+];
 
 const DOCS_CONTENTS = [
   ['overview', 'Overview'],
@@ -472,29 +498,13 @@ export default function AboutDocsPage() {
           </Section>}
 
           <Section id="glossary">
-            <p><strong className="text-[var(--text-primary)]">GTFS:</strong> A standard set of files describing transit routes, stops, trips, calendars and shapes. Agencies publish it, and Atlas reads it.</p>
-            <p><strong className="text-[var(--text-primary)]">GTFS-Flex:</strong> GTFS extensions for demand-responsive service, including service areas, location groups, virtual stops and booking rules.</p>
-            <p><strong className="text-[var(--text-primary)]">Headway:</strong> The time between one scheduled departure and the next. For a rider who just missed a bus, it is roughly the wait for the next one.</p>
-            <p><strong className="text-[var(--text-primary)]">Frequency:</strong> How often a route runs. Atlas shows what the schedule promises, not what happened on the street.</p>
-            <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “{headwayEveryRange(8, 25)}” means your wait is between the two: on a card it’s one row’s waits, and in a list it runs from the shared stretch to the least frequent branch.</p>
-            <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as {TIER_LIST.replace(/ and /, ' or ')}, used to colour and filter routes on the map. The filter and the legend show it as “≤10 min”.</p>
-            <p><strong className="text-[var(--text-primary)]">Route rating:</strong> {ROUTE_RATING}</p>
-            <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} ({PERIOD_TIMES.amPeak}), {PERIOD_LABELS.midday} ({PERIOD_TIMES.midday}), {PERIOD_LABELS.pmPeak} ({PERIOD_TIMES.pmPeak}), {PERIOD_LABELS.evening} ({PERIOD_TIMES.evening}), {PERIOD_LABELS.late} ({PERIOD_TIMES.late}), or {PERIOD_LABELS.overnight} ({PERIOD_TIMES.overnight}). Each period is measured on its own. A quiet evening is not hidden by a busy midday.</p>
-            <p><strong className="text-[var(--text-primary)]">Branch:</strong> One of several paths under one route number, such as trips that split to different destinations or turn back early. The route card lists each one with its own frequency.</p>
-            <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “{SHARED_STRETCH_LABEL}”. It sets the route’s colour and filter result, and each branch is read on its own.</p>
-            <p><strong className="text-[var(--text-primary)]">Irregular:</strong> Shown for a time period when a route runs but its trips don’t come at a consistent gap, so there is no frequency to give. Route cards, tables and lists say “{IRREGULAR_PERIOD_SHORT_LABEL}”.</p>
-            <p><strong className="text-[var(--text-primary)]">Service class:</strong> The kind of service a route runs: regular, part-time or occasional.</p>
-            <p><strong className="text-[var(--text-primary)]">Occasional:</strong> {HIDE_ONE_OFF_SETTING.description} “{HIDE_ONE_OFF_SETTING.label}” hides them.</p>
-            <p><strong className="text-[var(--text-primary)]">Consistent service:</strong> Service whose gaps stay within a small allowance across the whole time period, not only in a short burst.</p>
-            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs through the whole time period, but with gaps that vary.{FEATURES.unevenBanner && ' The card names the longest gap.'}</p>
-            {FEATURES.onDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p>}
-            <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status and correction history attached to an Atlas result.</p>
-            <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
-            {/* The Live report pages link here ("What these terms mean"), so the terms follow their flag. They load in the
+            {/* CIV-3191: one A–Z list. The Live report pages link here ("What these terms mean"), so the terms follow their flag. They load in the
                 browser only: the prerender's renderToString can't wait for a lazy chunk, and wrote React's error text with the
                 build machine's path into the page instead (#1524). The page mounts fresh in the browser (createRoot), so there
                 is nothing to hydrate against. */}
-            {FEATURES.liveReports && typeof window !== 'undefined' && <Suspense fallback={null}><LiveGlossaryTerms /></Suspense>}
+            {FEATURES.liveReports && typeof window !== 'undefined'
+              ? <Suspense fallback={<GlossaryTerms entries={sortGlossary(DOCS_GLOSSARY)} />}><LiveGlossaryTerms core={DOCS_GLOSSARY} /></Suspense>
+              : <GlossaryTerms entries={sortGlossary(DOCS_GLOSSARY)} />}
           </Section>
 
           <SiteContact title="Technical Questions and Feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">
