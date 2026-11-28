@@ -13,7 +13,7 @@ import type { LiveScheduledRow } from '../../utils/liveScheduledHeadway';
 import { branchOnlyStops, vehiclesByPattern } from '../../../shared/livePatterns';
 import { gapText } from '../../../shared/liveFormat';
 import { useRouteAnalysis } from '../../hooks/useRouteAnalysisPatterns';
-import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, rowLineModel, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, rowLineModel, type RecentSnapshot, withStats, type LineModel, type LiveGaps } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LOADING_LABEL, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
@@ -139,9 +139,9 @@ interface Props {
  * Without the recordings (no read token, a route not recorded) the map's polls build it up, as before, on the browser's
  * clock. `clockSec` is null then.
  */
-export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, routeShortName: string): { recent: RecentSnapshot[]; seedSettled: boolean; clockSec: number | null } {
+export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: string, routeShortName: string): { recent: RecentSnapshot[]; seedSettled: boolean; clockSec: number | null; ownRecent: RecentSnapshot[] } {
   const [polls, setPolls] = useState<RecentSnapshot[]>([]);
-  const [seed, setSeed] = useState<{ snapshots: RecentSnapshot[]; serverNow: number | null; fetchedAt: number } | null>(null);
+  const [seed, setSeed] = useState<RecordedHalfHour | null>(null);
   // #1833: whether the recorded half hour has come back (or failed). Until then a thin first poll is loading, not a failure.
   const [seedSettled, setSeedSettled] = useState(false);
   useEffect(() => {
@@ -161,16 +161,34 @@ export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: strin
     const t = setInterval(() => void read(), LIVE_RECENT_REFRESH_SEC * 1000);
     return () => { live = false; clearInterval(t); };
   }, [slug, routeShortName]);
-  const recent = useMemo(() => (seed ? seed.snapshots : polls), [seed, polls]);
-  // The newest recording's time, unless the recordings have stopped coming (by the server's clock) or the last answer is
-  // old (by the browser's): then the real time, so the card shows the reading as stale instead of frozen.
-  const newest = seed ? Math.max(...seed.snapshots.map(s => s.capturedAt)) : null;
-  const clockSec = seed && newest != null
-    ? (seed.serverNow != null && seed.serverNow - newest > LIVE_STALE_SEC) || Date.now() - seed.fetchedAt > LIVE_STALE_SEC * 1000
-      ? Math.floor(Date.now() / 1000)
-      : newest
-    : null;
-  return { recent, seedSettled, clockSec };
+  const { recent, clockSec } = useMemo(() => recentReading(seed, polls, Date.now() / 1000), [seed, polls]);
+  // This page's own reading, as before part 2 (the recordings up to its first poll, then its polls, on the browser's
+  // clock): it fills only what the shared reading leaves blank, so the card never shows less than it did.
+  const ownRecent = useMemo(() => pageReading(seed, polls), [seed, polls]);
+  return { recent, seedSettled, clockSec, ownRecent };
+}
+
+/** The recorded half hour as the card received it: its snapshots, the server's clock then, and when it arrived (ms). */
+export interface RecordedHalfHour { snapshots: RecentSnapshot[]; serverNow: number | null; fetchedAt: number }
+
+/**
+ * What the card measures (CIV-3173 part 2). Fresh recordings: they alone, on the newest recording's time, the same on the
+ * map and in Studio. Recordings behind by more than LIVE_STALE_SEC (by the server's clock), or an answer that old (the
+ * card's first reading on a slow or cold read, critic 2026-11-28): the recordings up to the first poll, then the map's
+ * polls, on the browser's clock, as before part 2, so the card is never emptier than that. No recordings: the polls.
+ */
+export function recentReading(seed: RecordedHalfHour | null, polls: RecentSnapshot[], browserNowSec: number): { recent: RecentSnapshot[]; clockSec: number | null } {
+  if (!seed?.snapshots.length) return { recent: polls, clockSec: null };
+  const newest = Math.max(...seed.snapshots.map(s => s.capturedAt));
+  const behind = (seed.serverNow != null && seed.serverNow - newest > LIVE_STALE_SEC) || browserNowSec - seed.fetchedAt / 1000 > LIVE_STALE_SEC;
+  return behind ? { recent: pageReading(seed, polls), clockSec: null } : { recent: seed.snapshots, clockSec: newest };
+}
+
+/** A page's own reading, as before part 2: the recordings up to its first poll, then its polls (or the polls alone). */
+export function pageReading(seed: RecordedHalfHour | null, polls: RecentSnapshot[]): RecentSnapshot[] {
+  if (!seed?.snapshots.length) return polls;
+  const first = polls[0]?.capturedAt ?? Infinity;
+  return [...seed.snapshots.filter(sn => sn.capturedAt < first), ...polls].reduce<RecentSnapshot[]>((b, sn) => addSnapshot(b, sn), []);
 }
 
 
@@ -185,7 +203,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
-  const { recent, seedSettled, clockSec } = useRecentPositions(vehicles, slug, routeShortName);
+  const { recent, seedSettled, clockSec, ownRecent } = useRecentPositions(vehicles, slug, routeShortName);
   // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -231,7 +249,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       <>
         {shown.map(([id, label]) => (
           <DirectionRightNow key={id} data={data} directionId={id} directionLabel={label} heading={null} slug={slug} routeShortName={routeShortName}
-            vehicles={vehicles} recent={recent} seedSettled={seedSettled} now={clockMs} scheduledRows={scheduledRowsFor?.(id, label) ?? null}
+            vehicles={vehicles} recent={recent} ownRecent={ownRecent} ownNow={now} seedSettled={seedSettled} now={clockMs} scheduledRows={scheduledRowsFor?.(id, label) ?? null}
             scheduledBlock={null} onDestinationGaps={onDestinationGaps} rowVehicles={rowVehicles} />
         ))}
       </>
@@ -252,6 +270,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             routeShortName={routeShortName}
             vehicles={vehicles}
             recent={recent}
+            ownRecent={ownRecent}
+            ownNow={now}
             seedSettled={seedSettled}
             now={clockMs}
             scheduledRows={steered ? scheduledRows : scheduledRowsFor?.(id, label) ?? null}
@@ -280,7 +300,7 @@ function scheduledRowProps(r: LiveScheduledRow) {
 }
 
 /** One direction's "Right now": its vehicles by destination row, each with its longest gap (CIV-2047). */
-function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted, onDestinationGaps, rowVehicles }: {
+function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, ownRecent, ownNow, seedSettled, now, scheduledRows, scheduledBlock, onCounted, onDestinationGaps, rowVehicles }: {
   data: SegmentDelayData & { tripDirections?: Record<string, string[]> };
   directionId: number;
   directionLabel: string;
@@ -290,6 +310,9 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   routeShortName: string;
   vehicles: readonly LiveVehicle[];
   recent: RecentSnapshot[];
+  /** CIV-3173 part 2: this page's own reading and clock (as before part 2), only for what `recent` leaves blank. */
+  ownRecent: RecentSnapshot[];
+  ownNow: number;
   /** #1833: the recorded half hour has come back (or failed). */
   seedSettled: boolean;
   now: number;
@@ -309,7 +332,11 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   // The cars and their gaps need a band's stops either way; only the scheduled comparison waits for a period.
   const liveBand: SegmentBand = period ?? 'all';
   const extraTrips = liveTripDirections(vehicles, data.tripDirections).get(directionId);
-  const live = line ? liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips }) : null;
+  const wholeOf = (rec: RecentSnapshot[], atMs: number) => (line ? liveGaps(data, line, withStats(line, liveBand), liveBand, rec, Math.floor(atMs / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips }) : null);
+  const shared = wholeOf(recent, now);
+  // CIV-3173 part 2 critic: where the shared reading has nothing for the direction, this page's own reading stands in.
+  const own = shared && !shared.incomplete ? null : wholeOf(ownRecent, ownNow);
+  const live = own && !own.incomplete ? own : shared;
   const countedKey = live && !live.incomplete ? (live.carIds ?? []).join('\n') : null;
   useEffect(() => {
     onCounted?.(countedKey == null ? null : { directionId, label: directionLabel, ids: countedKey ? countedKey.split('\n') : [] });
@@ -322,12 +349,14 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   // found none on a route whose analysis has one pattern per direction (TTC 504), so rows with 8 vehicles had no live line.
   const stopPatterns = useRouteAnalysis(slug, routeShortName, !!scheduledRows?.length).value?.stopPatterns;
   const rowFigures = useMemo(() => {
+    type Rows = Map<string, { cars: number; extremes: ReturnType<typeof gapExtremes>; median: number | null }>;
+    const rowsOf = (live: LiveGaps | null, recent: RecentSnapshot[], now: number): Rows | null => {
     if (!live || live.incomplete || !scheduledRows?.length || !line) return null;
     const ids0 = new Set(live.carIds ?? []);
     const cars = vehicles.filter(v => ids0.has(v.id));
     const only = branchOnlyStops(stopPatterns?.[String(directionId)] ?? [], scheduledRows);
     const groups = vehiclesByPattern(cars, only);
-    const out = new Map<string, { cars: number; extremes: ReturnType<typeof gapExtremes>; median: number | null }>();
+    const out: Rows = new Map();
     // A direction with one destination row: that row carries every car (Studio 512 westbound showed a bare "Vehicles 3").
     const destRows = scheduledRows.filter(r => r.key !== 'shared');
     const sole = destRows.length === 1 ? destRows[0].key : null;
@@ -360,7 +389,16 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
       out.set(r.key, { cars: mine.length, extremes: ext, median: ext && sub ? median(sub.gapsMin.filter((g): g is number => g != null)) : null });
     }
     return out;
-  }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId, rowVehicles, routeShortName]); // eslint-disable-line react-hooks/exhaustive-deps
+    };
+    const first = rowsOf(shared, recent, now);
+    // CIV-3173 part 2 critic (2026-11-28): a row the shared reading leaves blank takes this page's own reading, so the card
+    // never shows less than before part 2. Rows the shared reading fills keep its figure, the same on the map and in Studio.
+    if (first && [...first.values()].every(f => f.extremes)) return first;
+    const second = rowsOf(own ?? wholeOf(ownRecent, ownNow), ownRecent, ownNow);
+    if (!first) return second;
+    if (second) for (const [k, f] of second) if (!first.get(k)?.extremes && f.extremes) first.set(k, f);
+    return first;
+  }, [shared, own, scheduledRows, data, line, vehicles, recent, now, ownRecent, ownNow, liveBand, extraTrips, stopPatterns, directionId, rowVehicles, routeShortName]); // eslint-disable-line react-hooks/exhaustive-deps
   // #1877: each destination row's longest gap, keyed as the card names the destination (the first row naming it).
   const gapsKey = rowFigures && scheduledRows ? scheduledRows.flatMap(r => {
     // The shared stretch rides along under its own key, so the card's shared row reads live/schedule too (CIV-3158 follow-up).
