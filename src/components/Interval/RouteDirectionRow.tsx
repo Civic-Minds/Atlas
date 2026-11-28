@@ -155,6 +155,9 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
           {routeName ? <><RouteRowName shortName={routeName.shortName} name={routeName.name} />{routeNameNote && <span className={`${LIST_ROW_DIM} ml-1.5`}>{routeNameNote}</span>}</> : singleLine ? label : keepLastWord(label)}
         </span>
         {labelEnd && <span className="ml-auto shrink-0 whitespace-nowrap font-black text-[var(--text-primary)]">{labelEnd}</span>}
+        {/* A row whose value sits on lines of its own keeps its chevron on the first line, after the vehicles ("3 vehicles ›"),
+            never alone under the value (CIV-3158 follow-up). */}
+        {chevron && valueBelow && <ChevronRight aria-hidden="true" data-testid="row-chevron" className="w-3 h-3 self-center text-[var(--text-dim)] shrink-0" />}
         {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd || fitOrBelow ? 'ml-auto' : ''} ${valueBelow ? 'basis-full' : ''}`}>
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
@@ -167,7 +170,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
           {value}
         </span>}
         {valueNote && <span className={`${CARD_NOTICE} basis-full text-right leading-snug`} data-testid="row-value-note">{valueNote}</span>}
-        {chevron && <ChevronRight aria-hidden="true" className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
+        {chevron && !valueBelow && <ChevronRight aria-hidden="true" data-testid="row-chevron" className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
       </div>
       {subLabel && (subLabelTrailing ? (
         <span className={`text-xs ${subLabelWeight === 'medium' ? 'font-medium' : 'font-bold'} text-[var(--text-dim)] flex min-w-0 mt-0.5`}>
