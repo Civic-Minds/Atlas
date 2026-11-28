@@ -375,13 +375,13 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
                       key={r.key}
                       {...scheduledRowProps(r)}
                       headwaySuffix={f?.extremes ? `· ${gapRangeText(f.extremes.rangeFrom, f.extremes.longest.min)}` : undefined}
-                      subLabel={f ? countOf(f.cars, 'vehicle') : undefined}
-                      subLabelWeight="medium"
+                      labelEnd={f ? countOf(f.cars, 'vehicle') : undefined}
+                      valueBelow={!!f}
                     />
                   );
                 })}
                 {live.cars > matched && (
-                  <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} subLabel={countOf(live.cars - matched, 'vehicle')} subLabelWeight="medium" />
+                  <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} labelEnd={countOf(live.cars - matched, 'vehicle')} />
                 )}
               </div>
             );

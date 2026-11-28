@@ -40,6 +40,11 @@ interface Props {
   /** The suffix's colour (HeadwayBadge suffixTone). */
   headwaySuffixTone?: 'dim' | 'negative' | 'positive';
   subLabel?: string;
+  /** A figure at the right of the label's line ("3 vehicles"), where the regular card puts its frequency; Live's rows
+   *  (Ryan, 2026-11-27: the vehicles on the first line, "why would there be a dot here if the number of vehicles is right justified"). */
+  labelEnd?: string;
+  /** The value on its own line under the label, at the right: Live's rows read "to Keele · 3 vehicles" over "every 13 min · gaps 9–13 min". */
+  valueBelow?: boolean;
   /** Text after the sub-label that always stays whole ("· 484 m away"); the sub-label shortens before it does (#1154). */
   subLabelTrailing?: string;
   /** The sub-label's weight: bold by default; 'medium' (the summary weight) for a stop name and distance (CIV-923). */
@@ -89,7 +94,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
 
-export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
+export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', labelEnd, valueBelow = false, live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -104,7 +109,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
   // CIV-1465 (Ryan, 2026-11-13: "same as the other one i thin split it into 2 lines"): a long value in two parts ("every
   // 60 min" / "until 5:05 PM") stays in the value column on two right-aligned lines, the list rule (CIV-1300).
   // CIV-3040 (Ryan, 2026-11-26, pick 1): the destination stays on line 1; a reading that doesn't fit beside it wraps to line 2, right-aligned.
-  const fitOrBelow = wrapLongValue && hasValueCell;
+  const fitOrBelow = (wrapLongValue || valueBelow) && hasValueCell;
   const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel) && !fitOrBelow;
   const longValue = wrapLongValue && !twoLineValue && !fitOrBelow && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
   // CIV-1165 (Ryan, 2026-11-13: "i wonder if instead we should wrap the destination text if needed", then "1"): a destination
@@ -147,7 +152,8 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
         >
           {routeName ? <><RouteRowName shortName={routeName.shortName} name={routeName.name} />{routeNameNote && <span className={`${LIST_ROW_DIM} ml-1.5`}>{routeNameNote}</span>}</> : singleLine ? label : keepLastWord(label)}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd || fitOrBelow ? 'ml-auto' : ''}`}>
+        {labelEnd && <span className="ml-auto shrink-0 whitespace-nowrap font-black text-[var(--text-primary)]">{labelEnd}</span>}
+        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd || fitOrBelow ? 'ml-auto' : ''} ${valueBelow ? 'basis-full' : ''}`}>
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />
