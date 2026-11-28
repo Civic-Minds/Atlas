@@ -737,7 +737,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   /** The bottom-right counts row is on (Live hides it); Live's "Unable to load" badge shows in it regardless (CIV-1768). */
   const countsRowShown = showUi || nightServiceView || phoneErrorsInRow;
   // A page's pill (Studio's "Data up to") takes the loading pill's spot once nothing is loading.
-  const pagePill = usePageMapOverlay().overlay?.statusPill ?? null;
+  const pageMapOverlay = usePageMapOverlay();
+  const pagePill = pageMapOverlay.overlay?.statusPill ?? null;
+  // CIV-3216: a page still loading its code (Studio's cold open) shows its words in the same loading pill.
+  const pageLoading = pageMapOverlay.pageLoading;
   const mapErrorsPanelRef = useRef<HTMLDivElement>(null);
   useEffect(() => { if (!isPhoneScreen) setListedMapErrors(null); }, [isPhoneScreen]);
   useEffect(() => {
@@ -1525,7 +1528,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       <div className={MAP_FOOTER_RIGHT_SLOT}>
       {/* A page's pill (Studio's "Data up to") in the loading pill's own slot; the counts row beside it stays hidden in a page,
           and takes no room there, so the pill ends where the loading pill does (CIV-1961, Ryan: "Look at this too it's not aligned"). */}
-      {pagePill && !(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
+      {pageLoading && !((countsRowShown || liveRowOn) && (isLoading || isTilesLoading || isBasemapLoading || liveDownBadge)) && (
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 pointer-events-auto`}>
+          <MapLoadingPill label={pageLoading} />
+        </div>
+      )}
+      {!pageLoading && pagePill && !(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
         // CIV-1961 (Ryan: "Why does it show the hand cursor when i hover over this"): the pill takes the pointer, as the counts row
         // does, so the map under it no longer shows its hand cursor through it.
         <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 pointer-events-auto`}>{pagePill}</div>
@@ -1542,12 +1550,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               countdown is in its hover when the feeds are down. */}
           {liveStatusOn && <LiveStatusPill feeds={liveFeeds!} retrySeconds={liveRetrySeconds} />}
           {(isLoading || isTilesLoading || isBasemapLoading || liveDownBadge) && (
-            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} {...(liveDownBadge ? { role: 'status' } : {})}>
-              {!liveDownBadge && <Spinner />}
-              <span className={MAP_BADGE_LABEL}>
-                {liveDownBadge ? liveUnableToLoadPill(liveRetrySeconds!) : isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
-              </span>
-            </div>
+            <MapLoadingPill down={liveDownBadge} label={liveDownBadge ? liveUnableToLoadPill(liveRetrySeconds!) : isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')} />
           )}
           {/* Live hides the counts: the row shows only Live's pill. */}
           {(countsRowShown || !liveRowOn) && (<>
@@ -1881,5 +1884,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       </div>
     </div>
     </CompareCardTopProvider>
+  );
+}
+
+/** The map's loading pill, bottom right: the one design every loading map shows, a page's cold open too (CIV-3216).
+ *  `down`: Live's "Unable to load" badge in the same spot, without the spinner. */
+function MapLoadingPill({ label, down = false }: { label: string; down?: boolean }) {
+  return (
+    <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} {...(down ? { role: 'status' } : {})}>
+      {!down && <Spinner />}
+      <span className={MAP_BADGE_LABEL}>{label}</span>
+    </div>
   );
 }

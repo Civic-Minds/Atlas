@@ -70,7 +70,7 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_APPS_LABEL, COMPARE_LABEL, MORE_LABEL, explainerFor } from './content/noticeCopy';
-import ViewLoadingPanel from './components/ViewLoadingPanel';
+import ViewLoadingPanel, { ViewLoadingPill } from './components/ViewLoadingPanel';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
 import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
@@ -969,7 +969,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               </React.Suspense>
             )}
             {studioOn && (inStudio || studioLeaving) && (
-              <React.Suspense fallback={inStudio ? <ViewLoadingPanel what={PAGE_NAMES.studio} /> : null}>
+              // CIV-3216: Studio's cold open shows the map's own loading pill, not a card.
+              <React.Suspense fallback={inStudio ? <ViewLoadingPill what={PAGE_NAMES.studio} /> : null}>
                 <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} settings={studioSettings} searchBox={studioSearch} />
               </React.Suspense>
             )}

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Opening Studio shows the map's loading pill, not a "Loading Studio…" card under the search bar**: it now loads the way the map does
 - **Atlas Studio says when an agency's schedule has already ended**: Moose Jaw's ended in March 2024, and its answers read as current service with no warning
 - **Atlas Studio's route history answers for the route asked**: asking for Halifax route 1 returned route 21's history, because any route whose name contained "1" could match
 - **The panel footer fits on one line: "Docs · Terms · Privacy · © 2026 Civic Minds"**: it took two lines on every screen, now only on a phone
