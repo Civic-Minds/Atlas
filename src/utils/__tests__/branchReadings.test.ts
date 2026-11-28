@@ -61,7 +61,7 @@ describe('route card branch lines (CIV-1959 B3)', () => {
   it('a branch with too few trips shows no number and no figure from the trunk', () => {
     const r = readings({ t: 'limited' });
     const m = card([withReadings(r, 'main'), withReadings(r, 'tail')], 'midday', true);
-    expect(lines(m)).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: Runs irregularly in this period']);
+    expect(lines(m)).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: Irregular']);
     const branch = m.groups[0].rows.find(r => r.feature.stretchRole === 'tail')!.display(null).value;
     expect(branch.headway).toBeUndefined();
     expect(branch.isLimited).toBe(true);
@@ -144,7 +144,7 @@ describe('route card branch lines (CIV-1959 B3)', () => {
       ({ pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), { ...piece('branch', 0, { midday: t }), to: 'Tower Rd' }] }) as PieceReadings;
     expect(lines(card([withReadings(named({ t: 'reading', v: 30 }), 'main')], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to Tower Rd: every 30 min']);
     expect(lines(card([withReadings(named({ t: 'tail', v: 164, every: 30, until: 736 }), 'main')], 'midday', true)).at(-1)).toBe('to Tower Rd: every 30 min until 12:16 PM');
-    expect(lines(card([withReadings(named({ t: 'limited' }), 'main')], 'midday', true)).at(-1)).toBe('to Tower Rd: Runs irregularly in this period');
+    expect(lines(card([withReadings(named({ t: 'limited' }), 'main')], 'midday', true)).at(-1)).toBe('to Tower Rd: Irregular');
     // An origin leg is named from where it starts, in the existing "from A to B" form, and left out when the direction has a named branch row (its row speaks for the starting legs).
     const leg = (t: NonNullable<PieceReadings['pieces'][number]['periods'][keyof PieceReadings['pieces'][number]['periods']]>) =>
       ({ pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), { ...piece('branch', 0, { midday: t }), from: 'Colfax Ave & Tower Rd' }] }) as PieceReadings;
@@ -188,7 +188,7 @@ describe('stop card branch words (CIV-1959 B3)', () => {
     return [withReadings(r, 'main'), withReadings(r, 'tail')];
   };
   it('a stop on a limited branch shows the no-number words, never the trunk figure; a trunk stop is untouched', () => {
-    expect(stopBranchReading(readingsWithStops({ t: 'limited' }), 'x3', 'midday')).toEqual({ periodText: 'Runs irregularly in this period' });
+    expect(stopBranchReading(readingsWithStops({ t: 'limited' }), 'x3', 'midday')).toEqual({ periodText: 'Irregular' });
     expect(stopBranchReading(readingsWithStops({ t: 'limited' }), 't3', 'midday')).toBeNull();
   });
   it('a stop on a tail shows its spacing with when it stops; on a reading branch, the branch number', () => {
@@ -211,7 +211,7 @@ describe('stop card branch words (CIV-1959 B3)', () => {
     expect(off).toBe(plain);
     // On: the branch's row for the stop says the no-number words, with no number.
     const on = buildStopRoutes(args(f, true)).flatMap(r => r.branches).find(b => b.headsign === 'Pearson Airport');
-    expect(on?.periodText).toBe('Runs irregularly in this period');
+    expect(on?.periodText).toBe('Irregular');
     expect(on?.rowHeadway).toBeNull();
   });
 });

@@ -65,7 +65,7 @@ describe('route card rows, built once (CIV-987)', () => {
     const [first] = model([limited, row(1, 'Lawrence West Station', 20)]).groups[0].rows;
     expect(first.display(null).value.isLimited).toBe(true);
     // CIV-1251: in a time period a row with no number reads Irregular, whichever check found it.
-    expect(reportRowValueText(first)).toBe('Runs irregularly in this period');
+    expect(reportRowValueText(first)).toBe('Irregular');
   });
 });
 
@@ -127,13 +127,13 @@ describe('CIV-1251 review: one word for a row with no number', () => {
     const m = build(true, 'midday');
     expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly overnight', 'Runs irregularly overnight']);
   });
-  it('a time period reads "Runs irregularly in this period" for both checks', () => {
+  it('a time period reads "Irregular" for both checks', () => {
     const m = build(false, 'midday');
-    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly in this period', 'Runs irregularly in this period']);
+    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Irregular', 'Irregular']);
   });
   it('has no All day words (CIV-1279): no Part-time or "limited" row, even if a caller passes All day', () => {
     const m = build(false, 'all', { routeAllDayHeadway: 999999, routeHasLimitedDirection: true });
-    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Runs irregularly in this period', 'Runs irregularly in this period']);
+    expect([m.noRegularLabel, m.limitedWord]).toEqual(['Irregular', 'Irregular']);
   });
 });
 

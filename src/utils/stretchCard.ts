@@ -25,7 +25,7 @@ export interface StretchRow {
   refStop: string;
   /** The stretch's own value in the period (same rules as a whole route): a number, null for no value, undefined on older data. */
   value: number | null | undefined;
-  /** The row reads "Runs irregularly in this period" (#955: one gap, or under three departures), never its wait as "every N". */
+  /** The row reads "Irregular" (#955: one gap, or under three departures), never its wait as "every N". */
   noRegular: boolean;
 }
 

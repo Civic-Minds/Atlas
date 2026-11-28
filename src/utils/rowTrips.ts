@@ -183,7 +183,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   }
   // #773 (Strategy's pick for Ryan, 2026-11-22: gap words): a row the all-day grade called infrequent, with no words of its
   // own, names its one long gap where it is at least ROW_GAP_WORDS_RATIO times its number (#1239), "every 30 min, with one
-  // 60 min gap". A gap over PERIOD_COVERAGE_MAX_HEADWAY is no cadence (#962): the row reads "Runs irregularly in this period"
+  // 60 min gap". A gap over PERIOD_COVERAGE_MAX_HEADWAY is no cadence (#962): the row reads "Irregular"
   // (CTA 9 to Vincennes midday, two bursts 313 minutes apart; LA Metro 108 Mesmer / Major PM, 167).
   if (d.tier === 'infrequent' && !partPeriod && value != null && !stretch && !waitNotCadence) {
     const g = d.maxGapByPeriod?.[key];
@@ -192,18 +192,18 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
       else { value = null; waitNotCadence = true; overHour = true; }
     }
   }
-  // #773: a row with no cadence by the shared gap-words test reads "Runs irregularly in this period", never its direction's
+  // #773: a row with no cadence by the shared gap-words test reads "Irregular", never its direction's
   // filter value (Chatham-Kent 5 midday: every 45 with a 75 min gap, not "every 75").
   if (!stretch && !partPeriod && infrequentRowNoCadence(d, period)) { value = null; waitNotCadence = true; }
   // CIV-2171 (Ryan, 2026-11-23, "1"): no card names a gap over an hour, as #773's gap words: words that would name one
-  // (D6's "every 5 min, with one 169 min gap", #1239's) read "Runs irregularly in this period" instead (#962: a wait over
+  // (D6's "every 5 min, with one 169 min gap", #1239's) read "Irregular" instead (#962: a wait over
   // PERIOD_COVERAGE_MAX_HEADWAY is no cadence). Card wording only: the colour and the filter are unchanged.
   if (partPeriodGap != null && partPeriodGap > PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = undefined; partPeriodEvery = undefined; partPeriodThen = undefined; value = null; waitNotCadence = true; overHour = true; }
   // CIV-2232 (Ryan, 2026-11-24: "if it is a persistent like 58-71 minutes or something then I think we should put that range ... but
   // if it is like 2 trips or 3 trips or not regular intervals then I think we should put Irregular"): past an hour, the row's own
   // trips decide. Evenly spaced by rule D (rowOwnTripsEven: MIN_SCHEDULE_DEPARTURES trips or more, the longest gap within the
   // evenness bound) reads their range, shortest to longest gap, however long (Bustang "every 120 min"); anything else reads
-  // "Runs irregularly in this period" (TTC 101 to Wilson midday, two trips 320 minutes apart). Words that explain the wait (a late
+  // "Irregular" (TTC 101 to Wilson midday, two trips 320 minutes apart). Words that explain the wait (a late
   // start or early end) keep them. Card wording only: the map colour and the filter are unchanged.
   let range: RowTrips['range'];
   let irregularPastHour = false;
@@ -220,7 +220,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   }
   // CIV-2232 (Ryan, 2026-11-24, "1": "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1":
   // only on cards without "from …"/"until …" words): a row whose period wait is over an hour and that has fewer than
-  // MIN_CARD_ROW_DEPARTURES of its own trips in the period reads "Runs irregularly in this period". A row whose words say when
+  // MIN_CARD_ROW_DEPARTURES of its own trips in the period reads "Irregular". A row whose words say when
   // its service starts or stops ("every 60 min until 5:14 PM") keeps them; so does a row reading the filter's stretch value.
   const edgeWords = partPeriod != null && /\b(from|until)\b/.test(partPeriod);
   const longWait = (d.periodCoverageHeadway?.[key] ?? 0) > PERIOD_COVERAGE_MAX_HEADWAY;

@@ -135,7 +135,7 @@ describe('Infrequent routes show "limited" on All day and in specific periods (#
 
     it('CIV-1251: TL-42 in Saturday midday reads Irregular, not "limited"', () => {
       renderCard([tl42Saturday], 'midday');
-      expect(screen.getAllByText('Runs irregularly in this period').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Irregular').length).toBeGreaterThan(0);
       expect(screen.queryByText(/every 56 min/)).toBeNull();
     });
 

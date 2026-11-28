@@ -166,7 +166,7 @@ These measures are different things. Never combine them, convert one into anothe
 | tier `span` | `tier` | hidden by "Hide occasional routes" | not a frequency |
 | `serviceClass: 'time-limited'` | `isLimitedService` | "Part-time" (About page, [TEXT.md](style/TEXT.md)), "Limited" (agency table), "limited service" (card), "Hide part-time routes" (filter) | "Time-limited" is the code value only; the UI word is "Part-time" |
 | `serviceClass: 'irregular'` | `isIrregularService` | "Occasional" (About page), "Hide occasional routes" | CIV-1238 replaced #720's "one-off"; never "Irregular", which is the period wording |
-| `noRegular` / the filter's null where the route runs | `routeListNoRegularService`, `IRREGULAR_PERIOD_LABEL` | "Runs irregularly in this period" (cards), "Irregular" (table cells, list values) | CIV-1238; never "no regular service" |
+| `noRegular` / the filter's null where the route runs | `routeListNoRegularService`, `IRREGULAR_PERIOD_SHORT_LABEL` | "Irregular" (cards, table cells, list values; CIV-3136) | CIV-1238; never "no regular service" |
 | midday variant | `middayVariant` | "limited service", headline blank | not a serviceClass |
 | pooled stop value | `stopHeadways` on a shared stretch | the card says the value is pooled | |
 | `gainedMedianSec` (Live) | `segmentDelayView.ts` | "Time lost: X" | branch only |

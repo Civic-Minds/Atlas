@@ -61,11 +61,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: chosen from a census of 1,160 feeds and a review of example routes. Check these before asking.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) (Thresholds), [#567](https://github.com/Civic-Minds/Atlas/issues/567), [#568](https://github.com/Civic-Minds/Atlas/issues/568), [#570](https://github.com/Civic-Minds/Atlas/issues/570), [#571](https://github.com/Civic-Minds/Atlas/issues/571), PR [#584](https://github.com/Civic-Minds/Atlas/pull/584)
 - **A period with no regular cadence reads "Irregular"**
-  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Runs irregularly in this period" on cards, "Irregular" in tight spots (table cells, list values). Both come from src/content/noticeCopy.ts.
+  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Irregular" on cards, in table cells and in list values, one label in src/content/noticeCopy.ts. The Night card keeps "Runs irregularly overnight".
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
-  - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
+  - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; card wording "Irregular" since 2026-11-27 (CIV-3136); [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A card row with a wait over an hour needs 4 of its own trips for a number**
-  - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Runs irregularly in this period", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
+  - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Irregular", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
   - Why: 2 or 3 trips are not a pattern a rider can plan around, even when evenly spaced.
   - Source: Ryan, 2026-11-24, on CIV-2232: "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1" to "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words"
 - **A direction running every 60 min or better always has a card row**
@@ -415,6 +415,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-27 — Card rows with no number read "Irregular" (CIV-3136; card wording of 2026-10-31 / CIV-1238 superseded)
+Ryan, 2026-11-27, on CIV-3121: "1 but should it say \"Irregular\" instead of runs irregularly in this period", then, on changing it on every card: "I'd need to see it". After the before/after page (SEPTA 20 Sunday evening) he picked "1": "Use \"Irregular\" on every card".
+- The rule: every route and stop card row with no number reads "Irregular", the same one label (`IRREGULAR_PERIOD_SHORT_LABEL`) as route lists, tables and agency pages. "Runs irregularly in this period" is gone.
+- Not part of the pick: the Night card keeps "Runs irregularly overnight".
 
 ### 2026-11-27 — Booked-route detection counts only stops where riders can board (CIV-3002, #1829)
 Ryan, 2026-11-27, asked in the Studio chat whether it should ship, picked "Ship it". The 85% rule (CIV-1006) now counts only boarding stop events (pickup_type other than 1), not every stop event.
@@ -901,7 +906,7 @@ Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that ru
 
 ### 2026-10-31 — "Irregular" for a period, "Occasional" for the hidden class
 
-Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards. This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
+Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards (card wording superseded by 2026-11-27 / CIV-3136: cards read "Irregular"). This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
 
 ### 2026-10-31 — The Overnight period reads the Night Service verdict
 

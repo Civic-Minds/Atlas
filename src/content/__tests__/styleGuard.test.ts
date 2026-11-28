@@ -52,7 +52,7 @@ const RULES: Rule[] = [
   // CIV-211, #933. The data value 'time-limited' is a code name.
   { name: '"Time-limited" (say "Part-time")', doc: 'TEXT.md', pattern: /\bTime-limited\b|\btime-limited (routes?|service)\b/, slip: "label: 'Time-limited routes'" },
   // CIV-1238 (Ryan): it read as if nothing runs.
-  { name: '"no regular service" (say "Irregular" or "Runs irregularly in this period")', doc: 'TEXT.md', pattern: /\b[Nn]o regular\b/, slip: "const label = 'no regular service';" },
+  { name: '"no regular service" (say "Irregular")', doc: 'TEXT.md', pattern: /\b[Nn]o regular\b/, slip: "const label = 'no regular service';" },
   // CIV-1238 (Ryan): "one-off sounds like it only runs once per day".
   { name: '"one-off" for the hidden route class (say "occasional")', doc: 'TEXT.md', pattern: /\b[Oo]ne-off (routes?|service)\b/, slip: "'Hide one-off routes'" },
   // CIV-1251: "Shared stretch" is the only name for the shared part.
