@@ -42,11 +42,13 @@ export const validThrough = (a: { lastFeedExpiry?: string | null; noFeedEnd?: bo
 
 /**
  * CIV-2081: an answer whose schedule ends within FEED_EXPIRING_DAYS (scheduleValidThrough, YYYY-MM-DD) carries a
- * warning beside it, so the figures aren't read as lasting. Every tool's answer passes through here on both servers.
+ * warning beside it, and one whose schedule has already ended says so (#1955), so the figures aren't read as lasting. Every tool's answer passes through here on both servers.
  */
 export function scheduleEndsSoon(result: unknown, today = new Date().toISOString().slice(0, 10)): unknown {
   const end = (result as { scheduleValidThrough?: unknown } | null)?.scheduleValidThrough;
-  if (typeof end !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(end) || end < today) return result;
+  if (typeof end !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(end)) return result;
+  // #1955: a schedule that has already ended (Moose Jaw, 2024-03-31) said nothing, so its figures read as current.
+  if (end < today) return { ...(result as object), scheduleEnded: `This schedule ended on ${end}. Atlas has no current figures for this agency until it publishes a new schedule; say so first, and give these figures only as the ended schedule's.` };
   const days = Math.round((Date.parse(end) - Date.parse(today)) / 86_400_000);
   if (days > FEED_EXPIRING_DAYS) return result;
   return { ...(result as object), scheduleEndsSoon: `This schedule ends ${days === 0 ? 'today' : days === 1 ? 'tomorrow' : `in ${days} days`} (${end}). Atlas has no figures past that date until the agency publishes its next schedule; say so beside the figures.` };
