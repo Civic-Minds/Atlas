@@ -17,7 +17,8 @@ export default function Widget({ title, size: _size = 'medium', children, classN
     return (
       <PanelSection label={title ?? label ?? ''} title={hint} className={className} aside={headings ? action : undefined}>
         {/* CIV-3098: where the panel keeps each part's own title, the widget's title stays as it was, its action beside it. */}
-        {!headings && (title || action) && <div className="flex items-start justify-between gap-2">{title && <h3 className="m-0 truncate text-sm font-bold text-[var(--text-muted)]">{title}</h3>}{action}</div>}
+        {!headings && title && <h3 className="m-0 truncate text-sm font-bold text-[var(--text-muted)]">{title}</h3>}
+        {!headings && action}
         {children}
       </PanelSection>
     );
@@ -25,8 +26,9 @@ export default function Widget({ title, size: _size = 'medium', children, classN
   return (
     <Card as="section" tone="surface" aria-label={title ?? label} title={hint} className={`min-w-0 flex h-full min-h-0 flex-col overflow-hidden p-3 ${className}`.trim()}>
       {(title || action) && (
-        <div className="flex shrink-0 items-center justify-between gap-2">
+        <div className="shrink-0">
           {title && <h3 className="m-0 truncate text-sm font-bold text-[var(--text-muted)]">{title}</h3>}
+          {/* The notes on the line under the title (CIV-3159), as in the panel's sections. */}
           {action}
         </div>
       )}
