@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's route history no longer explains away a figure that disagrees with today's**: it said a long late-night figure came from Atlas's edge rule, which was wrong for the TTC 504; it now gives both figures and says they disagree
 - **Studio Live explains its late colours in Measurements, under a "Late" row beside Bunching**: the bottom "Late · 5+ min" pill is gone, and the row says the agency's own limit where it has one
 - **Studio Fleet's vehicles with no trip read "294 not on a trip", with "230 at garages" on the line below**: the count wrapped out of line beside its label
 - **Studio's Live, Fleet and Schedules tabs fold to their icons once you open one, as the map's tabs do**: the top bar has more room and reads the same across Atlas

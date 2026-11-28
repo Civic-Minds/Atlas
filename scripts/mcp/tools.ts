@@ -349,7 +349,8 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const h = await data.routeHistory(a, String(route ?? ''), dayType);
     if (!h) return { agency: a.name, history: null, note: "Atlas's History has no data for this agency." };
     if (!h.route) return { agency: a.name, history: null, note: `Atlas's History has ${h.routes} routes for this agency, none matching "${route}".` };
-    return { agency: a.name, day: dayType, figure: `Each figure is ${FIGURE_LABELS.grade}, not the typical wait route_frequency gives.`, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. Where a route starts or stops partway through a part of the day, Atlas counts the wait to the edge of that part, so a figure can be far longer than the gap between the trips that run (a route every 10 min until 1 AM shows every 61 min from 11 PM to 2 AM). That is the rule Atlas uses, not a data error.', source: "Atlas's History data." };
+    // #1951: the note gave a cause (the edge-of-period rule) that didn't hold for TTC 504 Late, which runs every 10 until 2 AM.
+    return { agency: a.name, day: dayType, figure: `Each figure is ${FIGURE_LABELS.grade}, not the typical wait route_frequency gives.`, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. A History figure for the current schedule can differ from route_frequency\'s for the same part of the day: give both and say they disagree, with no cause.', source: "Atlas's History data." };
   },
   routes_by_hours: async (args) => {
     const a = await needAgency(args.agency);
