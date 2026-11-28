@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import LiveRoutePerformance from '../../components/Live/LiveRoutePerformance';
 import { RouteCardRows } from '../../components/Interval/panels/RouteCardHeadway';
-import { CardDirectionRow, CardHelpNotice, type CardReportButtonHandle } from '../../components/Interval/cardUi';
+import { CardDirectionRow, CardHelpNotice, SidebarCardList, type CardReportButtonHandle } from '../../components/Interval/cardUi';
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveFeeds } from '../../hooks/useLiveFeeds';
 import { useAgencyGeo } from '../../hooks/useAgencyGeo';
 import { STUDIO_ROUTE_PANEL_PENDING } from '../../../shared/liveWording';
 import { LIVE_UNMATCHED_DESTINATION } from '../../content/noticeCopy';
-import { liveCardModelNow, liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey, type CardRowKey } from '../../utils/liveGrouping';
+import { liveCardModelNow, liveCardRowKeys, liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
+import { DIRECTION_UNCLEAR, groupVehiclesByDirection, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey } from '../../utils/liveGrouping';
 import { streetJoin } from '../../utils/stopLabel';
 import { vehicleModeWord } from '../../utils/format';
 import { effectiveMode, type EffectiveModeInput } from '../../../shared/modes';
@@ -35,7 +35,7 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
     return vehicleModeWord(props?.routeType == null ? null : effectiveMode({ ...props, agencySlug: slug }));
   }, [geo, routeShortName, slug]);
   // The same grouping as main Live: by destination, then under the card's own rows (mergeIntoCardRows, #1877).
-  const rowKeys = useMemo((): CardRowKey[] => (model?.groups ?? []).flatMap(g => [...g.rows, ...g.spanRows].flatMap(r => { const k = rowDirectionKey(r.feature?.headsign, routeShortName); return k ? [{ key: k, directionId: g.dirId }] : []; })), [model, routeShortName]);
+  const rowKeys = useMemo(() => liveCardRowKeys(model, routeShortName), [model, routeShortName]);
   const groups = useMemo(() => {
     const labels = geo ? new Map([...routeDirectionLabels(geo.features, routeShortName)].map(([d, l]) => [d, streetJoin(l)])) : new Map<number, string>();
     return mergeIntoCardRows(groupVehiclesByDirection(vehicles, labels), rowKeys);
@@ -81,7 +81,8 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
   return (
     <>
       {reading}
-      <RouteCardRows model={model} reportRef={reportRef} rowLive={rowLive} />
+      {/* The map card's own list spacing around its direction headings. */}
+      <SidebarCardList><RouteCardRows model={model} reportRef={reportRef} rowLive={rowLive} /></SidebarCardList>
       <Unmatched groups={groups} rowKeys={new Set(rowKeys.map(r => r.key))} modeWord={modeWord} />
     </>
   );

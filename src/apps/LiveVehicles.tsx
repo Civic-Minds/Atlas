@@ -26,7 +26,7 @@ import { useColorVision } from '../context/ColorVisionContext';
 import { effectiveMode, knownModeLabel, type EffectiveModeInput } from '../../shared/modes';
 import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel, GENERIC_VEHICLE, formatBranchLabel } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
-import { liveScheduledHeadway, liveScheduledRowsNow } from '../utils/liveScheduledHeadway';
+import { liveCardModelNow, liveCardRowKeys, liveScheduledHeadway, liveScheduledRowsNow } from '../utils/liveScheduledHeadway';
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
 import { periodKeyForHour } from '../../shared/config';
 import { andOthers, countOf } from '../../shared/overflowText';
@@ -566,8 +566,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const day = getNowDay();
     const key = fc ? routeKeyForShortName(slug, fc.features, selectedGroup.routeShortName, day) : null;
     const current = fc && key ? buildCurrentRoute(key, { [slug]: fc }, day, 'all') : null;
-    return (current?.directions ?? []).flatMap(d => { const k = rowDirectionKey(d.headsign, selectedGroup.routeShortName); return k ? [{ key: k, directionId: d.directionId }] : []; });
-  }, [selectedGroup, routeLayer]);
+    // The rows the card draws now first (the same model Studio draws), then any other row of the day.
+    const now = liveCardRowKeys(liveCardModelNow(fc, agencies, slug, selectedGroup.routeShortName), selectedGroup.routeShortName);
+    const day_ = (current?.directions ?? []).flatMap(d => { const k = rowDirectionKey(d.headsign, selectedGroup.routeShortName); return k ? [{ key: k, directionId: d.directionId }] : []; });
+    return [...now, ...day_.filter(r => !now.some(n => n.key === r.key))];
+  }, [selectedGroup, routeLayer, agencies]);
   const vehiclesByDirection = useMemo(
     () => (selectedGroup ? mergeIntoCardRows(groupVehiclesByDirection(listVehicles, directionLabels), cardRows) : null),
     [selectedGroup, listVehicles, directionLabels, cardRows],
