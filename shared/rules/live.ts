@@ -145,6 +145,13 @@ export const LIVE_PLACE_ON_SHAPE_MAX_M = 60;
  */
 export const LIVE_PLACE_ON_STOP_LINE_MAX_M = 150;
 
+/** A vehicle with no direction from its feed is placed on the route's nearest directional line within this distance... */
+export const LIVE_DIRECTION_MATCH_MAX_M = 1_200;
+/** ...a heading opposite the line's counting as this much extra distance... */
+export const LIVE_DIRECTION_BEARING_WEIGHT_M = 250;
+/** ...and left unplaced when two directions' lines score within this of each other. */
+export const LIVE_DIRECTION_TIE_M = 75;
+
 /** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 PM" (CIV-1034). */
 export const RIGHT_NOW_STALE_SEC = 2 * 60;
 /** A feed's age, in seconds, at the top of each status: fresh up to 90 s, degraded to 5 min, stale to 15 min, then unavailable. */
