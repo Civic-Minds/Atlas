@@ -14,9 +14,9 @@ import { CardReportButton, REPORT_REASON } from '../components/Interval/cardUi';
 import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
-import { headwayAmount, headwayEvery, headwayOrBetter } from '../utils/headwayText';
+import { headwayEvery, headwayOrBetter } from '../utils/headwayText';
 import ResearchInfo, { useResearchZoomedOut } from '../components/ResearchInfo';
-import { NIGHT_INFO_HEADING, NIGHT_LIST_TITLE, nightRuleText } from '../content/researchRules';
+import { NIGHT_INFO_HEADING, NIGHT_LIST_TITLE, nightReportTitle, nightRuleText } from '../content/researchRules';
 import { compareRouteNumber } from '../utils/sortCompare';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
@@ -210,7 +210,7 @@ export default function NightService({ active, layers, query = '', frequency, on
           title={NIGHT_LIST_TITLE}
           action={
             <CardReportButton
-              title={`${NIGHT_LIST_TITLE} (${headwayAmount(frequency)} view)`}
+              title={nightReportTitle(frequency)}
               details={nightReportDetails(frequency, agencies.map(agency => ({
                 name: agency.agencyName,
                 routes: agency.routes.map(route => {
