@@ -17,7 +17,8 @@ import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, posi
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LOADING_LABEL, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
-import { LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL, gapRangeText } from '../../../shared/liveWording';
+import { LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL, type LiveRowGap } from '../../../shared/liveWording';
+import { liveRowValueProps } from '../../utils/liveRowValue';
 import { rowDirectionKey } from '../../utils/liveGrouping';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
@@ -122,7 +123,7 @@ interface Props {
    * and hands each direction's destination gaps (longest, in minutes, keyed as rowDirectionKey names the destination) to
    * the card instead. Must be stable (a state setter or useCallback).
    */
-  onDestinationGaps?: (directionId: number, gaps: ReadonlyMap<string, string>) => void;
+  onDestinationGaps?: (directionId: number, gaps: ReadonlyMap<string, LiveRowGap>) => void;
 }
 
 /**
@@ -328,12 +329,15 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   const gapsKey = rowFigures && scheduledRows ? scheduledRows.flatMap(r => {
     const dest = r.key === 'shared' ? null : rowDirectionKey(r.headsign, routeShortName);
     const ext = rowFigures.get(r.key)?.extremes;
-    return dest && ext ? [`${dest}\t${gapRangeText(ext.rangeFrom, ext.longest.min)}`] : [];
+    return dest && ext ? [`${dest}\t${ext.rangeFrom ?? ''}\t${ext.longest.min}`] : [];
   }).join('\n') : '';
   useEffect(() => {
     if (!onDestinationGaps) return;
-    const gaps = new Map<string, string>();
-    for (const l of gapsKey ? gapsKey.split('\n') : []) { const [k, t] = l.split('\t'); if (!gaps.has(k)) gaps.set(k, t); }
+    const gaps = new Map<string, LiveRowGap>();
+    for (const l of gapsKey ? gapsKey.split('\n') : []) {
+      const [k, from, longest] = l.split('\t');
+      if (!gaps.has(k)) gaps.set(k, { from: from === '' ? null : Number(from), longest: Number(longest) });
+    }
     onDestinationGaps(directionId, gaps);
   }, [onDestinationGaps, gapsKey, directionId]);
   if (!line || !live || onDestinationGaps) return null;
@@ -370,11 +374,13 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
               <div className="space-y-1">
                 {(scheduledRows ?? []).map(r => {
                   const f = r.key === 'shared' ? undefined : rowFigures.get(r.key);
+                  const sched = scheduledRowProps(r);
+                  // CIV-3158: the same three lines as the card's rows (liveRowValueProps): vehicles, live, schedule.
                   return (
                     <CardDirectionRow
                       key={r.key}
-                      {...scheduledRowProps(r)}
-                      headwaySuffix={f?.extremes ? `· ${gapRangeText(f.extremes.rangeFrom, f.extremes.longest.min)}` : undefined}
+                      {...sched}
+                      {...(f?.extremes ? liveRowValueProps({ from: f.extremes.rangeFrom, longest: f.extremes.longest.min }, sched) : {})}
                       labelEnd={f ? countOf(f.cars, 'vehicle') : undefined}
                       valueBelow={!!f}
                     />

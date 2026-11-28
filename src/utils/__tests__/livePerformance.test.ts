@@ -304,15 +304,15 @@ describe('the route card\'s longest and shortest gap (CIV-2045)', () => {
 // CIV-1828 (Ryan, 2026-11-27): a destination row reads its live gaps as a range, leaving out gaps under a minute.
 describe('live gap range', () => {
   it('starts at the shortest gap of a minute or more', async () => {
-    const { gapRangeText } = await import('../../../shared/liveWording');
+    const { liveLineText } = await import('../../../shared/liveWording');
     const ext = gapExtremes({ gapsMin: [0.7, 3, 20, 8], scheduledSec: 300 })!;
     expect(ext.rangeFrom).toBe(3);
-    expect(gapRangeText(ext.rangeFrom, ext.longest.min)).toBe('gaps 3–20 min');
+    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min })).toBe('live 3–20 min');
   });
   it('falls back to the longest gap when no other gap is a minute or more', async () => {
-    const { gapRangeText } = await import('../../../shared/liveWording');
+    const { liveLineText } = await import('../../../shared/liveWording');
     const ext = gapExtremes({ gapsMin: [0.5, 12], scheduledSec: 300 })!;
-    expect(gapRangeText(ext.rangeFrom, ext.longest.min)).toBe('longest gap 12 min');
-    expect(gapRangeText(null, 0.5)).toBe('longest gap 30 sec');
+    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min })).toBe('live 12 min');
+    expect(liveLineText({ from: null, longest: 0.5 })).toBe('live 30 sec');
   });
 });

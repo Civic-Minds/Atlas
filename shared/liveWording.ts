@@ -85,12 +85,17 @@ export const updatedAgoText = (ageSec: number): string => {
 /** The Live route card's gap rows, under Scheduled (CIV-2045, Ryan's words; replaced "Gaps, front to back (min)"). */
 export const LONGEST_GAP_LABEL = 'Longest gap';
 export const SHORTEST_GAP_LABEL = 'Shortest gap';
-/**
- * The gaps between the vehicles on the road now, shortest to longest: "gaps 3–20 min" (CIV-1828). With no shortest gap
- * to show (see GAP_RANGE_FROM_SEC), or one that rounds to the longest, the longest alone: "longest gap 20 min".
- */
-export const gapRangeText = (from: number | null, longest: number): string =>
-  from != null && tenth(from) !== tenth(longest) ? `gaps ${tenth(from)}–${minutesText(longest)}` : `${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(longest)}`;
+/** A destination row's live gaps: the shortest to the longest gap between the vehicles on the road now, or one figure when
+ * there is no range (all gaps the same to the tenth, or all under a minute). Ryan, 2026-11-28 (CIV-3158): "schedule 10 min · live 10–13 min" with units on both
+ * "because sometimes it might not be in minutes", on their own lines. */
+export type LiveRowGap = { from: number | null; longest: number };
+export const LIVE_LINE_WORD = 'live';
+export const SCHEDULE_LINE_WORD = 'schedule';
+/** "live 10–13 min", "live 40 sec": the row's live line (CIV-3158). */
+export const liveLineText = ({ from, longest }: LiveRowGap): string =>
+  `${LIVE_LINE_WORD} ${from != null && tenth(from) !== tenth(longest) ? `${tenth(from)}–${gapText(longest)}` : gapText(longest)}`;
+/** "schedule 10 min", "schedule 6–12 min": the row's timetable line under the live one (CIV-3158). */
+export const scheduleLineText = (amount: string): string => `${SCHEDULE_LINE_WORD} ${amount}`;
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
