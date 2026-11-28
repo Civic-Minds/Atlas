@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The hosted Atlas Studio MCP answers callers running in the cloud**: its own read of Atlas's schedule files was blocked by the site's bot protection whenever the question came from a data centre, so those calls failed
+- **Studio Live's Views pill sits at the bottom by the locate-me button**: it only changes what the map's lines are coloured to show, so it moved out of the top bar, which keeps Agency, Direction and Time
+- **A problem report from the Night list is titled "Overnight · every 30 min or better"**: it named a "30 min view", and Atlas has modes, not views
 - **"And N other agencies" on the map's credit line opens Sources filtered to the agencies on screen**: it opened the full list of every agency, so the ones on the map were hard to find; the search box's X clears the filter
 - **Studio's Schedules opens on a summary of the changes: routes running more often, less often, added and removed at the time of day, each count opening its routes**: the full list of changed routes was hard to take in at a glance; a route's card shows its old and new frequency across the day
 - **A route's daily trip count includes the trips that skip a stop near its end**: Danville's North Main counted 11 of its 16 weekday loops and the RTD Flatiron Flyer 20 of 63, so the MCP undercounted their trips
