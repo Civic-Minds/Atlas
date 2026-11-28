@@ -662,13 +662,17 @@ export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
 /** The switched-off page's line, in parts around its two code snippets. */
 export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Start it with', command: 'npm run live', middle: 'and open', path: LIVE_PATH, end: 'on the address it prints.' } as const;
 
-/** Why a picked route has no vehicles on the Live map. */
-export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {
+/**
+ * Why a picked route has no vehicles on the Live map. `feedFailed`: the agency's feed isn't answering (the pill reads
+ * Unavailable), so Atlas has no reading, which is not "none running" (#1923): the pill's own "Unable to load".
+ */
+export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[], feedFailed = false): string {
   if (!polled) {
     return followed.length > 0
       ? `${liveDoesNotCover(agencyName, routeShortName)} It covers ${agencyName} routes ${joinList(followed)}.`
       : liveCoversNoRoutes(agencyName);
   }
+  if (feedFailed) return LIVE_UNABLE_TO_LOAD;
   return `No ${agencyName} ${routeShortName} vehicles are running right now.`;
 }
 export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A Live route card says "Unable to load" while its feed is down, not that no vehicles are running**: with the TTC feed failing for a minute, 505 read "No TTC 505 vehicles are running right now" though 20 were on the road
 - **The map opens showing all service, on-demand zones included**: it opened on every 60 min, a filter on-demand service can't meet, so zones never showed until the filter was cleared
 - **Studio's Live tab shows the same number as the main map's: the agencies Live covers**: it showed the open agency's recorded routes (22 on the TTC), so the same pill counted two different things
 - **Studio Live offers only cities it has figures for, and says so when one has none**: Kingston and the MBTA opened on an empty box with no message, and the menu listed 9 cities when 4 had figures
