@@ -22,13 +22,24 @@ describe('CIV-3159 Studio and map parity', () => {
     expect(miniChartBars([...few, hour(23)])).not.toBeNull();
   });
 
-  it('draws every hour with departures, as the map chart draws every hour with service: thin hours faded and capped', () => {
+  it('draws no bar for an hour with too few departures, as the map draws none for an hour without service', () => {
     const day = Array.from({ length: MIN_CHART_HOURS }, (_, i) => hour(6 + i, 200, 0.1));
-    const bars = miniChartBars([...day, { hour: 1, value: 0.9, n: 4 }])!;
-    // After midnight on the chart's 5am-4am axis (25), faded, and capped at the measured hours' top (10%).
-    expect(bars.countByHour[25]).toBe(10);
-    expect([...bars.faded]).toEqual([25]);
-    expect(bars.countByHour[6]).toBe(10);
+    const bars = miniChartBars([...day, { hour: 1, value: 0.9, n: 4 }, { hour: 2, value: 0.2, n: 200 }])!;
+    expect(bars[25]).toBeUndefined();
+    // After midnight on the chart's 5am-4am axis.
+    expect(bars[26]).toBe(20);
+    expect(bars[6]).toBe(10);
+  });
+
+  it("shares the map chart's bar width, spacing, height, baseline and label row: only the values and colours differ", () => {
+    const spark = read('src/components/Interval/HeadwaySparkline.tsx');
+    const count = spark.slice(spark.indexOf('export function CountSparkline('));
+    // The plain card bars, not stacked segments (which drew thinner, fainter bars), and no size of its own.
+    expect(count).toMatch(/return <HeadwaySparkline \{\.\.\.rest\} byHour=\{byHour\} colorByHour=\{colorByHour\} \/>/);
+    expect(count).not.toMatch(/stackedByHour=|expanded|yAxis=|height=|className=/);
+    const src = read('src/components/Live/sections/LateByHourSection.tsx');
+    const call = src.slice(src.indexOf('<CountSparkline'), src.indexOf('/>', src.indexOf('<CountSparkline')));
+    expect(call).not.toMatch(/height=|className=|expanded|faded=/);
   });
 
   it("builds the chart from the map route card's own component, not a copy", () => {
