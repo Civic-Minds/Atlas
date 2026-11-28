@@ -31,6 +31,11 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     }));
     return { ...res, allRoutes: { stops: byStop, rule: `Every route leaving this stop together, the way combined_frequency counts them: two departures ${local.BUNCHED_MINUTES} minute or less apart count as one, so the combined wait can read longer than the trips listed. One entry per side of the street or platform (towards: its most common destinations), since a rider waits at one.` } };
   },
+  // #1948: only this server has combined_frequency, so only its route_frequency answer points to it.
+  route_frequency: async (args) => {
+    const res = await sharedHandlers.route_frequency(args) as { sameNameNote?: string } & Record<string, unknown>;
+    return res.sameNameNote ? { ...res, sameNameNote: `${res.sameNameNote} combined_frequency between two stops counts them together.` } : res;
+  },
   trip_time: async (args) => {
     const a = await needAgency(args.agency);
     const dayType = data.parseDay(args.day);
