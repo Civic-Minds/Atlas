@@ -16,7 +16,7 @@ describe('feed publisher credits in MCP answers', () => {
   it('adds the 511 credit and link to an answer about a 511 agency', async () => {
     data.useStore(store);
     const out = await withFeedCredits({ agency: catalog[0].name, route: 'N' }) as Record<string, string>;
-    expect(out.credit).toBe('Data provided by 511.org (https://511.org/)');
+    expect(out.credit).toBe('[Data provided by 511.org](https://511.org/)');
     expect(out.creditNote).toMatch(/at the end of the answer/);
   });
   it('finds the agency in compare rows and list rows, and leaves other answers alone', async () => {
@@ -35,7 +35,8 @@ describe('feed publisher credits in MCP answers', () => {
   it('adds the licence credit the site shows for the agency', async () => {
     data.useStore(store);
     const out = await withFeedCredits({ agency: 'Toronto Transit Commission' }) as Record<string, string>;
-    expect(out.credit).toBe('Contains information licensed under the Open Government Licence – Toronto. (https://open.toronto.ca/open-data-licence/)');
+    // CIV-3192 (Ryan: "like the text is the link i mean"): the licence's name is the link, the words unchanged.
+    expect(out.credit).toBe('Contains information licensed under the [Open Government Licence – Toronto](https://open.toronto.ca/open-data-licence/).');
     const both = await withFeedCredits({ agencies: [{ agency: 'Toronto Transit Commission' }, { agency: catalog[0].name }] }) as Record<string, string>;
     expect(both.credit.split('; ')).toHaveLength(2);
   });

@@ -573,13 +573,14 @@ export async function agencyNotOnThisServer(query: string): Promise<{ name: stri
  * licence credit from its config's dataLicense (CIV-3102, #1897), then its feed publisher's (#1694: "Data provided by
  * 511.org"). Names are as the tools give them; a name may begin a longer line.
  */
-export async function creditsFor(names: readonly string[]): Promise<Array<{ label: string; href: string }>> {
-  const out = new Map<string, { label: string; href: string }>();
+export async function creditsFor(names: readonly string[]): Promise<Array<{ label: string; href: string; linkText?: string | null }>> {
+  const out = new Map<string, { label: string; href: string; linkText?: string | null }>();
   for (const a of await store.catalog()) {
     if (!names.some(n => n === a.name || n.startsWith(`${a.name} |`))) continue;
     const c = agencyCredit(a);
     if (!c) continue;
-    for (const x of [{ label: c.text, href: c.url }, ...(c.feedLink ? [{ label: c.feedLink.text, href: c.feedLink.href }] : [])]) out.set(`${x.label}|${x.href}`, x);
+    // CIV-3192: the licence's name is the link's text (the feed publisher's line links whole).
+    for (const x of [{ label: c.text, href: c.url, linkText: c.licenceName }, ...(c.feedLink ? [{ label: c.feedLink.text, href: c.feedLink.href }] : [])]) out.set(`${x.label}|${x.href}`, x);
   }
   return [...out.values()];
 }
