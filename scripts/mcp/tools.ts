@@ -52,6 +52,17 @@ async function unknownRegion(reg: string): Promise<{ regionNote: string } | null
   return all.some(a => sameRegion(a.region, reg)) ? null : { regionNote: `Atlas has no agency in a state or province named "${reg}". Give its full name or its short form, such as "Ontario" or "ON".` };
 }
 
+/**
+ * #1952: a route the map's filter counts as every N or better while its own list words say Irregular, or give nothing
+ * that often (YRT 004 "every 18 min from 3:42 PM" in an every-15 list). Both figures and the disagreement, no cause.
+ */
+export function shownDisagrees(shown: string | null | undefined, every: number): { warning?: string } {
+  if (!shown || shown === 'no service') return {};
+  const mins = [...shown.matchAll(/every (\d+(?:\.\d+)?)/g)].map(m => Number(m[1]));
+  if (mins.length && Math.min(...mins) <= every) return {};
+  return { warning: `The map's filter counts this route as every ${every} min or better, but its route list shows "${shown}". Give both and say they disagree, with no cause.` };
+}
+
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   ...liveHandlers,
   ...docsHandlers,
@@ -239,7 +250,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const { key, dayType, now } = await periodOrNow(a, p, d);
     const minutes = Number(n);
     const res = await data.routesMeeting(a, dayType, key, minutes);
-    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, figure: `waitMinutes is ${FIGURE_LABELS.typical}`, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), ...(res.leftOut.length ? { leftOutByRule: res.leftOut.map(m => ({ route: m.route, name: m.longName, shown: m.shown, waitMinutes: m.waitMinutes })), leftOutNote: `These routes' typical wait is every ${minutes} min or better, but some of their waits in this part of the day run longer, so the map's every-${minutes} filter leaves them out. Name them when you answer.` } : {}), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
+    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, figure: `waitMinutes is ${FIGURE_LABELS.typical}`, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes, ...shownDisagrees(m.shown, minutes) })), ...(res.leftOut.length ? { leftOutByRule: res.leftOut.map(m => ({ route: m.route, name: m.longName, shown: m.shown, waitMinutes: m.waitMinutes })), leftOutNote: `These routes' typical wait is every ${minutes} min or better, but some of their waits in this part of the day run longer, so the map's every-${minutes} filter leaves them out. Name them when you answer.` } : {}), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
     // #1700: an agency left out by its data terms is a note beside the others' rows, not the whole answer.
