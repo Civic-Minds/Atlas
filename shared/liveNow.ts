@@ -1,6 +1,6 @@
 /**
  * A route right now (CIV-1870): where its vehicles are bunched and where riders have waited longest, from the last half
- * hour of the Live recorder's position snapshots. One calculation for the Atlas Studio MCP's route_now and Studio's view
+ * hour of the Live recorder's position snapshots. One calculation for the Atlas Studio MCP's route_now and Studio
  * (CIV-1893).
  *
  * Gaps are observed at stops, as Live's weekly figures count them (shared/bunching.ts): the time between two vehicles

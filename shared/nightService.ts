@@ -2,7 +2,7 @@
 export const NIGHT_GRADES = [30, 60, 90] as const;
 export type NightServiceFrequency = (typeof NIGHT_GRADES)[number];
 
-/** CIV-1329: the loosest grade the Overnight view counts; 90 is the Night Service page's alone. */
+/** CIV-1329: the loosest grade the Overnight mode counts; 90 is the Night Service page's alone. */
 export const OVERNIGHT_NIGHT_GRADE: NightServiceFrequency = 60;
 
 type NightFlags = { nightService30?: unknown; nightService60?: unknown; nightService90?: unknown; nightService?: unknown };
@@ -26,7 +26,7 @@ export function rowPassesNightGrade(row: NightFlags | null | undefined, frequenc
 }
 
 /**
- * A route's night value for a list (CIV-931): the grade the Night view checks over 2am to 5am, never a
+ * A route's night value for a list (CIV-931): the grade the Night mode checks over 2am to 5am, never a
  * daytime headway. The loosest grade of its lit rows, so a list never overstates it: one row at 60 makes
  * the route 60, one at 90 makes it 90.
  */
@@ -41,7 +41,7 @@ export function routeNightGrade(rows: ReadonlyArray<NightFlags>): NightServiceFr
  * no gap between buses over 60 minutes, from the night verdict); 30 implies it, and nightService is the older 60.
  * The Overnight period reads it (tileNightServiceExpr is its tile twin), so a first trip at 3 AM is never overnight
  * service. CIV-1329 (Ryan, 2026-11-04: "i only meant to include 90 mins in" the Night Service page): the 90 grade
- * is for that page only (rowPassesNightGrade(row, 90)); the Overnight view stays at 30 and 60.
+ * is for that page only (rowPassesNightGrade(row, 90)); the Overnight mode stays at 30 and 60.
  */
 export function rowRunsThroughNight(row: NightFlags | null | undefined): boolean {
   return rowPassesNightGrade(row, OVERNIGHT_NIGHT_GRADE);

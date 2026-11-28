@@ -68,7 +68,7 @@ export interface BustangData {
   trips: Record<DayType, BustangTrip[]>;
 }
 
-/** The research view's list title, also the back link of a route opened from it. */
+/** The research mode's list title, also the back link of a route opened from it. */
 export const BUSTANG_LIST_TITLE = 'Bustang routes';
 export const BUSTANG_INFO_HEADING = MAP_EXPORT_TITLES.bustang;
 /** Where the view's map opens without a place in its link: Bustang's stops, Grand Junction to Denver ([south, west, north, east]). */

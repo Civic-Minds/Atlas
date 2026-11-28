@@ -17,7 +17,7 @@ const PHONE_PILL = 'flex h-8 px-3 items-center gap-1.5 rounded-full text-xs font
 const MODE_TAB_PEEK = 'hover:gap-1.5 focus-visible:gap-1.5 hover:pr-3 focus-visible:pr-3';
 
 /**
- * One view tab (Live, History, Compare) in the top bar, or as an item in the phone "More" menu.
+ * One app tab (Live, History, Compare) in the top bar, or as an item in the phone "More" menu.
  * Every mode switches in place through `onClick` (no page load, so the map stays mounted, #888);
  * none of them is a link. `variant="menu-trigger"` is the phone top bar's button that opens that
  * menu: it names the current mode, takes `expanded` and a `trailing` chevron, and is not a toggle.

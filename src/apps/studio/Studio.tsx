@@ -29,7 +29,7 @@ import { FEATURES } from '../../../shared/config';
 import { StudioMapFrameProvider, studioFrameKey } from '../../context/StudioMapFrame';
 
 /**
- * Atlas Studio (CIV-1828), a view of the main map as History is: App's top bar, its view tabs (Studio's pages in place of
+ * Atlas Studio (CIV-1828), a view of the main map as History is: App's top bar, its app tabs (Studio's pages in place of
  * the map's), the main map's chips, sidebar card, map, key and footer. The view owns the page, the agency and the route, in its
  * path (/studio/<page>/<agency>/<route>, CIV-1924); a page owns the rest. Each page lists only the agencies it has data for: Live's from
  * the Live map's own list (LIVE_AGENCY_SLUGS, CIV-2046), Fleet's from the built Studio files (STUDIO_MANIFEST_DEV_URL).

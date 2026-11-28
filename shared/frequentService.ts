@@ -1,11 +1,11 @@
 import { DAY_TYPES, type DayType } from './dayTypes';
 import { hourRange } from './timeText';
 
-/** The frequent-service view's name: its map export title, research card and share image (CIV-1613). */
+/** The frequent-service mode's name: its map export title, research card and share image (CIV-1613). */
 export const FREQUENT_SERVICE_TITLE = 'Frequent service';
 
 export type FrequentServiceWindow = 'daytime' | 'extended';
-/** The frequent-service view's grades: every 15 or 30 minutes or better. */
+/** The frequent-service mode's grades: every 15 or 30 minutes or better. */
 export const FREQUENT_GRADES = [15, 30] as const;
 export type FrequentServiceFrequency = (typeof FREQUENT_GRADES)[number];
 
