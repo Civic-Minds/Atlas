@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio answers no longer guess why two of a route's frequency figures disagree**: they said the faster figure might come from a stretch shared with other routes and to trust the slower one, which was wrong for the TTC 504 in the evening
 - **Studio's route card shows both schedules in full**: the newer schedule's column was cut off at the card's edge
 - **The MCP's route_now counts each direction's vehicles and the gaps between them the way the Live map's route card does**: it used its own count, so at the same minute it could say 9 vehicles where the map said 8
 - **Studio Live shows Kingston**: it offered Kingston, then said "Live doesn’t cover any Kingston Transit routes", because only some of its reads looked in Studio's private files
