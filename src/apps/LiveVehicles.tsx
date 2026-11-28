@@ -89,7 +89,7 @@ interface RouteGroup {
 const ELIGIBLE_SLUGS = new Set(LIVE_AGENCY_SLUGS);
 
 /** One-line summary of a destination's vehicles: "10 vehicles · 2 late" (a streetcar route), "3 buses". */
-function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
+export function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
   const count = vehicleModeCount(vehicles.length, modeWord);
   const late = vehicles.filter(v => vehicleStatus(v) === 'late').length;
   return late > 0 ? `${count} · ${late} late` : count;
