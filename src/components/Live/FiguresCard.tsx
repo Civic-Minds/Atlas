@@ -33,9 +33,9 @@ export function FiguresCard({ label, title, action, children }: { label: string;
   return (
     <Card as="section" tone="surface" aria-label={label} className="min-w-0 px-2.5 py-1.5">
       {(title || action) && (
-        <div className="flex items-start justify-between gap-2 pt-0.5">
-          {title && <h3 className="m-0 text-sm font-bold text-[var(--text-primary)]">{title}</h3>}
-          {action && <div className="ml-auto">{action}</div>}
+        <div className="pt-0.5">
+          {title && <h3 className="m-0 whitespace-nowrap text-sm font-bold text-[var(--text-primary)]">{title}</h3>}
+          {action}
         </div>
       )}
       {children}

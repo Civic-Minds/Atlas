@@ -19,7 +19,7 @@ describe('WeekTable', () => {
     const table = screen.getByRole('table');
     expect(within(table).getAllByRole('columnheader').map(h => h.textContent)).toEqual(['Measure', 'Last week', 'This week']);
     // The scope and the days left out sit top right beside the title, as on the late-by-hour chart (Ryan, 2026-11-27).
-    expect(screen.getByTestId('section-notes').textContent).toBe('TTCExcluding Oct 11 and Oct 4');
+    expect(screen.getByTestId('section-notes').textContent).toBe('TTC·Excluding Oct 11 and Oct 4');
     expect(within(table).getAllByRole('rowheader').map(h => h.textContent)).toEqual(['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']);
   });
   it('puts this week and last week in their own columns, bunching in two parts that add up to the total', () => {

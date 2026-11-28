@@ -875,12 +875,9 @@ export function SidebarCardListRows({ children, className = '' }: { children: Re
 export function SidebarCardSection({ label, aside, children }: { label?: string; /** At the end of the label's line (Live's SectionNotes). */ aside?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="mt-3 pt-3 border-t border-[var(--border-primary)]">
-      {aside ? (
-        <div className="flex items-start justify-between gap-2">
-          {label ? <CardSectionLabel>{label}</CardSectionLabel> : <span />}
-          {aside}
-        </div>
-      ) : label && <CardSectionLabel>{label}</CardSectionLabel>}
+      {/* The heading on its own line, never wrapped; the aside (Live's SectionNotes) on the line under it (CIV-3159). */}
+      {label && <CardSectionLabel className={aside ? 'mb-0 whitespace-nowrap' : undefined}>{label}</CardSectionLabel>}
+      {aside && <div className="mb-2">{aside}</div>}
       <SidebarCardListRows>{children}</SidebarCardListRows>
     </div>
   );
