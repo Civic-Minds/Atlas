@@ -231,3 +231,44 @@ export function orderAlongRoute<V extends Pick<LiveVehicle, 'lat' | 'lon' | 'dir
   });
   return placed.sort((a, b) => a.dir - b.dir || a.along - b.along || a.i - b.i).map(x => x.v);
 }
+
+/** One destination row the route card draws: its key (rowDirectionKey) and its direction. */
+export interface CardRowKey { key: string; directionId: number }
+
+const words = (s: string) => s.toLowerCase().replace(/^to\s+/, '').split(/[\s&/,]+/).filter(Boolean);
+/** "St Clair" and "St Clair Station": one name is the other's first words. */
+const leadsWith = (a: string, b: string) => { const x = words(a), y = words(b); const n = Math.min(x.length, y.length); return n > 0 && x.slice(0, n).join(' ') === y.slice(0, n).join(' '); };
+/** The rows a group's name (or its trips' last stop) leads into; several: the shortest name, the route's main one ("Broadview" over "Broadview Station"). */
+const namedRow = (pool: readonly string[], key: string, stops: readonly string[]): string | null => {
+  const named = pool.filter(k => leadsWith(k, key) || stops.some(s => leadsWith(k, s)));
+  if (!named.length) return null;
+  const shortest = Math.min(...named.map(k => words(k).length));
+  const best = named.filter(k => words(k).length === shortest);
+  return best.length === 1 ? best[0] : null;
+};
+
+/**
+ * #1877, 2026-11-27 (Ryan, a fifth time: vehicles listed apart from their destination): every vehicle group goes under one
+ * of the route card's own rows where it can, so no destination gets a second row. A group whose key isn't a row's joins
+ * the only row of its direction; else the one row whose name leads with the group's (or its trips' last stop's) name,
+ * or the other way round ("St Clair" → "to St Clair Station"). A group that fits no row, or several, keeps its own.
+ */
+export function mergeIntoCardRows(groups: ReadonlyMap<string, LiveVehicle[]>, rows: readonly CardRowKey[]): Map<string, LiveVehicle[]> {
+  const rowKeys = new Set(rows.map(r => r.key));
+  const out = new Map<string, LiveVehicle[]>();
+  const add = (k: string, vs: readonly LiveVehicle[]) => out.set(k, [...(out.get(k) ?? []), ...vs]);
+  for (const [key, vs] of groups) {
+    if (rowKeys.has(key) || key === DIRECTION_UNCLEAR) { add(key, vs); continue; }
+    const dir = vs[0]?.directionId;
+    const oneDir = dir != null && vs.every(v => v.directionId === dir);
+    // A group with no single direction (the feed gives none) is matched by name among every row.
+    const pool = [...new Set(rows.filter(r => !oneDir || r.directionId === dir).map(r => r.key))];
+    const stops = [...new Set(vs.map(v => v.lastStop?.name).filter((n): n is string => !!n))];
+    // "Broadview Ave", "Broadview & Queen" → "Broadview": the names' shared first words. A feed whose direction id
+    // disagrees with the schedule's still finds its row by name among every row.
+    const everyRow = [...new Set(rows.map(r => r.key))];
+    const target = namedRow(pool, key, stops) ?? namedRow(everyRow, key, stops) ?? (oneDir && pool.length === 1 ? pool[0] : null);
+    add(target ?? key, vs);
+  }
+  return out;
+}

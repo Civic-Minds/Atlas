@@ -1,23 +1,24 @@
 import Widget from './Widget';
+import { CardDirectionRow } from '../../Interval/cardUi';
+import { CARD_NOTICE } from '../../../styles';
 
 export interface Problem { key: string; label: string; sub?: string; value: string; onPick: () => void }
 
-/** A short clickable list of the worst places (stops), each with its figure; a click selects it on the map. */
+/**
+ * A short clickable list of the worst places (stops), each with its figure; a click selects it on the map. Each place is
+ * the route card's own row (CardDirectionRow), with the card's spacing, so the list lines up with the section's title and
+ * reads like the other sections (Ryan, 2026-11-27, on "Stops most often late": "This doesn't look great as-is").
+ */
 export default function ProblemsWidget({ title, rows, intro }: { title: string; rows: readonly Problem[]; /** A line under the title that says how the list is picked. */ intro?: string }) {
   if (!rows.length) return null;
   return (
     <Widget title={title} size="medium">
-      {intro && <p className="m-0 mb-1 text-xs leading-4 text-[var(--text-dim)]">{intro}</p>}
-      <ul className="m-0 p-0">
+      {intro && <p className={`${CARD_NOTICE} m-0 mb-1`}>{intro}</p>}
+      <div className="space-y-1">
         {rows.map(r => (
-          <li key={r.key} className="list-none">
-            <button type="button" onClick={r.onPick} className="flex w-full items-baseline justify-between gap-3 rounded-lg px-1.5 py-1 text-left text-sm hover:bg-[var(--bg-hover)] max-sm:min-h-[44px] max-sm:items-center">
-              <span className="min-w-0 break-words">{r.label}{r.sub && <span className="text-[var(--text-dim)]"> {r.sub}</span>}</span>
-              <span className="shrink-0 text-[var(--text-secondary)]">{r.value}</span>
-            </button>
-          </li>
+          <CardDirectionRow key={r.key} labelWeight="regular" label={r.sub ? `${r.label} ${r.sub}` : r.label} labelEnd={r.value} onClick={r.onPick} />
         ))}
-      </ul>
+      </div>
     </Widget>
   );
 }

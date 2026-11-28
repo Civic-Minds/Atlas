@@ -5,7 +5,7 @@
  */
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, stopNameParts, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
 import { lonLatPoint, metresBetween, projectOntoSegment } from '../../shared/geoDistance';
-import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LIVE_MIN_SAMPLE, LIVE_STALE_SEC } from '../../shared/rules/live';
+import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LIVE_MIN_SAMPLE, LIVE_STALE_SEC, GAP_RANGE_FROM_SEC } from '../../shared/rules/live';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
 export const MIN_STRIP_GAPS = LIVE_MIN_SAMPLE;
@@ -243,7 +243,7 @@ export interface LiveGaps {
  * car behind is (so a downtown gap on an overlapped route is judged by the downtown timetable, not the route's widest),
  * too close is under BUNCHED_GAP_SEC. Null unless more than half the gaps were measured.
  */
-export function gapExtremes(live: Pick<LiveGaps, 'gapsMin' | 'gapsSchedSec' | 'scheduledSec'>): { longest: { min: number; tooFar: boolean }; shortest: { min: number; tooClose: boolean } } | null {
+export function gapExtremes(live: Pick<LiveGaps, 'gapsMin' | 'gapsSchedSec' | 'scheduledSec'>): { longest: { min: number; tooFar: boolean }; shortest: { min: number; tooClose: boolean }; /** The range's low end: the shortest gap of at least GAP_RANGE_FROM_SEC (CIV-1828), null when none is. */ rangeFrom: number | null } | null {
   const measured = live.gapsMin.map((g, i) => ({ g, i })).filter((x): x is { g: number; i: number } => x.g != null);
   if (measured.length * 2 <= live.gapsMin.length || measured.length === 0) return null;
   const long = measured.reduce((a, b) => (b.g > a.g ? b : a));
@@ -252,6 +252,7 @@ export function gapExtremes(live: Pick<LiveGaps, 'gapsMin' | 'gapsSchedSec' | 's
   return {
     longest: { min: long.g, tooFar: sched != null && long.g * 60 > GAPPED_FACTOR * sched },
     shortest: { min: short.g, tooClose: short.g * 60 < BUNCHED_GAP_SEC },
+    rangeFrom: measured.reduce<number | null>((a, b) => (b.g * 60 >= GAP_RANGE_FROM_SEC && (a == null || b.g < a) ? b.g : a), null),
   };
 }
 

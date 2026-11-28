@@ -4,7 +4,7 @@ import { vehiclesWord } from '../../../shared/modeVehicles';
 import { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import { dashedLineSwatch } from '../../styles';
-import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
+import { PanelBody } from '../../components/ui/Panel';
 import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
 import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
@@ -23,12 +23,13 @@ import { capitalizeFirst } from '../../../shared/headwayText';
 import { dateRange, shortDate } from '../../../shared/dateText';
 import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
-import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
+import { pairedStudioFile, periodChange, studioBeforeAfterDevUrl, studioSeason, type StudioBeforeAfterFile, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_REDESIGN_TEXT, fleetNetworkText, fleetNetworkTitle, fleetPeriodCountText, notOnTripValueText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
 import Widget from '../../components/Live/tool/Widget';
 import { PanelSection, PanelSectionsProvider } from '../../components/Live/panelSections';
-import { CARD_NOTE } from '../../styles';
+import { CARD_NOTE, MAP_APP_PAGE, MAP_APP_PAGE_COLUMN } from '../../styles';
+import { PageTitle } from '../../components/ui/PageTitle';
 import SplitBar from '../../components/charts/SplitBar';
 import DataTable from '../../components/ui/DataTable';
 import { countText } from '../../../shared/numberText';
@@ -368,6 +369,9 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
 
   const change = route ? file.changes.find(c => c.route === route) ?? null : null;
   const intro = file.day ? C.intro(agency, dayInSentence(file.day), shortDate(file.before.date) ?? file.before.date, shortDate(file.after.date) ?? file.after.date) : C.noDay;
+  // CIV-2058: when no earlier schedule from the same season exists, the page names the two seasons compared.
+  const seasons = [studioSeason(file.before.date), studioSeason(file.after.date)] as const;
+  const seasonNote = seasons[0] && seasons[1] && seasons[0] !== seasons[1] ? C.seasons(seasons[0], seasons[1]) : '';
   const leftOut = (['after', 'before'] as const).map(side => {
     const days = file.leftOut.filter(l => l.sides.includes(side)).map(l => capitalizeFirst(dayPlural(l.day)));
     return days.length ? C.leftOut(joinList(days), side === 'after') : null;
@@ -432,16 +436,25 @@ function Body({ view, slug, file, vehicles, agency, period, setPeriod, route, se
           </PanelBody>
         </StudioPanel>
       ) : (
-        <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>
-          <PanelTitleBar title={PAGE_NAMES.studioSchedules} />
-          <div className="shrink-0 px-4 pt-2">
-            <CardBodyText>{intro}</CardBodyText>
-            {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
+        // CIV-2182 (Ryan, 2026-11-25: "Maybe scehedules should be a full page too idk"; 2026-11-26: "Feel like the Schedules page
+        // isn't ideal as a panel like it currently is and I think we were considering making that a full-page tool"): the list is a
+        // full page under Studio's top bar, as the review mock-up showed; a route picked from it opens its card on the map.
+        <section aria-label={PAGE_NAMES.studioSchedules} className={MAP_APP_PAGE}>
+          <div className={MAP_APP_PAGE_COLUMN}>
+            <PageTitle>{PAGE_NAMES.studioSchedules}</PageTitle>
+            <div className="mt-3">
+              <CardBodyText>{intro}</CardBodyText>
+              {seasonNote && <CardBodyText>{seasonNote}</CardBodyText>}
+              {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
+            </div>
+            <div className="mt-4 flex flex-col">
+              <ChangeList file={file} period={period} onPick={setRoute} design={schedulesDesign()} />
+            </div>
           </div>
-          <ChangeList file={file} period={period} onPick={setRoute} design={schedulesDesign()} />
-        </StudioPanel>
+        </section>
       )}
-      {view === 'schedules' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
+      {/* The map's key, only while the map shows (a route's card); the full page has no map. */}
+      {view === 'schedules' && route && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
     </>
   );
 }

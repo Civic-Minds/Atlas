@@ -3,7 +3,7 @@ import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
-import { minutesText } from './liveFormat';
+import { gapText, minutesText, tenth } from './liveFormat';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow, type OnTimeWindow } from './rules/live';
 
 /**
@@ -33,7 +33,8 @@ export const SERVICE_DELIVERED_TITLE = 'Service delivered';
 /** The late-stops section and widget on the agency and route pages. */
 export const LATE_STOPS_TITLE = 'Stops most often late';
 /** The week table's section and caption. */
-export const WEEK_COMPARE_TITLE = 'This week compared with last week';
+/** Ryan, 2026-11-27: "This Week vs. Last or smth" (sentence case). */
+export const WEEK_COMPARE_TITLE = 'This week vs. last';
 /**
  * #1831 (CIV-3001): the week table's scope line names the time of day its figures are for, where one is picked ("both
  * directions · Evening"), so they aren't read against the all-day late-by-hour chart below them (TTC 504: "Late 18%" for the
@@ -84,6 +85,12 @@ export const updatedAgoText = (ageSec: number): string => {
 /** The Live route card's gap rows, under Scheduled (CIV-2045, Ryan's words; replaced "Gaps, front to back (min)"). */
 export const LONGEST_GAP_LABEL = 'Longest gap';
 export const SHORTEST_GAP_LABEL = 'Shortest gap';
+/**
+ * The gaps between the vehicles on the road now, shortest to longest: "gaps 3–20 min" (CIV-1828). With no shortest gap
+ * to show (see GAP_RANGE_FROM_SEC), or one that rounds to the longest, the longest alone: "longest gap 20 min".
+ */
+export const gapRangeText = (from: number | null, longest: number): string =>
+  from != null && tenth(from) !== tenth(longest) ? `gaps ${tenth(from)}–${minutesText(longest)}` : `${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(longest)}`;
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
@@ -122,6 +129,8 @@ const halfMinText = (n: number): string => (Number.isInteger(n) ? String(n) : `$
 /** "more than 5½ min" for Atlas's window; the agency's own late limit where it publishes one ("more than 5 min", TTC). */
 export const lateLimitText = (t?: OnTimeWords | null): string =>
   t?.lateAtOrAboveMin != null && t.lateAtOrAboveMin !== LATE_ABOVE_MIN ? `more than ${halfMinText(t.lateAtOrAboveMin)} min` : LATE_LIMIT_TEXT;
+/** The late limit as the map's key says it: "5½+ min" for Atlas's window, the agency's own where it publishes one (CIV-3151). */
+export const lateKeyLimit = (t?: OnTimeWords | null): string => `${halfMinText(t?.lateAtOrAboveMin ?? LATE_ABOVE_MIN)}+ min`;
 /** LATE_THRESHOLD at a page's window. */
 export const lateThreshold = (t?: OnTimeWords | null): string => `${lateLimitText(t)} late`;
 /** An agency's own on-time window in Ryan's words (2026-11-24, CIV-2222: ">1 min early or >5 min late"). */
@@ -351,6 +360,8 @@ export const STUDIO_LIVE_PENDING = {
 export const STUDIO_GLANCE = {
   onTime: 'On time',
   late: LATE_THRESHOLD.charAt(0).toUpperCase() + LATE_THRESHOLD.slice(1),
+  /** #1925: at the agency's own late limit where it publishes one ("More than 5 min late", TTC), as every other Late line. */
+  lateAt: (t?: OnTimeWords | null): string => { const s = lateThreshold(t); return s.charAt(0).toUpperCase() + s.slice(1); },
 } as const;
 
 /**
@@ -388,11 +399,6 @@ export const STUDIO_ROUTE_PANEL_PENDING = {
   noReading: 'No live reading for this route right now.',
   /** A reading with no vehicle of the route on the road. */
   noVehicles: 'No vehicles on this route right now.',
-  /**
-   * The route's week table, labelled as recorded past service so it isn't read as live (Ryan, CIV-2021: "I'm confused what
-   * I am looking at here if live information is unavailable"). Proposed item 8.
-   */
-  weekRecorded: 'Recorded past service, not live.',
   /** About, Live part: bunching in plain words (replaces the two-figure note now that Studio shows one figure). */
   bunchingAbout: (): string =>
     `Bunching is the share of gaps between vehicles at a stop that were under ${minutesText(BUNCHED_GAP_SEC / 60)} (vehicles running together) or more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap (a long wait).`,

@@ -22,5 +22,45 @@
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/benton-or-us/benton-or-us--flex-v2.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3109/latest.zip",
   "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/benton-or-us/benton-or-us--flex-v2.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20280401",
+  "feedQuality": {
+    "status": "review",
+    "score": 70,
+    "reasons": [
+      "3 minor schedule issues found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 3,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 6,
+      "feedExpiry": "20280401",
+      "routeCount": 2,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20271001-95800f4e975097e2",
+  "lastFeedContentKey": "525f2440012c3eac",
+  "lastFeedExpiry": "20280401",
+  "lastPeekedExpiry": "20280401",
+  "lastFeedStart": "20260901",
+  "lastFeedVersion": "UTC: 02-Oct-2026 17:44",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "58076502b53141d6",
+  "feedObtainedAt": "20261127"
 }

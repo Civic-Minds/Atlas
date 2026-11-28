@@ -1,0 +1,142 @@
+{
+  "slug": "danville-va",
+  "officialName": "Danville Transit",
+  "websiteUrl": "https://www.danville-va.gov/508/Mass-Transit",
+  "dataLicense": {
+    "url": "https://www.danville-va.gov/508/Mass-Transit",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-27"
+  },
+  "region": "Virginia",
+  "center": [
+    36.5914,
+    -79.3848
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/danville-va-us/danville-va-us--flex-v2.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true,
+  "routeRenames": [
+    {
+      "routeId": "33014",
+      "from": {
+        "shortName": "1",
+        "longName": "North Main"
+      },
+      "to": {
+        "shortName": "North Main",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33011",
+      "from": {
+        "shortName": "4",
+        "longName": "North Main"
+      },
+      "to": {
+        "shortName": "North Main",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33012",
+      "from": {
+        "shortName": "5",
+        "longName": "Riverside"
+      },
+      "to": {
+        "shortName": "Riverside",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33013",
+      "from": {
+        "shortName": "6",
+        "longName": "Glenwood"
+      },
+      "to": {
+        "shortName": "Glenwood",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33017",
+      "from": {
+        "shortName": "3",
+        "longName": "Edgewood - Stokesland"
+      },
+      "to": {
+        "shortName": "Edgewood - Stokesland",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33010",
+      "from": {
+        "shortName": "4",
+        "longName": "Health Center - DCC"
+      },
+      "to": {
+        "shortName": "Health Center - DCC",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33019",
+      "from": {
+        "shortName": "3",
+        "longName": "Danville Estates - NorDan"
+      },
+      "to": {
+        "shortName": "Danville Estates - NorDan",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33016",
+      "from": {
+        "shortName": "2",
+        "longName": "Third Avenue - NorDan"
+      },
+      "to": {
+        "shortName": "Third Avenue - NorDan",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33020",
+      "from": {
+        "shortName": "5",
+        "longName": "Edgewood - Stokesland"
+      },
+      "to": {
+        "shortName": "Edgewood - Stokesland",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33018",
+      "from": {
+        "shortName": "1",
+        "longName": "Kemper Road - DCC"
+      },
+      "to": {
+        "shortName": "Kemper Road - DCC",
+        "longName": ""
+      }
+    },
+    {
+      "routeId": "33015",
+      "from": {
+        "shortName": "2",
+        "longName": "Riverside"
+      },
+      "to": {
+        "shortName": "Riverside",
+        "longName": ""
+      }
+    }
+  ]
+}

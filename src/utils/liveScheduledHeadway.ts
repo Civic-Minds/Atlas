@@ -5,6 +5,7 @@ import { routeKeyForShortName } from './routeKey';
 import { periodKeyForHour } from '../../shared/config';
 import { getNowDay } from '../../shared/dayTypes';
 import { buildRouteCardModel, cardGroupLines, type RouteCardModel } from './routeCardRows';
+import { rowDirectionKey, type CardRowKey } from './liveGrouping';
 
 /** The main map's route card model for a route now, the one source Live reads its scheduled figures from (#1234, CIV-2045). */
 function liveCardModel(fc: GeoJSON.FeatureCollection, routeKey: string, day: DayType, period: TimePeriod, overrides: RouteDirectionOverrides): RouteCardModel | null {
@@ -132,4 +133,34 @@ export function liveScheduledRowsNow(
   const period = periodKeyForHour(new Date().getHours());
   if (!period) return null;
   return liveScheduledRows(fc, routeKey, getNowDay(), period, counted?.directionId ?? null, routeDirectionOverrides(agencies, slug, routeShortName), counted?.label ?? null);
+}
+
+/** The main map's route card model for a route now (today, the clock hour's period): what Studio's Live panel draws its rows from, as the map's card does. */
+export function liveCardModelNow(
+  fc: GeoJSON.FeatureCollection | undefined,
+  agencies: Parameters<typeof routeDirectionOverrides>[0],
+  slug: string,
+  routeShortName: string,
+): RouteCardModel | null {
+  const period = periodKeyForHour(new Date().getHours());
+  return period ? liveCardModelAt(fc, agencies, slug, routeShortName, getNowDay(), period) : null;
+}
+
+/** The same model for a given day and period. */
+export function liveCardModelAt(
+  fc: GeoJSON.FeatureCollection | undefined,
+  agencies: Parameters<typeof routeDirectionOverrides>[0],
+  slug: string,
+  routeShortName: string,
+  day: DayType,
+  period: TimePeriod,
+): RouteCardModel | null {
+  const routeKey = fc ? routeKeyForShortName(slug, fc.features, routeShortName, day) : null;
+  if (!fc || !routeKey) return null;
+  return liveCardModel(fc, routeKey, day, period, routeDirectionOverrides(agencies, slug, routeShortName));
+}
+
+/** The destination rows the route card draws now (every row and span row, by direction), for placing live vehicles under them (#1877). */
+export function liveCardRowKeys(model: RouteCardModel | null, routeShortName: string): CardRowKey[] {
+  return (model?.groups ?? []).flatMap(g => [...g.rows, ...g.spanRows].flatMap(r => { const k = rowDirectionKey(r.feature?.headsign, routeShortName); return k ? [{ key: k, directionId: g.dirId }] : []; }));
 }

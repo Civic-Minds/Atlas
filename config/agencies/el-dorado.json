@@ -21,5 +21,45 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-75/latest.zip",
   "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-75/latest.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270601",
+  "feedQuality": {
+    "status": "review",
+    "score": 90,
+    "reasons": [
+      "1 minor schedule issue found while reading the feed."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 1,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 19,
+      "feedExpiry": "20270601",
+      "routeCount": 9,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270601-54bd59ae69dfa063",
+  "lastFeedContentKey": "0ad2abfb2861d25d",
+  "lastFeedExpiry": "20270601",
+  "lastPeekedExpiry": "20270601",
+  "lastFeedStart": "20261110",
+  "lastFeedVersion": "UTC: 10-Nov-2026 19:12",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "5a80f3f68ac5dff0",
+  "feedObtainedAt": "20261127"
 }

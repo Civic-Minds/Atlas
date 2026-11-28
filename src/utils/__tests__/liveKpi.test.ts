@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kpiDelta, kpiTiles, lateForDays, weekWindowParts } from '../liveKpi';
+import { datesUpToLastCounted, kpiDelta, kpiTiles, lateForDays, weekWindowParts } from '../liveKpi';
 import { dailyNoise } from '../../../shared/liveDashboard';
 import type { LiveV3 } from '../../../shared/liveDashboard';
 
@@ -159,5 +159,18 @@ describe('network run time against the timetable (CIV-945)', () => {
     expect(runTimeShareText(-0.071)).toBe('7% faster');
     expect(runTimeShareText(0.03)).toBe('3% slower');
     expect(runTimeShareText(0.004)).toBe('on time');
+  });
+});
+
+// #1924: "Data up to" never names a trailing day the week table excludes.
+describe('datesUpToLastCounted', () => {
+  const wk = (dates: string[], healthy: string[]) => ({ days: dates.length, dates, healthyDates: healthy, late: null, tripTime: null, extraWait: null, bunching: null, delivered: null }) as never;
+  const dates = ['2026-11-25', '2026-11-26', '2026-11-27'];
+  it('drops trailing days left out (today, half recorded)', () => {
+    expect(datesUpToLastCounted(dates, wk(dates, ['2026-11-25', '2026-11-26']))).toEqual(['2026-11-25', '2026-11-26']);
+  });
+  it('keeps a day left out in the middle, and returns the same array when nothing is trimmed', () => {
+    expect(datesUpToLastCounted(dates, wk(dates, ['2026-11-25', '2026-11-27']))).toBe(dates);
+    expect(datesUpToLastCounted(dates, null)).toBe(dates);
   });
 });

@@ -17,7 +17,7 @@ import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, posi
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LOADING_LABEL, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
-import { LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL } from '../../../shared/liveWording';
+import { LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL, gapRangeText } from '../../../shared/liveWording';
 import { rowDirectionKey } from '../../utils/liveGrouping';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
@@ -122,7 +122,7 @@ interface Props {
    * and hands each direction's destination gaps (longest, in minutes, keyed as rowDirectionKey names the destination) to
    * the card instead. Must be stable (a state setter or useCallback).
    */
-  onDestinationGaps?: (directionId: number, gaps: ReadonlyMap<string, number>) => void;
+  onDestinationGaps?: (directionId: number, gaps: ReadonlyMap<string, string>) => void;
 }
 
 /**
@@ -186,22 +186,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const scheduledBlock = steered && scheduledRows && scheduledRows.length > 0 ? (
                 <div className="space-y-1">
                   <CardSectionLabel className="mb-0">{SCHEDULED_COLUMN}</CardSectionLabel>
-                  {scheduledRows.map(r => {
-                    // The row's own number, else the one its words name ("every 10 min" on a row with no gap of its own).
-                    const every = r.headwayMin ?? (Number(/^every (\d+)/.exec(r.value)?.[1]) || null);
-                    return (
-                      <CardDirectionRow
-                        key={r.key}
-                        labelWeight={r.key === 'shared' ? 'bold' : 'regular'}
-                        label={r.label}
-                        headway={every ?? undefined}
-                        headwayLabel={every != null && r.value !== headwayEvery(every) ? r.value : undefined}
-                        limited={every == null}
-                        limitedLabel={every == null ? r.value : undefined}
-                        wrapLongValue
-                      />
-                    );
-                  })}
+                  {scheduledRows.map(r => <CardDirectionRow key={r.key} {...scheduledRowProps(r)} />)}
                 </div>
   ) : null;
   // Loaded and still missing: Live has no analysis for this route, so "Right now" can't show; one grey line says so (CIV-1413 B).
@@ -238,7 +223,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     );
   }
   return (
-    <SidebarCardSection label={rightNowLabel}>
+    // No "Right now" heading (Ryan, 2026-11-27: no separate Right now and Scheduled sections); it names only a stale reading.
+    <SidebarCardSection label={rightNowLabel === RIGHT_NOW_LABEL ? undefined : rightNowLabel}>
       <div className="flex flex-col gap-3">
         {shown.map(([id, label]) => (
           <DirectionRightNow
@@ -261,6 +247,21 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       </div>
     </SidebarCardSection>
   );
+}
+
+/** A scheduled row as the main card draws it: its label, its headway dot and words (CIV-2045). */
+function scheduledRowProps(r: LiveScheduledRow) {
+  // The row's own number, else the one its words name ("every 10 min" on a row with no gap of its own).
+  const every = r.headwayMin ?? (Number(/^every (\d+)/.exec(r.value)?.[1]) || null);
+  return {
+    labelWeight: r.key === 'shared' ? 'bold' as const : 'regular' as const,
+    label: r.label,
+    headway: every ?? undefined,
+    headwayLabel: every != null && r.value !== headwayEvery(every) ? r.value : undefined,
+    limited: every == null,
+    limitedLabel: every == null ? r.value : undefined,
+    wrapLongValue: true,
+  };
 }
 
 /** One direction's "Right now": its vehicles by destination row, each with its longest gap (CIV-2047). */
@@ -309,11 +310,15 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     const only = branchOnlyStops(stopPatterns?.[String(directionId)] ?? [], scheduledRows);
     const groups = vehiclesByPattern(cars, only);
     const out = new Map<string, { cars: number; extremes: ReturnType<typeof gapExtremes> }>();
+    // A direction with one destination row: that row carries every car (Studio 512 westbound showed a bare "Vehicles 3").
+    const destRows = scheduledRows.filter(r => r.key !== 'shared');
+    const sole = destRows.length === 1 ? destRows[0].key : null;
     for (const r of scheduledRows) {
-      const mine = r.key === 'shared' ? cars : groups.get(r.key) ?? [];
-      if (r.key !== 'shared' && !only.has(r.key)) continue;
+      const all = r.key === 'shared' || r.key === sole;
+      const mine = all ? cars : groups.get(r.key) ?? [];
+      if (!all && !only.has(r.key)) continue;
       const ids = new Set(mine.map(v => v.id));
-      const sub = r.key === 'shared' ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
+      const sub = all ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips });
       const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
       out.set(r.key, { cars: mine.length, extremes: ext });
     }
@@ -322,13 +327,13 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   // #1877: each destination row's longest gap, keyed as the card names the destination (the first row naming it).
   const gapsKey = rowFigures && scheduledRows ? scheduledRows.flatMap(r => {
     const dest = r.key === 'shared' ? null : rowDirectionKey(r.headsign, routeShortName);
-    const longest = rowFigures.get(r.key)?.extremes?.longest.min;
-    return dest && longest != null ? [`${dest}\t${longest}`] : [];
+    const ext = rowFigures.get(r.key)?.extremes;
+    return dest && ext ? [`${dest}\t${gapRangeText(ext.rangeFrom, ext.longest.min)}`] : [];
   }).join('\n') : '';
   useEffect(() => {
     if (!onDestinationGaps) return;
-    const gaps = new Map<string, number>();
-    for (const l of gapsKey ? gapsKey.split('\n') : []) { const [k, m] = l.split('\t'); if (!gaps.has(k)) gaps.set(k, Number(m)); }
+    const gaps = new Map<string, string>();
+    for (const l of gapsKey ? gapsKey.split('\n') : []) { const [k, t] = l.split('\t'); if (!gaps.has(k)) gaps.set(k, t); }
     onDestinationGaps(directionId, gaps);
   }, [onDestinationGaps, gapsKey, directionId]);
   if (!line || !live || onDestinationGaps) return null;
@@ -358,28 +363,30 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
               return <Stats items={[[VEHICLES_LABEL, String(live.cars)], ...(onTime != null ? [[ON_TIME_LABEL, String(onTime)] as [string, string]] : [])]} />;
             }
             const matched = dest.reduce((n, r) => n + (rowFigures.get(r.key)?.cars ?? 0), 0);
+            // Ryan, 2026-11-27 ("Then this should use a similar/same design for that part"): each destination once, as the
+            // main card's row: its scheduled figure with the live gaps beside it, its vehicles under its name. No separate
+            // Scheduled section.
             return (
               <div className="space-y-1">
-                {dest.map(r => {
-                  const f = rowFigures.get(r.key)!;
+                {(scheduledRows ?? []).map(r => {
+                  const f = r.key === 'shared' ? undefined : rowFigures.get(r.key);
                   return (
                     <CardDirectionRow
                       key={r.key}
-                      labelWeight="regular"
-                      label={r.label}
-                      value={<span className="text-sm font-black text-[var(--text-primary)] whitespace-nowrap">{countOf(f.cars, 'vehicle')}</span>}
-                      subLabel={f.extremes ? `${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(f.extremes.longest.min)}` : undefined}
-                      subLabelWeight="medium"
+                      {...scheduledRowProps(r)}
+                      headwaySuffix={f?.extremes ? `· ${gapRangeText(f.extremes.rangeFrom, f.extremes.longest.min)}` : undefined}
+                      labelEnd={f ? countOf(f.cars, 'vehicle') : undefined}
+                      valueBelow={!!f}
                     />
                   );
                 })}
                 {live.cars > matched && (
-                  <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} value={<span className="text-sm font-black text-[var(--text-primary)] whitespace-nowrap">{countOf(live.cars - matched, 'vehicle')}</span>} />
+                  <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} labelEnd={countOf(live.cars - matched, 'vehicle')} />
                 )}
               </div>
             );
           })()}
-          {period && scheduledBlock}
+          {period && !(scheduledRows ?? []).some(r => r.key !== 'shared' && rowFigures?.has(r.key)) && scheduledBlock}
           {/* CIV-2045: the longest and shortest gap, only where the card has no destination rows to carry them. */}
           {extremes && !(scheduledRows && scheduledRows.length > 0 && rowFigures) && (
             <Stats items={[

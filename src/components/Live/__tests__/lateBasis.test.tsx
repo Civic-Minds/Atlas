@@ -60,9 +60,9 @@ describe('a figure on fewer than 3 good days is dimmed', () => {
     expect(tile('Weekends')?.getAttribute('title')).toBe('Few measurements: treat with care.'); // 1 good day
     expect(tile('Weekdays')?.getAttribute('title')).toBe('Few measurements: treat with care.'); // 2026-10-09 only
   });
-  it('dims the planner chart on fewer than 3 days and not on 3', () => {
+  it('hides the planner chart on fewer than 3 days and shows it on 3 (Ryan, 2026-11-27: "1")', () => {
     const { container, rerender } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={2} />);
-    expect(within(container).getByRole('region', { name: 'Late departures by hour' }).className).toMatch(/opacity-60/);
+    expect(within(container).queryByRole('region', { name: 'Late departures by hour' })).toBeNull();
     rerender(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={3} />);
     expect(within(container).getByRole('region', { name: 'Late departures by hour' }).className).not.toMatch(/opacity-60/);
   });
@@ -100,10 +100,6 @@ describe('thin figures say why, and one scale serves the row', () => {
     render(<LateByHourSection chart="bars" v3={v3} data={v3.bands.all as unknown as DashboardBandData} band="all" dir={null} />);
     // Every card of this fixture rests on 1 or 2 good days: a tile line and a chart line each.
     expect(screen.getAllByText('Few measurements: treat with care.').length).toBeGreaterThanOrEqual(6);
-  });
-  it('writes it in the planner chart too, without adding height (it takes the idle hover line)', () => {
-    render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.2, n: 200 }]} band="all" overall={0.2} days={2} />);
-    expect(screen.getByText('Few measurements: treat with care.')).toBeTruthy();
   });
   it('sets one scale from the bars with enough departures, and marks a thin bar that runs past it', () => {
     expect(rowMax([{ hour: 1, value: 0.12, n: 50 }, { hour: 2, value: 0.7, n: 5 }])).toBe(0.2); // the 5-departure hour does not count

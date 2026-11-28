@@ -20,7 +20,7 @@ describe('CIV-1199: the part-period notice reads the numbers the rows show (one 
     const m = card('late');
     const rows = m.groups.flatMap(g => g.rows);
     // CIV-2232 (Ryan, 2026-11-24): under 4 of its own trips in a late period whose wait is over an hour: no number.
-    expect(rows.map(r => `${r.label}: ${reportRowValueText(r)}`)).toEqual(['to Central / 53Ave-Target: Runs irregularly in this period']);
+    expect(rows.map(r => `${r.label}: ${reportRowValueText(r)}`)).toEqual(['to Central / 53Ave-Target: Irregular']);
     expect(m.rowHeadways).toEqual([]);
   });
 });

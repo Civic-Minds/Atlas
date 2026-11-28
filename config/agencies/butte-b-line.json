@@ -16,5 +16,42 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/ntd-90208/latest.zip",
   "timezone": "America/Los_Angeles",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/ntd-90208/latest.zip",
+  "lastFeedCheckAt": "20261127",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20261219",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 1,
+      "featureCount": 57,
+      "feedExpiry": "20261219",
+      "routeCount": 20,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20261219-7bebd95b8246634f",
+  "lastFeedExpiry": "20261219",
+  "lastPeekedExpiry": "20261219",
+  "lastFeedStart": "20260903",
+  "lastFeedVersion": "Fall 2026 2nd Edition",
+  "lastRefreshedAt": "2026-11-27",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "67fc2f3a0f6b252a",
+  "feedObtainedAt": "20261127"
 }

@@ -20,10 +20,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How a route's frequency is decided
 
-- **On-demand zones show only with no frequency filter**
-  - What: under any frequency filter (every 10, 15, 20, 30 or 60) the map hides on-demand zones and stops; with no filter (all service) they show by their hours as before. One rule (shared/viewLayers.ts mapDrawsOnDemand), so the failed-to-load notice follows it too.
-  - Why: on-demand service has no headway, so it can't pass a frequency filter.
-  - Source: Ryan, 2026-11-24 (CIV-2898): "on demand doens't have deadways so why do they show up if i select 10 mins lol", then "1"
+- **On-demand zones show only with no frequency filter, and the map opens with no filter**
+  - What: under any frequency filter (every 10, 15, 20, 30 or 60) the map hides on-demand zones and stops; with no filter (all service) they show by their hours as before. One rule (shared/viewLayers.ts mapDrawsOnDemand), so the failed-to-load notice follows it too. The map's default filter is All (DEFAULT_MAX_HEADWAY), so zones show on a fresh map.
+  - Why: on-demand service has no headway, so it can't pass a frequency filter; with an every-60 default, zones never showed on a fresh map.
+  - Source: Ryan, 2026-11-24 (CIV-2898): "on demand doens't have deadways so why do they show up if i select 10 mins lol", then "1"; the All default 2026-11-27 (CIV-2898), "1"
 - **Atlas is not a trip-planning tool; no booking info**
   - What: no on-demand booking info anywhere: no app names, booking links, phone numbers, call-centre hours or booking-ahead rules on zone cards, other UI or the MCP's on_demand_zones answer. The bookingInfo and bookingUrl fields are deleted from the data, and a guard test (noBookingInfo.test.ts) fails if a booking field or booking text comes back.
   - Why: Atlas shows how often service runs, not how to ride it.
@@ -61,13 +61,17 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: chosen from a census of 1,160 feeds and a review of example routes. Check these before asking.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) (Thresholds), [#567](https://github.com/Civic-Minds/Atlas/issues/567), [#568](https://github.com/Civic-Minds/Atlas/issues/568), [#570](https://github.com/Civic-Minds/Atlas/issues/570), [#571](https://github.com/Civic-Minds/Atlas/issues/571), PR [#584](https://github.com/Civic-Minds/Atlas/pull/584)
 - **A period with no regular cadence reads "Irregular"**
-  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Runs irregularly in this period" on cards, "Irregular" in tight spots (table cells, list values). Both come from src/content/noticeCopy.ts.
+  - What: when a number is only one gap between a few departures, or the filter finds no regular cadence though the route runs, the row says so instead of the number, everywhere: "Irregular" on cards, in table cells and in list values, one label in src/content/noticeCopy.ts. The Night card keeps "Runs irregularly overnight".
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
-  - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
+  - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; card wording "Irregular" since 2026-11-27 (CIV-3136); [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A card row with a wait over an hour needs 4 of its own trips for a number**
-  - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Runs irregularly in this period", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
+  - What: a route card row whose period wait is over an hour and that has fewer than 4 of its own trips in the period (`MIN_CARD_ROW_DEPARTURES`) reads "Irregular", on every row, branch rows included (#1827). A row whose words say when its service starts or stops ("every 60 min until 5:14 PM") keeps its number. Card wording only; the map colour and the filter are unchanged.
   - Why: 2 or 3 trips are not a pattern a rider can plan around, even when evenly spaced.
   - Source: Ryan, 2026-11-24, on CIV-2232: "1" to "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1" to "Apply the 4-trip minimum only when the card has no 'from …' or 'until …' words"
+- **"Hide irregular routes" also hides the lines whose card reads "Irregular" in the period**
+  - What: with the setting on, a line whose route card row reads "Irregular" for the chosen period leaves the map, the route count and the lists, read from the card's own model (cardIrregularFeatures), so the card and the map agree. All day hides nothing more.
+  - Why: a line the card calls Irregular was still drawn and counted as if it ran to a pattern.
+  - Source: [decision log](#decision-log) (2026-11-27, CIV-2925)
 - **A direction running every 60 min or better always has a card row**
   - What: when every line of a direction is a branch that stops partway through the period (hidden by #1115) and no branch reading gives one back, a direction whose main stretch runs every 60 min or better (the last public grade, `PUBLIC_TIER_MAXES`) keeps one row, read as its main stretch. The row needs a destination name and a number of its own.
   - Why: a card that shows one direction only reads as a one-way route (Winnipeg 31 weekday PM showed only "to Riverbend" while The Forks runs every 28).
@@ -418,6 +422,18 @@ Dated, newest first. The rules above are the short form; this is the reasoning.
 
 ### 2026-11-27 — Ship the start-up-trips rule (CIV-1764, #1927)
 Ryan, 2026-11-27 (Questions chat), picked "1, ship it" for the 2026-11-24 rule below (a day's own start-up trips are not overnight service). The count he saw still included TTC 320 Saturday to Eglinton's all-day headline going from 12 to 8. The final branch removes that change, so it ships less than he approved. Final count (cloud dry-run pair base 46095655047 / fix 46095661553, same service day, plus 7c1619c1f checked by a same-zip local run): 5,010 figures change on about 2,440 route directions in 148 agencies, 4,964 of them Overnight. The 46 outside Overnight are all Laval (STL) 26, 50 and 76 on weekdays, and they now match the timetable (route 26 to Montmorency reads its own 66 trips, every 30 in the evening, not both directions' 134 at the shared stop). TTC 320 is unchanged. No headline gets faster, and no grade or colour outside Overnight moves.
+
+### 2026-11-27 — "Hide irregular routes" also hides lines whose card reads "Irregular" (CIV-2925, follow-up to CIV-2232)
+Ryan, 2026-11-24, on CIV-2232: lines whose card reads irregular are hidden "(unless the user turns off irregular routes)", his pick "1". Counts were put to him on CIV-2925 (options 1 ship as measured, 2 check NJT first, 3 don't hide); the manager settled it on his earlier "1" (2026-11-27) and the NJT check was done here.
+- Counts (19 large agencies, release of 2026-11-24, every day type and period, lines the setting already hides left out): 4,010 of 86,574 line-periods hide (4.6%); in 594 of 35,178 route-periods the whole route leaves the map. NJT 1,296 of 10,998 (11.8%, 196 whole routes), SEPTA 511, MBTA 383, TransLink 307, LA Metro 196, RTD 176, King County Metro 157, OC Transpo 150, Metro Transit 121, TTC 113, WMATA 107, MARTA 106, CTA 102, AC Transit 72, YRT 69, DRT 50, GRT 45, MiWay 27, Hamilton 22.
+- Why NJT is high: of its 1,296, 527 have no steady cadence in the period and 430 run less often than every 60 min (its many suburban and commuter routes with a few trips a period); 246 are 31–60 min with gaps over an hour, 78 are variant patterns whose own trips are few while the street is served by others (as TTC 25's through trips to Steeles in the AM peak), 15 have no trips of their own.
+### 2026-11-27 — Card rows with no number read "Irregular" (CIV-3136; card wording of 2026-10-31 / CIV-1238 superseded)
+Ryan, 2026-11-27, on CIV-3121: "1 but should it say \"Irregular\" instead of runs irregularly in this period", then, on changing it on every card: "I'd need to see it". After the before/after page (SEPTA 20 Sunday evening) he picked "1": "Use \"Irregular\" on every card".
+- The rule: every route and stop card row with no number reads "Irregular", the same one label (`IRREGULAR_PERIOD_SHORT_LABEL`) as route lists, tables and agency pages. "Runs irregularly in this period" is gone.
+- Not part of the pick: the Night card keeps "Runs irregularly overnight".
+
+### 2026-11-27 — The map opens with no frequency filter (All), so on-demand zones show on a fresh map (CIV-2898; extends 2026-11-24, replaces CIV-1812 item 8's every-60 default)
+Ryan, 2026-11-27 (Studio chat). He first picked "Hide when tighter than 60", then asked "But the same issue would still exist right" (zones would still show at the default 60 although they don't run every 60) and "So should the default be "all" then". Offered "1. Make "All" the default and hide zones under any filter (Recommended)", with the trade-off that a fresh map also shows routes slower than every 60 min, in the slowest tier colour. His words: "1". The 2026-11-24 rule (zones hidden under any frequency filter) stays. The saved filter moves to a new key, so returning viewers, whose old every-60 default had been saved automatically, open on All once; a filter picked after that is kept.
 
 ### 2026-11-27 — No "from"/"until" on a card row where buses keep the same spacing across the period's edge (CIV-3121, #1906)
 Ryan, 2026-11-27, on TransLink R2 toward Park Royal ("every 8 mins from 310 but the period begins at 3 pm lol so"), then in the manager window: "Why are we saying "until" or "from" if the frequency doesn't change here". In the data chat he said "Please ask Manager then decide"; the manager found no rule against it (CIV-1241 and CIV-1411 cover real starts and stops only) and the data chat kept both sides.
@@ -910,7 +926,7 @@ Ryan, 2026-11-01 (#1268, Linear CIV-1241), picked option 1: a branch row that ru
 
 ### 2026-10-31 — "Irregular" for a period, "Occasional" for the hidden class
 
-Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards. This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
+Ryan, 2026-10-31 (Linear CIV-1238): "'no regular service' is still deceptive and misleading bc it makes it sound like there is no service during that period not that there is little service during that period." His words: "Irregular" in tight spots (table cells, list values) and "Runs irregularly in this period" on cards (card wording superseded by 2026-11-27 / CIV-3136: cards read "Irregular"). This supersedes the 2026-10-17 wording. The class hidden by default, which #720 named "one-off" and the Docs page called "Irregular", is now "Occasional" ("one-off sounds like it only runs once per day"); the setting reads "Hide occasional routes" with the same description. Code names (`serviceClass: 'irregular'`, `noRegular`) are unchanged.
 
 ### 2026-11-24 — A day's own start-up trips are not overnight service
 

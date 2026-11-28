@@ -125,7 +125,7 @@ export interface RouteCardHeadwayProps {
   extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
   /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
    *  destination (its key) carries it. */
-  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; onClick: () => void } | null;
+  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; /** Live gaps, beside the row's frequency ("· gaps 3–20 min"). */ gap?: string; onClick?: () => void; /** The row's vehicles, listed right under it when opened (Ryan, 2026-11-27: never a separate list). */ below?: React.ReactNode } | null;
   /** Live (CIV-3047 B): an icon just before the card's flag (the clock shown while the route's vehicles aren't reporting). */
   headerIcon?: React.ReactNode;
   /** Live (#1877): rows after a direction's own rows, for live vehicles whose trips end at a stop no row goes to. */
@@ -186,9 +186,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     hideSpan,
     sectionColours: FEATURES.segmentColours,
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
-  const { displayGroups, showDirectionSections, primaryMultiBranch } = model;
-  // The destinations whose live vehicles a row carries this render (rowLive, #1877).
-  const claimedLive = new Set<string>();
+  const { displayGroups, primaryMultiBranch } = model;
+  // The destinations whose live vehicles a row carries (rowLive, #1877), known before the rows draw so `extra` lists only the rest.
+  const claimedLive = new Set<string>(rowLive ? model.groups.flatMap(g => [...g.rows.map(r => r.feature), ...g.spanRows.map(s => s.feature)]).flatMap(f => { const k = f ? rowLive(f)?.key : null; return k ? [k] : []; }) : []);
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/style/TEXT.md "Card notices").
   const notices = routeCardNotices({
@@ -410,119 +410,16 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
         );
       })()}
       <SidebarCardList>
-        {(() => {
-          // A row's hover sends its destination (and pattern); the row lights when it is the hovered one (#1064).
-          const hoverProps = (dirId: number, feature: ShapeProperties | undefined, hover: HoveredBranch | null) => {
-            if (!hover || !feature) return {};
-            const isHovered = rowIsHovered(hoveredBranch, { dirId, feature });
-            return {
-              onHoverStart: () => setHoveredBranch(hover),
-              onHoverEnd: () => setHoveredBranch(null),
-              branchHovered: isHovered,
-              branchDimmed: !!hoveredBranch && !isHovered,
-            };
-          };
-          // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
-          const liveProps = (feature: ShapeProperties | undefined) => {
-            const live = rowLive && feature ? rowLive(feature) : null;
-            if (!live || claimedLive.has(live.key)) return {};
-            claimedLive.add(live.key);
-            return { subLabel: live.subLabel, onClick: live.onClick, chevron: true };
-          };
-          return model.groups.map((group, gi) => {
-            const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);
-            return (
-              <React.Fragment key={group.dirId}>
-                {gi > 0 && showDirectionSections && <CardDivider />}
-                {showDirectionSections && group.boundLabel && (
-                  <>
-                    <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
-                    {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'no-service').map(n => (
-                      // A direction with no service reads as a row saying so, not a note: "No trips from 9 AM–3 PM" (CIV-1251).
-                      <div key={n.kind} className="mt-1"><CardDirectionRow labelWeight="regular" label="" limited limitedLabel={n.text} /></div>
-                    ))}
-                  </>
-                )}
-                {/* #1840 (Ryan, "2"): the shared row sits in its group's rows, so the gap under it matches the gaps between them. */}
-                <div className="space-y-1">
-                {group.shared && (
-                  <>
-                    <CardDirectionRow
-                      label={group.shared.label}
-                      headway={group.shared.headway}
-                      headwayLabel={group.shared.edgeText}
-                      branchHovered={coreHovered}
-                      branchDimmed={!!hoveredBranch && !coreHovered}
-                      onHoverStart={() => setHoveredBranch(group.shared!.hover)}
-                      onHoverEnd={() => setHoveredBranch(null)}
-                    />
-                  </>
-                )}
-                  {group.rows.map((row, i) => {
-                    const d = row.feature;
-                    if (row.night) {
-                      const { grade } = row.night;
-                      return (
-                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
-                          <CardDirectionRow
-                            labelWeight="regular"
-                            singleLine
-                            wrapLongValue
-                            label={row.label}
-                            headway={grade ?? undefined}
-                            limited={grade == null}
-                            limitedLabel={grade == null ? model.noRegularLabel : undefined}
-                            subLabel={grade != null && row.night.partOfRoute ? OVERNIGHT_PART_OF_ROUTE : undefined}
-                            {...hoverProps(group.dirId, d, row.hover)}
-                          />
-                        </FlaggableValue>
-                      );
-                    }
-                    const shown = row.display(hoveredHour);
-                    if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
-                    return (
-                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
-                        <CardDirectionRow
-                          labelWeight="regular"
-                          singleLine={shown.singleLine}
-                          valueEnd={shown.valueEnd}
-                          wrapLongValue
-                          label={row.label}
-                          headway={shown.value.headway}
-                          limitedLabel={shown.limitedLabel}
-                          colorHeadway={shown.value.colorHeadway}
-                          headwayLabel={shown.value.headwayLabel}
-                          trunkHeadway={shown.value.trunkHeadway}
-                          dimmed={shown.value.dimmed}
-                          limited={shown.value.isLimited}
-                          {...hoverProps(group.dirId, d, row.hover)}
-                          {...liveProps(d)}
-                          holdLayout={hoveredHour != null}
-                        />
-                      </FlaggableValue>
-                    );
-                  })}
-                  {/* Span-only branches use the same limited row whether or not the irregular-service
-                      filter is on: the filter hides them from the map, not from the route's own card. */}
-                  {group.spanRows.map((span, si) => (
-                    <CardDirectionRow
-                      labelWeight="regular"
-                      singleLine
-                      wrapLongValue
-                      key={span.feature ? `s${si}` : 'smulti'}
-                      label={span.label}
-                      limited
-                      limitedLabel={model.limitedWord}
-                      {...hoverProps(group.dirId, span.feature, span.hover)}
-                      {...liveProps(span.feature)}
-                    />
-                  ))}
-                  {directionExtra?.(group.dirId)}
-                </div>
-              </React.Fragment>
-            );
-          });
-        })()}
+        <RouteCardRows
+          model={model}
+          directionNotices={notices.directions}
+          hoveredBranch={hoveredBranch}
+          setHoveredBranch={setHoveredBranch}
+          hoveredHour={hoveredHour}
+          reportRef={reportRef}
+          rowLive={rowLive}
+          directionExtra={directionExtra}
+        />
         {notices.filter && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
             <CardHelpNotice
@@ -559,3 +456,143 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     </SidebarCardShell>
   );
 };
+
+/**
+ * The route card's destination rows, by direction: the one row list the map's card, Live's card and Studio's Live panel
+ * draw (Ryan, 2026-11-27: "Using the same code perhaps"). `rowLive` adds a row's live vehicles and gaps.
+ */
+export function RouteCardRows({ model, directionNotices = [], hoveredBranch = null, setHoveredBranch = () => {}, hoveredHour = null, reportRef, rowLive, directionExtra }: {
+  model: ReturnType<typeof buildRouteCardModel>;
+  directionNotices?: ReturnType<typeof routeCardNotices>['directions'];
+  hoveredBranch?: HoveredBranch | null;
+  setHoveredBranch?: (b: HoveredBranch | null) => void;
+  hoveredHour?: number | null;
+  reportRef: React.RefObject<CardReportButtonHandle | null>;
+  rowLive?: RouteCardHeadwayProps['rowLive'];
+  directionExtra?: RouteCardHeadwayProps['directionExtra'];
+}) {
+  const { showDirectionSections } = model;
+  const notices = { directions: directionNotices };
+  // The first row naming a destination carries its live vehicles.
+  const claimedLive = new Set<string>();
+          // A row's hover sends its destination (and pattern); the row lights when it is the hovered one (#1064).
+    const hoverProps = (dirId: number, feature: ShapeProperties | undefined, hover: HoveredBranch | null) => {
+      if (!hover || !feature) return {};
+      const isHovered = rowIsHovered(hoveredBranch, { dirId, feature });
+      return {
+        onHoverStart: () => setHoveredBranch(hover),
+        onHoverEnd: () => setHoveredBranch(null),
+        branchHovered: isHovered,
+        branchDimmed: !!hoveredBranch && !isHovered,
+      };
+    };
+    // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
+    const liveProps = (feature: ShapeProperties | undefined): { props: { labelEnd?: string; valueBelow?: boolean; headwaySuffix?: string; onClick?: () => void; chevron?: boolean }; below: React.ReactNode } => {
+      const live = rowLive && feature ? rowLive(feature) : null;
+      if (!live || claimedLive.has(live.key)) return { props: {}, below: null };
+      claimedLive.add(live.key);
+      // Ryan, 2026-11-27: "Why is the number of vehicles on a third line instead of on the fist line like i asked", then
+            // "why would there be a dot here if the number of vehicles is right justified": the destination with its vehicles at
+            // the right, then the frequency and live gaps.
+            return { props: { labelEnd: live.subLabel, valueBelow: true, headwaySuffix: live.gap ? `· ${live.gap}` : undefined, onClick: live.onClick, chevron: !!live.onClick }, below: live.below ?? null };
+    };
+    return model.groups.map((group, gi) => {
+      const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);
+      return (
+        <React.Fragment key={group.dirId}>
+          {gi > 0 && showDirectionSections && <CardDivider />}
+          {showDirectionSections && group.boundLabel && (
+            <>
+              <CardSectionLabel className="mb-0">{group.boundLabel}</CardSectionLabel>
+              {notices.directions.filter(n => n.dirId === group.dirId && n.kind === 'no-service').map(n => (
+                // A direction with no service reads as a row saying so, not a note: "No trips from 9 AM–3 PM" (CIV-1251).
+                <div key={n.kind} className="mt-1"><CardDirectionRow labelWeight="regular" label="" limited limitedLabel={n.text} /></div>
+              ))}
+            </>
+          )}
+          {/* #1840 (Ryan, "2"): the shared row sits in its group's rows, so the gap under it matches the gaps between them. */}
+          <div className="space-y-1">
+          {group.shared && (
+            <>
+              <CardDirectionRow
+                label={group.shared.label}
+                headway={group.shared.headway}
+                headwayLabel={group.shared.edgeText}
+                branchHovered={coreHovered}
+                branchDimmed={!!hoveredBranch && !coreHovered}
+                onHoverStart={() => setHoveredBranch(group.shared!.hover)}
+                onHoverEnd={() => setHoveredBranch(null)}
+              />
+            </>
+          )}
+            {group.rows.map((row, i) => {
+              const d = row.feature;
+              if (row.night) {
+                const { grade } = row.night;
+                return (
+                  <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
+                    <CardDirectionRow
+                      labelWeight="regular"
+                      singleLine
+                      wrapLongValue
+                      label={row.label}
+                      headway={grade ?? undefined}
+                      limited={grade == null}
+                      limitedLabel={grade == null ? model.noRegularLabel : undefined}
+                      subLabel={grade != null && row.night.partOfRoute ? OVERNIGHT_PART_OF_ROUTE : undefined}
+                      {...hoverProps(group.dirId, d, row.hover)}
+                    />
+                  </FlaggableValue>
+                );
+              }
+              const shown = row.display(hoveredHour);
+              if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
+              const live = liveProps(d);
+              return (
+                <React.Fragment key={`r${i}`}>
+                <FlaggableValue reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
+                  <CardDirectionRow
+                    labelWeight="regular"
+                    singleLine={shown.singleLine}
+                    valueEnd={shown.valueEnd}
+                    wrapLongValue
+                    label={row.label}
+                    headway={shown.value.headway}
+                    limitedLabel={shown.limitedLabel}
+                    colorHeadway={shown.value.colorHeadway}
+                    headwayLabel={shown.value.headwayLabel}
+                    trunkHeadway={shown.value.trunkHeadway}
+                    dimmed={shown.value.dimmed}
+                    limited={shown.value.isLimited}
+                    {...hoverProps(group.dirId, d, row.hover)}
+                    {...live.props}
+                    holdLayout={hoveredHour != null}
+                  />
+                </FlaggableValue>
+                {live.below}
+                </React.Fragment>
+              );
+            })}
+            {/* Span-only branches use the same limited row whether or not the irregular-service
+                filter is on: the filter hides them from the map, not from the route's own card. */}
+            {group.spanRows.map((span, si) => { const live = liveProps(span.feature); return (
+              <React.Fragment key={span.feature ? `s${si}` : 'smulti'}>
+              <CardDirectionRow
+                labelWeight="regular"
+                singleLine
+                wrapLongValue
+                label={span.label}
+                limited
+                limitedLabel={model.limitedWord}
+                {...hoverProps(group.dirId, span.feature, span.hover)}
+                {...live.props}
+              />
+              {live.below}
+              </React.Fragment>
+            ); })}
+            {directionExtra?.(group.dirId)}
+          </div>
+        </React.Fragment>
+      );
+    });
+}

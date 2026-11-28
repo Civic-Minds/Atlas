@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { Search, Info, History as HistoryIcon, ChevronDown } from 'lucide-react';
+import { LiveIcon } from './components/Live/LiveIcon';
 import { CompareTab } from './components/Interval/CompareControl';
 import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import ModeUnavailableNote from './components/ModeUnavailableNote';
 import SearchClearButton from './components/ui/SearchClearButton';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SEARCH_ICON, CARD_NOTE, TOP_BAR_DIVIDER } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, SEARCH_BAR_MIN_WIDTH, TOP_BAR_KEEP_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SEARCH_ICON, CARD_NOTE, TOP_BAR_DIVIDER } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
-import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
+import { LIVE_AGENCY_COUNT, LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { findSeoRoute } from '../shared/seo';
 import { PageTitle } from './components/ui/PageTitle';
 const Interval = React.lazy(() => import('./apps/Interval'));
@@ -533,7 +534,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // "Here" is the city at the map's centre right now: not every layer ever loaded, and not every agency whose wide area
   // touches the screen. Panning from a city with data to one without dims the tabs again, and back.
   const liveHere = inLive || centreAgencySlugs.some(slug => LIVE_AGENCY_SLUGS.includes(slug));
-  const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
+  const liveAgencyCount = LIVE_AGENCY_COUNT;
   const showHistoryControl = historyOn && !inStudio;
   const historyHere = inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
@@ -680,19 +681,20 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         onJump={slug => { setModeNote(null); handleLiveAgencyClick(slug); }}
         onClose={closeModeNote}
         sidebarLeft={sidebarLeft}
+        searchBarWidth={isPhone ? undefined : searchBarWidth}
       />
     )}
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <PageMapOverlayProvider>
-    {/* CIV-2001: Studio's panels keep their own width beside its search box; they start at the box's left edge as before. */}
-    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone || inStudio ? undefined : searchBarWidth}>
+    {/* #1917: every left card, Studio's included, takes the search bar's left edge and width (CIV-2001 had Studio's wider). */}
+    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth}>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
       {/* Unified header row — left and right sections share one flex container so they can never overlap. Fixed row height so a taller control in one view (e.g. Night's 30/60 toggle) can't push the logo and search off the line they sit on in every other view (#908). */}
       <div className={`absolute ${MAP_TOP_BAR_SLOT} ${infoOpen ? Z_MODAL_TOP : Z_HEADER} flex items-center justify-between pointer-events-none`} data-map-overlay="top-bar">
-      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 min-w-0 ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
+      <div ref={headerLeftRef} className={`flex items-center gap-2 pointer-events-auto flex-1 ${TOP_BAR_KEEP_WIDTH} ${phoneSearchExpanded ? '' : 'max-w-[calc(100%-3rem)] mr-2'} sm:max-w-none sm:mr-0`}>
         {/* The logo is "home": it clears every selection, mode and URL parameter, like a fresh visit to "/". */}
         <AtlasLogo
           hideByline
@@ -710,12 +712,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           ariaLabel={ATLAS_HOME_LABEL}
         />
 
-        {!inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
-        <div className="flex-1 min-w-0 sm:flex">
+        {!inResearch && <div className={`flex items-center gap-2 flex-1 ${TOP_BAR_KEEP_WIDTH} lg:flex-initial`}>
+        <div className={`flex-1 ${TOP_BAR_KEEP_WIDTH} sm:flex`}>
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
         {/* CIV-2001: Studio uses this same box for its page's routes (StudioSearch.tsx); the map's own search stays off there. */}
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`} style={isPhone ? undefined : { minWidth: SEARCH_BAR_MIN_WIDTH }}>
         <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${FEATURES.modeTransitions ? `transition-[max-width] ${MODE_EASE}` : ''}`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : FEATURES.modeTransitions ? { maxWidth: '100%' } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
@@ -757,7 +759,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
         {showLiveControl && (
           <ModeTab
-            icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            icon={<LiveIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label={LIVE_TAB_LABEL} extra={liveAgencyCount} ariaLabel={LIVE_MAP_TITLE}
             active={liveTabOn} dimmed={!liveHere}
             onClick={() => liveHere ? setActiveApp(liveTabOn ? 'frequency' : 'live') : noteFor('Live')}
@@ -810,7 +812,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 <div className={`absolute top-10 right-0 ${FLOATING_CARD} min-w-48 p-1.5 flex flex-col gap-1 ${Z_MODAL_TOP}`}>
                   {showLiveControl && (
                     <ModeTab
-                      variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
+                      variant="menu" icon={<LiveIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn} dimmed={!liveHere}
                       onClick={() => { if (liveHere) setActiveApp(liveTabOn ? 'frequency' : 'live'); else noteFor('Live'); setAppLinksOpen(false); }}
                     />
@@ -834,7 +836,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </div>}
       </div>
       {/* Portal target for Interval's right header (FilterChips + Now + FilterPanel) */}
-      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 pointer-events-none [&>button]:pointer-events-auto`}>
+      <div className={`${phoneSearchExpanded ? 'hidden' : 'flex'} items-center gap-2 min-w-0 sm:flex-wrap sm:justify-end sm:self-start pointer-events-none [&>button]:pointer-events-auto`}>
         {/* CIV-449: on every phone width the search rests as a round button in the right group, just left of the
             filter button (Ryan, 2026-10-30), and opens into the box, which takes the whole bar while the other
             buttons step aside (#698). */}
@@ -850,7 +852,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         )}
         {/* This group and the portal slot are click-through; only their buttons and what Interval portals in take clicks,
             so the empty space and the invisible filters in Live don't cover Live's own buttons under this bar (#1467). */}
-        <div ref={headerPortalRef} className="flex items-center gap-2 pointer-events-none" />
+        <div ref={headerPortalRef} className="flex items-center gap-2 min-w-0 sm:flex-wrap sm:justify-end pointer-events-none" />
         <button
           type="button"
           onClick={toggleInfo}

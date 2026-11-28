@@ -1,6 +1,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { Flag, Radio } from 'lucide-react';
+import { Flag } from 'lucide-react';
+import { LiveIcon } from '../Live/LiveIcon';
 import { fmtHeadway } from '../../utils/format';
 import { placeAlreadyInName } from '../../utils/agencyName';
 import { headwayToTierColor } from './HeadwaySparkline';
@@ -640,7 +641,7 @@ export function HeadwayBadge({
   const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
-      {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label={LIVE_DATA_AVAILABLE_LABEL} />}
+      {live && <LiveIcon className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label={LIVE_DATA_AVAILABLE_LABEL} />}
       {twoPart(words) ? (stacked ? <StackedBadge dot={dot} text={words} /> : <TwoPartBadge dot={dot} text={words} className={base} />) : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
@@ -661,7 +662,7 @@ export function LimitedBadge({ label, className = '', secondLine = false }: { la
   if (secondLine) return <SecondLineBadge color={getTierColor(null, colorMode)} words={label ?? ''} />;
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
-  // A several-word label ("Runs irregularly in this period") breaks between words, right-aligned, where the row is
+  // A several-word label ("Runs irregularly overnight") breaks between words, right-aligned, where the row is
   // too narrow, instead of running over the destination (TTC 25 northbound AM; the #1128 rule). It stays one line where it fits.
   if (label?.includes(' ')) {
     return (

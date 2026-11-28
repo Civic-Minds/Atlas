@@ -1,0 +1,492 @@
+{
+  "slug": "stjoseph-mo",
+  "officialName": "St. Joseph Transit",
+  "websiteUrl": "https://www.stjosephmo.gov/310/St-Joseph-Transit-Go-St-Joe",
+  "dataLicense": {
+    "url": "https://www.stjosephmo.gov/310/St-Joseph-Transit-Go-St-Joe",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-27"
+  },
+  "region": "Missouri",
+  "center": [
+    39.7676,
+    -94.8185
+  ],
+  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11982/google_transit.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true,
+  "excludeRouteShortNames": [
+    "DR 1 SAT",
+    "DR 2 SAT",
+    "DR A",
+    "DR B",
+    "DR C",
+    "DR D",
+    "DR E"
+  ],
+  "routeRenames": [
+    {
+      "routeId": "3077",
+      "from": {
+        "shortName": "1 A",
+        "longName": "Saint Joseph Avenue"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Saint Joseph Avenue"
+      }
+    },
+    {
+      "routeId": "3916",
+      "from": {
+        "shortName": "1 A SAT",
+        "longName": "Saint Joseph Avenue"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Saint Joseph Avenue"
+      }
+    },
+    {
+      "routeId": "3869",
+      "from": {
+        "shortName": "1 B",
+        "longName": "Saint Joseph Avenue"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Saint Joseph Avenue"
+      }
+    },
+    {
+      "routeId": "3928",
+      "from": {
+        "shortName": "1 B SAT",
+        "longName": "Saint Joseph Avenue"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Saint Joseph Avenue"
+      }
+    },
+    {
+      "routeId": "3933",
+      "from": {
+        "shortName": "1 C SAT",
+        "longName": "Saint Joseph Avenue"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Saint Joseph Avenue"
+      }
+    },
+    {
+      "routeId": "3892",
+      "from": {
+        "shortName": "1 D",
+        "longName": "Saint Joseph Avenue"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Saint Joseph Avenue"
+      }
+    },
+    {
+      "routeId": "3904",
+      "from": {
+        "shortName": "1 E",
+        "longName": "Saint Joseph Avenue"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Saint Joseph Avenue"
+      }
+    },
+    {
+      "routeId": "10870",
+      "from": {
+        "shortName": "2 A",
+        "longName": "Frederick"
+      },
+      "to": {
+        "shortName": "2",
+        "longName": "Frederick"
+      }
+    },
+    {
+      "routeId": "4011",
+      "from": {
+        "shortName": "2/7 A SAT",
+        "longName": "Frederick / Village"
+      },
+      "to": {
+        "shortName": "2/7",
+        "longName": "Frederick / Village"
+      }
+    },
+    {
+      "routeId": "1610",
+      "from": {
+        "shortName": "2/7 B",
+        "longName": "Frederick / Village"
+      },
+      "to": {
+        "shortName": "2/7",
+        "longName": "Frederick / Village"
+      }
+    },
+    {
+      "routeId": "4014",
+      "from": {
+        "shortName": "2/7 B SAT",
+        "longName": "Frederick / Village"
+      },
+      "to": {
+        "shortName": "2/7",
+        "longName": "Frederick / Village"
+      }
+    },
+    {
+      "routeId": "3974",
+      "from": {
+        "shortName": "2/7 C",
+        "longName": "Frederick / Village"
+      },
+      "to": {
+        "shortName": "2/7",
+        "longName": "Frederick / Village"
+      }
+    },
+    {
+      "routeId": "4017",
+      "from": {
+        "shortName": "2/7 D SAT",
+        "longName": "Frederick / Village"
+      },
+      "to": {
+        "shortName": "2/7",
+        "longName": "Frederick / Village"
+      }
+    },
+    {
+      "routeId": "3987",
+      "from": {
+        "shortName": "2/7 E",
+        "longName": "Frederick / Village"
+      },
+      "to": {
+        "shortName": "2/7",
+        "longName": "Frederick / Village"
+      }
+    },
+    {
+      "routeId": "3999",
+      "from": {
+        "shortName": "2/7 F",
+        "longName": "Frederick / Village"
+      },
+      "to": {
+        "shortName": "2/7",
+        "longName": "Frederick / Village"
+      }
+    },
+    {
+      "routeId": "4030",
+      "from": {
+        "shortName": "3 A",
+        "longName": "Belt Highway"
+      },
+      "to": {
+        "shortName": "3",
+        "longName": "Belt Highway"
+      }
+    },
+    {
+      "routeId": "4064",
+      "from": {
+        "shortName": "3 A SAT",
+        "longName": "Belt Highway"
+      },
+      "to": {
+        "shortName": "3",
+        "longName": "Belt Highway"
+      }
+    },
+    {
+      "routeId": "1529",
+      "from": {
+        "shortName": "3 B",
+        "longName": "Belt Highway"
+      },
+      "to": {
+        "shortName": "3",
+        "longName": "Belt Highway"
+      }
+    },
+    {
+      "routeId": "4052",
+      "from": {
+        "shortName": "3 D",
+        "longName": "Belt Highway"
+      },
+      "to": {
+        "shortName": "3",
+        "longName": "Belt Highway"
+      }
+    },
+    {
+      "routeId": "9700",
+      "from": {
+        "shortName": "4 A",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "4136",
+      "from": {
+        "shortName": "4 A SAT",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "4096",
+      "from": {
+        "shortName": "4 B",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "4132",
+      "from": {
+        "shortName": "4 B SAT",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "4139",
+      "from": {
+        "shortName": "4 C SAT",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "4108",
+      "from": {
+        "shortName": "4 D",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "4142",
+      "from": {
+        "shortName": "4 D SAT",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "4120",
+      "from": {
+        "shortName": "4 E",
+        "longName": "Faraon Jules"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Faraon Jules"
+      }
+    },
+    {
+      "routeId": "5238",
+      "from": {
+        "shortName": "5 A",
+        "longName": "Lafayette"
+      },
+      "to": {
+        "shortName": "5",
+        "longName": "Lafayette"
+      }
+    },
+    {
+      "routeId": "4250",
+      "from": {
+        "shortName": "5/8 A SAT",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "7645",
+      "from": {
+        "shortName": "5/8 B",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "4253",
+      "from": {
+        "shortName": "5/8 B SAT",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "4214",
+      "from": {
+        "shortName": "5/8 C",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "4256",
+      "from": {
+        "shortName": "5/8 C SAT",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "4259",
+      "from": {
+        "shortName": "5/8 D SAT",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "4226",
+      "from": {
+        "shortName": "5/8 E",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "4238",
+      "from": {
+        "shortName": "5/8 F",
+        "longName": "Lafayette MWSU"
+      },
+      "to": {
+        "shortName": "5/8",
+        "longName": "Lafayette MWSU"
+      }
+    },
+    {
+      "routeId": "1579",
+      "from": {
+        "shortName": "6 A",
+        "longName": "Industrial Park"
+      },
+      "to": {
+        "shortName": "6",
+        "longName": "Industrial Park"
+      }
+    },
+    {
+      "routeId": "4190",
+      "from": {
+        "shortName": "6 A SAT",
+        "longName": "Industrial Park"
+      },
+      "to": {
+        "shortName": "6",
+        "longName": "Industrial Park"
+      }
+    },
+    {
+      "routeId": "4154",
+      "from": {
+        "shortName": "6 B",
+        "longName": "Industrial Park"
+      },
+      "to": {
+        "shortName": "6",
+        "longName": "Industrial Park"
+      }
+    },
+    {
+      "routeId": "4193",
+      "from": {
+        "shortName": "6 B SAT",
+        "longName": "Industrial Park"
+      },
+      "to": {
+        "shortName": "6",
+        "longName": "Industrial Park"
+      }
+    },
+    {
+      "routeId": "4166",
+      "from": {
+        "shortName": "6 D",
+        "longName": "Industrial Park"
+      },
+      "to": {
+        "shortName": "6",
+        "longName": "Industrial Park"
+      }
+    },
+    {
+      "routeId": "4178",
+      "from": {
+        "shortName": "6 E",
+        "longName": "Industrial Park"
+      },
+      "to": {
+        "shortName": "6",
+        "longName": "Industrial Park"
+      }
+    }
+  ]
+}

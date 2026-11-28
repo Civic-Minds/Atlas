@@ -136,3 +136,21 @@ function listRangeShown({ shown, ownNumbers }: { shown: number[]; ownNumbers: Ar
   if (headwayRangeShown(low, high, Infinity) && ownNumbers.some(n => n.h === high && n.own)) return { range: true, wide: true };
   return { range: false };
 }
+
+/**
+ * CIV-2925 (Ryan, 2026-11-24, "1": hide irregular routes "(unless the user turns off irregular routes)"): the
+ * lines whose route card row reads "Irregular" for the period, read from the card's own model, so the
+ * map's hide-irregular setting and the card read one value. A line that isn't a card row of its own is never in it.
+ */
+export function cardIrregularLines(features: readonly ShapeProperties[], period: TimePeriod): Set<ShapeProperties> {
+  const out = new Set<ShapeProperties>();
+  if (period === 'all' || features.length === 0) return out;
+  const directions = routeCardDirectionOrder(features, period);
+  const route = { routeShortName: directions[0]?.routeShortName ?? null, routeLongName: directions[0]?.routeLongName ?? null, directions };
+  const model = buildRouteCardModel({
+    ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
+    period, maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+  });
+  for (const group of model.groups) for (const row of group.rows) if (row.display(null).value.rowNoRegular) out.add(row.feature);
+  return out;
+}

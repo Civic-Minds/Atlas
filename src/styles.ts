@@ -67,9 +67,9 @@ export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 /** Width constant for panels and cards; matches the responsive search bar on desktop. */
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
-/** The wide sidebar card, for a card whose tables need more room than the search bar's width (Studio's route card,
- *  CIV-1828): the width Studio's old frame gave its sidebar, never past the window. */
-export const SIDEBAR_PANEL_WIDE_WIDTH = 'w-[calc(100vw-3rem)] sm:w-[24.5rem] max-w-[calc(100vw-3rem)]';
+/** #1917: every left card's left edge on sm and up: the search bar's own left edge (--sidebar-left, useSidebarAnchor). The
+ *  only place a card's left offset is written; its width comes from sidebarFrameStyle. */
+export const SIDEBAR_LEFT_EDGE = 'sm:left-[var(--sidebar-left)]';
 
 /** Shared glass pill geometry; surfaces and borders are supplied by each state. */
 export const GLASS_PILL = 'backdrop-blur-md rounded-full';
@@ -210,8 +210,13 @@ import { SIDEBAR_CARD_BOTTOM_LIMIT, SIDEBAR_CARD_TOP_BELOW_CONSENT, SIDEBAR_CARD
 export const SIDEBAR_CARD_TOP_DESKTOP = 'sm:top-[56px]';
 export const SIDEBAR_CARD_TOP = `top-[58px] ${SIDEBAR_CARD_TOP_DESKTOP}`;
 /** Every sidebar card's placement: SIDEBAR_CARD_TOP plus its left edge. */
-export const SIDEBAR_CARD_SLOT = `absolute ${SIDEBAR_CARD_TOP} ${SIDEBAR_CARD_TOP_BELOW_CONSENT} left-6 sm:left-[var(--sidebar-left)]`;
+export const SIDEBAR_CARD_SLOT = `absolute ${SIDEBAR_CARD_TOP} ${SIDEBAR_CARD_TOP_BELOW_CONSENT} left-6 ${SIDEBAR_LEFT_EDGE}`;
 export const SIDEBAR_CARD = `${SIDEBAR_CARD_SLOT} ${Z_PANEL}`;
+/** A full-page tool inside the map app (Studio Schedules, CIV-2182): covers the map under the app's own top bar and scrolls
+ *  itself. Not PageShell, which brings the site header of a separate content page. Its column: MAP_APP_PAGE_COLUMN. */
+export const MAP_APP_PAGE = `fixed inset-0 ${Z_PANEL} overflow-y-auto bg-[var(--bg-app)] text-[var(--text-primary)]`;
+/** The centred column of a MAP_APP_PAGE, starting below the app's top bar. */
+export const MAP_APP_PAGE_COLUMN = 'mx-auto flex w-full max-w-3xl flex-col px-4 pt-20 pb-10 sm:px-6';
 /** Every sidebar card's tallest size: it stops above the bottom pills, on sm and up however far the footer row wraps,
  *  and its list scrolls inside. */
 export const SIDEBAR_CARD_MAX_H = `${SIDEBAR_CARD_BOTTOM_LIMIT} max-sm:max-h-[calc(100dvh-118px)] ${SIDEBAR_CARD_MAX_H_BELOW_CONSENT}`;
@@ -227,7 +232,7 @@ export function sidebarCardFrame(visible: boolean, { z = Z_PANEL, extra = '' }: 
 
 /** Live's sidebar placement, kept apart from the cards' while Live is rebuilt on its own branch
  *  (Live sidebars never scroll or collapse). */
-export const PANEL_SIDEBAR_SLOT = 'absolute top-[68px] left-6 sm:left-[var(--sidebar-left)]';
+export const PANEL_SIDEBAR_SLOT = `absolute top-[68px] left-6 ${SIDEBAR_LEFT_EDGE}`;
 export const PANEL_SIDEBAR = `${PANEL_SIDEBAR_SLOT} ${Z_PANEL}`;
 
 /** Fallback sidebar left offset (px) — used until ResizeObserver measures the real position */
@@ -250,8 +255,13 @@ export function sidebarFrameStyle(sidebarLeft?: number | null, searchBarWidth?: 
   } as CSSProperties;
 }
 
-/** #1187: a sidebar card's narrowest width on sm and up: the search bar's own width, kept 1.5rem inside the window. */
-export const SIDEBAR_CARD_MIN_WIDTH = 'min(18rem, calc(100vw - var(--sidebar-left) - 1.5rem))';
+/** #1917: the narrowest the search bar and every left card get on sm and up: one number, so a busy top bar can't squeeze
+ *  the bar narrower than the cards under it; the pills to its right wrap instead. */
+export const SEARCH_BAR_MIN_WIDTH = '18rem';
+/** #1187: a sidebar card's narrowest width on sm and up: the search bar's own minimum, kept 1.5rem inside the window. */
+export const SIDEBAR_CARD_MIN_WIDTH = `min(${SEARCH_BAR_MIN_WIDTH}, calc(100vw - var(--sidebar-left) - 1.5rem))`;
+/** #1917: a top-bar box on the search bar's side keeps its content's width on sm and up, so the bar keeps its minimum. */
+export const TOP_BAR_KEEP_WIDTH = 'min-w-0 sm:min-w-fit';
 
 /**
  * A dashed line's swatch, the key for a line the map draws dashed: its `color` and its `swatchClassName`. One look for every
