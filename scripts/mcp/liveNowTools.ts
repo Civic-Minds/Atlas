@@ -14,7 +14,7 @@ import { LIVE_ARCHIVE_SLUGS, routeIsRecorded } from '../../shared/liveCoverage';
 import { bunchedText, cutoffsFrom, gappedText } from '../../shared/liveCutoffs';
 import { NOW_RECENT_MIN, NOW_WINDOW_MIN, nowDirections, routeNow, type NowRouteRow } from '../../shared/liveNow';
 import { LIVE_STALE_SEC } from '../../shared/rules/live';
-import { recentFromSnapshots, routeDirectionsNow, type DirectionNow } from '../../shared/liveCore';
+import { liveAgencyCoverage, recentFromSnapshots, routeDirectionsNow, type DirectionNow } from '../../shared/liveCore';
 import { inferLiveDirection } from '../../shared/liveDirection';
 import type { SegmentDelayData } from '../../shared/liveSegmentData';
 import { liveLineText, type LiveRowGap } from '../../shared/liveWording';
@@ -25,6 +25,10 @@ import { routeKeyForShortName } from '../../src/utils/routeKey';
 import { routeDirectionOverrides } from '../../src/utils/routeCardDirectionGroups';
 import { liveScheduledRows } from '../../src/utils/liveScheduledHeadway';
 import type { Args } from './toolHelpers';
+import { latestSnapshot } from '../../shared/liveSource';
+import { liveRecorderFeed } from '../../shared/liveRecorderFeeds';
+import { networkCountAnswer, networkCountFrom } from '../../shared/liveNetworkCount';
+import { fleetNetworkText } from '../../shared/studioWording';
 
 const NOW_SOURCE = "Atlas Live's recordings of where each vehicle was, one reading a minute, over the last half hour: gaps are measured from when vehicles passed stops, not guessed from speed.";
 /** What each part of a route_now answer means. */
@@ -63,6 +67,36 @@ function pairedCore(core: readonly DirectionNow[], ids: readonly string[]): Dire
 }
 
 export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
+  // CIV-3207: the agency's vehicles out right now across its whole network, Studio Fleet's "In service now" and "Not on a
+  // trip" (CIV-2939), from the same recorder count Fleet reads (shared/liveNetworkCount.ts), by the same freshness rule.
+  network_now: async ({ agency: q }) => {
+    const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
+    if (!a) throw new Error(`No agency matches "${q}". Use list_agencies to search.`);
+    // The agencies Fleet's count is served for (atlas-live-read /live/network-count): recorded, and shown on Live (not Kingston).
+    const feed = RECORDING_SLUGS.includes(a.slug) && liveAgencyCoverage(a.slug).hasVehicles ? liveRecorderFeed(a.slug) : null;
+    if (!LIVE_ARCHIVE_SLUGS.includes(a.slug) || !feed) return { agency: a.name, live: null, note: `Atlas does not record Live data for ${a.name}, so it has no count of vehicles out now. It has the published schedule (buses_needed gives the vehicles the schedule needs, where Studio has built it).` };
+    const source = nowSource();
+    const timeZone = LIVE_AGENCY_TIMEZONES[a.slug];
+    if (!source?.store || !timeZone) return { agency: a.name, live: null, note: `Atlas records ${a.name}'s vehicles but this server can't read the current recordings yet, so it has no count for right now.` };
+    const now = nowSec();
+    const answer = networkCountAnswer(await latestSnapshot(source.store, a.slug, now, feed.paceSec), now);
+    const count = networkCountFrom(answer);
+    const asOf = answer ? `${new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(answer.at * 1000))}, ${clockTime(localClock(answer.at, timeZone).minutes)}` : null;
+    if (!count) return { agency: a.name, live: null, ...(asOf ? { latestReading: asOf } : {}), note: `Atlas has no current count of ${a.name}'s vehicles${asOf ? ` (the latest is from ${asOf}, too old to call current)` : ''}, so it has no figure for right now.` };
+    const words = fleetNetworkText(undefined);
+    return {
+      agency: a.name, asOf, dataAgeMin: Math.round((answer!.ageSec) / 6) / 10, timeZone,
+      inServiceNow: count.onTrip,
+      ...(count.noTrip != null ? { notOnATrip: count.noTrip, ...(count.atGarage != null ? { ofThemAtGarages: count.atGarage } : {}) } : {}),
+      definitions: {
+        inServiceNow: `"${words.inServiceNow}" in Studio Fleet: vehicles reporting a position on a trip, across the agency's whole network, in the recorder's latest reading.`,
+        ...(count.noTrip != null ? { notOnATrip: `"${words.notOnTrip}" in Studio Fleet: vehicles reporting a position with no trip (at a garage, deadheading, out of service); not counted as in service.` } : {}),
+        ...(count.atGarage != null ? { ofThemAtGarages: 'Of the vehicles not on a trip, those standing in a group at one spot, as at a garage.' } : {}),
+      },
+      note: 'Give the time of the reading with the figure. For how one route is running now (gaps, bunching), use route_now; for the vehicles the schedule needs, buses_needed.',
+      source: NOW_SOURCE,
+    };
+  },
   route_now: async ({ agency: q, route, bunched_within_min, gapped_factor }) => {
     const { cutoffs, custom } = cutoffsFrom({ bunched_within_min, gapped_factor });
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());

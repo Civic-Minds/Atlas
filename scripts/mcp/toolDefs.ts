@@ -55,6 +55,7 @@ const TOOL_LIST = [
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTimeOrNow, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'route_reliability', description: "How a route actually ran against its schedule, from Atlas Live's recordings of where vehicles were (past service; Atlas has no figures yet for how a route is running right now): the share of departures that were late, typical trip time against the timetable's, the share of scheduled trips that ran, this week against last week, and the stops most often late, for the whole day and each part of the day. Leave out route to rank the agency's recorded routes by how often they were late. Atlas records only some agencies (the answer says which routes it has).", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name; leave out to rank the recorded routes.' }, period: livePeriod, late_after_min: LATE_AFTER, early_before_min: EARLY_BEFORE }, required: ['agency'] } },
   { name: 'route_bunching', description: "How evenly a route's vehicles were spaced, from Atlas Live's recordings (past service): the share of gaps between vehicles that were bunched (too close) or gapped (far longer than scheduled), this week against last week, where along the route bunching forms, and the stops where the spacing goes most wrong, by direction and part of the day.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, period: livePeriod, bunched_within_min: BUNCHED_WITHIN, gapped_factor: GAPPED_FACTOR_ARG }, required: ['agency', 'route'] } },
+  { name: 'network_now', description: "How many of an agency's vehicles are out on a trip right now across its whole network, and how many report a position with no trip (some of them at garages), from Atlas Live's latest reading: Studio Fleet's 'In service now'. Live agencies only. For one route's gaps and bunching now, use route_now.", inputSchema: { type: 'object', properties: { agency }, required: ['agency'] } },
   { name: 'route_now', description: "How a route is running right now, from Atlas Live's last half hour of vehicle readings (one a minute): where vehicles are bunched now, where riders have waited longest since the last vehicle against that stop's scheduled gap, stops no vehicle passed at all, vehicles moving and standing, and the half hour's bunched and gapped shares, by direction. Every answer gives the time of the reading. Atlas records only some agencies; when it has no current reading it says so.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, bunched_within_min: BUNCHED_WITHIN, gapped_factor: GAPPED_FACTOR_ARG }, required: ['agency', 'route'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency, offset: { type: 'number', description: 'Skip this many frequency changes (to page through a long list).' }, limit: { type: 'number', description: 'How many frequency changes to return; 40 when left out, 200 at most.' } }, required: ['agency'] } },
 ];
@@ -75,7 +76,7 @@ const QUESTION_ID = { type: 'string', description: 'An ID you make up for the pe
 const TITLES: Record<string, string> = {
   list_agencies: 'Find agencies', rank_agencies: 'Rank agencies by frequent routes', route_frequency: 'How often a route runs',
   routes_at_frequency: 'Routes at a frequency', compare_agencies: 'Compare agencies', routes_near: 'Routes near a place', stop_frequency: 'How often buses come at a stop',
-  route_history: 'Route history', network_history: 'Network history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
+  network_now: 'Vehicles out right now', route_history: 'Route history', network_history: 'Network history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
   trip_time: 'Trip time between stops', combined_frequency: 'Combined frequency between stops', schedule_changes: 'Schedule changes',
   route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced', route_now: 'How a route is running right now', on_demand_zones: 'On-demand zones', night_service: 'Night service', frequent_coverage: 'People near frequent service', explain_method: 'How Atlas works out its figures',
 };
@@ -100,6 +101,7 @@ export const TOOL_SUMMARIES: Record<string, string> = {
   route_reliability: 'How a route ran against its schedule in past weeks, from Live\'s recordings.',
   route_bunching: 'How evenly a route\'s vehicles were spaced in past weeks, from Live\'s recordings.',
   // Pending Ryan's word-for-word OK (CIV-1870).
+  network_now: 'How many of an agency\'s vehicles are out on a trip right now, across its whole network, from Live\'s recorder.',
   route_now: 'Where a route\'s vehicles are bunched and where riders have waited longest right now, from Live\'s last half hour.',
   on_demand_zones: 'An agency\'s on-demand zones, or those covering or near a place, with hours, pickup and trip rules.',
   night_service: 'An agency\'s routes that run through the night, every 30, 60 or 90 min or better from 2 to 5 AM.',
@@ -112,7 +114,7 @@ const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHi
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION, question_id: QUESTION_ID }, required: [...(t.inputSchema.required ?? []), 'question', 'question_id'] } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.26.0';
+export const SERVER_VERSION = '0.27.0';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of
