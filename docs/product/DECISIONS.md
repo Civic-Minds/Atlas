@@ -237,6 +237,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a row's whole-day trip count adds its trips that end without reaching its end stop (running at least two thirds of its line); a trip reaching another row's end stop stays with that row (CIV-1069). Hour counts, first/last times and frequencies still read the end stop.
   - Why: RTD FreeRide showed 255 of 296 weekday trips; 41 end at Union Station Loop.
   - Source: [decision log](#decision-log) (2026-11-26, CIV-2233, #1776)
+- **A route is booked when its boarding stops are booked**
+  - What: a route reads as on-demand when at least 85% of the stop events where riders can board (pickup_type other than 1) need a booking (pickup_type 2); drop-off-only stops don't count. An agency can still force a route either way by short name.
+  - Why: taxibuses written as a booked pickup plus a drop-off-only stop read 50% booked and showed as fixed buses (Drummondville's 68 Secteur routes).
+  - Source: [decision log](#decision-log) (2026-11-27, CIV-3002, #1829)
 - **Manual corrections only fix errors inside the feed**
   - What: a manual correction only fixes an error inside the agency's GTFS file, and Atlas adds no note carrying information that is only on the agency's website.
   - Why: Ryan: "The GTFS is live. It is the truth."
@@ -411,6 +415,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-27 — Booked-route detection counts only stops where riders can board (CIV-3002, #1829)
+Ryan, 2026-11-27, asked in the Studio chat whether it should ship, picked "Ship it". The 85% rule (CIV-1006) now counts only boarding stop events (pickup_type other than 1), not every stop event.
+- Counts (sweep of every local feed, 50 agencies with booked stops, plus Drummondville's current feed): 8 routes gain the on-demand reading (Cascades East A and B; Dial-A-Ride and Paratransit in the mountain-village, smart-telluride and telluride feeds) plus Drummondville's 68 Secteur routes. None lose it. Rio Vista 50 stays a bus (81.8%); exo and Bay Transit are unchanged.
+- Drummondville's hand list of 68 routes (CIV-2244) is removed: the rule now finds exactly those 68.
 
 ### 2026-11-27 — No end date for placeholder feeds, and "may be out of date" after 12 months with no timetable change (CIV-3115)
 Ryan, 2026-11-27: "Have Manager look into it - why 2 years?", "Well obviously we can't trust 2099 but my point is that +2 years from today is equally as arbitrary" and "But \"no end date\" might not be ideal either". After Strategy's revised verdict and the mock-up: "I don't like the wording of any of those explanations", then "I lied I didn't realize what I was looking at - I choose 1" (option 1: "No end date given" plus a warning after 12 months with no timetable change; picking it OKs the 12 months). He then approved this wording word for word (relayed by the manager): "Based on the agency's published schedule, which has no end date. The agency hasn't changed its timetable since February 2022, so it may be out of date." The month and year come from the stored date; with no warning, only the first sentence.
