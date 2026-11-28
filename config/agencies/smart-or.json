@@ -17,7 +17,7 @@
   ],
   "feedUrl": "https://mysmartbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2706/latest.zip",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "FY27 Q2",
   "lastRefreshedAt": "2026-11-16",
   "cities": [
@@ -40,14 +40,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 24,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 9,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -61,5 +61,8 @@
   "feedObtainedAt": "20261102",
   "lastFeedStart": "20261101",
   "lastRawArchiveKey": "unknown-6ad9f7b174ffaa09",
-  "lastFeedContentKey": "4f43e95bc60e150b"
+  "lastFeedContentKey": "4f43e95bc60e150b",
+  "noFeedEnd": true,
+  "lastTimetableKey": "0046461e185e28fe",
+  "timetableChangedAt": "20261102"
 }

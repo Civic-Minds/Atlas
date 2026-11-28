@@ -42,7 +42,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Los_Angeles",
   "headsignFromLastStop": true,
@@ -58,5 +58,7 @@
   "lastFeedStart": "20260823",
   "lastRawArchiveKey": "20270821-1448e595969c5a9e",
   "lastFeedContentKey": "bad99acbf06aa09e",
-  "refusedFeedSha256": "c39dc63b306e3a3d542076d1a044e0b33946cda714f35b8925e9ddc0c0464e2d"
+  "refusedFeedSha256": "c39dc63b306e3a3d542076d1a044e0b33946cda714f35b8925e9ddc0c0464e2d",
+  "lastTimetableKey": "515ba31e75a035c2",
+  "timetableChangedAt": "20261116"
 }

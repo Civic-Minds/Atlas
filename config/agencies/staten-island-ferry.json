@@ -48,7 +48,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -63,5 +63,7 @@
     "name": "NYC DOT Data Feeds disclaimer",
     "credit": "This application may contain and/or utilize information which was originally compiled by the New York City Department of Transportation (NYC DOT) for governmental purposes; the information may subsequently been modified by entity/entities other than NYC DOT. NYC DOT and the City of New York make no representation as to the accuracy or usefulness of the information provided by this application or the information's suitability for any purpose and disclaim any liability for omissions or errors that may be contained therein. The public is advised to observe posted signage for compliance with applicable laws and regulations.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "4d83ffea5e8fdd58",
+  "timetableChangedAt": "20260109"
 }

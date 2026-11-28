@@ -7,7 +7,7 @@
     -118.31
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2149/latest.zip",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "7/8/2026",
   "region": "California",
   "lastRefreshedAt": "2026-11-16",
@@ -33,14 +33,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 2,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 2,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +51,8 @@
   "feedObtainedAt": "20261101",
   "lastFeedStart": "20260719",
   "lastRawArchiveKey": "unknown-518585c924608510",
-  "lastFeedContentKey": "28d0c01613f3ecb8"
+  "lastFeedContentKey": "28d0c01613f3ecb8",
+  "noFeedEnd": true,
+  "lastTimetableKey": "37ed2a1f0be7d1ed",
+  "timetableChangedAt": "20261101"
 }

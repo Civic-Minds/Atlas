@@ -28,7 +28,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20260710",
@@ -47,5 +47,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "47d1f772ebb10533",
   "feedObtainedAt": "20260710",
-  "lastFeedStart": "20260712"
+  "lastFeedStart": "20260712",
+  "lastTimetableKey": "98ff29a1cadad1fe",
+  "timetableChangedAt": "20260710"
 }

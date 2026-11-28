@@ -51,7 +51,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -64,5 +64,7 @@
   "lastServiceWeek": "12d581fc8a6d1f8b",
   "feedObtainedAt": "20261102",
   "lastFeedStart": "20261019",
-  "heldFeedStart": "20261129"
+  "heldFeedStart": "20261129",
+  "lastTimetableKey": "71bc347a9cc56115",
+  "timetableChangedAt": "20261102"
 }

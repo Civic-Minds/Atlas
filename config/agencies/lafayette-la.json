@@ -27,16 +27,16 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 28,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 15,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": "10/23/2026",
   "lastRefreshedAt": "2026-11-16",
   "lastFeedCheckAt": "20261123",
@@ -55,5 +55,8 @@
   "feedObtainedAt": "20261102",
   "lastFeedStart": "20261022",
   "lastRawArchiveKey": "unknown-13ed55d53a4ad24a",
-  "lastFeedContentKey": "68684ac307d07dab"
+  "lastFeedContentKey": "68684ac307d07dab",
+  "noFeedEnd": true,
+  "lastTimetableKey": "384f770a26a7cf19",
+  "timetableChangedAt": "20261102"
 }

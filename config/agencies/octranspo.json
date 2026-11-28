@@ -58,7 +58,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -98,5 +98,7 @@
     "name": "City of Ottawa Open Data Licence v2.0",
     "credit": "Contains information licensed under the Open Government Licence – City of Ottawa.",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "d3bc50924660b46b",
+  "timetableChangedAt": "20261123"
 }

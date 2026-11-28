@@ -55,7 +55,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx",
@@ -67,5 +67,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "d048fb8b88871789",
   "feedObtainedAt": "20261123",
-  "lastFeedContentKey": "64984bf95d64ab97"
+  "lastFeedContentKey": "64984bf95d64ab97",
+  "lastTimetableKey": "f9db75e3743b2998",
+  "timetableChangedAt": "20261123"
 }

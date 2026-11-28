@@ -7,7 +7,7 @@
     -78.9325
   ],
   "feedUrl": "https://duke.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20281126",
+  "lastFeedExpiry": "20281128",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-16",
   "region": "North Carolina",
@@ -41,14 +41,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 16,
-      "feedExpiry": "20281126",
+      "feedExpiry": "20281128",
       "routeCount": 10,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20501230",
   "feedRefreshStatus": "current",
@@ -58,5 +58,8 @@
   "lastServiceWeek": "98b4a9835c5bc51f",
   "feedObtainedAt": "20261116",
   "lastFeedStart": "20241216",
-  "lastFeedContentKey": "21f9cf359e5e1241"
+  "lastFeedContentKey": "21f9cf359e5e1241",
+  "noFeedEnd": true,
+  "lastTimetableKey": "1da865efc698f14b",
+  "timetableChangedAt": "20261116"
 }

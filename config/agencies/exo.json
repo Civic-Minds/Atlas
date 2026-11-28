@@ -63,7 +63,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "da015c0a7e7f48cd",
@@ -76,5 +76,7 @@
     "attribution": "required",
     "name": "CC BY",
     "checkedOn": "2026-11-26"
-  }
+  },
+  "lastTimetableKey": "1acdadf0cbfc9c44",
+  "timetableChangedAt": "20261028"
 }

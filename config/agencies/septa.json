@@ -57,15 +57,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 1086,
+      "featureCount": 1083,
       "feedExpiry": "20270220",
-      "routeCount": 162,
+      "routeCount": 161,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -136,5 +136,7 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20261122",
   "lastRawArchiveKey": "20270220-5104105459afb596",
-  "lastFeedContentKey": "a014d76de4089c8b"
+  "lastFeedContentKey": "a014d76de4089c8b",
+  "lastTimetableKey": "92bc1656cbf0a4d6",
+  "timetableChangedAt": "20261123"
 }

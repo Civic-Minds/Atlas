@@ -44,7 +44,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-27"
+    "checkedAt": "2026-11-28"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -58,5 +58,7 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20261121",
   "lastRawArchiveKey": "20261219-cd259d707947088f",
-  "lastFeedContentKey": "67949e0a5acb2a95"
+  "lastFeedContentKey": "67949e0a5acb2a95",
+  "lastTimetableKey": "25b4d1fd8005d51a",
+  "timetableChangedAt": "20261123"
 }
