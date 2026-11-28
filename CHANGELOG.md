@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The map's credit pill names a single remaining agency instead of "and 1 other agency"**: "TTC · and 1 other agency" hid a name behind a click that opened the full sources list
 - **Route card rows with no number read "Irregular"**: the same word as route lists and agency pages, instead of the longer "Runs irregularly in this period"
 - **Every Live vehicle sits under its own destination row**: TTC 512 cars signed "St Clair" were listed as a row of their own while "to St Clair Station" showed none; Studio's Live panel now shows both directions in the same rows as the map, and the card's back link always reads "Live"
 - **Studio's Live tab has the same icon as the main map's**: Studio used a different icon for the same app

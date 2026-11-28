@@ -52,7 +52,12 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null, mas
     return () => ro.disconnect();
   }, []);
   const hasCredits = pillCredits.length > 0 || feedCredits.length > 0;
-  const hiddenCredits = pillCredits.length - Math.min(shownCredits, pillCredits.length);
+  const fitHidden = pillCredits.length - Math.min(shownCredits, pillCredits.length);
+  // #1920 (Ryan: "If I click this then do we need to narrow the list to the 1 other one lol"): one name left over is named,
+  // not counted, wherever it is no longer than "and 1 other agency" would be (so it fits where the count did).
+  const lastHidden = fitHidden === 1 ? pillCredits[pillCredits.length - 1] : null;
+  const lastHiddenAgencies = lastHidden ? agencyCredits.filter(c => c.shortName === lastHidden.shortName).length : 0;
+  const hiddenCredits = lastHidden && lastHidden.shortName.length <= andOthers(lastHiddenAgencies, 'agency', 'agencies').length ? 0 : fitHidden;
   // The overflow counts agencies, not entries: a hidden "BC Transit" entry stands for each BC Transit agency in view.
   const shownNames = new Set(pillCredits.slice(0, pillCredits.length - hiddenCredits).map(c => c.shortName));
   const hiddenAgencies = agencyCredits.filter(c => !shownNames.has(c.shortName)).length;
