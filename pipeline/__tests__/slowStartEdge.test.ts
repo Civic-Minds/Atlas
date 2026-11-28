@@ -29,12 +29,12 @@ describe('slow start: "every N from <time>" (CIV-1411)', () => {
   it('reads the whole-minute stop times the pipeline keeps (Line 5: 7:19 to 7:27 is 8, a slow gap against 4)', () => {
     const minutes = [366, 386, 406, 413, 422, 430, 439, 447, 452, 456, ...every(3.6, 459.9, 539).map(Math.floor)];
     // The longest wait from 7:27 is 7:27 to 7:32: every 5, not the typical 4.
-    expect(slowStartEdge(minutes, AM.start, AM.end, 20)).toEqual({ from: 447, every: 5 });
+    expect(slowStartEdge(minutes, AM.start, AM.end, 20)).toEqual({ from: 447, every: 5, before: 20 });
   });
 
   it('names the longest wait from that time on, not the typical gap (Halifax 1: every 10-15 from 6:30)', () => {
     const halifax1 = [360, 390, ...every(15, 390 + 15, 435), ...every(10, 443, 539)];
-    expect(slowStartEdge(halifax1, AM.start, AM.end, 30)).toEqual({ from: 390, every: 15 });
+    expect(slowStartEdge(halifax1, AM.start, AM.end, 30)).toEqual({ from: 390, every: 15, before: 30 });
   });
 
   it('is on unless switched off, and periodEdge reads it', () => {

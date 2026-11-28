@@ -300,7 +300,7 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
  * PERIOD_COVERAGE_MAX_HEADWAY reads its spacing, any other its full-window wait, as stretchFilterValue), with its from / until words
  * when it starts or stops inside the period (rowPeriodEdge). Null when the row's own trips do not pass rule D.
  */
-export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number } | null {
+export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number; before?: number } | null {
   if (period === 'all' || period === 'overnight' || d.noOwnServiceByPeriod?.includes(period) || !rowOwnTripsEven(d, period)) return null;
   const hw = d.headwayByPeriod?.[period] as number, cov = d.periodCoverageHeadway?.[period];
   const v = typeof cov !== 'number' ? hw : periodFilterValue({ headway: hw, coverage: cov, sustained: d.headwayByPeriodSustained?.[period] === true }) as number;
@@ -310,6 +310,6 @@ export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'r
   // MIN_CARD_ROW_DEPARTURES of its own trips and no "from …"/"until …" words, gets no number (SEPTA 20 Sunday evening to Frankford
   // Transit Center: 3 trips read "every 171 min").
   if (!edgeWords && (cov ?? 0) > PERIOD_COVERAGE_MAX_HEADWAY && ownDeparturesIn(d, period) < MIN_CARD_ROW_DEPARTURES) return null;
-  if (edgeWords) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), ...(edge.then != null ? { then: edge.then } : {}), ...(edge.thenGap != null ? { thenGap: edge.thenGap } : {}) };
+  if (edgeWords) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), ...(edge.then != null ? { then: edge.then } : {}), ...(edge.thenGap != null ? { thenGap: edge.thenGap } : {}), ...(edge.before != null ? { before: edge.before } : {}) };
   return { t: 'reading', v };
 }

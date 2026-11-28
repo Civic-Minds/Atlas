@@ -1430,6 +1430,11 @@ export interface StretchPeriodEdge {
   then?: number;
   /** #1724: the one long wait after `until` that `then` leaves out ("then every 25 min, with one 37 min gap"). */
   thenGap?: number;
+  /**
+   * CIV-3135 (Ryan, 2026-11-28, "1"): a slow start's longest wait before `from` (the period's value), so the card reads
+   * "every 32 min, then every 17 from 4:37 PM" and a plain "from" only ever means the first bus.
+   */
+  before?: number;
   /** #1276: the stretch the edge is read on: 'main', or a tail's index (a row's stretchIndex when its stretchRole is 'tail'). */
   stretch?: 'main' | number;
 }
@@ -1523,7 +1528,7 @@ export function slowStartEdge(t: readonly number[], start: number, end: number, 
     if (sorted[Math.floor(sorted.length / 2)] <= SLOW_START_STEADY_RATIO * every) return null;
     // Ryan (2026-11-13): the card names the longest wait from T on, rounded up like the period's own
     // value, not the typical gap, so it never reads better than the service runs.
-    return Math.ceil(Math.max(...before)) === value ? { from: t[k], every: Math.ceil(longest) } : null;
+    return Math.ceil(Math.max(...before)) === value ? { from: t[k], every: Math.ceil(longest), before: value } : null;
   }
   return null;
 }
