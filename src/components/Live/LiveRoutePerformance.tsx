@@ -223,7 +223,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     );
   }
   return (
-    <SidebarCardSection label={rightNowLabel}>
+    // No "Right now" heading (Ryan, 2026-11-27: no separate Right now and Scheduled sections); it names only a stale reading.
+    <SidebarCardSection label={rightNowLabel === RIGHT_NOW_LABEL ? undefined : rightNowLabel}>
       <div className="flex flex-col gap-3">
         {shown.map(([id, label]) => (
           <DirectionRightNow

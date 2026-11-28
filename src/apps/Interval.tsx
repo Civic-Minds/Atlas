@@ -93,6 +93,10 @@ import type { StopCardExtraInput } from '../components/Interval/SidebarControls'
 import { percentText } from '../../shared/numberText';
 import { DEFAULT_MAX_HEADWAY } from '../../shared/rules/limits';
 
+// The saved frequency filter. Every value was saved, so returning viewers held the old every-60 default; a new key
+// lets the All default (CIV-2898) reach them once, and any filter they pick from then on is kept.
+const HEADWAY_PREF_KEY = 'atlas_pref_headway_all';
+
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
 const AGENCY_PREF_STORAGE_KEY = 'atlas_pref_agencies_off_v2';
@@ -282,7 +286,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     const fromLink = readUrlParam(searchParams, MAP_URL.headway);
     if (fromLink != null) return fromLink;
-    try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
+    try { const v = Number(localStorage.getItem(HEADWAY_PREF_KEY)); if (v > 0) return v; } catch {}
     return DEFAULT_MAX_HEADWAY;
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.route) ?? null));
@@ -1017,7 +1021,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       limited: urlParamPresent(sp, MAP_URL.hideLimited),
     };
   });
-  usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
+  usePersistedFilterPref(HEADWAY_PREF_KEY, String(maxHeadway), filtersFromUrl.headway);
   usePersistedFilterPref(DAY_PREF_KEY, day, filtersFromUrl.day);
   usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
   usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);

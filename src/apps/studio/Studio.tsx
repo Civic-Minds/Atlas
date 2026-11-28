@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 import StudioChips from './StudioChips';
 import { StudioSettingsProvider, type StudioGeneralSettings } from './StudioSettings';
 import { useLocation, useNavigate } from 'react-router';
-import { Activity, Bus, GitCompare } from 'lucide-react';
+import { Bus, GitCompare } from 'lucide-react';
+import { LiveIcon } from '../../components/Live/LiveIcon';
 import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
@@ -35,7 +36,7 @@ import { StudioMapFrameProvider, studioFrameKey } from '../../context/StudioMapF
  * Local only (FEATURES.studio).
  */
 
-const PAGE_ICONS: Record<StudioPageKey, typeof Bus> = { live: Activity, fleet: Bus, schedules: GitCompare };
+const PAGE_ICONS: Record<StudioPageKey, typeof Bus> = { live: LiveIcon, fleet: Bus, schedules: GitCompare };
 
 export interface StudioProps {
   agencyCatalog: Agency[];
