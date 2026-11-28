@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Live tab shows the same number as the main map's: the agencies Live covers**: it showed the open agency's recorded routes (22 on the TTC), so the same pill counted two different things
 - **Live's All routes trip-time arrow follows the number shown**: "5% faster" to "4% faster" drew an up arrow, because the arrow followed the trip getting longer rather than the share written
 - **Studio Live's "Data up to" date is the last day its figures count**: the TTC read "Data up to Nov 27" over a table excluding Nov 27, because today's half-recorded day was named
 - **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
