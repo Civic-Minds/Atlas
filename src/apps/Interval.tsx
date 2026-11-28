@@ -317,6 +317,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // about it in the abstract. Read-only from the URL on load, never written back.
   const [highlightRoutes] = useState<string[]>(() => readUrlParam(searchParams, MAP_URL.highlight) ?? []);
   const [disambiguationRoutes, setDisambiguationRoutes] = useState<string[] | null>(null);
+  // #1957: a route or stop picked on Studio's own map lets go once a Studio page opens and takes the map's clicks.
+  useEffect(() => {
+    if (!pageView) return;
+    setSelectedRoute(null);
+    setSelectedStop(null);
+    setDisambiguationRoutes(null);
+    // The URL sync below keeps ?route= for a page, so the map's own picks are taken out of the address here.
+    syncUrlParams({ ...urlParamUpdate(MAP_URL.route, null), ...urlParamUpdate(MAP_URL.stop, null), [ROUTE_CHOOSER_PARAM]: null });
+  }, [pageView]); // eslint-disable-line react-hooks/exhaustive-deps
   // A link's ?routes= chooser (CIV-919) waits here until those routes' agencies load, so it never
   // shows raw route keys. A link that also opens a route or stop shows that card instead.
   const [pendingRouteChooser, setPendingRouteChooser] = useState<string[] | null>(() => (
