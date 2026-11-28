@@ -399,6 +399,7 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     if (second) for (const [k, f] of second) if (!first.get(k)?.extremes && f.extremes) first.set(k, f);
     return first;
   }, [shared, own, scheduledRows, data, line, vehicles, recent, now, ownRecent, ownNow, liveBand, extraTrips, stopPatterns, directionId, rowVehicles, routeShortName]); // eslint-disable-line react-hooks/exhaustive-deps
+  const cardDirId = scheduledRows?.find(r => r.cardDirId != null)?.cardDirId;
   // #1877: each destination row's longest gap, keyed as the card names the destination (the first row naming it).
   const gapsKey = rowFigures && scheduledRows ? scheduledRows.flatMap(r => {
     // The shared stretch rides along under its own key, so the card's shared row reads live/schedule too (CIV-3158 follow-up).
@@ -414,8 +415,11 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
       const [k, from, longest, mid] = l.split('\t');
       if (!gaps.has(k)) gaps.set(k, { from: from === '' ? null : Number(from), longest: Number(longest), median: Number(mid) });
     }
-    onDestinationGaps(directionId, gaps);
-  }, [onDestinationGaps, gapsKey, directionId]);
+    // CIV-3173: reported under the route card's own direction, which the map and Studio look the shared stretch up by. The
+    // analysis may number directions the other way (TTC 504: its 0 is westbound, the card's 0 eastbound), which put each
+    // direction's shared-stretch figure on the other direction's row.
+    onDestinationGaps(cardDirId ?? directionId, gaps);
+  }, [onDestinationGaps, gapsKey, directionId, cardDirId]);
   if (!line || !live || onDestinationGaps) return null;
 
   const extremes = !live.incomplete ? gapExtremes(live) : null;

@@ -452,7 +452,15 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   }, [cardClockOn]);
   // The picked route's trip directions, kept on the route card and the vehicle card alike (a card opened from a link
   // has never shown the route card) (CIV-1068).
-  const routeTrips = useLiveTripDirections(selectedGroup?.agencySlug ?? null, selectedGroup?.routeShortName ?? null, selectedGroup?.vehicles ?? NO_VEHICLES);
+  // CIV-3173 part 2 (one model): the pairing reads the route's vehicles placed by shape alone, as Studio's panel does. Fed
+  // the vehicles already resolved by this same answer, a wrong pairing could hold itself in place, so a car counted the
+  // other way made the direction's live reading incomplete on the map while Studio read it at the same moment.
+  const pairingSlug = selectedGroup?.agencySlug ?? null;
+  const guessedSelected = useMemo(
+    () => (pairingSlug ? resolveLiveVehicles((vehiclesBySlug[pairingSlug] ?? []).filter(v => buildRouteKey(pairingSlug, v.routeShortName) === selectedRoute), routeLayer(pairingSlug)) : NO_VEHICLES),
+    [pairingSlug, vehiclesBySlug, routeLayer, selectedRoute],
+  );
+  const routeTrips = useLiveTripDirections(pairingSlug, selectedGroup?.routeShortName ?? null, guessedSelected);
   useEffect(() => { setTripDirections(routeTrips.byVehicle); }, [routeTrips.byVehicle]);
   // The card's Direction and Ends at rows wait until the vehicles have been placed by their trips (and, below, until the
   // route's analysis has said short turn or branch), so it never shows the nearest-shape guess first.
