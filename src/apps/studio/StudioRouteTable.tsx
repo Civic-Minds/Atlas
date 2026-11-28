@@ -58,7 +58,12 @@ export function periodCell(d: StudioRouteDay | null, k: PeriodKey): { main: stri
   if (!d) return { main: MISSING_VALUE, note: null };
   const edge = d.edge?.[k];
   if (!edge) return { main: headwayAmount(d.headway[k]), note: null };
-  return { main: headwayAmount(edge.every), note: periodShapeParts(periodEdgeText(edge)).note };
+  const { note } = periodShapeParts(periodEdgeText(edge));
+  // CIV-3164 (Ryan, 2026-11-28, picked "1": "—" with "15 min from 2:26 PM" under it): a time of day that runs only part of the
+  // period has no map figure, so it reads as the no-figure mark, with the route card's "N min from/until <time>" under it.
+  // Never "Runs only from 2:26–3 PM": Ryan, "But it doesn't run until 3 pm" (the bus keeps running past the period's end).
+  if (d.headway[k] == null && note) return { main: MISSING_VALUE, note: `${headwayAmount(edge.every)} ${note}` };
+  return { main: headwayAmount(edge.every), note };
 }
 const clockOrMissing = (m: number | null | undefined) => (m == null ? MISSING_VALUE : clockTime(m));
 
