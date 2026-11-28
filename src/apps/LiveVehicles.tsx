@@ -648,8 +648,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
       return liveRouteEmptyNotice(agencyName, routeShortName, false, followed);
     }
-    return liveRouteEmptyNotice(agencyName, routeShortName, true, []);
-  }, [selectedRoute, selectedGroup, isLoading, agencies]);
+    return liveRouteEmptyNotice(agencyName, routeShortName, true, [], errorBySlug[slug] != null);
+  }, [selectedRoute, selectedGroup, isLoading, agencies, errorBySlug]);
 
   // A route or vehicle card opens in the map card's body; on phones, in its bottom sheet (as SidebarControls).
   const cardOpen = !!selectedGroup && pickVehicles.length <= 1;
