@@ -138,6 +138,14 @@ export const lateLimitText = (t?: OnTimeWords | null): string =>
   t?.lateAtOrAboveMin != null && t.lateAtOrAboveMin !== LATE_ABOVE_MIN ? `more than ${halfMinText(t.lateAtOrAboveMin)} min` : LATE_LIMIT_TEXT;
 /** The late limit as the map's key says it: "5½+ min" for Atlas's window, the agency's own where it publishes one (CIV-3151). */
 export const lateKeyLimit = (t?: OnTimeWords | null): string => `${halfMinText(t?.lateAtOrAboveMin ?? LATE_ABOVE_MIN)}+ min`;
+/**
+ * CIV-3171 (Ryan, 2026-11-28, Pick B "1"; "I don't like : but sure", so no colon): where an agency publishes its own late
+ * limit, Measurements' Late row says so instead of the 30-second buffer sentence (LATE_LIMIT_LEAD), which stays for Atlas's
+ * own 5½ min. Draft wording, held here until Ryan's word-for-word OK: "Late means more than 5 min behind schedule, the TTC’s
+ * own limit." `possessive` is agencyPossessive's form ("the TTC’s").
+ */
+export const lateOwnLimitSentence = (possessive: string, t?: OnTimeWords | null): string =>
+  `${LATE_LABEL} means ${lateLimitText(t)} behind schedule, ${possessive} own limit.`;
 /** LATE_THRESHOLD at a page's window. */
 export const lateThreshold = (t?: OnTimeWords | null): string => `${lateLimitText(t)} late`;
 /** An agency's own on-time window in Ryan's words (2026-11-24, CIV-2222: ">1 min early or >5 min late"). */
