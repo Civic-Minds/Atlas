@@ -248,6 +248,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
   'src/data/onDemandServiceAreas.ts': ['within 3 miles of Sandy'],
   // Live's notices, word for word (CIV-1045; item 40, Ryan 2026-11-17: "Live doesn’t cover TTC 512.").
   'src/content/noticeCopy.ts': ['It covers ${agencyName} routes ${joinList(followed)}.'],
+  // The no-end-date warning, approved word for word by Ryan (CIV-3115, DECISIONS 2026-11-27): "The agency hasn't changed its timetable since February 2022, so it may be out of date."
+  'shared/agencyPages.ts': ['The agency hasn’t changed its timetable since'],
 };
 
 // Block comments, and line comments that don't start inside a string or a URL.
