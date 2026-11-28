@@ -69,13 +69,6 @@ export const STUDIO_REVIEW_URL = {
   design: oneOf('design', ['period', 'byPeriod', 'summary'] as const, null),
 } as const;
 
-/** Development-only switches for review mock-ups; never written into a link. */
-export const DEV_URL = {
-  /** CIV-3142: which candidate line the short credit list shows (SOURCES_ON_MAP_LINES), until Ryan picks one. */
-  // 'chip': Ryan's search-box idea (the full list, filtered by an "On my screen" chip in the search box).
-  mockCredit: oneOf('mockCredit', ['a', 'b', 'c', 'chip'] as const, 'a'),
-};
-
 /** The map (Frequency and Frequent Service; it stays mounted under every other view). */
 export const MAP_URL = {
   /**
@@ -272,8 +265,6 @@ export const URL_PARAM_ORDER: readonly string[] = [
   APP_URL.forceSlowConnection.key,
   // CIV-2182 review only: which proposed Schedules design Studio shows; removed with the switch once Ryan picks.
   STUDIO_REVIEW_URL.design.key,
-  // CIV-3142 review only: the short credit list's candidate line; removed once Ryan picks.
-  DEV_URL.mockCredit.key,
 ];
 
 const PARAM_RANK = new Map(URL_PARAM_ORDER.map((key, i) => [key, i]));

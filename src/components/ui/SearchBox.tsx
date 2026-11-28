@@ -17,7 +17,7 @@ export default function SearchBox({ value, onChange, placeholder, inputRef, auto
   inputRef?: Ref<HTMLInputElement>;
   autoFocus?: boolean;
   className?: string;
-  /** CIV-3142 mock-up: a filter already set in the box (Sources' "On my screen"); the box's X clears it with the text. */
+  /** CIV-3142: a filter already set in the box (Sources' "On my screen"); the box's X clears it with the text. */
   chip?: { label: string; onClear: () => void };
 }) {
   return (

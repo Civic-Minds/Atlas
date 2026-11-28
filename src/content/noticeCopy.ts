@@ -1079,22 +1079,10 @@ export const SOURCES_FALLBACK = 'For some agencies, we use their schedule from o
 /** Above the agency credits in Sources (CIV-3096, Ryan, 2026-11-26, word for word). */
 export const SOURCES_CREDITS_HEADING = 'Licences and attributions.';
 /**
- * CIV-3142 (Ryan, 2026-11-27, "1"): the line above the short list that the map's "and N other agencies" opens: only the
- * agencies credited on screen. Not approved yet: three candidates, switched in development with ?mockCredit=a|b|c.
- */
-export const SOURCES_ON_MAP_LINES = {
-  a: 'Credited on the map now',
-  b: 'Agencies on the map now',
-  c: 'Data from the agencies on screen',
-} as const;
-export type SourcesOnMapLineKey = keyof typeof SOURCES_ON_MAP_LINES;
-/**
- * CIV-3142 mock-up (Ryan, 2026-11-27: "populate the search bar with \"On My Screen\" or smth then have a \"X\" or clear
- * button"): the filter set in Sources' search box instead of the short list. His wording is a placeholder, not approved.
+ * CIV-3142 (Ryan, 2026-11-27, picked option 1: "populate the search bar with \"On My Screen\" or smth then have a \"X\" or
+ * clear button"): the filter set in Sources' search box when the map's "and N other agencies" opens it. Wording awaits his OK.
  */
 export const SOURCES_ON_SCREEN_CHIP = 'On my screen';
-/** CIV-3142: the link from that short list back to every source. */
-export const SOURCES_ALL_LINK = 'All sources';
 export const NEW_TAG = 'New';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';
