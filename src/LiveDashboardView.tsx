@@ -104,7 +104,7 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   const notes = split && !aboutLive ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
     <FiguresCard label={WEEK_COMPARE_TITLE} title={sections ? WEEK_COMPARE_TITLE : undefined}
-      // The scope and the days left out sit top right, as on the late-by-hour chart (SectionNotes), not in the table's head.
+      // The scope and the days left out under the title, as on the late-by-hour chart (SectionNotes), not in the table's head.
       action={<SectionNotes scope={scope} excluding={excluding ? <span title={excludingTitle}>{excluding}</span> : null} />}>
       {label && <FigureNotes lines={[label]} ruled={false} tone="secondary" />}
       <DataTable

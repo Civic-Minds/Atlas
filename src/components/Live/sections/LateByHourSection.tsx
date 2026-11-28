@@ -214,7 +214,7 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
   if (!hours.length || isThin(days)) return null;
   return (
     <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined}
-      // The scope and the days left out top right, as on the week table (SectionNotes).
+      // The scope and the days left out under the title, as on the week table (SectionNotes).
       action={<SectionNotes scope={scope} excluding={leftOut?.length ? <LeftOutDays dates={leftOut} /> : null} />}>
       {/* Ryan, 2026-11-27 ("redesign the sparkline here to be more like the one on the main map"): the route card's own
           chart, fed the late share by hour (in percent) and coloured by the lateness steps; its hover names the hour. */}
