@@ -59,8 +59,8 @@ export async function jsonOrNull<T = unknown>(res: Response, path: string, missi
 export const splitUrl = (base: string, path: string) => `${base.replace(/\/$/, '')}/${path.split('/').map(encodeURIComponent).join('/')}`;
 
 /** Reads files from a base URL (the published release's mcp folder). Works in Node and in a Worker. */
-export function urlReader(base: string, init?: RequestInit): SplitRead {
-  return async path => jsonOrNull(await fetch(splitUrl(base, path), init), path);
+export function urlReader(base: string, init?: RequestInit, get: typeof fetch = fetch): SplitRead {
+  return async path => jsonOrNull(await get(splitUrl(base, path), init), path);
 }
 
 /** The store over a reader. Each file is read once per store; a new release is a new store. */
