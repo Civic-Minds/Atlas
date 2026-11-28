@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's route card shows both schedules in full**: the newer schedule's column was cut off at the card's edge
 - **Live's destination rows say which figure is live and which is the timetable**: "live 10–13 min" in bold over "schedule 10 min", so the two no longer read as two answers to the same question
 - **Studio's agency choice is in its Settings menu**: the top bar keeps only the page's own menus, and Studio stays local only
 - **A route card says when buses start coming more often partway through a time of day: "every 32 min, then every 17 from 4:37 PM"**: it read only "every 17 min from 4:37 PM", as if the first bus was at 4:37

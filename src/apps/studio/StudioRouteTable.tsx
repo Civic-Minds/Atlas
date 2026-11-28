@@ -129,9 +129,11 @@ export function StudioRouteTable({ change, beforeDate, afterDate, period }: { ch
         rowKey={r => r.key}
         rowCurrent={r => r.key === period}
         columns={[
+          // #1947: widths that fit the sidebar card (16 rem in all), so the newer schedule's column isn't cut off at its edge;
+          // long end-stop names wrap in their cell.
           { key: 'label', header: '', rowHeader: true, width: 6, className: 'font-normal', cell: r => r.label },
-          { key: 'before', header: dateRange(beforeDate, beforeDate), cell: (r: FigureRow) => r.before },
-          { key: 'after', header: dateRange(afterDate, afterDate), cell: (r: FigureRow) => r.after },
+          { key: 'before', header: dateRange(beforeDate, beforeDate), width: 5, cell: (r: FigureRow) => r.before },
+          { key: 'after', header: dateRange(afterDate, afterDate), width: 5, cell: (r: FigureRow) => r.after },
         ]}
       />
     </ScrollX>
