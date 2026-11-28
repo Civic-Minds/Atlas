@@ -17,7 +17,6 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-688/latest.zip",
   "timezone": "America/Los_Angeles",
   "timezoneOverride": "America/Los_Angeles",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-688/latest.zip",
   "lastFeedCheckAt": "20261128",
