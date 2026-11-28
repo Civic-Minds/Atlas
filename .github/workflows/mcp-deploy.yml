@@ -56,7 +56,17 @@ jobs:
           BUILD_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo "::error::The CLOUDFLARE_API_TOKEN secret is missing: the hosted MCP was not deployed."; exit 1; fi
-          npx --yes wrangler@4.164.0 deploy -c wrangler.jsonc --var "BUILD_SHA:$BUILD_SHA"
+          # CIV-3165: a pasted secret can carry a newline or space, which wrangler refuses as a header value ("is an invalid
+          # header value"). Spaces and newlines at either end are dropped; anything left that isn't a letter, digit, _ or -
+          # (such as a second line) fails here with a plain message. Only lengths and counts are printed, never the value.
+          token=$(printf '%s' "$CLOUDFLARE_API_TOKEN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          account=$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')
+          removed=$(( ${#CLOUDFLARE_API_TOKEN} - ${#token} ))
+          if [ "$removed" -gt 0 ]; then echo "::warning::CLOUDFLARE_API_TOKEN had $removed space or newline character(s) at its ends; they were dropped. Re-save the secret without them."; fi
+          lines=$(printf '%s\n' "$token" | grep -c .)
+          other=$(printf '%s' "$token" | tr -d 'A-Za-z0-9_-' | wc -c | tr -d ' ')
+          if [ "$other" -gt 0 ]; then echo "::error::CLOUDFLARE_API_TOKEN is ${#token} characters on $lines line(s), with $other character(s) a token can't have: re-save the secret with only the token, on one line."; exit 1; fi
+          CLOUDFLARE_API_TOKEN="$token" CLOUDFLARE_ACCOUNT_ID="$account" npx --yes wrangler@4.164.0 deploy -c wrangler.jsonc --var "BUILD_SHA:$BUILD_SHA"
 
       # The new code is live (its BUILD_SHA answers) and the release still serves at least MIN_AGENCIES agencies.
       - name: Smoke check the live MCP
