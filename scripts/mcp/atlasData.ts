@@ -1116,15 +1116,26 @@ export function historyNow(todayWait: Partial<Record<PeriodKey, number>> | null,
 /** Doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more (GitHub #1580). */
 export const isDoubtfulHistoryFigure = (old: number | null, now: number | null) => old != null && old <= 3 && now != null && now >= 30;
 
+/**
+ * #1956: which History route a question names, by the rule route_frequency uses (findRoute), so the two tools pick the
+ * same route. A route number never lands on another number that only contains it (Halifax "1" read as 21); -1 for none.
+ */
+export function historyRouteIndex(names: Array<[string, string | null]>, query: string): number {
+  const rows = names.map(([short, name], i) => ({ shortName: short, name: short, longName: name, mode: '', i }));
+  const hit = findRoute(rows, query);
+  if (!hit) return -1;
+  const q = query.trim();
+  const lead = (x: string) => (x.match(/^0*(\d+)/)?.[1] ?? null);
+  if (/^\d+$/.test(q) && lead(hit.shortName) !== lead(q)) return -1;
+  return hit.i;
+}
+
 /** A route's History: each schedule Atlas has kept, oldest first, with its value in each period, read as History reads it. */
 export async function routeHistory(agency: CatalogAgency, routeQuery: string, day: DayType) {
   const slug = agency.slug;
   const names = await store.historyIndex(slug);
   if (!names) return null;
-  const q = routeQuery.trim().toLowerCase();
-  let at = names.findIndex(([short]) => short.toLowerCase() === q);
-  if (at < 0) at = names.findIndex(([, name]) => (name ?? '').toLowerCase() === q);
-  if (at < 0) at = names.findIndex(([short, name]) => `${short} ${name ?? ''}`.toLowerCase().includes(q));
+  const at = historyRouteIndex(names, routeQuery);
   const route = at >= 0 ? await store.historyRoute(slug, at) : null;
   if (!route) return { route: null, routes: names.length };
   const snaps = [...snapshotsNewestFirst(usableSnapshots(route.snapshots))].reverse();

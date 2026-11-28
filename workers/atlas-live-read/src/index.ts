@@ -12,7 +12,8 @@ import liveAgency from '../../../local-api/live-agency';
 import liveGaps from '../../../local-api/live-gaps';
 import liveStop from '../../../local-api/live-stop';
 import { cloudLiveFiles, setLiveFilesSource } from '../../../local-api/liveFiles';
-import { LIVE_NETWORK_COUNT_PATH, liveCloudServes, liveCloudServesVehicles, liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
+import { LIVE_NETWORK_COUNT_PATH, liveCloudServes, liveVehiclesCorsOrigin } from '../../../shared/liveCloud';
+import { liveAgencyCoverage } from '../../../shared/liveCore';
 import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
 import { setAgencyNameLookup } from '../../../local-api/agencyName';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
@@ -57,7 +58,7 @@ let boundFiles: R2Bucket | undefined;
  */
 export const NETWORK_COUNT_PATH = LIVE_NETWORK_COUNT_PATH;
 async function networkCount(bucket: R2Bucket, agency: string, cors: Record<string, string>, nowSec = Math.floor(Date.now() / 1000)): Promise<Response> {
-  const feed = RECORDER_SLUGS.includes(agency) && liveCloudServesVehicles(agency) ? liveRecorderFeed(agency) : null;
+  const feed = RECORDER_SLUGS.includes(agency) && liveAgencyCoverage(agency).hasVehicles ? liveRecorderFeed(agency) : null;
   if (!feed) return json({ error: 'Atlas does not record this agency.' }, 404, cors);
   const cache = { ...cors, 'Cache-Control': 'public, max-age=0, s-maxage=30' };
   const store = async (key: string) => { const obj = await bucket.get(key); return obj ? new Uint8Array(await obj.arrayBuffer()) : null; };
@@ -81,7 +82,7 @@ export default {
     const agency = url.searchParams.get('agency') ?? '';
     if (counting) return networkCount(env.LIVE_ARCHIVE, agency, cors);
     // CIV-2914 (CIV-1716): only agencies Live shows; an analysis-only agency (Kingston) is never served, whatever the files hold.
-    if (!(handler ? liveCloudServes(agency) : liveCloudServesVehicles(agency))) return json({ error: 'Live has no cloud recording for this agency.' }, 404, cors);
+    if (!(handler ? liveCloudServes(agency) : liveAgencyCoverage(agency).hasVehicles)) return json({ error: 'Live has no cloud recording for this agency.' }, 404, cors);
     if (env.LIVE_ARCHIVE !== bound) { bound = env.LIVE_ARCHIVE; useNowSource(bucketNowSource(bound)); }
     if (handler) {
       if (env.MCP_LIVE !== boundFiles) { boundFiles = env.MCP_LIVE; setLiveFilesSource(cloudLiveFiles(async key => (await boundFiles!.get(key))?.text() ?? null)); }

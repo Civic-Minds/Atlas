@@ -27,7 +27,7 @@ import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PL
 import { BUNCHING_LABEL, LATE_LABEL, STUDIO_ROUTE_PANEL_PENDING, lateOwnLimitSentence, onTimeWindowWords } from '../../shared/liveWording';
 import LiveMapKey from './Live/LiveMapKey';
 import { getSavedStudioAgency } from '../utils/studioAgency';
-import { agencyPossessive } from '../../shared/agencyArticle';
+import { agencySentenceStart } from '../../shared/agencyArticle';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import SourceCredits, { SourceCreditPage, useSourceCredits } from './SourceCredits';
@@ -558,7 +558,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-3">
               <LiveMapKey measure="late" variant="card" window={lateWindow} />
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                {lateWindow?.onTimeWindowPublished && lateAgency ? lateOwnLimitSentence(agencyPossessive(agencyNames({ name: lateAgency.name, cities: lateAgency.cities, displayArea: lateAgency.displayArea, nameQualifier: lateAgency.nameQualifier }).name), lateWindow) : LATE_LIMIT_LEAD}
+                {lateWindow?.onTimeWindowPublished && lateAgency ? lateOwnLimitSentence(agencySentenceStart(agencyNames({ name: lateAgency.name, cities: lateAgency.cities, displayArea: lateAgency.displayArea, nameQualifier: lateAgency.nameQualifier }).name), lateWindow) : LATE_LIMIT_LEAD}
               </p>
             </div>
           )}

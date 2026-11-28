@@ -335,7 +335,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: Ryan: "I shouldn't need to scroll in the sidebar." (He never asked for collapsible cards.)
   - Source: Linear CIV-293, comments of 2026-10-17 (14:17, 14:20 and 14:27 UTC)
 - **Studio Live's late key is a "Late" row in Measurements, not a pill**
-  - What: Measurements (opened by Learn more) has a "Late" row built like Bunching's, showing the late limit and colour steps at the agency's own limit where it publishes one; Studio Live has no bottom late pill. The Live page keeps its pill.
+  - What: Measurements (opened by Learn more) has a "Late" row built like Bunching's, showing the late limit and colour steps at the agency's own limit where it publishes one, then "The TTC counts a vehicle as late when it is more than 5 min behind schedule." (that agency's name and limit), or the 30-second buffer sentence for Atlas's own 5½ min; Studio Live has no bottom late pill. The Live page keeps its pill.
   - Why: Ryan: "put the 5+ minutes here in a Bunching thing"; "Just "Late" no Late 5+ mins I think".
   - Source: [decision log](#decision-log) (2026-11-28, CIV-3171)
 - **Late has one shared wording and one threshold**
@@ -439,7 +439,7 @@ Dated, newest first. The rules above are the short form; this is the reasoning.
 ### 2026-11-28 — Studio Live's late key moves to a "Late" row in Measurements; no bottom pill (CIV-3171)
 Ryan, 2026-11-28. First, on Studio's Measurements panel: "Just to be clear I meant put the 5+ minutes here in a Bunching thing". On the review page _review/civ-3171 ("Where should Studio Live explain 'Late · 5+ min'?"; 1 a Late row in Measurements and no bottom pill (Recommended), 2 the row and keep the pill, 3 keep today's pill only) he picked "1", adding "Just "Late" no Late 5+ mins I think".
 - The rule: Studio Live has no late key pill. Measurements (which Learn more opens) has a row labelled "Late", the same row as Bunching; it shows the key the pill opened (the limit and the colour steps) at the agency's own limit where it publishes one.
-- Then, on the sentence under the key (separate question), he picked "1": where the agency has its own limit, say that instead of the 30-second buffer sentence, which stays only where Atlas's 5½ min is used; "I don't like : but sure", so no colon. The exact sentence is pending his word-for-word OK (draft: "Late means more than 5 min behind schedule, the TTC’s own limit.").
+- Then, on the sentence under the key (separate question), he picked "1": where the agency has its own limit, say that instead of the 30-second buffer sentence, which stays only where Atlas's 5½ min is used; "I don't like : but sure", so no colon. Of three wordings he picked 3 ("The TTC counts a vehicle as late when it is more than 5 min behind schedule, and Atlas uses the same limit."), then: "but why do we need to include the second part of that sentence". Approved word for word: "The TTC counts a vehicle as late when it is more than 5 min behind schedule." (lateOwnLimitSentence; the agency's name and its own limit come from the shared sources, for every agency with its own limit).
 - Not changed: the Live page keeps its pill.
 
 ### 2026-11-28 — A Live destination row reads vehicles, then live, then schedule, each on its own line (CIV-3158, #1931)

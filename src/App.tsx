@@ -29,7 +29,7 @@ const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 // Atlas Studio is local only (FEATURES.studio is the dev server); the DEV check keeps it out of deployed bundles entirely.
 const Studio = import.meta.env.DEV ? React.lazy(() => import('./apps/studio/Studio')) : () => null;
 import { COMPARE_PATH, isAppGated, isCompareGated, type AppId } from './utils/appGate';
-import { parseStudioPath } from '../shared/studioAgencies';
+import { parseStudioPath, studioPageOwnsMap } from '../shared/studioAgencies';
 import { getSavedStudioAgency } from './utils/studioAgency';
 import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
@@ -70,7 +70,7 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_APPS_LABEL, COMPARE_LABEL, MORE_LABEL, explainerFor } from './content/noticeCopy';
-import ViewLoadingPanel from './components/ViewLoadingPanel';
+import ViewLoadingPanel, { ViewLoadingPill } from './components/ViewLoadingPanel';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
 import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
@@ -458,7 +458,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // #1744 (Ryan: "In Studio when I'm not inside any of the 'apps' the map is just... blank"): with no Studio page open
   // (CIV-1894), the map's own route lines show, the remembered agency's in focus and the rest dimmed, as History's open
   // agency is (CIV-1731's Studio map showed the agency's lines with nothing picked). A page draws its own lines instead.
-  const studioNoPage = inStudio && !parseStudioPath(pathname)?.page;
+  const studioNoPage = inStudio && !studioPageOwnsMap(pathname);
   const studioFocusAgency = studioNoPage ? getSavedStudioAgency() : null;
   const studioFocusSlugs = useMemo(() => (studioFocusAgency ? [studioFocusAgency] : null), [studioFocusAgency]);
   // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
@@ -886,7 +886,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               query={inStudio ? '' : deferredQuery}
               setQuery={setQuery}
               showUi={inFrequency || inFrequentService}
-              showSelectionUi={inLive || inNight || inBustang}
+              showSelectionUi={inLive || inNight || inBustang || studioNoPage}
               showRouteLayers={inFrequency || inLive || inHistory || inNight || inBustang || inFrequentService || studioNoPage}
               focusAgencySlugs={studioFocusSlugs}
               liveRoutesOnly={inLive}
@@ -911,7 +911,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               // CIV-2940 (#1814): Studio's map colours its lines by frequency with no page open, so the map's own
               // Frequency, Day, Time and Mode chips show there (Ryan picked 5; no Agencies toggle).
               studioFilters={studioNoPage}
-              pageView={inStudio}
+              // #1957: only an open Studio page handles the map's clicks; with none, a click opens the route as on the main map.
+              pageView={inStudio && !studioNoPage}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -969,7 +970,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               </React.Suspense>
             )}
             {studioOn && (inStudio || studioLeaving) && (
-              <React.Suspense fallback={inStudio ? <ViewLoadingPanel what={PAGE_NAMES.studio} /> : null}>
+              // CIV-3216: Studio's cold open shows the map's own loading pill, not a card.
+              <React.Suspense fallback={inStudio ? <ViewLoadingPill what={PAGE_NAMES.studio} /> : null}>
                 <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} settings={studioSettings} searchBox={studioSearch} />
               </React.Suspense>
             )}
