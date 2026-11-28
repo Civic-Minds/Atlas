@@ -10,6 +10,7 @@ import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { NEARBY_ROUTES_RADIUS_M, RANK_AGENCIES_MAX } from '../../shared/rules/limits';
 import { joinList } from '../../shared/overflowText';
 import { NIGHT_GRADES, OVERNIGHT_NIGHT_GRADE } from '../../shared/nightService';
+import { DOCS_METHOD_TOPICS } from './docsMethodTopics';
 
 export const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
@@ -47,6 +48,7 @@ const TOOL_LIST = [
   { name: 'frequent_coverage', description: "The share of a metro's people within a 10-minute walk of a route running every 15 or every 30 min (weekday AM peak, midday and PM peak), from Atlas's coverage table for Canada and the United States: one dated coverage run, cited with its rule, not a live calculation. Give a city, or a country (or neither) for the whole table. Only the metros in the table have a figure; for any other the answer says Atlas has none.", inputSchema: { type: 'object', properties: { city: { type: 'string', description: 'A metro, such as "Toronto" or "Kitchener".' }, country: { type: 'string', enum: ['Canada', 'United States'] } } } },
   { name: 'route_history', description: "How a route's frequency has changed over the years, from Atlas's History: each schedule Atlas has kept for it, oldest first, with how often it ran in each part of the day. Coverage depends on the agency; the answer says when Atlas has none.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day }, required: ['agency', 'route'] } },
   { name: 'buses_needed', description: "Buses needed to run a route in a part of the day, from Atlas Studio's buses-needed file for the agency (the same figures Studio's page shows): buses scheduled now, buses needed at the schedule's own frequency, and buses needed every 10, 15, 20, 30 or 60 minutes. Routes that share buses are counted together. Counts use the schedule's own layover. Only agencies whose file has been built have an answer; for others it says so.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string' }, period: periodOrNow, every: { type: 'number', description: 'Optional target minutes between buses: 10, 15, 20, 30 or 60.' } }, required: ['agency', 'route', 'period'] } },
+  { name: 'explain_method', description: `Atlas's own explanation of how it works out its figures, word for word from its Docs page. Call it before explaining why figures differ or what a term means, and use its words instead of guessing a cause. Topics: ${DOCS_METHOD_TOPICS.map(t => `${t.key} (${t.about})`).join('; ')}.`, inputSchema: { type: 'object', properties: { topic: { type: 'string', enum: DOCS_METHOD_TOPICS.map(t => t.key) } }, required: ['topic'] } },
   { name: 'routes_by_hours', description: "Routes whose service ends early or starts late on a day type: every route whose last trip leaves before ends_before, or whose first trip leaves after starts_after, with its first and last trips. For questions such as which routes stop before 10 PM on Sundays.", inputSchema: { type: 'object', properties: { agency, day, ends_before: { type: 'string', description: 'Clock time, e.g. "22:00" or "10 PM".' }, starts_after: { type: 'string', description: 'Clock time, e.g. "07:00".' } }, required: ['agency'] } },
   { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTimeOrNow, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
@@ -74,7 +76,7 @@ const TITLES: Record<string, string> = {
   routes_at_frequency: 'Routes at a frequency', compare_agencies: 'Compare agencies', routes_near: 'Routes near a place', stop_frequency: 'How often buses come at a stop',
   route_history: 'Route history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
   trip_time: 'Trip time between stops', combined_frequency: 'Combined frequency between stops', schedule_changes: 'Schedule changes',
-  route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced', route_now: 'How a route is running right now', on_demand_zones: 'On-demand zones', night_service: 'Night service', frequent_coverage: 'People near frequent service',
+  route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced', route_now: 'How a route is running right now', on_demand_zones: 'On-demand zones', night_service: 'Night service', frequent_coverage: 'People near frequent service', explain_method: 'How Atlas works out its figures',
 };
 /**
  * CIV-1900: one plain line per tool for people (the internal MCP docs page): "min", no field names. Kept beside the
@@ -100,6 +102,7 @@ export const TOOL_SUMMARIES: Record<string, string> = {
   on_demand_zones: 'An agency\'s on-demand zones, or those covering or near a place, with hours, pickup and trip rules.',
   night_service: 'An agency\'s routes that run through the night, every 30, 60 or 90 min or better from 2 to 5 AM.',
   frequent_coverage: 'The share of a metro\'s people within a 10 min walk of a route every 15 or 30 min, from Atlas\'s dated coverage table.',
+  explain_method: 'Atlas\'s own explanation of a method or term, word for word from its Docs page.',
   schedule_changes: 'What changed between an agency\'s two most recent schedules: routes added and removed, and frequency changes.',
 };
 /** Every tool only reads Atlas's own published data: nothing is changed, and nothing outside Atlas is reached. */
@@ -107,7 +110,7 @@ const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHi
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION, question_id: QUESTION_ID }, required: [...(t.inputSchema.required ?? []), 'question', 'question_id'] } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.24.0';
+export const SERVER_VERSION = '0.25.0';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of
@@ -127,5 +130,7 @@ export const INSTRUCTIONS = [
   "For what is scheduled right now, pass \"now\" as the period (or from_time) and say what the answer used (the day, part of the day and local time); never guess the time or day yourself.",
   // CIV-1860, Ryan: "'where is my streetcar right now' is a rider question not a transit planner question".
   // CIV-1870, Ryan: "being able to ask about bunching for example, or gaps in service on a specific route" right now.
+  // CIV-3197 (#1944): explanations come from Atlas's Docs page, not the assistant's guess.
+  "To explain why two figures differ or what a term means, call explain_method and use Atlas's words; don't guess a cause.",
   "route_reliability and route_bunching are past service. For gaps and bunching on a route right now, use route_now where the server has it, and give the time of its reading; when it has no current reading, say so and offer the latest recorded week. Atlas doesn't look up where a single vehicle is.",
 ].join(' ');

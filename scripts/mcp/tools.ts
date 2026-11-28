@@ -11,6 +11,7 @@ import * as data from './atlasData';
 import { headwayEvery } from '../../shared/headwayText';
 import { NEARBY_ROUTES_RADIUS_M, RANK_AGENCIES_MAX } from '../../shared/rules/limits';
 import { LIVE_TOOLS, liveHandlers } from './liveTools';
+import { docsHandlers } from './docsTools';
 import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { needAgency, needPeriod, mapLink, validThrough, SOURCE, windowNote, nowAt, nowBlock, periodOrNow, windowOrNow, type Args, FIGURE_LABELS } from './toolHelpers';
@@ -53,6 +54,7 @@ async function unknownRegion(reg: string): Promise<{ regionNote: string } | null
 
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   ...liveHandlers,
+  ...docsHandlers,
   list_agencies: async ({ query, region, country, near, km, include_parts }) => {
     if (near != null) {
       const res = await data.agenciesNear(String(near), km != null ? Number(km) : 60);
