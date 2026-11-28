@@ -7,10 +7,10 @@ import { useLiveFeeds } from '../../hooks/useLiveFeeds';
 import { useAgencyGeo } from '../../hooks/useAgencyGeo';
 import { useLiveTripDirections } from '../../hooks/useLiveTripDirections';
 import { resolveLiveVehicles } from '../../utils/liveResolveVehicles';
-import { STUDIO_ROUTE_PANEL_PENDING, type LiveRowGap } from '../../../shared/liveWording';
+import { LIVE_SHARED_GAP_KEY, STUDIO_ROUTE_PANEL_PENDING, type LiveRowGap } from '../../../shared/liveWording';
 import { sameLiveRowGap } from '../../utils/liveRowValue';
 import { liveCardModelNow, liveCardRowKeys, liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey } from '../../utils/liveGrouping';
+import { groupVehiclesByDirection, rowlessGroupShown, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey } from '../../utils/liveGrouping';
 import { streetJoin } from '../../utils/stopLabel';
 import { formatBranchLabel, vehicleModeWord } from '../../utils/format';
 import { effectiveMode, type EffectiveModeInput } from '../../../shared/modes';
@@ -91,7 +91,7 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
     <>
       {reading}
       {/* The map card's own list spacing around its direction headings. */}
-      <SidebarCardList><RouteCardRows model={model} reportRef={reportRef} rowLive={rowLive} /></SidebarCardList>
+      <SidebarCardList><RouteCardRows model={model} reportRef={reportRef} rowLive={rowLive} sharedLive={dirId => gaps.get(dirId)?.get(LIVE_SHARED_GAP_KEY)} /></SidebarCardList>
       <Unclaimed groups={groups} rowKeys={new Set(rowKeys.map(r => r.key))} modeWord={modeWord} routeShortName={routeShortName} routeLongName={routeLongName} />
     </>
   );
@@ -103,7 +103,7 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
  * destination make no row: there is no placeholder ("No destination") row.
  */
 export function unclaimedGroups(groups: ReadonlyMap<string, LiveVehicle[]>, rowKeys: ReadonlySet<string>): [string, LiveVehicle[]][] {
-  return [...groups].filter(([k, vs]) => vs.length > 0 && k !== DIRECTION_UNCLEAR && !rowKeys.has(k));
+  return [...groups].filter(([k, vs]) => vs.length > 0 && rowlessGroupShown(k) && !rowKeys.has(k));
 }
 
 function Unclaimed({ groups, rowKeys, modeWord, routeShortName, routeLongName }: { groups: ReadonlyMap<string, LiveVehicle[]>; rowKeys: ReadonlySet<string>; modeWord: string; routeShortName: string; routeLongName: string }) {

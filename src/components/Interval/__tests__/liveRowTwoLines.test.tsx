@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import RouteDirectionRow from '../RouteDirectionRow';
-import { liveRowValueProps, scheduleLine } from '../../../utils/liveRowValue';
+import { liveRowValueProps, scheduleLine, scheduleOnlyProps } from '../../../utils/liveRowValue';
+import { DIRECTION_UNCLEAR, rowlessGroupShown } from '../../../utils/liveGrouping';
 import { headwayToTierColor } from '../../../utils/colors';
 
 const src = (p: string) => readFileSync(resolve(__dirname, '../../../..', p), 'utf8');
@@ -69,7 +70,40 @@ describe('a Live destination row (CIV-3158)', () => {
       expect(s, p).not.toContain('gapRangeText');
     }
     // Both the card's rows and Live's own rows build the value with the one helper.
-    expect(src('src/components/Interval/panels/RouteCardHeadway.tsx')).toContain('liveRowValueProps(live.gap');
-    expect(src('src/components/Live/LiveRoutePerformance.tsx')).toContain('liveRowValueProps(');
+    expect(src('src/components/Interval/panels/RouteCardHeadway.tsx')).toContain('liveOrScheduleProps(live.gap');
+    expect(src('src/components/Live/LiveRoutePerformance.tsx')).toContain('liveOrScheduleProps(');
+  });
+
+  // Critic follow-ups on 5182 (2026-11-28).
+  it('a row with no live range reads only "schedule N min", in normal weight, with no dot', () => {
+    const { container } = render(<RouteDirectionRow label="to Queens Quay" labelEnd="4 vehicles" labelWeight="regular" wrapLongValue {...scheduleOnlyProps({ headway: 8 })} />);
+    expect(container.querySelectorAll('.rounded-full').length).toBe(0);
+    expect(container.querySelector('.font-black:not([data-flag-label])')?.textContent).toBe('4 vehicles');
+    expect(container.querySelector('[data-testid="row-value-note"]')?.textContent).toBe('schedule 8 min');
+    expect(container.textContent).not.toContain('every');
+    // The card's rows take the schedule-only form whenever there is no live gap.
+    expect(src('src/utils/liveRowValue.ts')).toMatch(/gap \? liveRowValueProps\(gap, s\) : scheduleOnlyProps\(s\)/);
+  });
+
+  it('the shared stretch reads live/schedule on Live too, never "every"', () => {
+    const card = src('src/components/Interval/panels/RouteCardHeadway.tsx');
+    expect(card).toContain('liveOrScheduleProps(sharedLive?.(group.dirId)');
+    expect(src('src/components/Live/LiveRoutePerformance.tsx')).toContain("r.key === 'shared' ? LIVE_SHARED_GAP_KEY");
+    expect(src('src/apps/studio/RouteRightNow.tsx')).toContain('get(LIVE_SHARED_GAP_KEY)');
+    expect(src('src/apps/LiveVehicles.tsx')).toContain('get(LIVE_SHARED_GAP_KEY)');
+  });
+
+  it('no stray "Direction unclear" row under the card rows, on the map as in Studio', () => {
+    expect(rowlessGroupShown(DIRECTION_UNCLEAR)).toBe(false);
+    expect(rowlessGroupShown('to Keele')).toBe(true);
+    expect(src('src/apps/LiveVehicles.tsx')).toContain('!rowlessGroupShown(dirKey)');
+    expect(src('src/apps/studio/RouteRightNow.tsx')).toContain('rowlessGroupShown(k)');
+  });
+
+  it('keeps the chevron on the first line after the vehicles, never alone under the value', () => {
+    const { container } = render(<RouteDirectionRow label="to Keele" labelEnd="3 vehicles" labelWeight="regular" wrapLongValue chevron onClick={() => {}} {...liveRowValueProps({ from: 5, longest: 10, median: 7 }, { headway: 6 })} />);
+    const chevrons = container.querySelectorAll('[data-testid="row-chevron"]');
+    expect(chevrons.length).toBe(1);
+    expect(chevrons[0].previousElementSibling?.textContent).toBe('3 vehicles');
   });
 });

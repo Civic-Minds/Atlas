@@ -17,8 +17,8 @@ import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, posi
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { vehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_ROUTE_FIGURES_UNAVAILABLE, LOADING_LABEL, LIVE_UNMATCHED_DESTINATION, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
-import { LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL, type LiveRowGap } from '../../../shared/liveWording';
-import { liveRowValueProps } from '../../utils/liveRowValue';
+import { LIVE_SHARED_GAP_KEY, LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL, type LiveRowGap } from '../../../shared/liveWording';
+import { liveOrScheduleProps } from '../../utils/liveRowValue';
 import { median } from '../../../shared/segmentDelay';
 import { rowDirectionKey } from '../../utils/liveGrouping';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
@@ -328,7 +328,8 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId]); // eslint-disable-line react-hooks/exhaustive-deps
   // #1877: each destination row's longest gap, keyed as the card names the destination (the first row naming it).
   const gapsKey = rowFigures && scheduledRows ? scheduledRows.flatMap(r => {
-    const dest = r.key === 'shared' ? null : rowDirectionKey(r.headsign, routeShortName);
+    // The shared stretch rides along under its own key, so the card's shared row reads live/schedule too (CIV-3158 follow-up).
+    const dest = r.key === 'shared' ? LIVE_SHARED_GAP_KEY : rowDirectionKey(r.headsign, routeShortName);
     const f = rowFigures.get(r.key);
     const ext = f?.extremes;
     return dest && ext && f.median != null ? [`${dest}\t${ext.rangeFrom ?? ''}\t${ext.longest.min}\t${f.median}`] : [];
@@ -375,16 +376,18 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
             return (
               <div className="space-y-1">
                 {(scheduledRows ?? []).map(r => {
-                  const f = r.key === 'shared' ? undefined : rowFigures.get(r.key);
+                  const f = rowFigures.get(r.key);
+                  const shared = r.key === 'shared';
                   const sched = scheduledRowProps(r);
-                  // CIV-3158: the same three lines as the card's rows (liveRowValueProps): vehicles, live, schedule.
+                  // CIV-3158: the same lines as the card's rows (liveOrScheduleProps): vehicles, live, schedule; the schedule
+                  // alone where there is no live range, the shared stretch included.
+                  const gap = f?.extremes && f.median != null ? { from: f.extremes.rangeFrom, longest: f.extremes.longest.min, median: f.median } : null;
                   return (
                     <CardDirectionRow
                       key={r.key}
                       {...sched}
-                      {...(f?.extremes && f.median != null ? liveRowValueProps({ from: f.extremes.rangeFrom, longest: f.extremes.longest.min, median: f.median }, sched) : {})}
-                      labelEnd={f ? countOf(f.cars, 'vehicle') : undefined}
-                      valueBelow={!!f}
+                      {...(f || shared ? liveOrScheduleProps(gap, sched) : {})}
+                      labelEnd={f && !shared ? countOf(f.cars, 'vehicle') : undefined}
                     />
                   );
                 })}

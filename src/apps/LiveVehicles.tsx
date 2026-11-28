@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef } from 'react';
-import type { LiveRowGap } from '../../shared/liveWording';
+import { LIVE_SHARED_GAP_KEY, type LiveRowGap } from '../../shared/liveWording';
 import { sameLiveRowGap } from '../utils/liveRowValue';
 import { useSidebarFrame } from '../context/SidebarFrame';
 import { createPortal } from 'react-dom';
@@ -35,7 +35,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { liveAgencyStatus, newestReportSec, worstLiveStatus, type LiveAgencyFeed } from '../../shared/liveStatus';
 import { LiveStatusDot } from '../components/Live/LiveStatusPill';
 import { resolveLiveVehicles } from '../utils/liveResolveVehicles';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, mergeIntoCardRows, orderAlongRoute, orderDirectionGroups, routeDirectionLabels, rowDirectionKey, type CardRowKey } from '../utils/liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, rowlessGroupShown, focusDirectionKey, groupVehiclesByDirection, mergeIntoCardRows, orderAlongRoute, orderDirectionGroups, routeDirectionLabels, rowDirectionKey, type CardRowKey } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
 import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
@@ -843,7 +843,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const inSections = new Set([...sectionGroups.values()].flat().map(([key]) => key));
   const liveRouteSections = (claimed: ReadonlySet<string>, onRows = false) => {
     if (!selectedGroup) return null;
-    const unclaimed = orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).filter(([dirKey]) => !claimed.has(dirKey) && !(onRows && inSections.has(dirKey)));
+    // CIV-3158 follow-up: under the card's rows, vehicles whose direction can't be told get no row of their own, as in Studio
+    // (rowlessGroupShown, the one rule both read).
+    const unclaimed = orderDirectionGroups(vehiclesByDirection ?? new Map(), directionLabels).filter(([dirKey]) => !claimed.has(dirKey) && !(onRows && (inSections.has(dirKey) || !rowlessGroupShown(dirKey))));
     const grouped = selectedGroup.vehicles.length > 0 && canGroupByDirection && !destination;
     return (
     <>
@@ -959,6 +961,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       extra={claimed => liveRouteSections(claimed, true)}
       rowLive={f => { const r = liveRowFor(f); return r && destination === r.key ? { ...r, below: vehicleListEl } : r; }}
       headerIcon={<LiveStaleClock slug={selectedGroup.agencySlug} vehicles={selectedGroup.vehicles} />}
+      sharedLive={dirId => destinationGaps.get(dirId)?.get(LIVE_SHARED_GAP_KEY)}
       directionExtra={directionExtra}
     />
   ) : selectedGroup ? (

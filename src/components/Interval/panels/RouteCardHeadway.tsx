@@ -40,7 +40,7 @@ import type { RouteLabel } from '../../../utils/routeFacts';
 import { directionBranchFallback } from '../../../../shared/headsignDisplay';
 import { correctionNoteForRoute } from '../../../../shared/correctionNotices';
 import type { LiveRowGap } from '../../../../shared/liveWording';
-import { liveRowValueProps, type RowSchedule } from '../../../utils/liveRowValue';
+import { liveOrScheduleProps, type RowSchedule } from '../../../utils/liveRowValue';
 
 /**
  * Labels for the full-day schedule's direction pills. Uses the bound label
@@ -132,6 +132,8 @@ export interface RouteCardHeadwayProps {
   headerIcon?: React.ReactNode;
   /** Live (#1877): rows after a direction's own rows, for live vehicles whose trips end at a stop no row goes to. */
   directionExtra?: (dirId: number) => React.ReactNode;
+  /** Live: a direction's shared stretch's live gaps (CIV-3158 follow-up); with rowLive set, the shared row reads live/schedule. */
+  sharedLive?: (dirId: number) => LiveRowGap | null | undefined;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -159,6 +161,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   onInfoOpen,
   extra,
   rowLive,
+  sharedLive,
   headerIcon,
   directionExtra,
 }) => {
@@ -420,6 +423,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           hoveredHour={hoveredHour}
           reportRef={reportRef}
           rowLive={rowLive}
+          sharedLive={sharedLive}
           directionExtra={directionExtra}
         />
         {notices.filter && (
@@ -463,7 +467,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
  * The route card's destination rows, by direction: the one row list the map's card, Live's card and Studio's Live panel
  * draw (Ryan, 2026-11-27: "Using the same code perhaps"). `rowLive` adds a row's live vehicles and gaps.
  */
-export function RouteCardRows({ model, directionNotices = [], hoveredBranch = null, setHoveredBranch = () => {}, hoveredHour = null, reportRef, rowLive, directionExtra }: {
+export function RouteCardRows({ model, directionNotices = [], hoveredBranch = null, setHoveredBranch = () => {}, hoveredHour = null, reportRef, rowLive, sharedLive, directionExtra }: {
   model: ReturnType<typeof buildRouteCardModel>;
   directionNotices?: ReturnType<typeof routeCardNotices>['directions'];
   hoveredBranch?: HoveredBranch | null;
@@ -471,6 +475,7 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
   hoveredHour?: number | null;
   reportRef: React.RefObject<CardReportButtonHandle | null>;
   rowLive?: RouteCardHeadwayProps['rowLive'];
+  sharedLive?: RouteCardHeadwayProps['sharedLive'];
   directionExtra?: RouteCardHeadwayProps['directionExtra'];
 }) {
   const { showDirectionSections } = model;
@@ -496,7 +501,7 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
       // Ryan, 2026-11-27: "Why is the number of vehicles on a third line instead of on the fist line like i asked": the
       // destination with its vehicles at the right on line 1. CIV-3158 (Ryan, 2026-11-28): then the live gaps, bold with
       // the dot, then the timetable ("live 10–13 min" over "schedule 10 min"), never "every 10 min · gaps 10–13 min".
-      const value = live.gap ? liveRowValueProps(live.gap, schedule) : { valueBelow: true };
+      const value = liveOrScheduleProps(live.gap, schedule);
       return { props: { labelEnd: live.subLabel, ...value, onClick: live.onClick, chevron: !!live.onClick }, below: live.below ?? null };
     };
     return model.groups.map((group, gi) => {
@@ -521,6 +526,7 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
                 label={group.shared.label}
                 headway={group.shared.headway}
                 headwayLabel={group.shared.edgeText}
+                {...(rowLive ? liveOrScheduleProps(sharedLive?.(group.dirId), { headway: group.shared.headway, headwayLabel: group.shared.edgeText }) : {})}
                 branchHovered={coreHovered}
                 branchDimmed={!!hoveredBranch && !coreHovered}
                 onHoverStart={() => setHoveredBranch(group.shared!.hover)}

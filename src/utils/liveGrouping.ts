@@ -18,6 +18,8 @@ export function compareLiveRoutes(
 
 /** The group for a vehicle whose direction cannot be told (it sits on track both directions share). */
 export const DIRECTION_UNCLEAR = 'Direction unclear';
+/** Whether vehicles no card row names get a row of their own under the card's rows: never the Direction unclear group (CIV-3158 follow-up; Studio and the map alike). */
+export const rowlessGroupShown = (key: string): boolean => key !== DIRECTION_UNCLEAR;
 
 /** Rough length of a route shape (first to last point of its longest part), to tell a full route from a short turn. */
 export function featureSpan(f: GeoJSON.Feature): number {
