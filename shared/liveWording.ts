@@ -139,13 +139,13 @@ export const lateLimitText = (t?: OnTimeWords | null): string =>
 /** The late limit as the map's key says it: "5½+ min" for Atlas's window, the agency's own where it publishes one (CIV-3151). */
 export const lateKeyLimit = (t?: OnTimeWords | null): string => `${halfMinText(t?.lateAtOrAboveMin ?? LATE_ABOVE_MIN)}+ min`;
 /**
- * CIV-3171 (Ryan, 2026-11-28, Pick B "1"; "I don't like : but sure", so no colon): where an agency publishes its own late
- * limit, Measurements' Late row says so instead of the 30-second buffer sentence (LATE_LIMIT_LEAD), which stays for Atlas's
- * own 5½ min. Draft wording, held here until Ryan's word-for-word OK: "Late means more than 5 min behind schedule, the TTC’s
- * own limit." `possessive` is agencyPossessive's form ("the TTC’s").
+ * CIV-3171 (Ryan, 2026-11-28, word for word): where an agency publishes its own late limit, Measurements' Late row says so instead
+ * of the 30-second buffer sentence (LATE_LIMIT_LEAD), which stays for Atlas's own 5½ min. He picked "The TTC counts a vehicle as
+ * late when it is more than 5 min behind schedule, and Atlas uses the same limit.", then dropped its second half: "but why do we
+ * need to include the second part of that sentence". `agencyStart` is agencySentenceStart's form ("The TTC").
  */
-export const lateOwnLimitSentence = (possessive: string, t?: OnTimeWords | null): string =>
-  `${LATE_LABEL} means ${lateLimitText(t)} behind schedule, ${possessive} own limit.`;
+export const lateOwnLimitSentence = (agencyStart: string, t?: OnTimeWords | null): string =>
+  `${agencyStart} counts a vehicle as late when it is ${lateLimitText(t)} behind schedule.`;
 /** LATE_THRESHOLD at a page's window. */
 export const lateThreshold = (t?: OnTimeWords | null): string => `${lateLimitText(t)} late`;
 /** An agency's own on-time window in Ryan's words (2026-11-24, CIV-2222: ">1 min early or >5 min late"). */

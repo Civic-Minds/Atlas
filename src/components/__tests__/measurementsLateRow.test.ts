@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { LATE_LABEL, lateOwnLimitSentence, onTimeWindowWords } from '../../../shared/liveWording';
-import { agencyPossessive } from '../../../shared/agencyArticle';
+import { agencySentenceStart } from '../../../shared/agencyArticle';
 
 // CIV-3171 (Ryan, 2026-11-28, picked 1): Studio Live's late key lives in Measurements as a row labelled just "Late" ("Just "Late"
 // no Late 5+ mins I think"), built like the Bunching row, in place of the bottom "Late · 5+ min" pill.
@@ -19,9 +19,7 @@ describe('Measurements carries the Late row, Studio Live has no late pill (CIV-3
     expect(LATE_LABEL).toBe('Late');
   });
 
-  it('an agency with its own limit reads it, with no colon (Ryan: "I don\'t like : but sure"); draft until his word-for-word OK', () => {
-    const text = lateOwnLimitSentence(agencyPossessive('TTC'), onTimeWindowWords('ttc'));
-    expect(text).toBe('Late means more than 5 min behind schedule, the TTC’s own limit.');
-    expect(text).not.toContain(':');
+  it('an agency with its own limit reads Ryan\'s sentence word for word (CIV-3171, 2026-11-28)', () => {
+    expect(lateOwnLimitSentence(agencySentenceStart('TTC'), onTimeWindowWords('ttc'))).toBe('The TTC counts a vehicle as late when it is more than 5 min behind schedule.');
   });
 });
