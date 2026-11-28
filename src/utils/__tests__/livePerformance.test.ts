@@ -307,12 +307,12 @@ describe('live gap range', () => {
     const { liveLineText } = await import('../../../shared/liveWording');
     const ext = gapExtremes({ gapsMin: [0.7, 3, 20, 8], scheduledSec: 300 })!;
     expect(ext.rangeFrom).toBe(3);
-    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min })).toBe('live 3–20 min');
+    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min, median: 0 })).toBe('live 3–20 min');
   });
   it('falls back to the longest gap when no other gap is a minute or more', async () => {
     const { liveLineText } = await import('../../../shared/liveWording');
     const ext = gapExtremes({ gapsMin: [0.5, 12], scheduledSec: 300 })!;
-    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min })).toBe('live 12 min');
-    expect(liveLineText({ from: null, longest: 0.5 })).toBe('live 30 sec');
+    expect(liveLineText({ from: ext.rangeFrom, longest: ext.longest.min, median: 0 })).toBe('live 12 min');
+    expect(liveLineText({ from: null, longest: 0.5, median: 0.5 })).toBe('live 30 sec');
   });
 });

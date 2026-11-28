@@ -14,7 +14,7 @@ const src = (p: string) => readFileSync(resolve(__dirname, '../../../..', p), 'u
 describe('a Live destination row (CIV-3158)', () => {
   const row = () => render(
     <RouteDirectionRow label="to Keele" labelEnd="3 vehicles" labelWeight="regular" wrapLongValue
-      {...liveRowValueProps({ from: 10, longest: 13 }, { headway: 10 })} />,
+      {...liveRowValueProps({ from: 10, longest: 13, median: 11 }, { headway: 10 })} />,
   );
 
   it('reads vehicles, then live, then schedule, each on its own line', () => {
@@ -35,21 +35,30 @@ describe('a Live destination row (CIV-3158)', () => {
     expect(text.indexOf('live 10–13 min')).toBeLessThan(text.indexOf('schedule 10 min'));
   });
 
-  it('bolds the live line and puts the dot on it, coloured from the live gaps; the vehicles carry no dot', () => {
+  it('bolds the live line and puts the dot on it, coloured by the typical (median) live gap, never a single gap (Ryan: "Feel like using a colour for a single gap isn\'t ideal"); the vehicles carry no dot', () => {
     const { container } = row();
     const dots = container.querySelectorAll('.rounded-full');
     expect(dots.length).toBe(1);
     const liveLine = dots[0].closest('.font-black');
     expect(liveLine?.textContent).toBe('live 10–13 min');
     const ref = document.createElement('span');
-    ref.style.background = headwayToTierColor(13);
+    ref.style.background = headwayToTierColor(11);
     expect((dots[0] as HTMLElement).style.background).toBe(ref.style.background);
+    expect(liveRowValueProps({ from: 2, longest: 40, median: 9 }, { headway: 10 }).colorHeadway).toBe(9);
   });
 
   it('names units on both lines through the shared formatters, with seconds under a minute', () => {
-    expect(liveRowValueProps({ from: null, longest: 0.5 }, { headway: 10 }).headwayLabel).toBe('live 30 sec');
+    expect(liveRowValueProps({ from: null, longest: 0.5, median: 0.5 }, { headway: 10 }).headwayLabel).toBe('live 30 sec');
     expect(scheduleLine({ headway: 12, trunkHeadway: 6 })).toBe('schedule 6–12 min');
     expect(scheduleLine({ headway: 90 })).toBe('schedule 90 min');
+  });
+
+  it("keeps the row's settled words on the schedule line (CIV-3121, CIV-3135)", () => {
+    expect(scheduleLine({ headway: 10, headwayLabel: 'every 10 min until 5:05 PM' })).toBe('schedule 10 min until 5:05 PM');
+    expect(scheduleLine({ headway: 10, headwayLabel: 'every 10 min from 4:37 PM' })).toBe('schedule 10 min from 4:37 PM');
+    expect(scheduleLine({ headway: 15, headwayLabel: 'every 15 min, with one 32 min gap' })).toBe('schedule 15 min, with one 32 min gap');
+    // The card's rows and Live's own rows both hand the row's words over.
+    expect(src('src/components/Interval/panels/RouteCardHeadway.tsx')).toContain('headwayLabel: shown.value.headwayLabel');
   });
 
   it('never brings back "every … · gaps …" on Live, Studio or the map card', () => {

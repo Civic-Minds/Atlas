@@ -88,7 +88,7 @@ export const SHORTEST_GAP_LABEL = 'Shortest gap';
 /** A destination row's live gaps: the shortest to the longest gap between the vehicles on the road now, or one figure when
  * there is no range (all gaps the same to the tenth, or all under a minute). Ryan, 2026-11-28 (CIV-3158): "schedule 10 min · live 10–13 min" with units on both
  * "because sometimes it might not be in minutes", on their own lines. */
-export type LiveRowGap = { from: number | null; longest: number };
+export type LiveRowGap = { from: number | null; longest: number; /** The typical (median) gap, which colours the row's dot. */ median: number };
 export const LIVE_LINE_WORD = 'live';
 export const SCHEDULE_LINE_WORD = 'schedule';
 /** "live 10–13 min", "live 40 sec": the row's live line (CIV-3158). */

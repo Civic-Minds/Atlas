@@ -550,7 +550,7 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
               }
               const shown = row.display(hoveredHour);
               if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
-              const live = liveProps(d, { headway: shown.value.headway, trunkHeadway: shown.value.trunkHeadway, limited: shown.value.isLimited, limitedLabel: shown.limitedLabel });
+              const live = liveProps(d, { headway: shown.value.headway, trunkHeadway: shown.value.trunkHeadway, headwayLabel: shown.value.headwayLabel, limited: shown.value.isLimited, limitedLabel: shown.limitedLabel });
               return (
                 <React.Fragment key={`r${i}`}>
                 <FlaggableValue reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
