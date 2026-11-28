@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The map's credit pill names a single remaining agency instead of "and 1 other agency"**: "TTC · and 1 other agency" hid a name behind a click that opened the full sources list
 - **Every Live vehicle sits under its own destination row**: TTC 512 cars signed "St Clair" were listed as a row of their own while "to St Clair Station" showed none; Studio's Live panel now shows both directions in the same rows as the map, and the card's back link always reads "Live"
 - **A Live route card says "Unable to load" while its feed is down, not that no vehicles are running**: with the TTC feed failing for a minute, 505 read "No TTC 505 vehicles are running right now" though 20 were on the road
 - **The map opens showing all service, on-demand zones included**: it opened on every 60 min, a filter on-demand service can't meet, so zones never showed until the filter was cleared
