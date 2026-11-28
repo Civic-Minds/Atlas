@@ -19,9 +19,9 @@ describe('Fleet\'s now table: Not on a trip (CIV-2939)', () => {
   const rowHeaders = () => screen.getAllByRole('rowheader').map(h => h.textContent);
   it('puts the quieter row straight under "In service now", its own figure, not added into the total', () => {
     render(<FleetNowTable modes={[3]} runningNow={{ onTrip: 1600, noTrip: 238 }} scheduledNow={1790} />);
-    expect(rowHeaders()).toEqual(['In service now', 'Not on a trip', 'Scheduled now']);
-    const row = screen.getByText('Not on a trip').closest('tr')!;
-    expect(row.textContent).toBe('Not on a trip238');
+    expect(rowHeaders()).toEqual(['In service now', '238 not on a trip', 'Scheduled now']);
+    const row = screen.getByText('238 not on a trip').closest('tr')!;
+    expect(row.textContent).toBe('238 not on a trip');
     expect(row.className).toContain('text-[var(--text-muted)]');
     expect(screen.getByText('In service now').closest('tr')!.textContent).toBe('In service now1,600');
     expect(screen.getByText('In service now').closest('tr')!.className).not.toContain('text-muted');
@@ -44,15 +44,16 @@ describe('Fleet\'s now table caption (#1832)', () => {
   });
 });
 
-// CIV-2990 (Ryan, 2026-11-26: "Not on a trip: 622, of which 521 at garages"): the count stays, the parked share beside it.
-describe('Fleet\'s "Not on a trip" split (CIV-2990)', () => {
-  it('reads "622, of which 521 at garages", and the plain count where none are', () => {
+// CIV-2990's count, CIV-3180's layout (#1940; Ryan, 2026-11-28): number first on two lines, "622 not on a trip" then
+// "521 at garages"; the first line alone where none are at a garage.
+describe('Fleet\'s "not on a trip" lines (CIV-2990, CIV-3180)', () => {
+  it('reads "622 not on a trip" above "521 at garages", and the first line alone where none are', () => {
     expect(networkCountFrom({ vehicles: 717, noTrip: 622, atGarage: 521, ageSec: 20 })).toEqual({ onTrip: 717, noTrip: 622, atGarage: 521 });
-    const { container, unmount } = render(<FleetNowTable modes={[3]} runningNow={{ onTrip: 717, noTrip: 622, atGarage: 521 }} scheduledNow={null} />);
-    expect(screen.getByText('Not on a trip').closest('tr')!.textContent).toBe('Not on a trip622, of which 521 at garages');
+    const { unmount } = render(<FleetNowTable modes={[3]} runningNow={{ onTrip: 717, noTrip: 622, atGarage: 521 }} scheduledNow={null} />);
+    const row = screen.getByText('622 not on a trip').closest('tr')!;
+    expect([...row.querySelectorAll('span.block')].map(s => s.textContent)).toEqual(['622 not on a trip', '521 at garages']);
     unmount();
     render(<FleetNowTable modes={[3]} runningNow={{ onTrip: 717, noTrip: 30 }} scheduledNow={null} />);
-    expect(screen.getByText('Not on a trip').closest('tr')!.textContent).toBe('Not on a trip30');
-    expect(container).toBeTruthy();
+    expect(screen.getByText('30 not on a trip').closest('tr')!.textContent).toBe('30 not on a trip');
   });
 });
