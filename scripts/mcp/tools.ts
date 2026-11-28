@@ -131,7 +131,11 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     let lo = args.min_routes != null ? Number(args.min_routes) : 0, hi = args.max_routes != null ? Number(args.max_routes) : Infinity;
     let like: string | null = null;
     let kind: 'bus' | 'rail' | 'ferry' | null = args.kind === 'bus' || args.kind === 'rail' || args.kind === 'ferry' ? args.kind : null;
-    const KIND_TEXT = { bus: 'buses only', rail: 'with rail', ferry: 'ferries only' };
+    // #1949: kind follows kindOfAgency (CIV-2025: rail and ferry only when every weekday route is), so a "bus" agency can
+    // run some rail; its label says so instead of "buses only".
+    const KIND_TEXT = { bus: 'buses only', rail: 'rail only', ferry: 'ferries only' };
+    const kindText = (x: { kind: 'bus' | 'rail' | 'ferry'; hasRail: boolean }) => x.kind === 'bus' && x.hasRail ? 'buses and some rail' : KIND_TEXT[x.kind];
+    const KIND_FILTER_TEXT = { bus: 'agencies that run buses (some also run rail)', rail: 'agencies whose every route is rail', ferry: 'agencies whose every route is a ferry' };
     const ends = new Map((await data.publicAgencies()).map(x => [x.slug, validThrough(x)]));
     const waits = await data.rankWaits(dayType);
     const at = PERIOD_KEYS.indexOf(key);
@@ -143,18 +147,18 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const labelKey = ([route, name]: [string, string | null]) => `${route}\u0000${name ?? ''}`;
     const entries = await Promise.all(groups.map(async g => {
       const home = groupHome(g);
-      if (!g.parent) return { slug: home.slug, name: home.name, region: home.region, country: home.country, partOf: home.partOf, kind: home.kind, weekdayRoutes: home.weekdayRoutes, members: [home] };
+      if (!g.parent) return { slug: home.slug, name: home.name, region: home.region, country: home.country, partOf: home.partOf, kind: home.kind, hasRail: home.railRoutes > 0, weekdayRoutes: home.weekdayRoutes, members: [home] };
       const weekday = new Set<string>();
       for (const m of g.members) for (const l of await data.rankLabels(m.slug, 'Weekday')) weekday.add(labelKey(l));
       const kinds = g.members.map(m => m.kind);
-      return { slug: g.slug, name: g.parent.name, region: home.region, country: home.country, partOf: null, kind: kinds.includes('rail') ? 'rail' as const : kinds.every(k => k === 'ferry') ? 'ferry' as const : 'bus' as const, weekdayRoutes: weekday.size, members: g.members };
+      return { slug: g.slug, name: g.parent.name, region: home.region, country: home.country, partOf: null, kind: kinds.includes('rail') ? 'rail' as const : kinds.every(k => k === 'ferry') ? 'ferry' as const : 'bus' as const, hasRail: g.members.some(m => m.railRoutes > 0), weekdayRoutes: weekday.size, members: g.members };
     }));
     if (args.similar_to != null) {
       const a = await needAgency(args.similar_to);
       const self = entries.find(x => x.members.some(m => m.slug === a.slug));
       if (!self) throw new Error(`${a.name} is not in the index.`);
       kind ??= self.kind;
-      like = `${self.name}: ${self.weekdayRoutes} weekday routes, ${KIND_TEXT[self.kind]}`;
+      like = `${self.name}: ${self.weekdayRoutes} weekday routes, ${kindText(self)}`;
       lo = Math.ceil(self.weekdayRoutes / 2); hi = self.weekdayRoutes * 2;
     }
     const reg = String(args.region ?? '').trim().toLowerCase(), ctry = String(args.country ?? '').trim();
@@ -190,14 +194,14 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const shown = await Promise.all(counted.slice(0, limit).map(async ({ a, routesOnDay, meeting }) => {
       const labels = new Map(await Promise.all(a.members.map(async m => [m.slug, await data.rankLabels(m.slug, dayType)] as const)));
       const end = a.members.map(m => ends.get(m.slug)).filter((x): x is string => !!x).sort()[0] ?? null;
-      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: KIND_TEXT[a.kind], scheduleValidThrough: end, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => { const l = labels.get(r.slug)![r.i]; return `${l[0]}${l[1] ? ` ${l[1]}` : ''} (every ${r.wait})`; }) };
+      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: kindText(a), scheduleValidThrough: end, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => { const l = labels.get(r.slug)![r.i]; return `${l[0]}${l[1] ? ` ${l[1]}` : ''} (every ${r.wait})`; }) };
     }));
     // #1700: a region or country with agencies left out by their data terms says so (Yukon's only agency is left out,
     // so its ranking was empty with no reason).
     const leftOutNote = await leftOutIn('ranking', reg, ctry);
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
-      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
+      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_FILTER_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
       agenciesCompared: counted.length, ranking: shown, ...(leftOutNote ? { leftOutAgencies: leftOutNote } : {}), ...(await unknownRegion(String(args.region ?? '').trim()) ?? {}), ...(asked > limit ? { shownLimit: `The ranking shows ${RANK_AGENCIES_MAX} agencies at most; narrow it by country, region, kind or size to see others.` } : {}), source: SOURCE,
     };
   },
