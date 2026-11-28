@@ -8,6 +8,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **The MCP's route_now counts each direction's vehicles and the gaps between them the way the Live map's route card does**: it used its own count, so at the same minute it could say 9 vehicles where the map said 8
 - **Studio Live shows Kingston**: it offered Kingston, then said "Live doesn’t cover any Kingston Transit routes", because only some of its reads looked in Studio's private files
+- **A route card says when buses start coming more often partway through a time of day: "every 32 min, then every 17 from 4:37 PM"**: it read only "every 17 min from 4:37 PM", as if the first bus was at 4:37
+- **The Live map and Studio's Live show vehicles for every TTC route Live analyses, about 32 routes instead of 9**: routes like the 7 Bathurst showed no live reading because only the streetcars were followed
+- **Studio's Schedules shows "—" for a time of day a route ran only part of, with "15 min from 2:26 PM" under it**: the cell read "15 min" like a full period, so a route that now runs all midday looked unchanged
 - **The hosted Atlas Studio MCP answers callers running in the cloud**: its own read of Atlas's schedule files was blocked by the site's bot protection whenever the question came from a data centre, so those calls failed
 - **Studio Live's Views pill sits at the bottom by the locate-me button**: it only changes what the map's lines are coloured to show, so it moved out of the top bar, which keeps Agency, Direction and Time
 - **A problem report from the Night list is titled "Overnight · every 30 min or better"**: it named a "30 min view", and Atlas has modes, not views

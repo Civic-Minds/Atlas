@@ -40,7 +40,7 @@ import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import { liveHandoffSettled, mapFocusRoute } from '../utils/routeFocus';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
-import { getPolledRoute } from '../../shared/livePollingConfig';
+import { liveFollowsRoute } from '../../shared/livePollingConfig';
 import { MASSDOT_CREDITED_SLUGS } from '../../shared/liveArchiveFeeds';
 import { agencyCredits, viewFeedCredits } from '../utils/agencyCredits';
 import { focusSource } from '../utils/sourcesFocus';
@@ -1272,7 +1272,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     if (!fc) return;
     const feature = fc.features.find(f => routeKey(f.properties as ShapeProperties) === selectedRoute);
     const rsn = (feature?.properties as ShapeProperties | undefined)?.routeShortName;
-    if (!rsn || !getPolledRoute(agencySlug, rsn)) return;
+    if (!rsn || !liveFollowsRoute(agencySlug, rsn)) return;
     handedToLiveRef.current = true;
     setLiveHandoff({ route: selectedRoute, liveRouteAtHandoff: mapFocusRoute(liveOverlayRef.current?.focus) });
     onLiveRouteSelected(agencySlug, rsn);

@@ -5,7 +5,7 @@ import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
 import { useLiveFeedsDown, useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute } from '../../shared/livePollingConfig';
+import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, liveFollowsRoute } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -630,7 +630,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     if (!selectedRoute || selectedGroup || isLoading) return null;
     const { agencySlug: slug, routeId: routeShortName } = splitRouteKey(selectedRoute);
     const agencyName = agencyShortNameBySlug(agencies, slug);
-    if (!getPolledRoute(slug, routeShortName)) {
+    if (!liveFollowsRoute(slug, routeShortName)) {
       const followed = LIVE_POLLING_ROUTES.filter(r => r.slug === slug).map(r => r.displayRouteShortName);
       return liveRouteEmptyNotice(agencyName, routeShortName, false, followed);
     }
