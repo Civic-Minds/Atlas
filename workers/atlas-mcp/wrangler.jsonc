@@ -30,7 +30,9 @@
   "r2_buckets": [
     { "binding": "MCP_LIVE", "bucket_name": "atlas-mcp-live" },
     // route_now's last half hour (CIV-1870), read only from the recorder's bucket.
-    { "binding": "MCP_LIVE_ARCHIVE", "bucket_name": "atlas-live" }
+    { "binding": "MCP_LIVE_ARCHIVE", "bucket_name": "atlas-live" },
+    // CIV-3165: the published release (the bucket behind DATA_ORIGIN), read only through the binding.
+    { "binding": "ATLAS_DATA", "bucket_name": "atlas" }
   ],
   "ratelimits": [
     // 30 calls a minute per tester, per Cloudflare location (approximate). The namespace id is a placeholder.
