@@ -36,7 +36,7 @@ describe('layer boundaries (CIV-3184)', () => {
     // Studio (src/apps/studio/) and its coverage page are dev-only (FEATURE_FLAGS.md): the app may reach them only through
     // `import.meta.env.DEV ? React.lazy(() => import(...)) : …`, which Vite drops from the production bundle.
     const entry = /['"][^'"]*(?:apps\/studio\/|\/StudioCoveragePage)['"]/;
-    const outside = tracked('src').filter(f => !isTest(f) && !f.startsWith('src/apps/studio/') && f !== 'src/StudioCoveragePage.tsx');
+    const outside = tracked('src').filter(f => !isTest(f) && !f.startsWith('src/apps/studio/') && f !== 'src/pages/StudioCoveragePage.tsx');
     const bad = outside.flatMap(f => readFileSync(f, 'utf8').split('\n').map((line, i) => ({ f, n: i + 1, line })))
       .filter(({ line }) => entry.test(line))
       .filter(({ line }) => !/import\.meta\.env\.DEV\s*\?\s*React\.lazy\(\s*\(\)\s*=>\s*import\(/.test(line))

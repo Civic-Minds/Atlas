@@ -1,12 +1,12 @@
 /**
  * CIV-3197: the MCP's explain_method tool gives the Docs page's own words. This renders the Docs page
- * (src/AboutDocsPage.tsx) and turns its method sections into plain text for docsMethods.generated.ts, which both servers
+ * (src/pages/AboutDocsPage.tsx) and turns its method sections into plain text for docsMethods.generated.ts, which both servers
  * bundle. The text is never typed by hand: docsMethods.test.ts renders the page as the public site builds it and fails
  * when the file differs (ATLAS_WRITE_DOCS_METHODS=1 rewrites it).
  */
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import AboutDocsPage from '../../src/AboutDocsPage';
+import AboutDocsPage from '../../src/pages/AboutDocsPage';
 import { LIVE_GLOSSARY } from '../../shared/liveGlossary';
 import { DOCS_METHOD_TOPICS } from './docsMethodTopics';
 

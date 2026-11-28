@@ -139,7 +139,7 @@ describe('card piece rules catch hand-built copies', () => {
 describe('internal pages share one text and table style (#1671)', () => {
   const INTERNAL_PAGES = ['DiagnosticsUnevenPage.tsx', 'DiagnosticsPerformancePage.tsx', 'McpDocsPage.tsx'];
   for (const name of INTERNAL_PAGES) {
-    const text = readFileSync(join(SRC, name), 'utf8');
+    const text = readFileSync(join(SRC, 'pages', name), 'utf8');
     it(`${name}: no hand-set text size on a paragraph`, () => {
       expect(text.match(/<p className="[^"]*\btext-(xs|sm|base|lg)\b/g) ?? []).toEqual([]);
     });

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FEATURES } from '../../shared/config';
-import PlannersPage from '../PlannersPage';
+import PlannersPage from '../pages/PlannersPage';
 import coverage from '../../shared/data/atlas-coverage.json';
 
 describe('For Transit Planners page (CIV-1320)', () => {

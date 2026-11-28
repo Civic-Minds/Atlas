@@ -4,7 +4,7 @@ import { glossarySortKey, sortGlossary } from '../GlossaryTerms';
 import { LIVE_GLOSSARY } from '../../../shared/liveGlossary';
 
 // CIV-3191 (Ryan, 2026-11-28: "In Docs glossary should the words be a-z or no", picked 1): one A–Z list, Live's terms sorted in.
-const page = readFileSync('src/AboutDocsPage.tsx', 'utf8');
+const page = readFileSync('src/pages/AboutDocsPage.tsx', 'utf8');
 const glossarySection = page.slice(page.indexOf('<Section id="glossary">'), page.indexOf('</Section>', page.indexOf('<Section id="glossary">')));
 const coreTerms = [...page.slice(page.indexOf('const DOCS_GLOSSARY'), page.indexOf('\n];', page.indexOf('const DOCS_GLOSSARY'))).matchAll(/term: '((?:[^'\\]|\\.)*)'/g)].map(m => m[1].replace(/\\'/g, "'"));
 

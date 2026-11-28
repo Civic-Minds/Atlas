@@ -1,10 +1,10 @@
-import { FREQUENCY_BANDS, NO_MIDDAY_SHORT, noMiddayBarSentence } from '../shared/agencyPages';
-import { useHeadwayTiers } from './hooks/useHeadwayTiers';
-import SplitBar from './components/charts/SplitBar';
-import { CHART_COUNT } from './components/charts/useActivePart';
-import { plural } from '../shared/overflowText';
-import { routeLabels } from './utils/format';
-import { ROUTES_BY_MIDDAY_FREQUENCY_LABEL } from './content/noticeCopy';
+import { FREQUENCY_BANDS, NO_MIDDAY_SHORT, noMiddayBarSentence } from '../../shared/agencyPages';
+import { useHeadwayTiers } from '../hooks/useHeadwayTiers';
+import SplitBar from '../components/charts/SplitBar';
+import { CHART_COUNT } from '../components/charts/useActivePart';
+import { plural } from '../../shared/overflowText';
+import { routeLabels } from '../utils/format';
+import { ROUTES_BY_MIDDAY_FREQUENCY_LABEL } from '../content/noticeCopy';
 
 const BAND_PHRASES = FREQUENCY_BANDS.map(b => b.phrase);
 const BAND_SHORT = [...FREQUENCY_BANDS.map(b => b.short), NO_MIDDAY_SHORT];

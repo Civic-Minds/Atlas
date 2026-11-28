@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
  * from a source (the focus list, History's list, Live's archive and map lists, Studio's files, the MCP's coverage files),
  * so none of them may hold an agency typed by hand.
  */
-const FILES = ['src/StudioCoveragePage.tsx', 'shared/coverageRows.ts', 'local-api/mcp-coverage.ts', 'shared/internalPages.ts'];
+const FILES = ['src/pages/StudioCoveragePage.tsx', 'shared/coverageRows.ts', 'local-api/mcp-coverage.ts', 'shared/internalPages.ts'];
 const SLUGS = readdirSync('config/agencies').filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, ''));
 // Words an agency slug can also be, used here for something else.
 const NOT_AGENCIES = new Set(['go', 'live', 'history', 'studio', 'coverage', 'focus']);
@@ -24,7 +24,7 @@ describe('the coverage page reads its columns from their sources (CIV-1871)', ()
   it('reads each column from its shared source', () => {
     const rows = readFileSync('shared/coverageRows.ts', 'utf8');
     for (const source of ['isFocusAgency', 'FOCUS_AGENCY_SLUGS', 'liveFeedStatus', 'earliestFiguresDay']) expect(rows, source).toContain(source);
-    const page = readFileSync('src/StudioCoveragePage.tsx', 'utf8');
+    const page = readFileSync('src/pages/StudioCoveragePage.tsx', 'utf8');
     for (const source of ['history-agencies.json', 'LIVE_ARCHIVE_SLUGS', 'LIVE_AGENCY_SLUGS', 'STUDIO_COVERAGE_DEV_URL', 'MCP_COVERAGE_API_URL']) expect(page, source).toContain(source);
     expect(readFileSync('local-api/mcp-coverage.ts', 'utf8')).toContain('PRODUCT_FOCUS.live');
   });

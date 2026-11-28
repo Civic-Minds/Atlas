@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { FEATURES } from '../../shared/config';
-import AboutPage from '../AboutPage';
+import AboutPage from '../pages/AboutPage';
 import { newestResearch, RESEARCH } from '../data/research';
 
 describe('About page (CIV-1206 D)', () => {

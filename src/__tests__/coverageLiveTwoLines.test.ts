@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const page = readFileSync(resolve(__dirname, '../StudioCoveragePage.tsx'), 'utf8');
+const page = readFileSync(resolve(__dirname, '../pages/StudioCoveragePage.tsx'), 'utf8');
 
 // CIV-3190 (Ryan: "should this be 2 lines so its less wide"): the Live column holds two tags a line, as Studio's does, so
 // its four tags (Recorded · Real-time · Report · Lateness) sit on two lines through the shared TagList's wrap.

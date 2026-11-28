@@ -1,6 +1,6 @@
 /**
  * CIV-3197: explain_method gives Atlas's own explanation of a method, word for word from the Docs page
- * (docsMethods.generated.ts, generated from src/AboutDocsPage.tsx), so an assistant explains a figure in Atlas's words
+ * (docsMethods.generated.ts, generated from src/pages/AboutDocsPage.tsx), so an assistant explains a figure in Atlas's words
  * instead of guessing a cause (#1944).
  */
 import { DOCS_PATH, SITE_URL } from '../../shared/rules/paths';

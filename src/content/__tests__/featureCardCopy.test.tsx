@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import AboutPage from '../../AboutPage';
-import PlannersPage from '../../PlannersPage';
-import ResearchersPage from '../../ResearchersPage';
+import AboutPage from '../../pages/AboutPage';
+import PlannersPage from '../../pages/PlannersPage';
+import ResearchersPage from '../../pages/ResearchersPage';
 import { ABOUT_HEADLINE, ATLAS_INTRO_TEXT, ATLAS_MAP_SUMMARY, DATA_SOURCE_TITLE, PLANNERS_COPY, REQUEST_DEMO_LABEL, RESEARCHERS_COPY, dataSourceText, type FeatureCardCopy } from '../noticeCopy';
 
 // Ryan's three rules for the feature cards and the pages that show them (CIV-1793; docs/style/TEXT.md, Words):

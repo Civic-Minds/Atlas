@@ -6,7 +6,7 @@ let friendly = false;
 vi.mock('../../../context/ColorVisionContext', () => ({ useColorVision: () => ({ colorVisionFriendly: friendly, setColorVisionFriendly: () => {} }) }));
 
 import { PersistentMapLegend } from '../PersistentMapLegend';
-import { FrequencyBar } from '../../../pageParts';
+import { FrequencyBar } from '../../../pages/pageParts';
 
 const swatchColors = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>('[aria-hidden="true"][style]')].map(e => e.style.background);
 

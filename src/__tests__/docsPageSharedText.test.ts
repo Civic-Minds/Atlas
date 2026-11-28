@@ -7,7 +7,7 @@ import * as copy from '../content/noticeCopy';
  * Any shared text (a notice, a filter's label or definition, the page's name) typed into the page by hand fails here;
  * the page must read the constant instead.
  */
-const source = readFileSync(new URL('../AboutDocsPage.tsx', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../pages/AboutDocsPage.tsx', import.meta.url), 'utf8');
 
 function sharedTexts(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string') out.push(value);

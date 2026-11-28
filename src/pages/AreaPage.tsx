@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import AppLink from './components/ui/AppLink';
+import AppLink from '../components/ui/AppLink';
 import { useParams } from 'react-router';
 import {
   areaAgencyRowHref,
@@ -14,18 +14,18 @@ import {
   areaSubtitleParts,
   resolveAreaSeo,
   type AreaPageData,
-} from '../shared/areaPages';
-import { ATLAS_MODE } from '../shared/config';
-import { applySeoToDocument, seoOrigin } from './lib/seoDom';
-import { readEmbeddedJson } from './lib/embeddedData';
+} from '../../shared/areaPages';
+import { ATLAS_MODE } from '../../shared/config';
+import { applySeoToDocument, seoOrigin } from '../lib/seoDom';
+import { readEmbeddedJson } from '../lib/embeddedData';
 import { UNDERLINED_LINK } from './pageStyles';
 import AgencyGroupSection from './AgencyGroupSection';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import ArrowLink from './components/ui/ArrowLink';
-import { PageTitle } from './components/ui/PageTitle';
-import EmptyPage from './components/ui/EmptyPage';
-import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, MAP_LINK, VIEW_ON_MAP } from './content/noticeCopy';
-import { agencyArticle } from '../shared/agencyArticle';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import ArrowLink from '../components/ui/ArrowLink';
+import { PageTitle } from '../components/ui/PageTitle';
+import EmptyPage from '../components/ui/EmptyPage';
+import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, MAP_LINK, VIEW_ON_MAP } from '../content/noticeCopy';
+import { agencyArticle } from '../../shared/agencyArticle';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AreaPageData | null {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import ResearchersPage from '../ResearchersPage';
+import ResearchersPage from '../pages/ResearchersPage';
 import { ATLAS_INTRO_TEXT } from '../content/noticeCopy';
 import coverage from '../../shared/data/atlas-coverage.json';
 

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { FrequencyBar } from '../pageParts';
+import { FrequencyBar } from '../pages/pageParts';
 
 const legendItems = (container: HTMLElement) =>
   Array.from(container.querySelectorAll('ul li')).map(li => li.textContent);

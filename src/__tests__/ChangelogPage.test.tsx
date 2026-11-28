@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import ChangelogPage from '../ChangelogPage';
+import ChangelogPage from '../pages/ChangelogPage';
 
 describe('ChangelogPage', () => {
   it('lists versions with their full release date and no map data lines', () => {

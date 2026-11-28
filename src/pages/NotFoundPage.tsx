@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router';
-import EmptyPage from './components/ui/EmptyPage';
-import ArrowLink from './components/ui/ArrowLink';
-import { NOT_FOUND_BODY, NOT_FOUND_TITLE, MAP_LINK } from './content/noticeCopy';
-import { tabTitle } from '../shared/pageNames';
+import EmptyPage from '../components/ui/EmptyPage';
+import ArrowLink from '../components/ui/ArrowLink';
+import { NOT_FOUND_BODY, NOT_FOUND_TITLE, MAP_LINK } from '../content/noticeCopy';
+import { tabTitle } from '../../shared/pageNames';
 
 /** Shown for addresses the app has no page for; public/404.html is the same page for the server's 404. */
 export default function NotFoundPage() {

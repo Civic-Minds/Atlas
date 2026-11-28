@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import Card, { CARD_TITLE } from './components/ui/Card';
-import ResearchTile from './components/ResearchTile';
+import Card, { CARD_TITLE } from '../components/ui/Card';
+import ResearchTile from '../components/ResearchTile';
 import { Clock, MapPin, Repeat } from 'lucide-react';
-import { FEATURE_ROUTES, FEATURES } from '../shared/config';
-import PageShell from './components/ui/PageShell';
-import ArrowLink from './components/ui/ArrowLink';
-import AppLink from './components/ui/AppLink';
-import { PageHero } from './components/FeaturePageSections';
-import { newestResearch } from './data/research';
-import { useHeadwayTiers } from './hooks/useHeadwayTiers';
-import { DOCS_PATH } from '../shared/pagePaths';
-import { ABOUT_CLOSER_HEADING, ABOUT_HEADLINE, ATLAS_INTRO_TEXT, ATLAS_MAP_SUMMARY, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from './content/noticeCopy';
+import { FEATURE_ROUTES, FEATURES } from '../../shared/config';
+import PageShell from '../components/ui/PageShell';
+import ArrowLink from '../components/ui/ArrowLink';
+import AppLink from '../components/ui/AppLink';
+import { PageHero } from '../components/FeaturePageSections';
+import { newestResearch } from '../data/research';
+import { useHeadwayTiers } from '../hooks/useHeadwayTiers';
+import { DOCS_PATH } from '../../shared/pagePaths';
+import { ABOUT_CLOSER_HEADING, ABOUT_HEADLINE, ATLAS_INTRO_TEXT, ATLAS_MAP_SUMMARY, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from '../content/noticeCopy';
 
 /** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
 const KEEP_LOOKING_COUNT = 3;

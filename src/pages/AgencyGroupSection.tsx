@@ -1,16 +1,16 @@
-import { fitAgencyName } from './utils/agencyName';
-import AppLink from './components/ui/AppLink';
-import { MISSING_VALUE } from '../shared/missingValue';
-import { AREA_TABLE_OTHER, areaAgencyRowHref, areaTableColumnTitle, type AgencyGroupData, type AreaAgencyRow } from '../shared/areaPages';
-import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
-import { agencyPagePath } from '../shared/pagePaths';
-import { RUSH_HOUR_ONLY } from './utils/routePattern';
+import { fitAgencyName } from '../utils/agencyName';
+import AppLink from '../components/ui/AppLink';
+import { MISSING_VALUE } from '../../shared/missingValue';
+import { AREA_TABLE_OTHER, areaAgencyRowHref, areaTableColumnTitle, type AgencyGroupData, type AreaAgencyRow } from '../../shared/areaPages';
+import { AGENCY_INDEX_PATH } from '../../shared/agencyIndex';
+import { agencyPagePath } from '../../shared/pagePaths';
+import { RUSH_HOUR_ONLY } from '../utils/routePattern';
 import { LINK } from './pageStyles';
 import { FrequencyBar } from './pageParts';
-import ArrowLink from './components/ui/ArrowLink';
-import DataTable, { PAGE_FIGURE_COLUMN_REM } from './components/ui/DataTable';
-import PageSection, { PageTable } from './components/ui/PageSection';
-import { SEE_ALL_AGENCIES, AGENCIES_FREQUENCY_HEADING, AGENCY_COLUMN, partOfAgencyRoutesNote } from './content/noticeCopy';
+import ArrowLink from '../components/ui/ArrowLink';
+import DataTable, { PAGE_FIGURE_COLUMN_REM } from '../components/ui/DataTable';
+import PageSection, { PageTable } from '../components/ui/PageSection';
+import { SEE_ALL_AGENCIES, AGENCIES_FREQUENCY_HEADING, AGENCY_COLUMN, partOfAgencyRoutesNote } from '../content/noticeCopy';
 
 /**
  * Desktop widths of the agency table: the names' smallest width, and each mode column's. Seven mode columns fit beside the

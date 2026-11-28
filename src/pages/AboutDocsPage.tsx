@@ -1,22 +1,22 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
-import { GlossaryTerms, sortGlossary, type GlossaryEntry } from './components/GlossaryTerms';
-import { FEATURES, PERIOD_LABELS, PUBLIC_TIER_MAXES, TIME_PERIODS } from '../shared/config';
-import { headwayAmount, headwayEvery, headwayEveryRange } from '../shared/headwayText';
-import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/rules/frequency';
-import { countText, percentText } from '../shared/numberText';
-import { MIN_HISTORY_DISTINCT_YEARS } from '../shared/historyEligibility';
-import { NIGHT_GRADES, OVERNIGHT_NIGHT_GRADE } from '../shared/nightService';
-import { STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods';
-import { metresText } from '../shared/unitText';
-import { hourRange } from '../shared/timeText';
-import { joinList, plural } from '../shared/overflowText';
-import { RESEARCH } from './data/research';
-import ScrollX from './components/ui/ScrollX';
-import SiteContact from './components/SiteContact';
-import DocsPageLayout from './components/ui/DocsPageLayout';
-import DataTable, { type DataTableColumn } from './components/ui/DataTable';
-import { PageTitle, SectionTitle, SubsectionTitle } from './components/ui/PageTitle';
-import { SCROLL_BELOW_HEADER } from './styles';
+import { GlossaryTerms, sortGlossary, type GlossaryEntry } from '../components/GlossaryTerms';
+import { FEATURES, PERIOD_LABELS, PUBLIC_TIER_MAXES, TIME_PERIODS } from '../../shared/config';
+import { headwayAmount, headwayEvery, headwayEveryRange } from '../../shared/headwayText';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../../shared/rules/frequency';
+import { countText, percentText } from '../../shared/numberText';
+import { MIN_HISTORY_DISTINCT_YEARS } from '../../shared/historyEligibility';
+import { NIGHT_GRADES, OVERNIGHT_NIGHT_GRADE } from '../../shared/nightService';
+import { STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../../shared/rules/periods';
+import { metresText } from '../../shared/unitText';
+import { hourRange } from '../../shared/timeText';
+import { joinList, plural } from '../../shared/overflowText';
+import { RESEARCH } from '../data/research';
+import ScrollX from '../components/ui/ScrollX';
+import SiteContact from '../components/SiteContact';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
+import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
+import { PageTitle, SectionTitle, SubsectionTitle } from '../components/ui/PageTitle';
+import { SCROLL_BELOW_HEADER } from '../styles';
 import {
   BETA_ROLLOUT_NOTICE,
   BOOKING_REQUIRED_NOTICE,
@@ -40,7 +40,7 @@ import {
   selectedRouteOutsideFilterNotice,
   selectedRoutePartMeetsFilterNotice,
   unevenServiceNotice,
-} from './content/noticeCopy';
+} from '../content/noticeCopy';
 
 /** Each period's hours ("6–9 AM"), from TIME_PERIODS so the page can't drift from the app (CIV-1610). */
 const PERIOD_TIMES = Object.fromEntries(TIME_PERIODS.map(p => [p.key, hourRange(p.startHour, p.endHour)])) as Record<(typeof TIME_PERIODS)[number]['key'], string>;
@@ -58,7 +58,7 @@ const ROUTE_RATING_SHARED = 'A route’s line colour and filter result come from
 const ROUTE_RATING_SECTIONS = 'A route’s line is coloured section by section. The shared stretch, where all branches run, gets its own colour, and each branch gets its own. The frequency filter reads the shared stretch, so a slow branch doesn’t hide the route.';
 const ROUTE_RATING = FEATURES.segmentColours ? ROUTE_RATING_SECTIONS : ROUTE_RATING_SHARED;
 
-const LiveGlossaryTerms = lazy(() => import('./components/LiveGlossaryTerms'));
+const LiveGlossaryTerms = lazy(() => import('../components/LiveGlossaryTerms'));
 
 /**
  * The Docs glossary's own terms (CIV-3191, Ryan, 2026-11-28, picked 1: one A–Z list). Shown through sortGlossary, merged with

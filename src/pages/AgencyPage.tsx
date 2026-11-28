@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import AppLink from './components/ui/AppLink';
-import { MISSING_VALUE } from '../shared/missingValue';
-import { countText } from '../shared/numberText';
+import AppLink from '../components/ui/AppLink';
+import { MISSING_VALUE } from '../../shared/missingValue';
+import { countText } from '../../shared/numberText';
 import { useParams } from 'react-router';
 import {
   bandCounts,
@@ -20,34 +20,34 @@ import {
   PLACE_OTHERS,
   type AgencyPageData,
   type AgencyPageRoute,
-} from '../shared/agencyPages';
-import { areaRegionName, areaSubtitleName } from '../shared/areaRegions';
-import { titleCase } from '../shared/titleCase';
+} from '../../shared/agencyPages';
+import { areaRegionName, areaSubtitleName } from '../../shared/areaRegions';
+import { titleCase } from '../../shared/titleCase';
 
 /** The nearby-agencies heading's opening; the area's name after it is cased as part of the same title ("in the Calgary Area"). */
 const NEARBY_IN = 'Nearby Agencies in ';
-import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
-import { areaPagePath } from '../shared/areas';
-import { andOthers } from '../shared/overflowText';
-import { agencyArticle } from '../shared/agencyArticle';
-import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
-import { ATLAS_MODE, FEATURES, PERIOD_LABELS } from '../shared/config';
-import HoursBar from './components/charts/HoursBar';
-import DocsPageLayout from './components/ui/DocsPageLayout';
+import { AGENCY_INDEX_PATH } from '../../shared/agencyIndex';
+import { areaPagePath } from '../../shared/areas';
+import { andOthers } from '../../shared/overflowText';
+import { agencyArticle } from '../../shared/agencyArticle';
+import { periodEdgeText, routeListHeadwayText } from '../utils/effectiveHeadway';
+import { ATLAS_MODE, FEATURES, PERIOD_LABELS } from '../../shared/config';
+import HoursBar from '../components/charts/HoursBar';
+import DocsPageLayout from '../components/ui/DocsPageLayout';
 import { AgencyModeTable } from './AgencyGroupSection';
-import { parentAgencyPagePath } from '../shared/pagePaths';
-import type { ParentAgencyPageData } from '../shared/parentAgencies';
-import ArrowLink from './components/ui/ArrowLink';
-import { SubsectionTitle, PageTitle, SectionTitle } from './components/ui/PageTitle';
-import EmptyPage from './components/ui/EmptyPage';
-import DataTable from './components/ui/DataTable';
-import ScrollX from './components/ui/ScrollX';
-import { applySeoToDocument, seoOrigin } from './lib/seoDom';
-import { readEmbeddedJson } from './lib/embeddedData';
+import { parentAgencyPagePath } from '../../shared/pagePaths';
+import type { ParentAgencyPageData } from '../../shared/parentAgencies';
+import ArrowLink from '../components/ui/ArrowLink';
+import { SubsectionTitle, PageTitle, SectionTitle } from '../components/ui/PageTitle';
+import EmptyPage from '../components/ui/EmptyPage';
+import DataTable from '../components/ui/DataTable';
+import ScrollX from '../components/ui/ScrollX';
+import { applySeoToDocument, seoOrigin } from '../lib/seoDom';
+import { readEmbeddedJson } from '../lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL, ROUTES_FREQUENCY_HEADING, ROUTE_COLUMN, SERVICES_HEADING } from './content/noticeCopy';
-import { periodShapeParts } from './utils/headwayText';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL, ROUTES_FREQUENCY_HEADING, ROUTE_COLUMN, SERVICES_HEADING } from '../content/noticeCopy';
+import { periodShapeParts } from '../utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
