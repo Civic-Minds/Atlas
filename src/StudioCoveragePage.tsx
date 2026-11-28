@@ -30,6 +30,9 @@ export interface LiveDays { minDays: number; days: Record<string, number> }
 interface LocalFacts { historyYears?: Record<string, number>; studio: string[]; vehicles: string[]; coverage: Record<string, LiveCoverage> }
 
 const WIDE = PAGE_FIGURE_COLUMN_REM + 2;
+/** CIV-3190 (Ryan: "should this be 2 lines so its less wide"): room for two tags a line, so Live's four sit on two lines
+ * and Studio's two on one; the shared TagList wraps the rest inside the column. */
+const TWO_TAG_COLUMN_REM = WIDE + 6;
 
 type CoveragePill = TagListItem;
 
@@ -72,9 +75,9 @@ const liveCell = (r: CoverageRow, live: LiveDays | null) => {
 const columns = (live: LiveDays | null): DataTableColumn<CoverageRow>[] => [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
   { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => <TagList tags={historyPills(r)} /> },
-  // #1816: room for all four Live tags and both Studio tags on one line; the MCP column holds one tag.
-  { key: 'live', header: H.live, width: WIDE + 12, cell: r => liveCell(r, live) },
-  { key: 'studio', header: H.studio, width: WIDE + 6, cell: r => <TagList tags={studioPills(r)} /> },
+  // #1816, CIV-3190: two tags a line; Live's four wrap onto two lines, both Studio tags fit one; the MCP column holds one tag.
+  { key: 'live', header: H.live, width: TWO_TAG_COLUMN_REM, cell: r => liveCell(r, live) },
+  { key: 'studio', header: H.studio, width: TWO_TAG_COLUMN_REM, cell: r => <TagList tags={studioPills(r)} /> },
   { key: 'mcp', header: H.mcp, width: WIDE, cell: r => <TagList tags={mcpPills(r)} /> },
 ];
 
