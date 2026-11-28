@@ -16,5 +16,47 @@
   ],
   "feedUrl": "https://catabus.rideralerts.com/InfoPoint/gtfs-zip.ashx",
   "timezone": "America/New_York",
-  "hiddenInProduction": true
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://catabus.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+  "lastFeedCheckAt": "20261128",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20301214",
+  "feedQuality": {
+    "status": "review",
+    "score": 95,
+    "reasons": [
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 7,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 46,
+      "feedExpiry": "20301214",
+      "routeCount": 20,
+      "problemShapes": 1,
+      "problemShapeRoutes": 1,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-28"
+  },
+  "lastRawArchiveKey": "20301214-4118b086fdc3f3e6",
+  "lastFeedContentKey": "688aa7b7d789cf16",
+  "lastFeedExpiry": "20301214",
+  "lastPeekedExpiry": "20301214",
+  "lastFeedStart": "20261030",
+  "lastFeedVersion": "20261030",
+  "lastRefreshedAt": "2026-11-28",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "4d7839f29c6de9af",
+  "feedObtainedAt": "20261128",
+  "lastTimetableKey": "798d8f694c22950d",
+  "timetableChangedAt": "20261128"
 }
