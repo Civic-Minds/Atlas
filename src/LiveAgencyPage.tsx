@@ -7,6 +7,7 @@ import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { type AgencyHotspotStop, type AgencyHotspotStretch, type AgencyRouteRow, type AgencySummary } from '../shared/liveAgency';
 import type { LiveAgencyResponse } from '../local-api/live-agency';
 import { devOnly, liveAgencyDataUrl, liveDataMissing, liveReportTitle } from './lib/liveReportData';
+import { liveRead } from './lib/liveCloudFetch';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
 import { liveDashboardPath, liveToolPath } from './hooks/useLiveDashboard';
@@ -74,7 +75,7 @@ export function useLiveAgency(agency: string): LiveAgencyState {
     if (!agency) return;
     let live = true;
     const settle = (state: LiveAgencyState) => { if (live) setHeld({ agency, state }); };
-    fetch(liveAgencyDataUrl(agency))
+    liveRead(liveAgencyDataUrl(agency))
       .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: '' } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
       // #1486: an answer for another agency (a local review stub serves TTC's file for any agency) is "no analysis", never shown under this name.
       .then(data => settle({ kind: 'done', data: data.status === 'ready' && data.summary.agency !== agency.toLowerCase() ? { status: 'unknown_agency', reason: '' } : data }))

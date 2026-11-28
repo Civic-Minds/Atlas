@@ -4,14 +4,15 @@ import { describe, expect, it } from 'vitest';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LIVE_STALE_SEC } from '../../shared/rules/live';
 import { DEFAULT_CUTOFFS } from '../../shared/liveCutoffs';
 import { NOW_WINDOW_MIN } from '../../shared/liveNow';
-import { RECENT_WINDOW_SEC } from '../utils/livePerformance';
+import { RECENT_WINDOW_SEC } from '../../shared/liveCore';
 
 /**
  * CIV-3177 (Ryan: "Like my main concern is if things are calculated differently in both live modes"): main Live's
  * route card, Studio Live's route panel and the MCP's route_now must read a route right now the same way.
  *
- * Today main Live and Studio share one reading (LiveRoutePerformance over src/utils/livePerformance.ts's liveGaps), and
- * route_now has its own (shared/liveNow.ts's routeNow). Admin is merging the two (CIV-3173). Until then this guard:
+ * CIV-3173 (Ryan: "should we have a 'core service' or something that feeds into everyting"): shared/liveCore.ts is the
+ * Live core. The map's and Studio's card (LiveRoutePerformance) and the MCP's route_now (routeDirectionsNow) count each
+ * direction's vehicles and the gaps between them there; route_now's stop-by-stop extras stay in shared/liveNow.ts. This guard:
  * - keeps Studio on the map's reading, never a copy of it;
  * - keeps the cut-offs both readings use equal to the one source (shared/rules/live.ts);
  * - lists every number the two readings type by hand. A new one fails here; a listed one that goes away fails too, so
@@ -22,9 +23,10 @@ const read = (f: string) => readFileSync(join(ROOT, f), 'utf8');
 
 /** The files that work out a route's figures right now, for each of the three views. */
 const RIGHT_NOW_FILES = [
+  'shared/liveCore.ts',
   'shared/liveNow.ts',
   'scripts/mcp/liveNowTools.ts',
-  'src/utils/livePerformance.ts',
+  'local-api/live-recent.ts',
   'src/components/Live/LiveRoutePerformance.tsx',
   'src/apps/LiveVehicles.tsx',
   'src/apps/studio/RouteRightNow.tsx',
@@ -38,12 +40,13 @@ const HAND_TYPED = [/^\s*(?:export )?const ([A-Z][A-Z0-9_]+) = [\d(][^;]*;/gm, /
  * figure in the other reading is named beside it where the two differ.
  */
 const KNOWN: Record<string, string[]> = {
-  // route_now: 30-min window, 10-min "now", 150 m off the line (the map's card: 60 m), 200 m to count as moving.
-  'shared/liveNow.ts': ['NOW_WINDOW_MIN', 'NOW_RECENT_MIN', 'NOW_MAX_OFF_LINE_M', 'NOW_MOVING_M', 'SAME_VEHICLE_SEC'],
-  // The map's and Studio's card: 60 m off the line (route_now: 150 m), and the moving/parked test typed inline as
-  // 200 m in 600 s (route_now: NOW_MOVING_M in NOW_RECENT_MIN).
-  'src/utils/livePerformance.ts': ['STRIP_ROWS', 'MAX_PLACE_M', 'MAX_BRACKET_SEC', 'RECENT_WINDOW_SEC', '600', '200'],
+  // How close together one vehicle's two passings of a stop count once (a trip id changing at a terminal).
+  'shared/liveNow.ts': ['SAME_VEHICLE_SEC'],
+  // The gap strip's rows (a layout count) and how far apart two reports may be to place a passing between them.
+  'shared/liveCore.ts': ['STRIP_ROWS', 'MAX_BRACKET_SEC'],
   'src/apps/LiveVehicles.tsx': ['MIN_LIVE_ZOOM'],
+  // How long the local server reuses a route's recorded half hour (a cache, not a figure).
+  'local-api/live-recent.ts': ['CACHE_MS'],
 };
 
 function handTyped(text: string): string[] {
@@ -60,9 +63,19 @@ describe('Live right now: one way of reading a route (CIV-3177)', () => {
     }
   });
 
-  it('only the shared card component works out live gaps', () => {
-    const callers = RIGHT_NOW_FILES.filter(f => /\bliveGaps\(/.test(read(f)) && f !== 'src/utils/livePerformance.ts');
+  it('works out live gaps only in the core (and, until part 2, the card that calls it)', () => {
+    expect(read('shared/liveCore.ts')).toMatch(/export function liveGaps\(/);
+    expect(read('src/utils/livePerformance.ts')).toMatch(/^export \* from '\.\.\/\.\.\/shared\/liveCore';$/m);
+    expect(read('src/utils/livePerformance.ts')).not.toMatch(/function /);
+    const callers = RIGHT_NOW_FILES.filter(f => f !== 'shared/liveCore.ts' && /\bliveGaps\(/.test(read(f)));
     expect(callers).toEqual(['src/components/Live/LiveRoutePerformance.tsx']);
+  });
+
+  it("route_now reads each direction's vehicles and gaps from the core, from the same recordings as the card", () => {
+    const tool = read('scripts/mcp/liveNowTools.ts');
+    expect(tool).toMatch(/routeDirectionsNow\(/);
+    expect(tool).toMatch(/recentFromSnapshots\(/);
+    expect(read('local-api/live-recent.ts')).toMatch(/recentFromSnapshots\(/);
   });
 
   it('both readings use the same cut-offs and window as shared/rules/live.ts', () => {
@@ -71,7 +84,7 @@ describe('Live right now: one way of reading a route (CIV-3177)', () => {
     expect(RECENT_WINDOW_SEC).toBe(NOW_WINDOW_MIN * 60);
     // Both readings drop positions by the one stale age.
     expect(read('shared/liveNow.ts')).toMatch(/import \{[^}]*\bLIVE_STALE_SEC\b[^}]*\} from '\.\/rules\/live/);
-    expect(read('src/utils/livePerformance.ts')).toMatch(/import \{[^}]*\bLIVE_STALE_SEC\b[^}]*\} from '\.\.\/\.\.\/shared\/rules\/live'/);
+    expect(read('shared/liveCore.ts')).toMatch(/import \{[^}]*\bLIVE_STALE_SEC\b[^}]*\} from '\.\/rules\/live/);
     expect(LIVE_STALE_SEC).toBeGreaterThan(0);
   });
 

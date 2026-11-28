@@ -123,6 +123,22 @@ export const GRADUAL_CLIMB = 0.05;
 
 /** Positions older than this aren't used for "Right now". */
 export const LIVE_STALE_SEC = 180;
+// ---- A route right now (CIV-3173, the Live core: shared/liveCore.ts and shared/liveNow.ts read these) ----
+
+/** How far back a "right now" reading looks: the map's polled positions, the recorder's snapshots. */
+export const LIVE_NOW_WINDOW_MIN = 30;
+/** A vehicle has moved (it runs this way, or it isn't standing) when it went at least this far along its line... */
+export const LIVE_MOVED_M = 200;
+/** ...within this long. */
+export const LIVE_MOVED_WITHIN_SEC = 10 * 60;
+/** A vehicle further than this from the route's drawn shape isn't placed on it (the card's line follows the street). */
+export const LIVE_PLACE_ON_SHAPE_MAX_M = 60;
+/**
+ * A vehicle further than this from a line drawn straight from stop to stop isn't placed on it (route_now's stop passings):
+ * a straight stop-to-stop line cuts corners, so it allows more than LIVE_PLACE_ON_SHAPE_MAX_M.
+ */
+export const LIVE_PLACE_ON_STOP_LINE_MAX_M = 150;
+
 /** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 PM" (CIV-1034). */
 export const RIGHT_NOW_STALE_SEC = 2 * 60;
 /** A feed's age, in seconds, at the top of each status: fresh up to 90 s, degraded to 5 min, stale to 15 min, then unavailable. */

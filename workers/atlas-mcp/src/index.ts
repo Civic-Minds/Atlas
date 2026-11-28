@@ -6,6 +6,7 @@
  * It reads the same split files the local check reads (shared/mcpSplitStore.ts) from `<DATA_ORIGIN>/atlas/releases/<id>/mcp/`,
  * found through the release pointer the map reads, so it is never staler than the map.
  */
+import { cloudLiveFiles, setLiveFilesSource } from '../../../local-api/liveFiles';
 import * as data from '../../../scripts/mcp/atlasData';
 import { TOOLS, handlers as scheduleHandlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
 import { liveNowHandlers } from '../../../scripts/mcp/liveNowTools';
@@ -66,6 +67,8 @@ function useLiveBucket(env: TestEnv): void {
   if (!env.MCP_LIVE || env.MCP_LIVE === liveBucket) return;
   liveBucket = env.MCP_LIVE;
   liveCache.clear();
+  // CIV-3173: route_now reads each route's Live analysis (the Live card's file) from the same private bucket, as atlas-live-read does.
+  setLiveFilesSource(cloudLiveFiles(async key => (await liveBucket!.get(key))?.text() ?? null));
   useLiveReader(splitLiveReader(async key => {
     const hit = liveCache.get(key);
     if (hit && Date.now() - hit.at < LIVE_TTL_MS) return hit.value;

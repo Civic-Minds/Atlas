@@ -1,5 +1,6 @@
 import { withMainPatternTrip, type LiveDashboardResponse } from '../../shared/liveDashboard';
 import { liveDashboardDataUrl, liveDataMissing } from './liveReportData';
+import { liveRead } from './liveCloudFetch';
 import { liveNoRoute } from '../content/noticeCopy';
 import { feedPlaceName } from '../utils/nameCase';
 
@@ -17,7 +18,7 @@ export function fetchLiveDashboard(agency: string, route: string): Promise<LiveD
   const url = liveDashboardDataUrl(agency, route);
   const hit = cache.get(url);
   if (hit && Date.now() - hit.at < KEEP_MS) return hit.answer;
-  const answer = fetch(url).then(r => (liveDataMissing(r) ? { status: 'unknown_route', reason: liveNoRoute(route, agency) } as LiveDashboardResponse : (r.json() as Promise<LiveDashboardResponse>).then(mainPatternRunTime)));
+  const answer = liveRead(url).then(r => (liveDataMissing(r) ? { status: 'unknown_route', reason: liveNoRoute(route, agency) } as LiveDashboardResponse : (r.json() as Promise<LiveDashboardResponse>).then(mainPatternRunTime)));
   cache.set(url, { at: Date.now(), answer });
   answer.catch(() => { if (cache.get(url)?.answer === answer) cache.delete(url); });
   return answer;

@@ -1,7 +1,8 @@
 /**
- * route_now (CIV-1870): how a route is running right now, from the Live recorder's last half hour, through
- * shared/liveNow.ts (Studio's view, CIV-1893, calls the same). Local MCP only for now: the hosted Worker has no handler
- * for it (it lists only tools it can serve) and keeps LIVE_TOOLS off.
+ * route_now (CIV-1870): how a route is running right now, from the Live recorder's last half hour. CIV-3173 (the Live
+ * core): each direction's vehicles and the gaps between them come from shared/liveCore.ts, the Live map's and Studio's own
+ * calculation, so route_now says what the map's card says; the stop-by-stop extras (bunched and gapped stretches, longest
+ * wait) come from shared/liveNow.ts. Served by the local MCP and the hosted Worker (workers/atlas-mcp).
  */
 import { PERIOD_LABELS, formatPeriodRange } from '../../shared/config';
 import { clockTime } from '../../shared/timeText';
@@ -13,6 +14,10 @@ import { LIVE_ARCHIVE_SLUGS, routeIsRecorded } from '../../shared/liveCoverage';
 import { bunchedText, cutoffsFrom, gappedText } from '../../shared/liveCutoffs';
 import { NOW_RECENT_MIN, NOW_WINDOW_MIN, nowDirections, routeNow, type NowRouteRow } from '../../shared/liveNow';
 import { LIVE_STALE_SEC } from '../../shared/rules/live';
+import { recentFromSnapshots, routeDirectionsNow, type DirectionNow } from '../../shared/liveCore';
+import type { SegmentDelayData } from '../../shared/liveSegmentData';
+import { gapRangeText } from '../../shared/liveWording';
+import { liveFiles } from '../../local-api/liveFiles';
 import * as data from './atlasData';
 import { nowSec, nowSource } from './liveNowData';
 import { routeKeyForShortName } from '../../src/utils/routeKey';
@@ -28,7 +33,8 @@ const NOW_MEANING = {
   gappedNow: 'Stretches of stops where riders have waited longer than the gapped cut-off since the last vehicle seen there; minutes is the longest wait so far.',
   noneSeen: `Stops where the route is scheduled now but no vehicle was seen passing in the whole ${NOW_WINDOW_MIN} minutes: either none ran there, or vehicles ran another way (a diversion). Say both are possible; don't call it a gap.`,
   longestWait: 'The stop where riders have waited longest since the last vehicle seen there.',
-  vehicles: `vehiclesNow counts vehicles moving along the route now; standingNow those that haven't moved in ${NOW_RECENT_MIN} minutes (at a terminal, held, out of service).`,
+  vehicles: `vehiclesNow counts the vehicles on this direction now, as the Live map's route card counts them; standingNow, of the vehicles seen on it, those that haven't moved in ${NOW_RECENT_MIN} minutes (at a terminal, held, out of service).`,
+  gapsNow: "The gaps between this direction's vehicles now, as the Live map's route card measures them: how long ago the vehicle ahead passed the spot where the one behind is. Missing when too few were measured.",
   lastHalfHour: `Every gap at every stop in the last ${NOW_WINDOW_MIN} minutes, and the shares bunched and gapped.`,
 };
 
@@ -37,6 +43,22 @@ function localClock(sec: number, timeZone: string) {
   const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone, hour12: false, weekday: 'short', hour: 'numeric', minute: 'numeric' }).formatToParts(new Date(sec * 1000)).map(p => [p.type, p.value]));
   const hour = Number(parts.hour) % 24, minute = Number(parts.minute);
   return { dow: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday), hour, minutes: hour * 60 + minute };
+}
+
+/** The route's Live analysis (its line, timetable and trips), the file the Live card reads; null where Live has none. */
+async function routeAnalysis(slug: string, route: string): Promise<(SegmentDelayData & { tripDirections?: Record<string, string[]>; directionLabels?: Record<string, string> }) | null> {
+  try {
+    const raw = await liveFiles().read(`${slug}-${route}-segments.json`);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+/** The core's direction that shares most vehicles with one of route_now's (their direction numbers can differ). */
+function pairedCore(core: readonly DirectionNow[], ids: readonly string[]): DirectionNow | null {
+  const mine = new Set(ids);
+  let best: DirectionNow | null = null, most = 0;
+  for (const d of core) { const n = d.vehicleIds.filter(id => mine.has(id)).length; if (n > most) { best = d; most = n; } }
+  return best;
 }
 
 export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
@@ -68,6 +90,11 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     if (!routeIsRecorded(a.slug, routeIds)) return { agency: a.name, route: s.longName ? `${s.name} ${s.longName}` : s.name, live: null, note: `Atlas has no current reading for this route: Atlas Live doesn't record it, so it has no figures for right now. Offer the published schedule (route_frequency).` };
     const snapshots = await source.snapshots(a.slug, now - NOW_WINDOW_MIN * 60, now);
     const r = routeNow({ snapshots, routeIds, directions, nowSec: now, cutoffs });
+    // CIV-3173: the Live map card's own reading, from the same recordings, where Live has the route's analysis.
+    const analysis = await routeAnalysis(a.slug, s.shortName || s.name);
+    const ids = new Set(routeIds);
+    const newest = snapshots.at(-1);
+    const core = analysis ? routeDirectionsNow(analysis, recentFromSnapshots(snapshots, id => ids.has(id)), now, period, (newest?.vehicles ?? []).filter(v => ids.has(v.r)).map(v => ({ tripId: v.tripId ?? '', directionId: v.d }))) : [];
     // CIV-2055: each direction's Scheduled lines as the Live route card shows them (its shared stretch, each branch and
     // short turn), from the card's own reading, for the agency's day and period, not this server's clock.
     const fc = { type: 'FeatureCollection' as const, features: rows.map(properties => ({ type: 'Feature' as const, geometry: null, properties })) as unknown as GeoJSON.Feature[] };
@@ -85,7 +112,7 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
       ...base,
       asOf, dataAgeMin: Math.round((r.ageSec ?? 0) / 6) / 10, timeZone,
       scheduleUsed: period ? `${day}, ${PERIOD_LABELS[period]} (${formatPeriodRange(period)})` : `${day}, overnight: no scheduled gaps, so nothing is called gapped`,
-      directions: r.directions.map(d => ({ direction: d.direction, scheduled: scheduledFor(d.directionId, d.direction), vehiclesNow: d.vehiclesNow, standingNow: d.standingNow, bunchedNow: d.bunchedNow, gappedNow: d.gappedNow, noneSeen: d.noneSeen, longestWait: d.longestWait, lastHalfHour: d.lastHalfHour })),
+      directions: r.directions.map(d => { const c = pairedCore(core, d.vehicleIdsNow); return { direction: d.direction, scheduled: scheduledFor(d.directionId, d.direction), vehiclesNow: c && !c.incomplete ? c.vehicles : d.vehiclesNow, standingNow: d.standingNow, ...(c?.gaps ? { gapsNow: gapRangeText(c.gaps.rangeFrom, c.gaps.longest.min) } : {}), bunchedNow: d.bunchedNow, gappedNow: d.gappedNow, noneSeen: d.noneSeen, longestWait: d.longestWait, lastHalfHour: d.lastHalfHour }; }),
       definitions: {
         bunched: bunchedText(cutoffs.bunchedWithinMin),
         gapped: `${gappedText(cutoffs.gappedFactor)} Each stop's scheduled gap is Atlas's own for this period (branches that share a stop count together).`,
