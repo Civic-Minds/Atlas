@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's destination rows say which figure is live and which is the timetable**: "live 10–13 min" in bold over "schedule 10 min", so the two no longer read as two answers to the same question
 - **A route card says when buses start coming more often partway through a time of day: "every 32 min, then every 17 from 4:37 PM"**: it read only "every 17 min from 4:37 PM", as if the first bus was at 4:37
 - **The Live map and Studio's Live show vehicles for every TTC route Live analyses, about 32 routes instead of 9**: routes like the 7 Bathurst showed no live reading because only the streetcars were followed
 - **Studio's Schedules shows "—" for a time of day a route ran only part of, with "15 min from 2:26 PM" under it**: the cell read "15 min" like a full period, so a route that now runs all midday looked unchanged

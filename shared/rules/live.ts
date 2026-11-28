@@ -107,6 +107,12 @@ export const BUNCHED_GAP_SEC = 120;
 export const GAP_RANGE_FROM_SEC = 60;
 /** A gap over this many times the scheduled gap is too long. */
 export const GAPPED_FACTOR = 2;
+/**
+ * Which live gap colours a destination row's dot, on the map's frequency tiers (CIV-3158, Ryan 2026-11-28: "Bold the live
+ * line and move the dot to it, coloured by how the buses are actually doing", then option 3, the typical (median) live gap:
+ * "Feel like using a colour for a single gap isn't ideal").
+ */
+export const LIVE_ROW_DOT_GAP: 'median' = 'median';
 /** A rise counts as a step (bunching "forms" there) when the bad share jumps by at least this much (0.10 = 10 points)... */
 export const RISE = 0.1;
 /** ...and the stops after it stay up: each is at least half the rise above where it started... */

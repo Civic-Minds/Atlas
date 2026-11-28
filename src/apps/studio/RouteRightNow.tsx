@@ -7,7 +7,8 @@ import { useLiveFeeds } from '../../hooks/useLiveFeeds';
 import { useAgencyGeo } from '../../hooks/useAgencyGeo';
 import { useLiveTripDirections } from '../../hooks/useLiveTripDirections';
 import { resolveLiveVehicles } from '../../utils/liveResolveVehicles';
-import { STUDIO_ROUTE_PANEL_PENDING } from '../../../shared/liveWording';
+import { STUDIO_ROUTE_PANEL_PENDING, type LiveRowGap } from '../../../shared/liveWording';
+import { sameLiveRowGap } from '../../utils/liveRowValue';
 import { liveCardModelNow, liveCardRowKeys, liveScheduledRowsNow } from '../../utils/liveScheduledHeadway';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, mergeIntoCardRows, routeDirectionLabels, rowDirectionKey } from '../../utils/liveGrouping';
 import { streetJoin } from '../../utils/stopLabel';
@@ -49,11 +50,11 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
     return mergeIntoCardRows(groupVehiclesByDirection(vehicles, labels), rowKeys);
   }, [geo, routeShortName, rowKeys, vehicles]);
   // Each destination's live gaps, handed up by Live's own reading (onDestinationGaps), as on main Live's card.
-  const [gaps, setGaps] = useState<ReadonlyMap<number, ReadonlyMap<string, string>>>(new Map());
-  const onDestinationGaps = useCallback((directionId: number, g: ReadonlyMap<string, string>) => {
+  const [gaps, setGaps] = useState<ReadonlyMap<number, ReadonlyMap<string, LiveRowGap>>>(new Map());
+  const onDestinationGaps = useCallback((directionId: number, g: ReadonlyMap<string, LiveRowGap>) => {
     setGaps(prev => {
       const old = prev.get(directionId);
-      if (old && old.size === g.size && [...g].every(([k, t]) => old.get(k) === t)) return prev;
+      if (old && old.size === g.size && [...g].every(([k, t]) => sameLiveRowGap(old.get(k), t))) return prev;
       return new Map(prev).set(directionId, g);
     });
   }, []);
