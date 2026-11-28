@@ -20,6 +20,7 @@ import {
   sharedStretchStopIds,
   type SharedStopIndex,
 } from '../../shared/sharedStops';
+import { combinedWait } from '../../shared/combinedWait';
 
 /** Identifies one route feature (a single direction/headsign/day shape) for MapLibre filter matching. */
 export interface FrequencySegmentRouteKey {
@@ -129,7 +130,7 @@ function branchHeadway(p: ShapeProperties, period: TimePeriod): number | null {
 function combinedHeadway(values: number[]): number | null {
   const valid = values.filter(v => Number.isFinite(v) && v > 0);
   if (valid.length < 2) return null;
-  return Math.max(1, Math.round(1 / valid.reduce((sum, value) => sum + 1 / value, 0)));
+  return combinedWait(valid);
 }
 
 function featureKey(key: FrequencySegmentRouteKey): string {

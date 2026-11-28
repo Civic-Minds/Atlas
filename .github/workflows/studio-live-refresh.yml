@@ -1,4 +1,6 @@
 name: Studio Live refresh
+# The mode in the title: the daily gate counts only publish runs, never a dry run (#1807).
+run-name: Studio Live refresh (${{ github.event_name == 'schedule' && 'publish' || inputs.mode }})
 
 # Rebuilds Studio's Live files for every Studio city every day (CIV-2077; Ryan picked "Add those two checks and switch on
 # a daily automatic run for every Studio city, matching TTC"). Every agency Live records, the TTC included (CIV-2186). The
@@ -44,7 +46,7 @@ concurrency:
 jobs:
   # ---------------------------------------------------------------------------------------
   # Backup check (CIV-2177, #1743): GitHub sometimes drops or delays a scheduled run, so the schedule fires 3 times a day
-  # and a scheduled run goes ahead only when the studio-live job hasn't succeeded since the day's refresh window opened
+  # and a scheduled run goes ahead only when a publish run's studio-live job hasn't succeeded since the day's refresh window opened
   # (08:00 UTC, after the 4 a.m. end of the Toronto service date). A run started by hand always goes ahead.
   # ---------------------------------------------------------------------------------------
   gate:
@@ -69,7 +71,8 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" != "schedule" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
           start="$(date -u +%F)T08:00:00Z"
           [ "$(date -u +%H)" -lt 8 ] && start="$(date -u -d yesterday +%F)T08:00:00Z"
-          last="$(bash scripts/ci/refresh-last-success.sh studio-live-refresh.yml studio-live || true)"  # on an API error, run anyway
+          # Only a publish counts: a dry run runs the same studio-live job (#1807).
+          last="$(bash scripts/ci/refresh-last-success.sh studio-live-refresh.yml studio-live '(publish)' || true)"  # on an API error, run anyway
           if [ -n "$last" ] && [[ "$last" > "$start" ]]; then
             echo "Already refreshed today ($last, window opened $start): skipping this scheduled run."
             echo "run=false" >> "$GITHUB_OUTPUT"
@@ -110,7 +113,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
 
       - run: npm ci

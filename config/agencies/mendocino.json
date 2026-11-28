@@ -8,9 +8,9 @@
   ],
   "region": "California",
   "bbox": [
-    38.32,
+    38.31,
     -123.82,
-    39.45,
+    39.46,
     -122.71
   ],
   "feedUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
@@ -39,7 +39,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

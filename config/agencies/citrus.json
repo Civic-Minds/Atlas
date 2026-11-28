@@ -1,0 +1,20 @@
+{
+  "slug": "citrus",
+  "officialName": "Lakeland Area Mass Transit District",
+  "commonName": "Citrus Connection",
+  "websiteUrl": "https://www.ridecitrus.com/",
+  "dataLicense": {
+    "url": "https://www.ridecitrus.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Florida",
+  "center": [
+    28.0328,
+    -81.9255
+  ],
+  "feedUrl": "https://www.ccbusinfo.com/InfoPoint/gtfs-zip.ashx",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -7,9 +7,9 @@
   ],
   "region": "California",
   "bbox": [
-    37.57,
-    -122.08,
-    37.61,
+    37.56,
+    -122.09,
+    37.62,
     -122
   ],
   "feedUrl": "https://unioncity.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F8206",
@@ -50,8 +50,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastPeekedExpiry": "20270816",
   "lastServiceWeek": "a44094e5d44b3fc5",

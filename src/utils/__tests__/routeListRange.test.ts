@@ -19,10 +19,11 @@ describe('route list range from the card', () => {
   it('starts at the card\'s Shared stretch row where it has one (TTC 102 PM: every 7)', () => {
     expect(routeListLowEnd(ttc102, 'pmPeak')).toBe(7);
   });
-  it('shows the range only where the range rule does, as History does (CIV-1227: TTC 102 PM 7 against 30 reads every 30)', () => {
+  it('shows a range past 4x only where the slow line has its own number (CIV-2909, replacing CIV-1227\'s 4x for lists: TTC 102 PM reads every 7–30)', () => {
     const pm = routeListDisplay(ttc102, 'pmPeak');
-    expect(pm).toMatchObject({ headway: 30 });
-    expect(pm.sharedHeadway).toBeUndefined();
+    expect(pm).toMatchObject({ headway: 30, sharedHeadway: 7, wideRange: true });
+    expect(routeListHeadwayText(30, 7, false, true)).toBe('every 7–30 min');
+    // Without the list's own-number test, the 4x rule stands (cards, History).
     expect(routeListHeadwayText(30, 7)).toBe('every 30 min');
     expect(routeListHeadwayText(30, 20)).toBe('every 20–30 min');
   });

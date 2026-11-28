@@ -7,6 +7,12 @@ export function isMiwayExpressHeadsign(headsign: string): boolean {
   return /^\d+\s+(?:[NSEW]\s+)?Express\s+.+\s+Exp$/i.test(h);
 }
 
+const DIRECTION_WORD = String.raw`(?:North|South|East|West)[- ]?bound|(?:NB|EB|WB|N/B|S/B|E/B|W/B)|(?<!Downtown )SB`;
+/** #1836: a direction code or word ending a headsign, bare, after a dash, or in brackets. Codes are capitals only. */
+const DIRECTION_AT_END = new RegExp(String.raw`(?:\s*\(\s*(?:${DIRECTION_WORD})\s*\)|\s+(?:-\s+)?(?:${DIRECTION_WORD}))$`, 'i');
+/** #1836: one starting a headsign ("Eastbound Antioch BART", Hudson Link "EB Tarrytown"). */
+const DIRECTION_AT_START = new RegExp(String.raw`^(?:\(\s*)?(?:${DIRECTION_WORD})(?:\s*\))?\s+(?:-\s+)?`, 'i');
+
 /**
  * Shared headsign cleaning for pipeline (GeoJSON properties) and frontend (route panel).
  * Keep all stripping rules here so build-time and render-time labels stay in sync.
@@ -19,6 +25,8 @@ export function cleanHeadsign(
   headsign: string,
   shortName: string | null = null,
   longName: string | null = null,
+  /** #1836: the pipeline keeps direction codes in the headsign it stores and groups trips by, so two patterns that differ only by one never merge (Kenosha 6229 "Bullen Middle School" and "... (Northbound)"); the app drops them at render. */
+  opts: { keepDirection?: boolean } = {},
 ): string {
   let h = headsign;
 
@@ -100,6 +108,16 @@ export function cleanHeadsign(
   }
   // TTC: trailing compass suffix "- Nb", "- Sb" etc.
   h = h.replace(/\s+-\s+[NSEW]b$/i, '');
+  // #1836, #1845: a direction code or word at the start or end of a headsign is the direction, not the place: CapMetro
+  // "38th Street SB", Calgary "78th Avenue N Station (SB)", RTC "Maryland Pkwy Southbound", StarMetro "AZALEA - EASTBOUND",
+  // Tri Delta "Eastbound Antioch BART". The card already names the direction. A code inside the name stays ("Broadway SB
+  // Past Cedar Lane"), and so does a headsign that is only a direction or a route number with one. Santa Barbara MTD's "Downtown SB" is the city.
+  const withoutDirection = opts.keepDirection ? '' : h
+    .replace(DIRECTION_AT_END, '')
+    .replace(DIRECTION_AT_START, '')
+    .trim();
+  // Nothing left but a route number ("Rt 3 Southbound", StarMetro "5 - NORTHBOUND"): the direction is all the headsign says, so it stays.
+  if (withoutDirection && !/^(?:(?:Rt|Route)\.?\s*)?\d+[A-Z]?$/i.test(withoutDirection)) h = withoutDirection;
   // Trailing stop number/comma junk common in US feeds
   h = h.replace(/,\s+\d+.*$/i, '');
   h = h.replace(/,/g, '');

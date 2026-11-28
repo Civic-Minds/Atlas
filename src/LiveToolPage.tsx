@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { loadingText, ATLAS_BYLINE, MEASURE_LABEL, ROUTE_MENU_LABEL, MAP_COLOURS_LABEL } from './content/noticeCopy';
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { loadingText, ATLAS_BYLINE, MEASURE_LABEL, ROUTE_MENU_LABEL, MAP_COLOURS_LABEL, explainerFor } from './content/noticeCopy';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
@@ -13,7 +13,9 @@ import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { LIVE_TOOL_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
-import { DIRECTION_LABEL, TIME_OF_DAY_LABEL } from '../shared/liveWording';
+import { DIRECTION_LABEL, OPEN_LATE_LIMIT_EVENT, TIME_OF_DAY_LABEL } from '../shared/liveWording';
+/** CIV-2222: this page has no map info panel of its own, so the late-limit note's Learn more opens one here. */
+const InfoPanel = lazy(() => import('./components/InfoPanel'));
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
@@ -125,6 +127,13 @@ export default function LiveToolPage() {
       stop: pick?.kind === 'stop' ? pick.stopId : null, segment: pick?.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : null,
     }));
   }, [route, dir, band, measure, pick]);
+  // CIV-2222 line B: the no-published-window note's Learn more opens E11 (N133) in the info panel.
+  const [lateLimitOpen, setLateLimitOpen] = useState(false);
+  useEffect(() => {
+    const on = () => setLateLimitOpen(true);
+    window.addEventListener(OPEN_LATE_LIMIT_EVENT, on);
+    return () => window.removeEventListener(OPEN_LATE_LIMIT_EVENT, on);
+  }, []);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice report />;
   const shell = (body: ReactNode) => <MapAppShell>{body}</MapAppShell>;
@@ -154,6 +163,11 @@ export default function LiveToolPage() {
         <div className="ml-auto flex items-center gap-3"><div ref={setDataSlot} className="contents" /><div ref={setPickSlot} className="contents" /><PeriodMenu band={band} setBand={setBand} /></div>
       </MapAppHeader>
       <Body agency={agency} agencyName={agencyName} pickSlot={pickSlot} measureSlot={measureSlot} dirSlot={dirSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
+      {lateLimitOpen && (
+        <Suspense fallback={null}>
+          <InfoPanel open onClose={() => setLateLimitOpen(false)} agencies={agencies} helpContext={{ topic: explainerFor('N133') }} />
+        </Suspense>
+      )}
     </>,
   );
 }

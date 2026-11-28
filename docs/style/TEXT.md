@@ -77,8 +77,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933. (checked)
 - "Irregular" for a period with no regular cadence where the route still runs. CIV-1238.
-  - "Runs irregularly in this period" on cards.
-  - "Irregular" in table cells and list values.
+  - "Irregular" on cards, in table cells and in list values (CIV-3136). The Night card reads "Runs irregularly overnight".
   - Never "no regular service", which reads as if nothing runs. (checked)
 - "Report a problem" reasons are named once, in `REPORT_REASON` (`src/components/Interval/cardUi.tsx`); cards hide or pre-check them by that name. CIV-1591. (checked)
 - "Area" is a metro area (the Calgary area, the Greater Toronto and Hamilton Area), in text and in /area/ links. "Region" is only a state or province (/region/ pages). An agency page reads "Calgary, Alberta" (the area's name without a trailing lowercase "area"; "Greater Toronto and Hamilton Area, Ontario" keeps its name). Ryan, CIV-1614. (checked)
@@ -91,7 +90,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Counts with a noun ("1 route", "3 agencies", "its routes have") come from `plural` / `countOf` (`shared/overflowText.ts`), never a hand-built "=== 1 ?". CIV-1593. (checked)
 - Every link that sends people to the map reads "Try Atlas" (`MAP_LINK`): page heroes, empty and not-found pages. Never "Open the map" or "Open the Atlas map". The shared header keeps "Go to Atlas" (#1509). (Ryan, 2026-11-15: "'Open the map' needs to be fixed too we need to refactor this bc this isnt good term", then "Try Atlas"). CIV-1594, CIV-1703. (checked)
 - A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s New", "About Atlas", map export titles). CIV-1599. (checked)
-- Every button, link, tag, heading, control label and table column is written in `src/content/noticeCopy.ts` (or `PAGE_NAMES`), never typed into its component, even when it is used once; Live's labels too (CIV-1781). Live's own terms ("Delays start", "Live" as the map's name) stay in `shared/liveWording.ts`; story and Docs headings are prose and stay with their page. CIV-1774. (checked)
+- Every button, link, tag, heading, control label and table column is written in `src/content/noticeCopy.ts` (or `PAGE_NAMES`), never typed into its component, even when it is used once; Live's labels too (CIV-1781). Live's own terms ("Lateness", "Live" as the map's name) stay in `shared/liveWording.ts`; story and Docs headings are prose and stay with their page. CIV-1774. (checked)
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
 - Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569. (checked)
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
@@ -145,20 +144,21 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   1. The issue in plain English. This can be the notice itself.
   2. What we are doing about it, in the "We…" voice ("We show this data as the agency published it.").
   3. What the reader can do.
+     - Left out when the reader has nothing to do (Ryan, 2026-11-25, CIV-2222, on E11 "Late departures": "Do we need a third paragraph then", then "1").
   - Notices themselves stay without first person.
 - No "so" joining two clauses in a notice or error (Ryan, 2026-10-26).
   - State what happened, then what it means, as two short sentences if needed.
 - One kind of notice, one place (Ryan, CIV-1202). A route card has three:
   1. Under the title: what the card is.
-     - "Includes variants …", and data warnings about the schedule (expired or outdated, under review, corrected, map line missing or incomplete).
+     - "Includes variants …".
      - Small, regular weight, grey.
-     - The data warnings end with "Learn more".
   2. On the rows: anything about one direction or row.
      - A direction with no service in the period is a row saying so ("Runs irregularly in this period"), not a note.
      - Row style: small, extra-bold, dark, fading with its row.
   3. Below the rows: the whole route in the period.
-     - The filter line, "This route runs only from …", "no trips", uneven gaps, booking ahead and weekday variation, in that order.
+     - The filter line, "This route runs only from …", "no trips", uneven gaps, booking ahead, then the data warnings about the schedule (map line missing or incomplete, no longer listed, expired or outdated, under review, corrected) and weekday variation, in that order.
      - Small, regular weight, grey.
+     - The data warnings end with "Learn more", which is why they sit here (CIV-1142, #1838).
 - Each fact once: a notice shows only when it says something the rows don't.
   - When a row already names the gap, the hours or a longer wait, the notice that repeats it is left out.
   - `routeCardNotices` (src/utils/routeCardNotices.ts) decides every notice and its place.
@@ -179,7 +179,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - Except a branch that is its direction's only row, which reads the range from the main stretch to itself ("every 15–54 min", NJ Transit 27 Sunday Midday toward Irvington; Ryan, CIV-1447).
     - Its dot is in the slower number's colour.
     - The route lists start their range at the same low number.
-  - A period with no number reads "Runs irregularly in this period" on cards and "Irregular" in tight spots (never "limited").
+  - A period with no number reads "Irregular" (never "limited").
   - The card has no All day row (CIV-1279: the map has no All day).
   - A route that doesn't run reads "no trips".
   - Part of a period reads "This route runs only from 7–9 AM." with the rest as a second sentence.

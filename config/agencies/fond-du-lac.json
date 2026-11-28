@@ -1,0 +1,19 @@
+{
+  "slug": "fond-du-lac",
+  "officialName": "Fond du Lac Area Transit",
+  "websiteUrl": "https://FondDuLac.transloc.com",
+  "dataLicense": {
+    "url": "https://FondDuLac.transloc.com",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Wisconsin",
+  "center": [
+    43.7769,
+    -88.4486
+  ],
+  "feedUrl": "http://www.fonddulac.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}

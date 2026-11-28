@@ -12,20 +12,16 @@
  */
 import { mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { parseSegmentsFileName } from '../shared/liveStudioAgencies';
 import { STUDIO_LIVE_POINTER, studioLiveRunPrefix, type StudioLivePointer } from './studioLiveRun';
+import { getR2Client, requireEnv } from '../pipeline/r2';
 
 const argv = process.argv.slice(2);
 const opt = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
 const only = opt('--only')?.split(',');
-const need = (k: string) => { const v = process.env[k]; if (!v) throw new Error(`Missing env var ${k}.`); return v; };
-const bucket = need('MCP_LIVE_BUCKET');
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${need('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: need('R2_ACCESS_KEY_ID'), secretAccessKey: need('R2_SECRET_ACCESS_KEY') },
-});
+const bucket = requireEnv('MCP_LIVE_BUCKET');
+const s3 = getR2Client();
 const get = async (Key: string) => (await s3.send(new GetObjectCommand({ Bucket: bucket, Key }))).Body!.transformToString();
 
 const dir = resolve(process.env.LIVE_SEGMENTS_DIR ?? '../_live-data/out');

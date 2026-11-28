@@ -1,0 +1,25 @@
+{
+  "slug": "el-dorado",
+  "officialName": "El Dorado Transit",
+  "websiteUrl": "http://www.eldoradotransit.com/",
+  "dataLicense": {
+    "url": "http://www.eldoradotransit.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    38.7059,
+    -120.8328
+  ],
+  "bbox": [
+    38.552,
+    -121.503,
+    38.958,
+    -119.942
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-75/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

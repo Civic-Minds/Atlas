@@ -1,0 +1,57 @@
+{
+  "slug": "rimouski",
+  "officialName": "Société des transports de Rimouski",
+  "websiteUrl": "https://www.rimouskibus.com/",
+  "dataLicense": {
+    "url": "https://www.donneesquebec.ca/recherche/dataset/transport-collectif",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Quebec",
+  "center": [
+    48.443,
+    -68.5219
+  ],
+  "feedUrl": "https://www.donneesquebec.ca/recherche/dataset/d2d92b84-4361-42f0-81eb-3c395bc54597/resource/bd4021ba-d3ae-4d3b-b8fd-016405166761/download/gtfsrimouskibus.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2276/latest.zip",
+  "timezone": "America/Montreal",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://www.donneesquebec.ca/recherche/dataset/d2d92b84-4361-42f0-81eb-3c395bc54597/resource/bd4021ba-d3ae-4d3b-b8fd-016405166761/download/gtfsrimouskibus.zip",
+  "lastFeedCheckAt": "20261126",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270214",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 11,
+      "feedExpiry": "20270214",
+      "routeCount": 5,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270214-80f1b14c52b32baa",
+  "lastFeedContentKey": "6361fa445cdb5947",
+  "lastFeedExpiry": "20270214",
+  "lastPeekedExpiry": "20270214",
+  "lastFeedStart": "20260909",
+  "lastFeedVersion": null,
+  "lastRefreshedAt": "2026-11-26",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "2b5e4980da13555d",
+  "feedObtainedAt": "20261125"
+}

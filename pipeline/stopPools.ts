@@ -23,6 +23,7 @@
  * Each pattern contributes its own departure list once per stop (one entry per trip, first
  * visit, no drop-off-only stop times: the same lists sharedStretch pools).
  */
+import { POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO } from '../shared/rules/frequency.js';
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { BUNCHED_DEPARTURE_MINUTES, departuresInWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
@@ -33,28 +34,26 @@ export const SAME_HEADSIGN_COVERAGE = 2 / 3;
 export type StopSharers = ReadonlyMap<string, ReadonlySet<string>>;
 
 /**
- * A pooled value is published only when no gap inside its window exceeds this times the mean
- * gap. Two 30-minute branches 3 minutes apart (gaps 3, 27: 1.8 times the mean) or 5 apart (5,
- * 25: 1.67) are bunched, not one service; an hourly variant over a half-hourly base (15, 15, 30)
- * is one service, and its 30 is 1.5 times the mean, more where a window edge cuts the list.
- */
-export const POOLED_MAX_GAP_RATIO = 1.75;
-/**
  * #813: no gap in the window may exceed about 1.5 times the pooled value itself. 1.6 leaves
  * room for a 15/15/30 alternation of a 30- and a 60-minute pattern read at 19 where the window
  * clips the list (RTC 219), while a 165-minute hole against 98 (freedom M) is out.
  */
 export const POOLED_MAX_GAP_TYPICAL_RATIO = 1.6;
-/**
- * On a dense pooled service the ratios bite on a single held bus: ttc 52 westbound at midday,
- * four branches every 20 merged to every 5 over 73 departures, has one 9-10 minute gap at
- * 14:31 from stop 26 on (running-time drift), and 1.6 times 5 is 8, so the stop published
- * nothing and read its own 20, a 14-stop hole in the Lawrence stretch. Each ratio allows at
- * least this many minutes over its base (the mean, the value), the tier grader's grace, so the
- * ratios only decide on services around 8 minutes and slower, where a 1.6x gap is a real
- * alternation.
- */
-export const POOLED_MAX_GAP_GRACE_MINUTES = 5;
+// POOLED_MAX_GAP_RATIO and POOLED_MAX_GAP_GRACE_MINUTES live in shared/rules/frequency.ts (CIV-2976 F1): the route
+// card's rule D (src/utils/rowTrips.ts) reads the same two numbers.
+export { POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO };
+
+/** The pooled evenness test's first clause (CIV-2976 F2): the longest gap is within POOLED_MAX_GAP_RATIO times the mean, or the grace over it. */
+export const gapFitsMean = (longest: number, mean: number): boolean =>
+  !(longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES));
+
+/** #813, the second clause: the longest gap is within POOLED_MAX_GAP_TYPICAL_RATIO times the value, or the grace over it. */
+export const gapFitsValue = (longest: number, value: number): boolean =>
+  !(longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES));
+
+/** The pooled evenness test: both clauses. The one copy of it (CIV-2976 F2); pieces.ts reads it too. */
+export const pooledListIsEven = (longest: number, mean: number, value: number): boolean =>
+  gapFitsMean(longest, mean) && gapFitsValue(longest, value);
 
 /**
  * The headway of a merged departure list inside [start, end]: the typical wait (typicalOfGaps,
@@ -118,8 +117,7 @@ export function pooledReadingInWindow(times: readonly number[], start: number, e
   // are not a 15) and, #813, none over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself.
   // Each ratio allows at least the grace over its base: one held bus on a dense service is
   // not an alternation, while two 30s three minutes apart (27 against a mean of 15) stay out.
-  if (longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
-    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return { value: null, worstWait: longest, typical: value };
+  if (!pooledListIsEven(longest, mean, value)) return { value: null, worstWait: longest, typical: value };
   return { value, worstWait: null };
 }
 

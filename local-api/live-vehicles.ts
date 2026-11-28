@@ -17,6 +17,7 @@ import { nowSource } from '../scripts/mcp/liveNowData.js';
 import { stopPlaces, type StopPlace } from './stopNames.js';
 import type { UpcomingStop } from '../shared/livePatterns.js';
 import { routeNames } from './routeNames.js';
+import { scheduleTrips, scheduledDirection, type ScheduleTrips } from './scheduleTrips.js';
 
 const FEED_TIMEOUT_MS = 15_000;
 /** Without trip updates (a failed trip feed, or a positions-only agency read from the recorder). */
@@ -208,6 +209,13 @@ export function upcomingStops(stops: readonly StopUpdate[] | null | undefined, p
  * Live's vehicles from joined records (CIV-2073), whether polled here or read from the recorder's v2 snapshot: route
  * names from `routeOf`, stop names from the agency's stops file, speed from movement between reports.
  */
+/** #1877: a trip's last stop by name and place, from the timetable; null where the trips file or stops file has none. */
+export function tripLastStop(tripId: string | null | undefined, schedule: ScheduleTrips | null | undefined, places: ReadonlyMap<string, StopPlace>): UpcomingStop | null {
+  const id = tripId ? schedule?.get(tripId)?.e : undefined;
+  const p = id ? places.get(id) : undefined;
+  return p?.lonLat ? { name: p.name, lonLat: p.lonLat } : null;
+}
+
 export function vehiclesFromRecords(
   agency: string,
   records: readonly LiveRecord[],
@@ -216,6 +224,8 @@ export function vehiclesFromRecords(
   nowSec: number,
   /** The trip updates' own timestamp (#1673), what the next stop is read against; `nowSec` without one. */
   feedNowSec: number = nowSec,
+  /** CIV-3044: the agency's timetable by trip id, which gives each vehicle its direction and destination. */
+  schedule: ScheduleTrips | null = null,
 ) {
   const vehicles = [];
   for (const rec of records) {
@@ -228,6 +238,7 @@ export function vehiclesFromRecords(
     });
     const own = rec.stu.length ? asUpdate(rec.stu) : undefined;
     const others = (rec.stuV ?? []).map(asUpdate);
+    const dir = scheduledDirection(rec, schedule, route);
     const stop = rec.tripId ? vehicleNextStop({ currentStatus: rec.currentStatus as number | null }, own, others, places, feedNowSec) : null;
     vehicles.push({
       id: rec.id,
@@ -241,14 +252,17 @@ export function vehiclesFromRecords(
       speedKmh: movementSpeeds.speedFor(agency, rec.id, rec.lat, rec.lon, rec.t, nowSec),
       tsEpoch: rec.t,
       delayMin,
-      headsign: rec.hs,
-      directionId: rec.d,
+      // CIV-3044: from the timetable by trip id, not the feed (scheduledDirection).
+      headsign: dir.headsign,
+      directionId: dir.directionId,
       vehicleLabel: rec.label,
       // CIV-2024: the stop the feed says it is heading to or arriving at, by name; while it stands at a stop, that stop (CIV-2034).
       nextStop: stop?.name ?? null,
       ...(stop?.at ? { atStop: true } : {}),
       // CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern.
       upcomingStops: rec.tripId ? upcomingStops(own?.stopTimeUpdate, places, nowSec) : [],
+      // #1877: where its trip ends, from the timetable (the trips file's last stop), to put it under that destination.
+      lastStop: tripLastStop(rec.tripId, schedule, places),
       status: statusForDelay(delayMin, agency),
       statusLabel: null,
       headwayGapMin: null,
@@ -267,7 +281,7 @@ export async function fromRecorder(agency: string): Promise<Response | null> {
   if (!snap || now - snap.capturedAt > LIVE_STALE_PACES * pace) return null;
   const archive = LIVE_POLLING_ROUTES.some(r => r.slug === agency) ? null : liveMapArchiveFeed(agency);
   // The agency's route file: the archive's route names, and the ids each Live route has now (#1696).
-  const [places, archiveRoutes] = await Promise.all([stopPlaces(agency), routeNames(agency)]);
+  const [places, archiveRoutes, schedule] = await Promise.all([stopPlaces(agency), routeNames(agency), scheduleTrips(agency)]);
   const routeById = liveRouteIdNames(agency, archiveRoutes);
   if (archive && archiveRoutes) {
     const filter = new RegExp(archive.positions.routeFilterSource);
@@ -275,10 +289,12 @@ export async function fromRecorder(agency: string): Promise<Response | null> {
   }
   const routeOf = (routeId: string) => routeById.get(routeId);
   // Headways the recorder keyed by route_id (a route Live names only from the GTFS) are given Live's short name here.
-  const headways = Object.fromEntries(Object.entries(snap.headways).map(([k, v]) => [routeOf(k)?.shortName ?? k, v]));
+  // CIV-2939: the recorder keeps every TTC route now; Live keeps the headways of the routes it shows, as before.
+  const shown = new Set([...routeById.values()].map(r => r.shortName));
+  const headways = Object.fromEntries(Object.entries(snap.headways).map(([k, v]) => [routeOf(k)?.shortName ?? k, v] as const).filter(([k]) => shown.has(k)));
   return json({
     // #1673: the next stop is read against the trip updates' own timestamp.
-    vehicles: vehiclesFromRecords(agency, snap.records, routeOf, places, now, snap.tripsTimestamp ?? now),
+    vehicles: vehiclesFromRecords(agency, snap.records, routeOf, places, now, snap.tripsTimestamp ?? now, schedule),
     headways,
     degraded: !snap.tripsOk,
     degradedReason: snap.tripsOk ? null : DEGRADED_REASON,
@@ -315,12 +331,13 @@ async function fetchHandler(request: Request): Promise<Response> {
   const tripsUrl = config?.tripUpdatesUrl ?? archive?.tripUpdatesUrl ?? null;
   if (!positionsUrl) return json({ error: 'Unknown, inactive, or unconfigured agency' }, 404);
 
-  const [positions, updates, places, archiveRoutes] = await Promise.all([
+  const [positions, updates, places, archiveRoutes, schedule] = await Promise.all([
     fetchFeed(positionsUrl, fetchOptions),
     tripsUrl ? fetchFeed(tripsUrl, fetchOptions) : Promise.resolve({ ok: false as const, reason: 'http-error' as const, detail: 'no trip feed' }),
     stopPlaces(agency),
     // The agency's route file: the archive's route names, and the ids each Live route has now (#1696).
     routeNames(agency),
+    scheduleTrips(agency),
   ]);
 
   if (!positions.ok) {
@@ -341,7 +358,7 @@ async function fetchHandler(request: Request): Promise<Response> {
   // #1673: the next stop is read against the trip updates' own timestamp, not this server's clock.
   const feedHeaderSec = updates.ok ? Number(updates.data.header?.timestamp) : NaN;
   const feedNowSec = Number.isFinite(feedHeaderSec) && feedHeaderSec > 0 ? feedHeaderSec : nowSec;
-  const vehicles = vehiclesFromRecords(agency, records, routeOf, places, nowSec, feedNowSec);
+  const vehicles = vehiclesFromRecords(agency, records, routeOf, places, nowSec, feedNowSec, schedule);
 
   return json({
     vehicles,

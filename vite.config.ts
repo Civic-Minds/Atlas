@@ -1,14 +1,40 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { existsSync, statSync, createReadStream, readdirSync, readFileSync } from 'fs';
+import { existsSync, statSync, createReadStream } from 'fs';
 import { resolve } from 'path';
-import { execSync } from 'child_process';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
 import { historyYearCounts } from './shared/historyEligibility';
 import { STUDIO_COVERAGE_DEV_URL, STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
 import { studioFiles } from './local-api/studioFiles';
 import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
+import { writeAgencyIndexAndCatalogs } from './scripts/agencyIndexGeneration';
+
+/**
+ * CIV-2975: public/data/index.json and the catalogs aren't committed. The dev server (every `dev:*` script) writes them
+ * from config/agencies when it starts and again whenever an agency file changes; `npm run build`'s prebuild writes them
+ * for a build.
+ */
+const agencyData: Plugin = {
+  name: 'atlas-agency-data',
+  apply: 'serve',
+  configureServer(server) {
+    const root = server.config.root;
+    const agenciesDir = resolve(root, 'config/agencies');
+    const regenerate = () => {
+      try {
+        for (const path of writeAgencyIndexAndCatalogs(root)) server.config.logger.info(`agency data: wrote ${path}`);
+      } catch (error) {
+        server.config.logger.error(`agency data: could not regenerate from config/agencies: ${(error as Error).message}`);
+      }
+    };
+    regenerate();
+    server.watcher.add(agenciesDir);
+    for (const event of ['add', 'change', 'unlink'] as const) {
+      server.watcher.on(event, (file: string) => { if (file.startsWith(agenciesDir)) regenerate(); });
+    }
+  },
+};
 
 /** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
 const MAP_MODULE = /[\\/]src[\\/](components[\\/]Interval[\\/](map[\\/]|MapCanvas)|components[\\/]Live[\\/]RouteMap|lib[\\/](mapStyle|pmtilesRetrySource|maplibreWorker)|apps[\\/]Interval)/;
@@ -34,24 +60,6 @@ function assertDevEnv(env: Record<string, string>): void {
     'New worktrees: scripts/new-worktree.sh <name> <branch> does this for you.',
     'Set ATLAS_SKIP_ENV_CHECK=1 to start anyway.',
   ].join('\n')));
-}
-
-/**
- * The local copy of the published history-config.json, the one the Atlas Studio MCP reads (scripts/mcp/diskStore.ts):
- * ATLAS_MCP_HISTORY_FILE when set, this checkout's tmp/history-cache, else the main checkout's. A worktree has no
- * tmp/ of its own, so without the last step the coverage page showed every History year count as "—" (CIV-1968).
- */
-function localHistoryFile(): string {
-  const rel = 'tmp/history-cache/history-config.json';
-  if (process.env.ATLAS_MCP_HISTORY_FILE) return process.env.ATLAS_MCP_HISTORY_FILE;
-  const own = resolve(rel);
-  if (existsSync(own)) return own;
-  try {
-    const common = execSync('git rev-parse --path-format=absolute --git-common-dir', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
-    const main = resolve(common, '..', rel);
-    if (existsSync(main)) return main;
-  } catch { /* not a git checkout: the copy counts as missing */ }
-  return own;
 }
 
 export default defineConfig(({ mode, command, isPreview }) => {
@@ -213,22 +221,18 @@ export default defineConfig(({ mode, command, isPreview }) => {
           res.end(JSON.stringify({ agencies: studioAgenciesFromFiles(names) }));
           return;
         }
-        // CIV-1871: the coverage page's local facts: which agencies have each Studio file, and the Live coverage files
-        // (what scripts/mcp/releaseLivePrivate.ts writes under tmp/mcp-live-private/live/<slug>/coverage.json).
+        // CIV-1871: the coverage page's facts: which agencies have each Studio file, and the Live coverage files the
+        // daily mcp-live job writes to the private bucket. CIV-2914: from the cloud, never tmp/ on this Mac.
         if (path === STUDIO_COVERAGE_DEV_URL) {
           const names = await files.list();
-          const liveDir = resolve('tmp/mcp-live-private/live');
-          const coverage: Record<string, unknown> = {};
-          if (existsSync(liveDir)) {
-            for (const slug of readdirSync(liveDir)) {
-              const f = resolve(liveDir, slug, 'coverage.json');
-              if (existsSync(f)) { try { coverage[slug] = JSON.parse(readFileSync(f, 'utf8')); } catch { /* an unreadable file counts as none */ } }
-            }
-          }
-          // Distinct History years for every archived agency, from the local copy of the published history-config.json (the file the MCP reads); none where the copy is missing.
+          const { readMcpCoverage } = await import('./local-api/mcp-coverage');
+          const coverage = await readMcpCoverage();
+          // Distinct History years for every archived agency, from the published history-config.json (the file the MCP reads).
           let historyYears: Record<string, number> = {};
-          const historyFile = localHistoryFile();
-          if (existsSync(historyFile)) { try { historyYears = historyYearCounts(JSON.parse(readFileSync(historyFile, 'utf8'))); } catch { /* an unreadable copy counts as none */ } }
+          try {
+            const r = await fetch(`${DEFAULT_R2_PUBLIC_URL}/atlas/history-config.json`);
+            if (r.ok) historyYears = historyYearCounts(await r.json());
+          } catch { /* unreachable: the page shows no year counts */ }
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Cache-Control', 'no-store');
           res.end(JSON.stringify({
@@ -324,6 +328,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
       tailwindcss(),
       earlyDataUrl,
       flagsJson,
+      agencyData,
       historyV2Fixtures,
       studioFixtures,
       contextLayerFixture,

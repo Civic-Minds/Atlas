@@ -26,13 +26,13 @@ import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, MINUTES_PER_DAY, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, MINUTES_PER_DAY, SPARKLINE_HOURS, SPARKLINE_START_HOUR, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, computeTripStartFirst, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, countDayDepartures, computeDepartureSpan, computeTripStartFirst, computeTripStartLast, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -63,7 +63,7 @@ import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { periodEdge, periodOneGap, directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
-import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { periodFilterValue } from '../shared/periodEligibility.js';
 import { branchReadingsFromEnv, headlineFromTrunkFromEnv, patternPools, pieceReadingFromEnv, pieceReadingOverlay, readFeaturePieces } from './pieces.js';
 import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
@@ -379,6 +379,38 @@ export function firstVisitStopTimes<T extends { stop_id: string; stop_sequence?:
   return out;
 }
 
+/** A trip runs a drawn line when it serves at least two thirds of the line's stops (the branch pool's test). */
+export function servesMostOfLine(servedStops: number, lineStops: number): boolean {
+  return servedStops * 3 >= lineStops * 2;
+}
+
+/**
+ * CIV-2233 (#1776; Ryan, 2026-11-26, option 1: "Count every trip of the row, wherever it ends"): a row's trip count
+ * is read at its end stop, so a trip that ends without reaching it was counted nowhere (RTD FreeRide toward Union
+ * Station: 41 of 296 weekday trips end at Union Station Loop). Per row of one route, direction and day, how many trips
+ * reach no row's end stop but run most of that row's line; each such trip goes to the one row it covers best (ties:
+ * the first). A trip that reaches any row's end stop is already in that row's count and is left alone, which keeps
+ * the CIV-1069 rule that a row never takes another pattern's trips. `trips` holds each trip's stops (with parents).
+ */
+export function offEndTripsPerRow(rowStops: ReadonlyArray<readonly string[]>, trips: Iterable<ReadonlySet<string>>): number[] {
+  const added = rowStops.map(() => 0);
+  const lines = rowStops.map(order => [...new Set(order)]);
+  const ends = new Set(rowStops.filter(order => order.length > 0).map(order => order[order.length - 1]));
+  for (const served of trips) {
+    if ([...ends].some(id => served.has(id))) continue;
+    let best = -1;
+    let bestShare = 0;
+    lines.forEach((line, i) => {
+      if (line.length === 0) return;
+      const hit = line.filter(id => served.has(id)).length;
+      const share = hit / line.length;
+      if (servesMostOfLine(hit, line.length) && share > bestShare) { best = i; bestShare = share; }
+    });
+    if (best >= 0) added[best] += 1;
+  }
+  return added;
+}
+
 /**
  * Use all departures for the feature's destination at its terminal stop.
  * Different shapes can add or omit an intermediate stop while still providing
@@ -510,6 +542,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
   idPrefix?: string;
   /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
   bookingRequiredRoutes?: Record<string, boolean>;
+  /** #1824: routes (short names) whose timetable runs to the second; their times keep seconds (parseGtfs.ts dropFeedSeconds). */
+  secondsRoutes?: string[];
   manualBaseFare?: number;
   /**
    * When true, continue after GTFS validation errors (log only).
@@ -575,7 +609,7 @@ export interface ProcessResult {
   geojson: string;
   corridorsGeojson: string; // isCorridor features only, served separately
   stopsJson: string; // JSON: Record<stopId, StopEntry> — for Corridors stop search
-  tripsJson: string; // JSON: Record<tripId, {d: directionId, h: headsign|null}> for live vehicle enrichment
+  tripsJson: string; // JSON: Record<tripId, {d: directionId, h: headsign|null, e?: last stop id}> for live vehicle enrichment
   stopsMetaJson: string; // JSON: StopsMetaFile — per-stop facts (routes, direction) for external consumers
   featureCount: number;
   center: [number, number] | null;
@@ -756,6 +790,13 @@ export function weekdayServiceDaysByRouteDir(
 }
 
 /** Local run date as YYYYMMDD. */
+/** #1877: a trip's last stop id, the stop with its highest stop_sequence; undefined for a trip with no stop times. */
+export function tripLastStopId(stopTimes: ReadonlyArray<{ stop_id: string; stop_sequence: string | number }> | undefined): string | undefined {
+  let last: { stop_id: string; stop_sequence: string | number } | undefined;
+  for (const st of stopTimes ?? []) if (!last || Number(st.stop_sequence) > Number(last.stop_sequence)) last = st;
+  return last?.stop_id || undefined;
+}
+
 function runDateYmd(): string {
   const d = runNow(); // #1523: ATLAS_RUN_AT pins it
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
@@ -785,7 +826,7 @@ export async function processGtfsBuffer(
   onStatus?: (msg: string) => void,
   options?: ProcessOptions,
 ): Promise<ProcessResult> {
-  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug });
+  let gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, onStatus, { keepLongShapeJumps: options?.keepLongShapeJumps, skipClusteredJumpRepair: options?.skipClusteredJumpRepair, agencySlug: options?.slug, secondsRoutes: options?.secondsRoutes });
   // A supplemental feed whose ids would collide with the main feed's (NJ Transit rail): see supplementalIds.ts.
   if (options?.idPrefix) gtfs = prefixGtfsIds(gtfs, options.idPrefix);
   gtfs = normalizeGtfs(gtfs, options, onStatus);
@@ -1548,6 +1589,7 @@ export async function processGtfsBuffer(
         headwayByHour: computeHourHeadways(result.times, SPARKLINE_HOURS),
         maxGapByHour: computeHourMaxGaps(result.times, SPARKLINE_HOURS),
         departuresByHour: computeHourDepartureCounts(result.times, SPARKLINE_HOURS),
+        departuresInDay: countDayDepartures(result.times),
         // CIV-1611: the first and last of those same departures (minutes), for the agency page's hours bar.
         departureSpan: computeDepartureSpan(result.times, SPARKLINE_HOURS),
         routeShortName: shortName,
@@ -1797,11 +1839,19 @@ export async function processGtfsBuffer(
   // another weekday), so the route's first time is its first boarding. Times are read as the day lists read them.
   // Frequency templates add their generated starts below.
   const tripStartsByGroup = new Map<string, number[]>();
+  // #1791: the same starts for the last boarding, with a night-only service's trip before the day window read as the
+  // night it ends (CIV-1812's service-day rule, as the night lists read it: CTA writes its after-midnight trips 0:xx under
+  // night services, so 0:45 is that day's 12:45 AM, not the morning's).
+  const lastStartsByGroup = new Map<string, number[]>();
   const addTripStart = (grp: StopTripGroup, mins: number) => {
     if (!grp.inGroup) return;
     const gKey = `${grp.shortName}::${grp.dirId}::${grp.dayType}`;
     const list = tripStartsByGroup.get(gKey);
     if (list) list.push(mins); else tripStartsByGroup.set(gKey, [mins]);
+    const night = mins < SPARKLINE_START_HOUR * 60 && mins < SERVICE_DAY_CUTOFF_MIN && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < SERVICE_DAY_CUTOFF_MIN;
+    const late = night ? mins + MINUTES_PER_DAY : mins;
+    const lastList = lastStartsByGroup.get(gKey);
+    if (lastList) lastList.push(late); else lastStartsByGroup.set(gKey, [late]);
   };
   for (const [tripId, groups] of tripGroupByTripId) {
     const first = frequencyTemplateTripIds.has(tripId) ? undefined : firstDepartureByTripId.get(tripId);
@@ -1915,7 +1965,7 @@ export async function processGtfsBuffer(
     const outerThird = shapeStopIds.slice(Math.floor(shapeStopIds.length * 2 / 3));
     const trips = new Map<string, Map<string, number>>();
     for (const [tid, byStop] of served) {
-      if (byStop.size * 3 < shapeStops.size * 2) continue;
+      if (!servesMostOfLine(byStop.size, shapeStops.size)) continue;
       if (fullOuterThird) {
         const missed = outerThird.filter(id => !byStop.has(id));
         if (missed.length > 1 || (missed.length === 1 && !skippable?.has(missed[0]))) continue;
@@ -1936,6 +1986,51 @@ export async function processGtfsBuffer(
   };
   const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string, fullOuterThird = false, skippable?: ReadonlySet<string>): number[] =>
     branchPoolTimesAt(hsKey, shapeStopIds, terminalId, fullOuterThird, undefined, skippable);
+
+  /**
+   * CIV-2233 (#1776): each row's whole-day trip count (departuresInDay, the count the MCP gives as a branch's trips) also
+   * counts its trips that end without reaching its end stop (offEndTripsPerRow). Only the count: the hour counts, span
+   * and every frequency value keep reading the end stop. A route-direction-day with a counted row that has no stop list
+   * is skipped, since its trips can't be told apart.
+   */
+  const addOffEndTripsToDayCounts = () => {
+    const rowsByGroup = new Map<string, GeoJsonFeature[]>();
+    for (const [feature, { shortName, dirId, day }] of featureStopHeadwaySlots) {
+      if (typeof feature.properties.departuresInDay !== 'number') continue;
+      const k = `${shortName}::${dirId}::${day}`;
+      const list = rowsByGroup.get(k) ?? rowsByGroup.set(k, []).get(k)!;
+      list.push(feature);
+    }
+    const tripsByGroup = new Map<string, Set<string>>();
+    for (const [tid, grps] of tripGroupByTripId) {
+      for (const g of grps) {
+        if (!g.inGroup) continue;
+        const k = `${g.shortName}::${g.dirId}::${g.dayType}`;
+        if (!rowsByGroup.has(k)) continue;
+        (tripsByGroup.get(k) ?? tripsByGroup.set(k, new Set()).get(k)!).add(tid);
+      }
+    }
+    if (tripsByGroup.size === 0) return;
+    if (!stopTimeIdxByTrip) buildBranchIndex();
+    const sts = gtfs.stopTimes ?? [];
+    for (const [k, rows] of rowsByGroup) {
+      const rowStops = rows.map(f => (f.properties.stopOrder as string[] | undefined) ?? []);
+      if (rowStops.some(order => order.length === 0)) continue;
+      const trips = [...(tripsByGroup.get(k) ?? [])].map(tid => {
+        const served = new Set<string>();
+        for (const i of stopTimeIdxByTrip!.get(tid) ?? []) {
+          const id = sts[i].stop_id;
+          served.add(id);
+          const parent = childToParent.get(id);
+          if (parent) served.add(parent);
+        }
+        return served;
+      }).filter(served => served.size > 0);
+      offEndTripsPerRow(rowStops, trips).forEach((n, i) => {
+        if (n > 0) rows[i].properties.departuresInDay = (rows[i].properties.departuresInDay as number) + n;
+      });
+    }
+  };
 
   const pushUnique = (map: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
     let stopMap = map.get(key);
@@ -2093,6 +2188,9 @@ export async function processGtfsBuffer(
     if (!starts?.length) continue;
     const first = computeTripStartFirst(starts);
     feature.properties.tripStartFirst = first ?? null;
+    // #1791: and its last boarding where trips start, over the same trips.
+    const lastStarts = lastStartsByGroup.get(`${slot.shortName}::${slot.dirId}::${slot.day}`) ?? starts;
+    feature.properties.tripStartLast = computeTripStartLast(lastStarts) ?? null;
   }
 
   // Unique route short names per stop — more accurate hub detection than raw route_id count,
@@ -3503,6 +3601,24 @@ export async function processGtfsBuffer(
         // sample rejects its 4-hour holes) keep phase 2's own headline.
       }
       settleTierOnStops(settleStopIds(boardableDrawnStops(coverageStops.map(p => p.stopId), dropOffOnlyStops)));
+      // #1769/#1770 (CIV-2227 option 1): Step 4 never runs for this row, so its counts would stay those of its own list,
+      // which a time-limited row keeps only inside the grading window (Kingston 22 "First Canada": 5 of its 8 weekday
+      // trips; the 6:34, 23:02 and 23:38 were dropped). Count the whole day from its end-stop list, the one Step 4 reads.
+      if (terminalId != null) {
+        const endStopList = featureHeadsign && coverageStops.length > 1
+          ? branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId)
+          : selectTerminalDepartureTimes(shapeMap?.get(terminalId), headsignMap?.get(terminalId));
+        // Only where the list is this row's own trips: a headsign's end-stop list can also hold the trips of its other
+        // patterns (SEPTA 98 weekday's 4-trip Norristown variant read the main pattern's 2 an hour, so it lost its
+        // noOwnServiceByPeriod and showed "every 30" beside its own 6-hour gap, CIV-1069). More departures than the row's
+        // own shape makes at its end stop are someone else's.
+        const ownAtEnd = shapeMap?.get(terminalId)?.length;
+        if (endStopList && endStopList.length > 0 && (ownAtEnd == null || endStopList.length <= ownAtEnd)) {
+          feature.properties.departuresByHour = computeHourDepartureCounts(endStopList, SPARKLINE_HOURS);
+          feature.properties.departuresInDay = countDayDepartures(endStopList);
+          feature.properties.departureSpan = computeDepartureSpan(endStopList, SPARKLINE_HOURS);
+        }
+      }
       continue;
     }
 
@@ -3832,7 +3948,7 @@ export async function processGtfsBuffer(
         // a period D8 calls unsteady reads its wait on the card, so its edge is read here (TTC 510 weekday evening to Queens Quay:
         // "every 10 min until 10:03 PM", not a bare 57).
         const steady = period.sustained === true && (feature.properties.headwayByPeriodSustainedMid as HeadwayByPeriodSustained | undefined)?.[pk] !== false;
-        const edgeValue = steady && period.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? period.headway : period.coverage;
+        const edgeValue = periodFilterValue({ headway: period.headway, coverage: period.coverage, sustained: steady }) as number;
         const edge = periodEdge(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end, edgeValue);
         if (edge) rowEdges[pk] = edge;
         else {
@@ -3976,13 +4092,27 @@ export async function processGtfsBuffer(
       }
       feature.properties.headwayByHour = mergedHourHw;
       feature.properties.maxGapByHour = mergedHourGaps;
-      feature.properties.departuresByHour = mergedHourDepartures;
-      feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as DepartureSpan | undefined);
+      if (terminalHourDepartures && terminalDepartureList?.length) {
+        // #1770 (CIV-2227 option 1): the counts and the span read one list for the whole day, the row's end-stop list.
+        // Picking each hour from whichever list set its headway counted a trip near the hour line twice (Kingston 10: 34
+        // trips each way against the feed's 33): the end-stop list and the row's own list read it about 30 min apart.
+        feature.properties.departuresByHour = terminalHourDepartures;
+        feature.properties.departuresInDay = countDayDepartures(terminalDepartureList);
+        feature.properties.departureSpan = computeDepartureSpan(terminalDepartureList, SPARKLINE_HOURS);
+      } else {
+        // #1873: the merged hours, plus the row's own trips outside them (a night trip written before 5 AM).
+        const hourTotal = (byHour: Record<number, number> | undefined) => Object.values(byHour ?? {}).reduce((a, b) => a + b, 0);
+        const ownOutside = typeof feature.properties.departuresInDay === 'number' ? feature.properties.departuresInDay - hourTotal(branchHourDepartures) : 0;
+        feature.properties.departuresInDay = hourTotal(mergedHourDepartures) + Math.max(0, ownOutside);
+        feature.properties.departuresByHour = mergedHourDepartures;
+        feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as DepartureSpan | undefined);
+      }
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
       feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
       if (terminalHourDepartures) {
         feature.properties.departuresByHour = terminalHourDepartures;
+        feature.properties.departuresInDay = terminalDepartureList ? countDayDepartures(terminalDepartureList) : undefined;
         feature.properties.departureSpan = terminalDepartureList ? computeDepartureSpan(terminalDepartureList, SPARKLINE_HOURS) : undefined;
       }
     }
@@ -3991,6 +4121,7 @@ export async function processGtfsBuffer(
   // A day where one origin of a slot is drawn alone gets its plain row back (CIV-221).
   clearLoneOriginRows(features as Array<{ properties: Record<string, unknown> }>);
   annotateShortTurnVariants(features, shapes);
+  addOffEndTripsToDayCounts();
   stampWorstDirectionHeadways(features);
   // CIV-1331 review: rows without stretch data are graded one by one above; a route runs through the night only when
   // every direction does (the settled rule: never one direction alone), so combine them here, before any surface reads
@@ -4464,11 +4595,14 @@ export async function processGtfsBuffer(
     onStatus?.(`Booking required: ${bookedRouteIds.size} route(s)`);
   }
 
-  // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign)
-  const tripsLookup: Record<string, { d: number; h: string | null }> = {};
+  // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign). `e`: the trip's
+  // last stop id (highest stop_sequence), so Live puts a vehicle under the destination its trip really ends at, whatever
+  // its headsign says (#1877: TTC 505 "Broadview Ave" trips beside "Broadview").
+  const tripsLookup: Record<string, { d: number; h: string | null; e?: string }> = {};
   for (const trip of gtfs.trips ?? []) {
     const h = trip.trip_headsign?.trim() || null;
-    tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h };
+    const e = tripLastStopId(stopTimesByTripId.get(trip.trip_id));
+    tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h, ...(e ? { e } : {}) };
   }
 
   return {

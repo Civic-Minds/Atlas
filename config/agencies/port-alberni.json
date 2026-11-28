@@ -1,0 +1,58 @@
+{
+  "slug": "port-alberni",
+  "officialName": "BC Transit",
+  "nameQualifier": "Port Alberni",
+  "websiteUrl": "https://www.bctransit.com/",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "British Columbia",
+  "center": [
+    49.2504,
+    -124.8022
+  ],
+  "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-761/latest.zip",
+  "timezone": "America/Vancouver",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=11",
+  "lastFeedCheckAt": "20261126",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270331",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 12,
+      "feedExpiry": "20270331",
+      "routeCount": 4,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20270331-0d3d67ddc18f9b3f",
+  "lastFeedContentKey": "b8be3117114ac355",
+  "lastFeedExpiry": "20270331",
+  "lastPeekedExpiry": "20270331",
+  "lastFeedStart": "20261123",
+  "lastFeedVersion": "202611250/20261124 21:00:00/20261125 04:00:00",
+  "lastRefreshedAt": "2026-11-26",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "edf89fb5ad68aaa4",
+  "feedObtainedAt": "20261125"
+}

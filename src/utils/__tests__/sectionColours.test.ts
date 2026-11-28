@@ -227,7 +227,7 @@ describe('period section colours (CIV-321 S3)', () => {
 
   it('#1503: colours no section as regular where the route has no regular service in the period (GO Barrie PM peak)', () => {
     // Release release-mwgrzbgq: northbound reads every 51-56 between Union and Aurora, southbound has only stray trips, so the
-    // route has no PM peak value and the card reads "Runs irregularly in this period" for both directions.
+    // route has no PM peak value and the card reads "Irregular" for both directions.
     const barrie = fixture('go-br-weekday');
     expect(barrie.features.some(f => f.properties?.stopId == null && f.properties?.routeFilterHeadwayByPeriod?.pmPeak == null)).toBe(true);
     expect(buildSectionColourFeatures({ go: barrie }, 'Weekday', 'default', undefined, 'pmPeak')).toEqual([]);
@@ -264,6 +264,33 @@ describe('period section colours (CIV-321 S3)', () => {
     expect(at(night('20*2,,20*2', { dropOffOnlyStops: ['c'] }), 'overnight')).toEqual([]);
     // A null run at the start is limited, as before.
     expect(at(night(',,20*3'), 'overnight')).toEqual([['infrequent', null]]);
+  });
+
+  // CIV-2994 (replaces #1839's faster-only rule): a direction that is one piece colours every stop as the piece. CapMetro 801
+  // weekday evening: the last stops read 15 because more of their gaps fall before the 9 PM drop from 15 to 20; the piece reads 20.
+  it('colours every stop as its piece where the direction is one piece, faster or slower', () => {
+    const piece = (v: number) => ({ pieces: [{ kind: 'trunk', index: 0, stopCount: 4, refStop: 'g', periods: { midday: { t: 'reading', v } } }] });
+    const fast = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: piece(30) }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(fast, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '30', u: '30' });
+    const slow = line({ stretchStopPeriodValues: { midday: '60*2,30*2' }, pieceReadings: piece(30) }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(slow, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '30', u: '30' });
+    // A stop with no value in the period gets none from the piece.
+    const gap = line({ stretchStopPeriodValues: { midday: ',30*3' }, pieceReadings: piece(30) }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(gap, 'midday')!.stopTiers).toEqual({ g: '30', b: '30', u: '30' });
+    // Two pieces (a branch): each stop keeps its own value.
+    const branched = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: { pieces: [...piece(30).pieces, { ...piece(15).pieces[0], kind: 'branch', index: 1 }] } }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(branched, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '15', u: '15' });
+    // Two pieces, but the branch runs no trip in this period: the direction is one piece in it, so one colour.
+    const branchOff = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: { pieces: [...piece(30).pieces, { ...piece(15).pieces[0], kind: 'branch', index: 1, periods: { amPeak: { t: 'reading', v: 15 } } }] } }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(branchOff, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '30', u: '30' });
+    // CIV-2994 B (Ryan, 2026-11-27, "1"): one piece that has no reading in the period ("limited") takes the card's figure (Nanaimo 40
+    // toward Downtown, PM peak: the card says every 15, 17 stops read 30 over a 30 vs 29 minute gap).
+    const limitedPiece = { pieces: [{ ...piece(30).pieces[0], periods: { midday: { t: 'limited' } } }] };
+    const limited = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: limitedPiece, headwayByPeriod: { midday: 15 }, headwayByPeriodSustained: { midday: true } }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(limited, 'midday')!.stopTiers).toEqual({ k: '15', g: '15', b: '15', u: '15' });
+    // If the card has no figure either, each stop keeps its own value.
+    const noFigure = line({ stretchStopPeriodValues: { midday: '30*2,15*2' }, pieceReadings: limitedPiece, headwayByPeriod: { midday: null } }).features[0].properties as unknown as ShapeProperties;
+    expect(periodSectionProps(noFigure, 'midday')!.stopTiers).toEqual({ k: '30', g: '30', b: '15', u: '15' });
   });
 
   it('reads the same run-length values the pipeline writes', () => {

@@ -11,9 +11,9 @@
   "region": "California",
   "bbox": [
     36.97,
-    -122.17,
+    -122.18,
     37.46,
-    -121.55
+    -121.54
   ],
   "feedUrl": "https://gtfs.vta.org/gtfs_vta.zip",
   "excludeTripHeadsigns": [
@@ -63,7 +63,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip",

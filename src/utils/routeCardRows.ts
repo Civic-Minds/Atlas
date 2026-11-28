@@ -11,7 +11,7 @@ import { dirIdNum, groupTrunkHeadway, oneRowMainStretchHeadway, sharedStopIdsFor
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
 import { branchBase, branchCodeOf } from '../../shared/branchCode';
-import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, stretchRowFeatures, type RouteContract } from './stretchCard';
+import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, rowStretchRunByOthers, stretchRowFeatures, type RouteContract } from './stretchCard';
 import { branchRowValue, directionPieceTreatments, tailText } from './branchReadings';
 import { BRANCH_READINGS_ENABLED } from '../../shared/rules/flags';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
@@ -52,6 +52,8 @@ export interface CardRowDisplay {
   limitedLabel?: string;
   singleLine: boolean;
   valueEnd: boolean;
+  /** CIV-2909: the number is a branch piece's own reading, which a piece gets only under rule D (3 or more evenly spaced trips). */
+  pieceNumber?: true;
 }
 
 export interface CardSpanRow {
@@ -66,6 +68,8 @@ export interface CardSharedRow {
   headway: number;
   /** CIV-1251 row 8: the shared stretch's own late start or early end ("every 15 min from 8:07 AM"), in place of the number. */
   edgeText?: string;
+  /** #1825: the in-service spacing edgeText names, where `headway` is the full-window wait the colour uses (a trunk tail). Lists read this. */
+  edgeEvery?: number;
   hover: HoveredBranch;
 }
 
@@ -213,9 +217,12 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     || (allDay != null && allDay.filterValue == null);
   const noRegularLabel = noNumberRowLabel({ nightView });
   const limitedWord = noRegularLabel;
+  // #1823: rows whose stretch another destination's row runs too read their own trips (rowStretchRunByOthers).
+  const stretchRunByOthers = new Set(stretchMode && stretchValues ? directionGroups.flatMap(group =>
+    group.realTier.filter(d => rowStretchRunByOthers(d, group.directionFeatures ?? group.realTier, period))) : []);
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
     // #773: a row that reads "Runs irregularly" for a long gap (waitNotCadence) still runs in the period.
-    group.realTier.some(direction => { const t = rowTrips(direction, period, { stretch: stretchValues }); return t.value != null || t.waitNotCadence === true; }) ||
+    group.realTier.some(direction => { const t = rowTrips(direction, period, { stretch: stretchValues, stretchRunByOthers: stretchRunByOthers.has(direction) }); return t.value != null || t.waitNotCadence === true; }) ||
     group.span.length > 0,
   );
   const hasPartialPeriodService = period !== 'all' && !hasPeriodService && directions.some(direction =>
@@ -241,7 +248,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
       // CIV-2232: a row whose start or end words gave way to "Runs irregularly" (too few or uneven trips) still runs part of the period.
-      .map(group => ({ ...group, realTier: group.realTier.filter(direction => { const t = rowTrips(direction, period, { stretch: stretchValues, branchReadings }); return t.partPeriod != null || t.irregularPastHour === true; }), span: [] }))
+      .map(group => ({ ...group, realTier: group.realTier.filter(direction => { const t = rowTrips(direction, period, { stretch: stretchValues, branchReadings, stretchRunByOthers: stretchRunByOthers.has(direction) }); return t.partPeriod != null || t.irregularPastHour === true; }), span: [] }))
       .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
@@ -270,9 +277,13 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     const peers = (group.directionFeatures ?? directions.filter(x => dirIdNum(x.directionId) === dirIdNum(group.dirId))).filter(x => destinationKey(x) === key);
     return peers.every(p => rowBranchCode(p, base) === code) ? code : null;
   };
+  // CIV-3036 (Ryan picked 1, 2026-11-26): where another row in the direction leads with a branch ID, a row with none leads
+  // with the plain route number, so the rows read alike (TTC "504C · to Roncesvalles", then "504 · to Dundas West").
+  const rowLeadCode = (group: RouteCardDirectionGroup, d: ShapeProperties): string | null =>
+    rowCode(group, d) ?? ([...group.realTier, ...group.span].some(x => x !== d && rowCode(group, x) != null) ? base : null);
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
-    withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowCode(group, direction));
-  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours, branchReadings };
+    withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowLeadCode(group, direction));
+  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours, branchReadings, stretchRunByOthers };
   const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
     return {
@@ -280,7 +291,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular || value.isLimited
         ? (word => (stableColors ? keepLastWordsTogether(word) : word))(value.rowNoRegular ? noRegularLabel : limitedWord)
         : undefined,
-      // Compare (CIV-844): a row that reads "Runs irregularly in this period" puts the whole
+      // Compare (CIV-844): a row that reads "Irregular" puts the whole
       // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
       singleLine: !(stableColors && value.rowNoRegular),
       valueEnd: stableColors && value.rowNoRegular,
@@ -371,7 +382,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       shared = mainRowIsTrunk ? null : {
         label: SHARED_STRETCH_LABEL,
         headway: trunkValue,
-        ...(pieces.trunk.t === 'tail' ? { edgeText: tailText(pieces.trunk) } : {}),
+        ...(pieces.trunk.t === 'tail' ? { edgeText: tailText(pieces.trunk), edgeEvery: pieces.trunk.every } : {}),
         hover: sharedRow?.hover ?? { directionId: group.dirId, headsigns: coreHeadsigns, sharedStopIds: groupSharedStopIds, sharedHeadway: trunkValue, isCore: true },
       };
       const rowOf = (d: ShapeProperties, i: number): CardRow => {
@@ -411,7 +422,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
           // A piece with no number reads and sits as any row with no number does (as rowDisplay has it).
           const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
           const noNumber = t.t === 'limited';
-          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber, ...(noNumber ? {} : { pieceNumber: true as const }) };
         } }];
       });
       // #1636: a branch with no feature of its own gets a row named from where it ends ("to Tower Rd"), the words every branch row has. An origin leg
@@ -430,7 +441,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
           const shown = base.display(hoveredHour);
           const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
           const noNumber = t.t === 'limited';
-          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber, ...(noNumber ? {} : { pieceNumber: true as const }) };
         } }];
       }) : [];
       // CIV-2018: a line whose words the card already has is left out, whatever it reads. Two rows "to X" with different numbers contradict each

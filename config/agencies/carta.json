@@ -8,10 +8,10 @@
     -79.93
   ],
   "bbox": [
-    32.6854,
-    -80.1692,
-    32.9774,
-    -79.7613
+    32.68,
+    -80.17,
+    32.98,
+    -79.76
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-352/latest.zip",
   "region": "South Carolina",
@@ -48,8 +48,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastFeedStart": "20261105",
   "feedRefreshStatus": "current",

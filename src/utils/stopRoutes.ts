@@ -8,13 +8,14 @@ import { routeCardSharedStretchEdge } from './routeCardRows';
 import { hasRegularServiceInPeriod, hasStretchRoles, routeContract } from './stretchCard';
 import { overnightRowNumber } from './routeCardRowValue';
 import { agencyNames } from './agencyName';
-import { rowTrips, unsteadyDirectionFallback } from './rowTrips';
+import { rowOwnTreatment, rowTrips, unsteadyDirectionFallback } from './rowTrips';
 import { compareRouteNumber } from './sortCompare';
 import { noTripsInPeriod } from '../../shared/stopRoutePeriods';
 import { routeCardNoNumberWords } from './routeCardNotices';
 import type { DayType } from '../../shared/dayTypes';
 import type { PeriodKey } from '../../shared/config';
 import { headwayRangeShown } from './headwayText';
+import { stretchRowWithoutOwnTrips } from '../../shared/ownDepartures';
 
 /**
  * The stop card's routes and destination rows, and the rule for the frequency each row shows (CIV-997). One
@@ -173,12 +174,22 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       // #1228: only where the route card's row has the words too (rowTrips): a destination with no trips of its own
       // in the period never reads its stretch's "from 5:34 AM" (TTC 100 to Pape, weekday overnight).
       // CIV-995 (b): the stop card keeps the row's own trips; only the route card reads the stretch's values.
+      // CIV-3128 (#1914): with branch readings, the row's own late start or early end is worded as on the route card
+      // (rowOwnEdgeText): TTC 102 "Steeles via Dynamic Dr" reads "every 12 min until 10:20 AM" at midday, not a bare "every 12"
+      // for trips that end at 10:20.
       const trips = rowTrips(p, period, { stretch: false });
-      const periodText = trips.partPeriod != null ? partPeriodText(p, period) : undefined;
+      const periodText = trips.partPeriod != null ? partPeriodText(p, period) : branchReadings ? rowOwnEdgeText(p, period) : undefined;
       // No cadence at the stop for a period the route card says has no regular cadence (#750), where the
       // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips), or where the
       // card's row reads its unsteady direction's worst wait as no regular service (#962).
-      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService || unsteadyDirectionFallback(p, period, trips))) continue;
+      // #1904: nor where a main or tail row's own trips don't run in the period (the pipeline leaves those rows unmarked, as
+      // the route card reads their stretch): the stop card reads own trips, so the row would show every trip passing the stop
+      // under one destination's name (TTC 102 midday "to Sheppard every 7" from 12 trips a day). The direction's other trips
+      // keep their rows, and the Shared stretch row carries the pooled number.
+      // Only a row with no number of its own: one the route card gives a number keeps it.
+      const ownless = period !== 'all' && period !== 'overnight' && stretchRowWithoutOwnTrips(p, period as PeriodKey)
+        && branchDisplayPeriodHeadway(p, period) == null;
+      if (!periodText && (!hasRegularServiceInPeriod(p, period) || trips.noOwnService || ownless || unsteadyDirectionFallback(p, period, trips))) continue;
 
       // Only include features whose shape actually covers any of the sibling stops.
       let stopHw: number | undefined = undefined;
@@ -339,4 +350,18 @@ export function stopCardAgencies(
   if (names.length > 0 || !selectedStop) return names;
   const own = agencies.find(a => a.slug === selectedStop.split('::')[0]);
   return own ? [agencyNames(own).name] : [];
+}
+
+/**
+ * CIV-3128 (#1914): the route card's words for a row whose own trips start or stop inside the period (its rowPeriodEdge, CIV-1959
+ * B3 follow-up), as the card reads them (rowTrips with branch readings, or the piece treatment rowOwnTreatment). Only the from /
+ * until words: the card's other own-trip words (one gap) say nothing a bare number overstates, so the stop card keeps its number.
+ */
+export function rowOwnEdgeText(p: ShapeProperties, period: TimePeriod): string | undefined {
+  const edge = period === 'all' ? undefined : p.rowPeriodEdge?.[period];
+  if (!edge || (edge.from == null && edge.until == null)) return undefined;
+  const card = rowTrips(p, period, { stretch: false, branchReadings: true });
+  if (card.partPeriod != null) return card.partPeriod === periodEdgeText(edge) ? card.partPeriod : undefined;
+  const own = rowOwnTreatment(p, period);
+  return own?.t === 'tail' ? periodEdgeText(own) : undefined;
 }

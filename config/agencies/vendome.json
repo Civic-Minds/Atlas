@@ -14,5 +14,12 @@
   "cities": [
     "Vendôme, France"
   ],
-  "timezone": "Europe/Paris"
+  "timezone": "Europe/Paris",
+  "dataLicense": {
+    "url": "https://transport.data.gouv.fr/datasets/gtfs-move-vendome",
+    "attribution": "required",
+    "name": "Licence Ouverte v2.0 (Etalab)",
+    "updatedLabel": "Dernière mise à jour :",
+    "checkedOn": "2026-11-26"
+  }
 }

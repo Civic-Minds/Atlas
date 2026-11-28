@@ -8,10 +8,10 @@
     -84.93
   ],
   "bbox": [
-    32.363111,
-    -84.990535,
-    32.562217,
-    -84.869212
+    32.36,
+    -85,
+    32.57,
+    -84.86
   ],
   "feedUrl": "https://metracolumbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40024/latest.zip",
@@ -21,7 +21,7 @@
     "Muscogee County, Georgia"
   ],
   "timezone": "America/New_York",
-  "lastFeedExpiry": "20281123",
+  "lastFeedExpiry": "20281126",
   "lastFeedVersion": "Saturday Schedule - 10/23/2026",
   "lastRefreshedAt": "2026-11-23",
   "feedQuality": {
@@ -34,14 +34,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 42,
-      "feedExpiry": "20281123",
+      "feedExpiry": "20281126",
       "routeCount": 10,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,

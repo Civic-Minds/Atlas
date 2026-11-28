@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { routeKey } from './useIntervalStats';
 import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
-import { routeListDisplay } from '../utils/effectiveHeadway';
+import { routeReading } from '../utils/routeReading';
 import { routeLabels } from '../utils/format';
 import { compareHeadwayThenNumber } from '../utils/sortCompare';
 import { metresBetween, withinMetres } from '../../shared/geoDistance';
@@ -23,7 +23,7 @@ export interface NearbyRoute {
   noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
-  /** #1292: the card's late-start or early-end words when they explain the value (routeListDisplay). */
+  /** #1292: the card's late-start or early-end words when they explain the value (routeReading's list). */
   edgeText?: string;
   /** CIV-1447: the number the dot is coloured by, where slower than `headway`. */
   colorHeadway?: number;
@@ -99,7 +99,7 @@ export function useNearbyRoutes(
               (candidateProps.day === undefined || candidateProps.day === currentDay);
           })
           .map(candidate => candidate.properties as unknown as ShapeProperties);
-        const { headway, limited, sharedHeadway, noRegular, edgeText, colorHeadway } = routeListDisplay(routeFeatures, period);
+        const { headway, limited, sharedHeadway, noRegular, edgeText, colorHeadway } = routeReading(routeFeatures, period).list;
 
         if (!routeMap.has(mapKey)) {
           const label = routeLabels({ shortName: p.routeShortName, longName: p.routeLongName as string | null, routeType: p.routeType, agencySlug: slug, agencyName: p.agencyName });

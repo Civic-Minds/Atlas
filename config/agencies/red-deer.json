@@ -35,8 +35,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Edmonton",
   "lastFeedSourceKind": "configured",
@@ -49,5 +48,12 @@
   "lastServiceWeek": "3a7252dc4472ebc1",
   "feedObtainedAt": "20260813",
   "lastFeedStart": "20260830",
-  "heldFeedStart": "20261206"
+  "heldFeedStart": "20261206",
+  "dataLicense": {
+    "url": "https://data.reddeer.ca/About",
+    "attribution": "required",
+    "name": "Open Government Licence - The City of Red Deer",
+    "credit": "Contains information licensed under the Open Government Licence – The City of Red Deer",
+    "checkedOn": "2026-11-26"
+  }
 }

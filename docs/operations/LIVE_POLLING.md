@@ -111,7 +111,7 @@ This is **not** the same set as client Live Vehicles (`LIVE_POLLING_ROUTES`). Th
 
 ### Trip-update archives (every ~5 min)
 
-Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. None of the five agencies below is recorded now, and their data has expired; Kingston's are recorded now. Powers `/api/history-adherence` and related History RT views.
+Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. None of the five agencies below is recorded now, and their data has expired; Kingston's are recorded now.
 
 | Agency | Slug | Notes |
 |--------|------|-------|

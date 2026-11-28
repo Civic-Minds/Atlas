@@ -28,6 +28,11 @@ export interface LiveAgencyExtras {
   serviceDayEndHour?: number;
   /** The agency's name in method notes ("the TTC feed has no delay values"). */
   shortName?: string;
+  /**
+   * #1801: trip ids the live feed makes up for runs with no scheduled trip, which no timetable can hold (the MBTA's
+   * "ADDED-…" Green Line and Mattapan runs, "…-OL1" Silver Line extras). They are left out of the timetable match.
+   */
+  unscheduledTripId?: RegExp;
 }
 
 /** Only agencies that need something non-default are listed. */
@@ -44,6 +49,7 @@ export const LIVE_AGENCY_EXTRAS: Readonly<Record<string, LiveAgencyExtras>> = {
     shortName: 'TTC',
   },
   kingston: { shortName: 'Kingston Transit' },
+  mbta: { unscheduledTripId: /^ADDED-|-OL\d+$/ },
 };
 
 export interface LiveAgencyConfig {
@@ -57,6 +63,7 @@ export interface LiveAgencyConfig {
   notDiversions: LatLon[];
   directionLabels: 'headsignFirstWordBound' | 'mostCommonHeadsign';
   shortName: string;
+  unscheduledTripId: RegExp | null;
 }
 
 export function liveAgencyConfig(slug: string, timeZone: string | undefined): LiveAgencyConfig {
@@ -75,12 +82,13 @@ export function liveAgencyConfig(slug: string, timeZone: string | undefined): Li
     notDiversions: [...carhouses, ...(x.notDiversions ?? [])],
     directionLabels: x.directionLabels ?? 'mostCommonHeadsign',
     shortName: x.shortName ?? slug,
+    unscheduledTripId: x.unscheduledTripId ?? null,
   };
 }
 
-const dateFmts = new Map<string, Intl.DateTimeFormat>();
-const hourFmts = new Map<string, Intl.DateTimeFormat>();
-function fmt(cache: Map<string, Intl.DateTimeFormat>, timeZone: string, opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+const dateFmts = new Map<string | undefined, Intl.DateTimeFormat>();
+const hourFmts = new Map<string | undefined, Intl.DateTimeFormat>();
+function fmt(cache: Map<string | undefined, Intl.DateTimeFormat>, timeZone: string | undefined, opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
   let f = cache.get(timeZone);
   if (!f) { f = new Intl.DateTimeFormat('en-CA', { timeZone, ...opts }); cache.set(timeZone, f); }
   return f;
@@ -91,8 +99,8 @@ export function localDate(ms: number, timeZone: string): string {
   return fmt(dateFmts, timeZone, { year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms);
 }
 
-/** Local hour (0-23) at an instant (ms). */
-export function localHour(ms: number, timeZone: string): number {
+/** Local hour (0-23) at an instant (ms). With no zone, the runtime's own clock. */
+export function localHour(ms: number, timeZone: string | undefined): number {
   return Number(fmt(hourFmts, timeZone, { hour: 'numeric', hourCycle: 'h23' }).format(ms));
 }
 

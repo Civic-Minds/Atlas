@@ -3,9 +3,10 @@
   "officialName": "Brampton Transit",
   "websiteUrl": "http://www.bramptontransit.com",
   "dataLicense": {
-    "url": "https://brampton.maps.arcgis.com/home/item.html?id=a355aabd5a8c490186bdce559c9c75fb",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://creativecommons.org/licenses/by/4.0",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-26"
   },
   "region": "Ontario",
   "center": [
@@ -72,8 +73,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",

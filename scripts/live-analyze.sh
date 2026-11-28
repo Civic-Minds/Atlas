@@ -70,7 +70,7 @@ for route in "${ROUTES[@]}"; do
   fi
   NODE_OPTIONS=--max-old-space-size=8192 npx tsx scripts/live-segment-delay.ts \
     --gtfs "$GTFS" --archive "$ARCHIVE" --route "$route" --days "$DAYS" ${EXTRA[@]+"${EXTRA[@]}"} \
-    --out "$DATA/out/$AGENCY-$route-segments.json" | grep -E "^(v3|dates)" || exit 1
+    --out "$DATA/out/$AGENCY-$route-segments.json" | grep -E "^(v3|dates|#1789)" || exit 1
 done
 # The agency page (/apps/live/ttc) reads one summary of every route's analysis. Other agencies have no agency page
 # (live-segment-delay.ts still rebuilds <slug>-agency.json after each route).

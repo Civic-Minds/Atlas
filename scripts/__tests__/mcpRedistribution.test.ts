@@ -15,12 +15,14 @@ const store = {
 describe('agencies the MCP may not serve', () => {
   it('lists WMATA with its reason', () => {
     // CIV-2124 (Whitehorse from CIV-2125): group A (terms bar sharing) and group C (out until written permission), each with its own reason.
-    expect(NO_REDISTRIBUTION.map(x => x.slug)).toEqual(['wmata', 'des-moines', 'nyc-ferry', 'beeline', 'norta', 'cata-lansing', 'spokane', 'trimet', 'vre', 'rtcwashoe', 'mta-flint', 'max-transit', 'citybus-lafayette', 'topeka', 'cherriots', 'ctran', 'whitehorse']);
+    expect(NO_REDISTRIBUTION.map(x => x.slug)).toEqual(['wmata', 'des-moines', 'nyc-ferry', 'beeline', 'norta', 'cata-lansing', 'spokane', 'trimet', 'vre', 'rtcwashoe', 'mta-flint', 'max-transit', 'citybus-lafayette', 'topeka', 'cherriots', 'embark', 'uta', 'indygo', 'whitehorse']);
     expect(new Set(NO_REDISTRIBUTION.map(x => x.reason)).size).toBe(NO_REDISTRIBUTION.length);
-    for (const slug of ['norta', 'trimet', 'ctran']) expect(redistributionExclusion(slug)?.reason).toMatch(/until the agency gives written permission\.$/);
+    for (const slug of ['norta', 'trimet', 'cherriots']) expect(redistributionExclusion(slug)?.reason).toMatch(/until the agency gives written permission\.$/);
     for (const slug of ['des-moines', 'nyc-ferry', 'beeline']) expect(redistributionExclusion(slug)?.reason).not.toMatch(/permission/);
     expect(mayRedistribute('wmata')).toBe(false);
     expect(mayRedistribute('ttc')).toBe(true);
+    // CIV-3051: C-TRAN's agreement grants redistribution to anyone who uses the data, with its notice shown.
+    expect(mayRedistribute('ctran')).toBe(true);
     expect(redistributionExclusion('wmata')?.reason).toMatch(/terms don’t allow an API/);
   });
 

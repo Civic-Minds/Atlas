@@ -1,0 +1,19 @@
+{
+  "slug": "madera",
+  "officialName": "Madera County Connection",
+  "websiteUrl": "https://mcctransit.com/",
+  "dataLicense": {
+    "url": "https://mcctransit.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    37.122,
+    -119.8001
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-572/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

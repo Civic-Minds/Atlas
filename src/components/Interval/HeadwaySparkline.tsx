@@ -12,7 +12,7 @@ import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import ExpandDialog, { ExpandButton } from '../ui/ExpandDialog';
 import LegendItem from '../ui/LegendItem';
-import { delayAmount, headwayEvery, runTimeAmount } from '../../utils/headwayText';
+import { headwayEvery, runTimeAmount } from '../../utils/headwayText';
 import { TripTimeStrip, AxisOverlay, tripTimeAxisTicks, type AxisTick, tripTimeHeading, FULL_DAY_BAR_SHAPE, FULL_DAY_COLUMN_ROW } from './TripTimeStrip';
 import { type TripTimeSeries } from '../../utils/tripTime';
 import { syncUrlParams } from '../../utils/syncUrlParams';
@@ -21,7 +21,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { tripsPerHourAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
-import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL, EXPAND_SCHEDULE_LABEL, SCHEDULE_DIRECTION_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL, EXPAND_SCHEDULE_LABEL, SCHEDULE_DIRECTION_LABEL, SCHEDULE_OVERVIEW_TITLE, ALL_PERIODS_SHOWN_NOTE } from '../../content/noticeCopy';
 export { tripsPerHourAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
@@ -132,8 +132,6 @@ interface HourlySparklineProps {
   title?: string;
   /** The route, when the full-day window's title names it: drawn as the route title (CIV-1128); `title` stays its plain text. */
   titleLabel?: { primary: string; secondary?: string; text: string };
-  /** Names what the bars show in hour tooltips, e.g. "slower direction". */
-  seriesLabel?: string;
   /** Used by the modal's larger, all-period rendering. */
   expanded?: boolean;
   /** Full-day view only: trip time by hour, drawn as a strip on the chart's own hour columns. */
@@ -147,9 +145,11 @@ interface HourlySparklineProps {
   onSharedHour?: (hour: number | null) => void;
   /** Y-axis ticks (full-day, both directions): drawn over the bars, labels in a gutter the parent leaves. */
   yAxis?: AxisTick[];
+  /** The card chart's hover text for an hour, for a series that isn't a frequency (CIV-2182: Fleet's vehicles by time of day). */
+  hourTitle?: (hour: number) => string | undefined;
 }
 
-export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = 'Schedule overview', titleLabel, seriesLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis }: HourlySparklineProps) {
+export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directionOptions, period, onPeriodChange, onPeriodHover, onHourHover, allowExpand = false, reserveStackedLegendSpace = false, title = SCHEDULE_OVERVIEW_TITLE, titleLabel, expanded = false, tripTime, legendStackedByHour, legendInvisible = false, scaleMaxFreq, sharedHour, onSharedHour, yAxis, hourTitle }: HourlySparklineProps) {
   const colorMode = useColorMode();
   const [hoveredPeriod, setHoveredPeriod] = useState<string | null>(null);
   const [hoveredHour, setHoveredHour] = useState<number | null>(null);
@@ -279,7 +279,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
         >
         {expanded && <FullDayPeriodBands className="inset-x-0 top-1 bottom-0" />}
         {yAxis && <AxisOverlay ticks={yAxis} height={H} className="top-1" />}
-        <HoveredPeriodName period={activeLabelKey} className={`absolute top-0 ${allowExpand ? 'right-7' : 'right-0'}`} />
+        {/* #1819 (CIV-2949): a frequency chart's hovered hour shows beside the period name, not in a hover text. */}
+        <HoveredPeriodName period={activeLabelKey} hour={hourTitle ? null : hoveredHour} className={`absolute top-0 ${allowExpand ? 'right-7' : 'right-0'}`} />
         {/* Hover region highlight — visible on light bg. It starts below the label row
             (the top padding), so the period label sits above it, not inside it. */}
         {bands?.map((band, i) => (
@@ -311,9 +312,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
               <div
                 key={h}
                 className="flex-1 min-w-0 flex flex-col items-center"
-                title={hasValue && !expanded
-                  ? `${formatHourTitle(h, hw)}${seriesLabel ? ` (${seriesLabel})` : ''}${maxGap != null && maxGap > hw ? `; longest gap ${delayAmount(maxGap)}` : ''}`
-                  : undefined}
+                title={hasValue && !expanded && hourTitle ? hourTitle(h) : undefined}
               >
                 <div style={{ height: H }} className="relative flex items-end justify-center w-full">
                   {isTooltipHover && hasValue && (
@@ -395,7 +394,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
       {allowExpand && !expanded && isExpanded && (
         <ExpandDialog
           title={titleLabel ? <RouteTitleName label={titleLabel} /> : title}
-          note="All time periods are shown together."
+          note={ALL_PERIODS_SHOWN_NOTE}
           ariaLabel={`${title} full-day schedule`}
           closeLabel={closeLabel(CLOSE_PLACES.schedule)}
           onClose={closeExpanded}
@@ -418,24 +417,22 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
             <>
                 {(() => {
                   const loop = gridBlocks.some(option => option.tripTime?.loop);
-                  // Each chart's title sits right above it, with the hovered hour's period name (as on the card's chart)
-                  // and its number at the other end of the same line, so nothing jumps and no line is left empty.
-                  const modalPeriod = modalHour != null ? (HOUR_TO_PERIOD[modalHour] as PeriodKey | undefined) ?? null : null;
+                  // Each chart's title sits right above it, with the hovered hour's own reading at the other end of the same
+                  // line, so nothing jumps and no line is left empty. #1820 (Ryan, 2026-11-25: "Actually 1", then "1" to
+                  // "5 AM: every 15 min"): the line names the hour, in the hover's own words (formatHourTitle), never the
+                  // hour's period, so one hour's figure ("Overnight every 15 min" on a route with no overnight service)
+                  // never reads as the period's.
                   const titleRow = (title: string, value: string, testId: string) => (
                     <div className={`flex items-baseline justify-between gap-2 leading-4 ${CHART_HEADING} ${HEADING_GAP}`} data-testid={testId}>
                       <span>{title}</span>
-                      <span className="flex items-baseline gap-2" aria-hidden="true">
-                        {/* The title line's own line height, so the name never makes the line taller. */}
-                        <HoveredPeriodName period={modalPeriod} className="leading-[inherit]" />
-                        <span className="text-[var(--text-muted)]" data-testid="full-day-chart-value">{value}</span>
-                      </span>
+                      <span className="text-[var(--text-muted)]" aria-hidden="true" data-testid="full-day-chart-value">{value}</span>
                     </div>
                   );
                   const frequencyCell = (option: typeof gridBlocks[number]) => {
                     const hw = modalHour != null ? option.byHour[modalHour] : null;
                     return (
                       <div className="relative pl-11" data-testid="full-day-frequency-cell">
-                        {titleRow(FREQUENCY_LABEL, hw != null ? headwayEvery(hw) : '', 'full-day-frequency-heading')}
+                        {titleRow(FREQUENCY_LABEL, hw != null && modalHour != null ? formatHourTitle(modalHour, hw) : '', 'full-day-frequency-heading')}
                         {pairFreqTicks.length > 0 && <div className={`mb-2 ${UNIT_LINE}`} data-testid="full-day-frequency-unit">{TRIPS_PER_HOUR_LABEL}</div>}
                         <HeadwaySparkline
                           byHour={option.byHour}
@@ -461,7 +458,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                       <div className="relative pl-11" data-testid="full-day-trip-time-cell">
                         <TripTimeStrip
                           above={<>
-                            {titleRow(tripTimeHeading(loop), tt != null ? tripTimeAbout(tt) : '', 'full-day-trip-time-heading')}
+                            {titleRow(tripTimeHeading(loop), tt != null && modalHour != null ? formatTripTimeTitle(modalHour, tt) : '', 'full-day-trip-time-heading')}
                             {/* The frequency chart's unit line has no twin here: an empty line of the same size keeps the two charts level. */}
                             {pairFreqTicks.length > 0 && <div className={`mb-2 ${UNIT_LINE} invisible`} aria-hidden="true">{TRIPS_PER_HOUR_LABEL}</div>}
                           </>}
@@ -525,3 +522,23 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 }
 
 // Legacy period-based export kept for any callers that still use it
+
+/**
+ * CIV-2973: the route card's chart for a count by hour (Studio Fleet's vehicles by time of day) instead of a frequency.
+ * The chart's bars are trips per hour (1 / headway), so a count draws as 60 / count, in one colour, never expandable: none
+ * of the chart's frequency wording ("every N min") can read a count. Hover text comes from `hourTitle`.
+ */
+export function CountSparkline({ countByHour, color, label, ...rest }: Pick<HourlySparklineProps, 'period' | 'title' | 'hourTitle' | 'onPeriodChange' | 'onHourHover'> & {
+  countByHour: Record<number, number | null>;
+  color: string;
+  /** The counted thing ("buses"), named on each bar's segment. */
+  label: string;
+}) {
+  const byHour: Record<number, number | null> = {};
+  const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
+  for (const [h, n] of Object.entries(countByHour)) {
+    byHour[+h] = n ? 60 / n : null;
+    if (n) stackedByHour[+h] = [{ label, headway: 60 / n, color }];
+  }
+  return <HeadwaySparkline {...rest} byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} />;
+}

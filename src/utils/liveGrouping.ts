@@ -2,6 +2,10 @@ import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { compareRouteNumber } from '../../shared/sortCompare';
 import { projectOntoSegment } from '../../shared/geoDistance';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
+import { feedPlaceName } from './nameCase';
+import { streetJoin } from './stopLabel';
+import { metresBetween } from '../../shared/geoDistance';
+import { SAME_STOP_M } from '../../shared/rules/live';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -78,7 +82,8 @@ export function riderHeadsign(headsign: string | null | undefined, routeShortNam
   const own = raw.split(' ')[0];
   // The route number may carry one letter ("88S South Leaside Short Turn" on route 88).
   const number = own === routeShortName.toLowerCase() || (own.slice(0, -1) === routeShortName.toLowerCase() && /[a-z]$/.test(own));
-  return number && raw.endsWith(' short turn') ? null : headsign;
+  // CIV-2915: a destination the feed sends in capitals reads in normal case ("HAMILTON GO CENTRE" -> "Hamilton GO Centre").
+  return number && raw.endsWith(' short turn') ? null : feedPlaceName(headsign);
 }
 
 /** Each direction named by its longest shape's headsign (a short turn never names a direction). */
@@ -91,7 +96,7 @@ export function routeDirectionLabels(features: readonly GeoJSON.Feature[], route
     if (p.directionId == null || !p.headsign) continue;
     const dir = Number(p.directionId);
     const len = featureSpan(f);
-    if (len > (span.get(dir) ?? -1)) { span.set(dir, len); labels.set(dir, String(p.headsign)); }
+    if (len > (span.get(dir) ?? -1)) { span.set(dir, len); labels.set(dir, feedPlaceName(String(p.headsign))); }
   }
   return labels;
 }
@@ -103,11 +108,53 @@ export function routeDirectionLabels(features: readonly GeoJSON.Feature[], route
  */
 export function groupVehiclesByDirection(vehicles: readonly LiveVehicle[], directionLabels: ReadonlyMap<number, string>): Map<string, LiveVehicle[]> {
   const groups = new Map<string, LiveVehicle[]>();
+  const keys = destinationKeys(vehicles, directionLabels);
   for (const v of vehicles) {
-    const key = vehicleDirectionKey(v, directionLabels);
+    const key = keys.get(v.id) ?? vehicleDirectionKey(v, directionLabels);
     (groups.get(key) ?? groups.set(key, []).get(key)!).push(v);
   }
   return groups;
+}
+
+/**
+ * The Live direction group a route card's destination row stands for (#1877): its shape's headsign, named the way a
+ * vehicle's is, so the row can carry that destination's vehicles. Null for a row with no headsign or a short turn.
+ */
+export function rowDirectionKey(headsign: unknown, routeShortName: string): string | null {
+  const name = typeof headsign === 'string' ? riderHeadsign(headsign, routeShortName) : null;
+  return name ? streetJoin(name) : null;
+}
+
+/**
+ * #1877 (Ryan: the same destination listed again under another name): which destination each vehicle's trip really goes
+ * to. Vehicles whose trips end at the same stop (the timetable's last stop, within SAME_STOP_M, same direction) are one
+ * destination, named by the headsign most of them carry when that is where most of that headsign's vehicles end (TTC 505's
+ * "Broadview Ave" trips ending at Broadview Station join "Broadview"); a stop no headsign mainly ends at keeps the stop's
+ * own name. Vehicles with no known last stop keep their headsign group (vehicleDirectionKey).
+ */
+export function destinationKeys(vehicles: readonly Pick<LiveVehicle, 'id' | 'headsign' | 'directionId' | 'lastStop'>[], directionLabels: ReadonlyMap<number, string>): Map<string, string> {
+  const out = new Map<string, string>();
+  interface End { dir: number | null; at: readonly [number, number]; name: string; ids: string[]; heads: Map<string, number> }
+  const ends: End[] = [];
+  for (const v of vehicles) {
+    const base = vehicleDirectionKey(v, directionLabels);
+    out.set(v.id, base);
+    const last = v.lastStop;
+    if (!last?.lonLat || v.headsign == null) continue;
+    let end = ends.find(e => e.dir === v.directionId && metresBetween({ lon: e.at[0], lat: e.at[1] }, { lon: last.lonLat[0], lat: last.lonLat[1] }) < SAME_STOP_M);
+    if (!end) ends.push(end = { dir: v.directionId, at: last.lonLat, name: last.name, ids: [], heads: new Map() });
+    end.ids.push(v.id);
+    end.heads.set(base, (end.heads.get(base) ?? 0) + 1);
+  }
+  // Each headsign's own end: the stop most of its vehicles end at.
+  const home = new Map<string, End>();
+  for (const e of ends) for (const [h, n] of e.heads) { const at = home.get(h); if (!at || n > (at.heads.get(h) ?? 0)) home.set(h, e); }
+  for (const e of ends) {
+    const own = [...e.heads].filter(([h]) => home.get(h) === e).sort((a, b) => b[1] - a[1]);
+    const name = own.length ? own[0][0] : e.name;
+    for (const id of e.ids) out.set(id, name);
+  }
+  return out;
 }
 
 /** The direction group a vehicle belongs to (see groupVehiclesByDirection). */
@@ -183,4 +230,33 @@ export function orderAlongRoute<V extends Pick<LiveVehicle, 'lat' | 'lon' | 'dir
     return { v, i, dir: along == null ? Infinity : v.directionId!, along: along ?? Infinity };
   });
   return placed.sort((a, b) => a.dir - b.dir || a.along - b.along || a.i - b.i).map(x => x.v);
+}
+
+/** One destination row the route card draws: its key (rowDirectionKey) and its direction. */
+export interface CardRowKey { key: string; directionId: number }
+
+const words = (s: string) => s.toLowerCase().split(/\s+/).filter(Boolean);
+/** "St Clair" and "St Clair Station": one name is the other's first words. */
+const leadsWith = (a: string, b: string) => { const x = words(a), y = words(b); const n = Math.min(x.length, y.length); return n > 0 && x.slice(0, n).join(' ') === y.slice(0, n).join(' '); };
+
+/**
+ * #1877, 2026-11-27 (Ryan, a fifth time: vehicles listed apart from their destination): every vehicle group goes under one
+ * of the route card's own rows where it can, so no destination gets a second row. A group whose key isn't a row's joins
+ * the only row of its direction; else the one row whose name leads with the group's (or its trips' last stop's) name,
+ * or the other way round ("St Clair" → "to St Clair Station"). A group that fits no row, or several, keeps its own.
+ */
+export function mergeIntoCardRows(groups: ReadonlyMap<string, LiveVehicle[]>, rows: readonly CardRowKey[]): Map<string, LiveVehicle[]> {
+  const rowKeys = new Set(rows.map(r => r.key));
+  const out = new Map<string, LiveVehicle[]>();
+  const add = (k: string, vs: readonly LiveVehicle[]) => out.set(k, [...(out.get(k) ?? []), ...vs]);
+  for (const [key, vs] of groups) {
+    if (rowKeys.has(key) || key === DIRECTION_UNCLEAR) { add(key, vs); continue; }
+    const dir = vs[0]?.directionId;
+    const same = dir != null && vs.every(v => v.directionId === dir) ? [...new Set(rows.filter(r => r.directionId === dir).map(r => r.key))] : [];
+    const stops = [...new Set(vs.map(v => v.lastStop?.name).filter((n): n is string => !!n))];
+    const named = same.filter(k => leadsWith(k, key) || stops.some(s => leadsWith(k, s)));
+    const target = same.length === 1 ? same[0] : named.length === 1 ? named[0] : null;
+    add(target ?? key, vs);
+  }
+  return out;
 }

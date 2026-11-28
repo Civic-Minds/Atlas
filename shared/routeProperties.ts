@@ -49,14 +49,22 @@ export interface RouteProperties {
   maxGapByHour?: HeadwayByHourMaxGap;
   /** CIV-1010: departures leaving in each clock hour, only hours with one or more (the last hour of the day included). */
   departuresByHour?: Record<number, number>;
+  /** #1873: the departures of the same list over the whole service day, the hours before 5 AM included: the row's trip count. */
+  departuresInDay?: number;
   /** CIV-1611: the first and last of the departuresByHour departures (minutes after midnight). */
   departureSpan?: RouteDepartureSpan;
   /**
    * CIV-2229 (#1772, Ryan "1"): the first time a trip of the row's route direction that day leaves its first stop (minutes
    * after midnight; the same trips the reference stops count), where a rider can first board. Null when a trip leaves
-   * before the day window departuresByHour uses. The route's first time reads this; its last time stays departureSpan's.
+   * before the day window departuresByHour uses. The route's first time reads this.
    */
   tripStartFirst?: number | null;
+  /**
+   * #1791: the last time a trip of the row's route direction that day leaves its first stop, over the same trips: the last
+   * boarding. Null when a trip leaves after the day window, or the day runs on into the night (a night-only service's trip
+   * written before the window, CIV-1812). The route's last time reads this.
+   */
+  tripStartLast?: number | null;
   routeShortName: string | null;
   routeLongName: string | null;
   routeVariant?: string | null;
@@ -179,7 +187,7 @@ export interface RouteProperties {
   /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "Irregular" (one gap, or under three departures). */
   stretchMeta?: {
     main: { stops: number; refStop: string; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number }>>; rows?: StretchRowValues } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number }>>; notThrough?: PeriodKey[]; rows?: StretchRowValues }>;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; then?: number; thenGap?: number }>>; notThrough?: PeriodKey[]; /** #1710: a tail that exists only because of ATLAS_PIECES_BY_TRIPS (a piece under the legacy size, not a branch). */ byTrips?: true; rows?: StretchRowValues }>;
   };
   /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30, 60 or 90 minutes; nightService is the older 60. 90 is for the Night Service page only (CIV-1329); the Overnight view counts 30 and 60. */
   nightService30?: boolean;

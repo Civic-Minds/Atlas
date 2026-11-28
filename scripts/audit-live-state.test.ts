@@ -23,13 +23,13 @@ describe('parseWranglerToml', () => {
     expect(parseWranglerToml('name = "a"\n[vars]\nX = "1"\n').crons).toEqual([]);
   });
 
-  // CIV-1689: the repo config must match the live schedule (TTC, Hamilton and Kingston positions every minute).
+  // CIV-1689: the repo config must match the live schedule. CIV-2217: only the cloud recorder runs every minute; the
+  // per-shard v1 Workers have no cron.
   it('matches the archiver configs in the repo', () => {
     const read = (f: string) => parseWranglerToml(readFileSync(new URL(`../workers/gtfs-rt-archiver/${f}`, import.meta.url), 'utf8'), f);
-    expect(read('wrangler.toml')).toMatchObject({ name: 'atlas-gtfs-rt-archiver-ttc-positions', crons: ['* * * * *'] });
-    expect(read('wrangler.kingston.toml')).toMatchObject({ bucket: 'atlas-live', crons: ['* * * * *'] });
-    expect(read('wrangler.hamilton.toml')).toMatchObject({ crons: ['* * * * *'] });
-    for (const f of ['wrangler.ttc-trips.toml', 'wrangler.stm.toml', 'wrangler.burlington-halifax.toml']) {
+    expect(read('wrangler.recorder.toml')).toMatchObject({ name: 'atlas-live-recorder', bucket: 'atlas-live', crons: ['* * * * *'] });
+    expect(read('wrangler.toml')).toMatchObject({ name: 'atlas-gtfs-rt-archiver-ttc-positions', crons: [] });
+    for (const f of ['wrangler.hamilton.toml', 'wrangler.kingston.toml', 'wrangler.mbta.toml', 'wrangler.ttc-trips.toml', 'wrangler.stm.toml', 'wrangler.burlington-halifax.toml']) {
       expect(read(f).crons, f).toEqual([]);
     }
   });

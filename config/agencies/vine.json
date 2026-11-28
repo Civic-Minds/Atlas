@@ -14,10 +14,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.93,
-    -122.58,
-    38.58,
-    -122.04
+    37.92,
+    -122.59,
+    38.59,
+    -122.03
   ],
   "feedUrl": "https://data.trilliumtransit.com/gtfs/vinetransit-ca-us/vinetransit-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1288/latest.zip",
@@ -52,8 +52,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

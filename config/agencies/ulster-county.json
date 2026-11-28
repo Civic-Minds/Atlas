@@ -1,0 +1,20 @@
+{
+  "slug": "ulster-county",
+  "officialName": "Ulster County Area Transit",
+  "commonName": "UCAT",
+  "websiteUrl": "https://ulstercountyny.gov/ucat/bus-schedules",
+  "dataLicense": {
+    "url": "https://ulstercountyny.gov/ucat/bus-schedules",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "New York",
+  "center": [
+    41.928,
+    -74.0057
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-526/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

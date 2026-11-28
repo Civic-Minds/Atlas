@@ -90,7 +90,16 @@ describe('recording shards match the archiver Workers', () => {
       if ('paused' in s) expect(s.paused.since, s.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
   });
-  it('records TTC, Hamilton, Kingston and the MBTA Green Line', () => {
-    expect([...RECORDING_SLUGS].sort()).toEqual(['hamilton', 'kingston', 'mbta', 'ttc']);
+  it('records only through the cloud recorder (CIV-2217)', async () => {
+    const { RECORDER_SLUGS } = await import('../liveArchiveFeeds');
+    expect([...RECORDING_SLUGS].sort()).toEqual([...RECORDER_SLUGS].sort());
+    expect(LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).map(s => s.id)).toEqual(['live-v2']);
+  });
+  it('builds only agencies recorded now: Halifax and Montréal are paused, the cloud recorder\'s agencies count (#1810)', async () => {
+    const { isRecordingNow, RECORDER_SLUGS } = await import('../liveArchiveFeeds');
+    expect(isRecordingNow('halifax')).toBe(false);
+    expect(isRecordingNow('stm')).toBe(false);
+    expect(isRecordingNow('ttc')).toBe(true);
+    for (const s of RECORDER_SLUGS) expect(isRecordingNow(s)).toBe(true);
   });
 });

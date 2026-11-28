@@ -50,8 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -63,5 +62,12 @@
   "lastPeekedExpiry": "20261226",
   "lastServiceWeek": "6a9ec4b1acb575bc",
   "feedObtainedAt": "20261001",
-  "lastFeedStart": "20260906"
+  "lastFeedStart": "20260906",
+  "dataLicense": {
+    "url": "https://www.hamilton.ca/city-initiatives/strategies-actions/open-data-licence-terms-and-conditions",
+    "attribution": "required",
+    "name": "City of Hamilton Open Data Licence v1.1",
+    "credit": "Contains public sector Data made available under the City of Hamilton’s Open Data Licence",
+    "checkedOn": "2026-11-26"
+  }
 }

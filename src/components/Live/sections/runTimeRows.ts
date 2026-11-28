@@ -2,6 +2,7 @@ import { branchFigures, runningTimeFigures, type DashboardBand, type LiveV3 } fr
 import { countOf } from '../../../../shared/overflowText';
 import { SHORT_TURN_LABEL } from '../../../../shared/liveWording';
 import { countText } from '../../../../shared/numberText';
+import { runTimeAxis } from '../../../utils/chartAxis';
 
 /** A pattern with fewer trips than this is too thin to draw (the main stretch) or drawn dim with a care note (a longer pattern). */
 export const MIN_PATTERN_TRIPS = 30;
@@ -80,9 +81,7 @@ export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, n
 
 /** One minutes range for every row of the section (both directions), whole 5-minute steps with a little headroom. Thin main rows are left out. */
 export function runTimeRowScale(rows: readonly RunTimeRow[]): { min: number; max: number } {
-  const v = rows.filter(r => !(r.main && r.thin)).flatMap(r => [r.typical, r.scheduled]).filter(finite);
-  if (!v.length) return { min: 0, max: 10 };
-  return { min: Math.max(0, Math.floor((Math.min(...v) - 2) / 5) * 5), max: Math.ceil((Math.max(...v) + 2) / 5) * 5 };
+  return runTimeAxis(rows.filter(r => !(r.main && r.thin)).flatMap(r => [r.typical, r.scheduled]).filter(finite));
 }
 
 /** Where a minutes value sits on the shared line, 0 to 100 (%). */

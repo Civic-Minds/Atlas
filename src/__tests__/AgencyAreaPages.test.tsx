@@ -355,7 +355,11 @@ describe('parent agency pages (CIV-1277)', () => {
     view(<AgencyPage data={parentAgencyPageData(parentAgency('exo')!, all, null)!} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('exo');
     const services = screen.getByRole('heading', { name: 'Services' }).closest('section')!;
-    expect(within(services).getAllByRole('row').length).toBe(1 + 7);
+    // One row per exo service in the published pages, plus the header; the count grows as services go public
+    // (exo Chambly and L'Assomption, CIV-2237), so it is read from the data, not typed here.
+    const members = all.filter(a => a.parentAgency === 'exo');
+    expect(members.length).toBeGreaterThanOrEqual(7);
+    expect(within(services).getAllByRole('row').length).toBe(1 + members.length);
     const trains = within(services).getAllByRole('link').find(a => a.getAttribute('href') === '/agency/exo-trains');
     expect(trains).toBeTruthy();
   });

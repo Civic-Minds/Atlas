@@ -5,7 +5,7 @@
  */
 import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS, LIVE_RECORDER_ONLY_FEEDS } from './liveArchiveFeeds.js';
 import { LIVE_POLLING_ROUTES } from './livePollingConfig.js';
-import { LIVE_POSITIONS_ONLY_SLUGS, LIVE_RECORDER_ROUTE_IDS, livePaceSec } from './rules/live.js';
+import { LIVE_POSITIONS_ONLY_SLUGS, LIVE_RECORDER_ALL_ROUTES, LIVE_RECORDER_ROUTE_IDS, livePaceSec } from './rules/live.js';
 
 export interface LiveRecorderFeed {
   slug: string;
@@ -21,6 +21,8 @@ export interface LiveRecorderFeed {
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const idsFilter = (ids: readonly string[]) => `^(${ids.map(escapeRe).join('|')})$`;
+/** CIV-2939: every vehicle on a route (any route_id). */
+const ALL_ROUTES_FILTER = '.+';
 
 export function liveRecorderFeed(slug: string): LiveRecorderFeed | null {
   const positionsOnly = LIVE_POSITIONS_ONLY_SLUGS.includes(slug);
@@ -31,7 +33,7 @@ export function liveRecorderFeed(slug: string): LiveRecorderFeed | null {
       slug,
       positionsUrl: archived.url,
       tripsUrl: positionsOnly ? null : trips?.url ?? null,
-      routeFilterSource: LIVE_RECORDER_ROUTE_IDS[slug] ? idsFilter(LIVE_RECORDER_ROUTE_IDS[slug]) : archived.routeFilterSource,
+      routeFilterSource: LIVE_RECORDER_ALL_ROUTES.includes(slug) ? ALL_ROUTES_FILTER : LIVE_RECORDER_ROUTE_IDS[slug] ? idsFilter(LIVE_RECORDER_ROUTE_IDS[slug]) : archived.routeFilterSource,
       paceSec: livePaceSec(slug),
       ...(archived.apiKeyHeader ? { apiKey: { env: archived.apiKeyHeader, header: true as const } } : {}),
     };
@@ -46,7 +48,7 @@ export function liveRecorderFeed(slug: string): LiveRecorderFeed | null {
     slug,
     positionsUrl: cfg.vehiclePositionsUrl,
     tripsUrl: positionsOnly ? null : cfg.tripUpdatesUrl,
-    routeFilterSource: idsFilter(LIVE_RECORDER_ROUTE_IDS[slug] ?? ids),
+    routeFilterSource: LIVE_RECORDER_ALL_ROUTES.includes(slug) ? ALL_ROUTES_FILTER : idsFilter(LIVE_RECORDER_ROUTE_IDS[slug] ?? ids),
     paceSec: livePaceSec(slug),
     ...(cfg.apiKeyParamEnvVar ? { apiKey: { env: cfg.apiKeyParamEnvVar, param: cfg.apiKeyParamName ?? 'apikey' } }
       : cfg.apiKeyHeaderEnvVar ? { apiKey: { env: cfg.apiKeyHeaderEnvVar, header: true as const } } : {}),

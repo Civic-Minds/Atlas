@@ -1,0 +1,20 @@
+{
+  "slug": "brockton",
+  "officialName": "Brockton Area Transit Authority",
+  "commonName": "BAT",
+  "websiteUrl": "http://www.ridebat.com/",
+  "dataLicense": {
+    "url": "https://cdn.mbta.com/sites/default/files/2023-08/mbta-massdot-develop-license-agreement.pdf",
+    "attribution": "required",
+    "name": "MassDOT Developers License Agreement",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "Massachusetts",
+  "center": [
+    42.0933,
+    -71.0319
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-422/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -30,6 +30,7 @@
  */
 
 import { MISSING_VALUE } from './missingValue';
+import { RANGE_MAX_RATIO } from './rules/frequency.js';
 
 const MISSING = MISSING_VALUE;
 
@@ -103,13 +104,14 @@ export function headwayEveryRange(low: number | null | undefined, high: number |
  * Whether a low end reads as a range beside the value ("every 15–52 min"), or the value stands alone. One rule for every
  * range: the route list, route cards, History and agency pages (CIV-1143 rule B, Ryan 2026-10-30; the list too, CIV-1227,
  * 2026-11-02). Shown only when the low end is at least 5 min, the two are at least 5 min apart, and no more than 4 times apart
- * (TTC 102 PM: 7 against 30 reads "every 30 min"). A single branch's faster short turn counts too (TTC 94 Castle Frank, #493).
+ * (RANGE_MAX_RATIO; TTC 102 PM: 7 against 30 reads "every 30 min"). A single branch's faster short turn counts too (TTC 94 Castle
+ * Frank, #493). A list passes `maxRatio` Infinity where its slow line has its own number (CIV-2909, routeListRange.ts).
  */
-export function headwayRangeShown(low: number | null | undefined, high: number | null | undefined): boolean {
+export function headwayRangeShown(low: number | null | undefined, high: number | null | undefined, maxRatio: number = RANGE_MAX_RATIO): boolean {
   if (low == null || high == null) return false;
   if (low < 5 || low >= high) return false;
   if (high - low < 5) return false;
-  if (high / low > 4) return false;
+  if (high / low > maxRatio) return false;
   return true;
 }
 
@@ -149,7 +151,7 @@ export function runTimeAmount(minutes: number | null | undefined): string {
  * 5:40 PM", "every 10 min, with a 45 min gap", "every 15 min until 8:57 PM, then every 30 min" (CIV-1913).
  */
 export function headwayPeriodShape(shape: { from?: string; until?: string; every: number; gap?: number; then?: number; thenGap?: number }): string {
-  if (shape.gap != null) return `${headwayEvery(shape.every)}, with one ${delayAmount(shape.gap)} gap`;
+  if (shape.gap != null) return withOneGap(headwayEvery(shape.every), shape.gap);
   const text = [
     headwayEvery(shape.every),
     shape.from != null ? `from ${shape.from}` : null,
@@ -171,6 +173,17 @@ export function headwayPeriodShape(shape: { from?: string; until?: string; every
 export function periodShapeParts(text: string): { main: string; note: string | null } {
   const m = /^(.*?)(?:, with (.*)| ((?:from|until) .*))$/.exec(text);
   return m ? { main: m[1], note: m[2] ?? m[3] } : { main: text, note: null };
+}
+
+/** D6's one-gap note after a frequency ("every 26–45 min" -> "every 26–45 min, with one 45 min gap"; #1856, a list range keeps it). */
+export function withOneGap(text: string, gap: number): string {
+  return `${text}, with one ${delayAmount(gap)} gap`;
+}
+
+/** #1856: the one gap D6's words name ("every 30 min, with one 59 min gap" -> 59), the inverse of headwayPeriodShape's gap form; null otherwise. */
+export function periodShapeGap(text: string): number | null {
+  const m = /^every [^,]+, with one ([\d.]+) min gap$/.exec(text);
+  return m ? Number(m[1]) : null;
 }
 
 export function capitalizeFirst(text: string): string {

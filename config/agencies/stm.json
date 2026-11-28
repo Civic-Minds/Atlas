@@ -6,9 +6,10 @@
   "displayArea": "Montréal",
   "websiteUrl": "https://www.stm.info",
   "dataLicense": {
-    "url": "https://www.stm.info/en/about/developers/terms-use",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://www.stm.info/a-propos/documents-donnees/donnees-ouvertes",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-26"
   },
   "searchAliases": [
     "Montreal"
@@ -66,8 +67,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Montreal",
   "lastFeedSourceKind": "configured",

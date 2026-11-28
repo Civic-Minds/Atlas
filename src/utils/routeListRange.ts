@@ -2,7 +2,9 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { buildDirectionGroups } from './routeCardDirectionGroups';
 import { buildRouteCardModel } from './routeCardRows';
 import { headwayRangeShown } from './headwayText';
+import { periodShapeGap } from '../../shared/headwayText';
 import { routeCardDirectionOrder } from './routeCardRoute';
+import { rowOwnTripsEven } from './rowTrips';
 
 /** The lowest and highest numbers the route card shows for a period. */
 export interface RouteCardRange {
@@ -15,6 +17,15 @@ export interface RouteCardRange {
    * with one 32 min gap"; "every 9 min from 7:12 AM"). Undefined when the row reads its plain number.
    */
   words?: string;
+  /** Whether the list reads low–high as a range (headwayRangeShown, or wider where the slow line has its own number: CIV-2909). */
+  range: boolean;
+  /** CIV-2909: the range is wider than RANGE_MAX_RATIO, shown because its slow line passes rule D; renderers show it as is. */
+  wide?: true;
+  /**
+   * #1856 (b), Ryan 2026-11-26 ("1"): where the list shows a range and a card row at its slow end names one gap, the longest
+   * such gap, so the list keeps the card's note after the range (AC Transit 60 weekday AM: "every 26–45 min, with one 45 min gap").
+   */
+  gap?: number;
 }
 
 /**
@@ -59,11 +70,17 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
   const read = (bare: boolean) => {
     const shown: number[] = [];
     let color = 0;
-    const worded: Array<{ h: number; words: string }> = [];
+    // `full`: the row's own number for the period (its colour), where `h` can be the spacing its words name (#1825).
+    const worded: Array<{ h: number; full: number; words: string; gap?: number }> = [];
+    // CIV-2909: each row number with whether its row's own trips pass rule D (3 or more, evenly spaced).
+    const ownNumbers: Array<{ h: number; own: boolean }> = [];
     for (const group of model.groups) {
-      if (typeof group.shared?.headway === 'number') shown.push(group.shared.headway);
+      // #1825: a Shared stretch line that stops or starts partway reads its in-service spacing, as the card words it (VIA 24 Saturday
+      // evening: "every 18 min until 9:45 PM", not its full-window 75).
+      if (typeof group.shared?.headway === 'number') shown.push(group.shared.edgeEvery ?? group.shared.headway);
       for (const row of group.rows) {
-        const v = row.display(null).value;
+        const shownRow = row.display(null);
+        const v = shownRow.value;
         // A row with no number (limited, irregular) shows none; a row reading a range ("every 15–54") shows both ends.
         if (v.isLimited || v.headway == null) continue;
         // #1684: a row whose words name a time reads their number ("every 16 min from 6:39 AM" is 16), not the period's
@@ -73,22 +90,51 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
         // weekday midday read "every 4" for a period that runs every 6 from 9:17 AM).
         const h = v.edgeText != null && v.shownHeadway != null ? (bare && v.shownThen != null ? Math.max(v.shownHeadway, v.shownThen) : v.shownHeadway) : v.headway;
         shown.push(h);
+        ownNumbers.push({ h, own: shownRow.pieceNumber === true || rowOwnTripsEven(row.feature, period) });
         color = Math.max(color, h, v.colorHeadway ?? 0);
         const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, h);
         if (range) shown.push(v.trunkHeadway!);
-        else if (v.headwayLabel) worded.push({ h, words: v.headwayLabel });
+        else if (v.headwayLabel) worded.push({ h, full: v.headway, words: v.headwayLabel, ...(periodShapeGap(v.headwayLabel) != null ? { gap: periodShapeGap(v.headwayLabel)! } : {}) });
       }
     }
-    return { shown, color, worded };
+    return { shown, color, worded, ownNumbers };
   };
   const worded = read(false);
   if (!worded.shown.length) return undefined;
-  // Rows at that number saying different things leave the list on the number.
-  const said = new Set(worded.worded.filter(w => w.h === Math.max(...worded.shown)).map(w => w.words));
-  const words = said.size === 1 ? [...said][0] : undefined;
-  const { shown, color } = words ? worded : read(true);
+  // Rows at that number saying different things leave the list on the number. #1856: where they differ only in the one gap they
+  // name ("every 30 min, with one 59 min gap" and "…, with one 60 min gap", SEPTA 53 Saturday AM), the list says the longest
+  // gap's words, as a list row is the route's slowest showing (#1771); words naming a time stay on the number.
+  const atHigh = worded.worded.filter(w => w.h === Math.max(...worded.shown));
+  const gapOnly = atHigh.length > 1 && atHigh.every(w => w.gap != null);
+  const said = new Set(gapOnly ? [atHigh.reduce((a, b) => (b.gap! > a.gap! ? b : a)).words] : atHigh.map(w => w.words));
+  // #1825: a list that shows a range drops the words (routeListDisplay), so it reads the bare numbers (#1771), never the first part of
+  // a row that changes partway. CTA 53 Saturday late read "every 7–18" beside "every 7 min until 11:33 PM, then every 31 min".
+  const rangeShown = listRangeShown(worded);
+  const words = said.size === 1 && !rangeShown.range ? [...said][0] : undefined;
+  const bare = words ? worded : read(true);
+  const { shown, color } = bare;
   const high = Math.max(...shown);
-  return { low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}) };
+  const shownRange = words ? { range: false } : listRangeShown(bare);
+  // A row "every 26 min, with one 45 min gap" is the range's slow end by its own number (45), though the list reads its 26.
+  const gaps = shownRange.range ? bare.worded.filter(w => w.full === high && w.gap != null).map(w => w.gap!) : [];
+  return {
+    low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}), range: shownRange.range,
+    ...(shownRange.wide ? { wide: true as const } : {}), ...(gaps.length ? { gap: Math.max(...gaps) } : {}),
+  };
+}
+
+/**
+ * CIV-2909 (#1786, Ryan 2026-11-26, picking "1": "No cap. A range shows when its slow line runs regularly enough to get its own
+ * number (3 or more evenly spaced trips)"; replaces his "up to 6 times"): a list range within RANGE_MAX_RATIO shows as before;
+ * a wider one shows when a card row at the slow end passes rule D (rowOwnTripsEven, or a branch piece's own reading, which
+ * only rule D gives). A slow end that is only the shared stretch
+ * has no line to test and keeps the cap. RTD 31 weekday PM: "every 10–60 min".
+ */
+function listRangeShown({ shown, ownNumbers }: { shown: number[]; ownNumbers: Array<{ h: number; own: boolean }> }): { range: boolean; wide?: true } {
+  const low = Math.min(...shown), high = Math.max(...shown);
+  if (headwayRangeShown(low, high)) return { range: true };
+  if (headwayRangeShown(low, high, Infinity) && ownNumbers.some(n => n.h === high && n.own)) return { range: true, wide: true };
+  return { range: false };
 }
 
 /**

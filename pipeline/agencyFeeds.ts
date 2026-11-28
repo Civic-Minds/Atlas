@@ -15,6 +15,8 @@ import type { BranchReadCorrection } from './branchReadCorrections.js';
 import { addIds, gtfsIdSets, idCollisions } from './supplementalIds.js';
 import type { RouteSplit } from './preprocess/split-routes.js';
 import type { SameNameRoute } from './preprocess/same-name-routes.js';
+import type { StopRename } from './transforms/stop-renames.js';
+import type { HeadsignRename } from './transforms/headsign-renames.js';
 import { processGtfsBuffer, type GtfsPreprocess, type ProcessOptions, type ProcessResult } from './process-core.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { extractAgencySections } from '../shared/agencySections.js';
@@ -31,6 +33,8 @@ export interface AgencyFeedConfig {
   onDemandRoutes?: string[];
   /** CIV-1006: force a route's booking-required status by short name (see bookedRoutes.ts). */
   bookingRequiredRoutes?: Record<string, boolean>;
+  /** #1824: routes (short names) whose timetable runs to the second; their times keep seconds. */
+  secondsRoutes?: string[];
   timezoneOverride?: string;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
@@ -51,6 +55,12 @@ export interface AgencyFeedConfig {
   mergeIdenticalShapeIds?: boolean;
   /** CIV-1551: see GtfsTransformOptions.routeNumberFromLongName. */
   routeNumberFromLongName?: boolean;
+  /** CIV-2999: see GtfsTransformOptions.headsignFromLastStop. */
+  headsignFromLastStop?: boolean;
+  /** CIV-3021: see GtfsTransformOptions.stopRenames. */
+  stopRenames?: StopRename[];
+  /** CIV-3124: see GtfsTransformOptions.headsignRenames. */
+  headsignRenames?: HeadsignRename[];
   /** CIV-1485: History only. A route with no long name keeps the feed's route_desc for the reused-number test. */
   historyNameFromDesc?: boolean;
   referenceDateFromRunDate?: boolean;
@@ -118,7 +128,11 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
     routeNumberFromLongName: agency.routeNumberFromLongName,
+    headsignFromLastStop: agency.headsignFromLastStop,
+    stopRenames: agency.stopRenames,
+    headsignRenames: agency.headsignRenames,
     bookingRequiredRoutes: agency.bookingRequiredRoutes,
+    secondsRoutes: agency.secondsRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
     mergeEquivalentShapeVariants: agency.mergeEquivalentShapeVariants,
@@ -145,25 +159,8 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
   };
 }
 
-/** Download a GTFS zip, falling back to curl for hosts whose TLS chain Node rejects. */
-export async function downloadFeedBuffer(url: string): Promise<Buffer> {
-  try {
-    const response = await fetch(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-      signal: AbortSignal.timeout(180_000),
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return Buffer.from(await response.arrayBuffer());
-  } catch (fetchError) {
-    try {
-      const { execFileSync } = await import('node:child_process');
-      return execFileSync('curl', ['-fsSL', url], { maxBuffer: 128 * 1024 * 1024, timeout: 180_000 });
-    } catch {
-      throw fetchError instanceof Error ? fetchError : new Error(String(fetchError));
-    }
-  }
-}
+// CIV-2976 D4: the feed download lives in downloadFeed.ts; re-exported for its readers here.
+export { downloadFeedBuffer } from './downloadFeed.js';
 
 /**
  * Archive folder for a supplemental feed's raw zips, by 1-based position in
@@ -290,7 +287,7 @@ export async function processAgencyFeeds(
   stopsMeta.stopCount = stopsMeta.stops.length;
   Object.assign(runningTimes, primaryCollection.runningTimes ?? {});
   const onDemandChanged = applyOnDemandRoutes(features as Array<{ properties?: Record<string, unknown> | null }>, runningTimes, agency.onDemandRoutes);
-  if (onDemandChanged > 0) onProgress?.(`On-demand routes: ${onDemandChanged} features carry no timetable values (#1119)`);
+  if (onDemandChanged > 0) onProgress?.(`On-demand routes: ${onDemandChanged} features carry no timetable values (#1119, booked routes #1828)`);
   // CIV-321: one pass over the merged list, so supplemental features' keys number on from the main feed's.
   const sections = extractAgencySections(features as Array<{ geometry?: { type?: string } | null; properties?: Record<string, unknown> | null }>);
 

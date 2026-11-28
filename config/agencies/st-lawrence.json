@@ -1,0 +1,25 @@
+{
+  "slug": "st-lawrence",
+  "officialName": "St. Lawrence County Public Transit",
+  "websiteUrl": "https://www.slcnypublictransit.com",
+  "dataLicense": {
+    "url": "https://www.slcnypublictransit.com",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "New York",
+  "center": [
+    44.6714,
+    -75.168
+  ],
+  "bbox": [
+    44.309,
+    -75.756,
+    44.979,
+    -74.612
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2611/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

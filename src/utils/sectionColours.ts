@@ -5,6 +5,7 @@ import { clipLinestring } from './lineClip';
 import { getHeadwayTiers, getTierColor, headwayToTierColor, type ColorVisionMode } from './colors';
 import { decodeStopRuns } from '../../shared/stopRuns';
 import type { PeriodKey } from '../../shared/config';
+import { routeCardDisplayHeadway } from './effectiveHeadway';
 
 /**
  * Route lines coloured section by section (CIV-152, beta only: FEATURES.segmentColours).
@@ -48,6 +49,13 @@ export function tierOfHeadway(h: number | null | undefined): string | null {
  * and headway from stretchStopPeriodValues, and the line's tier from its direction's filter value. Null
  * when the line has no per-stop period values or no value in the period (it keeps one colour).
  */
+/**
+ * CIV-2994 (#1847; replaces #1839's faster-only rule): where a direction is one piece (pieceReadings: its trunk and no branch,
+ * so the same trips run its whole length), every stop with a value colours as the piece's reading, faster or slower, so the
+ * stretch is one colour. Each stop reads its own clock, so a period whose service changes partway paints stops differently
+ * though the same buses serve them (CapMetro 801 weekday evening: the last 8 northbound stops read 15 against the route's 20;
+ * METRO 26's first stops read two tiers slower). Map colours only: the stop card and published values keep their own.
+ */
 export function periodSectionProps<P extends ShapeProperties>(p: P, period: PeriodKey): P | null {
   const stops = p.stopOrder ?? [];
   // (A row with a full line has had stopOrder replaced by fullStopOrder already: fullLineProps.)
@@ -55,7 +63,7 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   const lineValue = p.directionFilterHeadwayByPeriod?.[period];
   if (stops.length === 0 || values.length !== stops.length || typeof lineValue !== 'number') return null;
   // #1503: a section follows the route's rules (CIV-321 decision 1), so where the route has no regular service in the
-  // period (no filter value: the card reads "Runs irregularly in this period") no section is coloured as regular
+  // period (no filter value: the card reads "Irregular") no section is coloured as regular
   // (GO Barrie at PM peak: southbound has only stray trips, yet Union–Aurora read every 51-56 northbound).
   const routeValues = p.routeFilterHeadwayByPeriod;
   if (routeValues && typeof routeValues[period] !== 'number') return null;
@@ -68,14 +76,25 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   const first = values.findIndex(v => v != null);
   const last = values.findLastIndex(v => v != null);
   const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
+  // CIV-2994: a direction that is one piece (the pipeline's pieceReadings: a trunk and no branch) colours every stop as the piece's reading.
+  // Read per period: a direction whose other pieces run no trip in this period is one piece in it (OC Transpo 60 midday: its branch runs
+  // only at other times, so the whole-day piece count of 2 left 2 stops infrequent beside 29 at the piece's every 30).
+  const active = (p.pieceReadings?.pieces ?? []).filter(pc => pc.periods?.[period] != null);
+  const piece = active.length === 1 ? active[0].periods?.[period] : undefined;
+  // CIV-2994 B (Ryan, 2026-11-27, "1": "Yes, one colour, the card's figure; if the card has no figure, each stop keeps its own"): a
+  // one-piece direction whose piece has no reading in the period ("limited") is coloured with the card's figure for the row
+  // (routeCardDisplayHeadway, the number the route card shows); with none, each stop keeps its own value. BC Transit Nanaimo 40
+  // toward Downtown, weekday PM peak: the card says every 15, and the first 17 stops no longer read 30 over a one-minute gap.
+  const pieceValue = !piece ? null : piece.t !== 'limited' ? piece.v : routeCardDisplayHeadway(p, period);
   stops.forEach((stopId, i) => {
     const v = values[i];
     if (v == null) {
       if (period === 'overnight' && i > first && i < last && !dropOffOnly.has(stopId)) stopTiers[stopId] = 'infrequent';
       return;
     }
-    stopHeadways[stopId] = v;
-    stopTiers[stopId] = tierOfHeadway(v)!;
+    const shown = pieceValue ?? v;
+    stopHeadways[stopId] = shown;
+    stopTiers[stopId] = tierOfHeadway(shown)!;
   });
   return { ...p, stopTiers, stopHeadways, tier: tierOfHeadway(lineValue)! };
 }

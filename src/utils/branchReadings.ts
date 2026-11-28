@@ -55,7 +55,10 @@ export function branchRowValue(base: RouteCardRowValue, t: PieceTreatment, noNum
     return { value: { ...own, isLimited: true, headway: undefined, displayH: undefined, headwayLabel: undefined, shownHeadway: undefined, colorHeadway: null }, limitedLabel: noNumberLabel };
   }
   if (t.t === 'tail') {
-    return { value: { ...own, isLimited: false, headway: t.v, displayH: t.v, headwayLabel: tailText(t), shownHeadway: t.every, colorHeadway: t.v } };
+    // #1825: the tail's words are its edge words, so a list reads their number (routeCardRange), never the full-window wait the
+    // colour uses (TTC 52 Saturday evening: "every 20 min until 7:45 PM" made the list read 195).
+    const text = tailText(t);
+    return { value: { ...own, isLimited: false, headway: t.v, displayH: t.v, headwayLabel: text, edgeText: text, shownHeadway: t.every, ...(t.then != null ? { shownThen: t.then } : {}), colorHeadway: t.v } };
   }
   return { value: { ...own, isLimited: false, headway: t.v, displayH: t.v, headwayLabel: undefined, shownHeadway: t.v, colorHeadway: t.v } };
 }

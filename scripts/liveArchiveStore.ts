@@ -27,5 +27,10 @@ export function s3ArchiveDayStore(client: S3Client, v1Bucket: string): ArchiveDa
     },
     listV1: prefix => listAllKeys(client, v1Bucket, prefix),
     getV1: async key => (await client.send(new GetObjectCommand({ Bucket: v1Bucket, Key: key }))).Body!.transformToString(),
+    // #1815: an hour's pack, from the recorder's bucket.
+    async getPack(key) {
+      try { return await (await client.send(new GetObjectCommand({ Bucket: LIVE_V2_BUCKET, Key: key }))).Body!.transformToByteArray(); }
+      catch (e) { if (missing(e)) return null; throw e; }
+    },
   };
 }

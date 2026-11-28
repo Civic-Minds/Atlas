@@ -1,0 +1,116 @@
+{
+  "slug": "merced",
+  "area": {
+    "serviceName": "The Micro Bus",
+    "sourceUrl": "https://www.mercedthebus.com/250/The-Micro-Bus",
+    "sourceLabel": "The Micro Bus page and zone KML (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-23",
+    "serviceHours": "Monday–Friday 6:00 AM–7:30 PM and Saturday–Sunday 8:00 AM–5:30 PM.",
+    "availability": {
+      "Weekday": [
+        {
+          "startHour": 6,
+          "endHour": 19.5
+        }
+      ],
+      "Saturday": [
+        {
+          "startHour": 8,
+          "endHour": 17.5
+        }
+      ],
+      "Sunday": [
+        {
+          "startHour": 8,
+          "endHour": 17.5
+        }
+      ]
+    },
+    "hoursSource": {
+      "url": "https://www.mercedthebus.com/250/The-Micro-Bus",
+      "retrievedAt": "2026-11-23"
+    },
+    "tripRules": "Trips can start and end anywhere in the zone."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "merced",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.mercedthebus.com/250/The-Micro-Bus",
+        "sourceLabel": "The Micro Bus zone KML (agency-supplied)",
+        "sourceRetrievedAt": "2026-11-16",
+        "areaName": "Merced County"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -121.05205,
+              37.265077
+            ],
+            [
+              -121.064787,
+              37.246731
+            ],
+            [
+              -121.048685,
+              37.243689
+            ],
+            [
+              -121.051501,
+              37.054942
+            ],
+            [
+              -120.856492,
+              36.999685
+            ],
+            [
+              -120.693281,
+              37.02096
+            ],
+            [
+              -120.697633,
+              36.941543
+            ],
+            [
+              -120.620179,
+              36.927054
+            ],
+            [
+              -120.580079,
+              36.963931
+            ],
+            [
+              -120.578431,
+              37.075004
+            ],
+            [
+              -120.681847,
+              37.074227
+            ],
+            [
+              -120.686646,
+              37.075443
+            ],
+            [
+              -120.816941,
+              37.153953
+            ],
+            [
+              -120.93944,
+              37.272508
+            ],
+            [
+              -121.05205,
+              37.265077
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "CIV-1981 (Ryan picked 1, 2026-11-26: \"import what we can then have Instinct draft an email about what we can't\"). Only the KML's 'Merced County' zone is imported: the app-visible west-side area whose outline matches MCAG's official service-area map and contains Gustine, Santa Nella, Los Banos and Dos Palos. Held out pending MCAG's answer: 'Merced County Greater Area' (about 4.2x larger, reaches Merced city, which the official page does not list). Left out: 'East Merced' and 'East Merced Para' (east county; Para is paratransit), the 'Los Banos', 'Dos Palos' and 'Gustine' business zones (town footprints inside the imported zone, not shown to riders) and the 'Extended service map'. Source: MCAG email 2026-11-16 (Gmail thread 1a0f5d59a3c35d65), KML zones_2026_11_16_20_02_13_city_663.kml."
+}

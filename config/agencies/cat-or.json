@@ -10,8 +10,8 @@
   "region": "Oregon",
   "bbox": [
     45.15,
-    -122.83,
-    45.36,
+    -122.84,
+    45.37,
     -122.6
   ],
   "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/canbytransit-or-us/canbytransit-or-us.zip",
@@ -41,8 +41,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

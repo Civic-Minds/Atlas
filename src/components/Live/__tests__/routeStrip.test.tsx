@@ -70,7 +70,7 @@ describe('stripSummary', () => {
     const text = stripSummary(STOPS, 'delay', 'Southbound', span);
     expect(text).toContain('12 stops');
     expect(text).toContain('2 on time, 4 1–3 min, 6 3+ min behind');
-    expect(text).toContain('Delays start between Spadina Ave at Street 3 South Side and Spadina Ave at Street 5 South Side');
+    expect(text).toContain('Lateness between Spadina Ave at Street 3 South Side and Spadina Ave at Street 5 South Side');
   });
 });
 
@@ -118,13 +118,13 @@ describe('RouteStrip', () => {
   it('is one focusable unit with a summary label, and arrow keys announce each stop', () => {
     setWidth(900);
     render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" delaysStart={{ fromStopId: 'S3', toStopId: 'S5' }} />);
-    const strip = screen.getByRole('group', { name: /Typical delay, southbound/ });
+    const strip = screen.getByRole('group', { name: /Typical deviation, southbound/ });
     expect(strip.tabIndex).toBe(0);
     fireEvent.keyDown(strip, { key: 'ArrowRight' });
     expect(strip.textContent).toContain('Spadina Ave at Street 0 South Side');
     fireEvent.keyDown(strip, { key: 'End' });
     expect(strip.textContent).toContain('Usually 5.5 min late');
-    expect(screen.getByText('Delays start')).toBeTruthy();
+    expect(screen.getByText('Lateness')).toBeTruthy();
   });
 
   it('shows a legend line per track, with less exact and faded entries only when they apply', () => {
@@ -180,7 +180,7 @@ describe('RouteStrip', () => {
     const { container } = render(<BranchStrip model={model} modes={['delay']} />);
     const drawn = container.querySelector<HTMLElement>('[aria-hidden="true"]')!;
     // The bracket's name, as on the wide strip.
-    expect(within(drawn).getAllByText('Delays start')).toHaveLength(1);
+    expect(within(drawn).getAllByText('Lateness')).toHaveLength(1);
     // The route's first stop (a branch terminal) is named once, not again as a branch title above it.
     expect(within(drawn).getAllByText(shortStopName(stops[0].name))).toHaveLength(1);
     // An unnamed less exact stop keeps the full 10px dot, so its hatching shows.
@@ -192,9 +192,9 @@ describe('RouteStrip', () => {
   it('draws delay on top and bunching underneath by default, each with its own legend and marker', () => {
     setWidth(900);
     render(<RouteStrip stops={STOPS} directionLabel="Southbound" delaysStart={{ fromStopId: 'S2', toStopId: 'S3' }} bunchingForms={{ fromStopId: 'S6', toStopId: 'S8' }} />);
-    expect(screen.getByText('Typical delay:')).toBeTruthy();
+    expect(screen.getByText('Typical deviation:')).toBeTruthy();
     expect(screen.getByText('Bunching:')).toBeTruthy();
-    expect(screen.getAllByText(/^Delays start/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^Lateness/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/^Bunching forms/).length).toBeGreaterThan(0);
     expect(screen.queryByRole('button', { name: 'Bunching' })).toBeNull();
   });

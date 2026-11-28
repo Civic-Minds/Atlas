@@ -37,7 +37,7 @@ import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { ModeCollapse, ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useModeLeaving, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
-import { splitRouteKey } from '../utils/routeKey';
+import { routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import { liveHandoffSettled, mapFocusRoute } from '../utils/routeFocus';
 import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import { getPolledRoute } from '../../shared/livePollingConfig';
@@ -93,6 +93,10 @@ import type { StopCardExtraInput } from '../components/Interval/SidebarControls'
 import { percentText } from '../../shared/numberText';
 import { DEFAULT_MAX_HEADWAY } from '../../shared/rules/limits';
 
+// The saved frequency filter. Every value was saved, so returning viewers held the old every-60 default; a new key
+// lets the All default (CIV-2898) reach them once, and any filter they pick from then on is kept.
+const HEADWAY_PREF_KEY = 'atlas_pref_headway_all';
+
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
 const AGENCY_PREF_STORAGE_KEY = 'atlas_pref_agencies_off_v2';
@@ -140,6 +144,8 @@ interface Props {
   searchFocused?: boolean;
   setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
+  /** Studio with no page open (CIV-2940, #1814): the top bar shows the map's Frequency, Day, Time and Mode chips, no Agencies. */
+  studioFilters?: boolean;
   /** A page draws on the map (Studio, CIV-1828, through PageMapOverlay): the map's own routes, clicks, key and route link are off. */
   pageView?: boolean;
   filterToAgencies?: boolean;
@@ -248,7 +254,7 @@ function CompareSideSlot({ side, className = '', children }: { side: 'A' | 'B'; 
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, focusAgencySlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, slowConnectionActive = false, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, focusAgencySlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, studioFilters = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, slowConnectionActive = false, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
   const [searchParams] = useSearchParams();
   // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
   const { pathname } = useLocation();
@@ -280,7 +286,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [maxHeadway, setMaxHeadway] = useState<number>(() => {
     const fromLink = readUrlParam(searchParams, MAP_URL.headway);
     if (fromLink != null) return fromLink;
-    try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
+    try { const v = Number(localStorage.getItem(HEADWAY_PREF_KEY)); if (v > 0) return v; } catch {}
     return DEFAULT_MAX_HEADWAY;
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.route) ?? null));
@@ -683,7 +689,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       .filter((slug, index, slugs) => slugs.indexOf(slug) === index)
       .concat(compareBSlugKey ? compareBSlugKey.split('|') : []);
   }, [selectedRoute, selectedStop, stopBackTargetState, pendingLiveRoute?.slug, pendingNightRoute?.slug, pendingBustangRoute?.slug, pendingRouteChooser, compareBSlugKey]);
-  const { layers, loadedCount, requestedCount, isLoading, failedSlugs } = useAgencyData(agencies, bounds, {
+  const { layers, loadedCount, requestedCount, isLoading, failedSlugs, unpublishedSlugs } = useAgencyData(agencies, bounds, {
     showCorridorBand: false,
     searchQuery: searchFocused ? query : '',
     zoom: mapZoom,
@@ -704,8 +710,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // CIV-461: the agencies in view whose data licence requires credit, for the map's attribution pill.
   const openCreditSource = useCallback((slug: string | null) => { focusSource(slug); onInfoOpen?.('sources'); }, [onInfoOpen]);
   // #1692: an agency credited only for its feed's publisher (511) shows that publisher's line, not its own name.
-  const viewCredits = useMemo(() => agencyCredits(agencies, viewportSlugKey ? viewportSlugKey.split('|') : []).filter(c => c.byLicence !== false), [agencies, viewportSlugKey]);
-  const viewFeeds = useMemo(() => viewFeedCredits(agencies, viewportSlugKey ? viewportSlugKey.split('|') : []), [agencies, viewportSlugKey]);
+  // CIV-3120 (Ryan, 2026-11-27: "Credit an agency in the pill only while at least one of its routes is drawn on the map"):
+  // the agencies with a route drawn, from the same drawn routes the route count reads (MapCanvas → drawnAgencySlugs).
+  const [drawnSlugKey, setDrawnSlugKey] = useState('');
+  const viewCredits = useMemo(() => agencyCredits(agencies, drawnSlugKey ? drawnSlugKey.split('|') : []).filter(c => c.byLicence !== false), [agencies, drawnSlugKey]);
+  const viewFeeds = useMemo(() => viewFeedCredits(agencies, drawnSlugKey ? drawnSlugKey.split('|') : []), [agencies, drawnSlugKey]);
   useEffect(() => {
     onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
   }, [viewportSlugKey, onViewportAgencySlugsChange]);
@@ -742,7 +751,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [listedMapErrors]);
-  const mapErrorsShown = showUi && !!listedMapErrors && !nearYouCovered;
+  const mapErrorsShown = (showUi || countsRowShown) && !!listedMapErrors && !nearYouCovered;
   const nearYouShown = showUi && !!userLocation && !nearYouCovered && !mapErrorsShown;
   const openNearYouRoute = useCallback((key: string | null) => {
     setNearYouRoute(key);
@@ -822,6 +831,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Routes and stops of agencies not loaded yet, from the release's search index (CIV-1048).
   // The load-error hint's names: short names, told apart where two agencies share one (#1245).
   const hintNames = useMemo(() => distinctAgencyNames(agencies), [agencies]);
+  // CIV-2947: the failed agencies, one line each in the existing words ("TTC couldn't load."), for the pill's list.
+  const failedAgencyLines = useMemo(() => [...failedSlugs].map(slug => networksFailedHint([hintNames.get(slug) ?? slug])), [failedSlugs, hintNames]);
   const catalogAgencyNames = useMemo(() => new Map(agencies.map(a => [a.slug, a.name])), [agencies]);
   const indexSearch = useIndexSearch(searchFocused ? query : '', bounds ?? null, catalogAgencyNames);
   const loadedSearchSlugs = useMemo(() => new Set(Object.keys(layers)), [layers]);
@@ -1010,7 +1021,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       limited: urlParamPresent(sp, MAP_URL.hideLimited),
     };
   });
-  usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
+  usePersistedFilterPref(HEADWAY_PREF_KEY, String(maxHeadway), filtersFromUrl.headway);
   usePersistedFilterPref(DAY_PREF_KEY, day, filtersFromUrl.day);
   usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
   usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
@@ -1195,6 +1206,12 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
+    // #1882: in Live a link's route is Live's agency::short name (burlington::1), not the map's agency::route_id; it
+    // becomes the map's key here, so it is handed to Live's card instead of reading "This route couldn't be found".
+    if (onLiveRouteSelected && !fc.features.some(f => routeKey(f.properties as ShapeProperties) === selectedRoute)) {
+      const byShortName = routeKeyForShortName(slug, fc.features, splitRouteKey(selectedRoute).routeId, day);
+      if (byShortName && byShortName !== selectedRoute) { setSelectedRoute(byShortName); return; }
+    }
     const resolvedRoute = resolveRouteSelectionForDay(selectedRoute, slug, fc.features, day);
     if (resolvedRoute && resolvedRoute !== selectedRoute) {
       setSelectedRoute(resolvedRoute);
@@ -1203,7 +1220,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       clearMapSelection();
       setMissingRoute(missing);
     }
-  }, [selectedRoute, layers, day, clearMapSelection, linkCatalog]);
+  }, [selectedRoute, layers, day, clearMapSelection, linkCatalog, onLiveRouteSelected]);
   // The same for a stop (N36) or an on-demand service: the note shows and the value leaves the address bar (#1191).
   const clearOnDemandLink = useCallback(() => setOnDemandStopAgencySlug(null), []);
   const { missing: missingLinkCard, dismiss: dismissMissingLinkCard } = useMissingLinkCard({
@@ -1433,6 +1450,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onMapContextOpenChange={setMapContextOpen}
             onMapContextAgencyCountChange={setMapContextAgencyCount}
             onMapContextRouteCountChange={setMapContextRouteCount}
+            onDrawnAgencySlugsChange={setDrawnSlugKey}
             day={day}
             hideSpan={hideSpan && !bustangView}
             tileFilter={tileFilter}
@@ -1541,14 +1559,20 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             />
           )}
           {failedSlugs.size > 0 && (
-            <div
-              className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}
+            // CIV-2947 (Ryan, 2026-11-25: "1"): the short count stays; a tap lists which agencies, one line each in the
+            // map errors card the phone "Error" pill opens (MapErrorsPanel), so phones, which show no hover title, get them too.
+            <button
+              type="button"
+              aria-expanded={!!listedMapErrors && listedMapErrors === failedAgencyLines}
+              onClick={() => setListedMapErrors(listedMapErrors === failedAgencyLines ? null : failedAgencyLines)}
+              data-map-errors-pill
+              className={`${MAP_BADGE} h-8 max-sm:h-[32px] cursor-pointer`}
               title={networksFailedHint([...failedSlugs].map(slug => hintNames.get(slug) ?? slug))}
             >
               <span className={MAP_BADGE_LABEL}>
                 {networksFailedText(failedSlugs.size)}
               </span>
-            </div>
+            </button>
           )}
           {/* Research views (Night, Frequent Service): their own whole-route and agency counts, then the colour key, in the same pills. */}
           {researchCounts && (
@@ -1682,6 +1706,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             {...agencyCardProps}
             onRouteSelect={(key) => { setSelectedRoute(key); onAgencyCardClose?.(); }}
             loadFailed={failedSlugs.has(agency.slug)}
+            unpublished={unpublishedSlugs.has(agency.slug)}
           />
         ) : null;
       })()}
@@ -1738,9 +1763,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView && !connectionsBar ? 'pointer-events-none' : 'pointer-events-auto'}`}>
+        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView && !connectionsBar && !studioFilters ? 'pointer-events-none' : 'pointer-events-auto'}`}>
           {/* CIV-1567 (beta): entering Compare cross-fades the chips inside FilterChips; the row itself stays shown. */}
-          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView || connectionsBar ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView || connectionsBar || studioFilters ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             {historyView ? (
               <FilterChips
                 maxHeadway={historyView.view.maxHeadway}
@@ -1783,7 +1808,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               nightServiceMode={nightServiceView}
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
-              variant={compareActive ? 'shared' : 'full'}
+              variant={studioFilters ? 'studio' : compareActive ? 'shared' : 'full'}
               connectionsBar={connectionsBarControls}
             />
             )}

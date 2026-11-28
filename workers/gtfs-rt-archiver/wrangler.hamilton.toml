@@ -11,9 +11,7 @@ binding = "BUCKET"
 bucket_name = "atlas-live"
 
 # Hamilton (HSR) recorded every minute again from 2026-11-18 (Ryan). Writes positions/hamilton/ and hamilton/ in atlas-live,
-# kept 30 days by the bucket-wide lifecycle rule.
-[triggers]
-crons = ["* * * * *"]
-
+# kept 60 days by the bucket-wide lifecycle rule (CIV-1906, Ryan 2026-11-18).
+# CIV-2217 (2026-11-26): no cron; the cloud recorder (wrangler.recorder.toml) records this shard's agencies.
 [observability]
 enabled = true

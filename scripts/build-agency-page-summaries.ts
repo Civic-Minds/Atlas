@@ -32,7 +32,7 @@ import { effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
-import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../src/utils/effectiveHeadway';
+import { routeReading } from '../src/utils/routeReading';
 import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import { routeRuns } from '../shared/routeRuns';
 export { routeRuns };
@@ -59,7 +59,7 @@ const REGION_BOUNDARIES = 'shared/data/region-boundaries.json';
 const base = (process.env.R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
 const only = new Set(process.argv.slice(2).filter(arg => !arg.startsWith('--')));
 
-type CatalogAgency = AgencyPageIdentity & SupplementalFeedExpiryEntry & { lastRefreshedAt?: string | null; listingEndedOn?: string | null; displayArea?: string; timezone?: string | null };
+type CatalogAgency = AgencyPageIdentity & SupplementalFeedExpiryEntry & { lastRefreshedAt?: string | null; listingEndedOn?: string | null; displayArea?: string; timezone?: string | null; noFeedEnd?: boolean; timetableChangedAt?: string | null };
 type Catalog = { agencies: CatalogAgency[] };
 type Feature = { geometry: { type: string }; properties: Record<string, unknown> };
 
@@ -180,15 +180,17 @@ export function summarize(
     const text: NonNullable<AgencyPageRoute['text']> = {};
     for (const [col, period] of cols) {
       // The agency pages' bands and summaries read the filter's number (CIV-1447 left them on it; the lists read the card).
-      const d = routeListFilterDisplay(ps, period);
+      // CIV-2953: the route's one reading (src/utils/routeReading.ts).
+      const reading = routeReading(ps, period);
+      const d = reading.filterDisplay;
       r[col] = d.headway;
       if (d.limited) limited.push(col);
       if (d.noRegular) noRegular.push(col);
       if (d.sharedHeadway != null) shared[col] = d.sharedHeadway;
       if (d.edge) edge[col] = d.edge;
       // CIV-1300: the page reads what the map's lists read (the route card), where that differs from the filter's number.
-      const shown = routeListCellText(routeListDisplay(ps, period), true);
-      if (shown != null && shown !== routeListCellText(d, true)) text[col] = shown;
+      const shown = reading.text(true);
+      if (shown != null && shown !== reading.filterText(true)) text[col] = shown;
     }
     if (limited.length) r.limited = limited;
     if (noRegular.length) r.noRegular = noRegular;
@@ -280,6 +282,9 @@ function identityFor(a: CatalogAgency) {
     validThrough: effectiveFeedExpiry(a),
     ...(a.timezone ? { timezone: a.timezone } : {}),
     ...(a.listingEndedOn ? { listingEndedOn: a.listingEndedOn } : {}),
+    // CIV-3115: no end date given, and when the timetable last changed.
+    ...(a.noFeedEnd ? { noFeedEnd: true } : {}),
+    ...(a.timetableChangedAt ? { timetableChangedAt: a.timetableChangedAt } : {}),
   };
 }
 

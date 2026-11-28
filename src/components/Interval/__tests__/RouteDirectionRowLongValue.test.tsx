@@ -4,30 +4,35 @@ import RouteDirectionRow from '../RouteDirectionRow';
 
 // CIV-1143 (Ryan 2026-10-30): a long value goes under the whole destination name, at the right, as Compare's rows do (CIV-844).
 describe('RouteDirectionRow long values', () => {
-  it('keeps a long two-part value in the value column on two right-aligned lines, the name beside it (CIV-1465, the CIV-1300 list rule)', () => {
+  it('keeps a short reading beside the destination on one line, right-aligned (CIV-3040)', () => {
+    const { container } = render(<RouteDirectionRow label="to Pearson Airport" singleLine wrapLongValue headway={16} />);
+    const name = screen.getByText('to Pearson Airport');
+    expect(name.className).not.toContain('truncate');
+    expect(name.className).not.toContain('basis-full');
+    expect(name.className).toContain('flex-auto');
+    // The row wraps only when the reading cannot fit; the reading sits at the right edge either way.
+    expect(container.querySelector('div.flex-wrap')).not.toBeNull();
+    expect(container.querySelector('span.ml-auto')).not.toBeNull();
+  });
+
+  it('lets a reading that does not fit beside the destination drop to line 2, right-aligned, never cutting the name (CIV-3040)', () => {
     const { container } = render(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue headway={60} headwayLabel="every 60 min until 5:05 PM" />);
     const name = screen.getByText('to Centrepointe');
+    expect(name.className).not.toContain('truncate');
     expect(name.className).not.toContain('basis-full');
-    expect(name.className).not.toContain('truncate');
-    expect([...container.querySelectorAll('span.flex-col.items-end > span')].map(el => el.textContent)).toEqual(['every 60 min', 'until 5:05 PM']);
+    const row = container.querySelector('div.flex-wrap');
+    expect(row?.className).toContain('justify-between');
+    const value = container.querySelector('span.ml-auto');
+    expect(value?.className).toContain('justify-end');
+    expect(value?.textContent).toContain('every 60 min');
+    expect(value?.textContent).toContain('until 5:05 PM');
   });
 
-  it('puts a long value with no two parts under the whole name instead of cutting the name (CIV-1143)', () => {
-    render(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue limited limitedLabel="Runs irregularly in this period" />);
-    const name = screen.getByText('to Centrepointe');
-    expect(name.className).toContain('basis-full');
-    expect(name.className).not.toContain('truncate');
-  });
-
-  it('keeps a plain value or a short range on the first line at the right, the name wrapping beneath itself, never cut (CIV-1165)', () => {
-    const { rerender, container } = render(<RouteDirectionRow label="to Pearson Airport via Dixon Rd" singleLine wrapLongValue headway={16} />);
-    const name = () => screen.getByText('to Pearson Airport via Dixon Rd');
-    expect(name().className).not.toContain('truncate');
-    expect(name().className).not.toContain('basis-full');
-    expect(name().className).toContain('break-words');
-    expect(container.querySelector('div.flex-wrap')).toBeNull();
-    rerender(<RouteDirectionRow label="to Pearson Airport via Dixon Rd" singleLine wrapLongValue headway={120} trunkHeadway={60} />);
-    expect(name().className).not.toContain('truncate');
+  it('does the same for a limited-service reading (CIV-3040)', () => {
+    const { container } = render(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue limited limitedLabel="Runs irregularly in this period" />);
+    expect(screen.getByText('to Centrepointe').className).not.toContain('truncate');
+    expect(container.querySelector('div.flex-wrap')).not.toBeNull();
+    expect(container.querySelector('span.ml-auto')).not.toBeNull();
   });
 
   it('leaves rows that do not ask for it as they were', () => {

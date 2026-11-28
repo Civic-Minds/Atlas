@@ -11,7 +11,7 @@
   "region": "Oregon",
   "mergeIdenticalShapeIds": true,
   "bbox": [
-    45.29,
+    45.28,
     -123.12,
     45.64,
     -122.33
@@ -42,7 +42,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 514,
+      "featureCount": 509,
       "feedExpiry": "20270227",
       "routeCount": 81,
       "problemShapes": 0,
@@ -50,7 +50,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

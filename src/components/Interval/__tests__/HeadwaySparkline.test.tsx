@@ -234,9 +234,17 @@ describe('HeadwaySparkline', () => {
     expect(within(screen.getByRole('dialog')).queryByRole('group', { name: 'Schedule direction' })).not.toBeInTheDocument();
   });
 
-  it('names the inline series in hour tooltips', () => {
-    const { container } = render(<HeadwaySparkline byHour={{ 6: 35 }} seriesLabel="slower direction" />);
-    expect(container.querySelector('[title^="6 AM"]')?.getAttribute('title')).toBe('6 AM: every 35 min (slower direction)');
+  // #1819 (CIV-2949, Ryan 2026-11-25: "Hour beside the period name, no hover text").
+  it('names the hovered hour beside the period, with no hover text on the bars', () => {
+    const { container } = render(<HeadwaySparkline byHour={{ 16: 10, 17: 8 }} period="pmPeak" onPeriodChange={() => {}} />);
+    expect(container.querySelector('[title]')).toBeNull();
+    expect(screen.getByTestId('hovered-period-name').textContent).toBe('PM peak');
+    const area = container.querySelector('.cursor-pointer') as HTMLElement;
+    area.getBoundingClientRect = () => ({ left: 0, width: 240, top: 0, height: 48, right: 240, bottom: 48, x: 0, y: 0, toJSON: () => ({}) });
+    fireEvent.mouseMove(area, { clientX: ((SPARKLINE_HOURS.indexOf(17) + 0.5) / SPARKLINE_HOURS.length) * 240 });
+    expect(screen.getByTestId('hovered-period-name').textContent).toBe('PM peak · 5 PM');
+    fireEvent.mouseLeave(area);
+    expect(screen.getByTestId('hovered-period-name').textContent).toBe('PM peak');
   });
 
   describe('slowerDirectionKey', () => {
@@ -325,10 +333,10 @@ describe('HeadwaySparkline', () => {
     ]);
     // Each chart shows its own number for that hour above it; a chart with no value there shows nothing.
     const values = within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent);
-    expect(values).toEqual(['every 25 min', 'about 52 min', 'every 35 min', 'about 50 min']);
-    // The same hour is lit in all four charts, and each title line names its period, as the card's chart does (CIV-1094).
+    expect(values).toEqual(['5 PM: every 25 min', '5 PM: about 52 min', '5 PM: every 35 min', '5 PM: about 50 min']);
+    // The same hour is lit in all four charts; each title line names the hour, never its period (#1820).
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(2);
-    expect(within(dialog).getAllByTestId('hovered-period-name').map(el => el.textContent)).toEqual(['PM peak', 'PM peak', 'PM peak', 'PM peak']);
+    expect(within(dialog).queryAllByTestId('hovered-period-name')).toHaveLength(0);
     const lit = (strip: HTMLElement) => within(strip).getAllByTestId('trip-time-bar').filter(bar => bar.className.includes('opacity-75') || bar.className.includes('opacity-100'));
     expect(lit(strips[1])).toHaveLength(1);
     fireEvent.mouseLeave(strips[0].querySelector(".items-end")!);
@@ -382,7 +390,7 @@ describe('HeadwaySparkline', () => {
     expect(dialog.querySelector<HTMLElement>('.relative.z-10.flex > div > div')!.style.height).toBe('96px');
     // Hovering a trip-time bar: each chart's own number above it, and the screen-reader line.
     fireEvent.mouseEnter(within(dialog).getAllByTestId('trip-time-bar')[1].parentElement!);
-    expect(within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent)).toEqual(['every 25 min', 'about 52 min']);
+    expect(within(dialog).getAllByTestId('full-day-chart-value').map(el => el.textContent)).toEqual(['5 PM: every 25 min', '5 PM: about 52 min']);
     expect(Array.from(within(dialog).getByTestId('full-day-readout').children).map(line => line.textContent)).toEqual(['5 PM', 'every 25 min; about 52 min']);
     expect(dialog.querySelectorAll('[data-testid="sparkline-hover-column"]')).toHaveLength(1);
     fireEvent.mouseLeave(within(dialog).getAllByTestId('trip-time-strip')[0].querySelector('.items-end')!);
@@ -550,5 +558,17 @@ describe('HeadwaySparkline full-day link', () => {
     unmount();
     expect(window.location.search).toBe('?route=ttc%3A%3A14');
     window.history.replaceState(null, '', '/');
+  });
+
+});
+
+// CIV-2973 step 2: a count series (Fleet's vehicles by time of day) never reads as minutes between trips.
+describe('CountSparkline', () => {
+  it('draws counts with the hover text it is given, never "every … min"', async () => {
+    const { CountSparkline } = await import('../HeadwaySparkline');
+    const { container } = render(<CountSparkline countByHour={{ 12: 1790, 17: 1900 }} color="#888" label="buses" period="midday" hourTitle={h => `${h}: buses`} onPeriodChange={() => {}} />);
+    expect(container.textContent).not.toMatch(/every|min\b/);
+    expect(container.querySelector('[title="12: buses"]')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: /expand/i })).toBeNull();
   });
 });

@@ -15,6 +15,213 @@
   ],
   "region": "Ontario",
   "mergeIdenticalShapeIds": true,
+  "stopRenames": [
+    {
+      "stopId": "9748",
+      "from": "3030 Birchmount Rd - Scarborough Health Network Birchmount H",
+      "to": "3030 Birchmount Rd - Scarborough Health Network Birchmount Hospital"
+    },
+    {
+      "stopId": "13368",
+      "from": "Bathurst St at Queens Quay West North Side Billy Bishop Airp",
+      "to": "Bathurst St at Queens Quay West North Side Billy Bishop Airport"
+    },
+    {
+      "stopId": "254",
+      "from": "Bay St at Harbour St South Side - Ferry Docks Terminal",
+      "to": "Bay St at Harbour St South Side - Jack Layton Ferry Terminal"
+    },
+    {
+      "stopId": "262",
+      "from": "Bay St at Queens Quay West North Side - Ferry Docks Terminal",
+      "to": "Bay St at Queens Quay West North Side - Jack Layton Ferry Terminal"
+    },
+    {
+      "stopId": "1726",
+      "from": "Bayview Ave at Lawrence Ave East - York University Glendon C",
+      "to": "Bayview Ave at Lawrence Ave East - York University Glendon Campus"
+    },
+    {
+      "stopId": "11330",
+      "from": "Bayview Ave at Lawrence Ave East - York University Glendon C",
+      "to": "Bayview Ave at Lawrence Ave East - York University Glendon Campus"
+    },
+    {
+      "stopId": "317",
+      "from": "Bayview Ave at Sheppard Ave East North Side - Bayview Statio",
+      "to": "Bayview Ave at Sheppard Ave East North Side - Bayview Station"
+    },
+    {
+      "stopId": "3335",
+      "from": "Belfield Rd at Kipling Ave West Side - Etobicoke North GO St",
+      "to": "Belfield Rd at Kipling Ave West Side - Etobicoke North GO Station"
+    },
+    {
+      "stopId": "3342",
+      "from": "Belfield Rd at Shaft Rd West Side - Etobicoke North GO Stati",
+      "to": "Belfield Rd at Shaft Rd West Side - Etobicoke North GO Station"
+    },
+    {
+      "stopId": "1965",
+      "from": "Don Mills Rd at Premier Davis Blvd - Seneca College",
+      "to": "Don Mills Rd at Premier Davis Blvd - Seneca Polytechnic"
+    },
+    {
+      "stopId": "1966",
+      "from": "Don Mills Rd at Premier Davis Blvd - Seneca College",
+      "to": "Don Mills Rd at Premier Davis Blvd - Seneca Polytechnic"
+    },
+    {
+      "stopId": "2136",
+      "from": "Dundas St East at Yonge St - Dundas Station",
+      "to": "Dundas St East at Yonge St - TMU Station"
+    },
+    {
+      "stopId": "2197",
+      "from": "Dundas St West at Yonge St - Dundas Station",
+      "to": "Dundas St West at Yonge St - TMU Station"
+    },
+    {
+      "stopId": "15901",
+      "from": "Eglinton Ave East at Bellamy Rd North West Side - Eglinton G",
+      "to": "Eglinton Ave East at Bellamy Rd North West Side - Eglinton GO Station"
+    },
+    {
+      "stopId": "9895",
+      "from": "Eglinton Ave West at Everden Rd (Eglinton West Sta",
+      "to": "Eglinton Ave West at Everden Rd - Cedarvale Station"
+    },
+    {
+      "stopId": "9896",
+      "from": "Eglinton Ave West at Everden Rd (Eglinton West Sta",
+      "to": "Eglinton Ave West at Everden Rd - Cedarvale Station"
+    },
+    {
+      "stopId": "7705",
+      "from": "Ellesmere Rd at Neilson Rd - Scarborough Health Network Cent",
+      "to": "Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital"
+    },
+    {
+      "stopId": "7704",
+      "from": "Ellesmere Rd at Neilson Rd - Scarborough Heatlh Network Cent",
+      "to": "Ellesmere Rd at Neilson Rd - Scarborough Health Network Centenary Hospital"
+    },
+    {
+      "stopId": "2549",
+      "from": "Finch Ave East at Au Large Blvd - Seneca College",
+      "to": "Finch Ave East at Au Large Blvd - Seneca Polytechnic"
+    },
+    {
+      "stopId": "11264",
+      "from": "Finch Ave East at Leslie St West Side - Old Cummer GO Statio",
+      "to": "Finch Ave East at Leslie St West Side - Old Cummer GO Station"
+    },
+    {
+      "stopId": "2550",
+      "from": "Finch Ave East at Seneca Hill Dr - Opposite Seneca College",
+      "to": "Finch Ave East at Seneca Hill Dr - Opposite Seneca Polytechnic"
+    },
+    {
+      "stopId": "3620",
+      "from": "Finch Ave West at Virgilwood Dr - North York General Finch B",
+      "to": "Finch Ave West at Virgilwood Dr - North York General Finch Branson Site"
+    },
+    {
+      "stopId": "1729",
+      "from": "Hospital Rd at Wellness Way East Side - Sunnybrook Main Entr",
+      "to": "Hospital Rd at Wellness Way East Side - Sunnybrook Main Entrance"
+    },
+    {
+      "stopId": "9394",
+      "from": "Hospital Rd at Wellness Way East Side - Sunnybrook Main Entr",
+      "to": "Hospital Rd at Wellness Way East Side - Sunnybrook Main Entrance"
+    },
+    {
+      "stopId": "15821",
+      "from": "Humber College Blvd at Westmore Dr - Etobicoke General Hospi",
+      "to": "Humber College Blvd at Westmore Dr - Etobicoke General Hospital"
+    },
+    {
+      "stopId": "16865",
+      "from": "Lawrence Ave E at Valparaiso Ave Scarborough General Hospita",
+      "to": "Lawrence Ave E at Valparaiso Ave Scarborough General Hospital"
+    },
+    {
+      "stopId": "5289",
+      "from": "Lawrence Ave East at McCowan Rd Westside Scarborough General",
+      "to": "Lawrence Ave East at McCowan Rd Westside Scarborough General Hospital"
+    },
+    {
+      "stopId": "16864",
+      "from": "McCowan Rd at Lawrence Ave East (Scarborough General Hospita",
+      "to": "McCowan Rd at Lawrence Ave East (Scarborough General Hospital)"
+    },
+    {
+      "stopId": "5773",
+      "from": "Mortimer Ave at Coxwell Ave West Side - Michael Garron Hospi",
+      "to": "Mortimer Ave at Coxwell Ave West Side - Michael Garron Hospital"
+    },
+    {
+      "stopId": "9182",
+      "from": "Oakdale Rd at Finch Ave West South Side - Humber Reactivatio",
+      "to": "Oakdale Rd at Finch Ave West South Side - Humber Reactivation Care"
+    },
+    {
+      "stopId": "16551",
+      "from": "Opposite 350 Orton Park Rd - Henry Hudson Senior Public Scho",
+      "to": "Opposite 350 Orton Park Rd - Henry Hudson Senior Public School"
+    },
+    {
+      "stopId": "11928",
+      "from": "Promenade Bus Terminal at Promenade Cir (Mall North Entrance",
+      "to": "Promenade Bus Terminal at Promenade Cir (Mall North Entrance)"
+    },
+    {
+      "stopId": "13371",
+      "from": "Queens Quay West at Bathurst St East Side Billy Bishop Airpo",
+      "to": "Queens Quay West at Bathurst St East Side Billy Bishop Airport"
+    },
+    {
+      "stopId": "13677",
+      "from": "Sheppard Ave East at Bessarion Rd East Side - Bessarion Stat",
+      "to": "Sheppard Ave East at Bessarion Rd East Side - Bessarion Station"
+    },
+    {
+      "stopId": "7203",
+      "from": "Sheppard Ave East at Leslie St East Side - North York Genera",
+      "to": "Sheppard Ave East at Leslie St East Side - North York General Hospital"
+    },
+    {
+      "stopId": "3106",
+      "from": "Sheppard Ave West at Bakersfield St Westside - Downsview Par",
+      "to": "Sheppard Ave West at Bakersfield St Westside - Downsview Park Station"
+    },
+    {
+      "stopId": "7308",
+      "from": "Sherbourne St at Bloor St East South Side - Sherbourne Stati",
+      "to": "Sherbourne St at Bloor St East South Side - Sherbourne Station"
+    },
+    {
+      "stopId": "6888",
+      "from": "The Queensway at Glendale Ave East Side - St Joseph's Health",
+      "to": "The Queensway at Glendale Ave East Side - St Joseph's Health Centre"
+    },
+    {
+      "stopId": "7456",
+      "from": "Woodsworth Rd at Northey Dr (East) - Walkway to Oriole GO St",
+      "to": "Woodsworth Rd at Northey Dr (East) - Walkway to Oriole GO Station"
+    },
+    {
+      "stopId": "3221",
+      "from": "Yonge St at Dundas St East - Dundas Station",
+      "to": "Yonge St at Dundas St East - TMU Station"
+    },
+    {
+      "stopId": "3222",
+      "from": "Yonge St at Dundas St West - Dundas Station",
+      "to": "Yonge St at Dundas St West - TMU Station"
+    }
+  ],
   "center": [
     43.7187,
     -79.4077
@@ -49,9 +256,9 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 1906,
+      "featureCount": 1877,
       "feedExpiry": "20261221",
       "routeCount": 230,
       "problemShapes": 0,
@@ -59,8 +266,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastFeedCheckAt": "20261123",
   "expiredFeedCheckCount": 0,
@@ -90,5 +296,9 @@
       "mode": 100,
       "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
     }
+  ],
+  "secondsRoutes": [
+    "1",
+    "4"
   ]
 }

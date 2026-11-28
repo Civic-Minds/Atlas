@@ -12,6 +12,14 @@ export const AGENCY_FETCH_TIMEOUT_MS = 60_000;
 export const agencyFetchSignal = (): AbortSignal | undefined =>
   typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(AGENCY_FETCH_TIMEOUT_MS) : undefined;
 
+/** The agency's route file is not in the data (HTTP 404), as opposed to a load that failed. */
+export class AgencyFileNotFoundError extends Error {
+  constructor(key: string) {
+    super(`${key} geo 404`);
+    this.name = 'AgencyFileNotFoundError';
+  }
+}
+
 export interface AgencyGeoSource {
   slug: string;
   name: string;
@@ -104,7 +112,7 @@ function getWorker(): Worker | null {
   if (!worker) {
     worker = new Worker(new URL('./geoWorker.ts', import.meta.url), { type: 'module' });
     worker.onmessage = (e: MessageEvent) => {
-      const { slug, type, success, data, error } = e.data;
+      const { slug, type, success, data, error, status } = e.data;
       const key = type === 'corridors' ? `${slug}-corridors` : slug;
       const req = pendingRequests.get(key);
       if (!req) return;
@@ -112,7 +120,7 @@ function getWorker(): Worker | null {
       if (success) {
         req.resolve(data);
       } else {
-        req.reject(new Error(error));
+        req.reject(status === 404 ? new AgencyFileNotFoundError(key) : new Error(error));
       }
     };
     worker.onerror = (e: ErrorEvent) => {
@@ -237,7 +245,7 @@ export async function fetchAgencyGeo(agency: AgencyGeoSource): Promise<GeoJSON.F
           return cached;
         }
         const r = await fetch(withVersionParam(fetchUrl, dataVer), { cache: 'default', signal: agencyFetchSignal() });
-        if (!r.ok) throw new Error(`${agency.slug} geo ${r.status}`);
+        if (!r.ok) throw r.status === 404 ? new AgencyFileNotFoundError(agency.slug) : new Error(`${agency.slug} geo ${r.status}`);
         const data = await r.json() as GeoJSON.FeatureCollection;
         for (const f of data.features) {
           const p = f.properties as Record<string, unknown> | null;

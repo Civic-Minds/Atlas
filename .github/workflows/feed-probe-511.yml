@@ -1,0 +1,69 @@
+name: 511 feed probe (read-only)
+
+# CIV-3069: find an agency in 511's operator list and compare its 511 feed with the feed Atlas has configured.
+# Read-only: it holds only the 511 key (no R2 keys), changes no config and uploads only the report (never the 511
+# zip, which is under the 511 Data Disseminator Agreement). Starts on a pushed tag dryrun/civ-3069-*, since a
+# workflow not on the default branch cannot be dispatched.
+on:
+  push:
+    tags:
+      - 'dryrun/civ-3069-*'
+
+permissions:
+  contents: read
+
+env:
+  # Operator names to look for (case-insensitive regex) and the slug whose configured feed is the comparison.
+  MATCH: 'rio vista|delta breeze'
+  SLUG: riovista
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      API_KEY: ${{ secrets.MUNI_511_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find the operator in 511's list
+        run: |
+          set -euo pipefail
+          mkdir -p out feeds
+          [ -n "$API_KEY" ] || { echo "MUNI_511_API_KEY is not set"; exit 1; }
+          curl -sS --fail --compressed "https://api.511.org/transit/gtfsoperators?api_key=${API_KEY}&format=json" -o feeds/operators.raw
+          python3 -I -c "
+          import json,re,sys,os
+          ops=json.loads(open('feeds/operators.raw','rb').read().decode('utf-8-sig'))
+          with open('out/operators.tsv','w') as f:
+              for o in ops: f.write('\t'.join(str(o.get(k,'')) for k in ('Id','Name','ShortName','PrimaryMode','Monitored'))+'\n')
+          hits=[o for o in ops if re.search(os.environ['MATCH'],json.dumps(o),re.I)]
+          print(f'{len(ops)} operators; matches:'); [print(json.dumps(o)) for o in hits]
+          open('out/ids.txt','w').write(' '.join(o['Id'] for o in hits))
+          "
+          echo "ids: $(cat out/ids.txt)"
+      - name: Download the 511 feed and the configured feed
+        run: |
+          set -euo pipefail
+          for id in $(cat out/ids.txt); do
+            curl -sS --fail --compressed -L "https://api.511.org/transit/datafeeds?operator_id=${id}&api_key=${API_KEY}" -o "feeds/511-${id}.zip"
+            unzip -l "feeds/511-${id}.zip" | tail -n +1 | tee "out/511-${id}-files.txt"
+          done
+          url=$(node -e "console.log(require('./config/agencies/'+process.env.SLUG+'.json').feedUrl)")
+          echo "configured: $url"
+          curl -sS --fail -L "$url" -o feeds/configured.zip
+      - name: Compare
+        run: |
+          set -euo pipefail
+          {
+            echo "## $SLUG: 511 operators matching /$MATCH/: $(cat out/ids.txt)"
+            for id in $(cat out/ids.txt); do
+              python3 -I scripts/compare-gtfs-feeds.py feeds/configured.zip "feeds/511-${id}.zip" configured "511 ${id}"
+              echo
+            done
+          } | tee out/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: feed-probe-511-${{ github.run_id }}
+          path: out/
+          retention-days: 14

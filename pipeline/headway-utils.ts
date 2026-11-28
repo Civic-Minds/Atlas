@@ -1,7 +1,7 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, SPARKLINE_HOURS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
-import { headwayGradeOn, TIER_MAXES } from '../shared/rules/frequency.js';
+import { headwayGradeOn, RANGE_HOLE_MIN_EXTRA_MINUTES, RANGE_HOLE_MIN_RATIO, TIER_MAXES } from '../shared/rules/frequency.js';
 import {
   FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS,
   RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN, RESEARCH_FREQUENT_SERVICE_START_MIN,
@@ -862,6 +862,15 @@ export function computeHourDepartureCounts(departureTimes: number[], hours: read
 }
 
 /**
+ * #1873: how many departures a list holds over the whole service day (distinct times, as computeHourDepartureCounts
+ * counts them), including those its hours leave out: AC Transit writes its All Nighters' trips 00:20-05:30 on the
+ * service day, so the 800 counted 4 a direction from 5 AM on and runs 12-14.
+ */
+export function countDayDepartures(departureTimes: readonly number[]): number {
+  return new Set(departureTimes).size;
+}
+
+/**
  * CIV-1611: the earliest and latest departure in one clock hour, from the same membership rule as
  * computeHourDepartureCounts (a time counts in [hour*60, hour*60+60)), in whole minutes. Null when the hour has none.
  */
@@ -912,6 +921,15 @@ export function computeTripStartFirst(tripStartTimes: readonly number[]): number
   return computeDepartureSpan(tripStartTimes, SPARKLINE_HOURS)?.first;
 }
 
+/**
+ * #1791: the last of them (a night service's trips read after midnight, 24:00 on), by the same window and rule for a late
+ * end: undefined when a trip leaves after the window. A route that runs through the night has no last boarding; the
+ * readers leave it out by the Night Service verdict (routeRunsByPeriod's Overnight, shared/routeRuns.ts).
+ */
+export function computeTripStartLast(tripStartTimes: readonly number[]): number | undefined {
+  return computeDepartureSpan(tripStartTimes, SPARKLINE_HOURS)?.last;
+}
+
 /** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
 export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
   const result: HeadwayByPeriodRange = {};
@@ -924,7 +942,7 @@ export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByP
     const gaps = times.slice(1).map((time, i) => time - times[i]).sort((a, b) => a - b);
     const last = gaps[gaps.length - 1];
     const next = gaps[gaps.length - 2];
-    if (gaps.length >= 3 && last - next >= 10 && last / next >= 1.6) gaps.pop();
+    if (gaps.length >= 3 && last - next >= RANGE_HOLE_MIN_EXTRA_MINUTES && last / next >= RANGE_HOLE_MIN_RATIO) gaps.pop();
     result[key] = { min: Math.round(gaps[0]), max: Math.round(gaps[gaps.length - 1]) };
   }
   return result;

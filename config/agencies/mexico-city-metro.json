@@ -11,5 +11,11 @@
   "feedUrl": "https://datos.cdmx.gob.mx/dataset/75538d96-3ade-4bc5-ae7d-d85595e4522d/resource/32ed1b6b-41cd-49b3-b7f0-b57acb0eb819/download/gtfs-2.zip",
   "mdbFeedUrl": "https://mobilitydatabase.org/feeds/gtfs/tfs-70",
   "agencyName": "Sistema de Transporte Colectivo Metro",
-  "websiteUrl": "https://www.metro.cdmx.gob.mx/"
+  "websiteUrl": "https://www.metro.cdmx.gob.mx/",
+  "dataLicense": {
+    "url": "https://datos.cdmx.gob.mx/dataset/75538d96-3ade-4bc5-ae7d-d85595e4522d",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-26"
+  }
 }

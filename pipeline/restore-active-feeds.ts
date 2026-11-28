@@ -33,6 +33,7 @@ import { isActiveProductionFeed, isStalePrimaryProductionFeed, type FeedAvailabi
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 interface Agency extends FeedAvailabilityEntry {
   slug: string;
@@ -175,6 +176,7 @@ async function restoreAgency(agency: Agency, candidate: Candidate): Promise<{ ag
 }
 
 async function main(): Promise<void> {
+  assertKnownFlags(process.argv.slice(2), {}); // CIV-3017: a mistyped flag must not turn into a real write
   const index = JSON.parse(readFileSync(indexPath, 'utf8')) as { agencies: Agency[] };
   // Stale in each agency's own local date (agencyTodayYmd, the default).
   const targets = index.agencies.filter(agency => isStalePrimaryProductionFeed(agency));

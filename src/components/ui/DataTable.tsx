@@ -106,6 +106,8 @@ interface DataTableProps<T> {
    * aria-current. Every row then gets the linked rows' small inner space, so the tint reaches past the text.
    */
   rowCurrent?: (row: T) => boolean;
+  /** A quieter row (CIV-2939: Fleet's "Not on a trip"): its text in the muted colour, as secondary text elsewhere. */
+  rowMuted?: (row: T) => boolean;
   /** Hover text for a whole row (where a column was left out on a phone, its figure). */
   rowTitle?: (row: T) => string | undefined;
   /**
@@ -149,7 +151,7 @@ export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
 const SELECTION_ROW = 'bg-[var(--selection-active-bg)] shadow-[inset_2px_0_0_var(--selection-active-border)]';
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowTitle, rowDetail, rowGroupLabel, sort, onSort }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowMuted, rowTitle, rowDetail, rowGroupLabel, sort, onSort }: DataTableProps<T>) {
   const openPath = useOpenPath();
   const fixed = layout !== 'content';
   const fill = layout === 'fill';
@@ -234,7 +236,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
             <tr className={v.row}><th scope="colgroup" colSpan={columns.length} className={`${v.td} pb-1 font-bold text-[var(--text-primary)]`}>{groupLabel}</th></tr>
           )}
           <tr
-            className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}${rowCurrent?.(row) ? ` ${SELECTION_ROW}` : ''}`}
+            className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}${rowCurrent?.(row) ? ` ${SELECTION_ROW}` : ''}${rowMuted?.(row) ? ' text-[var(--text-muted)]' : ''}`}
             aria-current={rowCurrent?.(row) ? 'true' : undefined}
             title={rowTitle?.(row)}
             onClick={rowHref ? e => openRow(e, rowHref(row), openPath) : undefined}

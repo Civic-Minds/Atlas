@@ -9,10 +9,10 @@
     -77.05
   ],
   "bbox": [
-    38.7977,
-    -77.1433,
-    38.8697,
-    -77.0406
+    38.79,
+    -77.15,
+    38.87,
+    -77.04
   ],
   "feedUrl": "https://www.dashbus.com/wp-content/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271114",
@@ -50,7 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

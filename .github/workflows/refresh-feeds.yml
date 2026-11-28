@@ -43,7 +43,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
 
       - run: npm ci
@@ -95,12 +95,11 @@ jobs:
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
 
-      # The refresh changes config/agencies and public/data/index.json; the catalogs are generated from
-      # them, and CI checks they match (check:agency-index), so regenerate both before the pull request
-      # (#1262: #1238 and #1259 failed that check). As in rebuild-release, a failed build must not lose
-      # the refreshed metadata itself.
+      # The refresh changes config/agencies (and the uncommitted public/data/index.json). Regenerate the
+      # index and catalogs from config so the steps below read the refreshed registry; only config goes
+      # into the pull request (CIV-2975). A failed build must not lose the refreshed metadata itself.
       - name: Regenerate the agency index and catalogs
-        run: npm run build:agency-index && npm run build:agency-catalog || echo "::warning::index/catalog rebuild failed; the refresh PR may fail the drift check"
+        run: npm run build:agency-data || echo "::warning::index/catalog rebuild failed; the refresh PR may fail check:agency-index"
 
       # Persist feed metadata through the protected-branch workflow before the
       # independent PMTiles verification gate.
@@ -148,6 +147,8 @@ jobs:
             git checkout "$REFRESH_HEAD_SHA" -- .
             git reset --quiet
           fi
+          # The index and catalogs aren't committed (CIV-2975): write them from the restored config.
+          npm run build:agency-data
           git diff --shortstat
 
       # Refresh keeps an agency's last timetable when every feed it knows about has expired, and
@@ -290,3 +291,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr merge "${{ steps.agency-pages-pr.outputs.pull-request-number }}" --auto --squash
+
+      # CIV-3027 (Ryan: "how do we avoid this in the future"): every feed version the index records
+      # (each agency's main and supplemental zip) must have its copy in the private archive bucket.
+      # Read-only. It runs last so a gap turns the run red without holding back the release.
+      - name: Check every used feed version has a private archive copy
+        if: ${{ !cancelled() }}
+        run: npm run audit-feed-archive
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}

@@ -63,6 +63,7 @@ import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, suppleme
 import { loadFareOverrides, manualBaseFareFor, type FareOverrides } from './fareOverrides.js';
 import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
 import { feedPeriodStart, recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
+import { timetableContentKey } from './feedPeek.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import { AGENCY_ARTIFACT_SUFFIXES, parseRunPrefixArg } from './runArtifacts.js';
@@ -81,6 +82,7 @@ import {
   reprocessCountryLaunchSkip,
   selectArchiveForAgency,
   selectByFeedDates,
+  liveExpiryToCompare,
   type PeekedArchive,
   type ArtifactCounts,
 } from './archiveSelection.js';
@@ -105,6 +107,7 @@ import { assessByCounts, type FeedQuality } from '../shared/feedQuality.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 interface Agency {
   slug: string;
@@ -175,7 +178,7 @@ const readBaseline = releaseBaselineReader(r2Get);
  * The processed feed's raw expiry dates (#837) and its quality rating (CIV-533) per agency, recorded in
  * index.json and the agency config once its artifacts are published.
  */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedStart: string | null; feedQuality: FeedQuality }>();
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedStart: string | null; feedQuality: FeedQuality; timetableKey: string | null; runDate: string }>();
 let qualityUpdates = 0;
 const expiryUpdates: string[] = [];
 
@@ -184,6 +187,7 @@ const outputDir = resolve('tmp/derived-reprocess');
 const localArchiveDir = process.env.ATLAS_LOCAL_ARCHIVE_DIR
   ? resolve(process.env.ATLAS_LOCAL_ARCHIVE_DIR)
   : null;
+assertKnownFlags(process.argv.slice(2), { '--write': 'flag', '--include-hidden': 'flag', '--i-am-launching-country': 'flag', '--allow-drop': 'flag', '--allow': 'value', '--only-slug': 'value', '--skip-slug': 'value', '--run-prefix': 'value', '--shard': 'value', '--merge-shards': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const writeToR2 = process.argv.includes('--write');
 // CIV-522: with --run-prefix atlas/runs/<run id>, --write puts each agency's files under that prefix
 // and leaves the top-level files alone; promote-run-artifacts copies them up once the release is public.
@@ -298,7 +302,7 @@ async function processAgency(agency: Agency, fareOverrides: FareOverrides): Prom
     const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = processedDates;
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
-    const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null, todayYmd);
+    const dateRefusal = feedDateRefusal(feedExpiry, liveExpiryToCompare(sourceKey, agency), agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null, todayYmd);
     if (dateRefusal) throw new Refusal(dateRefusal);
 
     const supplementalFeeds = await loadSupplementalFeeds(agency, url => readSupplementalFeed(agency, url));
@@ -319,8 +323,9 @@ async function processAgency(agency: Agency, fareOverrides: FareOverrides): Prom
     const live = await readBaseline(agency.slug);
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
-    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedStart: feedPeriodStart(processedDates), feedQuality: result.feedQuality });
+    gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry, pinnedExpiry: pinned ? agency.expiredFeedPin!.feedExpiry : null } }, live });
+    // CIV-3115: the timetable key travels with the dates, for timetableChangedAt.
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedStart: feedPeriodStart(processedDates), feedQuality: result.feedQuality, timetableKey: timetableContentKey(body), runDate: todayYmd });
     row.feedQuality = { status: result.feedQuality.status, score: result.feedQuality.score };
     const countRules = assessByCounts({ ...result.feedQuality.metrics, checkedAt: result.feedQuality.checkedAt });
     row.feedQualityCountRules = { status: countRules.status, score: countRules.score };

@@ -9,7 +9,7 @@ import { ANALYTICS_PATH, INTERNAL_PATH, MCP_DOCS_PATH, RESEARCH_PATH, STUDIO_CHA
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED' | 'VITE_BRANCH_READINGS_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED'): boolean {
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
 
@@ -27,9 +27,10 @@ export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABL
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
 export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
 // CIV-1959 B3 (#1620): the cards show each branch's own reading beside the trunk's, and the existing no-number words ("Runs irregularly in this
-// period") for a branch with too few trips to read. Off everywhere until the dry run is reviewed (docs/FEATURE_FLAGS.md); reads only data the pipeline switch
-// ATLAS_BRANCH_READINGS=1 wrote, so it does nothing on any published file today.
-export const BRANCH_READINGS_ENABLED = envFlag('VITE_BRANCH_READINGS_ENABLED');
+// period") for a branch with too few trips to read. On in the live bundle since 2026-11-21 (#1620, deploy 960c0407a). #1825: always on, not an env
+// switch, because the MCP, the agency pages and schedule_changes run in Node, where no VITE_ variable exists. They read the switch as off and gave
+// the card's old figures ("every 237" for B35's Sunday midday Limited branch, which runs every 12 from 12:57 PM), so they disagreed with the live card.
+export const BRANCH_READINGS_ENABLED = true;
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {

@@ -27,7 +27,7 @@ describe('the focus list (CIV-1866)', () => {
   });
 
   it('records only what Live is meant to record, and opens Studio on a Studio agency', () => {
-    const recorded = new Set<string>(LIVE_ARCHIVE_SHARDS.flatMap(s => [...s.positionSlugs, ...s.tripSlugs]));
+    const recorded = new Set<string>(LIVE_ARCHIVE_SHARDS.flatMap(s => [...s.positionSlugs, ...s.tripSlugs, ...('v2Slugs' in s ? s.v2Slugs : [])]));
     for (const slug of PRODUCT_FOCUS.live) expect(recorded.has(slug), slug).toBe(true);
     expect(PRODUCT_FOCUS.studio).toContain(STUDIO_DEFAULT_AGENCY);
   });

@@ -27,7 +27,8 @@ const meta = await store.meta();
 const have = await data.availableAgencies();
 // Agencies may be named by slug, short name or name. With names, only those are split (a check build).
 const wanted = new Set<string>();
-for (const q of only) { const a = await data.findAgency(q); if (!a) throw new Error(`No agency matching "${q}".`); wanted.add(a.slug); }
+// #1806: a slug is that feed even where a parent agency shares it (exo, bustang); a name goes through the tools' lookup.
+for (const q of only) { const a = have.find(x => x.slug === q) ?? await data.findAgency(q); if (!a) throw new Error(`No agency matching "${q}".`); wanted.add(a.slug); }
 const agencies = have.filter(a => !wanted.size || wanted.has(a.slug));
 console.error(`${agencies.length} agencies to split into ${out}`);
 

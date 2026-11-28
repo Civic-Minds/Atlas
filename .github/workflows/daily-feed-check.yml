@@ -39,7 +39,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
 
       - run: npm ci
@@ -48,8 +48,12 @@ jobs:
       # not refreshed again.
       - name: Read the open refresh pull request's dates
         run: |
+          # The pull request carries config/agencies only (CIV-2975): build its index from that.
           if git fetch --quiet --depth 1 origin automation/weekly-gtfs-refresh 2>/dev/null; then
-            git show FETCH_HEAD:public/data/index.json > "$RUNNER_TEMP/pending-index.json" || true
+            mkdir -p "$RUNNER_TEMP/pending"
+            git archive FETCH_HEAD config/agencies | tar -x -C "$RUNNER_TEMP/pending" \
+              && npx tsx scripts/build-agency-index.ts --source "$RUNNER_TEMP/pending/config/agencies" --out "$RUNNER_TEMP/pending-index.json" \
+              || true
           fi
 
       - name: Peek feeds that end within 7 days

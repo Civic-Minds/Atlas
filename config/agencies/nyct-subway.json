@@ -10,10 +10,10 @@
     -74.01
   ],
   "bbox": [
-    40.5128,
-    -74.252,
-    40.9031,
-    -73.7554
+    40.51,
+    -74.26,
+    40.91,
+    -73.75
   ],
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfs_subway.zip",
   "sameNameRoutes": [
@@ -78,8 +78,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",

@@ -13,8 +13,6 @@ ARCHIVE_SHARD = "mbta"
 binding = "BUCKET"
 bucket_name = "atlas-live"
 
-[triggers]
-crons = ["* * * * *"]
-
+# CIV-2217 (2026-11-26): no cron; the cloud recorder (wrangler.recorder.toml) records this shard's agencies.
 [observability]
 enabled = true

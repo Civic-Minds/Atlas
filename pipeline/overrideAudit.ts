@@ -79,17 +79,6 @@ export function clearOverrideUserFacingOnFeedChange(
   return true;
 }
 
-/** @deprecated Use clearOverrideUserFacingOnFeedChange */
-export function clearIssueUrlOnFeedChange(
-  agency: FeedVersionSnapshot & { issueUrl?: string; overrideNote?: string },
-  peekedExpiry: string | null,
-  peekedVersion: string | null,
-): string | null {
-  const prevUrl = agency.issueUrl;
-  if (!clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion)) return null;
-  return prevUrl ?? '(override note cleared)';
-}
-
 export function formatOverrideUserFacingClearedLog(slug: string): string {
   return `[override] ${slug}: new upstream GTFS — cleared override note from index.json (excludeRouteShortNames kept; re-verify and restore note if override still needed)`;
 }

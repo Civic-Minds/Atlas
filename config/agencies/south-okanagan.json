@@ -37,7 +37,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -51,5 +51,11 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20261121",
   "lastRawArchiveKey": "20270906-da5da7662a280c3d",
-  "lastFeedContentKey": "388b77c80c337f2a"
+  "lastFeedContentKey": "388b77c80c337f2a",
+  "dataLicense": {
+    "url": "https://www.bctransit.com/open-data/terms-of-use",
+    "attribution": "required",
+    "name": "BC Transit Open Data Terms of Use",
+    "checkedOn": "2026-11-26"
+  }
 }

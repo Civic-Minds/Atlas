@@ -24,6 +24,7 @@ import { resolve } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { DRY_RUN_ENV_LABEL, LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from './agencyFeeds.js';
+import { downloadFeedBuffer } from './downloadFeed.js';
 import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
 import { loadFareOverrides, manualBaseFareFor } from './fareOverrides.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
@@ -50,12 +51,14 @@ import {
 import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } from './hiddenRoutes.js';
 import { clearDataRefreshHandoff, writeDataRefreshMarker } from './dataRefreshMarker.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 console.log(LOADED_ENV_FILE === DRY_RUN_ENV_LABEL
   ? `  env: ${DRY_RUN_ENV_LABEL}`
   : `  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
 const FLAG_ARGS = new Set(['--dry-run', COUNTRY_LAUNCH_FLAG]);
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--force': 'flag', '--i-am-launching-country': 'flag' }); // CIV-3017: a mistyped flag must not turn into a real write
 const rawArgs = process.argv.slice(2);
 const dryRun = rawArgs.includes('--dry-run');
 const force = rawArgs.includes('--force');
@@ -91,23 +94,7 @@ const argCenter = centerArg
 
 async function downloadToBuffer(url: string): Promise<Buffer> {
   console.log(`  Downloading ${url} ...`);
-  try {
-    const res = await fetch(url, {
-      redirect: 'follow',
-      headers: { 'User-Agent': 'atlas-frequency-map/1.0' },
-      signal: AbortSignal.timeout(180_000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return Buffer.from(await res.arrayBuffer());
-  } catch (fetchErr) {
-    // Fallback to curl for tricky TLS
-    const { execFileSync } = await import('child_process');
-    try {
-      return execFileSync('curl', ['-fsSL', url], { maxBuffer: 128 * 1024 * 1024, timeout: 180_000 });
-    } catch {
-      throw fetchErr instanceof Error ? fetchErr : new Error(String(fetchErr));
-    }
-  }
+  return downloadFeedBuffer(url);
 }
 
 function loadAgencyRegistry(): AgencyCountrySource[] {

@@ -52,7 +52,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -65,5 +65,13 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20261121",
   "lastRawArchiveKey": "20270518-8e78a2f148e16eff",
-  "lastFeedContentKey": "528148df80e635c5"
+  "lastFeedContentKey": "528148df80e635c5",
+  "dataLicense": {
+    "url": "https://www.rtcquebec.ca/donnees-ouvertes",
+    "attribution": "required",
+    "name": "Licence d'utilisation des Informations publiques du RTC",
+    "credit": "Application, produit ou service, intégrant les Informations publiques du Réseau de transport de la Capitale,",
+    "updatedLabel": "mises à jour le",
+    "checkedOn": "2026-11-26"
+  }
 }

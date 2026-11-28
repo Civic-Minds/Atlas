@@ -1,0 +1,19 @@
+{
+  "slug": "linx-albany",
+  "officialName": "LINX, Linn-Benton Loop and Albany Transit System",
+  "websiteUrl": "https://www.albanyoregon.gov/bus",
+  "dataLicense": {
+    "url": "https://www.albanyoregon.gov/bus",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Oregon",
+  "center": [
+    44.6251,
+    -123.0927
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-135/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

@@ -34,6 +34,23 @@ export function archiveKeyServiceDate(key: string): string | null {
   return match ? match[1] : null;
 }
 
+/** An archive key's file name without `.zip`, the form `lastRawArchiveKey` records. */
+function archiveStem(key: string): string {
+  return (key.split('/').pop() ?? key).replace(/\.zip$/, '');
+}
+
+/**
+ * The live expiry a rebuild's source zip must not fall before (feedDateRefusal), or null when the zip is
+ * the exact file the last refresh processed (`lastRawArchiveKey`). That file cannot be older than itself:
+ * its end date only differs when the expiry rule changed after it was recorded (CIV-3091: Kingston,
+ * recorded 20271115 before #1768 dropped services with no trips, now 20270103; MNR 20270523 vs 20270522).
+ * The ended-before-today check still applies to it.
+ */
+export function liveExpiryToCompare(sourceKey: string | null | undefined, agency: { lastFeedExpiry?: string | null; lastRawArchiveKey?: string | null }): string | null {
+  if (sourceKey && agency.lastRawArchiveKey && archiveStem(sourceKey) === agency.lastRawArchiveKey) return null;
+  return agency.lastFeedExpiry ?? null;
+}
+
 function refuse(reason: string): ArchiveSelection {
   return { ok: false, noArchive: false, reason: `cannot tell which archived zip is newest: ${reason}` };
 }
@@ -53,7 +70,12 @@ function newestUpload(zips: ArchiveObject[]): ArchiveObject | null {
  * 1. The most recent upload (R2 LastModified) wins, unless another zip in the
  *    archive carries a later service date in its key. That happens when old
  *    feeds are backfilled or bulk-migrated after the current one was archived
- *    (norta, halifax, path), so upload time stops meaning recency.
+ *    (norta, halifax, path), so upload time stops meaning recency. #1767: the
+ *    most recent upload still wins when it is the zip the last refresh processed
+ *    (`lastRawArchiveKey`): a later key date then belongs to an older file. A key's
+ *    date is the feed's stated end, which can fall before its calendar's (TTC
+ *    S1000544: feed_info 20261219, calendar 20261221), so the older file whose key
+ *    carried the live record's expiry won and the rebuild brought back its stop names.
  * 2. In that case, or when upload times are missing or tied, take the zip whose
  *    service date is the expiry of the feed the live data was built from
  *    (`lastFeedExpiry`), whatever later date another zip carries: a zip with a
@@ -64,7 +86,7 @@ function newestUpload(zips: ArchiveObject[]): ArchiveObject | null {
  */
 export function selectArchiveForAgency(
   objects: ArchiveObject[],
-  agency: { lastFeedExpiry?: string | null },
+  agency: { lastFeedExpiry?: string | null; lastRawArchiveKey?: string | null },
   /** #1355: a live feed that has already ended is not matched; the second look finds the current zip (grt). */
   todayYmd?: string,
 ): ArchiveSelection {
@@ -80,6 +102,9 @@ export function selectArchiveForAgency(
     const newestDate = archiveKeyServiceDate(newest.key);
     if (newestDate === null || maxDate === null || newestDate >= maxDate) {
       return { ok: true, key: newest.key, reason: `newest upload (${newest.lastModified!.toISOString()})` };
+    }
+    if (agency.lastRawArchiveKey && archiveStem(newest.key) === agency.lastRawArchiveKey) {
+      return { ok: true, key: newest.key, reason: `newest upload (${newest.lastModified!.toISOString()}), the zip the last refresh processed; the later ${maxDate} is an older file (#1767)` };
     }
   }
 
@@ -250,6 +275,15 @@ export interface ExpiredFeedPin {
 /** Whether a source zip is the exact feed an expiredFeedPin approves. */
 export function matchesExpiredFeedPin(pin: ExpiredFeedPin | null | undefined, feed: { feedVersion: string | null; feedExpiry: string | null }): boolean {
   return !!pin && feed.feedVersion === pin.feedVersion && feed.feedExpiry === pin.feedExpiry;
+}
+
+/**
+ * The pinned expiry when the feed an agency was last built from is the exact feed its
+ * expiredFeedPin approves, else null. The publish gate reads the agency's recorded
+ * lastFeedVersion/lastFeedExpiry; it is the same check the reprocess gate applies (CIV-3090).
+ */
+export function pinnedFeedExpiry(pin: ExpiredFeedPin | null | undefined, feed: { feedVersion: string | null; feedExpiry: string | null }): string | null {
+  return pin && matchesExpiredFeedPin(pin, feed) ? pin.feedExpiry : null;
 }
 
 /**

@@ -3,9 +3,10 @@
   "officialName": "Société de transport de Sherbrooke",
   "websiteUrl": "http://www.sts.qc.ca/",
   "dataLicense": {
-    "url": "https://www.donneesquebec.ca/recherche/fr/dataset/transport-sts",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://www.donneesquebec.ca/licence/#cc-by",
+    "attribution": "required",
+    "name": "CC BY 4.0",
+    "checkedOn": "2026-11-26"
   },
   "center": [
     45.398,
@@ -13,10 +14,10 @@
   ],
   "region": "Quebec",
   "bbox": [
-    45.31,
-    -72.08,
-    45.48,
-    -71.82
+    45.3,
+    -72.09,
+    45.49,
+    -71.81
   ],
   "feedUrl": "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1996/latest.zip",
@@ -51,8 +52,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

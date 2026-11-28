@@ -74,24 +74,6 @@ export function cachedReleaseId(): string | null {
   return newest ? newest.split('/').pop()! : null;
 }
 
-/**
- * CIV-2014: the local server reads published data from the cloud; it falls back to the release cache on this Mac only
- * when the cloud can't be reached. Then this note says when that cache is older than the newest release the checkout
- * knows (shared/data/agency-pages.json, which the release bot commits per release). Null when the cache is current,
- * newer, absent, or ATLAS_MCP_DATA_DIR points elsewhere. Read from disk only.
- */
-export function staleCacheNote(): string | null {
-  if (process.env.ATLAS_MCP_DATA_DIR) return null;
-  const cached = cachedReleaseId();
-  if (!cached) return null;
-  let known: { releaseId?: string; generatedAt?: string };
-  try { known = JSON.parse(readFileSync(join(ATLAS_ROOT, 'shared/data/agency-pages.json'), 'utf8')); } catch { return null; }
-  if (!known.releaseId || known.releaseId === cached || !known.generatedAt) return null;
-  if (Date.parse(known.generatedAt) <= statSync(join(ATLAS_ROOT, 'tmp/agency-pages-cache', cached)).mtimeMs) return null;
-  // Ryan's wording, 2026-11-21 (CIV-2014: "1"; no "so").
-  return `These figures come from an older copy of Atlas's data (${cached}) than the latest release (${known.releaseId}) and may not match the map.`;
-}
-
 /** Where the ranking index sits: next to the route files it was built from, so a new release gets a new index. */
 export function indexFile(): string | null {
   const any = [...routeFiles().values()][0];
@@ -150,7 +132,7 @@ export function diskStore({ releaseCache = true }: { releaseCache?: boolean } = 
       const all = read(slug);
       if (!all) return null;
       return all.filter(f => f.geometry?.type === 'Point').map((f): McpStop => ({
-        id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates![0], lat: f.geometry!.coordinates![1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String),
+        id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates![0], lat: f.geometry!.coordinates![1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String), ...(f.properties.parentStation ? { parent: String(f.properties.parentStation) } : {}),
       }));
     },
     async index() {

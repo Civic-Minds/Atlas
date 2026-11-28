@@ -12,8 +12,7 @@
  */
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { resolve } from 'path';
-import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
-import { mainCheckoutEnv } from './mcp-coverage.js';
+import { privateBucket } from './privateBucket.js';
 import { STUDIO_FILES_PREFIX, isStudioFileName } from '../shared/studioFiles.js';
 
 export interface StudioFiles {
@@ -57,28 +56,12 @@ export function cloudStudioFiles(listKeys: (prefix: string) => Promise<string[]>
 
 let shared: StudioFiles | null = null;
 
-/** The folder when STUDIO_DIR is set, else the cloud; with no read-only keys, nothing. */
+/** The folder when STUDIO_DIR is set, else the cloud; with no read-only keys, it throws. */
 export function studioFiles(): StudioFiles {
   if (process.env.STUDIO_DIR) return folderStudioFiles(resolve(process.env.STUDIO_DIR));
   if (shared) return shared;
-  const { R2_ACCOUNT_ID: account, R2_RO_ACCESS_KEY_ID: accessKeyId, R2_RO_SECRET_ACCESS_KEY: secretAccessKey, MCP_LIVE_BUCKET: bucket } = mainCheckoutEnv();
-  if (!account || !accessKeyId || !secretAccessKey || !bucket) return (shared = { list: async () => [], read: async () => null });
-  const s3 = new S3Client({ region: 'auto', endpoint: `https://${account}.r2.cloudflarestorage.com`, credentials: { accessKeyId, secretAccessKey } });
-  shared = cloudStudioFiles(
-    async prefix => {
-      const keys: string[] = [];
-      let token: string | undefined;
-      do {
-        const r = await s3.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: token }));
-        for (const o of r.Contents ?? []) if (o.Key) keys.push(o.Key);
-        token = r.IsTruncated ? r.NextContinuationToken : undefined;
-      } while (token);
-      return keys;
-    },
-    async key => {
-      try { return await (await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }))).Body!.transformToString(); }
-      catch (e) { if ((e as { name?: string }).name === 'NoSuchKey') return null; throw e; }
-    },
-  );
+  // CIV-2914: no read-only keys throws (privateBucket), never an empty list that reads as "no files built".
+  const bucket = privateBucket();
+  shared = cloudStudioFiles(prefix => bucket.list(prefix), key => bucket.get(key));
   return shared;
 }

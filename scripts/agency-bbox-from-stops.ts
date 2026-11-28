@@ -1,7 +1,7 @@
 #!/usr/bin/env npx tsx
 /**
  * #1793: sets each agency's configured bbox from its published service (shared/agencyBbox.ts): its stops, its drawn route
- * shapes and its on-demand zones, where the configured box reaches past them. Reads a folder of published agency files
+ * shapes and its on-demand zones, where the configured box reaches past them (#1793) or falls short of them (#1794). Reads a folder of published agency files
  * (<dir>/<slug>/<slug>-stops.json and <slug>.json, as a dry run's agencies artifact holds them) and the on-demand
  * registry; writes only config/agencies/<slug>.json. Then run build:agency-index.
  *
@@ -9,7 +9,7 @@
  */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { bboxOversized, stopsBbox, type Bbox } from '../shared/agencyBbox';
+import { bboxOversized, bboxUndersized, pointsExtent, stopsBbox, type Bbox } from '../shared/agencyBbox';
 import { buildOnDemandRelease } from '../src/data/onDemandExport';
 
 /** Every [lat, lon] in GeoJSON coordinates (stored [lon, lat]). */
@@ -35,8 +35,9 @@ for (const file of readdirSync('config/agencies').filter(f => f.endsWith('.json'
   const shapes = existsSync(routeFile) ? (JSON.parse(readFileSync(routeFile, 'utf8')) as { features: Array<{ geometry?: { type: string; coordinates: unknown } | null }> }).features
     .filter(f => f.geometry?.type === 'LineString' || f.geometry?.type === 'MultiLineString').flatMap(f => [...coords(f.geometry!.coordinates)]) : [];
   const zonePoints = (zones.get(slug) ?? []).flatMap(f => [...coords((f.geometry as { coordinates?: unknown } | null)?.coordinates)]);
-  const box = stopsBbox([...stops.map(s => [Number(s.lat), Number(s.lon)] as const), ...shapes, ...zonePoints]);
-  if (!box || !bboxOversized(config.bbox, box)) continue;
+  const points = [...stops.map(s => [Number(s.lat), Number(s.lon)] as const), ...shapes, ...zonePoints];
+  const box = stopsBbox(points);
+  if (!box || !(bboxOversized(config.bbox, box) || bboxUndersized(config.bbox, pointsExtent(points)!))) continue;
   changed.push(`${slug}: [${config.bbox.join(', ')}] -> [${box.join(', ')}]`);
   if (write) writeFileSync(path, `${JSON.stringify({ ...config, bbox: box }, null, 2)}\n`);
 }

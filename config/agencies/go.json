@@ -43,24 +43,24 @@
   "expiredFeedCheckExpiry": "20270101",
   "feedQuality": {
     "status": "review",
-    "score": 82,
+    "score": 87,
     "reasons": [
-      "8 route have stops whose frequency differs from the overall route schedule."
+      "9 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 15,
-      "featureCount": 412,
+      "featureCount": 415,
       "feedExpiry": "20270101",
-      "routeCount": 44,
+      "routeCount": 72,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 8,
+      "mismatchRoutes": 9,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -83,5 +83,12 @@
     }
   ],
   "lastRawArchiveKey": "20270101-90c18eeccd35aaa2",
-  "lastFeedContentKey": "2eb673691784dcb7"
+  "lastFeedContentKey": "2eb673691784dcb7",
+  "dataLicense": {
+    "url": "https://www.gotransit.com/en/partner-with-us/software-developers",
+    "attribution": "required",
+    "name": "Metrolinx Access and Use Agreement",
+    "credit": "Data used in this product or service is provided with the permission of Metrolinx. Metrolinx makes no representations or warranties of any kind, express or implied, with respect to the Data and assumes no responsibility for the accuracy or currency of the data used in this product or service.",
+    "checkedOn": "2026-11-26"
+  }
 }

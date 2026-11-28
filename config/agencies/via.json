@@ -3,6 +3,13 @@
   "officialName": "VIA Metropolitan Transit",
   "nameQualifier": "San Antonio",
   "websiteUrl": "http://www.viainfo.net",
+  "dataLicense": {
+    "url": "https://www.viainfo.net/developers-license-agreement/",
+    "attribution": "required",
+    "name": "VIA Developer's License Agreement",
+    "credit": "Data provided by VIA Metropolitan Transit",
+    "checkedOn": "2026-11-26"
+  },
   "center": [
     29.42,
     -98.49
@@ -36,7 +43,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Chicago",
   "lastFeedSourceKind": "configured",

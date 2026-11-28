@@ -30,5 +30,11 @@
   "feedRefreshErrorAt": "20261123",
   "feedRefreshRetryCount": 8,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media"
+  "lastFeedSourceUrl": "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/us-new-york-greater-glens-falls-transit-gtfs-542.zip?alt=media",
+  "dataLicense": {
+    "url": "https://www.cdta.org/developer-license-agreement/169",
+    "attribution": "required",
+    "name": "CDTA Developer License Agreement",
+    "checkedOn": "2026-11-26"
+  }
 }

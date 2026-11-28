@@ -1,10 +1,9 @@
 import { noDataText } from './noDataText';
 import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
-import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
-import { minutesText } from './liveFormat';
+import { gapText, minutesText, tenth } from './liveFormat';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow, type OnTimeWindow } from './rules/live';
 
 /**
@@ -13,10 +12,11 @@ import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LATE_ABOVE_MIN, onTimeWindow, type OnTi
  */
 
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
-/** The route strip's delay legend (E22, Ryan, CIV-1075): "Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind". The early step shows only when a stop is ahead. */
+/** The route strip's delay legend (E22, Ryan, CIV-1075; CIV-2924 title): "Typical deviation: 1+ min ahead · On time · 1–3 min · 3+ min behind". The early step shows only when a stop is ahead. */
 /** The name of how long a trip takes end to end, on Live and the map alike (Ryan, CIV-1160 question 6, 2026-11-13: "Trip time", not "Run time"). */
 export const TRIP_TIME_LABEL = 'Trip time';
-export const DELAY_LEGEND_TITLE = 'Typical delay';
+/** CIV-2924 (Ryan, 2026-11-25: "Typical delay" becomes "Typical deviation"; "Delay" is kept for the new clear-street measure). */
+export const DELAY_LEGEND_TITLE = 'Typical deviation';
 
 // The names of Live's measures and sections, each written once (CIV-1596). Every page, panel, table and glossary reads
 // these; the style guard fails on a copy typed by hand in Live code.
@@ -33,7 +33,14 @@ export const SERVICE_DELIVERED_TITLE = 'Service delivered';
 /** The late-stops section and widget on the agency and route pages. */
 export const LATE_STOPS_TITLE = 'Stops most often late';
 /** The week table's section and caption. */
-export const WEEK_COMPARE_TITLE = 'This week compared with last week';
+/** Ryan, 2026-11-27: "This Week vs. Last or smth" (sentence case). */
+export const WEEK_COMPARE_TITLE = 'This week vs. last';
+/**
+ * #1831 (CIV-3001): the week table's scope line names the time of day its figures are for, where one is picked ("both
+ * directions · Evening"), so they aren't read against the all-day late-by-hour chart below them (TTC 504: "Late 18%" for the
+ * evening beside "8% late" for the whole day). The names are the period labels; nothing new.
+ */
+export const weekScopeText = (scope: string, periodLabel: string | null): string => (periodLabel ? `${scope} · ${periodLabel}` : scope);
 /** The bunching section. */
 export const BUNCHING_FORMS_TITLE = 'Where bunching forms';
 /** The route strip's marked stretch where bunching starts, beside DELAY_STARTS_LABEL (CIV-1803). */
@@ -78,6 +85,12 @@ export const updatedAgoText = (ageSec: number): string => {
 /** The Live route card's gap rows, under Scheduled (CIV-2045, Ryan's words; replaced "Gaps, front to back (min)"). */
 export const LONGEST_GAP_LABEL = 'Longest gap';
 export const SHORTEST_GAP_LABEL = 'Shortest gap';
+/**
+ * The gaps between the vehicles on the road now, shortest to longest: "gaps 3–20 min" (CIV-1828). With no shortest gap
+ * to show (see GAP_RANGE_FROM_SEC), or one that rounds to the longest, the longest alone: "longest gap 20 min".
+ */
+export const gapRangeText = (from: number | null, longest: number): string =>
+  from != null && tenth(from) !== tenth(longest) ? `gaps ${tenth(from)}–${minutesText(longest)}` : `${LONGEST_GAP_LABEL.toLowerCase()} ${gapText(longest)}`;
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
@@ -131,15 +144,21 @@ export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
 export const LATE_THRESHOLD = `${LATE_LIMIT_TEXT} late`;
 
-/** The title of every "Where delays start" section and the name of the stretch it marks (one name, CIV-1448). */
-export const DELAY_STARTS_TITLE = 'Where delays start';
+/**
+ * CIV-2924 (Ryan, 2026-11-27: "Ideally those would all be 1 word though", "Lateness might work", then "1"; supersedes his
+ * 2026-11-25 "Schedule adherence", which superseded CIV-1602's "Delays start"): the timetable measure, its Live section and
+ * Studio's one menu entry for it are one name, "Lateness". Written once, here.
+ */
+export const LATENESS_LABEL = 'Lateness';
+/** The title of every Lateness section (was "Schedule adherence", before that "Where delays start") and the name of the stretch it marks (one name, CIV-1448). */
+export const DELAY_STARTS_TITLE = LATENESS_LABEL;
 /** The column and figure label for the typical minutes a stretch adds (CIV-1448; CIV-1795: "Usually", as the Live column; was "Typical added"). */
 export const TYPICAL_ADDED = 'Usually adds';
 /** Delays start: the minutes added on the way into a stop that aren't made back over the next 3 stops, on the Live map's stop and stretch cards (Ryan, CIV-1795 question 9: "Time lost: 2 min"). */
 export const TIME_LOST_LABEL = 'Time lost';
 export const timeLostLine = (min: number): string => `${TIME_LOST_LABEL}: ${minutesText(min)}`;
-/** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (Ryan, CIV-1602: "Delays start" everywhere). */
-export const DELAY_STARTS_LABEL = 'Delays start';
+/** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (CIV-2924: "Lateness"; was "Schedule adherence", before that CIV-1602's "Delays start"). */
+export const DELAY_STARTS_LABEL = LATENESS_LABEL;
 /** The Live map's name: its page title and the title on a saved image of it (Ryan, CIV-1602; "Live", not "Live vehicles", 2026-11-17). */
 export const LIVE_MAP_TITLE = 'Live';
 
@@ -212,25 +231,6 @@ export function coveredRoutesText(/** The agency's short name (useLiveAgencyName
   return `${routes.length} ${agency} ${plural(routes.length, 'route')}`;
 }
 
-/**
- * "Figures updated Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp: when Live's figures
- * were last built. It sits in the About panel beside the schedule refresh line (CIV-1814 item 41, Ryan: "put into the about
- * area similar to how the last date GTFS was updated is"; was "Built Oct 16, 6:12 PM" in each page's method section).
- */
-/** "Nov 21, 14:05" in Toronto time: when Live's figures were built. */
-function figuresBuiltAt(iso: string): string {
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date(iso));
-  const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
-  return `${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
-}
-export function figuresUpdatedText(iso: string): string {
-  return `Figures updated ${figuresBuiltAt(iso)}`;
-}
-/** CIV-2084 (Ryan's words): the Live status pill's hover line for when Live's figures were built. */
-export function liveFiguresUpdatedText(iso: string): string {
-  return `Live figures updated ${figuresBuiltAt(iso)}`;
-}
-
 /** The heading at the foot of every Live page (MethodFootnote), and the name its draw error uses. */
 export const METHOD_TITLE = 'How this is measured';
 
@@ -292,6 +292,8 @@ export const bunchingShortNote = (): string =>
 
 /** The window event the Learn more link fires; the app opens the About panel at its Live part. */
 export const OPEN_ABOUT_LIVE_EVENT = 'atlas:open-about-live';
+/** CIV-2222 line B: Learn more on the no-published-window note opens E11 (Late departures) in the info panel. */
+export const OPEN_LATE_LIMIT_EVENT = 'atlas:open-late-limit';
 
 /** "14% · 8%": the two parts, adding up to the total shown anywhere else. */
 export const bunchPartsText = (share: number, bunched: number, gapped: number): string => { const p = bunchTotalParts(share, bunched, gapped); return `${p.bunched}% · ${p.tooLong}%`; };
@@ -340,8 +342,8 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
  * shows the rest).
  */
 export const STUDIO_LIVE_PENDING = {
-  /** The measure pill. */
-  fallsBehindPill: 'Falls behind',
+  /** The measure pill: "Lateness", Studio's one entry for the timetable measure (CIV-2924, Ryan 2026-11-27, "1"; was "Falls behind"). */
+  fallsBehindPill: LATENESS_LABEL,
   /** A stop pair's lines in a route's view: its time lost (timeLostLine), then the sample (CIV-1878: the manager's suggested wording, PENDING RYAN'S OK). */
   sample: (trips: number, days: number): string => `Based on ${countOf(trips, 'trip')} over ${countOf(days, 'day')}`,
   /** The collapsed list of stop pairs whose schedule allows more than vehicles need. */
@@ -354,9 +356,10 @@ export const STUDIO_LIVE_PENDING = {
  * how departures split this week between on time and more than 5½ min late.
  */
 export const STUDIO_GLANCE = {
-  barTitle: 'Departures this week',
   onTime: 'On time',
   late: LATE_THRESHOLD.charAt(0).toUpperCase() + LATE_THRESHOLD.slice(1),
+  /** #1925: at the agency's own late limit where it publishes one ("More than 5 min late", TTC), as every other Late line. */
+  lateAt: (t?: OnTimeWords | null): string => { const s = lateThreshold(t); return s.charAt(0).toUpperCase() + s.slice(1); },
 } as const;
 
 /**
@@ -394,11 +397,6 @@ export const STUDIO_ROUTE_PANEL_PENDING = {
   noReading: 'No live reading for this route right now.',
   /** A reading with no vehicle of the route on the road. */
   noVehicles: 'No vehicles on this route right now.',
-  /**
-   * The route's week table, labelled as recorded past service so it isn't read as live (Ryan, CIV-2021: "I'm confused what
-   * I am looking at here if live information is unavailable"). Proposed item 8.
-   */
-  weekRecorded: 'Recorded past service, not live.',
   /** About, Live part: bunching in plain words (replaces the two-figure note now that Studio shows one figure). */
   bunchingAbout: (): string =>
     `Bunching is the share of gaps between vehicles at a stop that were under ${minutesText(BUNCHED_GAP_SEC / 60)} (vehicles running together) or more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap (a long wait).`,

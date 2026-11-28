@@ -86,7 +86,7 @@ The shared components live in `src/components/ui/`.
 - Reach for this before bar charts or prose.
 - Live pages offer no CSV downloads. Commit 697af467. (checked: no "CSV" in Live code)
 - Live writes minutes in the map's shared minutes format (`shared/headwayText.ts`): "every 8–10 min", "7.5 min", "2 min late". CIV-1160.
-- Added time keeps its plus sign: an increase reads "+0.5 min", as in "Where delays start": "starts at Broadview Ave (+0.5 min)" (Ryan, 2026-11-14). CIV-1470.
+- Added time keeps its plus sign: an increase reads "+0.5 min", as in "Lateness" (then "Where delays start"): "starts at Broadview Ave (+0.5 min)" (Ryan, 2026-11-14). CIV-1470.
   - The no-plus rule above is for lateness ("2 min late").
 
 ## Agencies

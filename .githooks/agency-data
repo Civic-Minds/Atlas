@@ -1,0 +1,9 @@
+#!/bin/sh
+# CIV-2975: public/data/index.json and the catalogs aren't committed. After a checkout, merge or rebase, write them from
+# config/agencies (only files that change), so the dev server and scripts never read a missing or stale index.
+# Never blocks git: any failure only prints a hint.
+root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+cd "$root" || exit 0
+[ -x node_modules/.bin/tsx ] || { echo "agency data: no node_modules here; run npm run build:agency-data after installing." >&2; exit 0; }
+node_modules/.bin/tsx scripts/write-agency-data.ts || echo "agency data: not regenerated; run npm run build:agency-data." >&2
+exit 0

@@ -9,9 +9,9 @@
   ],
   "bbox": [
     37.19,
-    -76.82,
-    37.41,
-    -76.52
+    -76.83,
+    37.42,
+    -76.51
   ],
   "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
   "region": "Virginia",
@@ -43,7 +43,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

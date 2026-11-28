@@ -9,10 +9,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.66,
-    -122.19,
+    37.65,
+    -122.2,
     38.02,
-    -121.78
+    -121.77
   ],
   "feedUrl": "https://countyconnection.com/GTFS/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2421/latest.zip",
@@ -54,8 +54,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

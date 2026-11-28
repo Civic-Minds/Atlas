@@ -106,7 +106,8 @@ export function RouteListColumns({ cells }: { cells: readonly RouteListCell[] })
             {c.dot && <RowDot color={c.dot} className="inline-block mr-1 align-middle" />}
             {c.main}
           </span>
-          {c.note && <span className={`block whitespace-nowrap ${LIST_ROW_DIM}`}>{c.note}</span>}
+          {/* #1746: a long note ("until 8:07 PM, then every 9 min") wraps inside its column instead of running into the next or being cut off. */}
+          {c.note && <span className={`block text-balance ${LIST_ROW_DIM}`}>{c.note}</span>}
         </span>
       ))}
     </span>

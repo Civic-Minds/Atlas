@@ -1,14 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { bunchPartsText, bunchTotalParts, coveredRoutesText, figuresUpdatedText, LATE_DEFINITION, LATE_THRESHOLD, LATE_TILE_CAPTION, liveSubtitle } from '../liveWording';
+import { bunchPartsText, bunchTotalParts, coveredRoutesText, LATE_DEFINITION, LATE_THRESHOLD, LATE_TILE_CAPTION, liveSubtitle } from '../liveWording';
 
 describe('Live wording', () => {
-  it('writes when the figures were built in Toronto time, "Figures updated Oct 16, 6:12 PM" (CIV-1814 item 41)', () => {
-    expect(figuresUpdatedText('2026-10-16T22:12:03Z')).toBe('Figures updated Oct 16, 6:12 PM');
-    expect(figuresUpdatedText('2026-10-16T13:05:00Z')).toBe('Figures updated Oct 16, 9:05 AM');
-    expect(figuresUpdatedText('2026-10-16T22:00:00Z')).toBe('Figures updated Oct 16, 6 PM');
-    expect(figuresUpdatedText('2026-10-16T04:30:00Z')).toBe('Figures updated Oct 16, 12:30 AM');
-  });
-
   it('counts the covered routes with no mode word, since replacement buses can run a streetcar route (CIV-1075)', () => {
     expect(coveredRoutesText('TTC', Array.from({ length: 9 }, () => ({ mode: 0 })))).toBe('9 TTC routes');
     expect(coveredRoutesText('TTC', [{ mode: 0 }, { mode: 3 }])).toBe('2 TTC routes');

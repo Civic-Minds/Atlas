@@ -9,10 +9,10 @@
     -77.0369
   ],
   "bbox": [
-    38.6915,
-    -77.3663,
-    39.1562,
-    -76.7167
+    38.69,
+    -77.5,
+    39.16,
+    -76.71
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1846/latest.zip",
   "supplementalFeedUrls": [
@@ -64,7 +64,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",

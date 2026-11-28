@@ -10,7 +10,7 @@ export type LiveDashboardState =
   | { kind: 'error'; reason: string }
   | { kind: 'done'; data: LiveDashboardResponse };
 
-/** The Live route dashboard's data and whether it exists (/api/live-dashboard in dev, the published JSON on R2 in builds). Shared by the full page and the route card, so their numbers cannot differ. */
+/** The Live route dashboard's data and whether it exists (the cloud reader in dev, the published JSON on R2 in builds). Shared by the full page and the route card, so their numbers cannot differ. */
 export function useLiveDashboard(agency: string | null | undefined, route: string | null | undefined): LiveDashboardState {
   const [state, setState] = useState<LiveDashboardState>({ kind: 'loading' });
   useEffect(() => {

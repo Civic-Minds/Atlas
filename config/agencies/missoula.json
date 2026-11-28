@@ -8,10 +8,10 @@
     -114.03
   ],
   "bbox": [
-    46.82,
+    46.81,
     -114.09,
-    46.92,
-    -113.87
+    46.93,
+    -113.86
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-292/latest.zip",
   "region": "Montana",
@@ -45,8 +45,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastPeekedExpiry": "20270215",
   "feedRefreshStatus": "current",

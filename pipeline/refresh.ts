@@ -37,7 +37,7 @@ import { extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceInd
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { loadFareOverrides, manualBaseFareFor } from './fareOverrides.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
-import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource, zipContentKey } from './feedPeek.js';
+import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource, timetableContentKey, zipContentKey } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
   clearOverrideUserFacingOnFeedChange,
@@ -50,7 +50,7 @@ import {
 import { logGateRun } from './gateHoldLog.js';
 import { readFeedReviewHistory, reviewStatusForNewFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedContentsChanged, feedFileDate, feedPeriodStart, isNewFeedFile, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedContentsChanged, feedFileDate, feedPeriodStart, isNewFeedFile, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta, isPlaceholderFeedEnd, stampNoFeedEnd, stampTimetableChange } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -97,6 +97,7 @@ import {
   type SameSeasonSource,
 } from './releaseDiff.js';
 import { coversDate, sameDateLastYear, sameSeasonCandidates } from './sameSeasonFeed.js';
+import { assertKnownFlags } from './cliFlags.js';
 
 console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
@@ -107,6 +108,7 @@ if (!process.env.R2_ACCESS_KEY_ID) {
 
 const FLAG_ARGS = new Set(['--force', COUNTRY_LAUNCH_FLAG]);
 // --allow <slug>:<flag> and --allow-drop are pulled out first so they are never read as slugs.
+assertKnownFlags(process.argv.slice(2), { '--force': 'flag', '--i-am-launching-country': 'flag', '--allow-drop': 'flag', '--allow': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const gateOverrides = parseGateOverrides(process.argv.slice(2));
 const rawArgs = gateOverrides.rest;
 const forceRefresh = rawArgs.includes('--force');
@@ -298,6 +300,10 @@ interface AgencyEntry {
   lastServiceWeek?: string | null;
   /** When Atlas first obtained the current main feed file (YYYYMMDD). */
   feedObtainedAt?: string | null;
+  /** CIV-3115: no real end date, the timetable's key and when it last changed (refreshMeta FeedMetaFields). */
+  noFeedEnd?: boolean;
+  lastTimetableKey?: string | null;
+  timetableChangedAt?: string | null;
   expiredFeedCheckCount?: number;
   expiredFeedCheckSince?: string | null;
   expiredFeedCheckExpiry?: string | null;
@@ -501,6 +507,8 @@ async function refreshAgency(
   // #1429: one "did the feed change" answer, from the zip's contents when recorded, for the obtained
   // date, the review flag and the override note below (the skip check reads the same keys).
   const feedContentKey = zipContentKey(buf);
+  // CIV-3115: the timetable's own key (trips and stop times), for when it last changed.
+  const timetableKey = timetableContentKey(buf);
   const feedDigest = rawFeedDigest(buf);
   const contentsChanged = feedContentsChanged({
     contentKey: feedContentKey, lastFeedContentKey: agency.lastFeedContentKey,
@@ -559,6 +567,9 @@ async function refreshAgency(
         feedInfoEnd: peekedFeedInfoEnd ?? null, calendarEnd: peekedCalendarEnd ?? null, calendarOnlyEnd: peekedCalendarOnlyEnd ?? null, todayYmd: todayUtcYmd(),
       });
       if (previousExpiry) writeLog(`\n  [info] recorded expiry ${previousExpiry} -> ${agency.lastFeedExpiry} (calendar's last service date)\n  `);
+      // CIV-3115: an unchanged feed still records whether it gives an end date and when its timetable last changed.
+      stampNoFeedEnd(agency, isPlaceholderFeedEnd(peekedFeedInfoEnd ?? null, peekedCalendarEnd ?? null, todayUtcYmd(), peekedCalendarOnlyEnd ?? null));
+      stampTimetableChange(agency, timetableKey, runDate, feedObtainedAt);
       return { summary: skipDecision.reason };
     }
     writeLog(`\n  ${agency.slug.padEnd(12)} ... reprocessing (current feed, legacy or missing route artifact)\n`);
@@ -723,6 +734,8 @@ async function refreshAgency(
       serviceWeek,
       feedObtainedAt,
       feedStart: peekedPeriodStart,
+      timetableKey,
+      runDate,
       rawArchiveKey: archiveKey,
       contentKey: feedContentKey,
     });

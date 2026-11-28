@@ -1,0 +1,26 @@
+{
+  "slug": "yuba-sutter",
+  "officialName": "Yuba-Sutter Transit Authority",
+  "websiteUrl": "http://www.yubasuttertransit.com/",
+  "dataLicense": {
+    "url": "https://www.yubasuttertransit.com/general-transit-feed-specification-gtfs",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    39.1306,
+    -121.5925
+  ],
+  "bbox": [
+    38.573,
+    -121.673,
+    39.457,
+    -121.254
+  ],
+  "feedUrl": "https://passio3.com/yubasutter/passioTransit/gtfs/google_transit.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-79/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

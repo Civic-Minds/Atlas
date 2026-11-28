@@ -1,16 +1,17 @@
 import { CARD_NOTE } from '../../styles';
-import { PERIOD_LABELS, type PeriodKey } from '../../hooks/useIntervalStats';
+import { type PeriodKey } from '../../hooks/useIntervalStats';
+import { periodWithHourText } from '../../content/noticeCopy';
 import { PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
 /**
  * The hovered (or selected) period's name: above the route card's chart, and on each full-day chart's title line
  * (CIV-1094). `className` places it.
  */
-export function HoveredPeriodName({ period, className = '' }: { period: PeriodKey | null; className?: string }) {
+export function HoveredPeriodName({ period, hour = null, className = '' }: { period: PeriodKey | null; /** #1819: the hovered hour, named beside the period on the card's chart. */ hour?: number | null; className?: string }) {
   if (!period) return null;
   return (
     <span className={`${CARD_NOTE} pointer-events-none ${className}`} data-testid="hovered-period-name">
-      {PERIOD_LABELS[period]}
+      {periodWithHourText(period, hour)}
     </span>
   );
 }

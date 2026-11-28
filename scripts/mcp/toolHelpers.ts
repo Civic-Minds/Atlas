@@ -9,11 +9,11 @@ import type { PeriodKey } from '../../shared/config';
 import type { DayType } from '../../shared/rules/days';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { SITE_URL } from '../../shared/rules/paths';
-import { TIME_PERIODS } from '../../shared/rules/periods';
 import { MAP_URL } from '../../src/utils/urlSchema';
 import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
 import { buildRouteKey } from '../../src/utils/routeKey';
 import { isoDate } from '../../shared/dateText';
+import { noEndDateValidThrough } from '../../shared/agencyPages';
 import { FEED_EXPIRING_DAYS } from '../../shared/rules/limits';
 import { PERIODS } from './toolDefs';
 
@@ -34,21 +34,11 @@ export function mapLink(view: { route?: { agency: string; routeId: string }; age
   return `${SITE_URL}/?${q.toString()}`;
 }
 
-/**
- * A time window for the service day. A clock window that starts before the first part of the day (12 AM–3 AM) can mean
- * the hours after midnight that belong to the day's late night (24:00–27:00), where the schedule writes them, or the
- * hours at its start (5 AM). Both are read: the starts that fall in the window shifted a day, folded into it.
- */
-export function startsInWindow(starts: readonly number[], w: { start: number; end: number }): number[] {
-  return starts.filter(t => windowHas(t, w)).map(t => (t >= w.end ? t - 1440 : t));
-}
-
-/** Whether a departure (minutes in the service day) falls in a window, reading an early-morning window both ways (see startsInWindow). */
-export function windowHas(t: number, w: { start: number; end: number }): boolean {
-  if (t >= w.start && t < w.end) return true;
-  return w.start < TIME_PERIODS[0].startHour * 60 && w.end <= 1440 && t >= w.start + 1440 && t < w.end + 1440;
-}
-export const validThrough = (a: { lastFeedExpiry?: string | null }) => isoDate(a.lastFeedExpiry);
+// The early-morning window rule lives with the hour-by-hour view that also reads it (#1868).
+export { startsInWindow, windowHas } from './atlasData';
+/** The schedule's end date, or for a feed that gives none Ryan's "no end date" words (CIV-3115), never the placeholder cap. */
+export const validThrough = (a: { lastFeedExpiry?: string | null; noFeedEnd?: boolean; timetableChangedAt?: string | null }, today = new Date().toISOString().slice(0, 10)) =>
+  a.noFeedEnd ? noEndDateValidThrough(a, today) : isoDate(a.lastFeedExpiry);
 
 /**
  * CIV-2081: an answer whose schedule ends within FEED_EXPIRING_DAYS (scheduleValidThrough, YYYY-MM-DD) carries a
@@ -73,14 +63,14 @@ export function agencyNamesIn(result: unknown): string[] {
   walk(result);
   return out;
 }
-/** #1694: an answer that uses an agency whose feed publisher requires a credit carries it, to give at the end with its link. */
+/** #1694, CIV-3102: an answer that uses an agency whose licence or feed publisher requires a credit carries it, to give at the end with its link. */
 export async function withFeedCredits(result: unknown): Promise<unknown> {
   if (!result || typeof result !== 'object' || Array.isArray(result)) return result;
   const names = agencyNamesIn(result);
   if (!names.length) return result;
-  const credits = await data.feedCreditsFor(names);
+  const credits = await data.creditsFor(names);
   if (!credits.length) return result;
-  return { ...(result as object), credit: credits.map(c => `${c.label} (${c.href})`).join('; '), creditNote: 'Give this credit, with its link, at the end of the answer: the data publisher requires it.' };
+  return { ...(result as object), credit: credits.map(c => `${c.label} (${c.href})`).join('; '), creditNote: 'Give this credit word for word, with its link, at the end of the answer: the data\'s licence requires it.' };
 }
 /** Every tool's answer, with the schedule-ending warning (CIV-2081) and any credit a feed publisher requires (#1694). */
 export function withScheduleWarning<T extends Record<string, (args: Args) => unknown | Promise<unknown>>>(handlers: T): T {
@@ -117,7 +107,8 @@ export async function withAlso(a: Awaited<ReturnType<typeof needAgency>>, args: 
   return [a, ...more].filter((x, i, all) => all.findIndex(y => y.slug === x.slug) === i);
 }
 /** Trip times read the schedule file on this Mac, which can be older than the schedule behind the map's figures: say so first. */
-export const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | null) => (ends && a.lastFeedExpiry && ends < a.lastFeedExpiry
+// CIV-3115: no note for a feed with no end date, whose lastFeedExpiry is only the placeholder cap.
+export const staleNote = (a: { lastFeedExpiry?: string | null; noFeedEnd?: boolean }, ends: string | null) => (ends && a.lastFeedExpiry && !a.noFeedEnd && ends < a.lastFeedExpiry
   ? { scheduleWarning: `These trip times come from an older schedule file on this Mac (service to ${isoDate(ends)}); the map's figures use the current one (to ${validThrough(a)}). Times may have changed since.` }
   : {});
 export const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;

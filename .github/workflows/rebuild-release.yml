@@ -180,7 +180,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
 
       - run: npm ci
@@ -228,6 +228,15 @@ jobs:
         if: always()
         continue-on-error: true
         run: npx tsx scripts/diff-period-figures.ts --summary=tmp/derived-reprocess --out=tmp/derived-reprocess/period-figures.json
+
+      # CIV-3130: every agency's trips file, counted (trips, trips with their last stop id, bytes against live), since
+      # the dry run uploads no agency files and a change to them would otherwise show only after publishing.
+      - name: Summarize the trips files
+        if: always()
+        continue-on-error: true
+        env:
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+        run: npx tsx scripts/trips-file-summary.ts --dir=tmp/derived-reprocess --out=tmp/derived-reprocess/trips-summary.json
 
       # The settings this dry run processed with, kept beside its figures so a comparison knows which side is which.
       # (The release manifest is written by the tile build, which only the publish job runs.)
@@ -320,6 +329,9 @@ jobs:
         continue-on-error: true
         run: nice -n 10 npx tsx scripts/studio-builds.ts --dry-run || { echo "::warning::Some Studio files failed to build; see the log."; exit 1; }
         env:
+          # #1874: the schedule comparison reads the pipeline switches; here they are the dry run's own, already in the
+          # job env from its flags step, so it must not read the repo variables with gh (it has no token and failed).
+          ATLAS_PUBLISH_FLAGS: none
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
@@ -347,6 +359,7 @@ jobs:
             tmp/derived-reprocess/report.json
             tmp/derived-reprocess/period-figures.json
             tmp/derived-reprocess/build-settings.json
+            tmp/derived-reprocess/trips-summary.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
             tmp/mcp-release/report.json
@@ -464,7 +477,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
 
       - run: npm ci
@@ -516,27 +529,13 @@ jobs:
       - name: Check the resumed run built this commit and put its files back
         if: inputs.start_at != 'reprocess' && inputs.resume_run_id != ''
         run: |
-          head_sha="$(git rev-parse HEAD)"
-          for dir in tmp/rebuild-state tmp/rebuild-manifest; do
-            [ -f "$dir/sha.txt" ] || continue
-            if [ "$(cat "$dir/sha.txt")" != "$head_sha" ]; then
-              echo "main is now ${head_sha:0:7}; run $RESUME_RUN_ID built $(cut -c1-7 "$dir/sha.txt")."
-              echo "Resuming across a new commit would mix builds. Start again with start_at=reprocess."
-              exit 1
-            fi
-          done
-          if [ -s tmp/rebuild-state/stamps.patch ]; then
-            if git apply --check tmp/rebuild-state/stamps.patch 2>/dev/null; then
-              git apply tmp/rebuild-state/stamps.patch
-            elif git apply -R --check tmp/rebuild-state/stamps.patch 2>/dev/null; then
-              echo "The stamps are already on main (their pull request was merged)."
-            else
-              echo "The saved stamps neither apply nor are already applied."; exit 1
-            fi
-          fi
+          # Main may have moved on only by this run's own stamps pull request (#1865); anything else is refused.
+          bash scripts/rebuild-resume-check.sh tmp/rebuild-state tmp/rebuild-manifest
           if [ -f tmp/rebuild-manifest/atlas-release-manifest.json ]; then
             cp tmp/rebuild-manifest/atlas-release-manifest.json tmp/atlas-release-manifest.json
           fi
+          # The index and catalogs aren't committed (CIV-2975): write them from the stamped config.
+          npm run build:agency-data
           git diff --shortstat
 
       # ---- Reprocess ---------------------------------------------------------------------
@@ -614,18 +613,18 @@ jobs:
           open(out, 'a').write(f'fatal={fatal}\n')
           PY
 
-      # --write stamps each rebuilt agency's feed expiry in public/data/index.json and
-      # config/agencies/<slug>.json (the index and catalogs are regenerated first). Save them as a patch (a resumed run reapplies it) before the
-      # pull request step moves them.
+      # --write stamps each rebuilt agency's feed expiry in config/agencies/<slug>.json (and the
+      # uncommitted public/data/index.json, CIV-2975). Save the config changes as a patch (a resumed run
+      # reapplies it and regenerates the index) before the pull request step moves them.
       - name: Save the stamped files
         id: stamps
         if: always() && inputs.start_at == 'reprocess' && steps.reprocess.outcome != 'skipped'
         run: |
           mkdir -p tmp/rebuild-state
           git rev-parse HEAD > tmp/rebuild-state/sha.txt
-          # The stamps change config/agencies; index.json and the catalogs are generated from it, and CI
-          # checks they match (check:agency-index). A failed build must not lose the stamps themselves.
-          npm run build:agency-index && npm run build:agency-catalog || echo "::warning::index/catalog rebuild failed; the stamp PR may fail the drift check"
+          # The stamps change config/agencies; the index and catalogs are generated from it (not committed).
+          # A failed build must not lose the stamps themselves.
+          npm run build:agency-data || echo "::warning::index/catalog rebuild failed; the stamp PR may fail check:agency-index"
           git add -A
           git diff --cached --binary > tmp/rebuild-state/stamps.patch
           git reset --quiet
@@ -693,6 +692,10 @@ jobs:
             git checkout "$REPROCESS_HEAD_SHA" -- .
             git reset --quiet
           fi
+          # The index and catalogs aren't committed (CIV-2975): write them from the restored config. The pull
+          # request step's branch switches regenerate them from main's unstamped config, so without this the
+          # tiles and the publish gate read the old expiries (#1864: avon-transit blocked as ended 20261125).
+          npm run build:agency-data
           git diff --shortstat
 
       # ---- Tiles, history, release -------------------------------------------------------
@@ -761,6 +764,13 @@ jobs:
         continue-on-error: true
         run: nice -n 10 npx tsx scripts/studio-builds.ts || { echo "::warning::Some Studio files failed to build; see the log."; exit 1; }
         env:
+          # #1874: the schedule comparison reads routes as the publish job does: the same four switches from the repo
+          # variables, set here, so it never calls gh (this step has no token; every comparison failed on 2026-11-26).
+          ATLAS_PUBLISH_FLAGS: none
+          ATLAS_HEADLINE_FROM_TRUNK: ${{ vars.ATLAS_HEADLINE_FROM_TRUNK }}
+          ATLAS_PIECE_READING: ${{ vars.ATLAS_PIECE_READING }}
+          ATLAS_BRANCH_READINGS: ${{ vars.ATLAS_BRANCH_READINGS }}
+          ATLAS_PIECES_BY_TRIPS: ${{ vars.ATLAS_PIECES_BY_TRIPS }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}

@@ -1,0 +1,19 @@
+{
+  "slug": "eau-claire",
+  "officialName": "Eau Claire Transit",
+  "websiteUrl": "https://www.eauclairewi.gov/government/our-divisions/transit",
+  "dataLicense": {
+    "url": "https://www.eauclairewi.gov/government/our-divisions/transit",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Wisconsin",
+  "center": [
+    44.8121,
+    -91.4867
+  ],
+  "feedUrl": "https://gtfs.ect.cadavl.com/ECT/GTFS/GTFS_ECT.zip",
+  "timezone": "America/Chicago",
+  "hiddenInProduction": true
+}

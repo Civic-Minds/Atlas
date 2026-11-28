@@ -6,9 +6,9 @@
     -101.8485
   ],
   "bbox": [
-    35.15,
+    35.14,
     -101.94,
-    35.25,
+    35.26,
     -101.76
   ],
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12076/ACT_GTFS_24.zip",
@@ -50,8 +50,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastPeekedExpiry": "20261230",
   "lastServiceWeek": "b6d0a81e3efe7c1e",

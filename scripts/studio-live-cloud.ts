@@ -9,8 +9,9 @@
  * files Studio's Live page reads (`<slug>-<route>-segments.json`, `-gaps.json`, `<slug>-agency.json`) to the PRIVATE
  * Live bucket (MCP_LIVE_BUCKET, which the Mac's read-only key can read; CIV-2186). Timetables are read from the private
  * archive bucket. Studio is private and this
- * repository is public, so the log prints counts only: no agency, route or figure. Child output goes to --log (default
- * <work>/private.log), which is never uploaded.
+ * repository is public, so the log prints counts only: no agency, route or figure (#1811). Each agency's reason
+ * (CIV-2910: rebuilt / kept: <why> / failed: <stage>) and all child output go to --log (default <work>/private.log),
+ * which is never uploaded.
  *
  * The two checks from docs/operations/LIVE_ANALYSIS.md:
  * - **No half-finished upload.** Each run writes under its own prefix (`studio-live/runs/<run id>/`) and then switches
@@ -27,13 +28,17 @@
 import { spawnSync } from 'child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { basename, join, resolve } from 'path';
-import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand } from '@aws-sdk/client-s3';
 import { LIVE_ARCHIVE_SLUGS } from '../shared/liveCoverage';
+import { isRecordingNow } from '../shared/liveArchiveFeeds';
 import { LIVE_TTC_ANALYSED_ROUTES } from '../shared/rules/live';
 import type { LiveV3 } from '../shared/liveDashboard';
+import { getR2Client, privateLiveBucketName, requireEnv } from '../pipeline/r2';
 import { analyseArchivedAgency, LiveBuildFailed } from './liveArchiveAnalysis';
 import { STUDIO_LIVE_POINTER, studioLiveRunPrefix, acceptStudioLiveBuild, goodDaysByWeek, nextStudioLivePointer, runsToPrune, type StudioLivePointer } from './studioLiveRun';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--days': 'value', '--work': 'value', '--log': 'value', '--only': 'value', '--run-id': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const argv = process.argv.slice(2);
 const opt = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
 const dryRun = argv.includes('--dry-run');
@@ -46,16 +51,10 @@ if (!/^[A-Za-z0-9-]+$/.test(runId)) throw new Error('--run-id: letters, digits a
 mkdirSync(work, { recursive: true });
 writeFileSync(log, '');
 
-const need = (k: string) => { const v = process.env[k]; if (!v) throw new Error(`Missing env var ${k}.`); return v; };
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${need('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: need('R2_ACCESS_KEY_ID'), secretAccessKey: need('R2_SECRET_ACCESS_KEY') },
-});
+const s3 = getR2Client();
 // CIV-2186: the files go to the private Live bucket the Mac's read-only key reads; timetables still come from the archive.
-need('R2_ARCHIVE_BUCKET_NAME');
-const PRIVATE = need('MCP_LIVE_BUCKET');
-if (PRIVATE === process.env.R2_BUCKET_NAME) throw new Error('MCP_LIVE_BUCKET is the public bucket; refusing.');
+requireEnv('R2_ARCHIVE_BUCKET_NAME');
+const PRIVATE = privateLiveBucketName();
 
 async function getText(key: string): Promise<string | null> {
   try { return await (await s3.send(new GetObjectCommand({ Bucket: PRIVATE, Key: key }))).Body!.transformToString(); }
@@ -79,12 +78,27 @@ async function deleteKeys(keys: string[]): Promise<void> {
   }
 }
 
+/** #1789 (CIV-2907): per agency, runs that started partway along their trip and the trip starts rated (counts only, for the public log). */
+const partway = new Map<string, { runs: number; starts: number }>();
+let currentSlug = '';
+function countPartway(stdout: string | null): void {
+  for (const m of (stdout ?? '').matchAll(/^#1789: (\d+) runs in the window started partway .*?of (\d+) rated trip starts/gm)) {
+    const c = partway.get(currentSlug) ?? { runs: 0, starts: 0 };
+    c.runs += Number(m[1]); c.starts += Number(m[2]);
+    partway.set(currentSlug, c);
+  }
+}
+
 /** Runs one of Live's scripts with its output in the private log only. */
+let lastStepError: string | null = null;
 function run(script: string, args: string[]): boolean {
   const r = spawnSync(process.execPath, [resolve('node_modules/tsx/dist/cli.mjs'), script, ...args], {
     env: { ...process.env, LIVE_DATA: work, NODE_OPTIONS: '--max-old-space-size=8192' }, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024,
   });
   appendFileSync(log, `\n$ ${script} ${args.join(' ')}\n${r.stdout ?? ''}${r.stderr ?? ''}exit ${r.status}\n`);
+  // CIV-2910 (as #1801): the timetable step's own one-line reason (dates, counts and storage keys only) for the public reason code.
+  lastStepError = r.status === 0 ? null : (r.stderr ?? '').split('\n').reverse().find(l => l.startsWith('live-gtfs-window: '))?.slice(0, 300) ?? null;
+  countPartway(r.stdout);
   return r.status === 0;
 }
 
@@ -92,6 +106,7 @@ function run(script: string, args: string[]): boolean {
 function runShell(script: string, args: string[]): boolean {
   const r = spawnSync('bash', [script, ...args], { env: { ...process.env, LIVE_DATA: work, NODE_OPTIONS: '--max-old-space-size=8192' }, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
   appendFileSync(log, `\n$ ${script} ${args.join(' ')}\n${r.stdout ?? ''}${r.stderr ?? ''}exit ${r.status}\n`);
+  countPartway(r.stdout);
   return r.status === 0;
 }
 
@@ -104,7 +119,7 @@ function analyseTtc(): { outDir: string; routes: Map<string, { file: string; v3?
   mkdirSync(outDir, { recursive: true });
   const routes = LIVE_TTC_ANALYSED_ROUTES.join(',');
   if (!run('scripts/live-fetch-archive.ts', ['--days', String(days), '--out', join(work, 'archive'), '--prune', '--routes', routes])) throw new LiveBuildFailed('fetch');
-  if (!run('scripts/live-gtfs-for-window.ts', ['--days', String(days), '--feeds-dir', join(work, 'gtfs', 'candidates', 'surface-feeds'), '--surface', join(work, 'gtfs', 'candidates', 'surface'), '--archive', join(work, 'archive')])) throw new LiveBuildFailed('timetables');
+  if (!run('scripts/live-gtfs-for-window.ts', ['--days', String(days), '--feeds-dir', join(work, 'gtfs', 'candidates', 'surface-feeds'), '--surface', join(work, 'gtfs', 'candidates', 'surface'), '--archive', join(work, 'archive')])) throw new LiveBuildFailed(`timetables${lastStepError ? ` (${lastStepError})` : ''}`);
   if (!runShell('scripts/live-analyze.sh', ['all', '--days', String(days)])) throw new LiveBuildFailed('analysis');
   const out = new Map<string, { file: string; v3?: LiveV3 }>();
   for (const route of LIVE_TTC_ANALYSED_ROUTES) {
@@ -118,11 +133,25 @@ function analyseTtc(): { outDir: string; routes: Map<string, { file: string; v3?
 const previous = JSON.parse(await getText(STUDIO_LIVE_POINTER).catch(e => { if (dryRun) return null; throw e; }) ?? 'null') as StudioLivePointer | null;
 const built: Record<string, { files: string[]; thisWeek: number; lastWeek: number }> = {};
 let failed = 0, thin = 0;
-for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
+// CIV-2910: why each agency was rebuilt or not goes to the private log, with the minutes it took (#1811: agency names
+// never reach the public log). The public log shows only how many agencies are done, so a slow run still shows progress.
+let agencyStart = Date.now(), agenciesDone = 0;
+const minutes = () => Math.round((Date.now() - agencyStart) / 60000);
+const reasons = { push: (r: string) => appendFileSync(log, `\n${r} [${minutes()} min]\n`) };
+// #1810: only agencies recorded now; a paused one (Halifax, Montréal) has no new positions and keeps its last files.
+for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => isRecordingNow(s) && (!only || only.includes(s)))) {
+  agencyStart = Date.now();
+  currentSlug = slug;
   try {
-    const a = slug === 'ttc' ? analyseTtc() : analyseArchivedAgency(slug, { work, days, run });
+    const a = slug === 'ttc' ? analyseTtc() : analyseArchivedAgency(slug, { work, days, run, lastError: () => lastStepError });
     const weeks = goodDaysByWeek([...a.routes.values()].map(r => r.v3));
-    if (!a.routes.size || !acceptStudioLiveBuild(weeks, !!previous?.agencies[slug])) { thin++; continue; }
+    const had = !!previous?.agencies[slug];
+    if (!a.routes.size || !acceptStudioLiveBuild(weeks, had)) {
+      thin++;
+      reasons.push(`${slug}: kept its last files: ${a.routes.size ? `too few good days (this week ${weeks.thisWeek}, last week ${weeks.lastWeek})` : 'no route analysed'}${had ? '' : ' (none before)'}`);
+      continue;
+    }
+    reasons.push(`${slug}: rebuilt (${a.routes.size} routes; good days this week ${weeks.thisWeek}, last week ${weeks.lastWeek})`);
     const agencyFile = join(a.outDir, `${slug}-agency.json`);
     // Each route's analysis and, where written, its gaps file (the gaps chart; CIV-2186), then the agency summary.
     const gaps = (f: string) => f.replace(/-segments\.json$/, '-gaps.json');
@@ -130,7 +159,10 @@ for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
     built[slug] = { files, ...weeks };
   } catch (e) {
     failed++;
+    reasons.push(`${slug}: failed: ${e instanceof LiveBuildFailed ? e.message : 'analysis'}`);
     appendFileSync(log, `\n${slug}: ${(e as Error).stack ?? e}\n`);
+  } finally {
+    console.log(`  ${++agenciesDone} agencies done [${minutes()} min]`);
   }
 }
 
@@ -138,6 +170,11 @@ const pointer = nextStudioLivePointer(previous, runId, new Date().toISOString(),
   Object.fromEntries(Object.entries(built).map(([slug, b]) => [slug, { files: b.files.map(f => basename(f)), thisWeekGoodDays: b.thisWeek, lastWeekGoodDays: b.lastWeek }])));
 const fileCount = Object.values(built).reduce((n, b) => n + b.files.length, 0);
 console.log(`Studio Live: ${Object.keys(built).length} agencies rebuilt (${fileCount} files), ${thin} kept their last files (thin week or no routes), ${failed} could not be built (see the private log); ${Object.keys(pointer.agencies).length} agencies in the new pointer.`);
+
+// #1811: agency names stay in the private log; the public log gets only the totals.
+for (const [slug, c] of [...partway].sort((a, b) => b[1].runs - a[1].runs)) appendFileSync(log, `\n#1789 ${slug}: ${c.runs} runs started partway, of ${c.starts} rated trip starts\n`);
+const partwayTotal = [...partway.values()].reduce((t, c) => ({ runs: t.runs + c.runs, starts: t.starts + c.starts }), { runs: 0, starts: 0 });
+if (partway.size) console.log(`#1789: ${partwayTotal.runs} runs started partway, of ${partwayTotal.starts} rated trip starts, in ${partway.size} agencies (per agency in the private log)`);
 
 if (dryRun) {
   const dir = join(work, 'dry-run');

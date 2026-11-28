@@ -8,6 +8,7 @@ import { TOO_CLOSE_LABEL, TOO_FAR_LABEL } from '../../../shared/liveWording';
 import { ACTIVE_BG, FADED_OPACITY, useActivePart } from './useActivePart';
 import { countOf } from '../../../shared/overflowText';
 import { SCHEDULED_COLUMN } from '../../content/noticeCopy';
+import { minuteTicks } from '../../utils/chartAxis';
 
 const PAD_TOP = 22;
 const PAD_BOTTOM = 22;
@@ -45,9 +46,7 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: 
   // Headroom for the long gaps without letting one outlier flatten the rest: 3x the typical timetable gap, at least 10 min.
   const yMax = Math.max(10, Math.ceil((3 * median(gaps.s)) / 60 / 5) * 5);
   const y = (min: number) => PAD_TOP + (1 - Math.min(min, yMax) / yMax) * (H - PAD_TOP - PAD_BOTTOM);
-  const step = yMax > 30 ? 10 : 5;
-  const ticks: number[] = [];
-  for (let t = 0; t <= yMax; t += step) ticks.push(t);
+  const ticks = minuteTicks({ min: 0, max: yMax });
   // The timetable's gap for each hour on the axis (median of the scheduled gaps of the gaps measured in that hour).
   const sched = axis.map(h => {
     const s = gaps.s.filter((_, i) => Math.floor(gaps.m[i] / 60) === h);

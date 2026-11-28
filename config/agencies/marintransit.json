@@ -9,10 +9,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.86,
-    -122.85,
-    38.12,
-    -122.46
+    37.85,
+    -122.86,
+    38.13,
+    -122.45
   ],
   "feedUrl": "https://marintransit.gov/data/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2937/latest.zip",
@@ -51,7 +51,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastPeekedExpiry": "20270110",
   "feedRefreshStatus": "current",
@@ -62,5 +62,11 @@
   "feedObtainedAt": "20261020",
   "lastFeedStart": "20260412",
   "lastRawArchiveKey": "20270109-6190d89f9e601601",
-  "lastFeedContentKey": "dc6e2bf7dc9ad3d3"
+  "lastFeedContentKey": "dc6e2bf7dc9ad3d3",
+  "dataLicense": {
+    "url": "https://marintransit.gov/developers",
+    "attribution": "required",
+    "name": "ODC-By 1.0",
+    "checkedOn": "2026-11-26"
+  }
 }

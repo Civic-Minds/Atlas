@@ -1,0 +1,21 @@
+{
+  "slug": "manatee",
+  "officialName": "Manatee County Area Transit",
+  "commonName": "MCAT",
+  "websiteUrl": "https://www.mymanatee.org/departments/mcat",
+  "dataLicense": {
+    "url": "https://www.mymanatee.org/departments/mcat",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Florida",
+  "center": [
+    27.4736,
+    -82.5719
+  ],
+  "feedUrl": "https://realtimemcat.availtec.com/InfoPoint/GTFS-Zip.ashx",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2258/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

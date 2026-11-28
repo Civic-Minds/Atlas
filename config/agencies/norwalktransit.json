@@ -10,6 +10,1248 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20261105",
   "region": "California",
+  "stopRenames": [
+    {
+      "stopId": "1001",
+      "from": "183rd Street and Alburtis Avenue- N/E Co",
+      "to": "183rd Street and Alburtis Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1002",
+      "from": "183rd Street and Alburtis Avenue- S/E Co",
+      "to": "183rd Street and Alburtis Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1004",
+      "from": "183rd Street and Los Cerritos Center- S/",
+      "to": "183rd Street and Los Cerritos Center- S/E Corner"
+    },
+    {
+      "stopId": "1005",
+      "from": "183rd Street and Studebaker Road- S/E Co",
+      "to": "183rd Street and Studebaker Road- S/E Corner"
+    },
+    {
+      "stopId": "1008",
+      "from": "Alondra Boulevard and Elmcroft Avenue- N",
+      "to": "Alondra Boulevard and Elmcroft Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1011",
+      "from": "Alondra Boulevard and Gridley Road- N/W",
+      "to": "Alondra Boulevard and Gridley Road- N/W Corner"
+    },
+    {
+      "stopId": "1012",
+      "from": "Alondra Boulevard and Madris Avenue - N/",
+      "to": "Alondra Boulevard and Madris Avenue - N/E Corner"
+    },
+    {
+      "stopId": "1014",
+      "from": "Alondra Boulevard and Maidstone Avenue-N",
+      "to": "Alondra Boulevard and Maidstone Avenue-N/E Corner"
+    },
+    {
+      "stopId": "1016",
+      "from": "Alondra Boulevard and Mc Nab Avenue- N/W",
+      "to": "Alondra Boulevard and Mc Nab Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1017",
+      "from": "Alondra Boulevard and Mc Nab Avenue- S/E",
+      "to": "Alondra Boulevard and Mc Nab Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1018",
+      "from": "Alondra Boulevard and Piuma Avenue- N/W",
+      "to": "Alondra Boulevard and Piuma Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1019",
+      "from": "Alondra Boulevard and Piuma Avenue- S/W",
+      "to": "Alondra Boulevard and Piuma Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1020",
+      "from": "Alondra Boulevard and Studebaker Road- N",
+      "to": "Alondra Boulevard and Studebaker Road- N/E Corner"
+    },
+    {
+      "stopId": "1021",
+      "from": "Alondra Boulevard and Studebaker Road- S",
+      "to": "Alondra Boulevard and Studebaker Road- S/E Corner"
+    },
+    {
+      "stopId": "1009",
+      "from": "Alondra Boulevard opposite Elmcroft Aven",
+      "to": "Alondra Boulevard opposite Elmcroft Avenue"
+    },
+    {
+      "stopId": "1023",
+      "from": "Alondra Boulevard opposite Leibacher Ave",
+      "to": "Alondra Boulevard opposite Leibacher Avenue"
+    },
+    {
+      "stopId": "1024",
+      "from": "Beach Boulevard and Fashion Square Lane-",
+      "to": "Beach Boulevard and Fashion Square Lane- S/E Corner"
+    },
+    {
+      "stopId": "1053",
+      "from": "Civic Center Drive and Silverbow Avenue",
+      "to": "Civic Center Drive and Silverbow Avenue -S/E Corner"
+    },
+    {
+      "stopId": "1054",
+      "from": "Civic Center Drive and Volunteer Avenue",
+      "to": "Civic Center Drive and Volunteer Avenue - S/E Corner"
+    },
+    {
+      "stopId": "1055",
+      "from": "Civic Center Drive and Volunteer Avenue-",
+      "to": "Civic Center Drive and Volunteer Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1059",
+      "from": "Clark Avenue and Alondra Boulevard - S/E",
+      "to": "Clark Avenue and Alondra Boulevard - S/E  Corner"
+    },
+    {
+      "stopId": "1060",
+      "from": "Clark Avenue and Ives Street - N/E  Corn",
+      "to": "Clark Avenue and Ives Street - N/E  Corner"
+    },
+    {
+      "stopId": "1061",
+      "from": "Clark Avenue and Linden Street - N/E  Co",
+      "to": "Clark Avenue and Linden Street - N/E  Corner"
+    },
+    {
+      "stopId": "1062",
+      "from": "Clark Avenue and Oak Street at Youth Emp",
+      "to": "Clark Avenue and Oak Street at Youth Employment"
+    },
+    {
+      "stopId": "1063",
+      "from": "Clark Avenue and Somerset Boulevard- N/E",
+      "to": "Clark Avenue and Somerset Boulevard- N/E  Corner"
+    },
+    {
+      "stopId": "1073",
+      "from": "Firestone Boulevard and Pioneer Boulevar",
+      "to": "Firestone Boulevard and Pioneer Boulevard"
+    },
+    {
+      "stopId": "1074",
+      "from": "Firestone Boulevard and Pioneer Boulevar",
+      "to": "Firestone Boulevard and Pioneer Boulevard"
+    },
+    {
+      "stopId": "1075",
+      "from": "Florence Avenue and Fulton Wells Avenue-",
+      "to": "Florence Avenue and Fulton Wells Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1076",
+      "from": "Florence Avenue and Norwalk Boulevard- N",
+      "to": "Florence Avenue and Norwalk Boulevard- N/W Corner"
+    },
+    {
+      "stopId": "1079",
+      "from": "Florence Avenue and Pioneer Boulevard- S",
+      "to": "Florence Avenue and Pioneer Boulevard- S/E Corner"
+    },
+    {
+      "stopId": "1080",
+      "from": "Florence Avenue and Ringwood Avenue- S/W",
+      "to": "Florence Avenue and Ringwood Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1081",
+      "from": "Florence Avenue at Lake Center Athletic",
+      "to": "Florence Avenue at Lake Center Athletic Park"
+    },
+    {
+      "stopId": "1085",
+      "from": "Flower Street and Civic Center Drive- N/",
+      "to": "Flower Street and Civic Center Drive- N/E Corner"
+    },
+    {
+      "stopId": "1087",
+      "from": "Foster Road and Bechard Avenue - S/W Cor",
+      "to": "Foster Road and Bechard Avenue - S/W Corner"
+    },
+    {
+      "stopId": "1088",
+      "from": "Foster Road and Bechard Avenue (Soropt.",
+      "to": "Foster Road and Bechard Avenue (Soropt. Village)"
+    },
+    {
+      "stopId": "1090",
+      "from": "Foster Road and Greenstone Avenue -S/E C",
+      "to": "Foster Road and Greenstone Avenue -S/E Corner"
+    },
+    {
+      "stopId": "1092",
+      "from": "Foster Road and Shoemaker Avenue - S/W C",
+      "to": "Foster Road and Shoemaker Avenue - S/W Corner"
+    },
+    {
+      "stopId": "1093",
+      "from": "Foster Road and Stanstead Avenue -S/W Co",
+      "to": "Foster Road and Stanstead Avenue -S/W Corner"
+    },
+    {
+      "stopId": "1105",
+      "from": "Imperial Highway and 12501 Imperial High",
+      "to": "Imperial Highway and 12501 Imperial Highway"
+    },
+    {
+      "stopId": "1106",
+      "from": "Imperial Highway and 1st Avenue- N/W Cor",
+      "to": "Imperial Highway and 1st Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1107",
+      "from": "Imperial Highway and 1st Avenue- S/W Cor",
+      "to": "Imperial Highway and 1st Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1108",
+      "from": "Imperial Highway and Beach Boulevard- N/",
+      "to": "Imperial Highway and Beach Boulevard- N/W Corner"
+    },
+    {
+      "stopId": "1109",
+      "from": "Imperial Highway and Biola Avenue- S/W C",
+      "to": "Imperial Highway and Biola Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1110",
+      "from": "Imperial Highway and Bloomfield Avenue-",
+      "to": "Imperial Highway and Bloomfield Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1111",
+      "from": "Imperial Highway and Bloomfield Avenue-",
+      "to": "Imperial Highway and Bloomfield Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1112",
+      "from": "Imperial Highway and Burgess Avenue- N/W",
+      "to": "Imperial Highway and Burgess Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1113",
+      "from": "Imperial Highway and Burgess Avenue- S/W",
+      "to": "Imperial Highway and Burgess Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1114",
+      "from": "Imperial Highway and Carmenita Road- N/E",
+      "to": "Imperial Highway and Carmenita Road- N/E Corner"
+    },
+    {
+      "stopId": "1115",
+      "from": "Imperial Highway and Carmenita Road- S/W",
+      "to": "Imperial Highway and Carmenita Road- S/W Corner"
+    },
+    {
+      "stopId": "1117",
+      "from": "Imperial Highway and Fairford Avenue-S/E",
+      "to": "Imperial Highway and Fairford Avenue-S/E Corner"
+    },
+    {
+      "stopId": "1118",
+      "from": "Imperial Highway and Grovedale Drive- N/",
+      "to": "Imperial Highway and Grovedale Drive- N/E Corner"
+    },
+    {
+      "stopId": "1119",
+      "from": "Imperial Highway and Grovedale Drive- S/",
+      "to": "Imperial Highway and Grovedale Drive- S/W Corner"
+    },
+    {
+      "stopId": "1120",
+      "from": "Imperial Highway and Hoxie Avenue- S/E C",
+      "to": "Imperial Highway and Hoxie Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1122",
+      "from": "Imperial Highway and Jersey Avenue- N/E",
+      "to": "Imperial Highway and Jersey Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1123",
+      "from": "Imperial Highway and La Mirada Boulevard",
+      "to": "Imperial Highway and La Mirada Boulevard- N/E Corner"
+    },
+    {
+      "stopId": "1124",
+      "from": "Imperial Highway and La Mirada Boulevard",
+      "to": "Imperial Highway and La Mirada Boulevard- S/W Corner"
+    },
+    {
+      "stopId": "1125",
+      "from": "Imperial Highway and Leffingwell Road -",
+      "to": "Imperial Highway and Leffingwell Road - S/E Corner"
+    },
+    {
+      "stopId": "1126",
+      "from": "Imperial Highway and Leffingwell Road- N",
+      "to": "Imperial Highway and Leffingwell Road- N/E Corner"
+    },
+    {
+      "stopId": "1128",
+      "from": "Imperial Highway and Market Place (West)",
+      "to": "Imperial Highway and Market Place (West) Wendy's"
+    },
+    {
+      "stopId": "1129",
+      "from": "Imperial Highway and Meyer Road- N/W Cor",
+      "to": "Imperial Highway and Meyer Road- N/W Corner"
+    },
+    {
+      "stopId": "1130",
+      "from": "Imperial Highway and Meyer Road- S/W Cor",
+      "to": "Imperial Highway and Meyer Road- S/W Corner"
+    },
+    {
+      "stopId": "1131",
+      "from": "Imperial Highway and Ocaso Avenue- N/W C",
+      "to": "Imperial Highway and Ocaso Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1132",
+      "from": "Imperial Highway and Ocaso Avenue- S/W C",
+      "to": "Imperial Highway and Ocaso Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1134",
+      "from": "Imperial Highway and Oxford Drive- N/E C",
+      "to": "Imperial Highway and Oxford Drive- N/E Corner"
+    },
+    {
+      "stopId": "1135",
+      "from": "Imperial Highway and Oxford Drive- S/W C",
+      "to": "Imperial Highway and Oxford Drive- S/W Corner"
+    },
+    {
+      "stopId": "1136",
+      "from": "Imperial Highway and Paddison Avenue- N/",
+      "to": "Imperial Highway and Paddison Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1137",
+      "from": "Imperial Highway and Paddison Avenue- S/",
+      "to": "Imperial Highway and Paddison Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1138",
+      "from": "Imperial Highway and Shoemaker Avenue- N",
+      "to": "Imperial Highway and Shoemaker Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1139",
+      "from": "Imperial Highway and Shoemaker Avenue- S",
+      "to": "Imperial Highway and Shoemaker Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1140",
+      "from": "Imperial Highway and Springview Drive- N",
+      "to": "Imperial Highway and Springview Drive- N/W Corner"
+    },
+    {
+      "stopId": "1141",
+      "from": "Imperial Highway and Studebaker Road- N/",
+      "to": "Imperial Highway and Studebaker Road- N/W Corner"
+    },
+    {
+      "stopId": "1142",
+      "from": "Imperial Highway and Studebaker Road-S/E",
+      "to": "Imperial Highway and Studebaker Road-S/E Corner"
+    },
+    {
+      "stopId": "1143",
+      "from": "Imperial Highway and Tigrina Avenue- N/E",
+      "to": "Imperial Highway and Tigrina Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1144",
+      "from": "Imperial Highway and Tigrina Avenue- S/W",
+      "to": "Imperial Highway and Tigrina Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1145",
+      "from": "Imperial Highway and Valley View Avenue-",
+      "to": "Imperial Highway and Valley View Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1146",
+      "from": "Imperial Highway and Valley View Avenue-",
+      "to": "Imperial Highway and Valley View Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1147",
+      "from": "Imperial Highway and Volunteer Avenue- N",
+      "to": "Imperial Highway and Volunteer Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1148",
+      "from": "Imperial Highway and Volunteer Avenue- S",
+      "to": "Imperial Highway and Volunteer Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1116",
+      "from": "Imperial Highway opposite Fairford Avenu",
+      "to": "Imperial Highway opposite Fairford Avenue"
+    },
+    {
+      "stopId": "1159",
+      "from": "La Mirada Boulevard and Ocaso Avenue S/E",
+      "to": "La Mirada Boulevard and Ocaso Avenue S/E Corner"
+    },
+    {
+      "stopId": "1160",
+      "from": "Lakeland Road and Arlee Avenue - S/W Cor",
+      "to": "Lakeland Road and Arlee Avenue - S/W Corner"
+    },
+    {
+      "stopId": "1163",
+      "from": "Lakeland Road and Paddison Avenue - S/E",
+      "to": "Lakeland Road and Paddison Avenue - S/E Corner"
+    },
+    {
+      "stopId": "1166",
+      "from": "Lambert Road and Beach Boulevard- S/E Co",
+      "to": "Lambert Road and Beach Boulevard- S/E Corner"
+    },
+    {
+      "stopId": "1167",
+      "from": "Lambert Road and Idaho Street- S/W Corne",
+      "to": "Lambert Road and Idaho Street- S/W Corner"
+    },
+    {
+      "stopId": "1171",
+      "from": "Lambert Road and Whitebrook Drive- S/E C",
+      "to": "Lambert Road and Whitebrook Drive- S/E Corner"
+    },
+    {
+      "stopId": "1172",
+      "from": "Mar Vista Street and Washington Boulevar",
+      "to": "Mar Vista Street and Washington Boulevard"
+    },
+    {
+      "stopId": "1176",
+      "from": "Norwalk Boulevard and 161st Street  (Cor",
+      "to": "Norwalk Boulevard and 161st Street  (Coras Market.- S/W Corner"
+    },
+    {
+      "stopId": "1178",
+      "from": "Norwalk Boulevard and Aegean Street- S/W",
+      "to": "Norwalk Boulevard and Aegean Street- S/W Corner"
+    },
+    {
+      "stopId": "1179",
+      "from": "Norwalk Boulevard and Aldrich Street- N/",
+      "to": "Norwalk Boulevard and Aldrich Street- N/W Corner"
+    },
+    {
+      "stopId": "1180",
+      "from": "Norwalk Boulevard and Balfour Street- N/",
+      "to": "Norwalk Boulevard and Balfour Street- N/E Corner"
+    },
+    {
+      "stopId": "1181",
+      "from": "Norwalk Boulevard and Beverly Boulevard-",
+      "to": "Norwalk Boulevard and Beverly Boulevard- S/E Corner"
+    },
+    {
+      "stopId": "1182",
+      "from": "Norwalk Boulevard and Beverly Boulevard-",
+      "to": "Norwalk Boulevard and Beverly Boulevard- S/W Corner"
+    },
+    {
+      "stopId": "1183",
+      "from": "Norwalk Boulevard and Bexley Drive- N/W",
+      "to": "Norwalk Boulevard and Bexley Drive- N/W Corner"
+    },
+    {
+      "stopId": "1184",
+      "from": "Norwalk Boulevard and Bexley Drive- S/E",
+      "to": "Norwalk Boulevard and Bexley Drive- S/E Corner"
+    },
+    {
+      "stopId": "1187",
+      "from": "Norwalk Boulevard and Civic Center Drive",
+      "to": "Norwalk Boulevard and Civic Center Drive- N/E Corner"
+    },
+    {
+      "stopId": "1188",
+      "from": "Norwalk Boulevard and Civic Center Drive",
+      "to": "Norwalk Boulevard and Civic Center Drive- N/E Corner"
+    },
+    {
+      "stopId": "1189",
+      "from": "Norwalk Boulevard and Coolhurst Drive- S",
+      "to": "Norwalk Boulevard and Coolhurst Drive- S/W Corner"
+    },
+    {
+      "stopId": "1190",
+      "from": "Norwalk Boulevard and Crewe Street- N/W",
+      "to": "Norwalk Boulevard and Crewe Street- N/W Corner"
+    },
+    {
+      "stopId": "1192",
+      "from": "Norwalk Boulevard and Florence Avenue- S",
+      "to": "Norwalk Boulevard and Florence Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1193",
+      "from": "Norwalk Boulevard and Hermes Street- N/W",
+      "to": "Norwalk Boulevard and Hermes Street- N/W Corner"
+    },
+    {
+      "stopId": "1194",
+      "from": "Norwalk Boulevard and Lakeland Road- S/E",
+      "to": "Norwalk Boulevard and Lakeland Road- S/E Corner"
+    },
+    {
+      "stopId": "1195",
+      "from": "Norwalk Boulevard and Mines Boulevard- N",
+      "to": "Norwalk Boulevard and Mines Boulevard- N/E Corner"
+    },
+    {
+      "stopId": "1196",
+      "from": "Norwalk Boulevard and Monte Vista Drive-",
+      "to": "Norwalk Boulevard and Monte Vista Drive- N/E Corner"
+    },
+    {
+      "stopId": "1197",
+      "from": "Norwalk Boulevard and Oracle Street- S/W",
+      "to": "Norwalk Boulevard and Oracle Street- S/W Corner"
+    },
+    {
+      "stopId": "1198",
+      "from": "Norwalk Boulevard and Orange Grove Avenu",
+      "to": "Norwalk Boulevard and Orange Grove Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1199",
+      "from": "Norwalk Boulevard and Orange Street- N/W",
+      "to": "Norwalk Boulevard and Orange Street- N/W Corner"
+    },
+    {
+      "stopId": "1200",
+      "from": "Norwalk Boulevard and Orange Street- S/E",
+      "to": "Norwalk Boulevard and Orange Street- S/E Corner"
+    },
+    {
+      "stopId": "1201",
+      "from": "Norwalk Boulevard and Paddison Avenue Sq",
+      "to": "Norwalk Boulevard and Paddison Avenue Square"
+    },
+    {
+      "stopId": "1202",
+      "from": "Norwalk Boulevard and Reichling Lane- S/",
+      "to": "Norwalk Boulevard and Reichling Lane- S/E Corner"
+    },
+    {
+      "stopId": "1203",
+      "from": "Norwalk Boulevard and Slauson Avenue- N/",
+      "to": "Norwalk Boulevard and Slauson Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1204",
+      "from": "Norwalk Boulevard and Slauson Avenue- N/",
+      "to": "Norwalk Boulevard and Slauson Avenue- N/W Corner"
+    },
+    {
+      "stopId": "1205",
+      "from": "Norwalk Boulevard and Tina Street - S/W",
+      "to": "Norwalk Boulevard and Tina Street - S/W Corner"
+    },
+    {
+      "stopId": "1206",
+      "from": "Norwalk Boulevard and Tina Street- N/W C",
+      "to": "Norwalk Boulevard and Tina Street- N/W Corner"
+    },
+    {
+      "stopId": "1207",
+      "from": "Norwalk Boulevard and Waddell Street- N/",
+      "to": "Norwalk Boulevard and Waddell Street- N/E Corner"
+    },
+    {
+      "stopId": "1208",
+      "from": "Norwalk Boulevard and Waddell Street- N/",
+      "to": "Norwalk Boulevard and Waddell Street- N/W Corner"
+    },
+    {
+      "stopId": "1209",
+      "from": "Norwalk Boulevard and Wakeman Street- Sw",
+      "to": "Norwalk Boulevard and Wakeman Street- Sw/E Corner"
+    },
+    {
+      "stopId": "1210",
+      "from": "Norwalk Boulevard at Metro Hospital Main",
+      "to": "Norwalk Boulevard at Metro Hospital Main Gate"
+    },
+    {
+      "stopId": "1224",
+      "from": "Orr and Day Road and Clarkman Street- N/",
+      "to": "Orr and Day Road and Clarkman Street- N/W Corner"
+    },
+    {
+      "stopId": "1226",
+      "from": "Orr and Day Road and Davenrich Street- S",
+      "to": "Orr and Day Road and Davenrich Street- S/W Corner"
+    },
+    {
+      "stopId": "1228",
+      "from": "Orr and Day Road and Dunning Street- N/W",
+      "to": "Orr and Day Road and Dunning Street- N/W Corner"
+    },
+    {
+      "stopId": "1229",
+      "from": "Orr and Day Road and Whiteland Street- S",
+      "to": "Orr and Day Road and Whiteland Street- S/E Corner"
+    },
+    {
+      "stopId": "1230",
+      "from": "Orr and Day Road and Whiteland Street- S",
+      "to": "Orr and Day Road and Whiteland Street- S/W Corner"
+    },
+    {
+      "stopId": "1260",
+      "from": "Pioneer Boulevard and 163rd Street- S/E",
+      "to": "Pioneer Boulevard and 163rd Street- S/E Corner"
+    },
+    {
+      "stopId": "1261",
+      "from": "Pioneer Boulevard and 166th Street- N/E",
+      "to": "Pioneer Boulevard and 166th Street- N/E Corner"
+    },
+    {
+      "stopId": "1262",
+      "from": "Pioneer Boulevard and 166th Street- N/W",
+      "to": "Pioneer Boulevard and 166th Street- N/W Corner"
+    },
+    {
+      "stopId": "1263",
+      "from": "Pioneer Boulevard and 178th Street - N/E",
+      "to": "Pioneer Boulevard and 178th Street - N/E Corner"
+    },
+    {
+      "stopId": "1264",
+      "from": "Pioneer Boulevard and 183rd Street- N/W",
+      "to": "Pioneer Boulevard and 183rd Street- N/W Corner"
+    },
+    {
+      "stopId": "1265",
+      "from": "Pioneer Boulevard and Alondra Boulevard-",
+      "to": "Pioneer Boulevard and Alondra Boulevard- N/W Corner"
+    },
+    {
+      "stopId": "1266",
+      "from": "Pioneer Boulevard and Artesia Boulevard-",
+      "to": "Pioneer Boulevard and Artesia Boulevard- N/E Corner"
+    },
+    {
+      "stopId": "1267",
+      "from": "Pioneer Boulevard and Artesia Boulevard-",
+      "to": "Pioneer Boulevard and Artesia Boulevard- N/W Corner"
+    },
+    {
+      "stopId": "1268",
+      "from": "Pioneer Boulevard and Bluejay Lane- S/E",
+      "to": "Pioneer Boulevard and Bluejay Lane- S/E Corner"
+    },
+    {
+      "stopId": "1269",
+      "from": "Pioneer Boulevard and Broaded Street- N/",
+      "to": "Pioneer Boulevard and Broaded Street- N/E Corner"
+    },
+    {
+      "stopId": "1270",
+      "from": "Pioneer Boulevard and Charlesworth Road-",
+      "to": "Pioneer Boulevard and Charlesworth Road- N/E Corner"
+    },
+    {
+      "stopId": "1271",
+      "from": "Pioneer Boulevard and Cheshire Street- N",
+      "to": "Pioneer Boulevard and Cheshire Street- N/E Corner"
+    },
+    {
+      "stopId": "1272",
+      "from": "Pioneer Boulevard and Excelsior Drive- N",
+      "to": "Pioneer Boulevard and Excelsior Drive- N/E Corner"
+    },
+    {
+      "stopId": "1273",
+      "from": "Pioneer Boulevard and Excelsior Drive-S/",
+      "to": "Pioneer Boulevard and Excelsior Drive-S/W Corner"
+    },
+    {
+      "stopId": "1275",
+      "from": "Pioneer Boulevard and Foster Road- S/E C",
+      "to": "Pioneer Boulevard and Foster Road- S/E Corner"
+    },
+    {
+      "stopId": "1278",
+      "from": "Pioneer Boulevard and Lindale- S/E Corne",
+      "to": "Pioneer Boulevard and Lindale- S/E Corner"
+    },
+    {
+      "stopId": "1280",
+      "from": "Pioneer Boulevard and Los Nietos Road- S",
+      "to": "Pioneer Boulevard and Los Nietos Road- S/E Corner"
+    },
+    {
+      "stopId": "1281",
+      "from": "Pioneer Boulevard and Mapledale Street-",
+      "to": "Pioneer Boulevard and Mapledale Street- N/E Corner"
+    },
+    {
+      "stopId": "1282",
+      "from": "Pioneer Boulevard and Mapledale Street-",
+      "to": "Pioneer Boulevard and Mapledale Street- S/W Corner"
+    },
+    {
+      "stopId": "1284",
+      "from": "Pioneer Boulevard and Orange Street- S/E",
+      "to": "Pioneer Boulevard and Orange Street- S/E Corner"
+    },
+    {
+      "stopId": "1285",
+      "from": "Pioneer Boulevard and Slauson Avenue- S/",
+      "to": "Pioneer Boulevard and Slauson Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1286",
+      "from": "Pioneer Boulevard and Slauson Avenue- S/",
+      "to": "Pioneer Boulevard and Slauson Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1288",
+      "from": "Pioneer Boulevard at Artesia Boulevard O",
+      "to": "Pioneer Boulevard at Artesia Boulevard Oasis"
+    },
+    {
+      "stopId": "1292",
+      "from": "Pioneer Boulevard opposite Cheshire Stre",
+      "to": "Pioneer Boulevard opposite Cheshire Street"
+    },
+    {
+      "stopId": "1293",
+      "from": "Pioneer Boulevard opposite Los Nietos Ro",
+      "to": "Pioneer Boulevard opposite Los Nietos Road"
+    },
+    {
+      "stopId": "1308",
+      "from": "Rosecrans Avenue and Adelfa Drive N/E Co",
+      "to": "Rosecrans Avenue and Adelfa Drive N/E Corner"
+    },
+    {
+      "stopId": "1309",
+      "from": "Rosecrans Avenue and Adelfa Drive S/W Co",
+      "to": "Rosecrans Avenue and Adelfa Drive S/W Corner"
+    },
+    {
+      "stopId": "1310",
+      "from": "Rosecrans Avenue and Ardis Avenue - S/E",
+      "to": "Rosecrans Avenue and Ardis Avenue - S/E  Corner"
+    },
+    {
+      "stopId": "1311",
+      "from": "Rosecrans Avenue and Bellflower Boulevar",
+      "to": "Rosecrans Avenue and Bellflower Boulevard -S/E Corner"
+    },
+    {
+      "stopId": "1312",
+      "from": "Rosecrans Avenue and Biola Avenue N/E Co",
+      "to": "Rosecrans Avenue and Biola Avenue N/E Corner"
+    },
+    {
+      "stopId": "1313",
+      "from": "Rosecrans Avenue and Biola Avenue S/W Co",
+      "to": "Rosecrans Avenue and Biola Avenue S/W Corner"
+    },
+    {
+      "stopId": "1315",
+      "from": "Rosecrans Avenue and Bloomfield Avenue S",
+      "to": "Rosecrans Avenue and Bloomfield Avenue S/W Corner"
+    },
+    {
+      "stopId": "1316",
+      "from": "Rosecrans Avenue and Cabell - S/E  Corne",
+      "to": "Rosecrans Avenue and Cabell - S/E  Corner"
+    },
+    {
+      "stopId": "1317",
+      "from": "Rosecrans Avenue and Carmenita Road N/W",
+      "to": "Rosecrans Avenue and Carmenita Road N/W Corner"
+    },
+    {
+      "stopId": "1318",
+      "from": "Rosecrans Avenue and Carmenita Road S/E",
+      "to": "Rosecrans Avenue and Carmenita Road S/E Corner"
+    },
+    {
+      "stopId": "1319",
+      "from": "Rosecrans Avenue and Castellon Road S/W",
+      "to": "Rosecrans Avenue and Castellon Road S/W Corner"
+    },
+    {
+      "stopId": "1320",
+      "from": "Rosecrans Avenue and Claressa Avenue S/W",
+      "to": "Rosecrans Avenue and Claressa Avenue S/W Corner"
+    },
+    {
+      "stopId": "1321",
+      "from": "Rosecrans Avenue and Clarkdale Avenue N/",
+      "to": "Rosecrans Avenue and Clarkdale Avenue N/W Corner"
+    },
+    {
+      "stopId": "1322",
+      "from": "Rosecrans Avenue and Clarkdale Avenue S/",
+      "to": "Rosecrans Avenue and Clarkdale Avenue S/E Corner"
+    },
+    {
+      "stopId": "1323",
+      "from": "Rosecrans Avenue and Dinard Avenue N/E C",
+      "to": "Rosecrans Avenue and Dinard Avenue N/E Corner"
+    },
+    {
+      "stopId": "1324",
+      "from": "Rosecrans Avenue and Dinard Avenue S/W C",
+      "to": "Rosecrans Avenue and Dinard Avenue S/W Corner"
+    },
+    {
+      "stopId": "1326",
+      "from": "Rosecrans Avenue and El Espejo Road N/E",
+      "to": "Rosecrans Avenue and El Espejo Road N/E Corner"
+    },
+    {
+      "stopId": "1328",
+      "from": "Rosecrans Avenue and Elmcroft Avenue S/E",
+      "to": "Rosecrans Avenue and Elmcroft Avenue S/E Corner"
+    },
+    {
+      "stopId": "1329",
+      "from": "Rosecrans Avenue and Figueras Road N/E C",
+      "to": "Rosecrans Avenue and Figueras Road N/E Corner"
+    },
+    {
+      "stopId": "1330",
+      "from": "Rosecrans Avenue and Figueras Road S/W C",
+      "to": "Rosecrans Avenue and Figueras Road S/W Corner"
+    },
+    {
+      "stopId": "1333",
+      "from": "Rosecrans Avenue and Flallon Avenue N/W",
+      "to": "Rosecrans Avenue and Flallon Avenue N/W Corner"
+    },
+    {
+      "stopId": "1334",
+      "from": "Rosecrans Avenue and Flallon Avenue S/W",
+      "to": "Rosecrans Avenue and Flallon Avenue S/W Corner"
+    },
+    {
+      "stopId": "1335",
+      "from": "Rosecrans Avenue and Grayland Avenue N/E",
+      "to": "Rosecrans Avenue and Grayland Avenue N/E Corner"
+    },
+    {
+      "stopId": "1336",
+      "from": "Rosecrans Avenue and Grayland Avenue S/E",
+      "to": "Rosecrans Avenue and Grayland Avenue S/E Corner"
+    },
+    {
+      "stopId": "1337",
+      "from": "Rosecrans Avenue and Greenstone Avenue N",
+      "to": "Rosecrans Avenue and Greenstone Avenue N/E Corner"
+    },
+    {
+      "stopId": "1338",
+      "from": "Rosecrans Avenue and Greenstone Avenue S",
+      "to": "Rosecrans Avenue and Greenstone Avenue S/E Corner"
+    },
+    {
+      "stopId": "1339",
+      "from": "Rosecrans Avenue and Harvest Avenue N/E",
+      "to": "Rosecrans Avenue and Harvest Avenue N/E Corner"
+    },
+    {
+      "stopId": "1340",
+      "from": "Rosecrans Avenue and Harvest Avenue S/W",
+      "to": "Rosecrans Avenue and Harvest Avenue S/W Corner"
+    },
+    {
+      "stopId": "1341",
+      "from": "Rosecrans Avenue and Helwig Avenue S/W C",
+      "to": "Rosecrans Avenue and Helwig Avenue S/W Corner"
+    },
+    {
+      "stopId": "1342",
+      "from": "Rosecrans Avenue and Jalon Road N/E Corn",
+      "to": "Rosecrans Avenue and Jalon Road N/E Corner"
+    },
+    {
+      "stopId": "1343",
+      "from": "Rosecrans Avenue and La Fonda Drive N/E",
+      "to": "Rosecrans Avenue and La Fonda Drive N/E Corner"
+    },
+    {
+      "stopId": "1344",
+      "from": "Rosecrans Avenue and La Fonda Drive S/W",
+      "to": "Rosecrans Avenue and La Fonda Drive S/W Corner"
+    },
+    {
+      "stopId": "1345",
+      "from": "Rosecrans Avenue and La Mirada Boulevard",
+      "to": "Rosecrans Avenue and La Mirada Boulevard N/E Corner"
+    },
+    {
+      "stopId": "1346",
+      "from": "Rosecrans Avenue and La Mirada Boulevard",
+      "to": "Rosecrans Avenue and La Mirada Boulevard S/E Corner"
+    },
+    {
+      "stopId": "1348",
+      "from": "Rosecrans Avenue and Marquardt Avenue N/",
+      "to": "Rosecrans Avenue and Marquardt Avenue N/E Corner"
+    },
+    {
+      "stopId": "1349",
+      "from": "Rosecrans Avenue and Marquardt Avenue S/",
+      "to": "Rosecrans Avenue and Marquardt Avenue S/W Corner"
+    },
+    {
+      "stopId": "1350",
+      "from": "Rosecrans Avenue and Norwalk Boulevard N",
+      "to": "Rosecrans Avenue and Norwalk Boulevard N/W Corner"
+    },
+    {
+      "stopId": "1351",
+      "from": "Rosecrans Avenue and Norwalk Boulevard S",
+      "to": "Rosecrans Avenue and Norwalk Boulevard S/E Corner"
+    },
+    {
+      "stopId": "1352",
+      "from": "Rosecrans Avenue and Santa Gertrudes Ave",
+      "to": "Rosecrans Avenue and Santa Gertrudes Avenue N/W Corner"
+    },
+    {
+      "stopId": "1353",
+      "from": "Rosecrans Avenue and Santa Gertrudes Ave",
+      "to": "Rosecrans Avenue and Santa Gertrudes Avenue S/W Corner"
+    },
+    {
+      "stopId": "1354",
+      "from": "Rosecrans Avenue and Shoemaker Avenue S/",
+      "to": "Rosecrans Avenue and Shoemaker Avenue S/W Corner"
+    },
+    {
+      "stopId": "1355",
+      "from": "Rosecrans Avenue and Studebaker Road N/E",
+      "to": "Rosecrans Avenue and Studebaker Road N/E Corner"
+    },
+    {
+      "stopId": "1356",
+      "from": "Rosecrans Avenue and Studebaker Road S/W",
+      "to": "Rosecrans Avenue and Studebaker Road S/W Corner"
+    },
+    {
+      "stopId": "1357",
+      "from": "Rosecrans Avenue and Valley View Avenue",
+      "to": "Rosecrans Avenue and Valley View Avenue N/W Corner"
+    },
+    {
+      "stopId": "1358",
+      "from": "Rosecrans Avenue and Valley View Avenue",
+      "to": "Rosecrans Avenue and Valley View Avenue S/E Corner"
+    },
+    {
+      "stopId": "1331",
+      "from": "Rosecrans Avenue opposite Bloomfield Ave",
+      "to": "Rosecrans Avenue opposite Bloomfield Avenue North"
+    },
+    {
+      "stopId": "1314",
+      "from": "Rosecrans Avenue opposite S Bloomfield A",
+      "to": "Rosecrans Avenue opposite S Bloomfield Avenue"
+    },
+    {
+      "stopId": "1364",
+      "from": "San Antonio Drive and Firestone Boulevar",
+      "to": "San Antonio Drive and Firestone Boulevard- S/W Corner"
+    },
+    {
+      "stopId": "1365",
+      "from": "San Antonio Drive and Foster Road- N/W C",
+      "to": "San Antonio Drive and Foster Road- N/W Corner"
+    },
+    {
+      "stopId": "1366",
+      "from": "San Antonio Drive and Front Street- N/E",
+      "to": "San Antonio Drive and Front Street- N/E Corner"
+    },
+    {
+      "stopId": "1367",
+      "from": "San Antonio Drive and Olive Street- N/E",
+      "to": "San Antonio Drive and Olive Street- N/E Corner"
+    },
+    {
+      "stopId": "1369",
+      "from": "Santa Fe Springs Road and Los Nietos Roa",
+      "to": "Santa Fe Springs Road and Los Nietos Road"
+    },
+    {
+      "stopId": "1370",
+      "from": "Santa Fe Springs Road and Los Nietos Roa",
+      "to": "Santa Fe Springs Road and Los Nietos Road"
+    },
+    {
+      "stopId": "1373",
+      "from": "Santa Gertrudes Avenue and Stanbrook Dri",
+      "to": "Santa Gertrudes Avenue and Stanbrook Drive"
+    },
+    {
+      "stopId": "1375",
+      "from": "Shoemaker Avenue and Shoemaker Avenue Ct",
+      "to": "Shoemaker Avenue and Shoemaker Avenue Ct. Apts."
+    },
+    {
+      "stopId": "1377",
+      "from": "Shoemaker Avenue and Tom White Way - S/W",
+      "to": "Shoemaker Avenue and Tom White Way - S/W Corner"
+    },
+    {
+      "stopId": "1380",
+      "from": "Slauson Avenue and Alburtis Avenue- N/E",
+      "to": "Slauson Avenue and Alburtis Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1381",
+      "from": "Slauson Avenue and Alburtis Avenue- S/E",
+      "to": "Slauson Avenue and Alburtis Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1382",
+      "from": "Slauson Avenue and Millergrove Drive- N/",
+      "to": "Slauson Avenue and Millergrove Drive- N/E Corner"
+    },
+    {
+      "stopId": "1383",
+      "from": "Slauson Avenue and Millergrove Drive- S/",
+      "to": "Slauson Avenue and Millergrove Drive- S/W Corner"
+    },
+    {
+      "stopId": "1384",
+      "from": "Studebaker Road and 166th Street- N/E Co",
+      "to": "Studebaker Road and 166th Street- N/E Corner"
+    },
+    {
+      "stopId": "1385",
+      "from": "Studebaker Road and 166th Street- N/W Co",
+      "to": "Studebaker Road and 166th Street- N/W Corner"
+    },
+    {
+      "stopId": "1386",
+      "from": "Studebaker Road and 183rd Street- N/E Co",
+      "to": "Studebaker Road and 183rd Street- N/E Corner"
+    },
+    {
+      "stopId": "1387",
+      "from": "Studebaker Road and Angell opposite Hosp",
+      "to": "Studebaker Road and Angell opposite Hospital"
+    },
+    {
+      "stopId": "1388",
+      "from": "Studebaker Road and Artesia Boulevard- N",
+      "to": "Studebaker Road and Artesia Boulevard- N/E Corner"
+    },
+    {
+      "stopId": "1389",
+      "from": "Studebaker Road and Artesia Boulevard- S",
+      "to": "Studebaker Road and Artesia Boulevard- S/W Corner"
+    },
+    {
+      "stopId": "1391",
+      "from": "Studebaker Road and Barnwall Street- N/E",
+      "to": "Studebaker Road and Barnwall Street- N/E Corner"
+    },
+    {
+      "stopId": "1394",
+      "from": "Studebaker Road and Excelsior Drive- N/E",
+      "to": "Studebaker Road and Excelsior Drive- N/E Corner"
+    },
+    {
+      "stopId": "1395",
+      "from": "Studebaker Road and Excelsior Drive- N/W",
+      "to": "Studebaker Road and Excelsior Drive- N/W Corner"
+    },
+    {
+      "stopId": "1396",
+      "from": "Studebaker Road and Falcon Way- N/E Corn",
+      "to": "Studebaker Road and Falcon Way- N/E Corner"
+    },
+    {
+      "stopId": "1397",
+      "from": "Studebaker Road and Foster Road- N/W Cor",
+      "to": "Studebaker Road and Foster Road- N/W Corner"
+    },
+    {
+      "stopId": "1398",
+      "from": "Studebaker Road and Foster Road- S/E Cor",
+      "to": "Studebaker Road and Foster Road- S/E Corner"
+    },
+    {
+      "stopId": "1400",
+      "from": "Studebaker Road and Leffingwell Road- N/",
+      "to": "Studebaker Road and Leffingwell Road- N/E Corner"
+    },
+    {
+      "stopId": "1401",
+      "from": "Studebaker Road and Leffingwell Road- N/",
+      "to": "Studebaker Road and Leffingwell Road- N/W Corner"
+    },
+    {
+      "stopId": "1402",
+      "from": "Studebaker Road and Mapledale Street- N/",
+      "to": "Studebaker Road and Mapledale Street- N/E Corner"
+    },
+    {
+      "stopId": "1403",
+      "from": "Studebaker Road and Mapledale Street- S/",
+      "to": "Studebaker Road and Mapledale Street- S/W Corner"
+    },
+    {
+      "stopId": "1404",
+      "from": "Studebaker Road and Melissa Street- S/W",
+      "to": "Studebaker Road and Melissa Street- S/W Corner"
+    },
+    {
+      "stopId": "1405",
+      "from": "Studebaker Road and Rosecrans Avenue- N/",
+      "to": "Studebaker Road and Rosecrans Avenue- N/E Corner"
+    },
+    {
+      "stopId": "1406",
+      "from": "Studebaker Road and Rosecrans Avenue- S/",
+      "to": "Studebaker Road and Rosecrans Avenue- S/W Corner"
+    },
+    {
+      "stopId": "1407",
+      "from": "Studebaker Road and Spinnaker Street- S/",
+      "to": "Studebaker Road and Spinnaker Street- S/E Corner"
+    },
+    {
+      "stopId": "1412",
+      "from": "Telegraph Road and Bloomfield Avenue - N",
+      "to": "Telegraph Road and Bloomfield Avenue - N/W Corner"
+    },
+    {
+      "stopId": "1414",
+      "from": "Telegraph Road and Greenleaf Avenue - N/",
+      "to": "Telegraph Road and Greenleaf Avenue - N/W Corner"
+    },
+    {
+      "stopId": "1416",
+      "from": "Telegraph Road and Jersey Avenue - N/W C",
+      "to": "Telegraph Road and Jersey Avenue - N/W Corner"
+    },
+    {
+      "stopId": "1417",
+      "from": "Telegraph Road and Laurel Avenue - N/W C",
+      "to": "Telegraph Road and Laurel Avenue - N/W Corner"
+    },
+    {
+      "stopId": "1419",
+      "from": "Telegraph Road and Painter Avenue - N/W",
+      "to": "Telegraph Road and Painter Avenue - N/W Corner"
+    },
+    {
+      "stopId": "1433",
+      "from": "Woodruff Avenue and Flora Vista Street-",
+      "to": "Woodruff Avenue and Flora Vista Street- N/W Corner"
+    },
+    {
+      "stopId": "1434",
+      "from": "Woodruff Avenue and Rosecrans Avenue - S",
+      "to": "Woodruff Avenue and Rosecrans Avenue - S/W  Corner"
+    },
+    {
+      "stopId": "1435",
+      "from": "Woodruff Avenue and Somerset Boulevard-N",
+      "to": "Woodruff Avenue and Somerset Boulevard-N/W  Corner"
+    },
+    {
+      "stopId": "1436",
+      "from": "Woodruff Avenue and Woodruff Avenue Pl.-",
+      "to": "Woodruff Avenue and Woodruff Avenue Pl.-N/W Corner"
+    },
+    {
+      "stopId": "1440",
+      "from": "Workman Mill Road and E Mission Mill Roa",
+      "to": "Workman Mill Road and E Mission Mill Road"
+    },
+    {
+      "stopId": "1441",
+      "from": "Workman Mill Road and Mission Mill Road-",
+      "to": "Workman Mill Road and Mission Mill Road- S/W Corner"
+    },
+    {
+      "stopId": "1442",
+      "from": "Workman Mill Road and Pioneer Boulevard",
+      "to": "Workman Mill Road and Pioneer Boulevard- S/W Corner"
+    },
+    {
+      "stopId": "1443",
+      "from": "Workman Mill Road and Pioneer Boulevard-",
+      "to": "Workman Mill Road and Pioneer Boulevard- S/W Corner"
+    },
+    {
+      "stopId": "1444",
+      "from": "Workman Mill Road and Rose Hills (Main G",
+      "to": "Workman Mill Road and Rose Hills (Main Gate)"
+    },
+    {
+      "stopId": "1445",
+      "from": "Workman Mill Road and Rose Hills Gate #",
+      "to": "Workman Mill Road and Rose Hills Gate # 17"
+    },
+    {
+      "stopId": "1446",
+      "from": "Workman Mill Road and Rose Hills Gate #",
+      "to": "Workman Mill Road and Rose Hills Gate # 19"
+    },
+    {
+      "stopId": "1447",
+      "from": "Workman Mill Road and Rose Hills Road- S",
+      "to": "Workman Mill Road and Rose Hills Road- S/W Corner"
+    },
+    {
+      "stopId": "1448",
+      "from": "Workman Mill Road and Sierra Morena Aven",
+      "to": "Workman Mill Road and Sierra Morena Avenue- S/E Corner"
+    },
+    {
+      "stopId": "1449",
+      "from": "Workman Mill Road and Spy Glass Hill Roa",
+      "to": "Workman Mill Road and Spy Glass Hill Road"
+    },
+    {
+      "stopId": "1451",
+      "from": "Workman Mill Road opposite Rose Hills Ma",
+      "to": "Workman Mill Road opposite Rose Hills Main Gate"
+    },
+    {
+      "stopId": "1452",
+      "from": "Workman Mill Road opposite Sierra Morena",
+      "to": "Workman Mill Road opposite Sierra Morena Avenue"
+    }
+  ],
   "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Norwalk, California",
@@ -48,8 +1290,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

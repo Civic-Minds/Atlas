@@ -74,6 +74,17 @@ describe('live-gtfs-for-window', () => {
     expect([...serviceDateTripIds(Object.keys(files), read, '2026-11-02', { timeZone: 'America/Toronto', serviceDayEndHour: 3 })]).toEqual(['early']);
   });
 
+  it('leaves the MBTA\'s made-up trip ids out of the match: ADDED Green Line runs and Silver Line extras (#1801)', async () => {
+    const { loadLiveAgencyConfig } = await import('../live-agency-config');
+    const mbta = loadLiveAgencyConfig('mbta');
+    const t = Date.parse('2026-11-24T15:00:00Z') / 1000;
+    const files = { '66-2026-11-24.jsonl': [snap(t, '78181357'), snap(t, 'ADDED-1585103711'), snap(t, '78591918-OL1')].join('\n') };
+    const read = (f: string) => files[f as keyof typeof files];
+    expect([...serviceDateTripIds(Object.keys(files), read, '2026-11-24', { timeZone: mbta.timeZone, serviceDayEndHour: mbta.serviceDayEndHour, unscheduledTripId: mbta.unscheduledTripId })]).toEqual(['78181357']);
+    // No other agency has the pattern: a TTC id that happens to start with ADDED would still count.
+    expect(loadLiveAgencyConfig('ttc').unscheduledTripId).toBeNull();
+  });
+
   it('reads an agency\'s archived zips newest first, keeps the ones that cover new dates, and stops when all are covered', async () => {
     const cov = (key: string, start: string, end: string): FeedCoverage => ({ key, dir: `/feeds/${key}`, version: null, start, end });
     const coverage: Record<string, FeedCoverage> = {

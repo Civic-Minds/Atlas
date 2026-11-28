@@ -1,0 +1,21 @@
+{
+  "slug": "kanawha",
+  "officialName": "Kanawha Valley Regional Transportation Authority",
+  "commonName": "KRT",
+  "websiteUrl": "http://www.rideonkrt.com",
+  "dataLicense": {
+    "url": "http://www.rideonkrt.com",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "West Virginia",
+  "center": [
+    38.36,
+    -81.64
+  ],
+  "feedUrl": "https://gtfs.krt.cadavl.com/KRT/GTFS/GTFS_KRT.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5769/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -9,10 +9,10 @@
     -77.2
   ],
   "bbox": [
-    38.9357,
-    -77.4187,
-    39.2885,
-    -76.9286
+    38.93,
+    -77.42,
+    39.29,
+    -76.85
   ],
   "feedUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
   "lastFeedExpiry": "20270109",
@@ -49,8 +49,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",

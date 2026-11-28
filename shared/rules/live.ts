@@ -97,6 +97,9 @@ export const SAME_STOP_M = 30;
 
 /** A gap under this many seconds is bunched. */
 export const BUNCHED_GAP_SEC = 120;
+/** The live gap range ("gaps 3–20 min") starts at the shortest gap of at least this many seconds, so it never reads "0.7"
+ * (Ryan, 2026-11-27, CIV-1828: picked "Show the range here too, e.g. \"gaps 3–20 min\", with gaps under a minute left out"). */
+export const GAP_RANGE_FROM_SEC = 60;
 /** A gap over this many times the scheduled gap is too long. */
 export const GAPPED_FACTOR = 2;
 /** A rise counts as a step (bunching "forms" there) when the bad share jumps by at least this much (0.10 = 10 points)... */
@@ -145,11 +148,26 @@ export const LIVE_POSITIONS_ONLY_SLUGS: readonly string[] = ['sfmta'];
  * Ten-Minute Network routes once CIV-2174 adds them to LIVE_TTC_ANALYSED_ROUTES), not the whole fleet; with trip updates.
  */
 export const LIVE_RECORDER_ROUTE_IDS: Readonly<Record<string, readonly string[]>> = {
-  ttc: LIVE_TTC_ANALYSED_ROUTES,
   // YRT: every Viva route (CIV-2176), not only the Blue Live shows; route ids from YRT's GTFS routes.txt, 2026-11-24.
   yrt: ['601', '60102', '603', '60301', '605', '607'],
 };
+/**
+ * CIV-2939 option 2 (Ryan, 2026-11-25, "1": keep every TTC route's positions, 60 days like everything else): agencies the
+ * cloud recorder keeps whole, every vehicle on a route. Live, the Live report and Studio Live still read only the routes
+ * they analyse (LIVE_TTC_ANALYSED_ROUTES), so nothing anyone sees changes.
+ */
+export const LIVE_RECORDER_ALL_ROUTES: readonly string[] = ['ttc'];
 export const livePaceSec = (slug: string): number => LIVE_FEED_PACE_SEC[slug] ?? LIVE_POLL_SEC;
+/**
+ * CIV-2990 (#1832; Ryan, 2026-11-26, picked "Not on a trip: 622, of which 521 at garages"): a vehicle with no trip is
+ * "at a garage" when it stands still (speed under GARAGE_STANDING_SPEED_MS, or no speed reported) with at least
+ * GARAGE_MIN_VEHICLES such vehicles, itself included, within GARAGE_RADIUS_M. No garage list: a garage is where parked
+ * vehicles gather. Ryan's word-for-word OK on all three numbers, 2026-11-26 (under 1 m/s, groups of 5+, within 100 m;
+ * DECISIONS.md, CIV-2990).
+ */
+export const GARAGE_MIN_VEHICLES = 5;
+export const GARAGE_RADIUS_M = 100;
+export const GARAGE_STANDING_SPEED_MS = 1;
 /** Positions older than this many paces read as late (CIV-2084, Ryan: "within 2× the agency's pace"). */
 export const LIVE_STALE_PACES = 2;
 
@@ -172,4 +190,20 @@ export const CUTOFF_LIMITS = {
   earlyBeforeMin: { min: 0, max: 10, step: 0.5 },
   bunchedWithinMin: { min: 0.5, max: 10, step: 0.5 },
   gappedFactor: { min: 1, max: 6, step: 0.25 },
+} as const;
+
+/**
+ * CIV-2919 (Ryan, 2026-11-26, option 1: "Use them as starting values and check later"): the Speed view's minimums. Below any
+ * of them a stretch shows no figure ("Not measured"). Starting values: 400 m, 30 trips and 10 per slot are untested prototype
+ * guesses and 7 weekdays is Strategy's proposal; they are tested on TTC, HSR and MBTA routes before anything ships.
+ */
+export const SPEED_MINIMUMS = {
+  /** A stretch is consecutive stops merged until it is at least this long (metres along the route shape). */
+  stretchM: 400,
+  /** Weekdays with at least one recorded trip over the stretch. */
+  weekdays: 7,
+  /** Recorded weekday trips over the stretch, all times of day together. */
+  trips: 30,
+  /** Recorded weekday trips over the stretch in one time-of-day slot. */
+  tripsPerSlot: 10,
 } as const;

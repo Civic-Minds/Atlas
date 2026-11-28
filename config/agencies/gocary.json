@@ -1,0 +1,19 @@
+{
+  "slug": "gocary",
+  "officialName": "GoCary",
+  "websiteUrl": "https://gocary.org",
+  "dataLicense": {
+    "url": "https://gotriangle.org/developer-resources/",
+    "attribution": "required",
+    "name": "CC BY 3.0",
+    "checkedOn": "2026-11-26"
+  },
+  "region": "North Carolina",
+  "center": [
+    35.7835,
+    -78.7831
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2277/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

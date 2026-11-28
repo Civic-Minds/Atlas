@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { pinnedReadFor, readPinnedSidecars } from '../historyV2Pin.js';
-import { parseMbtaArchiveIndex, pickZipSource } from '../history-v2-fetch-pinned.js';
+import { mdbDatasetsAsArchive, mdbFeedIdOf, parseMbtaArchiveIndex, pickMdbSource, pickZipSource } from '../history-v2-fetch-pinned.js';
 
 // CIV-1430: a pinned rebuild reads each published period at its own refDate.
 describe('pinned History v2 rebuild (CIV-1430)', () => {
@@ -35,6 +35,32 @@ describe('pinned History v2 rebuild (CIV-1430)', () => {
     // The file named by the period key wins even when refDate is past its listed end (MBTA 20110909, refDate 20111215).
     expect(pickZipSource('20181128', '20181215', undefined, [], index).source).toMatchObject({ kind: 'url', url: 'https://cdn.mbtace.com/archive/20181128.zip' });
     expect(pickZipSource('20181202', '20181129', undefined, [], null)).toMatchObject({ source: null });
+  });
+
+  // CIV-1862: past periods with no archived zip read the Mobility Database dataset in force on refDate.
+  it('reads the MDB feed id from the agency config', () => {
+    expect(mdbFeedIdOf({ mdbFeedUrl: 'https://files.mobilitydatabase.org/mdb-2253/latest.zip', feedUrl: 'https://x/y.zip' })).toBe('mdb-2253');
+    expect(mdbFeedIdOf({ feedUrl: 'https://files.mobilitydatabase.org/mdb-528/latest.zip' })).toBe('mdb-528');
+    expect(mdbFeedIdOf({ feedUrl: 'https://metro.kingcounty.gov/gtfs/google_transit.zip' })).toBeNull();
+  });
+
+  it('keeps one MDB dataset per file, picks the one in force on refDate downloaded last before it', () => {
+    const ds = (id: string, at: string, hash: string, start: string, end: string) =>
+      ({ id, downloaded_at: `${at}T05:00:00Z`, hosted_url: `https://files.mobilitydatabase.org/mdb-1/${id}.zip`, hash, service_date_range_start: start, service_date_range_end: end });
+    const feeds = mdbDatasetsAsArchive([
+      ds('a1', '2019-09-01', 'h1', '2019-09-01', '2019-12-31'),
+      ds('a2', '2019-09-02', 'h1', '2019-09-01', '2019-12-31'), // same file again: kept once
+      ds('b', '2019-11-01', 'h2', '2019-11-01', '2020-03-01'),
+      { id: 'c', downloaded_at: '2019-10-01T00:00:00Z', hosted_url: 'https://x/c.zip', hash: 'h3' }, // no window: left out
+    ]);
+    expect(feeds.map(f => f.url)).toEqual(['https://files.mobilitydatabase.org/mdb-1/a1.zip', 'https://files.mobilitydatabase.org/mdb-1/b.zip']);
+    // Both in force on 2019-11-20; b was downloaded last before it.
+    expect(pickMdbSource('20191120', feeds).source).toMatchObject({ kind: 'url', url: 'https://files.mobilitydatabase.org/mdb-1/b.zip' });
+    // Only a1 in force on 2019-10-15.
+    expect(pickMdbSource('20191015', feeds).source).toMatchObject({ url: 'https://files.mobilitydatabase.org/mdb-1/a1.zip' });
+    // A dataset downloaded on refDate itself counts as on or before it.
+    expect(pickMdbSource('20190901', [feeds[1], feeds[0]]).source).toMatchObject({ url: 'https://files.mobilitydatabase.org/mdb-1/a1.zip' });
+    expect(pickMdbSource('20210101', feeds)).toMatchObject({ source: null });
   });
 
 });

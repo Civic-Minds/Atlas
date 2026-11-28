@@ -5,7 +5,6 @@
   },
   "include": ["pipeline", "shared", "src/vite-env.d.ts"],
   "exclude": [
-    "pipeline/__tests__",
-    "pipeline/restore-active-feeds.ts"
+    "pipeline/__tests__"
   ]
 }

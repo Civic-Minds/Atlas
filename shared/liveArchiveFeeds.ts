@@ -53,11 +53,13 @@ export interface LiveArchivePositionFeed {
  */
 /** The 2026-10-14 pause: crons removed to stay within the free Workers plan’s five cron triggers (CIV-1856; the shard split is 1c08c18cd). */
 const FIVE_CRON_PAUSE = { since: '2026-10-14', reason: "Cron removed to stay within the free Workers plan’s five cron triggers (CIV-1856)." } as const;
+/** CIV-2217: the v1 Workers stopped once every reader of positions/ read the cloud recorder (live-v2) first. */
+const ON_RECORDER = { since: '2026-11-26', reason: 'Recorded by the cloud recorder instead (CIV-2217).' } as const;
 
 export const LIVE_ARCHIVE_SHARDS = [
-  { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], recording: true },
+  { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], paused: ON_RECORDER },
   { id: 'ttc-trips', positionSlugs: [], tripSlugs: ['ttc'], paused: FIVE_CRON_PAUSE },
-  { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'], recording: true },
+  { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'], paused: ON_RECORDER },
   { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'], paused: { since: '2026-11-24', reason: 'Needs an STM developer key; dropped 2026-11-24' } },
   {
     id: 'burlington-halifax',
@@ -66,27 +68,30 @@ export const LIVE_ARCHIVE_SHARDS = [
     paused: FIVE_CRON_PAUSE,
   },
   // Atlas Studio demo agency (CIV-1682). Its own worker writes to atlas-live like the rest (CIV-1906).
-  { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
+  { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], paused: ON_RECORDER },
   // Boston's MBTA (CIV-1930, Ryan): positions only, recorded for analysis (not a Live agency yet). Green Line, Silver Line, Mattapan Line and buses 23, 57, 66 and 111.
-  { id: 'mbta', positionSlugs: ['mbta'], tripSlugs: [], recording: true },
+  { id: 'mbta', positionSlugs: ['mbta'], tripSlugs: [], paused: ON_RECORDER },
   // CIV-2073: the cloud recorder (atlas.live.v2, workers/gtfs-rt-archiver/src/v2.ts, run by wrangler.recorder.toml), Hamilton first as the canary. Its
   // feeds and paces come from shared/liveRecorderFeeds.ts.
   {
     // Recording since 2026-11-23 (Ryan: "Yes" to the Hamilton canary): atlas-live-recorder, wrangler.recorder.toml.
     // Step B (Ryan approved 2026-11-24): TTC with its trip updates, Kingston, MBTA, YRT's Viva, DRT's 9XX and Brampton's 5XX join
-    // (Montréal dropped 2026-11-24). Their v1 shards keep
-    // recording until the readers of positions/ move to v2. CIV-2897 (Ryan, 2026-11-24, "1"): Burlington joins (routes 1
+    // (Montréal dropped 2026-11-24). Their v1 shards stopped once the readers of positions/ read v2 first (CIV-2217). CIV-2897 (Ryan, 2026-11-24, "1"): Burlington joins (routes 1
     // and 10 on Live); its v1 shard and Halifax stay paused.
     id: 'live-v2', positionSlugs: [], tripSlugs: [], v2Slugs: ['hamilton', 'ttc', 'kingston', 'mbta', 'yrt', 'drt', 'brampton', 'burlington'], recording: true,
   },
 ] as const;
 
+/** The slugs a shard carries: its v1 position and trip feeds and its cloud-recorder agencies. */
+const shardSlugs = (s: (typeof LIVE_ARCHIVE_SHARDS)[number]): readonly string[] => [...s.positionSlugs, ...s.tripSlugs, ...('v2Slugs' in s ? s.v2Slugs : [])];
+
 /**
  * The agencies being recorded now (Studio's "Recording"): every slug in a shard marked `recording`, which is a shard whose
  * Worker has a cron trigger (workers/gtfs-rt-archiver/wrangler*.toml; the test checks they agree). The others are paused.
+ * CIV-2217: includes the cloud recorder's agencies, which since the v1 Workers stopped are the only ones recording.
  */
 export const RECORDING_SLUGS: readonly string[] = [...new Set(
-  LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).flatMap(s => [...s.positionSlugs, ...s.tripSlugs]),
+  LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).flatMap(shardSlugs),
 )];
 
 /**
@@ -95,10 +100,13 @@ export const RECORDING_SLUGS: readonly string[] = [...new Set(
  */
 export const RECORDER_SLUGS: readonly string[] = LIVE_ARCHIVE_SHARDS.flatMap(s => ('v2Slugs' in s && 'recording' in s && s.recording ? [...s.v2Slugs] : []));
 
+/** #1810: recorded now by either recorder (RECORDING_SLUGS holds both since CIV-2217). */
+export const isRecordingNow = (slug: string): boolean => RECORDING_SLUGS.includes(slug);
+
 /** A feed's recording state, from its shards: recording when any shard carrying it records, else paused with the latest pause. */
 export type LiveFeedStatus = { status: 'recording' } | { status: 'paused'; since: string; reason: string } | { status: 'not archived' };
 export function liveFeedStatus(slug: string): LiveFeedStatus {
-  const shards = LIVE_ARCHIVE_SHARDS.filter(s => (s.positionSlugs as readonly string[]).includes(slug) || (s.tripSlugs as readonly string[]).includes(slug));
+  const shards = LIVE_ARCHIVE_SHARDS.filter(s => shardSlugs(s).includes(slug));
   if (shards.length === 0) return { status: 'not archived' };
   if (RECORDING_SLUGS.includes(slug)) return { status: 'recording' };
   const pauses = shards.flatMap(s => ('paused' in s ? [s.paused] : [])).sort((a, b) => b.since.localeCompare(a.since));

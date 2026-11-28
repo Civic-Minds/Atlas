@@ -8,7 +8,7 @@
     -120.48
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-3117/latest.zip",
-  "lastFeedExpiry": "20281123",
+  "lastFeedExpiry": "20281126",
   "lastFeedVersion": "PASAT 8 Route Update",
   "region": "California",
   "lastRefreshedAt": "2026-11-23",
@@ -34,14 +34,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 69,
-      "feedExpiry": "20281123",
+      "feedExpiry": "20281126",
       "routeCount": 15,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -51,5 +51,12 @@
   "feedObtainedAt": "20261123",
   "lastFeedStart": "20260126",
   "lastRawArchiveKey": "unknown-7b6b16ee7a0ea733",
-  "lastFeedContentKey": "7107d0ba2220e212"
+  "lastFeedContentKey": "7107d0ba2220e212",
+  "dataLicense": {
+    "url": "https://www.mercedthebus.com/DocumentCenter/View/1393/GTFS-Web-Link--DISCLAIMER-202111-002",
+    "attribution": "required",
+    "name": "Merced The Bus data disclaimer",
+    "credit": "Data provided by Merced The Bus is not warranted by Merced The Bus for accuracy or completeness and data is subject to change without notice.",
+    "checkedOn": "2026-11-26"
+  }
 }

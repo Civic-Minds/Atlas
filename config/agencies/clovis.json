@@ -1,0 +1,19 @@
+{
+  "slug": "clovis",
+  "officialName": "Clovis Transit",
+  "websiteUrl": "https://cityofclovis.com/general-services/transit/",
+  "dataLicense": {
+    "url": "https://cityofclovis.com/general-services/transit/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    36.8157,
+    -119.7019
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-2894/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

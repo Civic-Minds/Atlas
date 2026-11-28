@@ -9,8 +9,8 @@
   "bbox": [
     43.78,
     -123.36,
-    44.22,
-    -122.12
+    44.23,
+    -122.11
   ],
   "feedUrl": "https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip",
   "preprocess": "eugene-emx-patterns",
@@ -49,8 +49,7 @@
       "mismatchRoutes": 7,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

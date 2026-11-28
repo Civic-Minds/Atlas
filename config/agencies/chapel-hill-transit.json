@@ -7,7 +7,7 @@
     -79.05
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-89/latest.zip",
-  "lastFeedExpiry": "20281121",
+  "lastFeedExpiry": "20281126",
   "lastFeedVersion": "Fall 2026 Update (No Special Services)",
   "region": "North Carolina",
   "lastRefreshedAt": "2026-11-16",
@@ -31,15 +31,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 74,
-      "feedExpiry": "20281121",
+      "feedExpiry": "20281126",
       "routeCount": 21,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -50,5 +49,11 @@
   "feedObtainedAt": "20261031",
   "lastFeedStart": "20261008",
   "lastRawArchiveKey": "unknown-621622e2efcea431",
-  "lastFeedContentKey": "a08d827ebe719619"
+  "lastFeedContentKey": "a08d827ebe719619",
+  "dataLicense": {
+    "url": "https://gotriangle.org/developer-resources/",
+    "attribution": "required",
+    "name": "CC BY 3.0",
+    "checkedOn": "2026-11-26"
+  }
 }

@@ -1,0 +1,20 @@
+{
+  "slug": "tracy",
+  "officialName": "City of Tracy",
+  "commonName": "TRACER",
+  "websiteUrl": "https://www.cityoftracy.org/",
+  "dataLicense": {
+    "url": "https://www.cityoftracy.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    37.7374,
+    -121.4392
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3099/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

@@ -13,11 +13,12 @@ import { PERIOD_LABELS, PUBLIC_TIER_MAXES, type PeriodKey } from '../../shared/c
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
+import { clockTime } from '../../shared/timeText';
 import { metresText } from '../../shared/unitText';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { joinList, plural, countOf } from '../../shared/overflowText';
 import { countText, countWord } from '../../shared/numberText';
-import { LIVE_MAP_TITLE, METHOD_TITLE } from '../../shared/liveWording';
+import { LATE_LIMIT_TEXT, LIVE_MAP_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
@@ -142,8 +143,13 @@ export const loadingText = (noun: string) => `Loading ${noun}…`;
 /** "This route couldn't load.": the thing first. */
 export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn’t load.`;
 
-/** The zoomed-out note, shared by the map export and the Night list (CIV-1337, Ryan: reuse this exact string). */
+/** The frequency map's zoomed-out note, in the map export (CIV-1337). */
 export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden.';
+/**
+ * The research views' zoomed-out line (overnight and frequent service), where below the detail zoom no route is drawn at
+ * all (#1817, CIV-2946; Ryan, 2026-11-25: "1").
+ */
+export const ZOOM_IN_TO_SEE_ROUTES = 'Zoom in to see the routes.';
 // N54 history-failed (hint)
 /** Added after a load error that the person can retry. */
 export const RETRY_HINT = 'Check your connection and try again.';
@@ -196,16 +202,16 @@ export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 export const LIMITED_SERVICE_LABEL = 'limited';
 /**
  * CIV-1251: the one word a card row with no number reads, whichever check found it. The Night card: "Runs irregularly
- * overnight"; a time period: D2. The card has no All day row (CIV-1279: the map has no All day, so no rider reaches one).
+ * overnight"; a time period: D3, the same word as lists and tables (Ryan, CIV-3136). The card has no All day row
+ * (CIV-1279: the map has no All day, so no rider reaches one).
  */
 export function noNumberRowLabel(options: { nightView?: boolean }): string {
-  return options.nightView ? IRREGULAR_OVERNIGHT_LABEL : IRREGULAR_PERIOD_LABEL;
+  return options.nightView ? IRREGULAR_OVERNIGHT_LABEL : IRREGULAR_PERIOD_SHORT_LABEL;
 }
-// D2 irregular-period (Ryan's words, CIV-1238): the route runs in the period, but the filter finds no regular cadence. On cards.
-export const IRREGULAR_PERIOD_LABEL = 'Runs irregularly in this period';
 /** CIV-1251: a Night card row with no grade. The Night view isn't a period in the picker, so not "in this period". */
 export const IRREGULAR_OVERNIGHT_LABEL = 'Runs irregularly overnight';
-// D3 irregular-period-short: the same, in tight spots (table cells, list values).
+// D3 irregular-period (Ryan's word, CIV-1238; on cards too since CIV-3136): the route runs in the period, but the filter
+// finds no regular cadence. Card rows, table cells and list values.
 export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
 // D4 setting-hide-occasional (Ryan, CIV-1238: "Occasional", not "one-off")
 export const HIDE_ONE_OFF_SETTING = { label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' } as const;
@@ -225,6 +231,9 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
+/** The schedule chart's default title (HeadwaySparkline), and the full-day view's note under it (CIV-2973: moved here, unchanged). */
+export const SCHEDULE_OVERVIEW_TITLE = 'Schedule overview';
+export const ALL_PERIODS_SHOWN_NOTE = 'All time periods are shown together.';
 // The button at the end of the For Transit Planners and For Researchers pages that emails us (CIV-1706); also the email's subject.
 export const REQUEST_DEMO_LABEL = 'Request a demo';
 
@@ -515,6 +524,13 @@ export function noTripsInPeriodText(period: string, mode: number | null): string
   const name = PERIOD_LABELS[period as PeriodKey];
   return vehicles && name ? `No ${name.replace(/^\p{Lu}(?=\p{Ll})/u, c => c.toLowerCase())} ${vehicles}` : null;
 }
+/**
+ * The period name above the route card's chart, with the hovered hour beside it (#1819, CIV-2949: Ryan, 2026-11-25,
+ * picked "Hour beside the period name, no hover text": "PM peak · 5 PM" on hover, plain "PM peak" otherwise).
+ * Wording pending Ryan's word-for-word OK.
+ */
+export const periodWithHourText = (period: PeriodKey, hour: number | null | undefined): string =>
+  hour == null ? PERIOD_LABELS[period] : `${PERIOD_LABELS[period]} · ${clockTime(hour * 60)}`;
 /** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
 export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
   `${day} values by time of day aren’t available for this agency yet.`;
@@ -646,16 +662,22 @@ export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
 /** The switched-off page's line, in parts around its two code snippets. */
 export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Start it with', command: 'npm run live', middle: 'and open', path: LIVE_PATH, end: 'on the address it prints.' } as const;
 
-/** Why a picked route has no vehicles on the Live map. */
-export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {
+/**
+ * Why a picked route has no vehicles on the Live map. `feedFailed`: the agency's feed isn't answering (the pill reads
+ * Unavailable), so Atlas has no reading, which is not "none running" (#1923): the pill's own "Unable to load".
+ */
+export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[], feedFailed = false): string {
   if (!polled) {
     return followed.length > 0
       ? `${liveDoesNotCover(agencyName, routeShortName)} It covers ${agencyName} routes ${joinList(followed)}.`
       : liveCoversNoRoutes(agencyName);
   }
+  if (feedFailed) return LIVE_UNABLE_TO_LOAD;
   return `No ${agencyName} ${routeShortName} vehicles are running right now.`;
 }
 export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
+/** CIV-3047 B (Ryan, 2026-11-27, his words): the Live route card's clock beside the flag, shown once the route's vehicles stop reporting. */
+export const liveLocationsUpdatedAt = (time: string) => `Locations last updated at ${time}`;
 export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
 /** CIV-1795: the approved "can’t be shown right now" line (CIV-941). */
 export const LIVE_FEED_INCOMPLETE = 'These figures can’t be shown right now.';
@@ -711,7 +733,7 @@ export function liveReportFlagTitle(agency: string | null, loaded: boolean, rout
 /** The Live map's list of the routes it covers in view (CIV-1795: "covers", Atlas's own verb). */
 export const LIVE_COVERED_ROUTES_HEADING = 'Routes Live covers here';
 // N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
-export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
+export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed, NO_END_DATE_LEAD, timetableStaleLine } from '../../shared/agencyPages';
 
 /** CIV-1052: a stop's own route that has no trips at the stop in the whole chosen period (Ryan, wording approved 2026-10-27). */
 export function stopRouteNoTripsNotice(periodRange: string): string {
@@ -732,6 +754,8 @@ export const EXPLAINERS = {
   'route-rating': { code: 'E9', title: 'Route rating' },
   /** E10 (CIV-1978): title and paragraph 2 approved by Ryan (2026-11-20). */
   'official-data': { code: 'E10', title: 'Official data' },
+  /** E11 (CIV-2222): title Ryan's pick, "Late departures" (2026-11-25). */
+  'late-limit': { code: 'E11', title: 'Late departures' },
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
@@ -762,6 +786,8 @@ export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_SENTENCE} Some weekda
 // E9 (CIV-1199, Ryan 2026-11-14, word for word): N12's full sentence with its live values, then one more sentence.
 // CIV-2896: the card passes the full sentence (CardNotice.pageText), never its own card line.
 export const routeRatingLead = (filterNotice: string) => `${filterNotice} A part of the route runs less often than the rest.`;
+// E11 (CIV-2222, Ryan 2026-11-25, word for word; the whole page, no third paragraph: "Do we need a third paragraph then", then "1").
+export const LATE_LIMIT_LEAD = 'We check each vehicle’s location once per minute. The departure times can be up to 30 seconds off, so we add a 30 second buffer to the limit to allow for this.';
 
 // ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
 /** Where a paragraph-3 piece's links go, in order. */
@@ -815,7 +841,10 @@ export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly Explain
   'edge-gap-allowance': { p2: ['MIDDAY_GAPS'] },
   'weekday-variation': { p2: ['WEEKDAYS_SEPARATE'], p3: 'AGENCY_WEBSITE_EACH_DAY' },
   'route-rating': { p2: ['STRETCH_AND_BRANCHES_SEPARATE'], p3: 'REPORT_WITH_FLAG' },
-  'official-data': { p2: ['OFFICIAL_DATA_AS_PUBLISHED'], p3: 'AGENCY_WEBSITE_CURRENT' },
+  // E10: no "agency's website has its current schedule" line or link: Atlas never points riders elsewhere to plan or book (DECISIONS 2026-11-24).
+  'official-data': { p2: ['OFFICIAL_DATA_AS_PUBLISHED'] },
+  // E11: Ryan's two sentences are the whole page (2026-11-25): nothing for the reader to do, so no paragraph 3.
+  'late-limit': { p2: [] },
 };
 
 /**
@@ -834,6 +863,8 @@ export const NOTICE_EXPLAINERS = {
   /** CIV-1199 case 1: only when every row meets the filter but a part of the route doesn't (routeCardNotices learnMore). */
   N12: 'route-rating',
   N131: 'official-data',
+  /** CIV-2222 line B: an agency with no published on-time window (Live's week figures). */
+  N133: 'late-limit',
   /** An agency's own rollout note from its config (none set today); the beta-only notices link to beta instead. */
   N19: 'beta-rollout',
   N21: 'new-schedule-data',
@@ -860,6 +891,11 @@ export const officialDataOnlyNotice = officialDataOnlySentence;
 // E10's lead: N131's full sentence.
 export const officialDataLead = officialDataOnlySentence;
 
+// N133 no-published-window (CIV-2222 line B; Ryan's word-for-word OK): under Live's week figures, for an agency that publishes
+// no on-time window, with Learn more opening E11. 5½ min is LATE_LIMIT_TEXT.
+export const noPublishedWindowNotice = (agencyName: string): string =>
+  `${agencySentenceStart(agencyNames(agencyName).card.primary)} doesn’t publish its on-time window, so Atlas counts late as ${LATE_LIMIT_TEXT} behind schedule.`;
+
 // ---- CIV-2896: each Learn-more notice's two parts ----
 // Ryan (2026-11-24) picked "1": the card gets a short line, and its Learn more page keeps the full sentence and adds
 // what's new. "card" is what the card shows; "page" is the opening of its Learn more panel (E1 to E10), as InfoPanel shows it.
@@ -884,6 +920,7 @@ export const NOTICE_PARTS: Record<Exclude<LearnMoreCode, 'N19'>, NoticeParts> = 
   N14: { card: () => FIRST_LAST_TRIP_ALLOWANCE_HINT, page: () => EDGE_GAP_ALLOWANCE_LEAD },
   N25: { card: s => listingEndedNotice(s.date, s.ended), page: s => listingEndedPanelLead(s.agencyName, s.date, s.ended) },
   N131: { card: s => officialDataOnlyNotice(s.agencyName), page: s => officialDataLead(s.agencyName) },
+  N133: { card: s => noPublishedWindowNotice(s.agencyName), page: () => LATE_LIMIT_LEAD },
 };
 
 /**
@@ -986,7 +1023,6 @@ export const SOURCE_LINK_LABEL = 'Source';
 export const SOURCE_LINK_ARIA_LABEL = 'Source (opens in a new tab)';
 export const OPENS_IN_NEW_TAB_HINT = 'Opens in a new tab';
 /** The report form's buttons. */
-export const CANCEL_LABEL = 'Cancel';
 export const CHANGE_LABEL = 'Change';
 export const MAP_LEGEND_LABEL = 'Map legend';
 /** A map key's screen-reader name. */
@@ -1038,7 +1074,10 @@ export const HISTORY_TAG = 'History';
 export const clearAgencyFiltersTitle = (pills: readonly string[]): string => `Clear the ${joinList(pills)} filters`;
 /** The agency list's Sources view (CIV-1795: no "GTFS feed" jargon, as About Atlas says "published agency schedules"). */
 export const SOURCES_LEAD = 'We use the schedules transit agencies publish, usually downloaded directly from each agency.';
-export const SOURCES_FALLBACK = 'When we can’t rely on an agency’s own copy, we may use a public copy from:';
+/** Ryan, 2026-11-27, word for word (CIV-3118): not blame-y. */
+export const SOURCES_FALLBACK = 'For some agencies, we use their schedule from one of these public sources:';
+/** Above the agency credits in Sources (CIV-3096, Ryan, 2026-11-26, word for word). */
+export const SOURCES_CREDITS_HEADING = 'Licences and attributions.';
 export const NEW_TAG = 'New';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';

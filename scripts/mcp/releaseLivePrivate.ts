@@ -20,7 +20,7 @@
 import { spawnSync } from 'child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
-import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand } from '@aws-sdk/client-s3';
 import { LIVE_ARCHIVE_SLUGS, liveCoverage, liveFiguresReady } from '../../shared/liveCoverage';
 import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_MIN_DAYS_TO_SHOW } from '../../shared/rules/live';
 import { analyseArchivedAgency, LiveBuildFailed } from '../liveArchiveAnalysis';
@@ -28,9 +28,12 @@ import { LIVE_V2_BUCKET, onRecorder, snapshotsPerDay } from '../../shared/liveAr
 import { LIVE_V2_PREFIX } from '../../shared/liveSlots';
 import { liveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
+import { getR2Client, privateLiveBucketName, requireEnv } from '../../pipeline/r2';
 import type { AgencySummary } from '../../shared/liveAgency';
 import { liveIndexPath, liveSplitPaths, slimRanking, type LiveIndex, type LiveManifest } from './liveData';
+import { assertKnownFlags } from '../../pipeline/cliFlags';
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--days': 'value', '--work': 'value', '--log': 'value', '--only': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const argv = process.argv.slice(2);
 const opt = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
 const dryRun = argv.includes('--dry-run');
@@ -41,14 +44,9 @@ const only = opt('--only')?.split(',');
 mkdirSync(work, { recursive: true });
 writeFileSync(log, '');
 
-const need = (k: string) => { const v = process.env[k]; if (!v) throw new Error(`Missing env var ${k}.`); return v; };
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${need('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: need('R2_ACCESS_KEY_ID'), secretAccessKey: need('R2_SECRET_ACCESS_KEY') },
-});
-const PRIVATE = dryRun ? process.env.MCP_LIVE_BUCKET ?? '' : need('MCP_LIVE_BUCKET');
-const PUBLIC = need('R2_BUCKET_NAME');
+const s3 = getR2Client();
+const PRIVATE = dryRun ? process.env.MCP_LIVE_BUCKET ?? '' : privateLiveBucketName();
+const PUBLIC = requireEnv('R2_BUCKET_NAME');
 if (PRIVATE && PRIVATE === PUBLIC) throw new Error('MCP_LIVE_BUCKET is the public bucket; refusing.');
 
 async function getText(bucket: string, key: string): Promise<string | null> {

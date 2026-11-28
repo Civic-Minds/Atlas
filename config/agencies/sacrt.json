@@ -9,8 +9,8 @@
   "region": "California",
   "bbox": [
     38.39,
-    -121.76,
-    38.72,
+    -121.77,
+    38.73,
     -121.09
   ],
   "feedUrl": "https://apps.sacrt.com/gtfs/srtd/google_transit.zip",
@@ -51,7 +51,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 258,
+      "featureCount": 256,
       "feedExpiry": "20270102",
       "routeCount": 64,
       "problemShapes": 0,
@@ -59,8 +59,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "b5612c9f877e86db",

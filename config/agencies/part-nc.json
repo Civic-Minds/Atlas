@@ -1,0 +1,26 @@
+{
+  "slug": "part-nc",
+  "officialName": "Piedmont Authority for Regional Transportation",
+  "commonName": "PART",
+  "websiteUrl": "http://www.partnc.org/",
+  "dataLicense": {
+    "url": "http://www.partnc.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "North Carolina",
+  "center": [
+    36.0559,
+    -79.959
+  ],
+  "bbox": [
+    35.631,
+    -80.246,
+    36.118,
+    -79.051
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-373/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

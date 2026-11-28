@@ -70,6 +70,16 @@ export interface StudioBeforeAfterFile {
 /** One drawn line as [lng, lat] pairs (pipeline/feedCompare.ts's RouteLine). */
 export type StudioRouteLine = Array<[number, number]>;
 
+/** The four seasons, by month (Dec–Feb winter, Mar–May spring, Jun–Aug summer, Sep–Nov fall). */
+export type StudioSeason = 'winter' | 'spring' | 'summer' | 'fall';
+const SEASON_BY_MONTH: readonly StudioSeason[] = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'fall', 'fall', 'fall', 'winter'];
+
+/** The season a schedule file is read in, from its YYYYMMDD date (CIV-2058), or null for a date it can't read. */
+export function studioSeason(date: string): StudioSeason | null {
+  const month = Number(/^\d{4}(\d{2})\d{2}$/.exec(date)?.[1]);
+  return month >= 1 && month <= 12 ? SEASON_BY_MONTH[month - 1] : null;
+}
+
 /** Where the Vite dev server serves an agency's file (tmp/studio/<slug>-before-after.json). */
 export const studioBeforeAfterDevUrl = (slug: string) => `/dev-studio/${slug}-before-after.json`;
 

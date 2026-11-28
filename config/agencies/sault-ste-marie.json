@@ -1,0 +1,59 @@
+{
+  "slug": "sault-ste-marie",
+  "officialName": "Sault Ste. Marie Transit",
+  "websiteUrl": "https://saultstemarie.ca/City-Hall/City-Departments/Community-Development-Enterprise-Services/Community-Services/Transit.aspx",
+  "dataLicense": {
+    "url": "https://saultstemarie.ca/City-Hall/City-Departments/Community-Development-Enterprise-Services/Community-Services/Transit.aspx",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Ontario",
+  "center": [
+    46.5261,
+    -84.3213
+  ],
+  "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-saultstemarie.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4740/latest.zip",
+  "timezone": "America/Toronto",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-saultstemarie.zip",
+  "lastFeedCheckAt": "20261126",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20280331",
+  "feedQuality": {
+    "status": "review",
+    "score": 100,
+    "reasons": [
+      "1 route shape needed adjustment before display."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 1,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 22,
+      "feedExpiry": "20280331",
+      "routeCount": 5,
+      "problemShapes": 1,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-27"
+  },
+  "lastRawArchiveKey": "20280331-177c495f35f55872",
+  "lastFeedContentKey": "02af01839c5bf00b",
+  "lastFeedExpiry": "20280331",
+  "lastPeekedExpiry": "20280331",
+  "lastFeedStart": "20261124",
+  "lastFeedVersion": "1/20261124 15:50:51/20261125 00:00:00",
+  "lastRefreshedAt": "2026-11-26",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "1a8d95b4b057646b",
+  "feedObtainedAt": "20261125"
+}

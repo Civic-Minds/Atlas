@@ -16,6 +16,7 @@
  * Days the GTFS calendar doesn't cover are dropped, not guessed (with several --gtfs folders, a window date none covers is an error).
  * --gtfs takes one folder or a comma-separated list; each service date uses the feed that covers it (scripts/live-gtfs-feeds.ts).
  */
+import { speedStretches, speedTraversals, summarizeSpeed, type SpeedStretch, type SpeedTraversal } from '../shared/liveSpeed.js';
 import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, join } from 'path';
 import { buildShape, haversineM, projectOntoShape, type Shape } from '../shared/shapeProjection.js';
@@ -52,9 +53,11 @@ const AGENCY = args.agency ?? 'ttc';
 const LIVE = loadLiveAgencyConfig(AGENCY);
 /** CIV-2222: the agency's own on-time window where it publishes one (TTC: 1 min early to 5 min late), else Atlas's. */
 const WINDOW = onTimeWindow(AGENCY);
-/** #1789: runs rated with no departure from their trip's first stop, and those first seen at the 4th stop or later. */
-let partwayRuns = 0, partwayFar = 0;
-const RATE_PARTWAY = process.argv.includes('--rate-partway');
+/** #1789: per service date, runs with no departure from their trip's first stop, rated at the first stop they served. */
+const partwayByDate = new Map<string, { runs: number; far: number; rematched: number }>();
+/** The trip starts given to runs that started partway: dropped again when the same trip on the same day is already rated. */
+const partwayStarts = new Set<RunStopDelay>();
+let partwayDuplicates = 0;
 const TZ = LIVE.timeZone;
 const DAYS = Number(args.days ?? LIVE_WINDOW_DAYS);
 const OBS_OUT = args['obs-out'];
@@ -62,6 +65,10 @@ const OBS_OUT = args['obs-out'];
 const STRINGS_DIR = args['strings-dir'];
 /** Optional: write each measured end-to-end trip time (for hand-checking). */
 const RUNTIMES_OUT = args['runtimes-out'];
+// CIV-2919: Speed. --speed-out is the private traversal file (start time and duration per stretch, no vehicle ids);
+// --speed-summary-out is the figures built from it (summarizeSpeed), the only file a reader may use.
+const SPEED_OUT = args['speed-out'];
+const SPEED_SUMMARY_OUT = args['speed-summary-out'];
 /** Trips whose headsign contains this text (any case) are another service under the same route number (e.g. replacement buses): left out and counted. Plain text, not a pattern. */
 const EXCLUDE_HEADSIGN = args['exclude-headsign'] ? String(args['exclude-headsign']).toLowerCase() : null;
 // A separate service that shares the route number (the 507M shuttle): its own trips carry the name in the headsign; its
@@ -354,11 +361,24 @@ function scheduleKeyForDate(date: string): string | null {
 
 /** GTFS service date: trips after midnight (before the agency's service-day end, 4 a.m. for the TTC) belong to the previous day. */
 const serviceDateOf = (t: number) => { const l = local(t); return l.hour < LIVE.serviceDayEndHour ? prevDate(l.date) : l.date; };
+/**
+ * #1858: a run's service date comes from its own trip, not the clock alone. A trip timetabled before the service-day
+ * end (the TTC's first 501/504 cars at 03:51) belongs to the day it starts, so a car out before 4 a.m. on it was put on
+ * the previous day and read 24 h late. Of the clock's local date and the day before, take the one that puts the trip's
+ * scheduled start nearest the run's first report.
+ */
+function runServiceDate(t: number, tripId: string): string {
+  const startSec = timesByTrip.get(tripId)?.[0]?.dep;
+  if (startSec == null) return serviceDateOf(t);
+  const today = local(t).date;
+  const off = (d: string) => Math.abs(serviceDayStart(d) + startSec - t);
+  return off(today) <= off(prevDate(today)) ? today : prevDate(today);
+}
 
-let runsTotal = 0, runsMatched = 0, runsUnmatched = 0;
+let runsTotal = 0, runsMatched = 0, runsUnmatched = 0, runsExcluded = 0;
 const observations: SegmentObservation[] = [];
 // Passages by stop+direction, for headways.
-const passagesAt = new Map<string, { tripId: string; t: number }[]>();
+const passagesAt = new Map<string, { tripId: string; t: number; date: string }[]>();
 const holds: (HoldEvent & { directionId: number })[] = [];
 const runDelays: RunDelays[] = [];
 let delaysExcluded = 0;
@@ -377,6 +397,8 @@ let runsWithDelays = 0;
 const swapLog: { date: string; outcome: 'reassigned' | 'dropped' }[] = [];
 const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
 // Per vehicle: its runs in time order (for turn-backs); per trip: when it was seen.
+const speedStretchesByPattern = new Map<string, SpeedStretch[]>();
+const speedRuns: SpeedTraversal[] = [];
 const vehicleRuns = new Map<string, { tripId: string; first: PositionSample; last: PositionSample; samples: PositionSample[] }[]>();
 const tripPings = new Map<string, TripPing[]>(); // per trip number: reports, with position along its route
 const unlistedRuns: [number, number][] = []; // when cars on trip numbers missing from the timetable were running
@@ -397,10 +419,11 @@ for (const [key, samples] of runs) {
     const run = dedup.slice(start, i);
     start = i;
     runsTotal++;
-    const runDate = serviceDateOf(run[0].t);
-    allRunDates.add(runDate);
+    const clockDate = serviceDateOf(run[0].t);
     // The position feed's trip number belongs to the timetable in force on the run's service date.
-    const tripId = prefixedId(FEEDS, feedForDate(FEEDS, runDate), rawTripId);
+    const tripId = prefixedId(FEEDS, feedForDate(FEEDS, clockDate), rawTripId);
+    const runDate = runServiceDate(run[0].t, tripId);
+    allRunDates.add(runDate);
     if (excludedTripIds.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'excluded' });
     else if (!tripById.has(tripId)) leftOutRuns.push({ date: runDate, reason: 'no_timetable_trip' });
     else keptRuns.push(runDate);
@@ -410,7 +433,8 @@ for (const [key, samples] of runs) {
     vr.push({ tripId, first: run[0], last: run[run.length - 1], samples: run });
     vehicleRuns.set(vehicleId, vr);
     const trip = tripById.get(tripId);
-    if (!trip) { runsUnmatched++; unlistedRuns.push([run[0].t, run[run.length - 1].t]); continue; }
+    // #1859: runs of trips left out on purpose (e.g. --exclude-headsign replacement buses) are counted apart from runs with no timetable trip.
+    if (!trip) { if (excludedTripIds.has(tripId)) runsExcluded++; else runsUnmatched++; unlistedRuns.push([run[0].t, run[run.length - 1].t]); continue; }
     const pattern = patternFor(trip.shape_id);
     const projected = pattern ? projectRun(run, pattern) : [];
     const tp = tripPings.get(tripId) ?? [];
@@ -440,7 +464,7 @@ for (const [key, samples] of runs) {
     for (const h of detectHolds(projected, pattern)) {
       if (!times.length) continue;
       const stop = stopsById.get(h.stopId);
-      const base = serviceDayStart(serviceDateOf(h.start));
+      const base = serviceDayStart(runDate);
       const st = times.find(x => x.stopId === h.stopId);
       const excess = standingStillExcess({
         start: h.start, end: h.end, runFirst: run[0].t, runLast: run[run.length - 1].t,
@@ -452,12 +476,17 @@ for (const [key, samples] of runs) {
       if (excess != null) holds.push({ ...h, end: h.start + excess, directionId: pattern.directionId });
     }
     const legs = stopPassages(projected, pattern);
+    if (SPEED_OUT || SPEED_SUMMARY_OUT) {
+      let stretches = speedStretchesByPattern.get(pattern.id);
+      if (!stretches) { stretches = speedStretches(pattern, DEPARTURE_OFFSET_M); speedStretchesByPattern.set(pattern.id, stretches); }
+      speedRuns.push(...speedTraversals(projected, pattern, stretches, runDate, DEPARTURE_OFFSET_M));
+    }
     // v3: delay at each stop = when the car LEFT it (25 m past) minus the timetable's departure for this trip there.
     // Terminal "passes" are layover arrivals, so the arrival moment would fake early cars.
     const deps = stopPassages(projected, pattern, SEGMENT_DEFAULTS, DEPARTURE_OFFSET_M).flat();
     const firstDeparture = deps[0];
     if (firstDeparture && times.length) {
-      const svcDate = serviceDateOf(firstDeparture.t);
+      const svcDate = runDate;
       const base = serviceDayStart(svcDate);
       const seenStop = new Set<string>();
       const observed = deps.filter(p => !seenStop.has(p.stopId) && !!seenStop.add(p.stopId));
@@ -471,13 +500,17 @@ for (const [key, samples] of runs) {
       };
       let assigned = tripId;
       let rows = delaysFor(tripId);
+      const startedPartway = rows.length > 0 && !rows.some(r => r.tripStart);
       const med = median(rows.map(r => r.delaySec));
       if (rows.length >= 5 && med != null && Math.abs(med) >= SWAP_OFF_SEC) {
         // 15+ min off its own trip: is it really another scheduled trip on the same pattern (a swapped trip number)?
         const services = activeServices(svcDate) ?? [];
         let best: { id: string; share: number } | null = null;
+        // #1789: a run that started partway may be running another pattern in the same direction (a short turn), so it
+        // is matched against every trip in its direction, not only those on its own shape.
         for (const c of trips) {
-          if (c.trip_id === tripId || c.shape_id !== trip.shape_id || !services.includes(c.service_id)) continue;
+          if (c.trip_id === tripId || !services.includes(c.service_id)) continue;
+          if (startedPartway ? c.direction_id !== trip.direction_id : c.shape_id !== trip.shape_id) continue;
           const cr = delaysFor(c.trip_id);
           if (cr.length < 5) continue;
           const share = cr.filter(r => Math.abs(r.delaySec) <= SWAP_FIT_SEC).length / cr.length;
@@ -487,16 +520,20 @@ for (const [key, samples] of runs) {
         else { rows = []; swapLog.push({ date: svcDate, outcome: 'dropped' }); }
       }
       runsWithDelays++;
-      // #1789 (CIV-2222): a run seen first partway along its trip (a short turn re-entering service, or no position at the
-      // terminal) has no departure from the end of the line, so it got no on-time rating. With --rate-partway it is rated at
-      // the first stop it served instead. Investigation only until Ryan picks; off by default.
-      if (rows.length && !rows.some(r => r.tripStart)) {
-        partwayRuns++;
+      // #1789 (CIV-2907): a run seen first partway along its trip (a short turn re-entering service, or no position at the
+      // terminal) has no departure from the end of the line. Ryan: "if it doesn't stop at all stops and we mark it as missing
+      // or not on time when it actually is but ran a different service pattern ... that is an issue on our end". It is rated
+      // at the first stop it served, against the timetable of the trip it was matched to.
+      if (rows.length && startedPartway) {
+        const c = partwayByDate.get(svcDate) ?? { runs: 0, far: 0, rematched: 0 };
+        c.runs++;
+        if (assigned !== tripId) c.rematched++;
         const first = rows.reduce((a, b) => (b.p.t < a.p.t ? b : a));
         const tt = timesByTrip.get(assigned) ?? [];
-        const idx = tt.findIndex(st => st.stopId === first.p.stopId);
-        if (idx >= 3) partwayFar++;
-        if (RATE_PARTWAY) first.tripStart = true;
+        if (tt.findIndex(st => st.stopId === first.p.stopId) >= 3) c.far++;
+        partwayByDate.set(svcDate, c);
+        // Matched to a trip that starts where it was first seen: that stop is already its trip start.
+        if (!rows.some(r => r.tripStart)) first.tripStart = true;
       }
       if (rows.length) {
         const tt = timesByTrip.get(assigned) ?? [];
@@ -517,7 +554,9 @@ for (const [key, samples] of runs) {
       const stopsOut: RunStopDelay[] = [];
       for (const r of rows) {
         if (Math.abs(r.delaySec) > MAX_DELAY_SEC) { delaysExcluded++; continue; }
-        stopsOut.push({ stopId: r.p.stopId, t: r.p.t, hour: hourOf(r.p.t), delaySec: r.delaySec, timepoint: r.timepoint, tripStart: r.tripStart });
+        const row: RunStopDelay = { stopId: r.p.stopId, t: r.p.t, hour: hourOf(r.p.t), delaySec: r.delaySec, timepoint: r.timepoint, tripStart: r.tripStart };
+        if (startedPartway && r.tripStart && r.p.stopId !== (timesByTrip.get(assigned) ?? [])[0]?.stopId) partwayStarts.add(row);
+        stopsOut.push(row);
       }
       if (stopsOut.length) runDelays.push({ date: svcDate, directionId: pattern.directionId, tripId: assigned, stops: stopsOut });
     }
@@ -525,9 +564,25 @@ for (const [key, samples] of runs) {
     for (const leg of legs) for (const p of leg) {
       const k = `${p.stopId}|${pattern.directionId}`;
       const l = passagesAt.get(k) ?? [];
-      l.push({ tripId, t: p.t });
+      l.push({ tripId, t: p.t, date: runDate });
       passagesAt.set(k, l);
     }
+  }
+}
+
+// #1789: one trip start per trip per day. A piece of a trip seen again after a break, or a second car on the same trip
+// number, is not a run of its own: its partway start is dropped when that trip already has a start, or an earlier one.
+{
+  const byTrip = new Map<string, RunStopDelay[]>();
+  for (const r of runDelays) for (const x of r.stops) if (x.tripStart) {
+    const k = `${r.date}|${r.tripId}`;
+    (byTrip.get(k) ?? byTrip.set(k, []).get(k)!).push(x);
+  }
+  for (const starts of byTrip.values()) {
+    if (starts.length < 2) continue;
+    const own = starts.filter(x => !partwayStarts.has(x));
+    const keep = own.length ? null : starts.reduce((a, b) => (b.t < a.t ? b : a));
+    for (const x of starts) if (partwayStarts.has(x) && x !== keep) { x.tripStart = false; partwayDuplicates++; }
   }
 }
 
@@ -576,7 +631,7 @@ for (const [k, sched] of scheduledAt) {
   // Only passes by trips this stop's timetable has for that service day; other
   // vehicles (yard moves, the next day's first trips) would fill real gaps.
   const scheduledIds = new Set(sched.map(s => s.tripId));
-  const obs = (passagesAt.get(`${stopId}|${dir}`) ?? []).filter(p => scheduledIds.has(p.tripId) && serviceDateOf(p.t) === date);
+  const obs = (passagesAt.get(`${stopId}|${dir}`) ?? []).filter(p => scheduledIds.has(p.tripId) && p.date === date);
   const byTrip = new Map(obs.map(p => [p.tripId, p.t]));
   const byBand = new Map<TimeBand, { tripId: string; t: number }[]>();
   for (const s of sched) { const b = bandForHour(hourOf(s.t)); const l = byBand.get(b) ?? []; l.push(s); byBand.set(b, l); }
@@ -925,13 +980,20 @@ const holdStats = [...holdsAt].map(([k, m]) => {
   };
 });
 if (process.env.DEBUG_FIRST) console.log('joined_late at first stop:', firstStopJoinedLate);
-console.log(`#1789: ${partwayRuns} runs with no first-stop departure (${partwayFar} first seen at the 4th stop or later)${RATE_PARTWAY ? ', rated at the first stop they served' : ''}`);
 console.log(`v2: trip instances ${tripInstances} (short pieces left out ${tripsShortExcluded}), not seen ${tripsNotSeen}, unlisted cover ${tripsUnlistedCover}, feed-gap trips ${tripsFeedGap}, turned back ${tripsShortTurned}, stood-still events ${holds.length}, degraded snapshots empty/stale/thin ${degradedEmpty}/${degradedStale}/${degradedThin}, stood-still dropped for degraded feed ${standingStillDegraded}`);
 
 // --- v3: the dashboard analysis over the last DAYS service dates ---
-const windowDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort().slice(-DAYS);
+// #1858: a service day the archive has not reached yet (cars out before 4 a.m. on its first trips) is not a window day.
+const lastServiceDate = serviceDateOf(snapshotTimes[snapshotTimes.length - 1]);
+const windowDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d) && d <= lastServiceDate).sort().slice(-DAYS);
 const inWindow = new Set(windowDates);
 const windowRuns = runDelays.filter(r => inWindow.has(r.date));
+{
+  const pw = windowDates.map(d => partwayByDate.get(d)).filter(Boolean) as { runs: number; far: number; rematched: number }[];
+  const sum = (k: 'runs' | 'far' | 'rematched') => pw.reduce((a, x) => a + x[k], 0);
+  const starts = windowRuns.reduce((a, r) => a + r.stops.filter(x => x.tripStart && Math.abs(x.delaySec) <= MAX_DELAY_SEC).length, 0);
+  console.log(`#1789: ${sum('runs')} runs in the window started partway and are rated at the first stop they served, of ${starts} rated trip starts (${sum('far')} first seen at the 4th stop or later, ${sum('rematched')} matched to another trip); ${partwayDuplicates} pieces of trips already rated, over every date, left unrated`);
+}
 // Which days of the archive are healthy (good recordings). The window keeps all its dates, but the stop lists, run time by hour,
 // delay build-up, bunching, extra wait and each direction's late share count only the good ones (CIV-318), the same set the weekly tiles use.
 // Snapshots count when they carry at least one of this route's vehicles (an empty line and an absent one are the same), once
@@ -1418,6 +1480,12 @@ if (STRINGS_DIR) {
   }
 }
 if (OBS_OUT) writeFileSync(OBS_OUT, JSON.stringify(windowRuns.map(r => ({ ...r, tripId: rawTripId_(r.tripId) }))));
+if (SPEED_OUT || SPEED_SUMMARY_OUT) {
+  // The same days and feed checks as every other window figure.
+  const kept = speedRuns.filter(t => inGoodDays.has(t.date) && !feedDown(t.departT) && !feedDown(t.departT + t.sec));
+  if (SPEED_OUT) writeFileSync(SPEED_OUT, JSON.stringify(kept.map(({ key, departT, sec, date }) => [key, departT, sec, date])));
+  if (SPEED_SUMMARY_OUT) writeFileSync(SPEED_SUMMARY_OUT, JSON.stringify(summarizeSpeed([...speedStretchesByPattern.values()].flat(), kept, hourOf)));
+}
 if (RUNTIMES_OUT) writeFileSync(RUNTIMES_OUT, JSON.stringify(windowRunTimes.map(r => { const x = r as typeof r & { tripId: string; patternId: string }; return { ...r, tripId: rawTripId_(x.tripId), patternId: rawShapeIdOf(x.patternId) }; })));
 console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowDates[windowDates.length - 1]}), runs ${windowRuns.length}, stop passages ${v3.totals.stopPassages}, dropped off-timetable ${delaysExcluded}`);
 
@@ -1446,6 +1514,7 @@ const result = {
   runsTotal,
   runsMatched,
   runsUnmatched,
+  runsExcluded,
   observations: observations.length,
   headwayWindows: { total: windowsTotal, kept: windowsKept },
   segments: stats.map(segmentOut),
@@ -1479,7 +1548,7 @@ for (const [key, m] of headwayByStop) {
   if (row) (gapsOut[dir] ??= {})[stopId] = row;
 }
 writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: AGENCY, route: ROUTE, dates: goodWindowDates, directions: gapsOut }));
-console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
+console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}${runsExcluded ? `, left out on purpose: ${runsExcluded}` : ""}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
 
 // The agency page reads one summary of every route's analysis. Any run of this script rebuilds it, and drops it if the
 // rebuild fails, so a summary can never be older than the route files beside it (CIV-305).

@@ -120,8 +120,16 @@ export interface RouteCardHeadwayProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   onInfoOpen?: OpenInfoFn;
-  /** A research view's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none. */
-  extra?: React.ReactNode;
+  /** A research view's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none.
+   *  Live passes a function of the destinations its rows already carry (rowLive), to list only the rest (#1877). */
+  extra?: React.ReactNode | ((claimed: ReadonlySet<string>) => React.ReactNode);
+  /** Live (#1877): a destination row's live vehicles, a count under its name that opens them. The first row naming a
+   *  destination (its key) carries it. */
+  rowLive?: (feature: ShapeProperties) => { key: string; subLabel: string; /** Live gaps, beside the row's frequency ("· gaps 3–20 min"). */ gap?: string; onClick: () => void; /** The row's vehicles, listed right under it when opened (Ryan, 2026-11-27: never a separate list). */ below?: React.ReactNode } | null;
+  /** Live (CIV-3047 B): an icon just before the card's flag (the clock shown while the route's vehicles aren't reporting). */
+  headerIcon?: React.ReactNode;
+  /** Live (#1877): rows after a direction's own rows, for live vehicles whose trips end at a stop no row goes to. */
+  directionExtra?: (dirId: number) => React.ReactNode;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -148,6 +156,9 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   setHoveredBranch,
   onInfoOpen,
   extra,
+  rowLive,
+  headerIcon,
+  directionExtra,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
@@ -176,6 +187,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     sectionColours: FEATURES.segmentColours,
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { displayGroups, showDirectionSections, primaryMultiBranch } = model;
+  // The destinations whose live vehicles a row carries this render (rowLive, #1877).
+  const claimedLive = new Set<string>();
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
   // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/style/TEXT.md "Card notices").
   const notices = routeCardNotices({
@@ -302,6 +315,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               back={back}
             />
           </div>
+          {headerIcon}
           <CardReportButton
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
@@ -319,16 +333,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           {notices.variants.text}
         </p>
       )}
-      {onInfoOpen && notices.footer.some(notice => notice.place === 1) && (
-        <div className="-mt-1 mb-3 space-y-1">{notices.footer.filter(notice => notice.place === 1).map(renderFooterNotice)}</div>
-      )}
       {!nightView && (() => {
         const HOURS = SPARKLINE_HOURS;
         const branchColorOf = stableColors ? stableBranchColors(agencyFeatures, currentRoute.routeShortName) : undefined;
         const hoveredSingleBranch = hoveredBranch?.headsign != null;
         // One hourly series per direction (the direction pills), the inline chart's series, its gap colours,
         // the default branch stack and the route's y-axis top, from the shared hour model (CIV-1118).
-        const { perDirection, directionsWithHours, defaultMerged, hasTrunkSparkline, mergedMaxGaps, defaultStackedByHour, scaleMaxFreq } =
+        const { perDirection, defaultMerged, hasTrunkSparkline, mergedMaxGaps, defaultStackedByHour, scaleMaxFreq } =
           routeHourModel({ groups: displayGroups, directions: currentRoute.directions, primaryMultiBranch, period, hours: HOURS, colorOf: branchColorOf });
         // A selected branch row (CIV-512) keeps the chart and its scale: the bars become that direction's
         // trips each hour, split by branch (part-day branches too), each segment its own trips on the
@@ -381,7 +392,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <HeadwaySparkline
               byHour={merged}
               maxGapByHour={mergedMaxGaps}
-              seriesLabel={merged === defaultMerged && directionsWithHours.length > 1 ? 'slower direction' : undefined}
               stackedByHour={stackedByHour}
               // The legend always names the default stack (none when there is none), so a selection never adds or swaps it.
               legendStackedByHour={defaultStackedByHour ?? {}}
@@ -412,6 +422,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               branchDimmed: !!hoveredBranch && !isHovered,
             };
           };
+          // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
+          const liveProps = (feature: ShapeProperties | undefined): { props: { subLabel?: string; headwaySuffix?: string; onClick?: () => void; chevron?: boolean }; below: React.ReactNode } => {
+            const live = rowLive && feature ? rowLive(feature) : null;
+            if (!live || claimedLive.has(live.key)) return { props: {}, below: null };
+            claimedLive.add(live.key);
+            return { props: { subLabel: live.subLabel, headwaySuffix: live.gap ? `· ${live.gap}` : undefined, onClick: live.onClick, chevron: true }, below: live.below ?? null };
+          };
           return model.groups.map((group, gi) => {
             const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);
             return (
@@ -426,6 +443,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     ))}
                   </>
                 )}
+                {/* #1840 (Ryan, "2"): the shared row sits in its group's rows, so the gap under it matches the gaps between them. */}
+                <div className="space-y-1">
                 {group.shared && (
                   <>
                     <CardDirectionRow
@@ -439,13 +458,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     />
                   </>
                 )}
-                <div className="space-y-1">
                   {group.rows.map((row, i) => {
                     const d = row.feature;
                     if (row.night) {
                       const { grade } = row.night;
                       return (
-                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
+                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
@@ -462,8 +480,10 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     }
                     const shown = row.display(hoveredHour);
                     if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
+                    const live = liveProps(d);
                     return (
-                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
+                      <React.Fragment key={`r${i}`}>
+                      <FlaggableValue reason={REPORT_REASON.frequency} labelReason={REPORT_REASON.name} reportRef={reportRef} className="block w-full text-left">
                         <CardDirectionRow
                           labelWeight="regular"
                           singleLine={shown.singleLine}
@@ -478,25 +498,32 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           dimmed={shown.value.dimmed}
                           limited={shown.value.isLimited}
                           {...hoverProps(group.dirId, d, row.hover)}
+                          {...live.props}
                           holdLayout={hoveredHour != null}
                         />
                       </FlaggableValue>
+                      {live.below}
+                      </React.Fragment>
                     );
                   })}
                   {/* Span-only branches use the same limited row whether or not the irregular-service
                       filter is on: the filter hides them from the map, not from the route's own card. */}
-                  {group.spanRows.map((span, si) => (
+                  {group.spanRows.map((span, si) => { const live = liveProps(span.feature); return (
+                    <React.Fragment key={span.feature ? `s${si}` : 'smulti'}>
                     <CardDirectionRow
                       labelWeight="regular"
                       singleLine
                       wrapLongValue
-                      key={span.feature ? `s${si}` : 'smulti'}
                       label={span.label}
                       limited
                       limitedLabel={model.limitedWord}
                       {...hoverProps(group.dirId, span.feature, span.hover)}
+                      {...live.props}
                     />
-                  ))}
+                    {live.below}
+                    </React.Fragment>
+                  ); })}
+                  {directionExtra?.(group.dirId)}
                 </div>
               </React.Fragment>
             );
@@ -526,13 +553,14 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             <CardHelpNotice message={notices.booking.text} />
           </div>
         )}
-        {onInfoOpen && notices.footer.some(notice => notice.place === 3) && (
+        {onInfoOpen && notices.footer.length > 0 && (
           <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
-            {notices.footer.filter(notice => notice.place === 3).map(renderFooterNotice)}
+            {notices.footer.map(renderFooterNotice)}
           </div>
         )}
       </SidebarCardList>
-      {extra}
+      {/* After the rows, so claimedLive holds every destination they carry. */}
+      {typeof extra === 'function' ? extra(claimedLive) : extra}
       </>)}
     </SidebarCardShell>
   );

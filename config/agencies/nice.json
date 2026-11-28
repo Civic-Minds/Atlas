@@ -17,10 +17,10 @@
     -73.6
   ],
   "bbox": [
-    40.586,
-    -73.8302,
-    40.8642,
-    -73.4087
+    40.58,
+    -73.84,
+    40.87,
+    -73.4
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-521/latest.zip",
   "lastFeedExpiry": "20270109",
@@ -61,7 +61,7 @@
       "mismatchRoutes": 3,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

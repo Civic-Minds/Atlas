@@ -489,6 +489,12 @@ export const LIVE_AGENCY_SLUGS: readonly string[] = [...new Set([
   ...LIVE_MAP_ARCHIVE_FEEDS.map(f => f.slug),
 ])];
 
+/**
+ * #1926 (Ryan, CIV-2193: "similar to history we oculd put 9 beside live"): the number beside the Live tab, on the main map
+ * and in Studio alike: how many agencies Live covers, as History's number counts its agencies.
+ */
+export const LIVE_AGENCY_COUNT = LIVE_AGENCY_SLUGS.length;
+
 /** True when an agency's live feeds are usable in the UI (no API key needed, or marked active). */
 export function isLiveEligibleSlug(slug: string): boolean {
   return LIVE_POLLING_ROUTES.some(r => r.slug === slug && isLiveEligibleRoute(r));

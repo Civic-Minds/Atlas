@@ -1,0 +1,21 @@
+{
+  "slug": "marthas-vineyard",
+  "officialName": "Martha's Vineyard Transit Authority",
+  "commonName": "VTA",
+  "websiteUrl": "http://www.vineyardtransit.com",
+  "dataLicense": {
+    "url": "http://www.vineyardtransit.com",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Massachusetts",
+  "center": [
+    41.4174,
+    -70.6046
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/marthasvineyard-ma-us/marthasvineyard-ma-us.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-420/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

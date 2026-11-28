@@ -15,10 +15,10 @@
   ],
   "region": "California",
   "bbox": [
-    37.37,
+    37.36,
     -122.52,
-    37.79,
-    -122.13
+    37.8,
+    -122.12
   ],
   "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SM",
   "feedApiKeyEnvVar": "MUNI_511_API_KEY",
@@ -57,8 +57,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",

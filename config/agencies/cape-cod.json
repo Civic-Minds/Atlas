@@ -1,0 +1,20 @@
+{
+  "slug": "cape-cod",
+  "officialName": "Cape Cod Regional Transit Authority",
+  "commonName": "CCRTA",
+  "websiteUrl": "https://capecodrta.org/",
+  "dataLicense": {
+    "url": "https://cdn.mbta.com/sites/default/files/2023-08/mbta-massdot-develop-license-agreement.pdf",
+    "attribution": "required",
+    "name": "MassDOT Developers License Agreement",
+    "checkedOn": "2026-11-24"
+  },
+  "region": "Massachusetts",
+  "center": [
+    41.6906,
+    -70.2948
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-645/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

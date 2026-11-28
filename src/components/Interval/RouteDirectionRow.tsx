@@ -3,7 +3,7 @@ import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { ChevronRight } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { headwayRangeShown } from '../../utils/headwayText';
-import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
+import { FLAG_LABEL_PART, HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { keepLastWord } from '../../utils/keepLastWord';
 import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
@@ -103,13 +103,15 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
   const valueRef = React.useRef<HTMLSpanElement>(null);
   // CIV-1465 (Ryan, 2026-11-13: "same as the other one i thin split it into 2 lines"): a long value in two parts ("every
   // 60 min" / "until 5:05 PM") stays in the value column on two right-aligned lines, the list rule (CIV-1300).
-  const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel);
-  const longValue = wrapLongValue && !twoLineValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
+  // CIV-3040 (Ryan, 2026-11-26, pick 1): the destination stays on line 1; a reading that doesn't fit beside it wraps to line 2, right-aligned.
+  const fitOrBelow = wrapLongValue && hasValueCell;
+  const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel) && !fitOrBelow;
+  const longValue = wrapLongValue && !twoLineValue && !fitOrBelow && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
   // CIV-1165 (Ryan, 2026-11-13: "i wonder if instead we should wrap the destination text if needed", then "1"): a destination
   // name is never cut. With a short value the value stays on the row's first line at the right and the name wraps onto a
   // second line beneath itself, as in the route lists.
-  const wrapName = wrapLongValue && !longValue;
-  const singleLine = singleLineProp && !longValue && !wrapName;
+  const wrapName = wrapLongValue && !longValue && !fitOrBelow;
+  const singleLine = singleLineProp && !longValue && !wrapName && !fitOrBelow;
   const valueEnd = valueEndProp || longValue;
   // CIV-1300: a route list row (number and name) keeps its value in the right-hand column, a long value on two lines.
   const listRow = !!routeName;
@@ -137,14 +139,15 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
       onMouseLeave={onHoverEnd}
       {...keyboardFocusHover(onHoverStart, onHoverEnd)}
     >
-      <div className={`flex ${singleLine || listRow || wrapName ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
+      <div className={`flex ${singleLine || listRow || wrapName ? '' : 'flex-wrap'} items-start justify-between gap-2 ${fitOrBelow ? 'gap-y-0.5' : ''}`}>
         <span
-          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
+          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} ${fitOrBelow ? 'flex-auto' : 'flex-1'} min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
+          {...{ [FLAG_LABEL_PART]: '' }}
         >
           {routeName ? <><RouteRowName shortName={routeName.shortName} name={routeName.name} />{routeNameNote && <span className={`${LIST_ROW_DIM} ml-1.5`}>{routeNameNote}</span>}</> : singleLine ? label : keepLastWord(label)}
         </span>
-        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
+        {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd || fitOrBelow ? 'ml-auto' : ''}`}>
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />

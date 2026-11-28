@@ -3,9 +3,10 @@
   "officialName": "Worcester Regional Transit Authority",
   "websiteUrl": "https://therta.com/",
   "dataLicense": {
-    "url": "https://www.massdot.state.ma.us/Portals/0/docs/developers/develop_license_agree.pdf",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://www.mass.gov/doc/developers-license-agreement-11132009/download",
+    "attribution": "required",
+    "name": "MassDOT Developers License Agreement",
+    "checkedOn": "2026-11-26"
   },
   "region": "Massachusetts",
   "center": [
@@ -44,7 +45,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

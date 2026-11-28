@@ -1,14 +1,14 @@
 import { stopCardSiblings } from '../../utils/stopStation';
-import { shortDate } from '../../../shared/dateText';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
-import { buildCurrentRoute, routeVariantFamily } from '../../utils/routeCardRoute';
+import { buildCurrentRoute, routeCardFeedDates, routeVariantFamily } from '../../utils/routeCardRoute';
 import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
-import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { type RouteListDisplay } from '../../utils/effectiveHeadway';
+import { routeReading } from '../../utils/routeReading';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
 import { buildDirectionGroups, routeDirectionOverrides } from '../../utils/routeCardDirectionGroups';
 import { searchAgencyGroups, prepareAgencyGroupsForDisplay, SEARCH_AGENCY_DISPLAY_LIMIT } from '../../utils/agencySearch';
@@ -35,7 +35,6 @@ import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
 import { collectStopHubSiblings, nearbyRouteClosestStops, stopHubCandidates } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
-import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 import type { CompareSide } from '../../utils/compareSides';
 import { FEATURES } from '../../../shared/config';
@@ -289,7 +288,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; edgeText?: string; colorHeadway?: number }>();
+    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; wideRange?: true; edgeText?: string; colorHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -305,11 +304,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
               buildRouteFacts(candidateProps, slug).key === facts.key;
           })
           .map(candidate => candidate.properties as ShapeProperties);
-        const display = routeListDisplay(routeFeatures, period);
+        const display = routeReading(routeFeatures, period).list;
         const headway = display.headway ?? 999;
         const limited = display.limited;
         const noRegular = display.noRegular === true;
         const sharedHeadway = display.sharedHeadway;
+        const wideRange = display.wideRange;
         const colorHeadway = display.colorHeadway;
         const edgeText = display.edgeText;
         const shortName = facts.shortName;
@@ -317,12 +317,13 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const agencyName = agencyNames(facts.agencyName).name;
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, edgeText, colorHeadway });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, ...(wideRange ? { wideRange } : {}), edgeText, colorHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
             existing.headway = headway;
             existing.sharedHeadway = sharedHeadway;
+            existing.wideRange = wideRange;
             existing.edgeText = edgeText;
             existing.colorHeadway = colorHeadway;
           }
@@ -355,12 +356,12 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       return p.routeId === routeId && !(p as { stopId?: string }).stopId;
     });
     if (!feat) return { headway: null, limited: false };
-    const displayOn = (day: DayType, onPeriod: TimePeriod) => routeListDisplay(fc?.features
+    const displayOn = (day: DayType, onPeriod: TimePeriod) => routeReading(fc?.features
       .filter(candidate => {
         const p = candidate.properties as ShapeProperties;
         return !p.stopId && p.routeId === routeId && (p.day === undefined || p.day === day);
       })
-      .map(candidate => candidate.properties as ShapeProperties) ?? [], onPeriod);
+      .map(candidate => candidate.properties as ShapeProperties) ?? [], onPeriod).list;
     const display = displayOn(currentDay, period);
     // Compare (CIV-844): the row reads both maps, each on its own day and time.
     return compareListSideB ? { ...display, compare: { A: display, B: displayOn(compareListSideB.day, compareListSideB.period) } } : display;
@@ -600,8 +601,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
 
     // The same reading the other route lists use (CIV-1447: the route card's own range), not the best branch.
     for (const [mapKey, rows] of connectionRows) {
-      const display = routeListDisplay(rows, period);
-      Object.assign(seen.get(mapKey)!, { headway: display.headway, sharedHeadway: display.sharedHeadway, colorHeadway: display.colorHeadway, edgeText: display.edgeText });
+      const display = routeReading(rows, period).list;
+      Object.assign(seen.get(mapKey)!, { headway: display.headway, sharedHeadway: display.sharedHeadway, wideRange: display.wideRange, colorHeadway: display.colorHeadway, edgeText: display.edgeText });
     }
 
     return Array.from(seen.values())
@@ -797,14 +798,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ? (currentRoute as any).agencySlug as string | undefined
       : undefined;
   const routeAgency = routeSlug ? agencies.find(a => a.slug === routeSlug) : undefined;
-  const routeIsStale = (() => {
-    return routeAgency ? isAgencyFeedExpired(routeAgency) : false;
-  })();
-  const expDateStr = (() => {
-    const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
-    if (!exp || exp.length !== 8) return '';
-    return shortDate(exp) ?? '';
-  })();
+  const { routeIsStale, expDateStr } = routeCardFeedDates(routeAgency);
 
   if (!panelShouldRender) return null;
 

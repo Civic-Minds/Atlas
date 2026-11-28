@@ -13,7 +13,7 @@
  * computes the same stretches from the feed zip.
  */
 import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, MINUTES_PER_DAY, type PeriodKey } from '../shared/config.js';
-import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY, periodFilterValue } from '../shared/periodEligibility.js';
 import { edgeWaitFailMask } from './edgeWaits.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -606,10 +606,16 @@ export function directionStretches(
     const counts = stops.map(() => 0);
     for (const trip of measureTrips) {
       const at = new Map<number, TripVisit>();
+      // #1910: how many of the trip's own stops off this line it has made by each visit, so a trip that leaves the line
+      // between two of its stops (another branch's road) never counts at the line's stops in between.
+      const offLineBefore = new Map<number, number>();
+      let offLine = 0;
       for (const visit of trip.visits) {
         const i = index.get(visit.stopId);
-        if (i == null || visit.counted === false || at.has(i)) continue;
+        if (i == null) { offLine++; continue; }
+        if (visit.counted === false || at.has(i)) continue;
         at.set(i, visit);
+        offLineBefore.set(i, offLine);
       }
       if (at.size === 0) continue;
       const served = [...at.keys()].sort((a, b) => a - b);
@@ -617,8 +623,12 @@ export function directionStretches(
         const from = served[s], to = served[s + 1] ?? served[s];
         const a = at.get(from)!, b = at.get(to)!;
         // The served stop itself, then the stops it skips before its next one, at times interpolated
-        // between the two by stop position.
-        for (let i = from; i < (to === from ? from + 1 : to); i++) {
+        // between the two by stop position. #1910: only where the trip stays on this line between the two (an
+        // express skipping stops); one that stops elsewhere in between ran another road (Spokane 20's via-Riverside
+        // trips never pass Clarke Ave, yet read there and made the branch every 15 instead of 30).
+        const leftLine = (offLineBefore.get(to) ?? 0) !== (offLineBefore.get(from) ?? 0);
+        const last = to === from || leftLine ? from + 1 : to;
+        for (let i = from; i < last; i++) {
           const minutes = i === from ? a.minutes : Math.round(a.minutes + ((b.minutes - a.minutes) * (i - from)) / (to - from));
           counts[i]++;
           times[i].add(minutes);
@@ -788,8 +798,8 @@ export function stretchFilterValue(p: StretchPeriod): number | null {
   // (unevenWait).
   if (p.uneven) return p.value;
   // CIV-1958: the cap's yes/no reads the wait in clock minutes (coverageClock); the published wait stays exact, rounded up.
-  const capped = p.coverageClock !== undefined ? p.coverageClock : p.coverage;
-  return p.sustained === true && !p.uneven && p.coverage != null && capped != null && capped <= PERIOD_COVERAGE_MAX_HEADWAY ? p.headway : p.coverage;
+  const capWait = p.coverageClock !== undefined ? p.coverageClock : p.coverage;
+  return periodFilterValue({ headway: p.headway, coverage: p.coverage, sustained: p.sustained === true, capWait }) ?? null;
 }
 
 /**
@@ -970,7 +980,7 @@ export function featureStretchMeta(
 ) {
   return {
     main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main), ...(role === 'main' ? { rows: rowsOf(stretches.main) } : {}) } : null,
-    tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t), ...(role === 'tail' && index === i ? { rows: rowsOf(t) } : {}) })),
+    tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t), ...(t.byTrips ? { byTrips: true as const } : {}), ...(role === 'tail' && index === i ? { rows: rowsOf(t) } : {}) })),
   };
 }
 
@@ -1344,6 +1354,12 @@ export interface DirectionRollup {
     value: number | null; coverage: number | null; sustained: boolean | null; sustainedMid: boolean | null; mainValue: number | null;
     /** The main stretch's best reading for the range's low end: its typical gap when uneven (#1142), else mainValue. */
     mainLow: number | null;
+    /**
+     * #1775: when CIV-1959 B1 read the value from the trunk alone, the slowest counting branch's value (rule 3's range
+     * high end), leaving out a tail whose reading is only its wait to the period's edge (#1749) or is over an hour
+     * (PERIOD_COVERAGE_MAX_HEADWAY, CIV-3080); otherwise null.
+     */
+    branchValue?: number | null;
     /** The direction value comes from a counting stretch whose value is one gap (isOneGapPeriod). */
     oneGap: boolean;
     /**
@@ -1429,12 +1445,12 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
   if (value == null) return null;
   const t = departuresInWindow(stretchTimes, start, end, false);
   if (t.length < HEADLINE_MIN_DEPARTURES) return null;
-  return lateStartOrEarlyEnd(t, start, end, value)
+  return lateStartOrEarlyEnd(t, start, end, value, stretchTimes)
     ?? (slowStartFromEnabled() ? slowStartEdge(t, start, end, value) : null)
     ?? (slowEndUntilEnabled() ? slowEndEdge(t, start, end, value, stretchTimes.some(x => x >= end)) : null);
 }
 
-function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, value: number): StretchPeriodEdge | null {
+function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, value: number, all: readonly number[] = t): StretchPeriodEdge | null {
   const gaps = t.slice(1).map((x, i) => x - t[i]);
   const lead = t[0] - start;
   const trail = end - t[t.length - 1];
@@ -1445,6 +1461,13 @@ function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, v
   // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
   const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
   if (fromEdge === untilEdge) return null;
+  // CIV-3121 (#1906): service that runs on across the period's edge at the same spacing neither starts nor stops there.
+  // TransLink R2 toward Park Royal runs every 8 through 3 PM, so the wait from 3:00 to its 3:10 bus is the period line,
+  // not a late start: no "every 8 min from 3:10 PM". The same steadiness test, with the gap across the edge added.
+  const prev = fromEdge ? Math.max(-Infinity, ...all.filter(x => x < t[0] && x < start)) : -Infinity;
+  const next = untilEdge ? Math.min(Infinity, ...all.filter(x => x > t[t.length - 1] && x >= end)) : Infinity;
+  if (fromEdge && Number.isFinite(prev) && isSustainedHeadway([t[0] - prev, ...gaps], every)) return null;
+  if (untilEdge && Number.isFinite(next) && isSustainedHeadway([...gaps, next - t[t.length - 1]], every)) return null;
   return fromEdge ? { from: t[0], every } : { until: t[t.length - 1], every };
 }
 
@@ -1673,7 +1696,8 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
   const turnTaking = (p: StretchPeriod): StretchPeriod => ({ ...p, coverage: p.headway });
   const handover = Object.fromEntries(READ_WINDOWS.map(({ key, start, end }) => [key, d.tails.map((_, i) => handsOver(i, key, start, end))])) as Record<ReadKey, boolean[]>;
   const period = {} as DirectionRollup['period'];
-  for (const { key } of READ_WINDOWS) {
+  for (const window of READ_WINDOWS) {
+    const { key } = window;
     const counting = [main[key], ...(trunkOnly ? [] : tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key])))].filter(p => p.counts && p.value != null);
     period[key] = {
       value: counting.length > 0 ? Math.max(...counting.map(p => p.value!)) : null,
@@ -1684,6 +1708,14 @@ export function rollupDirection(dIn: DirectionStretches): DirectionRollup | null
       oneGap: counting.length > 0 && counting.some(p => p.oneGap && p.value === Math.max(...counting.map(c => c.value!))),
       mainValue: main[key].counts ? main[key].value : null,
       mainLow: !main[key].counts ? null : main[key].uneven ? main[key].headway : main[key].value,
+      branchValue: !trunkOnly ? null : (() => {
+        const branches = tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))
+          // CIV-3080: a branch over an hour stays on its own row and never stretches the range (Ryan on RTD 31, CIV-2232:
+          // "For the branch we wouldn't show 10-71"; the card reads "every 10" with the branch on its own line).
+          .filter((p, i) => p.counts && p.value != null && p.value <= PERIOD_COVERAGE_MAX_HEADWAY
+            && !edgeOnlyReading(d.tails[i].times, window.start, window.end, p));
+        return branches.length > 0 ? Math.max(...branches.map(p => p.value!)) : null;
+      })(),
       filterValue: null,
       trunkFilterValue: null,
       edgeWaitFail: 0,
@@ -1898,10 +1930,18 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     const serving = known.filter(d => d.period[key].hasService);
     const filterValues = serving.map(d => d.period[key].filterValue);
     const trunkValues = serving.map(d => d.period[key].trunkFilterValue);
+    // #1775 (CIV-2232, Ryan 2026-11-24: "every 10–30"): rule 3's range runs from the main stretch to the slowest branch. When
+    // the trunk set the headline (B1), the branch's value is not in it, so the range's high end reads the slowest branch.
+    const branches = known.map(d => d.period[key].branchValue).filter((v): v is number => v != null);
+    const high = value != null && branches.length > 0 ? Math.max(value, ...branches) : value;
+    // #1902 (CIV-3113; consistency pick by the manager inside CIV-3080, matching the route list): when a branch sets the high
+    // end, the low end is the trunk's value, as the list reads it ("every 10–30" for TTC 102 midday). An uneven trunk's
+    // typical gap (#1142) stays on the main stretch's row ("every 5–10"), so one range never mixes the two readings.
+    const rangeLow = high != null && value != null && high > value ? value : low;
     period[key] = {
       value,
       coverage: value != null && coverages.every(v => v != null) ? Math.max(...(coverages as number[])) : null,
-      range: value != null && low != null && low !== value ? [Math.min(low, value), value] : null,
+      range: high != null && rangeLow != null && rangeLow !== high ? [Math.min(rangeLow, high), high] : null,
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
       // A route fails a grade any serving direction's edge wait breaks (the worst direction decides, as everywhere).

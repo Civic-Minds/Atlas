@@ -62,9 +62,10 @@ interface FilterChipsProps {
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
    * as the full bar either way. 'history': Frequency and Time, with the map's own Time menu (CIV-389,
    * CIV-392; no "All day" since CIV-1097), and the Day chip only behind the beta day picker flag (CIV-1425);
-   * without it History is weekday only.
+   * without it History is weekday only. 'studio': Frequency, Day, Time and Mode, no Agencies, for Studio's map with no
+   * page open (CIV-2940, #1814; Ryan: "no need for the agency toggle", "We could have mode too").
    */
-  variant?: 'full' | 'shared' | 'side' | 'history';
+  variant?: 'full' | 'shared' | 'side' | 'history' | 'studio';
   /** History's Day chip (CIV-1646): the flag, and the open agency having weekend values; defaults to the flag. */
   historyDayPicker?: boolean;
   /** The connections top bar (CIV-1353, local only): replaces the filters while set. */
@@ -303,6 +304,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
 
+  // #1812: every hook runs before the early returns below.
+  const frequencyOptions = useFrequencyOptions();
   if (connectionsBar) {
     const c = connectionsBar;
     const pickedLabel = c.trips.flatMap(([, list]) => list).find(t => t.id === c.tripId)?.label;
@@ -376,7 +379,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     );
   }
 
-  const frequencyOptions = useFrequencyOptions();
   const frequencyChip = (className: string) => (
     <ChipMenu className={className} label={FREQUENCY_LABEL} active={maxHeadway !== Infinity} open={openChip === 'frequency'} onToggle={() => toggle('frequency')} panelClassName="w-36">
           <ChipOptions value={String(maxHeadway)} onPick={k => { setMaxHeadway(Number(k)); setOpenChip(null); }}
@@ -480,6 +482,17 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         {frequencyChip('')}
         {dayChip('')}
         {periodChip('')}
+      </div>
+    );
+  }
+
+  if (variant === 'studio') {
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        {frequencyChip('')}
+        {dayChip('')}
+        {periodChip('')}
+        {modeChip('')}
       </div>
     );
   }

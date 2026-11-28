@@ -12,28 +12,25 @@
  */
 import { readFileSync, readdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { STUDIO_FILES_PREFIX, isStudioFileName } from '../shared/studioFiles';
+import { getR2Client, privateLiveBucketName } from '../pipeline/r2';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
+assertKnownFlags(process.argv.slice(2), { '--dry-run': 'flag', '--from': 'value', '--only': 'value' }); // CIV-3017: a mistyped flag must not turn into a real write
 const argv = process.argv.slice(2);
 const opt = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
 const from = resolve(opt('--from') ?? 'tmp/studio');
 const only = opt('--only')?.split(',').filter(Boolean);
 const dryRun = argv.includes('--dry-run');
-const need = (k: string) => { const v = process.env[k]; if (!v) throw new Error(`Missing env var ${k}.`); return v; };
 
 const slugOf = (name: string) => name.replace(/-(?:vehicles|before-after)\.json$/, '');
 const names = readdirSync(from).filter(isStudioFileName).filter(n => !only || only.includes(slugOf(n))).sort();
 if (!names.length) { console.log('studio-files-upload: no Studio files to upload.'); process.exit(0); }
 if (dryRun) { console.log(`studio-files-upload: would upload ${names.length} files (dry run).`); process.exit(0); }
 
-const bucket = need('MCP_LIVE_BUCKET');
-if (bucket === process.env.R2_BUCKET_NAME) throw new Error('MCP_LIVE_BUCKET is the public bucket; refusing.');
-const s3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${need('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
-  credentials: { accessKeyId: need('R2_ACCESS_KEY_ID'), secretAccessKey: need('R2_SECRET_ACCESS_KEY') },
-});
+const bucket = privateLiveBucketName();
+const s3 = getR2Client();
 for (const n of names) {
   const body = readFileSync(join(from, n));
   JSON.parse(body.toString('utf8')); // never upload a broken file

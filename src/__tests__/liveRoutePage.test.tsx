@@ -77,7 +77,7 @@ describe('Live route dashboard', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: /max-width: (479|639)px/.test(q), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     renderPage(ready);
     expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
-    for (const [topic, name] of [[DELAY_STARTS_TITLE, /Where Delays Start/], [BUNCHING_FORMS_TITLE, /Where Bunching Forms/]] as const) {
+    for (const [topic, name] of [[DELAY_STARTS_TITLE, /Lateness/], [BUNCHING_FORMS_TITLE, /Where Bunching Forms/]] as const) {
       openTopic(topic);
       const section = fa().getByRole('region', { name });
       expect(section.querySelectorAll('[aria-roledescription="route strip"]').length).toBe(2);
@@ -252,7 +252,7 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, v3: rich });
     await screen.findByRole('heading', { level: 1 });
     // This week against last week: the dashboard's own tiles (same labels and change rule as the dashboard view).
-    const weekRegion = screen.getAllByRole('region', { name: /This Week Compared With Last Week/ })[0];
+    const weekRegion = screen.getAllByRole('region', { name: /This week vs\. last/i })[0];
     for (const label of ['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     // The subtitle names both weeks, and counts this week's trips only (CIV-1445); no separate line under the tiles. The method says it once, in groups.
@@ -339,7 +339,7 @@ describe('Live route dashboard', () => {
     renderPage(broken);
     await screen.findByRole('heading', { level: 1, name: 'TTC 505' });
     openTopic(DELAY_STARTS_TITLE);
-    expect(await screen.findByText(/Where delays start could not be drawn/)).toBeTruthy();
+    expect(await screen.findByText(/Lateness could not be drawn/)).toBeTruthy();
     openTopic(LATE_BY_HOUR_TITLE);
     expect(fa().getByRole('region', { name: /Late Departures by Hour/ })).toBeTruthy();
     openTopic(METHOD_TITLE);

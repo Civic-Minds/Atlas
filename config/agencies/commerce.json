@@ -1,0 +1,19 @@
+{
+  "slug": "commerce",
+  "officialName": "City of Commerce Transit",
+  "websiteUrl": "https://www.ci.commerce.ca.us/city-hall/transportation",
+  "dataLicense": {
+    "url": "https://www.ci.commerce.ca.us/city-hall/transportation",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "California",
+  "center": [
+    34.005,
+    -118.1575
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-994/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

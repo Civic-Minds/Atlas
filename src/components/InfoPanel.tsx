@@ -4,14 +4,14 @@ import AppLink from './ui/AppLink';
 import { shortDate } from '../../shared/dateText';
 import { mailto } from '../../shared/contact';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { Radio } from 'lucide-react';
+import { LiveIcon } from './Live/LiveIcon';
 import { DROPDOWN_PANEL, dropdownAnim, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
 import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
-import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
+import { FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import { nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
@@ -23,23 +23,24 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
-import { figuresUpdatedText, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
-import { useLiveFiguresUpdated } from '../hooks/useLiveFiguresUpdated';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
+import { BUNCHING_LABEL, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
-import SourceCredits from './SourceCredits';
-import { useSourcesFocus } from '../utils/sourcesFocus';
+import SourceCredits, { SourceCreditPage, useSourceCredits } from './SourceCredits';
+import { sourceCreditId, useSourcesFocus } from '../utils/sourcesFocus';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
 import SearchBox from './ui/SearchBox';
+import { agencyMatchesQuery } from '../utils/agencySearch';
 import { DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { loadHistoryConfig } from '../utils/historyConfig';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'sources' | 'measurements';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'late-limit' | 'sources' | 'source-credit' | 'measurements' | 'measure-bunching';
 /** 'sources': About → Schedule sources, from the map's credit pill (CIV-461). */
 export type Tab = 'about' | 'agencies' | 'history' | 'live' | 'sources';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
@@ -129,9 +130,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const FEATURES = { ...BASE_FEATURES, history: BASE_FEATURES.history && phoneModeFlags(isPhone).history };
   const [view, setView] = useState<View>('home');
-  const liveFiguresUpdated = useLiveFiguresUpdated(open);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  /** CIV-3119: the agency whose credit page Sources has open. */
+  const [creditSlug, setCreditSlug] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  // CIV-3143 (Ryan picked "1": "add the same search box the agency list already uses, filtering by agency or city"): Sources' own box.
+  const [sourcesQuery, setSourcesQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<Set<string>>(() => new Set());
   const [agencyFeatureFilters, setAgencyFeatureFilters] = useState<Set<AgencyListFilter>>(() => new Set());
   const [visible, setVisible] = useState(false);
@@ -141,8 +145,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   useEffect(() => {
     if (!FEATURES.history || historyAgencies || !open) return;
-    fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json() as Promise<HistoryAgencySummary[]>)
+    // The one shared fetch History itself uses (CIV-2976 D11): fetched once, an HTTP error is a failure.
+    loadHistoryConfig()
       .then((d: HistoryAgencySummary[]) => setHistoryAgencies(d))
       .catch(() => setHistoryAgencies([]));
   }, [historyAgencies, open]);
@@ -197,21 +201,39 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'weekday-variation' ? 'weekday-variation'
         : helpContext?.topic === 'route-rating' ? 'route-rating'
         : helpContext?.topic === 'official-data' ? 'official-data'
+        : helpContext?.topic === 'late-limit' ? 'late-limit'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
       setSelectedSlug(null);
     } else {
-      setQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
+      setQuery(''); setSourcesQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
     }
   }, [open, defaultTab, featureFilter, helpContext, scrollToLive]);
 
-  // CIV-461: a name in the map's credit pill opens Schedule sources at that agency's credit.
+  // CIV-461: a name in the map's credit pill opens Schedule sources at that agency's credit (CIV-3119: its own page).
   const sourcesFocus = useSourcesFocus();
+  const credits = useSourceCredits(agencies, FEATURES.live);
+  const sourcesAskSeen = useRef(0);
   useEffect(() => {
-    if (!sourcesFocus.n || !open) return;
-    setView('sources');
-  }, [sourcesFocus, open]);
+    if (!sourcesFocus.n || !open || sourcesFocus.n === sourcesAskSeen.current) return;
+    sourcesAskSeen.current = sourcesFocus.n;
+    const known = sourcesFocus.slug && credits.some(c => c.slug === sourcesFocus.slug);
+    setCreditSlug(known ? sourcesFocus.slug : null);
+    setView(known ? 'source-credit' : 'sources');
+  }, [sourcesFocus, open, credits]);
+  const openCredit = credits.find(c => c.slug === creditSlug) ?? null;
+  // CIV-3143: Sources' credits by the agency list's own search (name, slug or city), or the credit's own name where it has no agency.
+  const shownCredits = useMemo(() => credits.filter(c => {
+    const a = agencies.find(x => x.slug === c.slug);
+    return a ? agencyMatchesQuery(a, sourcesQuery) : agencyMatchesQuery({ name: [c.label.primary, c.label.secondary].filter(Boolean).join(' '), slug: c.slug }, sourcesQuery);
+  }), [credits, agencies, sourcesQuery]);
+  // Back from a credit page lands on that agency's row, not the top of the list.
+  useEffect(() => {
+    if (view !== 'sources' || !creditSlug) return;
+    const t = window.setTimeout(() => document.getElementById(sourceCreditId(creditSlug))?.scrollIntoView?.({ block: 'center' }), 0);
+    return () => window.clearTimeout(t);
+  }, [view, creditSlug]);
 
   useEffect(() => {
     if (view === 'agencies') {
@@ -256,7 +278,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [regionFilter, regionsInScope]);
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
     return agencies.filter(a => {
       if (agencyFeatureFilters.size > 0 && ![...agencyFeatureFilters].some(filter =>
         (filter === 'live' && liveBySlug.has(a.slug))
@@ -264,10 +285,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         || (filter === 'outdated' && isAgencyFeedExpired(a))
       )) return false;
       if (regionFilter.size > 0 && !regionFilter.has(a.region ?? 'Other')) return false;
-      if (!q) return true;
-      return a.name.toLowerCase().includes(q)
-        || a.slug.includes(q)
-        || (a.cities ?? []).some(city => city.toLowerCase().includes(q));
+      return agencyMatchesQuery(a, query);
     });
   }, [agencies, query, regionFilter, agencyFeatureFilters, liveBySlug, historyBySlug]);
 
@@ -322,8 +340,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     view === 'agencies' ? PAGE_NAMES.agencies
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
-    : view === 'sources' ? 'Sources'
+    : view === 'sources' ? BACK_PLACES.sources
+    // The row's own words (name · place), so the many "BC Transit" pages say which one.
+    : view === 'source-credit' ? (openCredit ? [openCredit.label.primary, openCredit.label.secondary].filter(Boolean).join(' · ') : '')
     : view === 'measurements' ? MEASUREMENTS_TITLE
+    : view === 'measure-bunching' ? BUNCHING_LABEL
     : null;
 
   return (
@@ -354,9 +375,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <PanelBackButton
               onClick={() => {
                 if (view === 'agency-detail') setView('agencies');
+                else if (view === 'measure-bunching') setView('measurements');
+                else if (view === 'source-credit') setView('sources');
                 else setView('home');
               }}
-              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : BACK_PLACES.aboutAtlas)}
+              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : view === 'measure-bunching' ? MEASUREMENTS_TITLE : view === 'source-credit' ? BACK_PLACES.sources : BACK_PLACES.aboutAtlas)}
             />
             <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}
@@ -505,10 +528,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'measurements' && (
             // #1751: Live's definitions, moved here from About's Live part; Live's Learn more opens this page.
             <div className="h-full overflow-y-auto px-5 py-4 space-y-2" data-testid="measurements">
+              <LinkCard as="button" onClick={() => setView('measure-bunching')} icon="chevron">{BUNCHING_LABEL}</LinkCard>
+            </div>
+          )}
+
+          {view === 'measure-bunching' && (
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-2">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">{STUDIO_ROUTE_PANEL_PENDING.bunchingAbout()}</p>
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">{LIVE_NOISE_CAPTION}</p>
-              {/* CIV-1814 item 41: when Live's figures were built, as in Sources beside the schedule refresh line. */}
-              {liveFiguresUpdated && <p className="text-xs text-[var(--text-dim)] leading-relaxed">{figuresUpdatedText(liveFiguresUpdated)}</p>}
             </div>
           )}
 
@@ -516,6 +542,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 {SOURCES_LEAD}
+              </p>
+              {/* CIV-3119 (Ryan: "being at teh bottom of the 200 item list is not ideal"): with the intro, above the list. */}
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {SOURCES_FALLBACK}
@@ -529,11 +559,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   rel="noopener noreferrer" icon="external">Transitland</LinkCard>
               </div>
               {/* CIV-461: each agency whose data licence requires credit, and MBTA's MassDOT credit where Live is on: one pill each. */}
-              <SourceCredits agencies={agencies} massDot={FEATURES.live} focusSlug={open ? sourcesFocus.slug : null} focusN={sourcesFocus.n} />
-              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                {feedRefreshCountdownLabel(feedRefreshMeta)}
-              </p>
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_CREDITS_HEADING}</p>
+              <SearchBox value={sourcesQuery} onChange={setSourcesQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER} />
+              {shownCredits.length === 0
+                ? <PanelEmpty>{NO_AGENCIES_MATCH}</PanelEmpty>
+                : <SourceCredits credits={shownCredits} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />}
               {/* CIV-2084: when Live's figures were built is in the Live status pill's hover now, not here. */}
+            </div>
+          )}
+
+          {view === 'source-credit' && openCredit && (
+            <div className="h-full overflow-y-auto px-5 py-4">
+              <SourceCreditPage credit={openCredit} />
             </div>
           )}
 
@@ -557,6 +594,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           })()}
           {view === 'edge-gap-allowance' && <ExplainerBody layout="edge-gap-allowance" lead={EDGE_GAP_ALLOWANCE_LEAD} helpContext={helpContext} />}
           {view === 'weekday-variation' && <ExplainerBody layout="weekday-variation" lead={WEEKDAY_VARIATION_LEAD} helpContext={helpContext} />}
+          {view === 'late-limit' && <ExplainerBody layout="late-limit" lead={LATE_LIMIT_LEAD} helpContext={helpContext} />}
           {view === 'route-rating' && helpContext?.filterNotice && <ExplainerBody layout="route-rating" lead={routeRatingLead(helpContext.filterNotice)} helpContext={helpContext} />}
           {view === 'new-schedule-data' && (
             <ExplainerBody layout="new-schedule-data" helpContext={helpContext}
@@ -595,7 +633,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                             onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
                             className="justify-start gap-2"
                           >
-                            <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                            <LiveIcon className="w-3 h-3 text-[var(--accent)] shrink-0" />
                             <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
                           </ListRow>
                         ))}

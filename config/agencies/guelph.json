@@ -23,9 +23,11 @@
   "expiredFeedCheckExpiry": "20270102",
   "websiteUrl": "http://www.guelphtransit.ca",
   "dataLicense": {
-    "url": "https://explore.guelph.ca/pages/open-data-license",
-    "attribution": "unread",
-    "checkedOn": "2026-11-21"
+    "url": "https://gismaps.guelph.ca/Images/OpenDataLicenceVersion2.pdf",
+    "attribution": "required",
+    "name": "City of Guelph Open Data Licence v2.0",
+    "credit": "Contains information licensed under the Open Government Licence – City of Guelph.",
+    "checkedOn": "2026-11-26"
   },
   "cities": [
     "Guelph, Ontario"
@@ -51,8 +53,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastPeekedExpiry": "20270102",
   "feedRefreshStatus": "current",

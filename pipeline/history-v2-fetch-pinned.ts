@@ -11,9 +11,11 @@
  * A period's zip is, in order: the archived zip whose content hash the sidecar records (feedSha256), an archived
  * zip gtfs/archive/{slug}/ named by the period key, then (MBTA only) MBTA's own archive
  * (cdn.mbta.com/archive/archived_feeds.txt): the file named by the period key, the feed ending on it, then the
- * one feed in force on the sidecar's refDate. Uses only list and get; nothing is ever written to R2.
+ * one feed in force on the sidecar's refDate; then (CIV-1862, any agency whose config names an MDB feed id, with
+ * MDB_REFRESH_TOKEN set) the Mobility Database dataset in force on refDate (pickMdbSource). Uses only list and
+ * get; nothing is ever written to R2.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { isEntryPoint, parseFlags } from './historyPublishLib.js';
 
@@ -27,7 +29,57 @@ export function parseMbtaArchiveIndex(text: string): ArchiveFeed[] {
   });
 }
 
-export type ZipSource = { kind: 'r2'; key: string; why: string } | { kind: 'url'; url: string; why: string };
+/** One Mobility Database dataset (GET /v1/gtfs_feeds/{id}/datasets). Dates are YYYY-MM-DD. */
+export interface MdbDataset { id: string; downloaded_at: string; hosted_url: string; hash?: string; service_date_range_start?: string; service_date_range_end?: string; feed_start_date?: string; feed_end_date?: string }
+
+/** The MDB feed id (mdb-NNN) an agency config names, from mdbFeedUrl or an MDB feedUrl. */
+export function mdbFeedIdOf(agency: { mdbFeedUrl?: string; feedUrl?: string }): string | null {
+  for (const url of [agency.mdbFeedUrl, agency.feedUrl]) {
+    const m = url?.match(/files\.mobilitydatabase\.org\/(mdb-\d+)\//);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+/**
+ * CIV-1862: the Mobility Database's stored datasets as archive feeds, one per distinct file (same hash kept once,
+ * the earliest download), with the service window each dataset states. Datasets with no stated window are left out.
+ */
+export function mdbDatasetsAsArchive(datasets: readonly MdbDataset[]): ArchiveFeed[] {
+  const ymd = (d: string | undefined) => (d && /^\d{4}-\d{2}-\d{2}/.test(d) ? d.slice(0, 10).replace(/-/g, '') : null);
+  const byHash = new Map<string, MdbDataset>();
+  for (const d of [...datasets].sort((a, b) => a.downloaded_at.localeCompare(b.downloaded_at))) {
+    const key = d.hash ?? d.id;
+    if (!byHash.has(key)) byHash.set(key, d);
+  }
+  return [...byHash.values()].flatMap(d => {
+    const start = ymd(d.service_date_range_start ?? d.feed_start_date);
+    const end = ymd(d.service_date_range_end ?? d.feed_end_date);
+    if (!start || !end || !d.hosted_url) return [];
+    return [{ startDate: start, endDate: end, version: `${d.id} (downloaded ${d.downloaded_at.slice(0, 10)})`, url: d.hosted_url }];
+  });
+}
+
+/**
+ * CIV-1862: a period's feed from the Mobility Database, when the archive has none. The feeds in force on refDate;
+ * with several, the one downloaded last on or before refDate (the file a run on that date would have read), else
+ * the earliest after it. The pinned rebuild's per-route match decides which routes it may flag, so a near miss
+ * flags nothing.
+ */
+export function pickMdbSource(refDate: string, feeds: readonly ArchiveFeed[]): { source: ZipSource | null; reason?: string; candidates: string[] } {
+  const inForce = feeds.filter(f => f.startDate <= refDate && refDate <= f.endDate);
+  if (inForce.length === 0) return { source: null, reason: `no Mobility Database dataset in force on ${refDate}`, candidates: [] };
+  const downloaded = (f: ArchiveFeed) => (f.version.match(/downloaded (\d{4})-(\d{2})-(\d{2})/)?.slice(1).join('') ?? '');
+  const before = inForce.filter(f => downloaded(f) <= refDate).sort((a, b) => downloaded(b).localeCompare(downloaded(a)));
+  const after = inForce.filter(f => downloaded(f) > refDate).sort((a, b) => downloaded(a).localeCompare(downloaded(b)));
+  const pick = before[0] ?? after[0];
+  return {
+    source: { kind: 'url', url: pick.url, why: `Mobility Database ${pick.version}, in force ${pick.startDate}-${pick.endDate}${inForce.length > 1 ? ` (${before[0] ? 'last downloaded on or before' : 'first downloaded after'} refDate, of ${inForce.length} in force)` : ''}` },
+    candidates: inForce.map(f => f.url),
+  };
+}
+
+export type ZipSource ={ kind: 'r2'; key: string; why: string } | { kind: 'url'; url: string; why: string };
 
 /** Pick a period's zip from the archive keys and (MBTA) the official index. Null with a reason when none fits. */
 export function pickZipSource(
@@ -56,6 +108,25 @@ export function pickZipSource(
   return { source: null, reason: `no archived zip for period ${periodKey}${index ? ' and no MBTA archive feed in force on ' + refDate : ''}`, candidates: [] };
 }
 
+const MDB_API = 'https://api.mobilitydatabase.org/v1';
+
+/** Every stored dataset of one MDB feed (read-only API calls). */
+async function fetchMdbDatasets(feedId: string, refreshToken: string): Promise<MdbDataset[]> {
+  const tok = await fetch(`${MDB_API}/tokens`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: refreshToken }) });
+  if (!tok.ok) throw new Error(`token exchange: HTTP ${tok.status}`);
+  const { access_token } = await tok.json() as { access_token: string };
+  const all: MdbDataset[] = [];
+  for (let offset = 0; ; offset += 100) {
+    const res = await fetch(`${MDB_API}/gtfs_feeds/${feedId}/datasets?limit=100&offset=${offset}`, { headers: { Authorization: `Bearer ${access_token}` } });
+    if (!res.ok) throw new Error(`datasets: HTTP ${res.status}`);
+    const page = await res.json() as MdbDataset[];
+    if (!Array.isArray(page) || page.length === 0) break;
+    all.push(...page);
+    if (page.length < 100) break;
+  }
+  return all;
+}
+
 async function main(): Promise<void> {
   await import('./loadEnv.js');
   const { values } = parseFlags(process.argv.slice(2), ['--slug', '--out'], []);
@@ -78,6 +149,22 @@ async function main(): Promise<void> {
     index = parseMbtaArchiveIndex(await res.text());
     console.log(`MBTA archive index: ${index.length} feeds`);
   }
+  // CIV-1862: the Mobility Database's stored datasets, read when the archive (and MBTA's index) has no feed.
+  let mdbFeeds: ArchiveFeed[] | null = null;
+  let mdbNote = '';
+  const agencyConfig = JSON.parse(readFileSync(resolve('config/agencies', `${slug}.json`), 'utf8')) as { mdbFeedUrl?: string; feedUrl?: string };
+  const mdbId = mdbFeedIdOf(agencyConfig);
+  if (!mdbId) mdbNote = 'no Mobility Database feed id in the agency config';
+  else if (!process.env.MDB_REFRESH_TOKEN) mdbNote = 'MDB_REFRESH_TOKEN not set';
+  else {
+    try {
+      mdbFeeds = mdbDatasetsAsArchive(await fetchMdbDatasets(mdbId, process.env.MDB_REFRESH_TOKEN));
+      console.log(`Mobility Database ${mdbId}: ${mdbFeeds.length} distinct dataset(s) with a service window`);
+    } catch (error) {
+      mdbNote = `Mobility Database ${mdbId}: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  }
+  if (mdbNote) console.log(`Mobility Database not searched: ${mdbNote}`);
 
   const sources: Array<Record<string, unknown>> = [];
   for (const key of sidecarKeys) {
@@ -86,7 +173,11 @@ async function main(): Promise<void> {
     if (body == null) { sources.push({ periodKey, error: 'listed but missing' }); continue; }
     writeFileSync(resolve(pubDir, `${periodKey}.json`), body);
     const sc = JSON.parse(body) as { refDate: string; feedSha256?: string; refDateQuality?: unknown };
-    const pick = pickZipSource(periodKey, sc.refDate, sc.feedSha256, archiveKeys, index);
+    let pick = pickZipSource(periodKey, sc.refDate, sc.feedSha256, archiveKeys, index);
+    if (!pick.source && mdbFeeds) {
+      const mdb = pickMdbSource(sc.refDate, mdbFeeds);
+      pick = mdb.source ? mdb : { ...mdb, reason: `${pick.reason}; ${mdb.reason}` };
+    } else if (!pick.source && mdbNote) pick = { ...pick, reason: `${pick.reason}; ${mdbNote}` };
     const row: Record<string, unknown> = { periodKey, refDate: sc.refDate, refDateQuality: sc.refDateQuality ?? null, candidates: pick.candidates };
     if (!pick.source) { sources.push({ ...row, zip: null, reason: pick.reason }); console.log(`${periodKey}: NO ZIP (${pick.reason})`); continue; }
     try {

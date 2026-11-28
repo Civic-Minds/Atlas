@@ -29,6 +29,20 @@ describe('weekly refresh workflow contract', () => {
     expect(workflow).toContain('git checkout "$REFRESH_HEAD_SHA" -- .');
   });
 
+  it('regenerates the uncommitted index after restoring files the pull request step reset (#1864)', () => {
+    // The index and catalogs aren't committed (CIV-2975). create-pull-request's branch switches rewrite them from
+    // main's config, so a restore that puts back only config leaves the tiles and publish gate on old expiries.
+    for (const file of ['refresh-feeds.yml', 'rebuild-release.yml']) {
+      const workflow = readFileSync(resolve(`.github/workflows/${file}`), 'utf8');
+      const restores = workflow.split('\n      - name: ').filter(step => /git checkout "\$\w+" -- \./.test(step));
+      expect(restores.length, file).toBeGreaterThan(0);
+      for (const step of restores) {
+        expect(step.indexOf('npm run build:agency-data'), `${file}: ${step.split('\n')[0]}`)
+          .toBeGreaterThan(step.search(/git checkout "\$\w+" -- \./));
+      }
+    }
+  });
+
   it('publishes the release pointer exactly once, after every derived artifact', () => {
     const workflow = readFileSync(resolve('.github/workflows/refresh-feeds.yml'), 'utf8');
     const publishSteps = workflow.split('      - name: Publish verified data release').length - 1;
@@ -48,7 +62,17 @@ describe('weekly refresh workflow contract', () => {
   it('rebuild-release queues only its publish job with the refresh; dry runs never cancel each other (#1704)', () => {
     const workflow = readFileSync(resolve('.github/workflows/rebuild-release.yml'), 'utf8');
     expect(workflow).not.toMatch(/^concurrency:/m);
-    expect(workflow).toMatch(/^  publish:\n(?:    .*\n|\s*\n)*?    concurrency:\n      group: atlas-data-release\n      cancel-in-progress: false$/m);
+    // The publish job's own lines: those after "  publish:" up to the next line indented less than 4 spaces (blank lines
+    // stay inside). Read line by line, not by one regex, which could backtrack exponentially (code scanning alert 56).
+    const lines = workflow.split('\n');
+    const start = lines.indexOf('  publish:');
+    expect(start).toBeGreaterThanOrEqual(0);
+    const after = lines.slice(start + 1);
+    const end = after.findIndex(line => line.trim() !== '' && !line.startsWith('    '));
+    const publishJob = end < 0 ? after : after.slice(0, end);
+    const at = publishJob.indexOf('    concurrency:');
+    expect(at).toBeGreaterThanOrEqual(0);
+    expect(publishJob.slice(at, at + 3)).toEqual(['    concurrency:', '      group: atlas-data-release', '      cancel-in-progress: false']);
     expect(workflow.match(/group: atlas-data-release/g)).toHaveLength(1);
   });
 

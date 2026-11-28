@@ -40,8 +40,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -88,5 +87,12 @@
   "lastPeekedExpiry": "20270220",
   "lastServiceWeek": "f3b68582fe16ff54",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261018"
+  "lastFeedStart": "20261018",
+  "dataLicense": {
+    "url": "https://www.rideprt.org/policies/developer-license-agreement/",
+    "attribution": "required",
+    "name": "PRT Developer License Agreement",
+    "credit": "Reproduced with permission granted by Pittsburgh Regional Transit (PRT). The information has been provided by means of a nonexclusive, limited, and revocable license granted by PRT. PRT does not guarantee the accuracy, adequacy, completeness, or usefulness of any information. PRT provides this information \"as is\" without warranty of any kind, express or implied, including, but not limited to, warranties of merchantability or fitness for a particular purpose and assumes no responsibility for anyone's use of the information.",
+    "checkedOn": "2026-11-26"
+  }
 }

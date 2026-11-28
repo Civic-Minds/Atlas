@@ -22,8 +22,11 @@ export const MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['late', 
 export { DELAY_STARTS_LABEL };
 /** The Live tool's measure switch: the four measures, then Delays start. */
 export const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
-/** CIV-1828: Studio's Live page leads with "Falls behind" (where vehicles fall behind the schedule, stop to stop). */
-export const STUDIO_MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['fallsBehind', STUDIO_LIVE_PENDING.fallsBehindPill], ...MAP_MEASURES];
+/**
+ * CIV-1828: Studio's Live page leads with the stop-to-stop timetable measure (where vehicles fall behind the schedule).
+ * CIV-2924 (Ryan, 2026-11-27, "1"): it is Studio's one "Lateness" entry, so the delay-starts heatmap leaves Studio's menu.
+ */
+export const STUDIO_MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['fallsBehind', STUDIO_LIVE_PENDING.fallsBehindPill], ...MEASURES];
 export const measureLabel = (m: MapMeasure): string => (m === 'delayStarts' ? DELAY_STARTS_LABEL : m === 'fallsBehind' ? STUDIO_LIVE_PENDING.fallsBehindPill : MEASURES.find(([k]) => k === m)![1]);
 
 /** Step cutoffs per measure: below the first is step 0, below the second step 1, else step 2. Late and bunching are shares; run time and extra wait are minutes. */

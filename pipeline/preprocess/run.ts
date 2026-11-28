@@ -1,4 +1,5 @@
 import type { GtfsData } from '../../types/gtfs.js';
+import { dropFeedSeconds } from '../parseGtfs.js';
 import { filterGtfsByAgencyId, filterGtfsByAgencyName, filterGtfsByExcludedShortNames, filterGtfsByExcludedTripHeadsigns, filterGtfsByRouteTypes } from '../filterGtfs.js';
 import { synthesizeMissingDirections, synthesizeTripHeadsigns } from '../synthesize-directions.js';
 import { mergeLetterSuffixBranches } from '../transforms/letter-suffix-branches.js';
@@ -9,7 +10,10 @@ import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { mergeWvuPrtLine } from '../transforms/wvu-prt-line.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
 import { splitLeadingRouteNumber } from '../transforms/leading-route-number.js';
+import { headsignsFromLastStop } from '../transforms/last-stop-destinations.js';
 import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
+import { renameStops, type StopRename } from '../transforms/stop-renames.js';
+import { renameHeadsigns, type HeadsignRename } from '../transforms/headsign-renames.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
@@ -36,6 +40,12 @@ export interface GtfsTransformOptions {
   excludeRouteShortNames?: string[];
   /** CIV-1551: take a leading route number out of route_long_name when route_short_name is blank (Manchester NH). */
   routeNumberFromLongName?: boolean;
+  /** CIV-2999: a trip headsign that is a street and a direction word ("101 Rainbow Northbound") reads its last stop instead (RTC). */
+  headsignFromLastStop?: boolean;
+  /** CIV-3021: the agency's hand-checked stop renames (transforms/stop-renames.ts). */
+  stopRenames?: StopRename[];
+  /** CIV-3124: the agency's hand-checked trip headsign renames (transforms/headsign-renames.ts). */
+  headsignRenames?: HeadsignRename[];
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
@@ -77,6 +87,20 @@ export function normalizeGtfs(
   options: GtfsTransformOptions | undefined,
   onStatus?: (msg: string) => void,
 ): GtfsData {
+  if (options?.stopRenames?.length) {
+    // CIV-3021: first, so every step after it (last-stop headsigns, bay merges, stop lists) reads the checked name.
+    const result = renameStops(gtfs, options.stopRenames);
+    gtfs = result.gtfs;
+    onStatus?.(`Stop renames: ${result.renamed} of ${options.stopRenames.length} applied (CIV-3021)`);
+    if (result.stale.length) onStatus?.(`Stop renames: ${result.stale.length} no longer match the feed, left as published: ${result.stale.map(r => r.stopId).join(', ')}`);
+  }
+  if (options?.headsignRenames?.length) {
+    // CIV-3124: before anything groups or fills trips by headsign, so every step reads the checked name.
+    const result = renameHeadsigns(gtfs, options.headsignRenames);
+    gtfs = result.gtfs;
+    onStatus?.(`Headsign renames: ${options.headsignRenames.length - result.stale.length} of ${options.headsignRenames.length} applied to ${result.renamed} trip(s) (CIV-3124)`);
+    if (result.stale.length) onStatus?.(`Headsign renames: ${result.stale.length} no longer match the feed, left as published: ${result.stale.map(r => `${r.routeId} "${r.from}"`).join(', ')}`);
+  }
   if (options?.agencyName) {
     gtfs = filterGtfsByAgencyName(gtfs, options.agencyName);
     onStatus?.(`Agency filter: ${options.agencyName}`);
@@ -211,6 +235,12 @@ export function normalizeGtfs(
     gtfs = result.gtfs;
     onStatus?.(`Untimed stops: interpolated ${result.filled} stop times between timepoints`);
   }
+  if (options?.headsignFromLastStop) {
+    // CIV-2999: before the bay merge and the headsign fill, which group trips by the names set here.
+    const result = headsignsFromLastStop(gtfs);
+    gtfs = result.gtfs;
+    if (result.renamed > 0) onStatus?.(`Destinations: ${result.renamed} trip(s) whose headsign is a street and direction word read their last stop (CIV-2999)`);
+  }
   // Before the headsigns are filled from last stops, so both bays of one terminal share one.
   const bays = mergeTerminalBays(gtfs);
   gtfs = bays.gtfs;
@@ -253,5 +283,8 @@ export function normalizeGtfs(
       onStatus?.(`Identical shapes: ${identical.mergedTrips} trips of ${identical.mergedGroups} pattern(s) written under a second shape id for the same line (#1446)`);
     }
   }
+  // #1824 (CIV-2959): a preprocess can write times with seconds (interpolate-untimed-stops: Amarillo); every route but an
+  // agency's secondsRoutes reads them in whole minutes, as t2m always did.
+  dropFeedSeconds(gtfs, (options as { secondsRoutes?: string[] } | undefined)?.secondsRoutes);
   return gtfs;
 }

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { GtfsData } from '../types/gtfs.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
 import { validateGtfs, type ValidationIssue, type ValidationReport } from './validation.js';
-import { bboxOversized, stopsBbox } from '../shared/agencyBbox.js';
+import { bboxOversized, bboxUndersized, pointsExtent, stopsBbox } from '../shared/agencyBbox.js';
 
 export interface CurrentFeedAgency {
   slug: string;
@@ -25,6 +25,8 @@ export interface CurrentFeedFinding {
   geographyMismatch: boolean;
   /** #1793: the configured bbox reaches past the feed's stops (rounded outward), so the map credits and loads it too widely. */
   bboxOversized: boolean;
+  /** #1794: the feed's stops reach past the configured bbox, so near that edge the map may not load, credit or list it. */
+  bboxUndersized: boolean;
   shapeAnomalies: {
     total: number;
     truncated: number;
@@ -78,6 +80,10 @@ export function summarizeCurrentFeed(
     bboxOversized: (() => {
       const stops = stopsBbox(gtfs.stops.map(stop => [Number(stop.stop_lat), Number(stop.stop_lon)] as const));
       return !!agency.bbox && agency.bbox.length === 4 && !!stops && bboxOversized(agency.bbox, stops);
+    })(),
+    bboxUndersized: (() => {
+      const extent = pointsExtent(gtfs.stops.map(stop => [Number(stop.stop_lat), Number(stop.stop_lon)] as const));
+      return !!agency.bbox && agency.bbox.length === 4 && !!extent && bboxUndersized(agency.bbox, extent);
     })(),
     shapeAnomalies: {
       total: anomalies.length,

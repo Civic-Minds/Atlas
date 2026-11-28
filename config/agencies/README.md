@@ -3,8 +3,9 @@
 These files are the canonical source for Atlas agency metadata and feed configuration.
 `order.json` preserves the stable display order used by the runtime index.
 
-Run `npm run build:agency-index` after changing them. That generates the runtime
-bundle at `public/data/index.json`; the app still loads one index at runtime.
+They generate the runtime bundle at `public/data/index.json` and the catalogs, which are not committed
+(CIV-2975): `npm install`, every dev server, `npm run build`, the test run and the git hooks write them.
+After editing these files by hand, `npm run build:agency-data` rewrites them at once.
 
 ## Mode overrides
 

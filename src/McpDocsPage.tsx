@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { dateTimeText } from '../shared/dateText';
-import { MCP_TESTERS_API_URL, MCP_TESTERS_CHANGE_HEADER, MCP_USAGE_DAYS, type McpTester, type McpTesterCall, type McpUsageResponse } from '../shared/mcpTesters';
+import { MCP_TESTERS_API_URL, MCP_TESTERS_CHANGE_HEADER, MCP_USAGE_DAY_CHOICES, MCP_USAGE_DAYS_DEFAULT, type McpUsageDayChoice, type McpTester, type McpTesterCall, type McpUsageResponse } from '../shared/mcpTesters';
 import LineChart from './components/charts/LineChart';
+import PillGroup from './components/ui/PillGroup';
 import { STORY_CHART_PANEL } from './pageStyles';
 import { countText } from '../shared/numberText';
 import { dateRange } from '../shared/dateText';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PAGE_LEAD } from './components/ui/PageSection';
-import { PageTitle, SectionTitle, SubsectionTitle } from './components/ui/PageTitle';
+import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
 import CopyButton from './components/ui/CopyButton';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
@@ -100,6 +101,7 @@ const ACTION = 'rounded-md border border-[var(--border-primary)] bg-[var(--bg-pr
 /** CIV-2202: a name and "Make link"; the new link shows once, with the copy button, and is kept nowhere. */
 function NewLink({ onMade }: { onMade: () => void }) {
   const N = T.newLink;
+  const [formOpen, setFormOpen] = useState(false);
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [made, setMade] = useState<{ name: string; link: string } | null>(null);
@@ -112,11 +114,13 @@ function NewLink({ onMade }: { onMade: () => void }) {
     setBusy(false);
     if (r.ok && r.link) { setMade({ name: who, link: r.link }); setName(''); onMade(); } else setError(r.error || N.failed);
   };
+  // CIV-2944 (Ryan, 2026-11-27, picked 1: "A 'New link' button under the table, with the form opening in place"):
+  // the form no longer sits open under the table.
+  if (!formOpen) return <button type="button" className={`${ACTION} mt-4`} onClick={() => setFormOpen(true)}>{N.heading}</button>;
   return (
-    <div className="mt-6">
-      <SubsectionTitle>{N.heading}</SubsectionTitle>
-      <form className="mt-2 flex max-w-md items-center gap-2" onSubmit={e => { e.preventDefault(); void make(); }}>
-        <input type="text" value={name} onChange={e => setName(e.target.value)} aria-label={N.name} placeholder={N.name} maxLength={60} className={FIELD} />
+    <div className="mt-4">
+      <form className="flex max-w-md items-center gap-2" onSubmit={e => { e.preventDefault(); void make(); }}>
+        <input type="text" value={name} onChange={e => setName(e.target.value)} aria-label={N.name} placeholder={N.name} maxLength={60} className={FIELD} autoFocus />
         <button type="submit" className={ACTION} disabled={busy || !name.trim()}>{N.make}</button>
       </form>
       {error && <p className={PARAGRAPH} role="alert">{error}</p>}
@@ -163,7 +167,6 @@ function Testers() {
     { key: 'questions', header: T.questions, cell: t => t.questions ?? MISSING_VALUE },
     { key: 'questionsLastWeek', header: T.questionsLastWeek, cell: t => t.questions_7d ?? MISSING_VALUE },
     { key: 'status', header: T.status, cell: t => (t.revoked_at ? T.revoked : T.active) },
-    { key: 'link', header: T.link, cell: t => (t.revoked_at ? null : <button type="button" className={`${ACTION} whitespace-nowrap`} disabled={stopping != null} onClick={() => void stop(t.name)}>{T.stop}</button>) },
   ];
   const callColumns: DataTableColumn<McpTesterCall>[] = [
     { key: 'when', header: T.when, cell: c => when(c.at) },
@@ -176,8 +179,14 @@ function Testers() {
       <div className={TESTERS_TABLE}>
         <DataTable variant="ruled" columns={testerColumns} rows={testers} rowKey={t => t.name} caption={T.heading}
           // A tester's latest questions open right under their row (Ryan, 2026-11-22), not under the table.
-          rowDetail={t => (t.name !== open ? null : calls === null ? <p className={PARAGRAPH}>{T.loading}</p> : !calls.length ? <p className={PARAGRAPH}>{T.noCalls}</p> : (
-            <DataTable variant="ruled" columns={callColumns} rows={calls} rowKey={c => c.id} caption={open} />
+          rowDetail={t => (t.name !== open ? null : (
+            <>
+              {calls === null ? <p className={PARAGRAPH}>{T.loading}</p> : !calls.length ? <p className={PARAGRAPH}>{T.noCalls}</p> : (
+                <DataTable variant="ruled" columns={callColumns} rows={calls} rowKey={c => c.id} caption={open} />
+              )}
+              {/* CIV-2944: Stop link sits in the tester's own view, not beside every row. */}
+              {!t.revoked_at && <button type="button" className={`${ACTION} mt-3 whitespace-nowrap`} disabled={stopping != null} onClick={() => void stop(t.name)}>{T.stop}</button>}
+            </>
           ))} />
       </div>
       {stopError && <p className={PARAGRAPH} role="alert">{T.stopFailed}</p>}
@@ -191,24 +200,31 @@ const U = C.usage;
 /** Questions per day, all testers together, read through the local API (`?usage`), at the bottom of the page. */
 function Usage() {
   const [usage, setUsage] = useState<McpUsageResponse | null>(null);
+  const [days, setDays] = useState<McpUsageDayChoice>(MCP_USAGE_DAYS_DEFAULT);
   useEffect(() => {
     fetch(`${MCP_TESTERS_API_URL}?usage=1`).then(r => r.json() as Promise<McpUsageResponse>).then(setUsage).catch(() => setUsage({ available: false }));
   }, []);
   if (usage == null) return <p className={PARAGRAPH}>{T.loading}</p>;
   if (!usage.available) return <p className={PARAGRAPH}>{T.unavailable}</p>;
   if (!usage.days.length) return <p className={PARAGRAPH}>{U.none}</p>;
+  const shown = usage.days.slice(-days);
   return (
     <>
-      <p className={PARAGRAPH}>{U.intro(MCP_USAGE_DAYS)}</p>
+      <p className={PARAGRAPH}>{U.intro(days)}</p>
+      <div className="mt-4 flex">
+        <PillGroup outlined label={U.daysLabel} value={days} onChange={setDays} options={MCP_USAGE_DAY_CHOICES.map(d => [d, U.days(d)] as const)} />
+      </div>
       <div className={`mt-4 ${STORY_CHART_PANEL} p-5 sm:p-8`}>
         <LineChart
-          label={U.chartLabel(MCP_USAGE_DAYS)}
+          label={U.chartLabel(days)}
           yTitle={U.axis}
           yMin={0}
           formatY={countText}
           height={200}
-          points={usage.days.map((d, i) => ({ x: i, y: d.questions, label: dateRange(d.date, d.date), sentence: U.day(countText(d.questions), countText(d.calls)) }))}
-          xTickLabels={(_p, i) => usage.days.length <= 7 || i % 7 === 0}
+          name={T.questions}
+          second={{ name: T.calls, values: shown.map(d => d.calls) }}
+          points={shown.map((d, i) => ({ x: i, y: d.questions, label: dateRange(d.date, d.date), sentence: U.day(countText(d.questions), countText(d.calls)) }))}
+          xTickLabels={(_p, i) => shown.length <= 7 || i % 7 === 0}
         />
       </div>
       {!usage.complete && <p className={PARAGRAPH}>{U.partial}</p>}

@@ -52,7 +52,7 @@ const RULES: Rule[] = [
   // CIV-211, #933. The data value 'time-limited' is a code name.
   { name: '"Time-limited" (say "Part-time")', doc: 'TEXT.md', pattern: /\bTime-limited\b|\btime-limited (routes?|service)\b/, slip: "label: 'Time-limited routes'" },
   // CIV-1238 (Ryan): it read as if nothing runs.
-  { name: '"no regular service" (say "Irregular" or "Runs irregularly in this period")', doc: 'TEXT.md', pattern: /\b[Nn]o regular\b/, slip: "const label = 'no regular service';" },
+  { name: '"no regular service" (say "Irregular")', doc: 'TEXT.md', pattern: /\b[Nn]o regular\b/, slip: "const label = 'no regular service';" },
   // CIV-1238 (Ryan): "one-off sounds like it only runs once per day".
   { name: '"one-off" for the hidden route class (say "occasional")', doc: 'TEXT.md', pattern: /\b[Oo]ne-off (routes?|service)\b/, slip: "'Hide one-off routes'" },
   // CIV-1251: "Shared stretch" is the only name for the shared part.
@@ -179,11 +179,13 @@ const RULES: Rule[] = [
     allowed: ['src/components/ui/PanelHeader.tsx', 'src/components/ui/SearchClearButton.tsx'] },
   // CIV-1596, CIV-1601: Live's measure and section names, and its words used in more than one place, are written once, in shared/liveWording.ts.
   { name: 'a Live measure or section name typed by hand (use its constant in shared/liveWording.ts)', doc: 'TEXT.md',
-    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Usually adds|Time lost|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|Bunching forms|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
+    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Typical deviation|Lateness|Usually adds|Time lost|Stops most often late|This week vs\. last|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|Bunching forms|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
     slip: '<Section title="Stops most often late">', only: /(^|\/)[Ll]ive[^/]*$|\/Live\//, allowed: ['shared/liveWording.ts'] },
-  // CIV-1602: Ryan's picks, "Delays start" (never "Delay starts") and the Live map's name "Live" (never "Live vehicles" or "Live transit", Ryan 2026-11-17), written once in shared/liveWording.ts.
-  { name: 'the Live delay-start or Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_MAP_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
-    pattern: /(["'`])(Delays? starts?|Live vehicles|Live transit)\1/, slip: "label: 'Delay starts'", allowed: ['shared/liveWording.ts'] },
+  // CIV-2924 (Ryan, 2026-11-27, "Lateness"; supersedes his 2026-11-25 "Schedule adherence" and CIV-1602's "Delays start"): the
+  // timetable measure is "Lateness", so the old "Delays start" / "Delay starts" and "Schedule adherence" never come back; and the
+  // Live map's name "Live" (never "Live vehicles" or "Live transit", Ryan 2026-11-17). Both written once in shared/liveWording.ts.
+  { name: 'an old Live timetable-measure name or the Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_MAP_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
+    pattern: /(["'`])(Delays? starts?|Schedule adherence|Live vehicles|Live transit)\1/, slip: "label: 'Delay starts'", allowed: ['shared/liveWording.ts'] },
   // CIV-1774 (Ryan, 2026-11-16: "in one place only for grammar reasons /branding"): a button, link, tag, heading, control
   // label or table column typed into a component. Its words go in noticeCopy (or PAGE_NAMES); Live's too since CIV-1781.
   // Long-form story and Docs headings are prose, not labels.
@@ -246,6 +248,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
   'src/data/onDemandServiceAreas.ts': ['within 3 miles of Sandy'],
   // Live's notices, word for word (CIV-1045; item 40, Ryan 2026-11-17: "Live doesn’t cover TTC 512.").
   'src/content/noticeCopy.ts': ['It covers ${agencyName} routes ${joinList(followed)}.'],
+  // The no-end-date warning, approved word for word by Ryan (CIV-3115, DECISIONS 2026-11-27): "The agency hasn't changed its timetable since February 2022, so it may be out of date."
+  'shared/agencyPages.ts': ['The agency hasn’t changed its timetable since'],
 };
 
 // Block comments, and line comments that don't start inside a string or a URL.

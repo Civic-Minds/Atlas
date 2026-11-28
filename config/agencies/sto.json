@@ -17,10 +17,10 @@
     -75.641
   ],
   "bbox": [
-    45.381,
-    -75.89,
-    45.593,
-    -75.391
+    45.38,
+    -75.9,
+    45.6,
+    -75.39
   ],
   "feedUrl": "https://contenu.sto.ca/GTFS/GTFS.zip",
   "lastFeedExpiry": "20270114",
@@ -57,7 +57,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "timezone": "America/Montreal",
   "feedRefreshStatus": "current",

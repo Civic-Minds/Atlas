@@ -6,6 +6,8 @@ import { branchDisplayHourHeadway } from './routeFacts';
 import { rowStretchHourValue, rowTrips, unsteadyDirectionFallback } from './rowTrips';
 import { hasRegularServiceInPeriod, isOneGapRow, variantRowHeadway, type RouteContract } from './stretchCard';
 import { rowRunsThroughNight } from '../../shared/nightService';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
+import type { PeriodKey } from '../../shared/config';
 
 /** The card-level facts every row of the route card reads (CIV-992). */
 export interface RouteCardRowContext {
@@ -38,6 +40,8 @@ export interface RouteCardRowContext {
   sectionColours?: boolean;
   /** CIV-1959: the branch-readings switch, so a row's own late start or early end (rowPeriodEdge) is worded only behind it. */
   branchReadings?: boolean;
+  /** #1823: rows whose stretch another destination's row runs too (rowStretchRunByOthers): they read their own trips. */
+  stretchRunByOthers?: ReadonlySet<ShapeProperties>;
 }
 
 /** What one route card row shows: its number, its words and its colour (CIV-992; moved out of RouteCardHeadway). */
@@ -74,23 +78,42 @@ export function overnightRowNumber(d: ShapeProperties, contract: Pick<RouteContr
   return typeof own === 'number' && rowRunsThroughNight(d) ? contract?.filterValue ?? null : null;
 }
 
+/**
+ * #1850 (CIV-3013): a direction's only row (variant) reads its direction's filter value, except where that value is the
+ * full-period wait of a stretch that starts late or stops early (an edge) while the stretch itself runs steadily more often:
+ * settled rule #1268 (Ryan, 2026-11-01) has such a row read its own spacing, with "from" / "until" words where they are its own,
+ * never the bare full-period wait (RTD 31 Saturday PM "to Evans" read 114 while it runs every 15; the far-north piece that stops
+ * at 5:06 PM has its own line). The filter and the row's colour keep the direction's value.
+ */
+export function variantRowValue(d: ShapeProperties, period: TimePeriod): number | null | undefined {
+  const value = variantRowHeadway(d, period);
+  if (typeof value !== 'number' || period === 'all') return value;
+  const key = period as PeriodKey;
+  const every = d.stretchPeriodHeadway?.[key];
+  const edgeWait = value > PERIOD_COVERAGE_MAX_HEADWAY && typeof every === 'number' && every < value
+    && d.stretchPeriodSustained?.[key] === true && d.stretchPeriodOneGap?.[key] !== true && d.stretchPeriodEdge?.[key] != null;
+  return edgeWait ? undefined : value;
+}
+
 export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext): RouteCardRowValue {
   const { period, hoveredHour, stretchMode, allDay, contract, noRegularService, maxHeadway } = ctx;
   // Dimming and colour follow the one frequency rule (worst direction decides),
   // exactly as the map does; the row's own cadence stays display-only (#564).
   const branchFilterHeadway = routeFilterHeadway(d, period);
   const dimmed = maxHeadway !== Infinity && !featurePassesHeadwayFilter(d, period, maxHeadway);
-  const variantH = hoveredHour == null ? variantRowHeadway(d, period) : undefined;
+  const variantH = hoveredHour == null ? variantRowValue(d, period) : undefined;
   // A main-stretch row the card cannot read a cadence for (its own gaps are uneven) takes its direction's filter
   // value. A tail never does: that value is the trunk's (#1115, Ryan 2026-10-26).
   // CIV-1069: the row's value, gap and part-period words come from the same trips.
-  const trips = rowTrips(d, period, { stretch: ctx.stretchValues !== false, branchReadings: ctx.branchReadings });
+  const runByOthers = ctx.stretchRunByOthers?.has(d) === true;
+  const trips = rowTrips(d, period, { stretch: ctx.stretchValues !== false, branchReadings: ctx.branchReadings, stretchRunByOthers: runByOthers });
   // CIV-995 (b): the hovered hour reads the row's stretch where the row's value does, under the same checks.
-  const stretchHour = hoveredHour != null && ctx.stretchValues !== false ? rowStretchHourValue(d, hoveredHour) : undefined;
+  const stretchHour = hoveredHour != null && ctx.stretchValues !== false && !runByOthers ? rowStretchHourValue(d, hoveredHour) : undefined;
   const ownH = hoveredHour != null
     ? (stretchHour !== undefined ? stretchHour : branchDisplayHourHeadway(d, hoveredHour)) ?? trips.value
     : trips.value;
-  const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail'
+  // #1823: nor does a main row whose stretch other destinations run: the direction's value counts their trips, not its own.
+  const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail' && !runByOthers
     ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
     : undefined;
   const allDayH = allDay?.filterValue != null && hoveredHour == null ? allDay.filterValue : undefined;
@@ -138,7 +161,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
     || isOneGapRow(d, period)
     || fallbackUnsteady
     || (trips.noOwnService && variantH === undefined && allDayH == null)
-    || trips.waitNotCadence === true);
+    // #1909: a pooled row speaks for every pattern on its stretch, so its own trips' spacing is no verdict on it (Broome 35
+    // Saturday eastbound: two same-path patterns every 120 each, every 60 together).
+    || (trips.waitNotCadence === true && pooledH === undefined));
   const isLimited = rowNoRegular
     ? true
     : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);

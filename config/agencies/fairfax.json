@@ -3,16 +3,23 @@
   "officialName": "Fairfax Connector",
   "displayArea": "Fairfax County",
   "websiteUrl": "http://www.fairfaxcounty.gov/connector/routes/",
+  "dataLicense": {
+    "url": "https://www.fairfaxcounty.gov/connector/bustracker/data",
+    "attribution": "required",
+    "name": "Fairfax Connector Terms and Conditions of License Agreement to Use Transportation Data",
+    "credit": "Visit fairfaxconnector.com for more information",
+    "checkedOn": "2026-11-26"
+  },
   "region": "Virginia",
   "center": [
     38.85,
     -77.3
   ],
   "bbox": [
-    38.687,
-    -77.4653,
-    39.0291,
-    -77.0219
+    38.68,
+    -77.47,
+    39.03,
+    -77.02
   ],
   "feedUrl": "https://www.fairfaxcounty.gov/connector/sites/connector/files/assets/connector_gtfs.zip",
   "excludeTripHeadsigns": [
@@ -67,7 +74,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

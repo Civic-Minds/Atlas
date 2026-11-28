@@ -63,12 +63,18 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "da015c0a7e7f48cd",
   "feedObtainedAt": "20261028",
   "lastFeedStart": "20261119",
   "lastRawArchiveKey": "20270103-d8af2d31da7d3f7e",
-  "lastFeedContentKey": "3af730d3c5605035"
+  "lastFeedContentKey": "3af730d3c5605035",
+  "dataLicense": {
+    "url": "https://exo.quebec/fr/a-propos/donnees-ouvertes",
+    "attribution": "required",
+    "name": "CC BY",
+    "checkedOn": "2026-11-26"
+  }
 }

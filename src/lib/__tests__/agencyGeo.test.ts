@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearAgencyGeoCache, fetchAgencyGeo, getCachedAgencyGeo } from '../agencyGeo';
+import { AgencyFileNotFoundError, clearAgencyGeoCache, fetchAgencyGeo, getCachedAgencyGeo } from '../agencyGeo';
 import { clearDataReleaseCache } from '../dataRelease';
 
 const agency = { slug: 'ttc', name: 'TTC', url: 'https://example.com/ttc.json' };
@@ -112,5 +112,20 @@ describe('fetchAgencyGeo', () => {
     vi.stubEnv('PROD', true);
     vi.stubGlobal('fetch', mockFetch());
     await expect(fetchAgencyGeo({ ...agency, slug: 'beta-agency', betaOnly: true })).resolves.toBeTruthy();
+  });
+
+  // #1899: a file that isn't in the data (404) is told apart from a load that failed.
+  it('rejects a missing route file (404) with AgencyFileNotFoundError, and other errors with a plain Error', async () => {
+    const respond = (status: number) => vi.fn().mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input).includes('data-version.json')) return { ok: true, json: async () => ({ v: 'test-v1' }) };
+      if (String(input).includes('release.json')) return { ok: false, status: 404, json: async () => null };
+      return { ok: false, status, json: async () => null };
+    });
+    vi.stubGlobal('fetch', respond(404));
+    await expect(fetchAgencyGeo({ ...agency, slug: 'ontario-northland' })).rejects.toBeInstanceOf(AgencyFileNotFoundError);
+    vi.stubGlobal('fetch', respond(500));
+    const err = await fetchAgencyGeo({ ...agency, slug: 'server-error' }).catch(e => e);
+    expect(err).toBeInstanceOf(Error);
+    expect(err).not.toBeInstanceOf(AgencyFileNotFoundError);
   });
 });

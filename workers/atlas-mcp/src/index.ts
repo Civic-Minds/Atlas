@@ -22,13 +22,15 @@ import { usageByDay } from './usage';
 import { dailyCapFor } from './dailyCap';
 import { jsonOrNull, splitStore, splitUrl, urlReader } from '../../../shared/mcpSplitStore';
 import { checkMcpRelease } from '../../../shared/mcpRelease';
+import { MCP_POINTER_RECHECK_MS } from '../../../shared/rules/limits';
 import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
 import { splitLiveReader, useLiveReader } from '../../../scripts/mcp/liveData';
 import { bucketNowSource, useNowSource } from '../../../scripts/mcp/liveNowData';
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_LOGGED_RESULT = 1_500_000; // D1 rows top out at 2 MB
-const POINTER_TTL_SECONDS = 60;
+/** The pointer recheck the local MCP server uses too (scripts/mcp/currentRelease.ts). */
+const POINTER_TTL_SECONDS = MCP_POINTER_RECHECK_MS / 1000;
 
 const json = (body: unknown, status = 200, headers: HeadersInit = {}) => Response.json(body, { status, headers });
 const hex = (buf: ArrayBuffer) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -47,7 +49,7 @@ async function sameSecret(a: string, b: string): Promise<boolean> {
 let activeRelease: { id: string; checkedAt: number } | null = null;
 
 /** Test deployments only (wrangler.pilot-test.jsonc): the split files ship inside the Worker as static assets, for a first test with nothing uploaded to R2. */
-type TestEnv = Env & { TESTER_DAILY_CAPS?: Record<string, number> | string; ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
+type TestEnv = Env & { TESTER_DAILY_CAPS?: Record<string, number> | string; ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; BUILD_SHA?: string; MCP_LIVE?: R2Bucket; MCP_LIVE_ARCHIVE?: R2Bucket };
 
 /**
  * The Live tools read the private bucket (CIV-1860; scripts/mcp/releaseLivePrivate.ts writes it daily), with a short
@@ -94,8 +96,9 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
   const check = await checkMcpRelease(env.DATA_ORIGIN, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } });
   if (activeRelease?.id !== check.releaseId) {
     // A new release counts only once its MCP files are up (the pointer can move before they are uploaded): until then the
-    // release already loaded keeps answering. With none loaded yet there is nothing to answer from.
-    if (check.kind === 'notReady') {
+    // release already loaded keeps answering. With none loaded yet there is nothing to answer from. A release this code
+    // can't read (CIV-3019) is never loaded, as the map never loads it.
+    if (check.kind !== 'ready') {
       if (activeRelease) { activeRelease = { ...activeRelease, checkedAt: now }; return activeRelease.id; }
       throw new Error('Atlas Studio has no schedule files for the current release yet. Try again later.');
     }
@@ -225,7 +228,13 @@ export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url);
     try {
-      if (url.pathname === '/health') return json({ ok: true });
+      if (url.pathname === '/health') {
+        if (!url.searchParams.has('check')) return json({ ok: true });
+        // CIV-3111: the deploy workflow's smoke check. The commit it deployed (BUILD_SHA, set with --var) and how many
+        // agencies the current release serves, so CI can tell the new code is live and still answering.
+        const release = await useCurrentRelease(env);
+        return json({ ok: true, build: env.BUILD_SHA ?? null, release, agencies: (await data.availableAgencies()).length });
+      }
       if (url.pathname.startsWith('/admin/')) return await handleAdmin(request, env, url);
       const token = linkToken(request, url);
       if (token !== undefined) {

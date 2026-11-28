@@ -5,6 +5,7 @@
  */
 import { noDataText } from './noDataText';
 import { joinList, plural } from './overflowText';
+import { countText } from './numberText';
 import { devPlaceholder } from './devPlaceholder';
 import { PAGE_NAMES } from './pageNames';
 import { vehiclesWord } from './modeVehicles';
@@ -37,6 +38,9 @@ export const STUDIO_MAP_TEXT = {
 
 export const STUDIO_CHANGES_TEXT = {
   intro: (agency: string, day: string, before: string, after: string) => `How the ${agency} ${day} schedule changed between ${before} and ${after}.`,
+  // CIV-2058 (Ryan, 2026-11-21: "If there's no earlier fall file, say on the page which two seasons are being compared"; the
+  // manager, 2026-11-27: his words settle it; no colon, per his 2026-11-27 "I don't like the use of the : though", CIV-3115).
+  seasons: (before: string, after: string) => `This compares a ${before} schedule with a ${after} one, because there’s no earlier ${after} schedule file.`,
   leftOut: (days: string, newer: boolean) => `${days} aren’t compared: the ${newer ? 'newer' : 'older'} schedule file’s calendar leaves out many of their trips.`,
   // The change list's group labels are map panel labels, so sentence case (docs/style/VISUAL.md Case; CIV-1922).
   frequencyTitle: 'Frequency or trips changed',
@@ -59,11 +63,45 @@ export const STUDIO_CHANGES_TEXT = {
   noDay: 'These two schedules couldn’t be compared.',
 } as const;
 
+/**
+ * CIV-2182 proposals, PENDING RYAN'S OK (review page /_review/studio-redesign/): Fleet's change column, and the Schedules
+ * list's heading for routes whose change is at another time of day.
+ */
+/**
+ * Fleet's "Not on a trip" figure, with how many of them are parked at a garage (CIV-2990; Ryan, 2026-11-26, picked
+ * "Not on a trip: 622, of which 521 at garages"): "622, of which 521 at garages"; the plain count where none are.
+ */
+export const notOnTripValueText = (noTrip: number, atGarage?: number) =>
+  atGarage ? `${countText(noTrip)}, of which ${countText(atGarage)} at garages` : countText(noTrip);
+
+/** Fleet's chart line for a time of day, "Midday: 1,790 buses" (CIV-2182; CIV-2973 moved it here, unchanged). */
+export const fleetPeriodCountText = (periodLabel: string, count: number, word: string) => `${periodLabel}: ${countText(count)} ${word}`;
+
+export const STUDIO_REDESIGN_TEXT = {
+  /** Schedules "period" design: the heading over routes that changed only at other times of day. */
+  otherTimes: 'Changed at other times of day',
+  /** Schedules "summary" design: one count per kind of change at the time of day, each opening its routes. */
+  summary: { more: (n: number) => `${n} more often`, less: (n: number) => `${n} less often`, added: (n: number) => `${n} added`, removed: (n: number) => `${n} removed` },
+  /** The bar's accessible name. */
+  summaryLabel: 'Routes by change',
+  /** Fleet "now" design (Ryan: "how many vehcles operating right now how many needed for scheduled service at now or x hour"). */
+  scheduledNow: 'Scheduled now',
+  /** Fleet "now" design: the sparkline of the vehicles the schedule needs in each time of day. */
+  scheduledByPeriod: 'Scheduled, by time of day',
+  /** Fleet's short caption in place of its intro sentence, "194 routes" (no date: Ryan, 2026-11-25, CIV-2182). */
+  fleetCaption: (routes: number) => `${countText(routes)} ${plural(routes, 'route')}`,
+  /** The way back from one kind's routes to the summary. */
+  allChanges: 'All changes',
+} as const;
+
 /** "Trains Needed", "Buses Needed" (the page's name), "Vehicles Needed" when modes mix (CIV-2002: Ryan, "This is a train line so why does it say buses"). */
 export function vehiclesNeededTitle(modes: readonly number[] | undefined): string {
   const word = vehiclesWord(modes);
   return word === 'buses' ? PAGE_NAMES.studioVehicles : `${word.replace(/\b\p{Ll}/gu, c => c.toUpperCase())} Needed`;
 }
+
+/** Fleet's network view heading in sentence case: "Vehicles needed" (CIV-3056: Ryan, 2026-11-26, picked 1 on #1745). The route view keeps `vehiclesNeededTitle`. */
+export const fleetNetworkTitle = (modes: readonly number[] | undefined) => `${vehiclesWord(modes).replace(/^\p{Ll}/u, c => c.toUpperCase())} needed`;
 
 /**
  * Fleet's network table (CIV-2002: Ryan, "is this network-wide?"): the schedule's own row is "As scheduled". CIV-2198:
@@ -72,7 +110,8 @@ export function vehiclesNeededTitle(modes: readonly number[] | undefined): strin
 export const fleetNetworkText = (modes: readonly number[] | undefined) => {
   const word = vehiclesWord(modes);
   // CIV-2056 (Ryan, 2026-11-21: "1" to adding "In service now" next to "As scheduled", Live cities only).
-  return { asScheduled: 'As scheduled', inServiceNow: 'In service now', count: word.charAt(0).toUpperCase() + word.slice(1) };
+  // CIV-2939 (Ryan, 2026-11-25: "1", a quieter row for vehicles reporting a position with no trip; no note).
+  return { asScheduled: 'As scheduled', inServiceNow: 'In service now', notOnTrip: 'Not on a trip', count: word.charAt(0).toUpperCase() + word.slice(1) };
 };
 
 /** A time of day with no service: "No trains at this time of day." (CIV-2002: by mode, as the rest of Fleet). */
@@ -87,13 +126,6 @@ export const STUDIO_VEHICLES_TEXT = {
 
 /** A route's two end stops, "Downtown – Cambrai" (the Route row of the open route's table). Ryan's OK as is (CIV-1834, 2026-11-21: "1"). */
 export const routeEndsText = (ends: readonly [string, string]) => `${ends[0]} – ${ends[1]}`;
-/**
- * Fleet's line above its table: network-wide, every route at once (CIV-1922; CIV-2002, Ryan: "is this network-wide?").
- * Proposed words, waiting on his OK: "All 194 TTC routes at once, on the Nov 25, 2026 schedule: the vehicles they need as
- * scheduled." (CIV-2198: the "if every route ran" clause is cut with its rows.)
- */
-export const fleetIntroText = (agency: string, date: string, routes: number, modes?: readonly number[]) =>
-  `All ${routes} ${agency} ${plural(routes, 'route')} at once, on the ${date} schedule: the ${vehiclesWord(modes)} they need as scheduled.`;
 /** Why the figures cover more than the open route: "12, 31, 601 and 602 share buses. These numbers cover all 4." Ryan's pick (CIV-1834, 2026-11-21: "1"), exact. */
 export const groupSharesText = (routes: readonly string[], modes?: readonly number[]) => `${joinList([...routes])} share ${vehiclesWord(modes)}. These numbers cover all ${routes.length}.`;
 /** The buses section's title with the newer schedule's date: "Buses Needed · Sep 17" ("Trains Needed" on a train line, CIV-2002). */

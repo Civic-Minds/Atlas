@@ -8,7 +8,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import JSZip from 'jszip';
+import { zipDir } from './fixtureZip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processAgencyFeeds } from '../agencyFeeds.js';
 import { fixtureSameNameRoutes } from './fixtureAgencyNames.js';
@@ -33,12 +33,6 @@ function referenceDate(dir: string): Date {
   const day = new Date(`${pick.slice(0, 4)}-${pick.slice(4, 6)}-${pick.slice(6, 8)}T12:00:00Z`);
   day.setUTCDate(day.getUTCDate() + ((3 - day.getUTCDay() + 7) % 7));
   return day;
-}
-
-async function zipDir(dir: string): Promise<Buffer> {
-  const zip = new JSZip();
-  for (const file of readdirSync(dir)) zip.file(file, readFileSync(join(dir, file)));
-  return zip.generateAsync({ type: 'nodebuffer' });
 }
 
 const fixtureNames = readdirSync(FIXTURES)

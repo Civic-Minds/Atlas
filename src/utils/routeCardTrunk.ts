@@ -8,6 +8,7 @@ import { rowTrips } from './rowTrips';
 import { SHARED_STRETCH_RATIO, stretchRowsFromMeta, trunkBeatsBranches } from './stretchCard';
 import { hourHasService } from './periodActiveRanges';
 import { rowIrregularInPeriod } from './effectiveHeadway';
+import { combinedWait } from '../../shared/combinedWait';
 
 /** Headsign-scoped trunk minimum for route-card range display (not route-wide combined deps). */
 export function headsignTrunkHeadway(d: ShapeProperties, period: string): number | null {
@@ -83,8 +84,7 @@ export function groupTrunkHeadway(branches: ShapeProperties[], period: string): 
     .map(d => branchDisplayPeriodHeadway(d, period as TimePeriod))
     .filter((v): v is number => v != null && v > 0);
   if (values.length === 0) return null;
-  const combined = 1 / values.reduce((sum, value) => sum + 1 / value, 0);
-  return Math.max(1, Math.round(combined));
+  return combinedWait(values);
 }
 
 /** Shared on-shape stops in the order used by the first branch, restricted to real, non-limited
@@ -150,7 +150,12 @@ export function pooledMainStretch(
   if (period === 'all') return null;
   if (directionFeatures.some(d => d.stretchRole === 'tail')) return null;
   // The patterns that run in the period: one with no trips then has no row (GO KI's Georgetown at midday).
-  const mains = directionFeatures.filter(d => d.stretchRole === 'main' && (d.stretchIndex ?? 0) === 0 && hasDirectionPeriodService(d, period));
+  const running = directionFeatures.filter(d => d.stretchRole === 'main' && (d.stretchIndex ?? 0) === 0 && hasDirectionPeriodService(d, period));
+  // #1909: where the regular patterns are all one destination, a span pattern (a few trips, never a row of its own) is not
+  // one of them; its trips are already in the pooled value. With two or more destinations it still counts, so a branch that
+  // runs on past the others keeps its own wait (RTD 15 eastbound to Tower Rd, every 30 past Billings).
+  const regular = running.filter(d => d.tier !== 'span');
+  const mains = regular.length >= 2 && regular.every(d => sameDestination(d, regular[0])) ? regular : running;
   if (mains.length < 2) return null;
   const shared = stretchRowsFromMeta(mains[0], period).find(r => r.role === 'main');
   if (shared?.value == null || shared.noRegular) return null;
@@ -159,13 +164,24 @@ export function pooledMainStretch(
   if (own.some(v => v == null)) return null;
   if (shared.value > medianHeadway(own as number[]) * SHARED_STRETCH_RATIO) return null;
   // One row per destination: the pattern that draws the most stops stands for it.
-  const byDestination = new Map<string, ShapeProperties>();
+  const destinations: ShapeProperties[] = [];
   for (const d of mains) {
-    const key = (d.headsign ?? '').trim().toLowerCase();
-    const current = byDestination.get(key);
-    if (!current || (d.stopOrder?.length ?? 0) > (current.stopOrder?.length ?? 0)) byDestination.set(key, d);
+    const i = destinations.findIndex(c => sameDestination(c, d));
+    if (i < 0) destinations.push(d);
+    else if ((d.stopOrder?.length ?? 0) > (destinations[i].stopOrder?.length ?? 0)) destinations[i] = d;
   }
-  return { destinations: [...byDestination.values()], pooled: shared.value };
+  return { destinations, pooled: shared.value };
+}
+
+/**
+ * Two patterns are one destination when they share a headsign, or run the same stops whatever their headsigns say (#1909:
+ * Intercity Transit 9X westbound alternates "Capital Mall-The Evergreen State College" and "Capital Mall - County
+ * Courthouse" on one 22-stop path, every 15 together, every 30 each).
+ */
+function sameDestination(a: ShapeProperties, b: ShapeProperties): boolean {
+  const headsign = (d: ShapeProperties) => (d.headsign ?? '').trim().toLowerCase();
+  if (headsign(a) === headsign(b)) return true;
+  return !!a.stopOrder?.length && a.stopOrder.join('|') === b.stopOrder?.join('|');
 }
 
 /**

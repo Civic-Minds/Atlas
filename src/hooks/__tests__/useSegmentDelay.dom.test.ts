@@ -24,6 +24,6 @@ describe('route reading with Live mode off (#1750)', () => {
   it('reads the route when the caller turns it on', async () => {
     const { result } = renderHook(() => useSegmentDelayStatus('ttc', '506', true));
     await waitFor(() => expect(result.current.data).toEqual(reading));
-    expect(vi.mocked(fetch).mock.calls.map(([url]) => String(url))).toContain('/api/live-segments?agency=ttc&route=506');
+    expect(vi.mocked(fetch).mock.calls.map(([url]) => String(url))).toContain('https://atlas-live-read.rhanna-334.workers.dev/live/segments?agency=ttc&route=506');
   });
 });

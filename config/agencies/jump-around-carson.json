@@ -1,0 +1,20 @@
+{
+  "slug": "jump-around-carson",
+  "officialName": "Jump Around Carson",
+  "commonName": "JAC",
+  "websiteUrl": "https://www.carson.org/",
+  "dataLicense": {
+    "url": "https://www.carson.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Nevada",
+  "center": [
+    39.1751,
+    -119.7634
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/tld-688/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "timezoneOverride": "America/Los_Angeles"
+}

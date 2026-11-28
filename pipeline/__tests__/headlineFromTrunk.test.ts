@@ -129,6 +129,62 @@ describe('headline from the trunk (CIV-1959 B1)', () => {
     }
   });
 
+  // #1775 (CIV-2232, Ryan 2026-11-24: "every 10–30"): RTD 15 weekday daytime, the trunk every 10 and the east branch
+  // every 30 all day. The trunk sets the headline, and rule 3's range still runs to the slowest branch.
+  it('#1775: the card range runs from the trunk to a slower branch that runs all period', () => {
+    const d = build('rtd15day', [
+      { times: every(360, 1380, 15), stops: trunk },
+      { times: every(370, 1380, 30), stops: [...trunk, ...tail] },
+    ]);
+    const onR = rollupDirection(on(d))!;
+    expect(onR.period[MIDDAY].value).toBe(10);
+    expect(onR.period[MIDDAY].branchValue).toBe(30);
+    const route = rollupRoute([onR, onR]);
+    expect(route.period[MIDDAY].value).toBe(10);
+    expect(route.period[MIDDAY].range).toEqual([10, 30]);
+    // Switch off: the branch sets the value, and the range reads the same.
+    const off = rollupRoute([rollupDirection(d)!, rollupDirection(d)!]);
+    expect(off.period[MIDDAY].range).toEqual([10, 30]);
+  });
+
+  // CIV-3080 (Ryan on RTD 31, CIV-2232: "For the branch we wouldn't show 10-71"): a branch over an hour keeps its own row
+  // and adds no range; the card reads the trunk's "every 10".
+  it('CIV-3080: a branch over an hour adds no range', () => {
+    const d = build('rtd31day', [
+      { times: every(360, 1380, 15), stops: trunk },
+      { times: every(370, 1380, 75), stops: [...trunk, ...tail] },
+    ]);
+    // Switch off, the branch's own reading (over an hour) sets the value.
+    expect(rollupDirection(d)!.period[MIDDAY].value!).toBeGreaterThan(60);
+    const onR = rollupDirection(on(d))!;
+    expect(onR.period[MIDDAY].value!).toBeLessThanOrEqual(15);
+    expect(onR.period[MIDDAY].branchValue).toBeNull();
+    const range = rollupRoute([onR, onR]).period[MIDDAY].range;
+    expect(range == null || range[1] <= 15).toBe(true);
+  });
+
+  // #1902 (CIV-3113): TTC 102 weekday midday. The trunk is uneven (typical gap 5, longest wait 10, #1142) and the Major
+  // Mackenzie branch runs every 30. The card's range reads 10–30, the route list's numbers, not 5–30; with no slower
+  // branch the uneven trunk keeps its typical-to-worst range (5–10).
+  it('#1902: a branch range starts at the trunk value, not an uneven trunk\'s typical gap', () => {
+    const d = build('ttc102', [
+      { times: every(360, 1380, 15), stops: trunk },
+      { times: every(370, 1380, 30), stops: [...trunk, ...tail] },
+    ]);
+    const onR = rollupDirection(on(d))!;
+    expect(onR.period[MIDDAY].value).toBe(10);
+    expect(onR.period[MIDDAY].branchValue).toBe(30);
+    const uneven = { ...onR, period: { ...onR.period, [MIDDAY]: { ...onR.period[MIDDAY], mainLow: 5 } } };
+    expect(rollupRoute([uneven, uneven]).period[MIDDAY].range).toEqual([10, 30]);
+    const noBranch = { ...uneven, period: { ...uneven.period, [MIDDAY]: { ...uneven.period[MIDDAY], branchValue: null } } };
+    expect(rollupRoute([noBranch, noBranch]).period[MIDDAY].range).toEqual([5, 10]);
+  });
+
+  it('#1775: a tail that only stops partway adds no range (#1749)', () => {
+    const route = rollupRoute([rollupDirection(on(rtd15()))!, rollupDirection(on(rtd15()))!]);
+    expect(route.period[MIDDAY].range).toBeNull();
+  });
+
   it('a route with no tails reads the same with the switch on or off', () => {
     const d = build('plain', [{ times: every(360, 1380, 12), stops: trunk }]);
     expect(rollupDirection(on(d))).toEqual(rollupDirection(d));

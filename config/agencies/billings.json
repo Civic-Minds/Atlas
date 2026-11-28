@@ -10,8 +10,8 @@
   "bbox": [
     45.73,
     -108.63,
-    45.84,
-    -108.45
+    45.85,
+    -108.44
   ],
   "feedUrl": "https://passio3.com/billings/passioTransit/gtfs/google_transit.zip",
   "region": "Montana",
@@ -46,7 +46,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

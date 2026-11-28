@@ -16,8 +16,8 @@ bucket_name = "atlas-live"
 # CIV-2073, step A (2026-11-23, Ryan: "Yes"): the Hamilton canary. Runs only the live-v2 shard; every v1 shard stays on
 # its own Worker.
 # Step B (Ryan approved 2026-11-24): the live-v2 shard adds TTC (with trip updates), Kingston, MBTA, YRT Viva, DRT 9XX and
-# Brampton 5XX (shared/liveArchiveFeeds.ts); no agency needs a key. ARCHIVE_SHARD stays "live-v2": the v1 shards keep
-# their own Workers until the readers of positions/ move to v2 (CIV-2217).
+# Brampton 5XX (shared/liveArchiveFeeds.ts); no agency needs a key. ARCHIVE_SHARD stays "live-v2". CIV-2217: the v1
+# Workers' crons are removed; this Worker is the only one recording.
 #
 # CIV-2073: the one recorder Worker. It runs every shard marked recording in shared/liveArchiveFeeds.ts: the v1 archive
 # shards and the v2 cloud recorder (live-v2, Hamilton first as the canary). It replaces the per-shard wrangler.*.toml

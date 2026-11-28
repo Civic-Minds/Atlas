@@ -15,8 +15,7 @@
  */
 import { readFile, readdir, stat } from 'fs/promises';
 import { resolve } from 'path';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { mainCheckoutEnv } from './mcp-coverage.js';
+import { privateBucket } from './privateBucket.js';
 import { STUDIO_LIVE_POINTER, studioLiveRunPrefix, type StudioLivePointer } from '../scripts/studioLiveRun.js';
 
 export interface LiveFiles {
@@ -51,7 +50,7 @@ export function pointerFiles(pointer: StudioLivePointer): Map<string, { key: str
   return out;
 }
 
-/** The cloud source; null without the read-only keys (the endpoints then answer as if no file were built). */
+/** The cloud source over a reader of the private bucket. */
 export function cloudLiveFiles(get: (key: string) => Promise<string | null>, now: () => number = Date.now): LiveFiles {
   let pointer: { at: number; files: Map<string, { key: string; run: string }> } | null = null;
   const texts = new Map<string, Promise<string | null>>();
@@ -85,15 +84,8 @@ export function liveFiles(): LiveFiles {
   const dir = process.env.LIVE_SEGMENTS_DIR;
   if (dir) return folderLiveFiles(resolve(dir));
   if (shared) return shared;
-  const { R2_ACCOUNT_ID: account, R2_RO_ACCESS_KEY_ID: accessKeyId, R2_RO_SECRET_ACCESS_KEY: secretAccessKey, MCP_LIVE_BUCKET: bucket } = mainCheckoutEnv();
-  if (!account || !accessKeyId || !secretAccessKey || !bucket) {
-    shared = { list: async () => [], read: async () => null, stamp: async () => null };
-    return shared;
-  }
-  const s3 = new S3Client({ region: 'auto', endpoint: `https://${account}.r2.cloudflarestorage.com`, credentials: { accessKeyId, secretAccessKey } });
-  shared = cloudLiveFiles(async key => {
-    try { return await (await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }))).Body!.transformToString(); }
-    catch (e) { if ((e as { name?: string }).name === 'NoSuchKey') return null; throw e; }
-  });
+  // CIV-2914: no read-only keys throws (privateBucket), never an empty source that reads as "no files built".
+  const bucket = privateBucket();
+  shared = cloudLiveFiles(key => bucket.get(key));
   return shared;
 }

@@ -16,9 +16,9 @@
   ],
   "region": "California",
   "bbox": [
-    37.37,
-    -122.47,
-    38.02,
+    37.36,
+    -122.48,
+    38.03,
     -121.78
   ],
   "feedUrl": "http://www.bart.gov/dev/schedules/google_transit.zip",
@@ -63,8 +63,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-22",
-    "scoredAt": "2026-11-23"
+    "checkedAt": "2026-11-27"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

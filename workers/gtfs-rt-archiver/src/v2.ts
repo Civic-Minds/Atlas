@@ -1,7 +1,8 @@
 /**
  * CIV-2073: the cloud recorder (atlas.live.v2). Each cron run polls every Live agency at the pace slots that fall in the
  * minute (shared/liveSlots.ts), joins its positions to its trip updates with Live's own join (shared/liveJoin.ts), and
- * writes one gzip snapshot per agency per slot to live/{slug}/{date}/{slot}.json. Not deployed until Ryan has upgraded
+ * writes one gzip snapshot per agency per slot to live/{slug}/{date}/{slot}.json, and once a minute the whole feed's
+ * vehicle counts inside each snapshot (CIV-2939). Not deployed until Ryan has upgraded
  * the Workers plan and the manager gives the go (the free plan's 10 ms CPU can't decode a trip-update feed).
  */
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
@@ -12,6 +13,8 @@ import { LIVE_SNAPSHOT_V2_SCHEMA_VERSION, type LiveSnapshotV2 } from '../../../s
 import { liveRouteIdNames } from '../../../shared/livePollingConfig';
 import type { LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
 import { fetchFeed as fetchWithRetry } from './fetchFeed';
+import { buildHourPack, HOUR_SEC, livePackKey } from '../../../shared/liveArchivePack';
+import { networkVehicleCounts } from '../../../shared/liveNetworkCount';
 
 export interface V2Env {
   BUCKET: R2Bucket;
@@ -57,6 +60,8 @@ export async function snapshotFor(feed: LiveRecorderFeed, env: V2Env, slotSec: n
     tripsOk: trips != null,
     headways,
     records,
+    // CIV-2939: the whole feed's vehicles, before the route filter (Fleet's "In service now" and "Not on a trip"); no new write.
+    network: networkVehicleCounts(positions),
   };
 }
 
@@ -88,4 +93,29 @@ export async function recordRun(feeds: readonly LiveRecorderFeed[], env: V2Env, 
     catch (e) { throw new Error(`${feed.slug} ${slot}: ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}`); }
   }));
   return Promise.allSettled(jobs.map(job => job()));
+}
+
+/** #1815: the minute past each UTC hour the first agency's pack of the hour before is written; the next agency's a minute later. */
+export const PACK_FIRST_MINUTE = 3;
+
+/**
+ * #1815: packs the hour before for one agency a run, from minute PACK_FIRST_MINUTE (so at most one hour of GETs, up to
+ * 120, per run). The single snapshots stay. A read that fails leaves the hour unpacked; readers then read its single
+ * snapshots, so a pack is always whole.
+ */
+export async function packRun(feeds: readonly LiveRecorderFeed[], env: V2Env, runStartMs: number): Promise<PromiseSettledResult<string>[]> {
+  const minute = new Date(runStartMs).getUTCMinutes();
+  const feed = feeds[minute - PACK_FIRST_MINUTE];
+  if (!feed) return [];
+  const hour = Math.floor(runStartMs / 1000 / HOUR_SEC) * HOUR_SEC - HOUR_SEC;
+  const get = async (key: string) => { const obj = await env.BUCKET.get(key); return obj ? new Uint8Array(await obj.arrayBuffer()) : null; };
+  return Promise.allSettled([(async () => {
+    try {
+      const { pack, snapshots } = await buildHourPack(feed.slug, hour, feed.paceSec, get);
+      if (snapshots === 0) return `${feed.slug} pack ${hour}: no snapshots`;
+      const key = livePackKey(feed.slug, hour);
+      await env.BUCKET.put(key, pack, { httpMetadata: { contentType: 'application/octet-stream' } });
+      return `${key}: ${snapshots} snapshots (${pack.byteLength} B)`;
+    } catch (e) { throw new Error(`${feed.slug} pack ${hour}: ${e instanceof Error ? e.message : String(e)}`); }
+  })()]);
 }

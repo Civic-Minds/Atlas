@@ -12,17 +12,17 @@
 import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RankWait, RouteLabel, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange, type PeriodKey } from '../../shared/config';
-import { DAY_TYPES, type DayType } from '../../shared/rules/days';
+import { DAY_TYPES, dayPlural, type DayType } from '../../shared/rules/days';
 import { PUBLIC_TIER_MAXES, headwayGradeOn } from '../../shared/rules/frequency';
 import { routeGroupKey } from '../../shared/routeGroupKey';
-import { normalizeRouteFilterFeatures, readingPassesHeadwayFilter, routeFilterReading, type RouteFilterReading } from '../../shared/routeHeadwayFilter';
+import { normalizeRouteFilterFeatures, readingPassesHeadwayFilter, type RouteFilterReading } from '../../shared/routeHeadwayFilter';
 import { frequencyChange } from '../../shared/frequencyChange';
 import { clockTime, hourRange } from '../../shared/timeText';
 import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
-import { routeListCellText, routeListDisplay, routeListFilterDisplay, routeWaitMinutes } from '../../src/utils/effectiveHeadway';
+import { routeReading } from '../../src/utils/routeReading';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
-import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
+import { departuresInPeriod, routeRuns, runsEveryHour } from '../../shared/routeRuns';
 import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
 import { metresBetween, withinMetres } from '../../shared/geoDistance';
 import { andOthers, joinList } from '../../shared/overflowText';
@@ -35,13 +35,17 @@ import { headwayAboutRange, headwayEvery } from '../../shared/headwayText';
 import { buildStopRoutes, stopRouteLineHeadway, stopRowHeadway, stopRowRangeLow } from '../../src/utils/stopRoutes';
 import { pairChanges } from '../../shared/scheduleChangePairing';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
-import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
+import { DAYTIME_PERIOD_KEYS, MINUTES_PER_DAY, TIME_PERIODS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { mayRedistribute, redistributionExclusion } from '../../shared/rules/redistribution';
-import { FEED_CREDITS, type FeedCreditKey } from '../../shared/feedCredits';
-import { routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
+import { feedPlaceName } from '../../src/utils/nameCase';
+import { agencyCredit } from '../../src/utils/agencyCredits';
+import { OVERNIGHT_NIGHT_GRADE, routeNightGrade, rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
+
+/** CIV-2915: a destination or stop name the feed sent in capitals, in normal case, as the map and Live show it. */
+const placeOrNull = (name: string | null | undefined): string | null => (name?.trim() ? feedPlaceName(name) : null);
 
 
 type Feature = McpFeature;
@@ -109,12 +113,51 @@ export function hasWholeWords(text: string, query: string): boolean {
  */
 export const SERVICE_OPERATORS: ReadonlyArray<{ name: string; slugs: readonly string[] }> = [{ name: 'Metrolinx', slugs: ['go', 'upexpress'] }];
 
+/**
+ * #1806: the parent agency named (its name or slug, any case: "MTA New York", "exo") and its feeds in the list, or null.
+ * Every tool resolves a parent's name through this, so none answers for one feed as if it were the whole agency.
+ */
+export function parentNamed(query: string, list: CatalogAgency[]): { name: string; slug: string; members: CatalogAgency[] } | null {
+  const q = query.trim().toLowerCase();
+  const g = groupAgencies(list).find(x => x.parent && (x.parent.slug === q || x.parent.name.toLowerCase() === q));
+  if (g?.parent) return { name: g.parent.name, slug: g.parent.slug, members: g.members };
+  const p = PARENT_AGENCIES.find(x => x.slug === q || x.name.toLowerCase() === q);
+  return p ? { name: p.name, slug: p.slug, members: [] } : null;
+}
+
 /** The operator named (its full name, any case) and its agencies that have data here, or null. */
 export function operatorNamed(query: string, list: CatalogAgency[]): { name: string; members: CatalogAgency[] } | null {
   const q = query.trim().toLowerCase();
   const op = SERVICE_OPERATORS.find(o => o.name.toLowerCase() === q);
   const members = op ? list.filter(a => op.slugs.includes(a.slug)) : [];
   return op && members.length ? { name: op.name, members } : null;
+}
+
+/**
+ * #1911: an agency some of whose routes are in other agencies' schedule files here, not its own. Sound Transit's own file
+ * holds Link and Sounder; its ST Express buses are in King County Metro's, Pierce Transit's and Community Transit's.
+ */
+export const ROUTES_IN_OTHER_FILES: ReadonlyArray<{ slug: string; routes: string; hosts: readonly string[] }> = [
+  { slug: 'soundtransit', routes: 'ST Express buses', hosts: ['kingcountymetro', 'piercetransit', 'communitytransit'] },
+];
+
+/**
+ * #1911: a route the agency's own file doesn't have, where that agency's routes are partly in other agencies' files: which
+ * of those files has a route of that exact number or name on that day, or null. Exact names only, and worded as what
+ * the file has: the route rows don't say which agency runs a route, so a match is offered, never answered for silently.
+ */
+export async function routeInOtherFileNote(agency: CatalogAgency, route: string, day: DayType): Promise<string | null> {
+  const entry = ROUTES_IN_OTHER_FILES.find(x => x.slug === agency.slug);
+  const q = route.trim().toLowerCase();
+  if (!entry || !q) return null;
+  const list = await availableAgencies();
+  const hosts = entry.hosts.map(slug => list.find(a => a.slug === slug)).filter((a): a is CatalogAgency => !!a);
+  if (!hosts.length) return null;
+  const having: CatalogAgency[] = [];
+  for (const h of hosts) if ((await routeList(h, day)).some(r => [r.shortName, r.name].some(n => n.toLowerCase() === q))) having.push(h);
+  const where = `${agency.name}'s ${entry.routes} are in other agencies' schedule files here: ${joinList(hosts.map(h => h.name))}.`;
+  if (!having.length) return `${agency.name} has no route matching "${route}" on ${day} in its own file. ${where} None of them has a route "${route}" on ${day} either.`;
+  return `${agency.name}'s own file has no route "${route}" on ${day}. ${where} ${joinList(having.map(h => h.name))} ${having.length > 1 ? 'have' : 'has'} a route "${route}": if it's the one meant, call again with that agency.`;
 }
 
 /**
@@ -151,10 +194,20 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   list ??= await availableAgencies();
   const meta = await store.meta();
   const q = query.trim().toLowerCase();
-  const byShort = list.filter(a => (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q);
-  if (byShort.length === 1) return byShort[0];
-  const exact = list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q);
-  if (exact) return exact;
+  // #1806: a parent agency's name finds the parent, never one of its feeds silently ("exo" is not exo's trains alone).
+  const parent = parentNamed(query, list);
+  if (parent?.members.length === 1) return parent.members[0];
+  if (parent && parent.members.length > 1) throw new Error(`${parent.name} is split across several feeds here: ${parent.members.map(a => a.name).join('; ')}. Call again with one of them.`);
+  const several = (hits: CatalogAgency[]) => new Error(`"${query}" matches several agencies: ${hits.slice(0, 6).map(a => a.name).join('; ')}${hits.length > 6 ? '; …' : ''}. Call again with the full name.`);
+  // #1869: a name, short name, id or bracketed name that two agencies answer to is asked about, never settled by one of
+  // them ("RTC" is RTC Québec's id and "Regional Transportation Commission of Southern Nevada (RTC)").
+  const bracketed = (a: CatalogAgency) => /\(([^()]+)\)\s*$/.exec(a.name)?.[1].trim().toLowerCase();
+  // A bracketed name only widens an exact match: alone it falls to the name tiers below ("Vancouver" asks about TransLink
+  // (Vancouver) and C-TRAN (Vancouver, WA)).
+  const strict = list.filter(a => (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q || a.slug === q || a.name.toLowerCase() === q);
+  const exact = strict.length ? [...new Set([...strict, ...list.filter(a => bracketed(a) === q)])] : [];
+  if (exact.length === 1) return exact[0];
+  if (exact.length > 1) throw several(exact);
   await refuseExcluded(q, true);
   const op = operatorNamed(query, list);
   if (op?.members.length === 1) return op.members[0];
@@ -165,7 +218,7 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   for (const tier of [(a: CatalogAgency) => named(a).startsWith(q), (a: CatalogAgency) => hasWordsAt(a.name, q), (a: CatalogAgency) => named(a).includes(q)]) {
     const hits = list.filter(tier);
     if (hits.length === 1) return hits[0];
-    if (hits.length > 1) throw new Error(`"${query}" matches several agencies: ${hits.slice(0, 6).map(a => a.name).join('; ')}${hits.length > 6 ? '; …' : ''}. Call again with the full name.`);
+    if (hits.length > 1) throw several(hits);
   }
   await refuseExcluded(q, false);
   return null;
@@ -272,7 +325,7 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
   // Exact matches: a short-name match first, then a daytime route before a night-only one (TTC "King" is the 504, not the
   // 304), else the list's order. CIV-2025: trains no longer win a tie over buses (#1623 had GO's "Lakeshore West" pick the
   // LW train over bus 18 with the same long name; otherExactMatches still names the other).
-  const night = (r: R) => { const f = (r as { figures?: RouteSummary['figures'] }).figures; return f && isNightRoute({ figures: f }) ? 1 : 0; };
+  const night = (r: R) => { const x = r as { figures?: RouteSummary['figures']; night?: RouteSummary['night'] }; return x.figures && isNightRoute({ figures: x.figures, night: x.night }) ? 1 : 0; };
   const exact = routes.filter(r => names(r).includes(q)).map((r, i) => ({ r, i, short: r.shortName.toLowerCase() === q ? 0 : 1 }))
     .sort((a, b) => a.short - b.short || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
   if (exact) return exact;
@@ -303,22 +356,32 @@ export const someTripsText = (trips: number) => `some trips (${trips}), but no r
  * quietest) and name a long gap where the route card does.
  */
 export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
-  const filter = routeListFilterDisplay(r.rows, period);
-  const shown = routeListCellText(routeListDisplay(r.rows, period), false);
-  const waitMinutes = routeWaitMinutes(filter);
+  // CIV-2953: the route's one reading (src/utils/routeReading.ts).
+  const reading = routeReading(r.rows, period);
+  const filter = reading.filterDisplay;
+  const shown = reading.text(false);
+  const waitMinutes = reading.wait;
   const trips = departuresInPeriod(r.rows as Array<{ departuresByHour?: Record<string, number> | null }>, period);
   const range = shown ? /every (\d+(?:\.\d+)?)–(\d+(?:\.\d+)?) min/.exec(shown) : null;
+  const rangeMeaning = range ? `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` : null;
+  const edge = edgeWait(shown, waitMinutes) || edgeBehindWait(shown, waitMinutes, filter.edgeText);
+  // #1787: the reverse of waitBelowShown (RTD 31 weekday AM peak: waitMinutes 60 beside "every 10 min"). The answer names
+  // the slower figure the map grades by, so a model neither drops it nor reads it as the whole route's service.
+  const above = !edge && waitAboveShown(shown, waitMinutes)
+    ? `Atlas colours and filters this route by every ${waitMinutes} min, the typical wait on its least frequent part or direction, which is slower than anything "shown" gives (${shown}). Give both figures, and say the map grades the route by the slower one.`
+    : null;
+  const meaning = [rangeMeaning, above].filter(Boolean).join('. ');
   return {
     period: PERIOD_LABELS[period],
     hours: formatPeriodRange(period),
     waitMinutes,
     shown: shown ?? (trips > 0 ? someTripsText(trips) : 'no service'),
-    ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
+    ...(meaning ? { meaning } : {}),
     // #1711: a range in shown drops the card's edge words (TTC 501 Sunday Late "every 5–10 min" beside a 47 min wait), so
     // the edge the filter read is named here in the card's own words ("every 5 min until 1:13 AM").
-    ...(edgeWait(shown, waitMinutes) || edgeBehindWait(shown, waitMinutes, filter.edgeText) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it${!edgeWait(shown, waitMinutes) && filter.edgeText ? ` (${filter.edgeText})` : ''}, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
+    ...(edge ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it${!edgeWait(shown, waitMinutes) && filter.edgeText ? ` (${filter.edgeText})` : ''}, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
     ...(waitBelowShown(shown, waitMinutes) ? { warning: `waitMinutes (every ${waitMinutes} min) is more frequent than anything this route's list shows (${shown}). Atlas may have read it from a stretch this route shares with other routes, so it can overstate this route's own service. Go by "shown" for this route, and say the two disagree.` } : {}),
-    filter: routeFilterReading(r.rows, period),
+    filter: reading.filter,
   };
 }
 
@@ -338,6 +401,23 @@ export function edgeBehindWait(shown: string | null, waitMinutes: number | null,
   // Both ends of a range ("every 5–10 min" is 5 and 10), so a wait inside the range is never called an edge wait.
   const shownMins = [...shown.matchAll(/every (\d+(?:\.\d+)?)(?:–(\d+(?:\.\d+)?))?/g)].flatMap(m => [Number(m[1]), ...(m[2] ? [Number(m[2])] : [])]);
   return shownMins.length > 0 && waitMinutes > Math.max(...shownMins);
+}
+
+/**
+ * #1787: a wait in a slower public grade than every figure the route list shows, counting both ends of a range and a
+ * named gap ("every 30 min, with one 60 min gap"). waitMinutes reads the route's least frequent part or direction, which
+ * the list's words can leave out. Compared by public grade, as waitBelowShown is: 13 beside "every 10 min" counts (the
+ * next grade), 50 beside "every 45 min" doesn't (the same grade).
+ */
+export function waitAboveShown(shown: string | null, waitMinutes: number | null): boolean {
+  if (!shown || waitMinutes == null) return false;
+  const shownMins = [
+    ...[...shown.matchAll(/every (\d+(?:\.\d+)?)(?:–(\d+(?:\.\d+)?))?/g)].flatMap(m => [Number(m[1]), ...(m[2] ? [Number(m[2])] : [])]),
+    ...[...shown.matchAll(/(\d+(?:\.\d+)?) min gap/g)].map(m => Number(m[1])),
+  ];
+  if (!shownMins.length) return false;
+  const grade = (m: number) => headwayGradeOn(m, PUBLIC_TIER_MAXES) ?? Infinity;
+  return grade(waitMinutes) > grade(Math.max(...shownMins));
 }
 
 /**
@@ -363,10 +443,52 @@ const duringHour = (h: number) => `during the ${clockTime(h * 60)} hour${h >= 24
 export function serviceSpan(r: RouteRows) {
   const runs = routeRuns(r.rows as never, undefined);
   if (!runs) return null;
+  // #1867: a route that runs through the night (the Night Service verdict) has no first or last trip of the day. Its first
+  // and last counted hours are only the edges of Atlas's day window (RTC's Red Line, every 30 min from 2 AM, read "first
+  // during the 5 AM hour"), so neither is given: allNightService says it runs all night instead.
+  const allNight = runsThroughNight(nightGradeOf(r.rows));
   return {
-    first: runs.first != null ? serviceClock(runs.first) : runs.hours.length ? duringHour(runs.hours[0]) : null,
-    last: runs.last != null ? serviceClock(runs.last) : runs.hours.length ? duringHour(runs.hours[runs.hours.length - 1]) : null,
+    first: allNight ? null : runs.first != null ? serviceClock(runs.first) : runs.hours.length ? duringHour(runs.hours[0]) : null,
+    last: allNight ? null : runs.last != null ? serviceClock(runs.last) : runs.hours.length ? duringHour(runs.hours[runs.hours.length - 1]) : null,
     breaks: (runs.gaps ?? []).map(([a, b]) => `${serviceClock(a)}–${serviceClock(b)}`),
+  };
+}
+
+/** #1867: whether a route runs all night, by the Night Service rule night_service lists routes by (its night grade at the Overnight view's 60). */
+export const runsThroughNight = (night: NightServiceFrequency | null | undefined): boolean => night != null && night <= OVERNIGHT_NIGHT_GRADE;
+
+/** The day types on which a route has service every hour in every direction (runsEveryHour), read from each day's own rows. */
+export async function daysRunningEveryHour(agency: CatalogAgency, s: Pick<RouteSummary, 'key' | 'name'>): Promise<DayType[]> {
+  const out: DayType[] = [];
+  for (const day of DAY_TYPES) {
+    const on = (await routeList(agency, day)).find(x => x.key === s.key);
+    if (on && runsEveryHour((await routeWithRows(agency, day, on)).rows as never)) out.push(day);
+  }
+  return out;
+}
+
+/**
+ * #1867: a night-only route, among those that run all night: no service in Midday, PM peak or Evening (the shared parts
+ * of the day). The AM peak is left out: a night route's last trips run into it (TTC 320 weekday: 3 trips before 6:18 AM).
+ */
+const NIGHT_ONLY_EMPTY_PERIODS = DAYTIME_PERIOD_KEYS.filter(k => k !== 'amPeak');
+const runsOvernightOnly = (s: Pick<RouteSummary, 'figures'>): boolean => NIGHT_ONLY_EMPTY_PERIODS.every(k => s.figures[k]?.shown === 'no service');
+
+/**
+ * #1867 (Ryan, option 1: "if you ask 'what time is the first trip on the red line' is that different than 'does the red
+ * line run all night'"): an all-night route's service says it runs all night, with its Overnight figure, in place of a
+ * first or last time; and 24 hours, with the days, where every hour has service in every direction.
+ */
+export function allNightService(s: Pick<RouteSummary, 'figures' | 'span' | 'night'>, everyHourOn: readonly DayType[]) {
+  // Ryan's words for a night-only route (2026-11-26): only "Runs overnight only", with no frequency, no clock times and so
+  // no breaks (TTC 320's "6:18 AM–1:12 AM" is its daytime, not a break in its service).
+  if (isNightRoute(s)) return { first: null, last: null, runsOvernightOnly: 'Runs overnight only', breaks: [] };
+  const allWeek = everyHourOn.length === DAY_TYPES.length;
+  return {
+    first: null, last: null,
+    runsAllNight: `Runs all night: ${s.figures.overnight.shown} overnight (${formatPeriodRange('overnight')})`,
+    ...(allWeek ? { runs24Hours: 'Runs 24 hours, 7 days a week' } : everyHourOn.length ? { runs24Hours: `Runs 24 hours on ${joinList(everyHourOn.map(dayPlural))}` } : {}),
+    breaks: s.span?.breaks ?? [],
   };
 }
 
@@ -435,9 +557,11 @@ export async function notOnThisServerNote(names: string[], more = 0): Promise<st
   const named = more > 0 ? `${names.join(', ')} ${andOthers(more, 'agency', 'agencies')}` : joinList(names);
   return `${named} ${them ? 'are' : 'is'} in Atlas, but this server has schedules for only ${have.length} agencies${list}. Say this server can't answer for ${them ? 'them' : 'it'}; don't answer from memory.`;
 }
-/** The agency a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */
-export async function agencyNotOnThisServer(query: string): Promise<CatalogAgency | null> {
+/** The agency (or parent agency, #1806) a name finds among all of Atlas's agencies when this server has no schedules for it, or null. */
+export async function agencyNotOnThisServer(query: string): Promise<{ name: string } | null> {
   const have = new Set((await availableAgencies()).map(a => a.slug));
+  const parent = parentNamed(query, await publicAgencies());
+  if (parent) return parent.members.some(m => have.has(m.slug)) ? null : { name: parent.name };
   try {
     const a = await findAgency(query, await publicAgencies());
     return a && !have.has(a.slug) ? a : null;
@@ -445,15 +569,19 @@ export async function agencyNotOnThisServer(query: string): Promise<CatalogAgenc
 }
 
 /**
- * #1694: the credits the feed publishers of the named agencies require (shared/feedCredits.ts: "Data provided by 511.org" for
- * the agencies read through the 511 API), once each. Names are as the tools give them; a name may begin a longer line.
+ * The credits the named agencies' data requires, once each, built as the site builds them (agencyCredit): the agency's
+ * licence credit from its config's dataLicense (CIV-3102, #1897), then its feed publisher's (#1694: "Data provided by
+ * 511.org"). Names are as the tools give them; a name may begin a longer line.
  */
-export async function feedCreditsFor(names: readonly string[]): Promise<Array<{ label: string; href: string }>> {
-  const keys = new Set<FeedCreditKey>();
+export async function creditsFor(names: readonly string[]): Promise<Array<{ label: string; href: string }>> {
+  const out = new Map<string, { label: string; href: string }>();
   for (const a of await store.catalog()) {
-    if (a.feedCredit && names.some(n => n === a.name || n.startsWith(`${a.name} |`))) keys.add(a.feedCredit);
+    if (!names.some(n => n === a.name || n.startsWith(`${a.name} |`))) continue;
+    const c = agencyCredit(a);
+    if (!c) continue;
+    for (const x of [{ label: c.text, href: c.url }, ...(c.feedLink ? [{ label: c.feedLink.text, href: c.feedLink.href }] : [])]) out.set(`${x.label}|${x.href}`, x);
   }
-  return [...keys].map(k => ({ label: FEED_CREDITS[k].label, href: FEED_CREDITS[k].href }));
+  return [...out.values()];
 }
 
 /** A ranking file's wait as a filter reading (RankWait). */
@@ -481,9 +609,8 @@ export async function routesMeeting(agency: CatalogAgency, day: DayType, period:
 export interface AgencyEntry { slug: string; name: string; members: CatalogAgency[] }
 export async function findAgencyEntry(query: string, list?: CatalogAgency[]): Promise<AgencyEntry | null> {
   list ??= await availableAgencies();
-  const q = query.trim().toLowerCase();
-  const parent = groupAgencies(list).find(g => g.parent && (g.parent.slug === q || g.parent.name.toLowerCase() === q));
-  if (parent) return { slug: parent.slug, name: parent.parent!.name, members: parent.members };
+  const parent = parentNamed(query, list);
+  if (parent?.members.length) return { slug: parent.slug, name: parent.name, members: parent.members };
   // #1681: an operator's agencies together, named with them ("Metrolinx (GO Transit, UP Express)").
   const op = operatorNamed(query, list);
   if (op && op.members.length > 1) return { slug: op.name.toLowerCase(), name: `${op.name} (${op.members.map(a => a.name).join(', ')})`, members: op.members };
@@ -549,9 +676,30 @@ export function parseClock(text: unknown): number | null {
   return h > 30 || min > 59 ? null : h * 60 + min;
 }
 
-/** The Atlas periods a time window overlaps, with their own hours. */
+/** Whether a window starts before the first part of the day and ends by midnight (2 AM to 6 AM), so it is read both ways (startsInWindow). */
+const earlyWindow = (w: { start: number; end: number }) => w.start < TIME_PERIODS[0].startHour * 60 && w.end <= MINUTES_PER_DAY;
+
+/**
+ * A time window for the service day. A clock window that starts before the first part of the day (12 AM–3 AM) can mean
+ * the hours after midnight that belong to the day's late night (24:00–27:00), where the schedule writes them, or the
+ * hours at its start (5 AM). Both are read: the starts that fall in the window shifted a day, folded into it.
+ */
+export function startsInWindow(starts: readonly number[], w: { start: number; end: number }): number[] {
+  return starts.filter(t => windowHas(t, w)).map(t => (t >= w.end ? t - MINUTES_PER_DAY : t));
+}
+
+/** Whether a departure (minutes in the service day) falls in a window, reading an early-morning window both ways (see startsInWindow). */
+export function windowHas(t: number, w: { start: number; end: number }): boolean {
+  if (t >= w.start && t < w.end) return true;
+  return earlyWindow(w) && t >= w.start + MINUTES_PER_DAY && t < w.end + MINUTES_PER_DAY;
+}
+
+/** The Atlas periods a time window overlaps, with their own hours; an early-morning window also reads the night's hours (#1868: 2–6 AM is Overnight). */
 export function periodsIn(start: number, end: number): string[] {
-  return PERIOD_KEYS.filter(k => PERIOD_MINUTES[k].start < end && PERIOD_MINUTES[k].end > start).map(k => `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`);
+  const overlaps = (k: PeriodKey, s: number, e: number) => PERIOD_MINUTES[k].start < e && PERIOD_MINUTES[k].end > s;
+  const shifted = earlyWindow({ start, end });
+  return PERIOD_KEYS.filter(k => overlaps(k, start, end) || (shifted && overlaps(k, start + MINUTES_PER_DAY, end + MINUTES_PER_DAY)))
+    .map(k => `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`);
 }
 
 /**
@@ -562,14 +710,17 @@ export function periodsIn(start: number, end: number): string[] {
  */
 export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?: (row: ShapeProperties) => string | null) {
   const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
-  const inWindow = (h: number) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end;
+  // #1868: an early-morning window reads the night's hours too (2 AM to 6 AM is 26:00 to 28:00 and 5 AM), in clock order.
+  const hourWindow = { start: Math.floor(start / 60) * 60, end };
+  const inWindow = (h: number) => windowHas(h * 60, hourWindow);
+  const clockOrder = (h: number) => startsInWindow([h * 60], hourWindow)[0] ?? h * 60;
   // #1714: a row that carries a tenth of its direction's trips inside the asked window keeps its column too, after the
   // day's columns, so a branch that runs mostly late (TTC 501 Sunday westbound "towards Long Branch": 23 of 253 trips a
   // day, nearly all after 10 PM) is not left out. The day's columns and their order stay as they were.
   const windowTrips = (row: ShapeProperties) => Object.entries(hoursOf(row)).reduce((a, [h, n]) => a + (inWindow(+h) ? n : 0), 0);
   const trips = (row: ShapeProperties) => Object.values(hoursOf(row)).reduce((a, b) => a + b, 0);
   const dirOf = (row: ShapeProperties) => String(row.directionId ?? '0');
-  const towardsOf = (row: ShapeProperties) => [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
+  const towardsOf = (row: ShapeProperties) => placeOrNull([row.headsign, row.routeVariant].filter(Boolean).join(' '));
   const dirTrips = new Map<string, number>(), dirWindow = new Map<string, number>();
   for (const row of r.rows) {
     dirTrips.set(dirOf(row), (dirTrips.get(dirOf(row)) ?? 0) + trips(row));
@@ -594,14 +745,14 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
     if (at != null) {
       const first = columns[at];
       const heads = new Set(kept.filter(k => String(k.directionId ?? '0') === String(row.directionId ?? '0') && endOf?.(k) === end).map(k => String(k.headsign ?? '')).filter(Boolean));
-      first.towards = heads.size === 1 ? [...heads][0] : first.towards;
+      first.towards = heads.size === 1 ? placeOrNull([...heads][0]) : first.towards;
       continue;
     }
     if (sig != null) seen.set(sig, columns.length);
     columns.push({ row, towards: towardsOf(row) });
   }
   const hours = (row: ShapeProperties) => Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
-    .map(([h, v]) => [+h, v] as const).filter(([h]) => inWindow(h)).sort((a, b) => a[0] - b[0]);
+    .map(([h, v]) => [+h, v] as const).filter(([h]) => inWindow(h)).sort((a, b) => clockOrder(a[0]) - clockOrder(b[0]));
   const runs = (row: ShapeProperties) => hours(row).some(([, v]) => v != null);
   const stopsOf = (row: ShapeProperties) => (row.stopOrder as string[] | undefined) ?? [];
   // #1714 (part 2): a column with no regular trips in any hour of the window is left out when another column of its direction
@@ -701,6 +852,22 @@ async function stopNamesFor(agency: CatalogAgency, day: DayType, r: RouteRows): 
   return new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
 }
 
+/** #1778: the parent station of each stop a route's rows use that has one: from the store's list for the route, else from the agency's stops. */
+async function stopParentsFor(agency: CatalogAgency, day: DayType, r: RouteRows): Promise<Map<string, string>> {
+  if (store.stopParents) return new Map(Object.entries((await store.stopParents(agency.slug, day, r.key)) ?? {}));
+  return new Map((await stopsOf(agency)).filter(s => s.parent).map(s => [s.id, s.parent!]));
+}
+
+/**
+ * #1778: how many stops a row's stop list has, counting a station once. Atlas copies a platform's departures up to its parent station
+ * (AI-117), so both are in the list (OC Transpo Line 1: each of its 13 stations and its platform, 26). A parent station is left out
+ * where one of its own platforms is in the same list.
+ */
+export function stopCount(order: readonly string[], parentOf: ReadonlyMap<string, string>): number {
+  const parentsInList = new Set(order.map(id => parentOf.get(id)).filter((p): p is string => p != null));
+  return order.filter(id => !parentsInList.has(id)).length;
+}
+
 /** Where each row of an agency's route ends (its last stop's name), for grouping branches that end at the same place. */
 export async function endOfRows(agency: CatalogAgency, day: DayType, r: RouteRows): Promise<(row: ShapeProperties) => string | null> {
   const name = await stopNamesFor(agency, day, r);
@@ -714,6 +881,7 @@ export async function endOfRows(agency: CatalogAgency, day: DayType, r: RouteRow
  */
 export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRows) {
   const name = await stopNamesFor(agency, day, r);
+  const parentOf = await stopParentsFor(agency, day, r);
   type Branch = { direction: string; towards: string | null; from?: string | null; to?: string | null; stops?: number; trips: number; startsAt?: string[] };
   const groups = new Map<string, { rows: ShapeProperties[]; branch: Branch; hours: Map<string, number>; from: string[]; headsigns: Set<string> }>();
   const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
@@ -722,13 +890,14 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
     const order = (row.stopOrder as string[] | undefined) ?? [];
     const towards = [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
     const direction = String(row.directionId ?? '0');
-    const trips = total(hoursOf(row));
+    // #1873: the row's whole-day count where the release has it (trips written before 5 AM included), else its hours'.
+    const trips = typeof row.departuresInDay === 'number' ? row.departuresInDay : total(hoursOf(row));
     if (trips <= 0 || !(towards || order.length)) continue;
     // Some rows carry no stop list (night rows, short turns): give where they head, not empty ends.
     const to = order.length ? name.get(order[order.length - 1]) ?? null : null;
     const key = order.length ? `${direction}|to:${to}` : `${direction}|towards:${towards}`;
     const sig = JSON.stringify(Object.entries(hoursOf(row)).sort(([a], [b]) => +a - +b));
-    const g = groups.get(key) ?? groups.set(key, { rows: [], branch: { direction, towards, ...(order.length ? { from: name.get(order[0]) ?? null, to, stops: order.length } : {}), trips: 0 }, hours: new Map(), from: [], headsigns: new Set() }).get(key)!;
+    const g = groups.get(key) ?? groups.set(key, { rows: [], branch: { direction, towards, ...(order.length ? { from: name.get(order[0]) ?? null, to, stops: stopCount(order, parentOf) } : {}), trips: 0 }, hours: new Map(), from: [], headsigns: new Set() }).get(key)!;
     g.rows.push(row);
     g.hours.set(sig, trips); // the same departures count once
     const from = order.length ? name.get(order[0]) : null;
@@ -737,11 +906,17 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
   }
   return [...groups.values()].map(g => {
     const merged = g.rows.length > 1 && g.from.length > 1;
-    return {
+    const b = {
       ...g.branch,
       trips: [...g.hours.values()].reduce((a, b) => a + b, 0),
       // Rows that start at different stops but end at the same one are a single way to the end.
       ...(merged ? { towards: g.headsigns.size === 1 ? [...g.headsigns][0] : g.branch.towards, from: g.from.join(' or '), startsAt: g.from } : {}),
+    };
+    // CIV-2915: where it goes and its end stops in normal case, as the map shows them ("HAMILTON GO CENTRE" -> "Hamilton GO Centre").
+    return {
+      ...b, towards: placeOrNull(b.towards),
+      ...('from' in b ? { from: b.startsAt ? b.startsAt.map(feedPlaceName).join(' or ') : placeOrNull(b.from), to: placeOrNull(b.to) } : {}),
+      ...(b.startsAt ? { startsAt: b.startsAt.map(feedPlaceName) } : {}),
     };
   }).filter(b => b.trips > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
@@ -750,8 +925,12 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
  * Routes near a place: stops whose names hold every part of the place ("Bathurst and Bloor": a stop named with both
  * streets, or the station), then every stop within `metres` of those. Each route gets the stops it uses there.
  */
-/** A route that runs only at night: no trips in any part of the day before the late evening (the map's own period list). */
-export const isNightRoute = (r: Pick<RouteSummary, 'figures'>) => DAYTIME_PERIOD_KEYS.every(k => r.figures[k]?.shown === 'no service');
+/**
+ * A route that runs only at night, the one verdict every tool gives (Ryan, 2026-11-26: the MCP never contradicts itself):
+ * it runs all night by the Night Service rule and has no service in Midday, PM peak or Evening. route_frequency says
+ * "Runs overnight only" for it, routes_near marks it nightRoute, and a name two routes share picks the daytime one first.
+ */
+export const isNightRoute = (r: Pick<RouteSummary, 'figures' | 'night'>): boolean => runsThroughNight(r.night) && runsOvernightOnly(r);
 
 /** How far apart the nearest stops on each street of a corner may be (YRT's Finch GO Bus Terminal is 330 m from its nearest Yonge St stop). */
 export const CORNER_MAX_APART_M = 400;
@@ -836,7 +1015,7 @@ export async function stopFrequency(agency: CatalogAgency, place: string, day: D
       if (line != null) r.allDestinations[label] = headwayEvery(line);
       for (const b of sr.branches) {
         const key = `${b.directionId}::${b.headsign ?? ''}`;
-        const d = r.destinations.get(key) ?? r.destinations.set(key, { towards: b.headsign, direction: b.directionId, periods: {} }).get(key)!;
+        const d = r.destinations.get(key) ?? r.destinations.set(key, { towards: placeOrNull(b.headsign), direction: b.directionId, periods: {} }).get(key)!;
         const hw = stopRowHeadway(b, period);
         // #1667: a shared stop whose combined trips aren't even reads as a range, its sparse low end to the longest gap.
         const low = hw != null ? stopRowRangeLow(b, period) : null;
@@ -956,7 +1135,7 @@ export async function routeHistory(agency: CatalogAgency, routeQuery: string, da
       const today = findRoute(await routeList(agency, day), route.routeShortName);
       if (today) {
         const cells = PERIOD_KEYS.flatMap(k => { const f = today.figures[k]; return f.waitMinutes != null ? [[PERIOD_LABELS[k], headwayEvery(f.waitMinutes)]] : f.shown === 'no service' ? [[PERIOD_LABELS[k], 'no service']] : []; });
-        const through = agency.lastFeedExpiry ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
+        const through = agency.lastFeedExpiry && !agency.noFeedEnd ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
         todayWait = Object.fromEntries(PERIOD_KEYS.flatMap(k => today.figures[k].waitMinutes != null ? [[k, today.figures[k].waitMinutes!]] : []));
         current = { schedule: `Today's schedule on Atlas's map (History's newest is ${newest.label}${through})`, ...Object.fromEntries(cells) };
       }

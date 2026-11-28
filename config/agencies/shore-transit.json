@@ -1,0 +1,25 @@
+{
+  "slug": "shore-transit",
+  "officialName": "Shore Transit",
+  "websiteUrl": "https://www.shoretransit.org/",
+  "dataLicense": {
+    "url": "https://www.shoretransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Maryland",
+  "center": [
+    38.3271,
+    -75.6008
+  ],
+  "bbox": [
+    37.978,
+    -75.855,
+    38.455,
+    -75.089
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3149/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

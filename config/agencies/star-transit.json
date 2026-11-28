@@ -1,0 +1,27 @@
+{
+  "slug": "star-transit",
+  "officialName": "STAR Transit",
+  "nameQualifier": "Virginia Eastern Shore",
+  "websiteUrl": "http://www.mystartransit.org/",
+  "dataLicense": {
+    "url": "http://www.mystartransit.org/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Virginia",
+  "center": [
+    37.6998,
+    -75.7178
+  ],
+  "bbox": [
+    37.133,
+    -76.021,
+    38.001,
+    -75.361
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/startransit-va-us/startransit-va-us--flex-v2.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2444/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -1,0 +1,20 @@
+{
+  "slug": "petersburg",
+  "officialName": "Petersburg Area Transit",
+  "websiteUrl": "http://www.petersburgva.gov/",
+  "dataLicense": {
+    "url": "http://www.petersburgva.gov/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Virginia",
+  "center": [
+    37.2179,
+    -77.3989
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/petersburg-va-us/petersburg-va-us--flex-v2.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2441/latest.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

@@ -1,5 +1,5 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
-import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
+import { PERIOD_COVERAGE_MAX_HEADWAY, periodFilterValue } from '../../shared/periodEligibility';
 import { periodEdgeText, routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeGap, routeCardPeriodShapeThen, routeCardPeriodShapeText, infrequentRowNoCadence, rowCarriesStretchWords, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
 import { isOneGapRow, rowStretchReading, SHARED_STRETCH_RATIO, type StretchRowReading } from './stretchCard';
@@ -43,7 +43,7 @@ function stretchSlot(d: ShapeProperties) {
   return null;
 }
 
-import { MIN_CARD_ROW_DEPARTURES, ROW_GAP_WORDS_RATIO } from '../../shared/rules/frequency';
+import { MIN_CARD_ROW_DEPARTURES, MIN_SCHEDULE_DEPARTURES, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, ROW_GAP_WORDS_RATIO } from '../../shared/rules/frequency';
 export { ROW_GAP_WORDS_RATIO };
 
 /**
@@ -117,7 +117,7 @@ export function rowStretchHourValue(d: ShapeProperties, hour: number): number | 
  *   faster or slower than its stretch (NYCT R late; Phoenix 35's branch rows), keeps its own trips' gap.
  * - Otherwise the row's own value and its own longest gap (maxGapByPeriod follows the value's source, #281).
  */
-export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean; stretch?: boolean; branchReadings?: boolean } = {}): RowTrips {
+export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean; stretch?: boolean; branchReadings?: boolean; /** #1823: another destination's row runs this row's stretch (rowStretchRunByOthers): the row reads its own trips only. */ stretchRunByOthers?: boolean } = {}): RowTrips {
   if (period === 'all') return { ...NONE, value: routeCardDisplayHeadway(d, period) };
   const key = period as PeriodKey;
   if (d.noOwnServiceByPeriod?.includes(key)) return { ...NONE, noOwnService: true };
@@ -130,8 +130,14 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // CIV-995 (b): a main or tail row reads its stretch's own values (every trip at the stretch's stop) where the stretch runs
   // through the period: its cadence, steadiness and longest gap. Elsewhere, and on older data, the row's own trips. The
   // shared and pooled rows' comparison (ownTrips) and the stop card (stretch: false) keep reading the row's own trips.
-  const stretch = opts.ownTrips || opts.stretch === false ? null : rowStretchValue(d, period);
+  const stretch = opts.ownTrips || opts.stretch === false || opts.stretchRunByOthers ? null : rowStretchValue(d, period);
   let value = stretch ? stretch.cadence : routeCardDisplayHeadway(d, period);
+  // #1823: a row's own trips are some of its stretch's, so they never run more often than the stretch: where its own reading
+  // is shorter (a few trips' median, CTtransit 55 AM to Middletown: 40 on 6:00, 6:30, 7:20, 8:20), it keeps the stretch's.
+  if (opts.stretchRunByOthers && value != null) {
+    const shared = rowStretchValue(d, period)?.cadence;
+    if (shared != null && shared > value) value = shared;
+  }
   // ownTrips: the card's shared and pooled rows compare the rows' own trips with the stretch's, so they stay as they are
   // (SEPTA 19 Saturday midday keeps "Shared stretch every 63" over its two destinations every 120).
   const filterReading = partPeriod == null && value != null && !opts.ownTrips ? mainFilterReading(d, key) : null;
@@ -177,7 +183,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   }
   // #773 (Strategy's pick for Ryan, 2026-11-22: gap words): a row the all-day grade called infrequent, with no words of its
   // own, names its one long gap where it is at least ROW_GAP_WORDS_RATIO times its number (#1239), "every 30 min, with one
-  // 60 min gap". A gap over PERIOD_COVERAGE_MAX_HEADWAY is no cadence (#962): the row reads "Runs irregularly in this period"
+  // 60 min gap". A gap over PERIOD_COVERAGE_MAX_HEADWAY is no cadence (#962): the row reads "Irregular"
   // (CTA 9 to Vincennes midday, two bursts 313 minutes apart; LA Metro 108 Mesmer / Major PM, 167).
   if (d.tier === 'infrequent' && !partPeriod && value != null && !stretch && !waitNotCadence) {
     const g = d.maxGapByPeriod?.[key];
@@ -186,18 +192,18 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
       else { value = null; waitNotCadence = true; overHour = true; }
     }
   }
-  // #773: a row with no cadence by the shared gap-words test reads "Runs irregularly in this period", never its direction's
+  // #773: a row with no cadence by the shared gap-words test reads "Irregular", never its direction's
   // filter value (Chatham-Kent 5 midday: every 45 with a 75 min gap, not "every 75").
   if (!stretch && !partPeriod && infrequentRowNoCadence(d, period)) { value = null; waitNotCadence = true; }
   // CIV-2171 (Ryan, 2026-11-23, "1"): no card names a gap over an hour, as #773's gap words: words that would name one
-  // (D6's "every 5 min, with one 169 min gap", #1239's) read "Runs irregularly in this period" instead (#962: a wait over
+  // (D6's "every 5 min, with one 169 min gap", #1239's) read "Irregular" instead (#962: a wait over
   // PERIOD_COVERAGE_MAX_HEADWAY is no cadence). Card wording only: the colour and the filter are unchanged.
   if (partPeriodGap != null && partPeriodGap > PERIOD_COVERAGE_MAX_HEADWAY) { partPeriod = undefined; partPeriodEvery = undefined; partPeriodThen = undefined; value = null; waitNotCadence = true; overHour = true; }
   // CIV-2232 (Ryan, 2026-11-24: "if it is a persistent like 58-71 minutes or something then I think we should put that range ... but
   // if it is like 2 trips or 3 trips or not regular intervals then I think we should put Irregular"): past an hour, the row's own
   // trips decide. Evenly spaced by rule D (rowOwnTripsEven: MIN_SCHEDULE_DEPARTURES trips or more, the longest gap within the
   // evenness bound) reads their range, shortest to longest gap, however long (Bustang "every 120 min"); anything else reads
-  // "Runs irregularly in this period" (TTC 101 to Wilson midday, two trips 320 minutes apart). Words that explain the wait (a late
+  // "Irregular" (TTC 101 to Wilson midday, two trips 320 minutes apart). Words that explain the wait (a late
   // start or early end) keep them. Card wording only: the map colour and the filter are unchanged.
   let range: RowTrips['range'];
   let irregularPastHour = false;
@@ -214,7 +220,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   }
   // CIV-2232 (Ryan, 2026-11-24, "1": "Need at least 4 trips in the period to show a number; 2–3 trips read Irregular", then "1":
   // only on cards without "from …"/"until …" words): a row whose period wait is over an hour and that has fewer than
-  // MIN_CARD_ROW_DEPARTURES of its own trips in the period reads "Runs irregularly in this period". A row whose words say when
+  // MIN_CARD_ROW_DEPARTURES of its own trips in the period reads "Irregular". A row whose words say when
   // its service starts or stops ("every 60 min until 5:14 PM") keeps them; so does a row reading the filter's stretch value.
   const edgeWords = partPeriod != null && /\b(from|until)\b/.test(partPeriod);
   const longWait = (d.periodCoverageHeadway?.[key] ?? 0) > PERIOD_COVERAGE_MAX_HEADWAY;
@@ -272,7 +278,7 @@ export function unsteadyDirectionFallback(d: ShapeProperties, period: TimePeriod
 
 /**
  * CIV-1959 (Ryan: "any piece with 3 or more evenly spaced trips gets a number"): whether a row's own trips in a period pass rule D: 3 or
- * more departures, evenly spaced (the longest gap within 1.75 x the spacing, or the spacing plus 5 minutes). A row that passes keeps its own
+ * more departures, evenly spaced (the longest gap within POOLED_MAX_GAP_RATIO x the spacing, or the spacing plus POOLED_MAX_GAP_GRACE_MINUTES; the pooled-list test's numbers). A row that passes keeps its own
  * reading even where the piece it sits on has no number (the piece's list is thin or bunched at its reference stop by other destinations' trips).
  */
 /** A row's own departures in a period (departuresByHour), the count rule D and MIN_CARD_ROW_DEPARTURES read. */
@@ -285,7 +291,8 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
   const trips = ownDeparturesIn(d, period);
   const hw = d.headwayByPeriod?.[period];
   const gap = d.maxGapByPeriod?.[period];
-  return trips >= 3 && typeof hw === 'number' && typeof gap === 'number' && gap <= Math.max(1.75 * hw, Math.round(hw) + 5);
+  return trips >= MIN_SCHEDULE_DEPARTURES && typeof hw === 'number' && typeof gap === 'number'
+    && gap <= Math.max(POOLED_MAX_GAP_RATIO * hw, Math.round(hw) + POOLED_MAX_GAP_GRACE_MINUTES);
 }
 
 /**
@@ -296,9 +303,13 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
 export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number; then?: number; thenGap?: number } | null {
   if (period === 'all' || period === 'overnight' || d.noOwnServiceByPeriod?.includes(period) || !rowOwnTripsEven(d, period)) return null;
   const hw = d.headwayByPeriod?.[period] as number, cov = d.periodCoverageHeadway?.[period];
-  const consistent = d.headwayByPeriodSustained?.[period] === true && typeof cov === 'number' && cov <= PERIOD_COVERAGE_MAX_HEADWAY;
-  const v = consistent || typeof cov !== 'number' ? hw : cov;
+  const v = typeof cov !== 'number' ? hw : periodFilterValue({ headway: hw, coverage: cov, sustained: d.headwayByPeriodSustained?.[period] === true }) as number;
   const edge = d.rowPeriodEdge?.[period];
-  if (edge && (edge.from != null || edge.until != null)) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), ...(edge.then != null ? { then: edge.then } : {}), ...(edge.thenGap != null ? { thenGap: edge.thenGap } : {}) };
+  const edgeWords = edge != null && (edge.from != null || edge.until != null);
+  // #1827: CIV-2232's 4-trip minimum (Ryan, 2026-11-24), as rowTrips has it: a row whose period wait is over an hour, with fewer than
+  // MIN_CARD_ROW_DEPARTURES of its own trips and no "from …"/"until …" words, gets no number (SEPTA 20 Sunday evening to Frankford
+  // Transit Center: 3 trips read "every 171 min").
+  if (!edgeWords && (cov ?? 0) > PERIOD_COVERAGE_MAX_HEADWAY && ownDeparturesIn(d, period) < MIN_CARD_ROW_DEPARTURES) return null;
+  if (edgeWords) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), ...(edge.then != null ? { then: edge.then } : {}), ...(edge.thenGap != null ? { thenGap: edge.thenGap } : {}) };
   return { t: 'reading', v };
 }

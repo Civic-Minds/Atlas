@@ -1,0 +1,26 @@
+{
+  "slug": "benton-area",
+  "officialName": "Benton Area Transit",
+  "websiteUrl": "https://www.co.benton.or.us/ridethebat",
+  "dataLicense": {
+    "url": "https://www.co.benton.or.us/ridethebat",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-25"
+  },
+  "region": "Oregon",
+  "center": [
+    44.6023,
+    -123.2555
+  ],
+  "bbox": [
+    44.539,
+    -124.054,
+    44.678,
+    -123.066
+  ],
+  "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/benton-or-us/benton-or-us--flex-v2.zip",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3109/latest.zip",
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}

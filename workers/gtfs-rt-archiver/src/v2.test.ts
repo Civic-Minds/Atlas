@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { recordRun, snapshotFor, writeSnapshot } from './v2';
+import { PACK_FIRST_MINUTE, packRun, recordRun, snapshotFor, writeSnapshot } from './v2';
+import { livePackKey } from '../../../shared/liveArchivePack';
 import { fixturePositions, fixtureTrips, FIXTURE_NOW } from '../../../shared/__tests__/fixtures/liveFeeds';
 import type { LiveRecorderFeed } from '../../../shared/liveRecorderFeeds';
 import { liveRecorderFeed } from '../../../shared/liveRecorderFeeds';
@@ -60,7 +61,7 @@ describe('cloud recorder v2 (CIV-2073)', () => {
 });
 
 describe('cloud recorder step B (CIV-2073)', () => {
-  it('records TTC\'s analysed routes with their trip updates, Kingston, MBTA, YRT Viva, DRT 9XX and Brampton 5XX, not STM', async () => {
+  it('records every TTC route with its trip updates, Kingston, MBTA, YRT Viva, DRT 9XX and Brampton 5XX, not STM', async () => {
     const { LIVE_ARCHIVE_SHARDS } = await import('../../../shared/liveArchiveFeeds');
     const { LIVE_TTC_ANALYSED_ROUTES } = await import('../../../shared/rules/live');
     const v2 = LIVE_ARCHIVE_SHARDS.find(s => s.id === 'live-v2')!;
@@ -69,10 +70,11 @@ describe('cloud recorder step B (CIV-2073)', () => {
     expect(liveRecorderFeed('burlington')!.tripsUrl).not.toBeNull();
     const ttc = liveRecorderFeed('ttc')!;
     expect(ttc.tripsUrl).not.toBeNull();
-    // Ryan, 2026-11-24: the routes Live analyses (streetcars, then the Ten-Minute Network with CIV-2174), not the whole fleet.
+    // CIV-2939 option 2 (Ryan, 2026-11-25, "1"): every TTC route is kept now, the analysed ones among them; a vehicle with no route is not.
     const keeps = new RegExp(ttc.routeFilterSource);
     expect(LIVE_TTC_ANALYSED_ROUTES.every(r => keeps.test(r))).toBe(true);
-    expect(['502', '29', '1', '5011'].some(r => keeps.test(r))).toBe(false);
+    expect(['502', '29', '1', '5011'].every(r => keeps.test(r))).toBe(true);
+    expect(keeps.test('')).toBe(false);
     expect(liveRecorderFeed('mbta')!.tripsUrl).toBeNull();
     expect(liveRecorderFeed('kingston')!.tripsUrl).not.toBeNull();
     // YRT: every Viva route (CIV-2176), with trip updates; DRT: its 9XX routes, with trip updates.
@@ -94,5 +96,46 @@ describe('cloud recorder step B (CIV-2073)', () => {
     const results = await recordRun([stm, feed], { BUCKET: b.BUCKET }, FIXTURE_NOW * 1000 - 60_000, () => FIXTURE_NOW * 1000);
     expect(results.map(r => r.status).sort()).toEqual(['fulfilled', 'rejected']);
     expect(b.puts.every(p => p.key.startsWith('live/hamilton/'))).toBe(true);
+  });
+});
+
+describe('whole-network vehicle counts (CIV-2939)', () => {
+  it('puts the whole feed\'s counts in the snapshot, before the route filter, with no other write', async () => {
+    serve();
+    const b = bucket();
+    const narrow = { ...feed, routeFilterSource: '^no-such-route$' };
+    const snap = await snapshotFor(narrow, { BUCKET: b.BUCKET }, FIXTURE_NOW);
+    expect(snap.records).toEqual([]);
+    expect(snap.network!.onTrip).toBeGreaterThan(0);
+    expect(snap.network).toEqual((await snapshotFor(feed, { BUCKET: b.BUCKET }, FIXTURE_NOW)).network);
+    await recordRun([narrow], { BUCKET: b.BUCKET }, FIXTURE_NOW * 1000, () => (FIXTURE_NOW + 60) * 1000);
+    expect(b.puts.map(p => p.key.split('/')[0])).toEqual(['live']);
+  });
+});
+
+describe('hourly packs (#1815)', () => {
+  const feeds: LiveRecorderFeed[] = [{ ...feed, slug: 'hamilton' }, { ...feed, slug: 'ttc', paceSec: 30 }];
+  const hourStart = Math.floor(FIXTURE_NOW / 3600) * 3600;
+  function packBucket(fail = false) {
+    const puts: string[] = [];
+    const BUCKET = {
+      get: async (key: string) => { if (fail) throw new Error('500'); return key.endsWith('0.json') ? { arrayBuffer: async () => new Uint8Array([7]).buffer } : null; },
+      put: async (key: string) => { puts.push(key); },
+    } as unknown as R2Bucket;
+    return { puts, BUCKET };
+  }
+  it('packs the hour before for one agency a minute, from minute 3', async () => {
+    const b = packBucket();
+    expect(await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + 2 * 60) * 1000)).toEqual([]);
+    await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + PACK_FIRST_MINUTE * 60) * 1000);
+    await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + (PACK_FIRST_MINUTE + 1) * 60) * 1000);
+    expect(await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + (PACK_FIRST_MINUTE + 2) * 60) * 1000)).toEqual([]);
+    expect(b.puts).toEqual([livePackKey('hamilton', hourStart - 3600), livePackKey('ttc', hourStart - 3600)]);
+  });
+  it('writes nothing when a read fails', async () => {
+    const b = packBucket(true);
+    const [r] = await packRun(feeds, { BUCKET: b.BUCKET }, (hourStart + PACK_FIRST_MINUTE * 60) * 1000);
+    expect(r.status).toBe('rejected');
+    expect(b.puts).toEqual([]);
   });
 });

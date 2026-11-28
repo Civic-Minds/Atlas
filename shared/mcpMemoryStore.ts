@@ -22,7 +22,7 @@ export function memoryStore(d: MemoryData): AtlasStore {
     async routeFeatures(slug) { return (d.files[slug]?.filter(f => f.geometry?.type === 'LineString') as McpFeature[] | undefined) ?? null; },
     async stops(slug) {
       const all = d.files[slug];
-      return all ? all.filter(f => f.geometry?.type === 'Point').map((f): McpStop => ({ id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates![0], lat: f.geometry!.coordinates![1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String) })) : null;
+      return all ? all.filter(f => f.geometry?.type === 'Point').map((f): McpStop => ({ id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates![0], lat: f.geometry!.coordinates![1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String), ...(f.properties.parentStation ? { parent: String(f.properties.parentStation) } : {}) })) : null;
     },
     async index() { return d.index ?? null; },
     async historyIndex(slug) { const ag = d.history?.find(a => a.slug === slug); return ag ? ag.routes.map(r => [r.routeShortName, r.routeName ?? null]) : null; },

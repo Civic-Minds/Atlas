@@ -44,8 +44,8 @@ describe('route card shows only what is live (CIV-892)', () => {
     card([car('a', 't1', 2, Math.floor(Date.now() / 1000))]);
     await act(async () => {});
     const urls = vi.mocked(fetch).mock.calls.map(([url]) => String(url));
-    expect(urls.some(u => u.includes('/api/live-recent?agency=ttc&route=505'))).toBe(true);
-    expect(urls.some(u => u.includes('live-dashboard'))).toBe(false);
+    expect(urls.some(u => u.includes('/live/recent?agency=ttc&route=505'))).toBe(true);
+    expect(urls.some(u => u.includes('dashboard'))).toBe(false);
   });
 });
 
@@ -58,7 +58,8 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     vi.setSystemTime(T0_MS + 120_000);
     // Car a moved from stop 1 to stop 2; car b is now where a was a minute ago.
     act(() => { view.rerender(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 2, T0 + 120), car('b', 't2', 1.5, T0 + 120)]} feedDegraded={false} />); });
-    expect(screen.getByText('Right now')).toBeTruthy();
+    // Ryan, 2026-11-27: no "Right now" heading while the reading is fresh.
+    expect(screen.queryByText('Right now')).toBeNull();
     expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('2')).toBeTruthy();
     // CIV-2045: the one gap measured is both the longest and the shortest; at 1 min it is too close (amber).
@@ -66,8 +67,9 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     const shortest = screen.getByText('Shortest gap').nextElementSibling as HTMLElement;
     expect(shortest.textContent).toBe('1 min');
     expect(shortest.style.color).toBe('var(--status-caution-text)');
-    // The direction pills show with "Right now".
-    expect(screen.getByRole('button', { name: 'Westbound' })).toBeTruthy();
+    // CIV-2901 v3: no direction pills; each direction is headed by its name, as the regular card's directions are.
+    expect(screen.queryByRole('button', { name: 'Westbound' })).toBeNull();
+    expect(screen.getByText('Westbound')).toBeTruthy();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
   });
 
@@ -83,19 +85,20 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
 
   it('names no time while the data is fresh, and "last updated" once the newest report is over 2 minutes old (CIV-1034)', () => {
     const view = card([car('a', 't1', 2, T0)]);
-    expect(screen.getByText('Right now')).toBeTruthy();
+    // Ryan, 2026-11-27: no "Right now" heading while the reading is fresh.
+    expect(screen.queryByText('Right now')).toBeNull();
     view.unmount();
     // The newest report is 2½ min old at 9 AM: it was last updated at 8:57 AM.
     card([car('a', 't1', 2, T0 - 150)]);
     expect(screen.getByText('Right now · last updated 8:57 AM')).toBeTruthy();
   });
 
-  it('shows the count and keeps the direction pills with only one car, and never "Fewer than 2 cars"', () => {
+  it('shows the count with only one car, with no direction pills, and never "Fewer than 2 cars"', () => {
     card([car('a', 't1', 2, T0)]);
     expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('1')).toBeTruthy();
     expect(screen.queryByText('Longest gap')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Eastbound' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Eastbound' })).toBeNull();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
   });
 
@@ -110,9 +113,9 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(label.nextElementSibling?.textContent).toBe('1');
   });
 
-  it('reports the picked direction and the cars it counts, so the vehicle list can show the same ones (#1163)', () => {
+  it('reports Studio\'s picked direction and the cars it counts (#1163)', () => {
     const onCounted = vi.fn();
-    const view = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('b', 't2', 1.5, T0), car('c', 't9', 2, T0)]} feedDegraded={false} onCounted={onCounted} />);
+    const view = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('b', 't2', 1.5, T0), car('c', 't9', 2, T0)]} feedDegraded={false} onCounted={onCounted} direction={0} />);
     // Car c's trip isn't in this direction's timetable: it isn't counted, so it isn't listed either.
     expect(onCounted).toHaveBeenLastCalledWith({ directionId: 0, label: 'Westbound', ids: ['a', 'b'] });
     view.unmount();
@@ -165,9 +168,26 @@ describe('a route with no Live analysis (CIV-1413 B)', () => {
     expect(screen.queryByText('Live figures for this route aren’t available yet.')).toBeNull();
   });
 
+  it('says nothing about live figures while the route has live vehicles (#1796: Burlington 1 listed live buses below it)', () => {
+    status.data = null; status.settled = true;
+    const view = card([car('a', 't1', 2, Math.floor(Date.now() / 1000))]);
+    expect(screen.queryByText('Live figures for this route aren’t available yet.')).toBeNull();
+    expect(view.container.textContent).toBe('');
+  });
+
   it('shows nothing while the file is still loading', () => {
     status.data = null; status.settled = false;
     const view = card();
     expect(view.container.textContent).toBe('');
+  });
+});
+
+describe('#1877: on main Live\'s route card, "Right now" repeats no destination', () => {
+  it('draws nothing and hands the gaps to the card\'s rows', () => {
+    const onDestinationGaps = vi.fn();
+    const { container } = render(<LiveRoutePerformance slug="ttc" routeShortName="505" vehicles={[car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]} feedDegraded={false} onDestinationGaps={onDestinationGaps} scheduledRowsFor={() => null} />);
+    expect(container.textContent).toBe('');
+    expect(screen.queryByText(/Right now/)).toBeNull();
+    expect(onDestinationGaps).toHaveBeenCalled();
   });
 });

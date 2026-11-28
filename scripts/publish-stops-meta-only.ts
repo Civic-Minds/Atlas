@@ -20,10 +20,12 @@ import { resolve } from 'path';
 import { config } from 'dotenv';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from '../pipeline/agencyFeeds.js';
 import { r2Put } from '../pipeline/r2.js';
+import { assertKnownFlags } from '../pipeline/cliFlags';
 
 config({ path: resolve('.env.local') });
 
 async function main() {
+  assertKnownFlags(process.argv.slice(2), {}); // CIV-3017: a mistyped flag must not turn into a real write
   const [zipPath, slug] = process.argv.slice(2);
   if (!zipPath || !slug) {
     console.error('Usage: npx tsx scripts/publish-stops-meta-only.ts <feed.zip> <slug>');
