@@ -9,13 +9,13 @@ export type WidgetSize = 'small' | 'medium' | 'large';
  * A widget bigger than a figure tile: the same surface Card (CIV-1800), radius, border and title as the Live figure
  * tiles, with a chart or a list as its one thing. Small figure tiles are KpiTile itself.
  */
-export default function Widget({ title, size: _size = 'medium', children, className = '', action, hint, label }: { /** The heading; none for a widget the page names already (CIV-1828), which then needs `label`. */ title?: string; size?: WidgetSize; children: ReactNode; className?: string; /** A small control at the end of the title row. */ action?: ReactNode; /** Hover text for the whole widget. */ hint?: string; /** The accessible name when there is no heading. */ label?: string }) {
+export default function Widget({ title, size: _size = 'medium', children, className = '', action, end, hint, label }: { /** The heading; none for a widget the page names already (CIV-1828), which then needs `label`. */ title?: string; size?: WidgetSize; children: ReactNode; className?: string; /** The notes under the title (SectionNotes). */ action?: ReactNode; /** At the right end of the title's line (the time of day, CIV-3159). */ end?: ReactNode; /** Hover text for the whole widget. */ hint?: string; /** The accessible name when there is no heading. */ label?: string }) {
   // CIV-2021: in Studio's route panel, a section of the panel under the same heading style, with no box.
   const sections = usePanelSections();
   const headings = usePanelSectionHeadings();
   if (sections) {
     return (
-      <PanelSection label={title ?? label ?? ''} title={hint} className={className} aside={headings ? action : undefined}>
+      <PanelSection label={title ?? label ?? ''} title={hint} className={className} aside={headings ? action : undefined} end={end}>
         {/* CIV-3098: where the panel keeps each part's own title, the widget's title stays as it was, its action beside it. */}
         {!headings && title && <h3 className="m-0 truncate text-sm font-bold text-[var(--text-muted)]">{title}</h3>}
         {!headings && action}

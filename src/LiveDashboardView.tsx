@@ -74,7 +74,7 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
  * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
  * the table. One component for any surface that wants it; the planner's left panel uses it today.
  */
-export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle, aboutLive, lead, label, lateNote }: {
+export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, period, excluding, excludingTitle, aboutLive, lead, label, lateNote }: {
   tiles: Kpi[];
   /** The lines that explain how the figures are worked out, in order, under the table. */
   notes?: readonly string[];
@@ -83,6 +83,8 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   captionTitle?: string;
   /** What the figures cover, in the first column's header ("TTC"). */
   scope?: string;
+  /** The time of day, at the right end of the title's line (Studio's route panel, CIV-3159), as Late departures by hour places it. */
+  period?: string;
   /** The days left out, as one note directly under the table ("Excluding Oct 11 this week, Oct 4 last week"), with its hover reason. */
   excluding?: string | null;
   excludingTitle?: string;
@@ -103,7 +105,7 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   const hasBunching = tiles.some(k => k.key === 'bunching');
   const notes = split && !aboutLive ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
-    <FiguresCard label={WEEK_COMPARE_TITLE} title={sections ? WEEK_COMPARE_TITLE : undefined}
+    <FiguresCard label={WEEK_COMPARE_TITLE} title={sections ? WEEK_COMPARE_TITLE : undefined} end={period}
       // The scope and the days left out under the title, as on the late-by-hour chart (SectionNotes), not in the table's head.
       action={<SectionNotes scope={scope} excluding={excluding ? <span title={excludingTitle}>{excluding}</span> : null} />}>
       {label && <FigureNotes lines={[label]} ruled={false} tone="secondary" />}
