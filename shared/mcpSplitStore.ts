@@ -11,6 +11,7 @@
 import type { DayType } from './rules/days';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
 import type { StudioVehiclesFile } from './studioVehicles';
+import type { HistoryNetwork } from './historyNetwork';
 import type { AtlasStore, McpAgency, McpAgencyMeta, McpHistoryRoute, McpStop, RankAgency, RankWait, RouteLabel, RouteSummary } from './mcpStore';
 
 export type SplitRead = (path: string) => Promise<unknown | null>;
@@ -33,6 +34,7 @@ export const splitPaths = {
   routeNameText: 'rank/route-names.json',
   historyIndex: (slug: string) => `history/${slug}/index.json`,
   historyRoute: (slug: string, i: number) => `history/${slug}/${i}.json`,
+  historyNetwork: (slug: string) => `history/${slug}/network.json`,
   summary: (slug: string, day: DayType) => `agencies/${slug}/summary-${day}.json`,
   stops: (slug: string) => `agencies/${slug}/stops.json`,
   routeNames: (slug: string) => `agencies/${slug}/routes.json`,
@@ -97,6 +99,7 @@ export function splitStore(read: SplitRead): AtlasStore {
     async index() { return null; },
     async historyIndex(slug) { return get<Array<[string, string | null]>>(splitPaths.historyIndex(slug)); },
     async historyRoute(slug, i) { return get<McpHistoryRoute>(splitPaths.historyRoute(slug, i)); },
+    async historyNetwork(slug) { return get<HistoryNetwork>(splitPaths.historyNetwork(slug)); },
     async comparison(slug) { return get<StudioBeforeAfterFile>(splitPaths.comparison(slug)); },
     async vehicles(slug) { return get<StudioVehiclesFile>(splitPaths.vehicles(slug)); },
     async summaries(slug, day) { return get<RouteSummary[]>(splitPaths.summary(slug, day)); },

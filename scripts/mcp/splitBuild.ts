@@ -2,6 +2,7 @@
 import { DAY_TYPES } from '../../shared/rules/days';
 import { splitPaths, type SplitRows, type SplitStop } from '../../shared/mcpSplitStore';
 import type { AtlasStore, IndexedAgency, McpAgency, McpHistoryAgency } from '../../shared/mcpStore';
+import { buildHistoryNetwork } from './historyNetwork';
 import { currentStore, labelsOf, rankAgencyOf, routesOn, summarize, waitsOf } from './atlasData';
 
 type Files = Array<[string, unknown]>;
@@ -58,6 +59,8 @@ export function historyFiles(history: McpHistoryAgency[]): Files {
   for (const ag of history) {
     files.push([splitPaths.historyIndex(ag.slug), ag.routes.map(r => [r.routeShortName, r.routeName ?? null])]);
     ag.routes.forEach((r, i) => files.push([splitPaths.historyRoute(ag.slug, i), r]));
+    // CIV-3206: the whole network in each year, for network_history.
+    files.push([splitPaths.historyNetwork(ag.slug), buildHistoryNetwork(ag)]);
   }
   return files;
 }

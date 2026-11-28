@@ -5,7 +5,7 @@ export type ToolGroup = 'find' | 'schedules' | 'changes' | 'planning' | 'live';
 export const TOOL_GROUPS: Record<ToolGroup, readonly string[]> = {
   find: ['list_agencies', 'routes_near', 'compare_agencies', 'rank_agencies', 'on_demand_zones', 'explain_method'],
   schedules: ['route_frequency', 'routes_at_frequency', 'routes_by_hours', 'stop_frequency', 'trip_time', 'combined_frequency', 'night_service', 'frequent_coverage'],
-  changes: ['route_history', 'schedule_changes'],
+  changes: ['route_history', 'network_history', 'schedule_changes'],
   planning: ['buses_needed'],
   live: ['route_now', 'route_reliability', 'route_bunching'],
 };

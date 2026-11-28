@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Live's Shared stretch rows show their own direction's live gaps**: on routes like the TTC 504, each direction's Shared stretch showed the other direction's figure, on the map and in Studio
 - **Live's map and Studio show the same live gaps for a route at the same minute**: each measured its own browser polls on its own clock, so the TTC 504 could read "live 2–13 min" on the map and "live 1–18 min" in Studio
+- **Atlas Studio can say how an agency's whole network changed over the years**: how many routes ran every 10 minutes or better in each year of History, and which, where it could only answer one route at a time
 - **Live's stop card gives the TTC's own late limit, "5+ min late"**: it said "5½+ min late", Atlas's limit, while its figure and the map key used the TTC's
 - **Clicking a route on Studio's map opens its route card**: with no Studio page open, the map showed every route but a click did nothing
 - **Opening Studio shows the map's loading pill, not a "Loading Studio…" card under the search bar**: it now loads the way the map does

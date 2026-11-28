@@ -17,6 +17,7 @@ For Atlas's own development and test rounds on this Mac only. Testers and everyo
 | `compare_agencies` | For several agencies, how many routes run every N minutes or better in a period |
 | `routes_near` | Routes that stop near a corner, station or stop, with the stops they use there |
 | `route_history` | How a route's frequency changed over the years, from Atlas's History data |
+| `network_history` | For each year in Atlas's History, how many of an agency's routes ran every N minutes or better in a part of the day, and which |
 | `buses_needed` | Buses needed for a route in a period, from Studio's buses-needed file (now, and every 10/15/20/30/60) |
 | `trip_time` | Scheduled trip time between two stops, per route, by the hour the trip leaves |
 | `combined_frequency` | Every route between two stops, and how often a trip leaves on any of them combined |
@@ -35,7 +36,7 @@ The tools read through one async store (`shared/mcpStore.ts`). This local server
 - **Frequencies.** Each agency's published route data. Every number comes from the map's own functions: `routeListFilterDisplay`, `routeListDisplay`, `routeRuns` and the hourly chart values.
 - **Trip times and combined frequency.** Only when `ATLAS_MCP_FEEDS_DIR` is set (CIV-2914: the hosted server has no schedule files, so by default these tools and stop_frequency's every-route reading are off here too). They read the schedule files in that folder (`<slug>/` and any `<slug>--supplemental-N/`, newest of each). With `also_agencies`, other agencies count together; a place named on one agency is found on another by stops within a 500 m walk (`SAME_PLACE_METRES`). It is read the way processing reads it (`pipeline/stopToStop.ts`): same week, same services, near-duplicate trips dropped, same representative weekday. Trip times are summarized with the running-time rules (`runningTimeSummary`). Combined frequency uses the stop-pool rule the map uses at a stop (`pooledReadingInWindow`).
 - **Agency index.** `rank_agencies` reads the release's ranking lists.
-- **History.** `route_history` reads Atlas's published History data from the release, with History's own snapshot rules.
+- **History.** `route_history` reads Atlas's published History data from the release, with History's own snapshot rules. `network_history` reads one file per agency (`history/<slug>/network.json`, CIV-3206), built by the release from History's year view (`routesForYear`, `historyDayPeriodValue`) and counted with its frequency limit (`passesHistoryLimit`).
 - **Buses needed.** `buses_needed` reads Studio's buses-needed file from the release (the cloud rebuild makes it). It never runs the calculation, which takes minutes on a large agency. Where an agency has no file, it says so. Targets are the public scale only (10, 15, 20, 30, 60), with the schedule's own layover.
 - **Testing.** The MCP chat runs the questions in [QUESTIONS.md](QUESTIONS.md) itself in fresh headless chats and logs the results in [TEST-LOG.md](TEST-LOG.md).
 - **Public agencies only.** It answers only for agencies in `public/data/catalog-public.json`.
