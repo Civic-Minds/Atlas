@@ -30,6 +30,7 @@ import RouteRightNow from './RouteRightNow';
 import { PanelSectionsProvider } from '../../components/Live/panelSections';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
 import StudioChips, { type StudioMenu } from './StudioChips';
+import { ChipMenu, ChipOptions, useChipRow } from '../../components/Interval/ChipMenu';
 import { CutoffFigures, cutoffsSection, type SetCutoffs } from './StudioCutoffs';
 import { liveRouteNumber } from '../../../shared/liveAgency';
 
@@ -90,8 +91,18 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const { setOverlay } = usePageMapOverlay();
   // "Data up to" sits in the map's loading-pill spot (the counts row), shown once loading finishes.
   const shownMeasure = m.held && measure && !GAP_MEASURES.has(measure) ? null : measure;
-  // The bottom pills: "Data up to…", then the map's key as one pill that opens the full key (Ryan, 2026-11-27, picked 1).
-  const statusPill = useMemo(() => <><DataUpTo pill dates={m.dataDates} route={m.dataRoute} /><LiveMapKeyPill measure={measure ?? 'late'} window={onTimeWindowWords(slug)} /></>, [m.dataDates, m.dataRoute, measure, slug]);
+  // CIV-2000: a held route has only the measures read from gaps between vehicles.
+  const measureOptions = useMemo(() => (m.held ? STUDIO_MAP_MEASURES.filter(([k]) => GAP_MEASURES.has(k)) : STUDIO_MAP_MEASURES), [m.held]);
+  // The bottom pills: "Data up to…", then the map's key as one pill that opens the full key (Ryan, 2026-11-27, picked 1),
+  // then Views by the locate-me button (CIV-3160, Ryan, 2026-11-28: "1", "Bottom, by locate me"): it only changes what
+  // the map's lines are coloured to show, so it sits with the map's own controls, out of the top bar.
+  const statusPill = useMemo(() => (
+    <>
+      <DataUpTo pill dates={m.dataDates} route={m.dataRoute} />
+      <LiveMapKeyPill measure={measure ?? 'late'} window={onTimeWindowWords(slug)} />
+      <ViewsPill value={shownMeasure ?? ''} options={measureOptions} onPick={k => setMeasure(k === shownMeasure ? null : k as MapMeasure)} />
+    </>
+  ), [m.dataDates, m.dataRoute, measure, slug, shownMeasure, measureOptions]);
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
   // Studio's frame owns where the map is framed (CIV-1925); Live only says when what it draws is still loading.
   const { frameKey, framedMemory, holdFrame } = useStudioMapFrame(m.frameKey !== (route ? `route-${route}` : 'network-all'));
@@ -103,11 +114,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const directionMenu: StudioMenu | null = route && m.v3 && m.ids.length > 1
     ? { key: 'direction', label: DIRECTION_LABEL, value: String(m.shown), options: m.ids.map(id => [String(id), m.v3!.directionLabels[String(id)]] as const), onPick: d => { setDir(Number(d)); setPick(null); }, panelClassName: 'w-56' }
     : null;
-  // CIV-2000: a held route has only the measures read from gaps between vehicles.
-  const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: shownMeasure ?? '', options: m.held ? STUDIO_MAP_MEASURES.filter(([k]) => GAP_MEASURES.has(k)) : STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === shownMeasure ? null : k as MapMeasure), active: shownMeasure != null, panelClassName: '', width: 'w-36' };
+  // CIV-3160: Views moved from here to the bottom pills (statusPill above); the top bar keeps Agency, Direction and Time.
   const menus: (StudioMenu | null)[] = [
-    // CIV-1960 (Ryan: "Measure should be on the left side of the filters"; "And no need for the drop down arrow beside the word Measure").
-    measureMenu,
     agencyMenu,
     // CIV-2001 (Ryan chose 1): no Route chip; the top bar's search box finds a route (StudioSearch.tsx). Supersedes CIV-1878's pick.
     directionMenu,
@@ -171,5 +179,20 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
       )}
       {m.note && <MapNote>{m.note}</MapNote>}
     </>
+  );
+}
+
+/**
+ * The Views pill (CIV-3160): the main map's chip (ChipMenu) in the bottom pill row, its list opening upwards. A second pick
+ * of the shown view clears it, as the top bar's Measure did.
+ */
+function ViewsPill({ value, options, onPick }: { value: string; options: typeof STUDIO_MAP_MEASURES; onPick: (k: string) => void }) {
+  const { openChip, setOpenChip, toggle, rowRef } = useChipRow<'views'>();
+  return (
+    <div ref={rowRef}>
+      <ChipMenu label={MEASURE_LABEL} active={value !== ''} open={openChip === 'views'} onToggle={() => toggle('views')} up panelClassName="" width="w-36">
+        <ChipOptions value={value} onPick={k => { onPick(k); setOpenChip(null); }} options={options.map(([key, label]) => ({ key, label }))} />
+      </ChipMenu>
+    </div>
   );
 }
