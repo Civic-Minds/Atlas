@@ -412,6 +412,25 @@ export function offEndTripsPerRow(rowStops: ReadonlyArray<readonly string[]>, tr
 }
 
 /**
+ * CIV-3154 (#1929), under CIV-2233's rule (Ryan, 2026-11-26: "Count every trip of the row, wherever it ends"): when a
+ * route, direction and day has only one row, every trip of the group with the row's headsign that runs most of that
+ * row's line is the row's own (a trip under another headsign is left out, as it may be a pattern Atlas doesn't draw), so its trip count is never lower than the number of those trips (distinct start times, as countDayDepartures
+ * reads distinct times). The end-stop list the count reads drops trips that skip stops near the end (Danville VA North
+ * Main: 7 of 17 weekday loops skip Squire Armory and Social Security, so the row read 11). Only the count: the hour
+ * counts, span and every frequency value keep reading the end stop. Rows that share a group are left alone, since a
+ * trip there may belong to a sibling (CIV-1069). `trips` holds each trip's stops (with parents) and its first time.
+ */
+export function loneRowTripCount(rowStops: readonly string[], trips: Iterable<{ served: ReadonlySet<string>; start: number }>): number {
+  const line = [...new Set(rowStops)];
+  if (line.length === 0) return 0;
+  const starts = new Set<number>();
+  for (const { served, start } of trips) {
+    if (servesMostOfLine(line.filter(id => served.has(id)).length, line.length)) starts.add(start);
+  }
+  return starts.size;
+}
+
+/**
  * Use all departures for the feature's destination at its terminal stop.
  * Different shapes can add or omit an intermediate stop while still providing
  * the same terminal service; using only one shape creates false gaps there.
@@ -2002,12 +2021,15 @@ export async function processGtfsBuffer(
       list.push(feature);
     }
     const tripsByGroup = new Map<string, Set<string>>();
+    // CIV-3154: each grouped trip's headsign, when its departures go into the headsign maps (the lone-row count below).
+    const headsignByGroupTrip = new Map<string, string | null>();
     for (const [tid, grps] of tripGroupByTripId) {
       for (const g of grps) {
         if (!g.inGroup) continue;
         const k = `${g.shortName}::${g.dirId}::${g.dayType}`;
         if (!rowsByGroup.has(k)) continue;
         (tripsByGroup.get(k) ?? tripsByGroup.set(k, new Set()).get(k)!).add(tid);
+        if (g.inHeadsign) headsignByGroupTrip.set(`${k}::${tid}`, g.displayHeadsign ?? g.headsign);
       }
     }
     if (tripsByGroup.size === 0) return;
@@ -2016,19 +2038,31 @@ export async function processGtfsBuffer(
     for (const [k, rows] of rowsByGroup) {
       const rowStops = rows.map(f => (f.properties.stopOrder as string[] | undefined) ?? []);
       if (rowStops.some(order => order.length === 0)) continue;
-      const trips = [...(tripsByGroup.get(k) ?? [])].map(tid => {
+      const tripStops = [...(tripsByGroup.get(k) ?? [])].map(tid => {
+        const headsign = headsignByGroupTrip.has(`${k}::${tid}`) ? headsignByGroupTrip.get(`${k}::${tid}`) : undefined;
         const served = new Set<string>();
+        let start = Infinity;
         for (const i of stopTimeIdxByTrip!.get(tid) ?? []) {
           const id = sts[i].stop_id;
           served.add(id);
           const parent = childToParent.get(id);
           if (parent) served.add(parent);
+          const timeStr = sts[i].departure_time || sts[i].arrival_time;
+          const mins = timeStr ? t2m(timeStr) : null;
+          if (mins != null && mins < start) start = mins;
         }
-        return served;
-      }).filter(served => served.size > 0);
-      offEndTripsPerRow(rowStops, trips).forEach((n, i) => {
+        return { served, start, headsign };
+      }).filter(t => t.served.size > 0);
+      offEndTripsPerRow(rowStops, tripStops.map(t => t.served)).forEach((n, i) => {
         if (n > 0) rows[i].properties.departuresInDay = (rows[i].properties.departuresInDay as number) + n;
       });
+      // CIV-3154: a lone row counts every trip of its group with its own headsign that runs most of its line.
+      if (rows.length === 1) {
+        const rowHeadsign = (rows[0].properties.headsign as string | null | undefined) ?? null;
+        const own = tripStops.filter(t => Number.isFinite(t.start) && t.headsign !== undefined && t.headsign === rowHeadsign);
+        const lone = loneRowTripCount(rowStops[0], own);
+        if (lone > (rows[0].properties.departuresInDay as number)) rows[0].properties.departuresInDay = lone;
+      }
     }
   };
 
