@@ -662,7 +662,7 @@ export function LimitedBadge({ label, className = '', secondLine = false }: { la
   if (secondLine) return <SecondLineBadge color={getTierColor(null, colorMode)} words={label ?? ''} />;
   const dot = <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getTierColor(null, colorMode) }} />;
   if (label && twoPart(label)) return <TwoPartBadge dot={dot} text={label} className={`text-xs font-black text-[var(--text-primary)] leading-snug ${className}`} />;
-  // A several-word label ("Runs irregularly in this period") breaks between words, right-aligned, where the row is
+  // A several-word label ("Runs irregularly overnight") breaks between words, right-aligned, where the row is
   // too narrow, instead of running over the destination (TTC 25 northbound AM; the #1128 rule). It stays one line where it fits.
   if (label?.includes(' ')) {
     return (

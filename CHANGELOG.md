@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route card rows with no number read "Irregular"**: the same word as route lists and agency pages, instead of the longer "Runs irregularly in this period"
 - **Every Live vehicle sits under its own destination row**: TTC 512 cars signed "St Clair" were listed as a row of their own while "to St Clair Station" showed none; Studio's Live panel now shows both directions in the same rows as the map, and the card's back link always reads "Live"
 - **Studio's Live tab has the same icon as the main map's**: Studio used a different icon for the same app
 - **A Live route card says "Unable to load" while its feed is down, not that no vehicles are running**: with the TTC feed failing for a minute, 505 read "No TTC 505 vehicles are running right now" though 20 were on the road

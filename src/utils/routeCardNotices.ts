@@ -334,7 +334,7 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
 /**
  * #1278: the route card's own words for a period in which the route has trips but shows no number: its period line
  * (the stop card's "Runs only from 7–9 AM", CIV-1251) or, without one and
- * where every row reads it, the rows' label ("Runs irregularly in this period"). Null when the card shows a number or neither. The stop
+ * where every row reads it, the rows' label ("Irregular"). Null when the card shows a number or neither. The stop
  * card lists such a route with these words, so the two cards agree. `features` are the route's for the day, as the card's.
  */
 export function routeCardNoNumberWords(features: readonly ShapeProperties[], period: TimePeriod): string | null {

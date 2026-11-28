@@ -291,7 +291,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular || value.isLimited
         ? (word => (stableColors ? keepLastWordsTogether(word) : word))(value.rowNoRegular ? noRegularLabel : limitedWord)
         : undefined,
-      // Compare (CIV-844): a row that reads "Runs irregularly in this period" puts the whole
+      // Compare (CIV-844): a row that reads "Irregular" puts the whole
       // destination name on its line and the value under it (the row's own wrap layout), never "to Roncesval…".
       singleLine: !(stableColors && value.rowNoRegular),
       valueEnd: stableColors && value.rowNoRegular,

@@ -23,15 +23,15 @@ function rows(directions: ShapeProperties[], route: string, period: TimePeriod):
 describe('pooled rows with a few departures in a period read Irregular (#1534)', () => {
   it('TTC 169 weekday midday: to Don Mills is Irregular, the Van Horne rows keep every 30', () => {
     const r = rows(props(ttc169json), '169', 'midday');
-    expect(r).toContain('to Don Mills: Runs irregularly in this period');
+    expect(r).toContain('to Don Mills: Irregular');
     expect(r).toContain('to Don Mills via Van Horne: every 30 min');
   });
 
   it('Sherbrooke 4 weekday: to Galvin is Irregular at midday and AM peak, Station du Cégep keeps every 30 at midday', () => {
     const midday = rows(props(sherbrooke4json), '4', 'midday');
-    expect(midday).toContain('to Galvin / des Trembles: Runs irregularly in this period');
+    expect(midday).toContain('to Galvin / des Trembles: Irregular');
     expect(midday).toContain('to Station du Cégep - Quai A: every 30 min');
-    expect(rows(props(sherbrooke4json), '4', 'amPeak')).toContain('to Galvin / des Trembles: Runs irregularly in this period');
+    expect(rows(props(sherbrooke4json), '4', 'amPeak')).toContain('to Galvin / des Trembles: Irregular');
     // #1823: Galvin's own trips (31), not its branch's every 28, which counts the trips to Station du Cégep - Quai H too.
     expect(rows(props(sherbrooke4json), '4', 'evening')).toContain('to Galvin / des Trembles: every 31 min');
   });
