@@ -416,6 +416,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-27 — No "from"/"until" on a card row where buses keep the same spacing across the period's edge (CIV-3121, #1906)
+Ryan, 2026-11-27, on TransLink R2 toward Park Royal ("every 8 mins from 310 but the period begins at 3 pm lol so"), then in the manager window: "Why are we saying "until" or "from" if the frequency doesn't change here". In the data chat he said "Please ask Manager then decide"; the manager found no rule against it (CIV-1241 and CIV-1411 cover real starts and stops only) and the data chat kept both sides.
+- The rule: a row's "from" ("until") words are dropped when the departure before the period's start (after its end) keeps the existing steadiness test (isSustainedHeadway) with the gap across the edge added. Service that really starts, stops or changes spacing in the period keeps its words. Card wording only: the filter value and map colour are unchanged. No new number.
+- Counts (same-zip local dry run, base vs fix, Spokane, TTC, MBTA, TransLink, SEPTA, OC Transpo, RTD): 72 card rows lose their words, 28 "from" and 44 "until" (the "until" side was not asked for). 21 of them then read "Runs irregularly in this period" under the 4-trip minimum (2026-11-24, CIV-2232: a wait over 60 min and 1–3 own trips; its exception is only for service that starts or ends in the period, which these rows don't). Rows list: Linear CIV-3121, comment of 2026-11-27.
+- Related, not settled here: "from"/"until" means both "service starts or stops" and "frequency changes" (CIV-3135).
+
 ### 2026-11-27 — Booked-route detection counts only stops where riders can board (CIV-3002, #1829)
 Ryan, 2026-11-27, asked in the Studio chat whether it should ship, picked "Ship it". The 85% rule (CIV-1006) now counts only boarding stop events (pickup_type other than 1), not every stop event.
 - Counts (sweep of every local feed, 50 agencies with booked stops, plus Drummondville's current feed): 8 routes gain the on-demand reading (Cascades East A and B; Dial-A-Ride and Paratransit in the mountain-village, smart-telluride and telluride feeds) plus Drummondville's 68 Secteur routes. None lose it. Rio Vista 50 stays a bus (81.8%); exo and Bay Transit are unchanged.
