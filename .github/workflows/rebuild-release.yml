@@ -229,6 +229,15 @@ jobs:
         continue-on-error: true
         run: npx tsx scripts/diff-period-figures.ts --summary=tmp/derived-reprocess --out=tmp/derived-reprocess/period-figures.json
 
+      # CIV-3130: every agency's trips file, counted (trips, trips with their last stop id, bytes against live), since
+      # the dry run uploads no agency files and a change to them would otherwise show only after publishing.
+      - name: Summarize the trips files
+        if: always()
+        continue-on-error: true
+        env:
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+        run: npx tsx scripts/trips-file-summary.ts --dir=tmp/derived-reprocess --out=tmp/derived-reprocess/trips-summary.json
+
       # The settings this dry run processed with, kept beside its figures so a comparison knows which side is which.
       # (The release manifest is written by the tile build, which only the publish job runs.)
       - name: Record the build settings
@@ -350,6 +359,7 @@ jobs:
             tmp/derived-reprocess/report.json
             tmp/derived-reprocess/period-figures.json
             tmp/derived-reprocess/build-settings.json
+            tmp/derived-reprocess/trips-summary.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
             tmp/mcp-release/report.json
