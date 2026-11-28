@@ -36,7 +36,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'scripts/check-logo-icon.mjs': { 'colour': 1, 'scale-array': 1 },
   'scripts/live-gtfs-for-window.ts': { 'min-sample': 1 },
   'scripts/planner-pictures/capture.mts': { 'colour': 2 },
-  'scripts/research-fares.mjs': { 'origin': 1 },
   'scripts/verify-deployments.mjs': { 'origin': 3 },
   'shared/config.ts': { 'definition': 2 },
   'shared/connections.ts': { 'scale-array': 1 },

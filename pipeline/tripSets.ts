@@ -700,7 +700,7 @@ const PERIOD_WINDOWS = PERIOD_KEYS.map(key => ({ key, ...PERIOD_MINUTES[key] }))
 /**
  * CIV-2013: the weekday windows the frequent-service chart may judge on, read exactly as a period is (the same value,
  * D1, CIV-238 edges): rule 9's Frequent Service window (07:00-19:00) and the weekday grading window (07:00-22:00).
- * Additive: nothing on screen reads them; the coverage study's window rules do (docs/research/canada-transit-coverage-2026-09).
+ * Additive: nothing on screen reads them; the coverage study's window rules do (Atlas-Editorial research/canada-transit-coverage-2026-09).
  */
 export const CHART_WINDOWS = [
   { key: 'frequentServiceWindow', start: FREQUENT_SERVICE_WINDOW_START_MIN, end: FREQUENT_SERVICE_WINDOW_END_MIN },
