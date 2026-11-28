@@ -7,12 +7,16 @@
  *
  * An agency config can force a route either way by short name (`bookingRequiredRoutes: { "50": false }`) for a feed
  * that sits near the line.
+ *
+ * #1829: only stop events where a rider can board count (pickup_type other than 1, "no pickup"). A taxibus written as
+ * a booked pickup and a drop-off-only stop (Drummondville's 68 "Secteur" routes) has every boarding booked, though only
+ * half of its stop events.
  */
 import type { GtfsData } from '../types/gtfs.js';
 
 export const BOOKED_SHARE_MIN = 0.85;
 
-/** Share of each route's stop events that need a booking (pickup_type 2); routes with none are left out. */
+/** Share of each route's boarding stop events (pickup_type not 1) that need a booking (pickup_type 2); routes with none are left out. */
 export function bookedShareByRoute(gtfs: Pick<GtfsData, 'trips' | 'stopTimes'>): Map<string, number> {
   const routeByTrip = new Map((gtfs.trips ?? []).map(t => [t.trip_id, t.route_id]));
   const total = new Map<string, number>();
@@ -20,8 +24,10 @@ export function bookedShareByRoute(gtfs: Pick<GtfsData, 'trips' | 'stopTimes'>):
   for (const st of gtfs.stopTimes ?? []) {
     const routeId = routeByTrip.get(st.trip_id);
     if (routeId == null) continue;
+    const pickup = st.pickup_type?.trim();
+    if (pickup === '1') continue;
     total.set(routeId, (total.get(routeId) ?? 0) + 1);
-    if (st.pickup_type?.trim() === '2') booked.set(routeId, (booked.get(routeId) ?? 0) + 1);
+    if (pickup === '2') booked.set(routeId, (booked.get(routeId) ?? 0) + 1);
   }
   return new Map([...booked].map(([routeId, n]) => [routeId, n / total.get(routeId)!]));
 }

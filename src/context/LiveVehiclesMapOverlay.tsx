@@ -24,6 +24,8 @@ export interface LiveVehicle {
   /** CIV-2047: the stop ids its trip update lists ahead, to tell which service pattern it runs. */
   /** CIV-2047: the stops its trip update lists ahead, by name and place, to tell its service pattern. */
   upcomingStops?: UpcomingStop[];
+  /** #1877: where its trip ends (the timetable's last stop), to put it under that destination; null where unknown. */
+  lastStop?: UpcomingStop | null;
   status: 'no_data' | 'early' | 'late' | 'on_time';
   statusLabel?: string | null;
   headwayGapMin?: number | null;

@@ -189,6 +189,14 @@ export function getMapContextAgenciesFromFeatures(
 }
 
 /**
+ * CIV-3120 (Ryan, 2026-11-27: "Credit an agency in the pill only while at least one of its routes is drawn on the map"):
+ * every feed with at least one route in this list, from the same drawn routes the route count reads, sorted.
+ */
+export function drawnAgencySlugs(list: readonly MapContextAgency[]): string[] {
+  return [...new Set(list.filter(a => a.routeCount > 0).flatMap(a => a.members ?? [a.slug]))].sort();
+}
+
+/**
  * Collapse feed route IDs that show the same label to a rider, so the In view
  * count and list match the distinct lines on the map (e.g. one overnight line
  * published under several route IDs).

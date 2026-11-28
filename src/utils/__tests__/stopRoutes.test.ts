@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildStopRoutes, headlineStandIn, stopCardAgencies, stopRouteBestHeadway, stopRouteLineHeadway, stopRowHeadway, stopRowRangeLow, type StopBranch } from '../stopRoutes';
 import ttc29json from './fixtures/ttc-29-weekday.json';
+import ttc102json from './fixtures/ttc-102-weekday-dir1.json';
 import { stopRoutePeriodBit } from '../../../shared/stopRoutePeriods';
 
 // Properties only (no geometry): the stop card reads none.
@@ -268,5 +269,25 @@ describe('stopCardAgencies (CIV-1310)', () => {
     expect(stopCardAgencies([], 'miway::0814', [miway])).toHaveLength(1);
     expect(stopCardAgencies([], 'nope::1', [miway])).toEqual([]);
     expect(stopCardAgencies([], null, [miway])).toEqual([]);
+  });
+});
+
+// #1904: TTC 102 weekday, toward Steeles at Markham Rd at Lawrence Ave East (stops 5568/5569). The "Sheppard" pattern
+// (the direction's main row, 12 trips a day, none at midday) read "every 7": every trip passing the stop under its name.
+// It has no row at midday now; the Shared stretch row carries the pooled 7, and the real destinations keep theirs.
+describe('buildStopRoutes: a main row whose own trips do not run in the period (#1904)', () => {
+  const ttc102 = ttc102json as unknown as GeoJSON.FeatureCollection;
+  const at = (period: 'midday' | 'late') => buildStopRoutes({
+    siblingIdsByAgency: { ttc: new Set(['5568', '5569']) }, routesByAgency: { ttc: new Set(['102']) },
+    layers: { ttc: ttc102 }, day: 'Weekday', period,
+  })[0].branches;
+  it('drops the Sheppard row at midday and keeps the shared number for the Shared stretch row', () => {
+    const rows = at('midday');
+    expect(rows.map(b => b.headsign)).not.toContain('Sheppard');
+    expect(rows.map(b => b.headsign)).toEqual(expect.arrayContaining(['Steeles', 'Centennial College', 'Major Mackenzie']));
+    expect(stopRouteLineHeadway(rows, 'midday')).toBe(7);
+  });
+  it('keeps the Sheppard row where its own trips run (late)', () => {
+    expect(at('late').map(b => b.headsign)).toContain('Sheppard');
   });
 });

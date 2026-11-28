@@ -67,6 +67,9 @@ export function parentSummary(parent: ParentAgency, members: readonly AgencyPage
     span: spans.length ? { first: Math.min(...spans.map(s => s.first)), last: Math.max(...spans.map(s => s.last)) } : null,
     lastRefreshedAt: latest(members.map(m => m.lastRefreshedAt)),
     validThrough: earliest(members.map(m => m.validThrough)),
+    // CIV-3115: no end date only when no member gives one; the earliest timetable change speaks for them.
+    ...(members.length > 0 && members.every(m => m.noFeedEnd) ? { noFeedEnd: true } : {}),
+    ...(earliest(members.map(m => m.timetableChangedAt)) ? { timetableChangedAt: earliest(members.map(m => m.timetableChangedAt)) } : {}),
     ...(home.timezone ? { timezone: home.timezone } : {}),
     sat: members.some(m => m.sat),
     sun: members.some(m => m.sun),

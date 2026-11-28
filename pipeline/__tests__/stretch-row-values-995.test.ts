@@ -58,6 +58,15 @@ describe('stretch row values (CIV-995 a)', () => {
     expect(asMain.main!.period).toEqual(asTail1.main!.period);
   });
 
+  it('marks a by-trips tail so the schedule comparison can tell it from a branch (#1710)', () => {
+    const main = stretch(every(6 * 60, 22 * 60 + 50, 15));
+    const branch = { ...stretch(every(6 * 60, 22 * 60 + 50, 30)), kind: 'tail' as const };
+    const piece = { ...stretch(every(6 * 60, 22 * 60 + 50, 30)), kind: 'tail' as const, byTrips: true as const };
+    const meta = featureStretchMeta({ main, tails: [branch, piece] }, 'tail', 1);
+    expect('byTrips' in meta.tails[0]).toBe(false);
+    expect(meta.tails[1].byTrips).toBe(true);
+  });
+
   it('shares one longest-gap and one hourly calculation', () => {
     const times = [m(16, 0), m(16, 20), m(17, 30)];
     expect(innerMaxGapInWindow(times, m(15, 0), m(19, 0))).toBe(70);

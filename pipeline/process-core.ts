@@ -609,7 +609,7 @@ export interface ProcessResult {
   geojson: string;
   corridorsGeojson: string; // isCorridor features only, served separately
   stopsJson: string; // JSON: Record<stopId, StopEntry> — for Corridors stop search
-  tripsJson: string; // JSON: Record<tripId, {d: directionId, h: headsign|null}> for live vehicle enrichment
+  tripsJson: string; // JSON: Record<tripId, {d: directionId, h: headsign|null, e?: last stop id}> for live vehicle enrichment
   stopsMetaJson: string; // JSON: StopsMetaFile — per-stop facts (routes, direction) for external consumers
   featureCount: number;
   center: [number, number] | null;
@@ -790,6 +790,13 @@ export function weekdayServiceDaysByRouteDir(
 }
 
 /** Local run date as YYYYMMDD. */
+/** #1877: a trip's last stop id, the stop with its highest stop_sequence; undefined for a trip with no stop times. */
+export function tripLastStopId(stopTimes: ReadonlyArray<{ stop_id: string; stop_sequence: string | number }> | undefined): string | undefined {
+  let last: { stop_id: string; stop_sequence: string | number } | undefined;
+  for (const st of stopTimes ?? []) if (!last || Number(st.stop_sequence) > Number(last.stop_sequence)) last = st;
+  return last?.stop_id || undefined;
+}
+
 function runDateYmd(): string {
   const d = runNow(); // #1523: ATLAS_RUN_AT pins it
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
@@ -4588,11 +4595,14 @@ export async function processGtfsBuffer(
     onStatus?.(`Booking required: ${bookedRouteIds.size} route(s)`);
   }
 
-  // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign)
-  const tripsLookup: Record<string, { d: number; h: string | null }> = {};
+  // Build trips lookup for live vehicle enrichment (agencies whose GTFS-RT omits directionId/headsign). `e`: the trip's
+  // last stop id (highest stop_sequence), so Live puts a vehicle under the destination its trip really ends at, whatever
+  // its headsign says (#1877: TTC 505 "Broadview Ave" trips beside "Broadview").
+  const tripsLookup: Record<string, { d: number; h: string | null; e?: string }> = {};
   for (const trip of gtfs.trips ?? []) {
     const h = trip.trip_headsign?.trim() || null;
-    tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h };
+    const e = tripLastStopId(stopTimesByTripId.get(trip.trip_id));
+    tripsLookup[trip.trip_id] = { d: Number(trip.direction_id ?? 0), h, ...(e ? { e } : {}) };
   }
 
   return {

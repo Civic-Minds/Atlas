@@ -4,6 +4,8 @@ import { projectOntoSegment } from '../../shared/geoDistance';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { feedPlaceName } from './nameCase';
 import { streetJoin } from './stopLabel';
+import { metresBetween } from '../../shared/geoDistance';
+import { SAME_STOP_M } from '../../shared/rules/live';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -106,8 +108,9 @@ export function routeDirectionLabels(features: readonly GeoJSON.Feature[], route
  */
 export function groupVehiclesByDirection(vehicles: readonly LiveVehicle[], directionLabels: ReadonlyMap<number, string>): Map<string, LiveVehicle[]> {
   const groups = new Map<string, LiveVehicle[]>();
+  const keys = destinationKeys(vehicles, directionLabels);
   for (const v of vehicles) {
-    const key = vehicleDirectionKey(v, directionLabels);
+    const key = keys.get(v.id) ?? vehicleDirectionKey(v, directionLabels);
     (groups.get(key) ?? groups.set(key, []).get(key)!).push(v);
   }
   return groups;
@@ -120,6 +123,38 @@ export function groupVehiclesByDirection(vehicles: readonly LiveVehicle[], direc
 export function rowDirectionKey(headsign: unknown, routeShortName: string): string | null {
   const name = typeof headsign === 'string' ? riderHeadsign(headsign, routeShortName) : null;
   return name ? streetJoin(name) : null;
+}
+
+/**
+ * #1877 (Ryan: the same destination listed again under another name): which destination each vehicle's trip really goes
+ * to. Vehicles whose trips end at the same stop (the timetable's last stop, within SAME_STOP_M, same direction) are one
+ * destination, named by the headsign most of them carry when that is where most of that headsign's vehicles end (TTC 505's
+ * "Broadview Ave" trips ending at Broadview Station join "Broadview"); a stop no headsign mainly ends at keeps the stop's
+ * own name. Vehicles with no known last stop keep their headsign group (vehicleDirectionKey).
+ */
+export function destinationKeys(vehicles: readonly Pick<LiveVehicle, 'id' | 'headsign' | 'directionId' | 'lastStop'>[], directionLabels: ReadonlyMap<number, string>): Map<string, string> {
+  const out = new Map<string, string>();
+  interface End { dir: number | null; at: readonly [number, number]; name: string; ids: string[]; heads: Map<string, number> }
+  const ends: End[] = [];
+  for (const v of vehicles) {
+    const base = vehicleDirectionKey(v, directionLabels);
+    out.set(v.id, base);
+    const last = v.lastStop;
+    if (!last?.lonLat || v.headsign == null) continue;
+    let end = ends.find(e => e.dir === v.directionId && metresBetween({ lon: e.at[0], lat: e.at[1] }, { lon: last.lonLat[0], lat: last.lonLat[1] }) < SAME_STOP_M);
+    if (!end) ends.push(end = { dir: v.directionId, at: last.lonLat, name: last.name, ids: [], heads: new Map() });
+    end.ids.push(v.id);
+    end.heads.set(base, (end.heads.get(base) ?? 0) + 1);
+  }
+  // Each headsign's own end: the stop most of its vehicles end at.
+  const home = new Map<string, End>();
+  for (const e of ends) for (const [h, n] of e.heads) { const at = home.get(h); if (!at || n > (at.heads.get(h) ?? 0)) home.set(h, e); }
+  for (const e of ends) {
+    const own = [...e.heads].filter(([h]) => home.get(h) === e).sort((a, b) => b[1] - a[1]);
+    const name = own.length ? own[0][0] : e.name;
+    for (const id of e.ids) out.set(id, name);
+  }
+  return out;
 }
 
 /** The direction group a vehicle belongs to (see groupVehiclesByDirection). */

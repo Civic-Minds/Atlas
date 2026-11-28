@@ -205,7 +205,11 @@ function stretchRowsFor(directionFeatures: ShapeProperties[], period: TimePeriod
   if (pooled && pooled.destinations.length >= 2 && rows.some(d => d.stretchRole === 'main')) {
     rows = [...pooled.destinations, ...rows.filter(d => d.stretchRole !== 'main')];
   } else if (pooled && pooled.destinations.length === 1) {
-    pooledMain = { feature: pooled.destinations[0], headway: pooled.pooled };
+    // #1909: never faster than the direction's own filter value, so the card cannot read better than the map (GO 40
+    // southbound PM: the stretch pools to 15, the direction's filter value is 17).
+    const feature = pooled.destinations[0];
+    const directionValue = period !== 'all' ? feature.directionFilterHeadwayByPeriod?.[period as PeriodKey] : undefined;
+    pooledMain = { feature, headway: typeof directionValue === 'number' ? Math.max(pooled.pooled, directionValue) : pooled.pooled };
     rows = rows.map(d => (d.stretchRole === 'main' ? pooled.destinations[0] : d));
   }
   return { rows, notThrough: notThrough.length, pooledMain };

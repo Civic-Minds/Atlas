@@ -40,3 +40,23 @@ describe('routes riders must book ahead (CIV-1006)', () => {
     expect([...bookingRequiredRouteIds(gtfs, { 50: true, T12: false })].sort()).toEqual(['exo350', 'rio50']);
   });
 });
+
+describe('only stops where riders can board count (#1829)', () => {
+  // Drummondville's "Secteur" taxibuses: a booked pickup, then a drop-off-only stop (pickup_type 1).
+  const gtfs = feed([
+    { id: 'secteur', short: 'S1', stops: ['2', '1'] },
+    // Rio Vista 50 with drop-off-only stops added stays a bus: 41 booked of 50 boarding stops.
+    { id: 'rio50', short: '50', stops: [...stops(41, 9), '1', '1', '1'] },
+    { id: 'dropoffs', short: 'D', stops: ['1', '1'] },
+  ]);
+
+  it('reads a booked pickup plus a drop-off-only stop as all booked', () => {
+    expect(bookedShareByRoute(gtfs).get('secteur')).toBe(1);
+    expect([...bookingRequiredRouteIds(gtfs)]).toEqual(['secteur']);
+  });
+
+  it('leaves a regular bus with request stops a bus, and a route with no boarding stops out', () => {
+    expect(bookedShareByRoute(gtfs).get('rio50')).toBeCloseTo(0.82);
+    expect(bookedShareByRoute(gtfs).has('dropoffs')).toBe(false);
+  });
+});

@@ -1,7 +1,7 @@
 /**
  * Local only: the Live route dashboard's data (B1-B4, the `v3` block of the analysis file) and whether it exists.
  * The route card asks this before it shows its "Full analysis" link, so the link never leads to an empty page.
- * Always answers with a status; `reason` is a plain sentence (what is missing and what to do).
+ * Always answers with a status; `reason` is a plain sentence saying what is missing (no Mac commands: CIV-2914).
  */
 import { liveFiles } from './liveFiles.js';
 import { LIVE_POLLING_ROUTES, getPolledRoute, hasLiveAnalysis } from '../shared/livePollingConfig.js';
@@ -19,7 +19,7 @@ async function handler(req: Request): Promise<Response> {
   const route = params.get('route')?.trim();
   if (!agency || !route) return json({ status: 'unknown_route', reason: 'Give an agency and a route, for example ?agency=ttc&route=505.' }, 400);
   const cfg = getPolledRoute(agency, route);
-  const unknown = async () => json({ status: 'unknown_route', reason: `Live has no analysis for ${await liveAgencyName(agency)} route ${route}. Build it with "npm run live:analyze -- ${route}".` }, 404);
+  const unknown = async () => json({ status: 'unknown_route', reason: `Live has no analysis for ${await liveAgencyName(agency)} route ${route}.` }, 404);
   // An agency Live doesn't record, or a route name no file can have, is unknown without asking the files (CIV-2914: the
   // cloud source needs the read-only keys, so CI and a request for nonsense never reach it).
   const slugLower = agency.toLowerCase();
@@ -40,7 +40,7 @@ async function handler(req: Request): Promise<Response> {
     if (raw == null) throw new Error('no file');
     const data = JSON.parse(raw) as { generatedAt: string; replacementBuses?: boolean; v3?: LiveV3 };
     if (!data.v3 || data.v3.schema !== 3) {
-      return json({ status: 'no_analysis', reason: `The analysis file for ${name} is from an older version. Rebuild it with "npm run live:analyze -- ${name}".` });
+      return json({ status: 'no_analysis', reason: `The analysis file for ${name} is from an older version.` });
     }
     const quality = qualityHold(data.v3);
     // CIV-2000: held with what can be trusted (gaps and bunching), which Studio shows; the delay figures never leave this file.
@@ -54,7 +54,7 @@ async function handler(req: Request): Promise<Response> {
       uncertainStart: [...(LIVE_DASHBOARD_UNCERTAIN_START[`${slug}::${name}`] ?? [])],
     });
   } catch {
-    return json({ status: 'no_analysis', reason: `No analysis file for ${name} yet. Build it with "npm run live:analyze -- ${name}" (needs the archive and timetable in ../_live-data).` });
+    return json({ status: 'no_analysis', reason: `Atlas has no analysis for ${name} yet.` });
   }
 }
 

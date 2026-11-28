@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey, vehicleDirectionKey } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKeys, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, rowDirectionKey, vehicleDirectionKey } from '../liveGrouping';
 import { streetJoin } from '../stopLabel';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
@@ -199,5 +199,26 @@ describe('rowDirectionKey (#1877: a route card row carries its destination\'s ve
     expect(rowDirectionKey('88S South Leaside Short Turn', '88')).toBeNull();
     expect(rowDirectionKey(undefined, '1')).toBeNull();
     expect(rowDirectionKey('', '1')).toBeNull();
+  });
+});
+
+describe('destinationKeys (#1877: a vehicle goes under the destination its trip ends at)', () => {
+  const station = { name: 'Broadview Station', lonLat: [-79.3584, 43.6767] as const };
+  const nearStation = { name: 'Broadview Station Platform', lonLat: [-79.3585, 43.6768] as const }; // ~14 m away
+  const gerrard = { name: 'Broadview Ave at Gerrard St East', lonLat: [-79.3524, 43.6653] as const };
+  const car = (id: string, headsign: string, lastStop: { name: string; lonLat: readonly [number, number] } | null) => ({ id, headsign, directionId: 0, lastStop });
+  it('puts a vehicle whose headsign differs but whose trip ends at the same stop under that destination', () => {
+    const keys = destinationKeys([car('a', 'Broadview', station), car('b', 'Broadview', station), car('c', 'Broadview Ave', nearStation)], new Map());
+    expect(keys.get('c')).toBe('Broadview');
+    expect(groupVehiclesByDirection([v('a', { headsign: 'Broadview', directionId: 0, lastStop: station }), v('c', { headsign: 'Broadview Ave', directionId: 0, lastStop: nearStation })], new Map()).get('Broadview')?.length).toBe(2);
+  });
+  it('names a trip ending somewhere else after its own last stop', () => {
+    const keys = destinationKeys([car('a', 'Broadview', station), car('b', 'Broadview', station), car('c', 'Broadview Ave', gerrard), car('d', 'Broadview', gerrard)], new Map());
+    expect(keys.get('a')).toBe('Broadview');
+    expect(keys.get('c')).toBe('Broadview Ave');
+    expect(keys.get('d')).toBe('Broadview Ave');
+  });
+  it('keeps the headsign group when the last stop is unknown', () => {
+    expect(destinationKeys([car('a', 'Broadview Ave', null)], new Map()).get('a')).toBe('Broadview Ave');
   });
 });

@@ -606,10 +606,16 @@ export function directionStretches(
     const counts = stops.map(() => 0);
     for (const trip of measureTrips) {
       const at = new Map<number, TripVisit>();
+      // #1910: how many of the trip's own stops off this line it has made by each visit, so a trip that leaves the line
+      // between two of its stops (another branch's road) never counts at the line's stops in between.
+      const offLineBefore = new Map<number, number>();
+      let offLine = 0;
       for (const visit of trip.visits) {
         const i = index.get(visit.stopId);
-        if (i == null || visit.counted === false || at.has(i)) continue;
+        if (i == null) { offLine++; continue; }
+        if (visit.counted === false || at.has(i)) continue;
         at.set(i, visit);
+        offLineBefore.set(i, offLine);
       }
       if (at.size === 0) continue;
       const served = [...at.keys()].sort((a, b) => a - b);
@@ -617,8 +623,12 @@ export function directionStretches(
         const from = served[s], to = served[s + 1] ?? served[s];
         const a = at.get(from)!, b = at.get(to)!;
         // The served stop itself, then the stops it skips before its next one, at times interpolated
-        // between the two by stop position.
-        for (let i = from; i < (to === from ? from + 1 : to); i++) {
+        // between the two by stop position. #1910: only where the trip stays on this line between the two (an
+        // express skipping stops); one that stops elsewhere in between ran another road (Spokane 20's via-Riverside
+        // trips never pass Clarke Ave, yet read there and made the branch every 15 instead of 30).
+        const leftLine = (offLineBefore.get(to) ?? 0) !== (offLineBefore.get(from) ?? 0);
+        const last = to === from || leftLine ? from + 1 : to;
+        for (let i = from; i < last; i++) {
           const minutes = i === from ? a.minutes : Math.round(a.minutes + ((b.minutes - a.minutes) * (i - from)) / (to - from));
           counts[i]++;
           times[i].add(minutes);
@@ -970,7 +980,7 @@ export function featureStretchMeta(
 ) {
   return {
     main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main), ...(role === 'main' ? { rows: rowsOf(stretches.main) } : {}) } : null,
-    tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t), ...(role === 'tail' && index === i ? { rows: rowsOf(t) } : {}) })),
+    tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t), ...(t.byTrips ? { byTrips: true as const } : {}), ...(role === 'tail' && index === i ? { rows: rowsOf(t) } : {}) })),
   };
 }
 

@@ -706,8 +706,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // CIV-461: the agencies in view whose data licence requires credit, for the map's attribution pill.
   const openCreditSource = useCallback((slug: string | null) => { focusSource(slug); onInfoOpen?.('sources'); }, [onInfoOpen]);
   // #1692: an agency credited only for its feed's publisher (511) shows that publisher's line, not its own name.
-  const viewCredits = useMemo(() => agencyCredits(agencies, viewportSlugKey ? viewportSlugKey.split('|') : []).filter(c => c.byLicence !== false), [agencies, viewportSlugKey]);
-  const viewFeeds = useMemo(() => viewFeedCredits(agencies, viewportSlugKey ? viewportSlugKey.split('|') : []), [agencies, viewportSlugKey]);
+  // CIV-3120 (Ryan, 2026-11-27: "Credit an agency in the pill only while at least one of its routes is drawn on the map"):
+  // the agencies with a route drawn, from the same drawn routes the route count reads (MapCanvas → drawnAgencySlugs).
+  const [drawnSlugKey, setDrawnSlugKey] = useState('');
+  const viewCredits = useMemo(() => agencyCredits(agencies, drawnSlugKey ? drawnSlugKey.split('|') : []).filter(c => c.byLicence !== false), [agencies, drawnSlugKey]);
+  const viewFeeds = useMemo(() => viewFeedCredits(agencies, drawnSlugKey ? drawnSlugKey.split('|') : []), [agencies, drawnSlugKey]);
   useEffect(() => {
     onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
   }, [viewportSlugKey, onViewportAgencySlugsChange]);
@@ -1443,6 +1446,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             onMapContextOpenChange={setMapContextOpen}
             onMapContextAgencyCountChange={setMapContextAgencyCount}
             onMapContextRouteCountChange={setMapContextRouteCount}
+            onDrawnAgencySlugsChange={setDrawnSlugKey}
             day={day}
             hideSpan={hideSpan && !bustangView}
             tileFilter={tileFilter}

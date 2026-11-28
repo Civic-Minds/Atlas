@@ -21,7 +21,7 @@ describe('live-agency API: a summary older than its route files is not served (C
     at(route, 3000); // the route was re-run after the summary was built
     const stale = await get();
     expect(stale.status).toBe('no_analysis');
-    expect(stale.reason).toMatch(/live-agency-summary/);
+    expect(stale.reason).toMatch(/^No agency summary for .* yet\.$/);
     at(summary, 4000); // rebuilt
     expect((await get()).status).toBe('ready');
   });

@@ -29,16 +29,17 @@ describe('live-dashboard API: always a status and a reason, never a bare 404 or 
     writeFileSync(join(dir, 'ttc-512-segments.json'), JSON.stringify({ generatedAt: 'x', v3: v3(0.03) }));
     expect((await get('agency=ttc&route=512')).body).toMatchObject({ status: 'ready', route: '512' });
   });
-  it('says how to build a missing analysis, and that an old one needs a rebuild', async () => {
+  it('says an analysis is missing or old, with no Mac command (CIV-2914)', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'live-dash-'));
     process.env.LIVE_SEGMENTS_DIR = dir;
     const missing = await get('agency=ttc&route=505');
     expect(missing.body.status).toBe('no_analysis');
-    expect(String(missing.body.reason)).toMatch(/npm run live:analyze -- 505/);
+    expect(String(missing.body.reason)).toBe('Atlas has no analysis for 505 yet.');
     writeFileSync(join(dir, 'ttc-505-segments.json'), JSON.stringify({ generatedAt: 'x', segments: [] }));
     const old = await get('agency=ttc&route=505');
     expect(old.body.status).toBe('no_analysis');
     expect(String(old.body.reason)).toMatch(/older version/);
+    expect(String(old.body.reason)).not.toMatch(/npm|npx/);
   });
   it('serves the v3 block when it exists', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'live-dash-'));

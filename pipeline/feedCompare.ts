@@ -22,6 +22,7 @@ import { gtfsTimeToMinutes } from '../shared/connections.js';
 import { ALL_DAYS, DAYS_SUNDAY_FIRST } from '../shared/rules/days.js';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
+import type { RouteProperties } from '../shared/routeProperties.js';
 import { routeReading } from '../src/utils/routeReading.js';
 import type { ShapeProperties } from '../src/hooks/useIntervalStats.js';
 
@@ -101,6 +102,19 @@ export interface FeedSide {
 
 /** A counted day whose read services cover less than this share of the listed trips (or add this share unlisted) is not compared. */
 export const NOT_READ_SHARE = 0.9;
+
+/**
+ * #1710: what a non-variant row counts as for the route's length (CIV-1827): a branch, the main stretch, or nothing. A row is
+ * a branch only when it covers a whole tail the pipeline makes without ATLAS_PIECES_BY_TRIPS; a row whose only tails are
+ * by-trips pieces (TTC 52's 2-stop "Lawrence" pattern between station bays) reads as it would with that switch off: the
+ * main stretch's row when it covers it, else a variant, left out.
+ */
+export function lengthRole(p: Pick<RouteProperties, 'stretchRole' | 'stretchCovers' | 'stretchMeta'>): 'branch' | 'main' | null {
+  const tails = p.stretchMeta?.tails ?? [];
+  const covers = p.stretchCovers ?? [];
+  if (p.stretchRole === 'tail' && covers.some(c => c !== 'main' && !tails[c]?.byTrips)) return 'branch';
+  return p.stretchRole === 'main' || covers.includes('main') ? 'main' : null;
+}
 
 /** The read date gives nothing to compare (no service listed, or the pipeline drops it): the run stops with this message. */
 export class DateNotReadError extends Error {
@@ -287,7 +301,7 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
 
   const stopName = new Map((gtfs.stops ?? []).map(s => [String(s.stop_id), String(s.stop_name ?? '')]));
   /** Each route day's patterns, for its length (CIV-1827): stop count, direction, card role and end stops. */
-  const patterns = new Map<RouteDay, Array<{ n: number; dir: string; tail: boolean; ends: [string, string] }>>();
+  const patterns = new Map<RouteDay, Array<{ n: number; dir: string; tail: boolean; branch: boolean; counted: boolean; ends: [string, string] }>>();
   // Each trip's departure from its first stop, for a route's first trip where the hours bar has none (#1582).
   const firstDeparture = new Map<string, number>();
   const seqOf = new Map<string, number>();
@@ -346,7 +360,8 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     const order = Array.isArray(p.stopOrder) ? (p.stopOrder as unknown[]).map(String) : [];
     if (order.length >= 2 && p.stretchRole !== 'variant') {
       const name = (id: string) => stopName.get(id) ?? id;
-      (patterns.get(day) ?? patterns.set(day, []).get(day)!).push({ n: order.length, dir: String(p.directionId ?? '0'), tail: p.stretchRole === 'tail', ends: [name(order[0]), name(order[order.length - 1])] });
+      const role = lengthRole(p);
+      (patterns.get(day) ?? patterns.set(day, []).get(day)!).push({ n: order.length, dir: String(p.directionId ?? '0'), tail: p.stretchRole === 'tail', branch: role === 'branch', counted: role != null, ends: [name(order[0]), name(order[order.length - 1])] });
     }
     const dir = String(p.directionId ?? '0');
     const span = p.departureSpan as { first?: number; last?: number } | undefined;
@@ -368,8 +383,12 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
   // The route's length (CIV-1827): where it has branches, their full patterns (the tails; the main row is the shared
   // stretch alone), else its patterns; short turns left out. The fewest and most stops, and the ends of the longest
   // pattern in the lowest direction id, so both sides of a comparison read the same way round.
-  for (const [day, list] of patterns) {
-    const use = list.some(x => x.tail) ? list.filter(x => x.tail) : list;
+  for (const [day, all] of patterns) {
+    // #1710: the branches by lengthRole; where every row is a by-trips piece alone (Kingston 2), the tails, as before.
+    const counted = all.filter(x => x.counted);
+    const use = counted.length
+      ? (counted.some(x => x.branch) ? counted.filter(x => x.branch) : counted)
+      : (all.some(x => x.tail) ? all.filter(x => x.tail) : all);
     const ns = use.map(x => x.n);
     day.stops = [Math.min(...ns), Math.max(...ns)];
     const dir = use.map(x => x.dir).sort()[0];

@@ -7,6 +7,7 @@
 import { groupAgencies } from './agencyGroups';
 import { agencyTodayYmd, isExpiredFeedExpiry } from './feedAvailability';
 import { shortDate } from './dateText';
+import { isTimetableStale, monthYear } from './timetableAge';
 import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
 import { compareAgencyName, compareNullableAscending } from './sortCompare';
@@ -129,6 +130,10 @@ export interface AgencyPageSummary extends AgencyPageIdentity {
   timezone?: string | null;
   /** CIV-1011: the catalog's listingEndedOn, yyyymmdd: most routes stopped being listed then (Ryan's notice). */
   listingEndedOn?: string | null;
+  /** CIV-3115: the feed gives no real end date (validThrough is then only the placeholder cap, never shown). */
+  noFeedEnd?: boolean;
+  /** CIV-3115: when the agency's timetable last changed, yyyymmdd. */
+  timetableChangedAt?: string | null;
   /** Whether the release has Saturday / Sunday service for this agency (published day types). */
   sat?: boolean;
   sun?: boolean;
@@ -729,11 +734,30 @@ export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) =>
 // Cards and notices keep N25.
 export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This schedule covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
 
-export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn' | 'timezone'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd(a)): string {
+// CIV-3115 (Ryan's exact text, 2026-11-27): a feed that gives no end date, and the warning once its timetable hasn't changed
+// for TIMETABLE_STALE_MONTHS (shared/config). Without the warning, only the first sentence.
+export const NO_END_DATE_LEAD = 'Based on the agency’s published schedule, which has no end date.';
+export const timetableStaleLine = (monthYearText: string) => `The agency hasn’t changed its timetable since ${monthYearText}, so it may be out of date.`;
+// CIV-3115 (Ryan's exact text, 2026-11-27): the MCP's "schedule valid through" for a feed with no end date, with the same
+// warning as the page once its timetable hasn't changed for TIMETABLE_STALE_MONTHS.
+export const NO_END_DATE_SHORT = 'no end date';
+export function noEndDateValidThrough(a: { timetableChangedAt?: string | null }, todayYmd: string): string {
+  const changed = isTimetableStale(a.timetableChangedAt, todayYmd) ? monthYear(a.timetableChangedAt) : null;
+  return changed ? `${NO_END_DATE_SHORT}; ${timetableStaleLine(changed).replace(/^The /, 'the ').replace(/\.$/, '')}` : NO_END_DATE_SHORT;
+}
+
+export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn' | 'timezone' | 'noFeedEnd' | 'timetableChangedAt'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd(a)): string {
   const published = shortDate(a.lastRefreshedAt);
-  const through = shortDate(a.validThrough);
   const release = shortDate(releaseDate);
   const listingEnded = shortDate(a.listingEndedOn);
+  if (a.noFeedEnd) {
+    // CIV-3115: no made-up end date. The warning names the month the timetable last changed.
+    const changed = isTimetableStale(a.timetableChangedAt, todayYmd) ? monthYear(a.timetableChangedAt) : null;
+    const datesClause = listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
+      : published ? `This schedule was added on ${published}.` : '';
+    return [NO_END_DATE_LEAD, changed ? timetableStaleLine(changed) : '', datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  }
+  const through = shortDate(a.validThrough);
   // The map's rule (isAgencyFeedExpired): ended from the day after the last day, in the agency's own date.
   const datesClause = through && isExpiredFeedExpiry(a.validThrough, todayYmd)
     ? `This schedule ended on ${through}; the agency hasn’t published a newer one yet.`

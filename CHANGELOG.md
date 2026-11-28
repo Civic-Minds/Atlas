@@ -7,8 +7,23 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
+- **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board
+- **A one-stretch route takes its card's colour on the map where its trips are uneven**: a one-minute timetable difference between neighbouring stops split the line into two colours (Nanaimo 40 toward Downtown, PM peak, drew its first 17 stops every 30 while the card said every 15)
+- **A route whose branch doesn't run at that time of day is one colour on the map then too**: the one-colour rule looked at the whole day, so a branch running only at other times left the trunk's stops in mixed colours
+- **A branch's own stops no longer take the other branch's buses on the map**: Spokane 20's Clarke and Riverside stops were coloured every 15 though each branch runs every 30, because buses on the other road were counted as passing them
+- **The MCP points to King County Metro, Pierce Transit or Community Transit when asked for a Sound Transit bus**: it said Sound Transit had no route 556, because ST Express buses are in those agencies' files, not Sound Transit's
+- **The map's credit line names an agency only while one of its routes is drawn**: at Terrace, BC it credited BC Transit with 0 routes on screen, because it credited any agency whose area was in view
+- **Sound Transit's 556 heads "to Issaquah Highlands Park & Ride", as the agency names it**: King County Metro's file runs the destination and a stop on the way together ("Issaquah Highlands Park & Ride Issaquah Transit Center")
+- **Agency pages no longer show a made-up end date for schedules that give none**: 39 agencies whose files run to 2099 read "covers service until" a date Atlas invented; they now say the schedule has no end date, and the 7 whose timetable hasn't changed in 12 months or more say it may be out of date
+- **The MCP says "no end date" for schedules that give none**: it gave the same made-up date as the agency pages did, and now carries the pages’ warning when the timetable hasn’t changed in 12 months
+- **A route card shows one row, at the direction's real frequency, where two headsigns run the same stops**: alternating headsigns read as two destinations at half the frequency (Intercity Transit 9X westbound said every 30 though buses come every 15, as the map shows)
 - **About → Sources credits about 200 more agencies whose data licence requires it**: French, ODbL, Creative Commons and city open-data feeds were shown without the credit their licence asks for
 - **The MCP's agency list no longer gives a "schedule added" date**: it was Atlas's last refresh, so a schedule from 2019 read as added this month
+- **Studio's schedule comparison gives a route's length from its whole branches**: TTC 52 read 2–80 stops because a 2-stop piece between Lawrence Station's bays counted as a branch; it reads 41–80
+- **A stop card no longer gives a destination a number its own buses don't run**: on a shared stretch, a destination with no trips of its own in the period showed every bus passing the stop under its name (TTC 102 midday "to Sheppard every 7" from 12 trips a day); the Shared stretch row carries that number, and the MCP's stop answers follow
+- **A link to a Live route opens its card on the current time of day**: opened from a link, the card sometimes showed the whole day, with no period picked on its chart, until the route was picked again
+- **A small clock beside the Live route card's flag shows when its vehicles stopped reporting**: hovering reads "Locations last updated at" the time, in place of the "last updated" words in the card's Right now heading
+- **Live puts each vehicle under the destination its trip really ends at**: a TTC 505 car signed "Broadview Ave" was listed apart from "to Broadview" although its trip ends at the same stop; a trip ending elsewhere gets its own row in its direction
 - **The MCP no longer answers for Embark, UTA and IndyGo**: their data terms need the agency's written permission for other uses, as TriMet's do; the map and History keep them
 - **The MCP gives the credit each agency's data licence asks for, as the site's Sources do**: it credited only 511.org agencies, so answers about the TTC, TransLink, VIA and 30 others carried no credit their licence requires
 - **Studio Live's late bar follows the time of day you pick, like the table under it**: the bar showed the whole day while the table showed the picked time, so the two late figures disagreed with nothing saying why
@@ -17,7 +32,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live's timetable figure is named "Lateness", and Studio's Measure menu lists it once**: "Schedule adherence" was long for a label, and Studio showed two entries for the same idea
 - **Studio's map has Frequency, Day, Time and Mode filters**: its lines were coloured by frequency with no way to filter them, as the main map can
 - **Live vehicles are arrows pointing the way they're heading**: the dots carried the route number, which made them hard to read; a vehicle that reports no heading stays a plain dot
-- **Long destination names no longer squeezed**: a reading that doesn't fit beside the name sits right-aligned on the line below.
+- **Long destination names no longer squeezed**: a reading that doesn't fit beside the name sits right-aligned on the line below
 - **Live's list shows every route on the map**: after picking a place such as Burlington Transit, the list kept to that agency, so HSR routes drawn on the map in the Hamilton view were missing from it
 - **About > Measurements is one row per measure, and Live shows no "figures updated" date**: "Bunching ›" opens its definition; the date was when summary figures were built, not when buses were seen, so it read as stale live data
 - **About > Sources labels its agency list "Licences and attributions."**: the list of agency pills had no heading, so it was unclear what it was for
@@ -76,14 +91,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Route lists, Atlas Studio MCP and agency pages give the numbers the route card shows**: a list could read a branch's full-period wait the card never shows (JTA 4 weekday midday "every 65–145" beside a card of 60 to 67), and the MCP and agency pages read an older card, so Brooklyn B35 on Sunday middays read "every 237 min" for a branch that runs every 12 from 12:57 PM
 - **Tapping "1 agency couldn't load" says which agency**: the map's pill lists each agency that failed, on phones too, where the names were only a hover you couldn't reach
 - **The full-day schedule names the hour you point at**: hovering 5 AM reads "5 AM: every 15 min" instead of "Overnight every 15 min", which read as overnight service on routes like CapMetro 801 that have none
-- **The cloud recorder saves each recorded agency's whole-network vehicle counts with every snapshot**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network
+- **The cloud recorder saves each recorded agency's whole-network vehicle counts every minute**: Fleet can show how many vehicles are on a trip now and how many are out with no trip, across the whole network, including TTC routes Live doesn't record
 - **The overnight and frequent-service maps say to zoom in when zoomed out**: they draw no routes that far out, but the overnight list said only "some less frequent routes are hidden" and the frequent-service map said nothing
 - **The Coverage page's tags line up under their headings**: four Live tags ran over the Studio column, so "Lateness" sat on top of "Schedule"
 - **Route cards that include lettered variants show every variant's destinations**: GRTC 1A's card said it included 1B and 1C but listed only 1A's rows, because the card kept one route's rows for the whole family
 - **Atlas Studio's Fleet leads with right now**: every vehicle on the road now and the vehicles the schedule runs at this hour, then a chart of each time of day you can hover or click; "Scheduled now" counted the vehicles the schedule's frequencies would need, not the ones it runs (1,819 against 1,790 for the TTC at the evening rush)
 - **The internal MCP page's usage chart shows questions and calls as two lines, over 7, 14 or 28 days**: calls were only in the hover, and it opens on the last week
 - **The internal MCP page's Stop link sits in a tester's own view**: a button on every row of the Testers table was too much
-- **The cloud recorder saves each recorded agency's whole-network vehicle count every minute**: Fleet can show how many vehicles are in service now, including TTC routes Live doesn't record
 - **Turning Live off no longer breaks the map**: leaving Live replaced the whole map with "The map couldn't be shown because of an error" until Retry
 - **Live's route card is the map's route card**: it has the map card's chart, period and both directions' destinations, with "Right now" added below for every direction at once instead of a direction toggle, and it lines up with the search bar
 - **Studio Live's map shows "Not measured" stretches dashed**: they were the same grey as "Under 0.5 min", so a stretch with no figure looked like one where nothing was lost
@@ -200,7 +214,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio MCP's right-now answers give Live's Scheduled lines**: the same shared stretch and branch lines as Live's route card, so the two never disagree
 - **Live's route card counts vehicles under each branch it lists**: on a branching route such as the 501, each Scheduled line shows how many vehicles are on that branch and its own longest and shortest gap, so a thin branch no longer hides behind the route-wide count
 - **Live's route card shows gaps as soon as it opens**: it starts from the last half hour of recorded positions, where it used to wait until its own readings covered a full gap, which on the 501 took about 9 minutes
-- **Studio's Live route panel shows the same Right now card as Live**: vehicles, Scheduled lines and per-branch gaps from the same live readings, steered by the panel's Direction chip, so the two views no longer give different right-now figures
 - **Studio's Live route page no longer re-renders in a loop while a route loads**: the map's status pill was rebuilt on every render, which hammered the page and flooded the console
 - **Studio's Live route panel shows the same Right now card as Live**: vehicles, Scheduled lines and per-branch gaps from the same live readings, steered by the panel's Direction chip, so the two views no longer give different right-now figures. A route with no live reading says only that, and the week's table says its figures are recorded past service
 - **Live's route card gives a gap under a minute in seconds**: it read "0 min", where Studio already said "40 sec"
