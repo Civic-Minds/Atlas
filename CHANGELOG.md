@@ -8,6 +8,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Live's All routes trip-time arrow follows the number shown**: "5% faster" to "4% faster" drew an up arrow, because the arrow followed the trip getting longer rather than the share written
 - **A route that runs through the start or end of a part of the day no longer reads "from" or "until" that edge**: TransLink R2 read "every 8 min from 3:10 PM" though its buses run every 8 straight through 3 PM
+- **Studio's Live panel is shorter and plainer**: the week table is headed "This week vs. last" without the "Recorded past service, not live." line, and the late-by-hour chart is left out when too few days were measured
+- **Live route rows show each destination once, with its vehicles under it and the live gaps beside its frequency**: a row reads "every 10 min · gaps 3–20 min" over "5 vehicles", and opening it lists its vehicles right there; the vehicles had sat in a separate list, and Studio repeated each destination under Right now and Scheduled
+- **The Live late-by-hour chart names what it covers top right, where the route card chart names its period**: "both directions" sat on its own line above the bars
 - **Taxibus and dial-a-ride routes that list a booked pickup and a drop-off-only stop read as on-demand**: Cascades East A and B and Telluride's Dial-A-Ride and Paratransit read as fixed buses, because Atlas counted stops where no one can board
 - **A one-stretch route takes its card's colour on the map where its trips are uneven**: a one-minute timetable difference between neighbouring stops split the line into two colours (Nanaimo 40 toward Downtown, PM peak, drew its first 17 stops every 30 while the card said every 15)
 - **A route whose branch doesn't run at that time of day is one colour on the map then too**: the one-colour rule looked at the whole day, so a branch running only at other times left the trunk's stops in mixed colours

@@ -291,12 +291,28 @@ describe('directions for trips the analysis doesn\'t list (CIV-899)', () => {
 describe('the route card\'s longest and shortest gap (CIV-2045)', () => {
   it('judges the longest gap by the timetable where it is, and the shortest by the bunched rule', () => {
     // Downtown (sched 4 min): a 9 min gap is over 2× 4 min, too far; at an end (sched 10 min) it would not be.
-    expect(gapExtremes({ gapsMin: [9, 3, 1.5], gapsSchedSec: [240, 240, 600], scheduledSec: 600 })).toEqual({ longest: { min: 9, tooFar: true }, shortest: { min: 1.5, tooClose: true } });
-    expect(gapExtremes({ gapsMin: [9, 3], gapsSchedSec: [600, 600], scheduledSec: 600 })).toEqual({ longest: { min: 9, tooFar: false }, shortest: { min: 3, tooClose: false } });
+    expect(gapExtremes({ gapsMin: [9, 3, 1.5], gapsSchedSec: [240, 240, 600], scheduledSec: 600 })).toEqual({ longest: { min: 9, tooFar: true }, shortest: { min: 1.5, tooClose: true }, rangeFrom: 1.5 });
+    expect(gapExtremes({ gapsMin: [9, 3], gapsSchedSec: [600, 600], scheduledSec: 600 })).toEqual({ longest: { min: 9, tooFar: false }, shortest: { min: 3, tooClose: false }, rangeFrom: 3 });
   });
   it('shows nothing unless more than half the gaps were measured', () => {
     expect(gapExtremes({ gapsMin: [5, null], scheduledSec: 600 })).toBeNull();
     expect(gapExtremes({ gapsMin: [5, null, 6], scheduledSec: 600 })).not.toBeNull();
     expect(gapExtremes({ gapsMin: [], scheduledSec: 600 })).toBeNull();
+  });
+});
+
+// CIV-1828 (Ryan, 2026-11-27): a destination row reads its live gaps as a range, leaving out gaps under a minute.
+describe('live gap range', () => {
+  it('starts at the shortest gap of a minute or more', async () => {
+    const { gapRangeText } = await import('../../../shared/liveWording');
+    const ext = gapExtremes({ gapsMin: [0.7, 3, 20, 8], scheduledSec: 300 })!;
+    expect(ext.rangeFrom).toBe(3);
+    expect(gapRangeText(ext.rangeFrom, ext.longest.min)).toBe('gaps 3–20 min');
+  });
+  it('falls back to the longest gap when no other gap is a minute or more', async () => {
+    const { gapRangeText } = await import('../../../shared/liveWording');
+    const ext = gapExtremes({ gapsMin: [0.5, 12], scheduledSec: 300 })!;
+    expect(gapRangeText(ext.rangeFrom, ext.longest.min)).toBe('longest gap 12 min');
+    expect(gapRangeText(null, 0.5)).toBe('longest gap 30 sec');
   });
 });

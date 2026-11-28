@@ -6,6 +6,7 @@ import PeriodBand from './PeriodBand';
 import { AXIS_W, SPARK_BAR, SparkTicks } from './sparkParts';
 import DataTable from '../ui/DataTable';
 import { countText } from '../../../shared/numberText';
+import { CARD_NOTE } from '../../styles';
 import { HOUR_COLUMN } from '../../content/noticeCopy';
 
 export interface HourValue {
@@ -81,9 +82,10 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
     <figure className="m-0">
       <div role="img" aria-label={ariaLabel} aria-describedby={tableId} tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
         <div aria-hidden="true" onPointerLeave={() => setHv(null)}>
-          {/* The hovered hour's figures, in the sparkline's way: a highlight behind the bar and one line above. */}
-          <div className="h-5 truncate text-xs text-[var(--text-secondary)]">
-            {hover != null && byHour.get(hover) ? (hoverLine ? hoverLine(clock(hover), byHour.get(hover)!) : <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {countText(byHour.get(hover)!.n)} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>) : hv == null ? idleText : null}
+          {/* The hovered hour's figures, in the sparkline's way: a highlight behind the bar and one line above. The line sits
+              top right, where the route card's chart names its period (CIV-1828). */}
+          <div className="h-5 truncate text-right text-xs text-[var(--text-secondary)]">
+            {hover != null && byHour.get(hover) ? (hoverLine ? hoverLine(clock(hover), byHour.get(hover)!) : <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {countText(byHour.get(hover)!.n)} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>) : hv == null && idleText ? <span className={CARD_NOTE}>{idleText}</span> : null}
           </div>
           {/* The peak label sits above the tallest bar: room is kept for it so it never runs into the line above. */}
           <div className={`relative ${yAxis ? 'mt-2.5' : peakLabel ? 'mt-3' : ''}`} style={{ paddingLeft: ml }}>

@@ -207,7 +207,8 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
 
 /** The tool panel's card: late share by hour over the whole 5am-4am day, the chosen time of day shaded. */
 function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<MiniProps, 'chart'>) {
-  if (!hours.length) return null;
+  // Ryan, 2026-11-27 ("1"): with too few measurements the whole section is hidden, not dimmed.
+  if (!hours.length || isThin(days)) return null;
   // The bars fill the chart's height relative to its own tallest hour, which is labelled.
   const max = Math.max(0.01, ...hours.filter(h => h.n >= MIN_N).map(h => h.value));
   return (

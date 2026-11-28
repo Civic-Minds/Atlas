@@ -12,7 +12,7 @@ import { useLiveDashboard } from '../../../hooks/useLiveDashboard';
 import { excludingDays, kpiTiles } from '../../../utils/liveKpi';
 import { agencyKpiTiles, agencyWeekScope } from '../../../utils/liveAgencyKpi';
 import { stretchLabel } from '../../../utils/stopLabel';
-import { TYPICAL_ADDED, GROWS_LABEL, LATE_STOPS_TITLE, excludingText, timeLostLine, STUDIO_LIVE_PENDING, STUDIO_ROUTE_PANEL_PENDING, onTimeWindowWords, weekScopeText } from '../../../../shared/liveWording';
+import { TYPICAL_ADDED, GROWS_LABEL, LATE_STOPS_TITLE, excludingText, timeLostLine, STUDIO_LIVE_PENDING, onTimeWindowWords, weekScopeText } from '../../../../shared/liveWording';
 import { PERIOD_LABELS } from '../../../../shared/config';
 import { measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from '../routeMapModel';
 import { delayHeatPoints } from '../delayHeatModel';
@@ -128,7 +128,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route, inStudio, held, lat
   const hourLeftShown = excludingText(hourLeft) === weekLeft.text ? undefined : hourLeft;
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={weekScopeText(inStudio ? BOTH_DIRECTIONS : `${route} · ${BOTH_DIRECTIONS}`, band === 'all' ? null : PERIOD_LABELS[band])} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lead={held} label={inStudio ? STUDIO_ROUTE_PANEL_PENDING.weekRecorded : undefined} lateNote={lateNote} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={weekScopeText(inStudio ? BOTH_DIRECTIONS : `${route} · ${BOTH_DIRECTIONS}`, band === 'all' ? null : PERIOD_LABELS[band])} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} lead={held} lateNote={lateNote} /> }] : []),
     ...(!tiles.length && held ? [{ key: 'held', size: 'medium' as const, node: <CardHelpNotice message={held} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
