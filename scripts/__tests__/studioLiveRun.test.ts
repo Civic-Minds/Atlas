@@ -55,7 +55,9 @@ describe('the cloud script (public repository)', () => {
   // #1811: every printing call, and every helper that wraps one (such as CIV-2910's reasons.push), may interpolate
   // only these counts; anything else (a slug, route, reason or error message) must go to the private log.
   const COUNTS = new Set(['++agenciesDone', 'minutes()', 'fileCount', 'thin', 'failed', 'stale.length',
-    'Object.keys(built).length', 'Object.keys(pointer.agencies).length']);
+    'Object.keys(built).length', 'Object.keys(pointer.agencies).length',
+    // #1789 (CIV-2907): the partway-start totals; the per-agency lines go to the private log.
+    'partwayTotal.runs', 'partwayTotal.starts', 'partway.size']);
   const callArgs = (from: number) => {
     let depth = 0;
     for (let i = from; i < src.length; i++) {
