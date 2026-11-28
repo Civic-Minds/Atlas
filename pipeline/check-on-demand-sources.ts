@@ -6,8 +6,8 @@
  *   npx tsx pipeline/check-on-demand-sources.ts lawrence-ku cats
  */
 import { evaluateOnDemandRelease } from './onDemandGate.js';
-import { buildOnDemandRelease } from '../src/data/onDemandExport.js';
-import { loadOnDemandSources } from '../src/data/onDemandSources.js';
+import { buildOnDemandRelease } from '../shared/onDemand/onDemandExport.js';
+import { loadOnDemandSources } from '../shared/onDemand/onDemandSources.js';
 
 const only = new Set(process.argv.slice(2));
 let sources;

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Agency } from '../../../App';
-import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../data/onDemandServiceAreas';
+import { HAMILTON_MY_RIDE_SERVICE_AREA } from '../../../../shared/onDemand/onDemandServiceAreas';
 
 const flags = vi.hoisted(() => ({ on: true }));
 vi.mock('../../../../shared/config', async (importOriginal) => {

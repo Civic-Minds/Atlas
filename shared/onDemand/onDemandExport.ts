@@ -5,7 +5,7 @@
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { localDateIn, withoutExpiredOnDemandZones } from '../../shared/onDemandAvailability';
+import { localDateIn, withoutExpiredOnDemandZones } from '../onDemandAvailability';
 import {
   ON_DEMAND_SCHEMA_VERSION,
   featuresBbox,
@@ -13,8 +13,9 @@ import {
   type OnDemandIndex,
   type OnDemandIndexEntry,
   type OnDemandManifest,
-} from '../../shared/onDemandData';
-import { ATTACHED_ON_DEMAND_SERVICES, PROMOTED_ON_DEMAND_SLUGS, STANDALONE_ON_DEMAND_AGENCIES, type OnDemandArea } from './onDemandRegistry';
+} from '../onDemandData';
+import { ATTACHED_ON_DEMAND_SERVICES, PROMOTED_ON_DEMAND_SLUGS, STANDALONE_ON_DEMAND_AGENCIES } from './onDemandRegistry';
+import type { OnDemandArea } from '../onDemandAvailability';
 import { loadOnDemandSources, type OnDemandSource } from './onDemandSources';
 
 /** Rollout fields are rebuilt from `public` on load, so they never travel in the files. */

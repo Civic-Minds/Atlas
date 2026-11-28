@@ -10,7 +10,7 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { bboxOversized, bboxUndersized, pointsExtent, stopsBbox, type Bbox } from '../shared/agencyBbox';
-import { buildOnDemandRelease } from '../src/data/onDemandExport';
+import { buildOnDemandRelease } from '../shared/onDemand/onDemandExport';
 
 /** Every [lat, lon] in GeoJSON coordinates (stored [lon, lat]). */
 function* coords(c: unknown): Generator<[number, number]> {

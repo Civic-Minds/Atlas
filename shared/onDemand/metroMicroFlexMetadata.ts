@@ -1,5 +1,5 @@
 // Generated from GTFS-Flex routes.txt and booking_rules.txt. Do not edit by hand.
-import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
+import type { OnDemandAvailability } from '../onDemandAvailability';
 
 export const GTFS_FLEX_METADATA = {
   zoneMetadata: {

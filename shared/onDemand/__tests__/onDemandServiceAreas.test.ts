@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { ON_DEMAND_PUBLIC } from '../../../shared/config';
-import { isAgencyVisibleInBrowser } from '../../../shared/agencyVisibility';
+import { ON_DEMAND_PUBLIC } from '../../config';
+import { isAgencyVisibleInBrowser } from '../../agencyVisibility';
 import {
   BWG_ON_DEMAND_AGENCY,
   BWG_ON_DEMAND_SERVICE_AREA,
@@ -24,8 +24,8 @@ import {
 import * as Services from '../onDemandServiceAreas';
 import { HSR_MY_RIDE_STOP_FEATURES } from '../hsrMyRideStops';
 import { HAMILTON_TRANS_CAB_SERVICE_AREAS, HAMILTON_TRANS_CAB_TRANSFER_POINTS } from '../transCabServiceArea';
-import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, resolveOnDemandZone } from '../../../shared/onDemandAvailability';
-import { onDemandPickupSentence } from '../../content/noticeCopy';
+import { isOnDemandActive, isOnDemandStopShown, isOnDemandZoneShown, resolveOnDemandZone } from '../../onDemandAvailability';
+import { onDemandPickupSentence } from '../../../src/content/noticeCopy';
 
 describe('BWG on-demand service area', () => {
   it('keeps the captured Argo polygon closed and non-trivial', () => {

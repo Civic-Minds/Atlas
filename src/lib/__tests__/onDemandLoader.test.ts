@@ -2,11 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Agency } from '../../App';
 import { ON_DEMAND_PUBLIC } from '../../../shared/config';
 import { isAgencyVisibleInBrowser } from '../../../shared/agencyVisibility';
-import { buildOnDemandRelease, releaseFiles, releaseWithHeldServices } from '../../data/onDemandExport';
-import { ATTACHED_ON_DEMAND_SERVICES, STANDALONE_ON_DEMAND_AGENCIES } from '../../data/onDemandRegistry';
-import { loadOnDemandSources } from '../../data/onDemandSources';
+import { buildOnDemandRelease, releaseFiles, releaseWithHeldServices } from '../../../shared/onDemand/onDemandExport';
+import { ATTACHED_ON_DEMAND_SERVICES, STANDALONE_ON_DEMAND_AGENCIES } from '../../../shared/onDemand/onDemandRegistry';
+import { loadOnDemandSources } from '../../../shared/onDemand/onDemandSources';
 import { applyOnDemand, loadOnDemandGeometry, loadOnDemandIndex } from '../onDemandLoader';
 import type { OnDemandGeometry } from '../../../shared/onDemandData';
+import { BETA_SERVICE_ROLLOUT_NOTICE } from '../../content/noticeCopy';
 
 const catalog = Object.keys(ATTACHED_ON_DEMAND_SERVICES).map(slug => ({ slug, name: slug, region: 'Test', center: [0, 0], url: `https://x/${slug}.json` }) as unknown as Agency);
 
@@ -32,8 +33,10 @@ describe('on-demand R2 round trip (CIV-50)', () => {
   it('rebuilds every on-demand-only agency, with its rollout fields from the public flag', () => {
     const { index, geometries } = roundTrip('beta');
     const agencies = applyOnDemand([], index, geometries);
+    // CIV-3189: the data carries only the rollout flags; the app adds the beta notice's words from noticeCopy.
     for (const original of STANDALONE_ON_DEMAND_AGENCIES) {
-      expect(agencies.find(a => a.slug === original.slug), original.slug).toEqual(JSON.parse(JSON.stringify(original)));
+      const expected = { ...JSON.parse(JSON.stringify(original)), ...(original.betaOnly ? { rolloutNotice: BETA_SERVICE_ROLLOUT_NOTICE } : {}) };
+      expect(agencies.find(a => a.slug === original.slug), original.slug).toEqual(expected);
     }
   });
 

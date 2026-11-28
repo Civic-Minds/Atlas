@@ -4,7 +4,7 @@
  */
 import type { OnDemandGeometry, OnDemandIndex, OnDemandIndexEntry } from '../shared/onDemandData.js';
 import { localDateIn } from '../shared/onDemandAvailability.js';
-import { agencyTimeZone } from '../src/data/onDemandExport.js';
+import { agencyTimeZone } from '../shared/onDemand/onDemandExport.js';
 
 export type OnDemandFlag =
   | 'invalid'

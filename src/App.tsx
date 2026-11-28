@@ -68,7 +68,7 @@ import type { NightServiceFrequency } from '../shared/nightService';
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
-import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
+import type { OnDemandArea } from '../shared/onDemandAvailability';
 import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_APPS_LABEL, COMPARE_LABEL, MORE_LABEL, explainerFor } from './content/noticeCopy';
 import ViewLoadingPanel, { ViewLoadingPill } from './components/ViewLoadingPanel';
 import { PAGE_NAMES } from '../shared/pageNames';
@@ -103,26 +103,7 @@ export interface Agency extends Omit<AgencyCatalogEntry, 'url' | 'feedQuality'> 
   supplementalFeedUrls?: string[];
   /** Agency-level service represented by a boundary rather than route GeoJSON. */
   onDemandOnly?: boolean;
-  onDemandServiceArea?: {
-    features: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>[];
-    stopFeatures?: GeoJSON.Feature<GeoJSON.Point>[];
-    sourceUrl: string;
-    sourceLabel: string;
-    sourceRetrievedAt?: string;
-    /** Source wording for hours; shown only when structured availability is missing. */
-    serviceHours?: string;
-    /** Qualifiers structured hours can't express, e.g. holidays. */
-    hoursNote?: string;
-    /** The service's own name. */
-    serviceName?: string;
-    /** A trip restriction riders must know, e.g. which trips a zone can serve. */
-    tripRules?: string;
-    /** Who may ride, when the agency limits it, e.g. "Riders 13 and older." */
-    eligibility?: string;
-    availability?: OnDemandAvailability;
-    pickup?: OnDemandPickup;
-    zoneMetadata?: Record<string, OnDemandZoneDetails>;
-  };
+  onDemandServiceArea?: OnDemandArea;
 }
 
 const PATH_TO_APP: Record<string, AppId> = {

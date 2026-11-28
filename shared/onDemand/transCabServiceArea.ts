@@ -1,4 +1,4 @@
-import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
+import type { OnDemandAvailability } from '../onDemandAvailability';
 
 const SOURCE_URL = 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/trans-cab';
 const SOURCE_LABEL = 'City of Hamilton Trans-Cab service-zone maps';

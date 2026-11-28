@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildOnDemandRelease } from '../onDemandExport';
+import { buildOnDemandRelease } from '../../../shared/onDemand/onDemandExport';
 
 /**
  * CIV-1427: every trip rule is one of three sentences, only the place names change (Ryan: "some notices say 'can go'

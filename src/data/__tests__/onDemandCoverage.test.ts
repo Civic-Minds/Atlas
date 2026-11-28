@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ON_DEMAND_NOT_MAPPED, ON_DEMAND_PARTLY_MAPPED, onDemandCoverageNote } from '../onDemandCoverage';
-import * as Services from '../onDemandServiceAreas';
-import { loadOnDemandSources } from '../onDemandSources';
+import * as Services from '../../../shared/onDemand/onDemandServiceAreas';
+import { loadOnDemandSources } from '../../../shared/onDemand/onDemandSources';
 
 // Every slug with a drawn zone, standalone agencies included (App.tsx attaches the rest).
 const MAPPED_SLUGS = [

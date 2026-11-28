@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import * as Services from '../onDemandServiceAreas';
+import * as Services from '../../../shared/onDemand/onDemandServiceAreas';
 
 // Ryan, 2026-11-24: "THis is like the 6th time i have said to remove the on demand booking info", and earlier (CIV-1784):
 // "this isnt for ppl using it like google maps". Atlas is not a trip-planning tool, so no booking info anywhere: no booking
