@@ -57,6 +57,8 @@ export interface LiveScheduledRow {
   /** #1958: the row's own shape, so its live gaps are measured along the streets its vehicles run (a branch past the split,
    *  replacement buses on other streets); null for the shared stretch or a row whose shape isn't a single line. */
   coordinates?: [number, number][] | null;
+  /** CIV-3173: the route card's own direction for the row (its group), which the analysis may number the other way. */
+  cardDirId?: number;
 }
 
 /** The shape a card row stands for: the model copies a shape's properties, so it is found by what names it. */
@@ -86,12 +88,12 @@ export function liveScheduledRows(
   const rest = lines.filter(l => !l.shared);
   // The card's lines come shared first, then one per row in order, then span rows.
   return [
-    ...shared.map(l => ({ key: 'shared', label: l.label, value: l.value, headsign: null, headwayMin: group.shared?.headway ?? null, coordinates: null })),
+    ...shared.map(l => ({ key: 'shared', label: l.label, value: l.value, headsign: null, headwayMin: group.shared?.headway ?? null, coordinates: null, cardDirId: group.dirId })),
     ...rest.map((l, i) => {
       const row = group.rows[i];
       const v = row && !row.night ? row.display(null).value : null;
       const shape = row ? lineCoords(rowShape(fc, row.feature)?.geometry) : [];
-      return { key: row?.id ?? `span-${i}`, label: l.label, value: l.value, headsign: row?.feature.headsign ?? null, headwayMin: v && !v.isLimited ? v.headway ?? null : null, coordinates: shape.length >= 2 ? shape : null };
+      return { key: row?.id ?? `span-${i}`, label: l.label, value: l.value, headsign: row?.feature.headsign ?? null, headwayMin: v && !v.isLimited ? v.headway ?? null : null, coordinates: shape.length >= 2 ? shape : null, cardDirId: group.dirId };
     }),
   ];
 }

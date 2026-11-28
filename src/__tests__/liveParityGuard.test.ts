@@ -138,3 +138,18 @@ describe('Live rows: gaps over the vehicles each row counts (#1958)', () => {
     expect(read('src/utils/liveScheduledHeadway.ts')).toMatch(/coordinates: shape\.length >= 2/);
   });
 });
+
+describe('Live map and Studio: one model (CIV-3173 part 2)', () => {
+  it('reports row gaps under the route card\'s own direction, which the shared stretch is looked up by', () => {
+    // TTC 504's analysis numbers westbound 0 and the card numbers eastbound 0, so each direction's shared-stretch figure
+    // sat on the other direction's row, on the map and in Studio.
+    const card = read('src/components/Live/LiveRoutePerformance.tsx');
+    expect(card).toContain('onDestinationGaps(cardDirId ?? directionId, gaps)');
+    expect(read('src/utils/liveScheduledHeadway.ts')).toMatch(/cardDirId: group\.dirId/g);
+  });
+  it('the map pairs trip directions from vehicles placed by shape alone, as Studio does', () => {
+    // Fed its own resolved vehicles, a wrong pairing held itself in place on the map only.
+    expect(read('src/apps/LiveVehicles.tsx')).toMatch(/useLiveTripDirections\(pairingSlug, selectedGroup\?\.routeShortName \?\? null, guessedSelected\)/);
+    expect(read('src/apps/studio/RouteRightNow.tsx')).toMatch(/useLiveTripDirections\(slug, routeShortName, guessed, true\)/);
+  });
+});
