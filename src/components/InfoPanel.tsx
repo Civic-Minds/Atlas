@@ -448,15 +448,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
             </div>
               {/* Pinned to the panel's bottom edge, below the scrolling content. */}
-              <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)] space-y-1" data-testid="info-panel-footer">
+              <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)]" data-testid="info-panel-footer">
+                {/* CIV-3178 (Ryan, 2026-11-28, picked 1: "when possible, this should be on one line"): one line,
+                    "Docs · Terms · Privacy · © 2026 Civic Minds", with no full stop; on a phone the © line wraps under the links. */}
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
                   <AppLink to={DOCS_PATH} className="hover:text-[var(--accent)] hover:underline">{DOCS_PAGE_TITLE}</AppLink>
                   <span aria-hidden="true">·</span>
                   <AppLink to={TERMS_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.termsLink}</AppLink>
                   <span aria-hidden="true">·</span>
                   <AppLink to={PRIVACY_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.privacyLink}</AppLink>
+                  <span aria-hidden="true" className="max-sm:hidden">·</span>
+                  <span className="max-sm:basis-full whitespace-nowrap">© {new Date().getFullYear()} Civic Minds</span>
                 </div>
-                <p>© 2026 Civic Minds.</p>
               </div>
             </div>
           )}
