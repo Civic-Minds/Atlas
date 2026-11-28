@@ -107,3 +107,20 @@ describe('Live right now: one way of reading a route (CIV-3177)', () => {
     expect(gone, 'remove it from KNOWN').toEqual([]);
   });
 });
+
+describe('Live coverage: one answer per agency (CIV-3173)', () => {
+  it('reads vehicles and weekly figures from the core, never from its own list', async () => {
+    const { liveAgencyCoverage } = await import('../../shared/liveCore');
+    // YRT: vehicles on the map, no weekly figures; Kingston: weekly figures in Studio, never public vehicles (CIV-1716).
+    expect(liveAgencyCoverage('yrt', ['ttc', 'kingston'])).toEqual({ hasVehicles: true, hasWeeklyFigures: false });
+    expect(liveAgencyCoverage('kingston', ['ttc', 'kingston'])).toEqual({ hasVehicles: false, hasWeeklyFigures: true });
+    expect(liveAgencyCoverage('ttc')).toEqual({ hasVehicles: true, hasWeeklyFigures: null });
+  });
+  it('the Worker and Studio\'s agency list take coverage from the core', () => {
+    for (const f of ['workers/atlas-live-read/src/index.ts', 'local-api/live-studio-agencies.ts']) {
+      const src = read(f);
+      expect(src, f).toContain('liveAgencyCoverage(');
+      expect(src, f).not.toContain('liveCloudServesVehicles');
+    }
+  });
+});

@@ -6,6 +6,7 @@
  */
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, stopNameParts, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './liveSegmentData.js';
 import { lonLatPoint, metresBetween, projectOntoSegment } from './geoDistance.js';
+import { liveCloudServesVehicles } from './liveCloud.js';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LIVE_MIN_SAMPLE, LIVE_STALE_SEC, GAP_RANGE_FROM_SEC, LIVE_MOVED_M, LIVE_MOVED_WITHIN_SEC, LIVE_NOW_WINDOW_MIN, LIVE_PLACE_ON_SHAPE_MAX_M } from './rules/live.js';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
@@ -564,4 +565,22 @@ export function routeDirectionsNow(data: SegmentDelayData & { tripDirections?: R
     if (!live) return [{ directionId, label, vehicles: 0, vehicleIds: [], gaps: null, incomplete: false }];
     return [{ directionId, label, vehicles: live.cars, vehicleIds: live.carIds ?? [], gaps: live.incomplete ? null : gapExtremes(live), incomplete: !!live.incomplete }];
   });
+}
+
+/**
+ * CIV-3173: what Live covers for an agency, the one answer every reader takes (the Worker, Studio and the MCP) instead of
+ * keeping its own list. Two things can differ: the Live map shows vehicles for YRT with no weekly figures, and Studio has
+ * Kingston's weekly figures with no public vehicles (CIV-1716).
+ */
+export interface LiveAgencyCoverage {
+  /** The public Live map shows the agency's vehicles: its polling config and the cloud recorder both cover it. */
+  hasVehicles: boolean;
+  /** Studio Live has the agency's weekly figures (the recordings' own list, shared/liveStudioAgencies.ts); null where the
+   *  reader has no such list (the Worker). */
+  hasWeeklyFigures: boolean | null;
+}
+
+/** One agency's Live coverage. `weeklyFigureAgencies` is the recordings' own list (LIVE_STUDIO_AGENCIES_URL's `agencies`). */
+export function liveAgencyCoverage(slug: string, weeklyFigureAgencies?: readonly string[]): LiveAgencyCoverage {
+  return { hasVehicles: liveCloudServesVehicles(slug), hasWeeklyFigures: weeklyFigureAgencies ? weeklyFigureAgencies.includes(slug) : null };
 }
