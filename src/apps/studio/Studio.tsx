@@ -7,6 +7,7 @@ import { Bus, GitCompare } from 'lucide-react';
 import { LiveIcon } from '../../components/Live/LiveIcon';
 import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
+import { ModeTabsProvider } from '../../components/ModeTabLabel';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
 import { agencyNames } from '../../utils/agencyName';
 import { getSavedStudioAgency, saveStudioAgency, studioAgencyInView } from '../../utils/studioAgency';
@@ -165,15 +166,17 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
     <StudioSettingsProvider value={settings ?? null}>
     <StudioSearchProvider value={searchBox ?? STUDIO_NO_SEARCH}>
     <StudioMapFrameProvider value={mapFrame}>
+      {/* CIV-3187 (Ryan picked 1: "should the apps/modes do the same thing where they de-expand when you enter into one of
+          them?"): with a page open, the other Studio tabs fold to their icon by the main map's own tab rule. */}
       {active && tabsPortal && page && createPortal(
-        STUDIO_PAGES.map(k => {
+        <ModeTabsProvider nonMapViewActive={FEATURES.collapseModeTabs && !closed}>{STUDIO_PAGES.map(k => {
           const Icon = PAGE_ICONS[k];
           return (
             <Fragment key={k}>
               <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} extra={k === 'live' ? LIVE_AGENCY_COUNT : undefined} active={!closed && page === k} onClick={() => pickPage(k)} />
             </Fragment>
           );
-        }),
+        })}</ModeTabsProvider>,
         tabsPortal,
       )}
       {/* #1747 (Ryan: "Inside Studio why is the settings button hidden on the main page but it appears when you open Schedules

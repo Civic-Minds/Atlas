@@ -106,4 +106,17 @@ describe('a Live destination row (CIV-3158)', () => {
     expect(chevrons.length).toBe(1);
     expect(chevrons[0].previousElementSibling?.textContent).toBe('3 vehicles');
   });
+
+  it('a schedule-only row keeps line 1 to the destination and its vehicles; the schedule wraps to its own line', () => {
+    const { container } = render(<RouteDirectionRow label="to Queens Quay" labelEnd="4 vehicles" labelWeight="regular" wrapLongValue singleLine {...scheduleOnlyProps({ headway: 10 })} />);
+    const label = container.querySelector('[data-flag-label]')!;
+    const line = label.parentElement!;
+    expect(line.className).toContain('flex-wrap');
+    expect(label.className).not.toContain('truncate');
+    expect(label.nextElementSibling?.textContent).toBe('4 vehicles');
+    const note = container.querySelector('[data-testid="row-value-note"]')!;
+    expect(note.className).toContain('basis-full');
+    expect(note.parentElement).toBe(line);
+  });
 });
+

@@ -7,6 +7,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Studio Live explains its late colours in Measurements, under a "Late" row beside Bunching**: the bottom "Late · 5+ min" pill is gone, and the row says the agency's own limit where it has one
+- **Studio Fleet's vehicles with no trip read "294 not on a trip", with "230 at garages" on the line below**: the count wrapped out of line beside its label
+- **Studio's Live, Fleet and Schedules tabs fold to their icons once you open one, as the map's tabs do**: the top bar has more room and reads the same across Atlas
+- **The hosted Atlas Studio MCP no longer points to a tool it doesn't have**: its answer for a route with a same-name night or express version told the assistant to use combined_frequency, which only the local server offers
+- **Atlas Studio answers no longer guess why two of a route's frequency figures disagree**: they said the faster figure might come from a stretch shared with other routes and to trust the slower one, which was wrong for the TTC 504 in the evening
 - **Studio's route card shows both schedules in full**: the newer schedule's column was cut off at the card's edge
 - **The MCP's route_now counts each direction's vehicles and the gaps between them the way the Live map's route card does**: it used its own count, so at the same minute it could say 9 vehicles where the map said 8
 - **Studio Live shows Kingston**: it offered Kingston, then said "Live doesn’t cover any Kingston Transit routes", because only some of its reads looked in Studio's private files

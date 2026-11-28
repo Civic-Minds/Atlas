@@ -222,7 +222,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       branchesNote: 'Branches that end at the same stop are one row, with their trips counted once; startsAt names where its trips begin.',
       ...(now ? nowBlock(now, found.figures[now.period]?.shown === 'no service') : {}),
       ...(also.length ? { alsoNamed: also.map(o => ({ route: o.name, name: o.longName, mode: o.mode })), alsoNamedNote: `"${args.route}" also names ${also.map(o => `${o.name} (${o.mode.toLowerCase()})`).join(', ')}. This answer is ${found.name} (${found.mode.toLowerCase()}); say so, name the other, and offer it.` } : {}),
-      ...(() => { const same = sameRoutes; return same.length ? { sameNameRoutes: same, sameNameNote: `Other ${a.name} routes with the same name, often a night or express version on the same street. A rider on this street can use them too; combined_frequency between two stops counts them together.` } : {}; })(),
+      ...(() => { const same = sameRoutes; return same.length ? { sameNameRoutes: same, sameNameNote: `Other ${a.name} routes with the same name, often a night or express version on the same street. A rider on this street can use them too.` } : {}; })(),
       ...(w ? { window: w.label, hourly: data.hourlyFrequency(r, w.start, w.end, await data.endOfRows(a, dayType, r)), windowNote: windowNote(w), hourlyNote: "Each column is one branch's own frequency by hour. Branches that end at the same stop share their trips, so the direction as a whole runs more often than any one column says." } : {}),
       mapLink: mapLink({ route: found.routeIds[0] != null ? { agency: a.slug, routeId: found.routeIds[0] } : undefined, day: dayType }),
       scheduleValidThrough: validThrough(a), source: SOURCE,
