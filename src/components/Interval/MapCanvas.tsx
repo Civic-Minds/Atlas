@@ -42,7 +42,7 @@ import { resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { isOnDemandStopFocused, isOnDemandZoneFocused, ON_DEMAND_FOCUSED_PROP, type OnDemandFocusTarget } from './map/onDemandFocus';
 import { TRANSFER_POINT_SERVICE_TYPE, transferPointStop } from './map/transferPointStop';
 import { dedupeRouteKeysByDisplay } from '../../utils/routeKey';
-import { computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
+import { buildPartialMatchFilterExpression, cardIrregularFeatures, cardIrregularRouteKeys, computeFrequencySegmentOverlay } from '../../utils/frequencySegments';
 import { buildSharedHoverSegments } from '../../utils/sharedHoverSegments';
 import { dedupeMapContextByDisplay, drawnAgencySlugs, getMapContextAgenciesFromFeatures, isMapContextOutsideClick, type MapContextAgency } from '../../utils/mapContext';
 import { MapContextPanel } from './MapContextPanel';
@@ -1305,8 +1305,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     vehicleCardOpen: !selectedRoute && !!liveOverlay?.vehicleCardId,
   });
 
+  // CIV-2925: with "hide irregular routes" on, lines whose card reads "Irregular" in the period leave the map too.
+  const cardIrregularKeys = useMemo(() => (hideSpan && layers ? cardIrregularRouteKeys(cardIrregularFeatures(layers, period)) : []), [hideSpan, layers, period]);
+  const tileFilterWithCard = useMemo(() => (cardIrregularKeys.length === 0 ? tileFilter
+    : ['all', tileFilter ?? true, ['!', buildPartialMatchFilterExpression(cardIrregularKeys)]]), [tileFilter, cardIrregularKeys]);
+
   useRouteStyling(mapRef, mapLoaded, {
-    agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute: mapSelectedRoute, hoveredSearchRoute, hoveredBranch,
+    agencies, layers, q, period, maxHeadway, tileFilter: tileFilterWithCard, selectedRoute: mapSelectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
     frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes, focusAgencySlugs,

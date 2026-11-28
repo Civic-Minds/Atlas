@@ -9,6 +9,7 @@ import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { collectStopHubSiblings, stopHubCandidates } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
+import { cardIrregularFeatures } from '../utils/frequencySegments';
 import { type DayType } from '../../shared/rules/days';
 
 export type { DayType };
@@ -310,13 +311,16 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
 
   const matchesQuery = useCallback((p: ShapeProperties) => matchesRouteQuery(p, q), [q]);
 
+  // CIV-2925: with "hide irregular routes" on, the lines whose card reads "Irregular" in the period leave the count and the
+  // lists as they leave the map (cardIrregularFeatures, the card's own model).
+  const cardIrregular = useMemo(() => (hideSpan && period ? cardIrregularFeatures(layers, period) : null), [hideSpan, layers, period]);
   const visibleFeatures = useMemo(() =>
     allFeatures.filter(f => {
       const p = f.properties as unknown as ShapeProperties;
-      return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop);
+      return passesRouteFilter(p, p.agencySlug ?? '', filters, routesForStop) && !cardIrregular?.has(p);
     }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, hideLimitedService, livePollingOnly, showCorridors, showCorridorBand, selectedRoute]);
+  [allFeatures, maxHeadway, agencies, modes, day, period, routesForStop, hideSpan, hideLimitedService, livePollingOnly, showCorridors, showCorridorBand, selectedRoute, cardIrregular]);
 
   // Feeds the #317 qualifying-segment overlay (computeFrequencySegmentOverlay), which needs
   // partial-match routes the frequency check would otherwise exclude entirely -- see

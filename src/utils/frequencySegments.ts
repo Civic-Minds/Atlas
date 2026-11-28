@@ -7,6 +7,9 @@ import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/rou
 import { PERIOD_KEYS } from '../../shared/config';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { splitRouteKey } from './routeKey';
+import { cardIrregularLines } from './routeListRange';
+import { isHiddenByIrregularFilter } from '../../shared/irregularRoutes';
+import { routeGroupKey } from '../../shared/routeGroupKey';
 import { rowIrregularInPeriod } from './effectiveHeadway';
 import {
   buildSharedStopIndex,
@@ -854,4 +857,32 @@ export function buildPartialMatchFilterExpression(keys: FrequencySegmentRouteKey
 export function broadenFilterForPartialMatches(baseFilter: any, partialMatches: FrequencySegmentRouteKey[]): any {
   if (partialMatches.length === 0) return baseFilter;
   return ['any', baseFilter, buildPartialMatchFilterExpression(partialMatches)];
+}
+
+/**
+ * CIV-2925 (Ryan, 2026-11-24, "1"): with "hide irregular routes" on, the lines whose card reads "Irregular" in the period
+ * (cardIrregularLines, the card's own model) leave the map, the route count and the lists too, so all of them and the card
+ * read one value. Lines the irregular setting already hides are left to it. Each line maps to its agency's slug.
+ */
+export function cardIrregularFeatures(layers: AgencyLayers, period: TimePeriod): Map<ShapeProperties, string> {
+  const out = new Map<ShapeProperties, string>();
+  if (period === 'all') return out;
+  for (const [slug, fc] of Object.entries(layers)) {
+    if (slug.endsWith('-corridors')) continue;
+    const groups = new Map<string, ShapeProperties[]>();
+    for (const f of fc.features) {
+      if (f.geometry?.type !== 'LineString') continue;
+      const p = f.properties as unknown as ShapeProperties;
+      if (isHiddenByIrregularFilter(p as never)) continue;
+      const k = `${routeGroupKey(p.routeShortName ?? null, p.routeId)}|${p.day ?? ''}`;
+      groups.set(k, [...(groups.get(k) ?? []), p]);
+    }
+    for (const rows of groups.values()) for (const p of cardIrregularLines(rows, period)) out.set(p, p.agencySlug ?? slug);
+  }
+  return out;
+}
+
+/** cardIrregularFeatures as the map's route keys, for its tile filter. */
+export function cardIrregularRouteKeys(lines: ReadonlyMap<ShapeProperties, string>): FrequencySegmentRouteKey[] {
+  return [...lines].map(([p, slug]) => ({ agencySlug: slug, routeId: p.routeId, directionId: p.directionId, headsign: p.headsign ?? null, day: p.day ?? null }));
 }

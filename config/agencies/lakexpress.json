@@ -1,0 +1,109 @@
+{
+  "slug": "lakexpress",
+  "officialName": "LakeXpress",
+  "websiteUrl": "https://www.ridelakexpress.com/",
+  "dataLicense": {
+    "url": "https://www.ridelakexpress.com/",
+    "attribution": "unread",
+    "name": "unknown",
+    "checkedOn": "2026-11-27"
+  },
+  "region": "Florida",
+  "center": [
+    28.6543,
+    -81.7782
+  ],
+  "feedUrl": "https://www.ridelakexpress.com/gtfs/gtfs.zip",
+  "timezone": "America/New_York",
+  "hiddenInProduction": true,
+  "routeRenames": [
+    {
+      "routeId": "4",
+      "from": {
+        "shortName": "Route",
+        "longName": "4 Altoona to Zellwood"
+      },
+      "to": {
+        "shortName": "4",
+        "longName": "Altoona to Zellwood"
+      }
+    },
+    {
+      "routeId": "50",
+      "from": {
+        "shortName": "Route",
+        "longName": "50 Winter Garden to Minneola"
+      },
+      "to": {
+        "shortName": "50",
+        "longName": "Winter Garden to Minneola"
+      }
+    },
+    {
+      "routeId": "3",
+      "from": {
+        "shortName": "Route",
+        "longName": "3 Mount Dora Circular"
+      },
+      "to": {
+        "shortName": "3",
+        "longName": "Mount Dora Circular"
+      }
+    },
+    {
+      "routeId": "55",
+      "from": {
+        "shortName": "Route",
+        "longName": "55 Four Corners Circular"
+      },
+      "to": {
+        "shortName": "55",
+        "longName": "Four Corners Circular"
+      }
+    },
+    {
+      "routeId": "1",
+      "from": {
+        "shortName": "Route",
+        "longName": "1 Leesburg to Eustis"
+      },
+      "to": {
+        "shortName": "1",
+        "longName": "Leesburg to Eustis"
+      }
+    },
+    {
+      "routeId": "1A",
+      "from": {
+        "shortName": "Route",
+        "longName": "1A Summerfield to Leesburg"
+      },
+      "to": {
+        "shortName": "1A",
+        "longName": "Summerfield to Leesburg"
+      }
+    },
+    {
+      "routeId": "2",
+      "from": {
+        "shortName": "Route",
+        "longName": "2 Leesburg Circular"
+      },
+      "to": {
+        "shortName": "2",
+        "longName": "Leesburg Circular"
+      }
+    },
+    {
+      "routeId": "50W",
+      "from": {
+        "shortName": "Route",
+        "longName": "50 Minneola to Winter Garden"
+      },
+      "to": {
+        "shortName": "50",
+        "longName": "Minneola to Winter Garden"
+      }
+    }
+  ]
+}
