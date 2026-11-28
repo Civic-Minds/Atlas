@@ -4,7 +4,7 @@ import AppLink from './ui/AppLink';
 import { shortDate } from '../../shared/dateText';
 import { mailto } from '../../shared/contact';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { Radio } from 'lucide-react';
+import { LiveIcon } from './Live/LiveIcon';
 import { DROPDOWN_PANEL, dropdownAnim, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
@@ -626,7 +626,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                             onClick={() => { onLiveRouteClick?.(r.slug, r.displayRouteShortName); onClose(); }}
                             className="justify-start gap-2"
                           >
-                            <Radio className="w-3 h-3 text-[var(--accent)] shrink-0" />
+                            <LiveIcon className="w-3 h-3 text-[var(--accent)] shrink-0" />
                             <span className="text-xs text-[var(--text-primary)]">{liveRouteLabel(r)}</span>
                           </ListRow>
                         ))}
