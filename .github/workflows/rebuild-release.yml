@@ -650,6 +650,8 @@ jobs:
           body: |
             Automated: feed expiry metadata stamped by a full reprocess (rebuild-release workflow).
           branch: automation/reprocess-metadata
+          # Publish checks out a full SHA (detached), so create-pull-request needs the base named.
+          base: main
           delete-branch: true
           labels: data-quality,pipeline
 
@@ -865,6 +867,7 @@ jobs:
           body: |
             Automated: agency page data regenerated from the data release that was just published, so agency pages match the live map.
           branch: automation/agency-pages
+          base: main
           delete-branch: true
           labels: data-quality,pipeline
 
