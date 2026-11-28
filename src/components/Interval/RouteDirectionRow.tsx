@@ -111,6 +111,8 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
   // CIV-1465 (Ryan, 2026-11-13: "same as the other one i thin split it into 2 lines"): a long value in two parts ("every
   // 60 min" / "until 5:05 PM") stays in the value column on two right-aligned lines, the list rule (CIV-1300).
   // CIV-3040 (Ryan, 2026-11-26, pick 1): the destination stays on line 1; a reading that doesn't fit beside it wraps to line 2, right-aligned.
+  // CIV-3158 critic: with a figure at the label's end ("11 vehicles"), the label takes the rest of line 1 (basis 0) and wraps inside it,
+  // so the count never drops to line 2.
   // A schedule-only Live row (valueNote and no value cell) wraps too, so its note takes a line of its own under "to Queens
   // Quay · 4 vehicles", never squeezing line 1 (CIV-3158 critic).
   const fitOrBelow = (wrapLongValue || valueBelow) && (hasValueCell || !!valueNote);
@@ -150,7 +152,7 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
     >
       <div className={`flex ${singleLine || listRow || wrapName ? '' : 'flex-wrap'} items-start justify-between gap-2 ${fitOrBelow ? 'gap-y-0.5' : ''}`}>
         <span
-          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} ${fitOrBelow ? 'flex-auto' : 'flex-1'} min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
+          className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} ${labelEnd && fitOrBelow ? 'flex-1 basis-0' : fitOrBelow ? 'flex-auto' : 'flex-1'} min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
           {...{ [FLAG_LABEL_PART]: '' }}
         >
@@ -171,7 +173,9 @@ export default function RouteDirectionRow({ label, routeName, routeNameNote, lab
           {!limited && rangeText && <HeadwayBadge headway={headway!} colorHeadway={Math.max(headway!, colorHeadway ?? headway!)} label={rangeText} />}
           {value}
         </span>}
-        {valueNote && <span className={`${CARD_NOTICE} basis-full text-right leading-snug`} data-testid="row-value-note">{valueNote}</span>}
+        {/* Under the value (a live line, or a row with its vehicles on line 1); else on line 1 at the right, as a shared
+            stretch's "schedule 3 min" sits where a destination row's figure does (CIV-3158 critic). */}
+        {valueNote && <span className={`${CARD_NOTICE} leading-snug ${hasValueCell || valueBelow ? 'basis-full text-right' : 'ml-auto whitespace-nowrap'}`} data-testid="row-value-note">{valueNote}</span>}
         {chevron && !valueBelow && <ChevronRight aria-hidden="true" data-testid="row-chevron" className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
       </div>
       {subLabel && (subLabelTrailing ? (

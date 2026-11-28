@@ -526,7 +526,7 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
                 label={group.shared.label}
                 headway={group.shared.headway}
                 headwayLabel={group.shared.edgeText}
-                {...(rowLive ? liveOrScheduleProps(sharedLive?.(group.dirId), { headway: group.shared.headway, headwayLabel: group.shared.edgeText }) : {})}
+                {...(rowLive ? liveOrScheduleProps(sharedLive?.(group.dirId), { headway: group.shared.headway, headwayLabel: group.shared.edgeText }, { firstLine: true }) : {})}
                 branchHovered={coreHovered}
                 branchDimmed={!!hoveredBranch && !coreHovered}
                 onHoverStart={() => setHoveredBranch(group.shared!.hover)}

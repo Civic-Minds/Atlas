@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import RouteDirectionRow from '../RouteDirectionRow';
-import { liveRowValueProps, scheduleLine, scheduleOnlyProps } from '../../../utils/liveRowValue';
+import { liveOrScheduleProps, liveRowValueProps, scheduleLine, scheduleOnlyProps } from '../../../utils/liveRowValue';
 import { DIRECTION_UNCLEAR, rowlessGroupShown } from '../../../utils/liveGrouping';
 import { headwayToTierColor } from '../../../utils/colors';
 
@@ -88,6 +88,8 @@ describe('a Live destination row (CIV-3158)', () => {
   it('the shared stretch reads live/schedule on Live too, never "every"', () => {
     const card = src('src/components/Interval/panels/RouteCardHeadway.tsx');
     expect(card).toContain('liveOrScheduleProps(sharedLive?.(group.dirId)');
+    expect(card).toMatch(/liveOrScheduleProps\(sharedLive\?\.\(group\.dirId\)[^\n]*\{ firstLine: true \}\)/);
+    expect(src('src/components/Live/LiveRoutePerformance.tsx')).toContain('{ firstLine: shared }');
     expect(src('src/components/Live/LiveRoutePerformance.tsx')).toContain("r.key === 'shared' ? LIVE_SHARED_GAP_KEY");
     expect(src('src/apps/studio/RouteRightNow.tsx')).toContain('get(LIVE_SHARED_GAP_KEY)');
     expect(src('src/apps/LiveVehicles.tsx')).toContain('get(LIVE_SHARED_GAP_KEY)');
@@ -117,6 +119,26 @@ describe('a Live destination row (CIV-3158)', () => {
     const note = container.querySelector('[data-testid="row-value-note"]')!;
     expect(note.className).toContain('basis-full');
     expect(note.parentElement).toBe(line);
+  });
+
+  it('a shared stretch puts its figure on line 1 at the right, live or schedule-only (no empty first line)', () => {
+    const only = render(<RouteDirectionRow label="Shared stretch" {...liveOrScheduleProps(null, { headway: 3 }, { firstLine: true })} />);
+    const note = only.container.querySelector('[data-testid="row-value-note"]')!;
+    expect(note.textContent).toBe('schedule 3 min');
+    expect(note.className).not.toContain('basis-full');
+    expect(note.previousElementSibling?.textContent).toBe('Shared stretch');
+    const live = render(<RouteDirectionRow label="Shared stretch" {...liveOrScheduleProps({ from: 2, longest: 5, median: 3 }, { headway: 3 }, { firstLine: true })} />);
+    const badge = live.container.querySelector('.rounded-full')!.closest('span.inline-flex')!.parentElement!;
+    expect(badge.className).not.toContain('basis-full');
+  });
+
+  it('a long destination wraps in its own column and the vehicle count stays on line 1', () => {
+    const { container } = render(<RouteDirectionRow label="504C · to Distillery (Front & Cherry)" labelEnd="11 vehicles" labelWeight="regular" wrapLongValue {...scheduleOnlyProps({ headway: 10 })} />);
+    const label = container.querySelector('[data-flag-label]')!;
+    expect(label.className).toContain('basis-0');
+    expect(label.className).toContain('flex-1');
+    expect(label.nextElementSibling?.textContent).toBe('11 vehicles');
+    expect(label.nextElementSibling?.className).toContain('shrink-0');
   });
 });
 

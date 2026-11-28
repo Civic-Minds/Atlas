@@ -49,9 +49,13 @@ export function scheduleOnlyProps(s: RowSchedule) {
   return { headway: undefined, trunkHeadway: undefined, limited: false, valueBelow: true, valueNote: scheduleLine(s) };
 }
 
-/** A row on Live: the live and schedule lines when there is a live range, else the schedule line alone. */
-export function liveOrScheduleProps(gap: LiveRowGap | null | undefined, s: RowSchedule) {
-  return gap ? liveRowValueProps(gap, s) : scheduleOnlyProps(s);
+/**
+ * A row on Live: the live and schedule lines when there is a live range, else the schedule line alone. `firstLine` (a shared
+ * stretch, which has no vehicle count): its figure sits on line 1 at the right, as a destination row's does (CIV-3158 critic).
+ */
+export function liveOrScheduleProps(gap: LiveRowGap | null | undefined, s: RowSchedule, opts: { firstLine?: boolean } = {}) {
+  const props = gap ? liveRowValueProps(gap, s) : scheduleOnlyProps(s);
+  return opts.firstLine ? { ...props, valueBelow: false } : props;
 }
 
 /** Two readings of a row's live gaps match (the callers keep their state when nothing changed). */
