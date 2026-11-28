@@ -65,11 +65,6 @@ export const LIVE_SORT_IDS = ['late', 'runTime', 'bunching', 'delivered'] as con
 export type LiveSort = typeof LIVE_SORT_IDS[number];
 
 /** The map (Frequency and Frequent Service; it stays mounted under every other view). */
-/** CIV-2182 review only: which proposed Studio design a screen shows (src/apps/studio/reviewDesign.ts). Removed once Ryan picks. */
-export const STUDIO_REVIEW_URL = {
-  design: oneOf('design', ['period', 'byPeriod', 'summary'] as const, null),
-} as const;
-
 export const MAP_URL = {
   /**
    * Frequency filter in minutes; Infinity is "All". Always written, 60 included: without it a link opens on
@@ -263,8 +258,6 @@ export const URL_PARAM_ORDER: readonly string[] = [
   MAP_URL.headway.key, COMPARE_HEADWAY_PARAM, MAP_URL.hideSpan.key, MAP_URL.hideLimited.key, MODES_PARAM, APP_URL.hideLowQuality.key,
   FREQUENT_URL.frequency.key, NIGHT_URL.frequency.key, BUSTANG_WITHIN_PARAM, LIVE_TOOL_URL.measure.key, LIVE_AGENCY_URL.sort.key,
   APP_URL.forceSlowConnection.key,
-  // CIV-2182 review only: which proposed Schedules design Studio shows; removed with the switch once Ryan picks.
-  STUDIO_REVIEW_URL.design.key,
 ];
 
 const PARAM_RANK = new Map(URL_PARAM_ORDER.map((key, i) => [key, i]));
