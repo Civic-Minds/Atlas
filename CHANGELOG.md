@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Live map's colour key is one small pill at the bottom, "Late · 5½+ min", that opens the full key when tapped**: the key box covered the map; the limit shown is the agency's own where it publishes one
+- **Live's week table and late-by-hour chart say what they cover in the same place**: "both directions" and the days left out sit top right beside each title, and the tables' footnotes use the app's notice style
+- **A Live destination row is two lines: the destination with its vehicle count at the right, then its frequency and live gaps**: the count sat on a third line
 - **"Hide irregular routes" also hides lines whose card reads "Irregular"**: the map, the route count and the lists drew those lines as if they ran to a pattern, while their card said they don't
 - **Studio's panels line up with the search bar**: they were a fixed wider size, so the 505 Dundas panel ran under the Live button
 - **Studio's Schedules is a full page**: the list of changed routes filled a narrow panel over the map; it now has the page's width, and a route picked from it opens its card on the map

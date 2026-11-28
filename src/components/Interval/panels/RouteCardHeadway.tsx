@@ -487,11 +487,14 @@ export function RouteCardRows({ model, directionNotices = [], hoveredBranch = nu
       };
     };
     // #1877: the first row naming a destination carries its live vehicles; `extra` lists the destinations none carry.
-    const liveProps = (feature: ShapeProperties | undefined): { props: { subLabel?: string; headwaySuffix?: string; onClick?: () => void; chevron?: boolean }; below: React.ReactNode } => {
+    const liveProps = (feature: ShapeProperties | undefined): { props: { labelEnd?: string; valueBelow?: boolean; headwaySuffix?: string; onClick?: () => void; chevron?: boolean }; below: React.ReactNode } => {
       const live = rowLive && feature ? rowLive(feature) : null;
       if (!live || claimedLive.has(live.key)) return { props: {}, below: null };
       claimedLive.add(live.key);
-      return { props: { subLabel: live.subLabel, headwaySuffix: live.gap ? `· ${live.gap}` : undefined, onClick: live.onClick, chevron: !!live.onClick }, below: live.below ?? null };
+      // Ryan, 2026-11-27: "Why is the number of vehicles on a third line instead of on the fist line like i asked", then
+            // "why would there be a dot here if the number of vehicles is right justified": the destination with its vehicles at
+            // the right, then the frequency and live gaps.
+            return { props: { labelEnd: live.subLabel, valueBelow: true, headwaySuffix: live.gap ? `· ${live.gap}` : undefined, onClick: live.onClick, chevron: !!live.onClick }, below: live.below ?? null };
     };
     return model.groups.map((group, gi) => {
       const coreHovered = sharedIsHovered(hoveredBranch, group.dirId);

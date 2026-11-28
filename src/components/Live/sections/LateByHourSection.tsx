@@ -13,6 +13,7 @@ import Widget from '../tool/Widget';
 import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
+import SectionNotes from '../SectionNotes';
 import { DAYS } from './figures';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays, BY_HOUR_HEADING, LATE_PERCENT_LEGEND, DEPARTURES_COLUMN } from '../../../content/noticeCopy';
 import { percentText, countText } from '../../../../shared/numberText';
@@ -212,9 +213,11 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
   // The bars fill the chart's height relative to its own tallest hour, which is labelled.
   const max = Math.max(0.01, ...hours.filter(h => h.n >= MIN_N).map(h => h.value));
   return (
-    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <LeftOutDays className="shrink-0 text-xs text-[var(--text-dim)]" dates={leftOut} /> : undefined}>
+    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined}
+      // The scope and the days left out top right, as on the week table (SectionNotes).
+      action={<SectionNotes scope={scope} excluding={leftOut?.length ? <LeftOutDays dates={leftOut} /> : null} />}>
       <HourSpark
-        idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
+        idleText={isThin(days) ? THIN_HINT : undefined} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
         hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= MIN_N))}
         shade={band === 'all' ? undefined : h => periodKeyForHour(h) === band}
         hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)}

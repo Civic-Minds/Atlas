@@ -859,7 +859,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       key={`live:${key}`}
       labelWeight="regular"
       label={formatBranchLabel(key, selectedGroup?.routeShortName ?? '', routeCard?.currentRoute.routeLongName ?? '')}
-      subLabel={directionSummary(vehicles, selectedRouteModeWord)}
+      labelEnd={directionSummary(vehicles, selectedRouteModeWord)}
       onClick={() => setSelectedDirection(destination === key ? null : key)}
       chevron
     />
@@ -891,7 +891,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             <CardDirectionRow
               key={dirKey}
               label={dirKey}
-              subLabel={directionSummary(vehicles, selectedRouteModeWord)}
+              labelEnd={directionSummary(vehicles, selectedRouteModeWord)}
               onClick={() => setSelectedDirection(dirKey)}
               chevron
             />

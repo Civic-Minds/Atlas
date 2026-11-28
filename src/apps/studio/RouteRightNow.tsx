@@ -92,5 +92,5 @@ export default function RouteRightNow({ slug, routeShortName }: { slug: string; 
 function Unmatched({ groups, rowKeys, modeWord }: { groups: ReadonlyMap<string, LiveVehicle[]>; rowKeys: ReadonlySet<string>; modeWord: string }) {
   const left = [...groups].filter(([k]) => !rowKeys.has(k) || k === DIRECTION_UNCLEAR).flatMap(([, vs]) => vs);
   if (!left.length) return null;
-  return <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} subLabel={directionSummary(left, modeWord)} subLabelWeight="medium" />;
+  return <CardDirectionRow labelWeight="regular" label={LIVE_UNMATCHED_DESTINATION} labelEnd={directionSummary(left, modeWord)} />;
 }
