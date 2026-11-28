@@ -107,3 +107,31 @@ describe('Live right now: one way of reading a route (CIV-3177)', () => {
     expect(gone, 'remove it from KNOWN').toEqual([]);
   });
 });
+
+describe('Live coverage: one answer per agency (CIV-3173)', () => {
+  it('reads vehicles and weekly figures from the core, never from its own list', async () => {
+    const { liveAgencyCoverage } = await import('../../shared/liveCore');
+    // YRT: vehicles on the map, no weekly figures; Kingston: weekly figures in Studio, never public vehicles (CIV-1716).
+    expect(liveAgencyCoverage('yrt', ['ttc', 'kingston'])).toEqual({ hasVehicles: true, hasWeeklyFigures: false });
+    expect(liveAgencyCoverage('kingston', ['ttc', 'kingston'])).toEqual({ hasVehicles: false, hasWeeklyFigures: true });
+    expect(liveAgencyCoverage('ttc')).toEqual({ hasVehicles: true, hasWeeklyFigures: null });
+  });
+  it('the Worker and Studio\'s agency list take coverage from the core', () => {
+    for (const f of ['workers/atlas-live-read/src/index.ts', 'local-api/live-studio-agencies.ts']) {
+      const src = read(f);
+      expect(src, f).toContain('liveAgencyCoverage(');
+      expect(src, f).not.toContain('liveCloudServesVehicles');
+    }
+  });
+});
+
+describe('Live rows: gaps over the vehicles each row counts (#1958)', () => {
+  it('the map and Studio hand the card their rows\' vehicles, and the card measures each row over them', () => {
+    // TTC 504's analysis has one pattern per direction, so the pattern grouping put no vehicle on any row and rows with
+    // 8 vehicles showed only the schedule. A row's gaps must come from the same vehicles as its count.
+    for (const f of ['src/apps/LiveVehicles.tsx', 'src/apps/studio/RouteRightNow.tsx']) expect(read(f), f).toMatch(/rowVehicles=\{/);
+    const card = read('src/components/Live/LiveRoutePerformance.tsx');
+    expect(card).toMatch(/rowVehicles!?\.get\(/);
+    expect(card).toContain('rowVehicles={rowVehicles}');
+  });
+});

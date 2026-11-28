@@ -125,6 +125,11 @@ interface Props {
    * the card instead. Must be stable (a state setter or useCallback).
    */
   onDestinationGaps?: (directionId: number, gaps: ReadonlyMap<string, LiveRowGap>) => void;
+  /**
+   * #1958: with onDestinationGaps, the vehicles each card row counts (mergeIntoCardRows), keyed as rowDirectionKey names
+   * the destination. Each row's gaps are measured over exactly these, so a row showing vehicles also gets their gaps.
+   */
+  rowVehicles?: ReadonlyMap<string, readonly LiveVehicle[]>;
 }
 
 /**
@@ -169,7 +174,7 @@ export function useRecentPositions(vehicles: readonly LiveVehicle[], slug: strin
  * as the regular card lists them, with no toggle; the card's own destination rows already give the schedule. Studio's panel
  * (CIV-2021) steers it to one direction with its own Direction chip and keeps the Scheduled lines, having no route card.
  */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled, onDestinationGaps, staleInHeading = true }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows, scheduledRowsFor, direction, unavailableMessage = LIVE_ROUTE_FIGURES_UNAVAILABLE, liveEnabled, onDestinationGaps, rowVehicles, staleInHeading = true }: Props) {
   const steered = direction !== undefined;
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName, liveEnabled);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
@@ -219,7 +224,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
         {shown.map(([id, label]) => (
           <DirectionRightNow key={id} data={data} directionId={id} directionLabel={label} heading={null} slug={slug} routeShortName={routeShortName}
             vehicles={vehicles} recent={recent} seedSettled={seedSettled} now={now} scheduledRows={scheduledRowsFor?.(id, label) ?? null}
-            scheduledBlock={null} onDestinationGaps={onDestinationGaps} />
+            scheduledBlock={null} onDestinationGaps={onDestinationGaps} rowVehicles={rowVehicles} />
         ))}
       </>
     );
@@ -267,7 +272,7 @@ function scheduledRowProps(r: LiveScheduledRow) {
 }
 
 /** One direction's "Right now": its vehicles by destination row, each with its longest gap (CIV-2047). */
-function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted, onDestinationGaps }: {
+function DirectionRightNow({ data, directionId, directionLabel, heading, slug, routeShortName, vehicles, recent, seedSettled, now, scheduledRows, scheduledBlock, onCounted, onDestinationGaps, rowVehicles }: {
   data: SegmentDelayData & { tripDirections?: Record<string, string[]> };
   directionId: number;
   directionLabel: string;
@@ -285,6 +290,7 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   onCounted?: Props['onCounted'];
   /** #1877: report the destinations' gaps and draw nothing (see Props). */
   onDestinationGaps?: Props['onDestinationGaps'];
+  rowVehicles?: Props['rowVehicles'];
 }) {
   const line: LineModel | null = useMemo(() => lineModel(data, directionId), [data, directionId]);
   // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
@@ -302,8 +308,10 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
   }, [onCounted, countedKey, directionId, directionLabel]);
   useEffect(() => () => onCounted?.(null), [onCounted]);
 
-  // CIV-2047: the counted cars by the card row (service pattern) they run, and each row's own gaps: the same live-gap
-  // calculation on that row's cars only, judged against the row's own scheduled gap. The shared stretch takes every car.
+  // CIV-2047: the counted cars by the card row they run, and each row's own gaps: the same live-gap calculation on that
+  // row's cars only, judged against the row's own scheduled gap. The shared stretch takes every car. #1958: where the card
+  // hands its rows' vehicles (rowVehicles), a row is measured over the vehicles it counts; the service-pattern grouping
+  // found none on a route whose analysis has one pattern per direction (TTC 504), so rows with 8 vehicles had no live line.
   const stopPatterns = useRouteAnalysis(slug, routeShortName, !!scheduledRows?.length).value?.stopPatterns;
   const rowFigures = useMemo(() => {
     if (!live || live.incomplete || !scheduledRows?.length || !line) return null;
@@ -317,15 +325,16 @@ function DirectionRightNow({ data, directionId, directionLabel, heading, slug, r
     const sole = destRows.length === 1 ? destRows[0].key : null;
     for (const r of scheduledRows) {
       const all = r.key === 'shared' || r.key === sole;
-      const mine = all ? cars : groups.get(r.key) ?? [];
-      if (!all && !only.has(r.key)) continue;
+      const counted = rowVehicles ? rowDirectionKey(r.headsign, routeShortName) : null;
+      const mine = all ? cars : counted ? rowVehicles!.get(counted) ?? [] : groups.get(r.key) ?? [];
+      if (!all && !counted && !only.has(r.key)) continue;
       const ids = new Set(mine.map(v => v.id));
       const sub = all ? live : liveGaps(data, line, withStats(line, liveBand), liveBand, recent.map(sn => ({ ...sn, v: sn.v.filter(e => ids.has(e[0])) })), Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips, rowSubset: true });
       const ext = sub && !sub.incomplete ? gapExtremes({ gapsMin: sub.gapsMin, scheduledSec: r.headwayMin != null ? r.headwayMin * 60 : sub.scheduledSec }) : null;
       out.set(r.key, { cars: mine.length, extremes: ext, median: ext && sub ? median(sub.gapsMin.filter((g): g is number => g != null)) : null });
     }
     return out;
-  }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [live, scheduledRows, data, line, vehicles, recent, now, liveBand, extraTrips, stopPatterns, directionId, rowVehicles, routeShortName]); // eslint-disable-line react-hooks/exhaustive-deps
   // #1877: each destination row's longest gap, keyed as the card names the destination (the first row naming it).
   const gapsKey = rowFigures && scheduledRows ? scheduledRows.flatMap(r => {
     // The shared stretch rides along under its own key, so the card's shared row reads live/schedule too (CIV-3158 follow-up).

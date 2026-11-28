@@ -9,6 +9,8 @@ import { liveFiles, type LiveFiles } from './liveFiles.js';
 import { resolve } from 'path';
 import { dashboardHold, qualityHold, type LiveV3 } from '../shared/liveDashboard.js';
 import { liveStudioAgencies, liveStudioMinDays, parseSegmentsFileName, type LiveRouteFile } from '../shared/liveStudioAgencies.js';
+import { liveAgencyCoverage, type LiveAgencyCoverage } from '../shared/liveCore.js';
+import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig.js';
 
 /** Each file's reading, kept while the file is unchanged (the files are a few MB; the menu asks on every visit). */
 const seen = new Map<string, { stamp: string; file: LiveRouteFile }>();
@@ -39,7 +41,11 @@ async function handler(): Promise<Response> {
   const days: Record<string, number> = {};
   // Days recorded per agency, held routes included (CIV-2173: the Status page's progress towards the minimum).
   for (const f of files) days[f.slug] = Math.max(days[f.slug] ?? 0, f.days);
-  return new Response(JSON.stringify({ agencies: liveStudioAgencies(files, minDays).filter(s => summaries.has(s)), minDays, days }), {
+  const agencies = liveStudioAgencies(files, minDays).filter(s => summaries.has(s));
+  // CIV-3173: each agency's Live coverage from the core (vehicles on the map, weekly figures here), for every agency on either list.
+  const coverage: Record<string, LiveAgencyCoverage> = {};
+  for (const s of new Set([...LIVE_AGENCY_SLUGS, ...agencies])) coverage[s] = liveAgencyCoverage(s, agencies);
+  return new Response(JSON.stringify({ agencies, minDays, days, coverage }), {
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 }

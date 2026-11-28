@@ -857,6 +857,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         feedDegraded={!!degradedBySlug[selectedGroup.agencySlug] || !!errorBySlug[selectedGroup.agencySlug]}
         scheduledRowsFor={scheduledRowsFor}
         onDestinationGaps={onRows && canGroupByDirection ? onDestinationGaps : undefined}
+        rowVehicles={vehiclesByDirection ?? undefined}
         staleInHeading={false}
       />
       {/* An open destination that a row carries lists its vehicles under that row, never here. */}
