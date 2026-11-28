@@ -1118,6 +1118,8 @@ export const STRETCH_COLUMN = 'Between stops';
 export const ROUTES_HEADING = 'Routes';
 export const DIRECTION_SHOWN_LABEL = 'Direction shown';
 export const MEASURE_LABEL = 'Views';
+/** The week table's screen-reader header for its measures column (Late, Trip time…); not the Views pill (CIV-3163). */
+export const MEASURES_COLUMN_LABEL = 'Measure';
 export const LOADING_LABEL = 'Loading…';
 export const ROUTE_MENU_LABEL = 'Route';
 export const LIVE_AT_STOP_LABEL = 'Live at this stop';

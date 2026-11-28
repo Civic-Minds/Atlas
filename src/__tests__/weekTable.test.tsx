@@ -17,7 +17,7 @@ describe('WeekTable', () => {
   it('is a real table: measures as row headers, This week and Last week as column headers', () => {
     view();
     const table = screen.getByRole('table');
-    expect(within(table).getAllByRole('columnheader').map(h => h.textContent)).toEqual(['Views', 'Last week', 'This week']);
+    expect(within(table).getAllByRole('columnheader').map(h => h.textContent)).toEqual(['Measure', 'Last week', 'This week']);
     // The scope and the days left out sit top right beside the title, as on the late-by-hour chart (Ryan, 2026-11-27).
     expect(screen.getByTestId('section-notes').textContent).toBe('TTC·Excluding Oct 11 and Oct 4');
     expect(within(table).getAllByRole('rowheader').map(h => h.textContent)).toEqual(['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']);
