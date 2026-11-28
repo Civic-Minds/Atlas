@@ -375,10 +375,11 @@ describe('processGtfsBuffer stretched TransLoc block trips (#722)', () => {
     const [southTerrace] = route('9');
     // Hand count: 19 departures, 05:00 to 19:02, every 46.8 min. Nothing after 19:15, so the
     // evening has one bus (19:02, then a 238-min wait to 23:00) and late has none; the 05:00
-    // first bus is the overnight period's only departure (180 min after 02:00).
+    // first bus is the day's own start-up trip, not night service, so overnight has none (CIV-1764).
     expect(southTerrace.headwayByPeriod).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47 });
     expect(southTerrace.headwayByPeriod?.late ?? null).toBeNull();
-    expect(southTerrace.periodCoverageHeadway).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47, evening: 238, overnight: 180 });
+    expect(southTerrace.periodCoverageHeadway).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47, evening: 238 });
+    expect(southTerrace.periodCoverageHeadway?.overnight ?? null).toBeNull();
     expect(southTerrace.periodCoverageHeadway?.late ?? null).toBeNull();
     expect(southTerrace.stopPeriodHeadways?.['TL-281']).toMatchObject({ amPeak: 47, midday: 47, pmPeak: 47 });
   });

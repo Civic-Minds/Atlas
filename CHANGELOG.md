@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **"And N other agencies" on the map's credit line opens just the agencies credited on screen**: it opened the full list of every agency, so the ones on the map were hard to find; "All sources" still shows them all
+- **Studio's Live route panel opens with late departures by hour, drawn like the route card's chart**: the same bars, period highlight and hover as the map, coloured by how often trips are late, above the destination rows; the colour key pill shows from the start, and each section's notes sit beside its title
 - **The Live map's colour key is one small pill at the bottom, "Late · 5½+ min", that opens the full key when tapped**: the key box covered the map; the limit shown is the agency's own where it publishes one
 - **Live's week table and late-by-hour chart say what they cover in the same place**: "both directions" and the days left out sit top right beside each title, and the tables' footnotes use the app's notice style
 - **A Live destination row is two lines: the destination with its vehicle count at the right, then its frequency and live gaps**: the count sat on a third line
@@ -161,6 +162,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Atlas Studio MCP finds stops with hyphens or accents in their names**: STM's Lionel-Groulx, Guy-Concordia and the YUL airport stops got "no stop name matches", since the stop names weren't read the way the place was
 - **Atlas Studio MCP finds a route by its route id**: a route with no number, such as TransLink's Expo Line (30053), was found only by name
 - **The internal MCP page makes and stops tester links**: a name and "Make link" gives a new tester their link (shown once, with a copy button), and each tester has a "Stop link" button, so links no longer need a command line
+- **A route's first morning buses no longer count as overnight service**: a route that runs nothing between 2 and 3:30 AM gets no Overnight figure from its 5 AM start-up trips (TTC 25 Steeles)
 - **Atlas tells you when a new version is out**: a banner offers to reload, so an open tab doesn't keep running an old version
 - **On the filtered map, a stretch changes colour where its branches split**: a branch's slower service no longer recolours the shared part, such as TTC 123 from Kipling to North Queen, and one slower end stop still colours only its own end piece
 - **History no longer shows six old routes as running in 2026**: AC Transit 20, 21, 79 and 72R and SacRT 195 and 80 carried 2020, 2021 and 2018 schedules dated as this year, because their archive dates were written as year and month only

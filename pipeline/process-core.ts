@@ -32,7 +32,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, countDayDepartures, computeDepartureSpan, computeTripStartFirst, computeTripStartLast, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, countDayDepartures, computeDepartureSpan, computeTripStartFirst, computeTripStartLast, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK, keepingStartUpTrips } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -3518,9 +3518,9 @@ export async function processGtfsBuffer(
       // different terminal stops), never better than the best single stop of the drawn line except
       // its last (two branches' trips counted at different first stops, or one bus counted on both
       // trips of a chained run, would otherwise add up to service no stop gets).
-      let overnight: ReturnType<typeof overnightPeriodValues> | null = null;
       const tripStarts = featureHeadsign ? headsignTripStarts(`${shortName}::${dirId}::${day}::${featureHeadsign}`) : undefined;
-      if (nightRoute && headsignMap && tripStarts && tripStarts.length > 0) {
+      const readOvernight = (): ReturnType<typeof overnightPeriodValues> | null => {
+        if (!(nightRoute && headsignMap && tripStarts && tripStarts.length > 0)) return null;
         const nextStarts = nextDay ? headsignTripStarts(`${shortName}::${dirId}::${nextDay}::${featureHeadsign}`) : undefined;
         const fromStarts = overnightPeriodValues(overnightWindowTimes(tripStarts, nextStarts));
         // #1121: when the night's trips leave before 26:00, a stop's later first bus is the ride there, not a gap.
@@ -3542,14 +3542,19 @@ export async function processGtfsBuffer(
         const startsH = fromStarts.headway ?? fromStarts.withheld, bestH = best?.headway ?? best?.withheld ?? null;
         const worseH = worse(startsH, bestH);
         const worseSparse = worseH != null && (worseH === startsH ? fromStarts.headway == null : best?.headway == null);
-        overnight = best == null ? null : {
+        return best == null ? null : {
           headway: worseSparse ? null : worseH,
           withheld: worseSparse ? worseH : null,
           coverage: worse(fromStarts.coverage, best.coverage),
           maxGap: worse(fromStarts.maxGap, best.maxGap),
           sustained: fromStarts.sustained === false || best.sustained === false ? false : fromStarts.sustained,
         };
-      }
+      };
+      const overnight = readOvernight();
+      // CIV-1764: the night-only headline floor below reads Overnight as before the start-up rule, so the rule never
+      // makes a headline faster (TTC 320 Saturday to Eglinton: no Overnight figure now, and without the floor its
+      // short turn's phase 2 value of 8 stood in place of the 12 it had).
+      const overnightForFloor = keepingStartUpTrips(readOvernight);
       if (overnight) {
         feature.properties.headwayByPeriod = { ...(feature.properties.headwayByPeriod as HeadwayByPeriod), overnight: overnight.headway };
         // #961: the night-route path (#896) skips the period loop below, so mark a withheld row here.
@@ -3559,6 +3564,8 @@ export async function processGtfsBuffer(
         const sustained = { ...(feature.properties.headwayByPeriodSustained as HeadwayByPeriodSustained) };
         if ((overnight.headway ?? overnight.withheld) != null) sustained.overnight = overnight.sustained; else delete sustained.overnight;
         feature.properties.headwayByPeriodSustained = sustained;
+      }
+      if (overnightForFloor) {
         // The headline of a night-only line is never better than its overnight reading: phase 2
         // read 337 Saturday's three-trip short turn as every 23, against every 30 all night.
         // Only when the rescue above did not run; the tier only degrades.
@@ -3569,7 +3576,7 @@ export async function processGtfsBuffer(
         const overnightOnly = ![...stopMap.values()].some(times => times.some(t => t >= PERIODS.midday.start && t < PERIODS.late.start));
         // A withheld sparse value (#897) still floors it: the period shows no value, the headline
         // keeps the floor it had.
-        const overnightFloor = overnight.headway ?? overnight.withheld;
+        const overnightFloor = overnightForFloor.headway ?? overnightForFloor.withheld;
         if (overnightOnly && !rescued && !limitedVariant && headline != null && overnightFloor != null && overnightFloor > headline) {
           feature.properties.headway = overnightFloor;
           const newTier = headwayToTierOn(overnightFloor, TIER_MAXES);

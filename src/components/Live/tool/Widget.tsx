@@ -15,10 +15,9 @@ export default function Widget({ title, size: _size = 'medium', children, classN
   const headings = usePanelSectionHeadings();
   if (sections) {
     return (
-      <PanelSection label={title ?? label ?? ''} title={hint} className={className}>
-        {/* CIV-3098: where the panel keeps each part's own title, the widget's title stays as it was. */}
-        {!headings && title && <h3 className="m-0 truncate text-sm font-bold text-[var(--text-muted)]">{title}</h3>}
-        {action && <div className="flex justify-end">{action}</div>}
+      <PanelSection label={title ?? label ?? ''} title={hint} className={className} aside={headings ? action : undefined}>
+        {/* CIV-3098: where the panel keeps each part's own title, the widget's title stays as it was, its action beside it. */}
+        {!headings && (title || action) && <div className="flex items-start justify-between gap-2">{title && <h3 className="m-0 truncate text-sm font-bold text-[var(--text-muted)]">{title}</h3>}{action}</div>}
         {children}
       </PanelSection>
     );

@@ -91,7 +91,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   // "Data up to" sits in the map's loading-pill spot (the counts row), shown once loading finishes.
   const shownMeasure = m.held && measure && !GAP_MEASURES.has(measure) ? null : measure;
   // The bottom pills: "Data up to…", then the map's key as one pill that opens the full key (Ryan, 2026-11-27, picked 1).
-  const statusPill = useMemo(() => <><DataUpTo pill dates={m.dataDates} route={m.dataRoute} />{shownMeasure && <LiveMapKeyPill measure={shownMeasure} window={onTimeWindowWords(slug)} />}</>, [m.dataDates, m.dataRoute, shownMeasure, slug]);
+  const statusPill = useMemo(() => <><DataUpTo pill dates={m.dataDates} route={m.dataRoute} /><LiveMapKeyPill measure={measure ?? 'late'} window={onTimeWindowWords(slug)} /></>, [m.dataDates, m.dataRoute, measure, slug]);
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
   // Studio's frame owns where the map is framed (CIV-1925); Live only says when what it draws is still loading.
   const { frameKey, framedMemory, holdFrame } = useStudioMapFrame(m.frameKey !== (route ? `route-${route}` : 'network-all'));
@@ -118,7 +118,10 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   // its places named, then the week, late departures by hour and the late stops. No trip time card.
   const byKey = (keys: readonly string[]): PanelWidget[] => keys.flatMap(k => m.routeBody?.filter(w => w.key === k) ?? []);
   // CIV-2021 (Ryan): service now, gaps and bunching now, then the week's figures, then the rest, each a section headed alike.
-  const routeWidgets = byKey(['loading', 'held', 'week', 'falls-behind', 'late-hours', 'problems']);
+  // Ryan, 2026-11-27 ("Should the sparkline be at the top instead … similar to how live on main map is"): late departures
+  // by hour first, where the map's card has its chart, then the destination rows, then the rest.
+  const topWidgets = byKey(['late-hours']);
+  const routeWidgets = byKey(['loading', 'held', 'week', 'falls-behind', 'problems']);
 
   // CIV-2001: the top bar's search finds this page's routes; its results take the panel's place while it's open.
   const searchOpen = useStudioSearchOpen();
@@ -142,6 +145,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
               {/* CIV-2021: one panel of sections (no boxes inside it), each with the shared route card's section heading. */}
               <PanelSectionsProvider>
                 {/* CIV-2021: main Live's own right-now card, over the same live vehicles, steered by the Direction chip. */}
+                <WidgetPanel widgets={topWidgets} className="!grid-cols-1 !gap-0" />
                 <RouteRightNow slug={slug} routeShortName={regularRow ? liveRouteNumber(regularRow) : route} direction={m.v3 ? m.shown : null} />
                 <WidgetPanel widgets={routeWidgets} className="!grid-cols-1 !gap-0" />
                 {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
