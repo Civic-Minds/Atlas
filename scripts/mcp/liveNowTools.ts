@@ -16,7 +16,7 @@ import { NOW_RECENT_MIN, NOW_WINDOW_MIN, nowDirections, routeNow, type NowRouteR
 import { LIVE_STALE_SEC } from '../../shared/rules/live';
 import { recentFromSnapshots, routeDirectionsNow, type DirectionNow } from '../../shared/liveCore';
 import type { SegmentDelayData } from '../../shared/liveSegmentData';
-import { gapRangeText } from '../../shared/liveWording';
+import { liveLineText, type LiveRowGap } from '../../shared/liveWording';
 import { liveFiles } from '../../local-api/liveFiles';
 import * as data from './atlasData';
 import { nowSec, nowSource } from './liveNowData';
@@ -34,7 +34,7 @@ const NOW_MEANING = {
   noneSeen: `Stops where the route is scheduled now but no vehicle was seen passing in the whole ${NOW_WINDOW_MIN} minutes: either none ran there, or vehicles ran another way (a diversion). Say both are possible; don't call it a gap.`,
   longestWait: 'The stop where riders have waited longest since the last vehicle seen there.',
   vehicles: `vehiclesNow counts the vehicles on this direction now, as the Live map's route card counts them; standingNow, of the vehicles seen on it, those that haven't moved in ${NOW_RECENT_MIN} minutes (at a terminal, held, out of service).`,
-  gapsNow: "The gaps between this direction's vehicles now, as the Live map's route card measures them: how long ago the vehicle ahead passed the spot where the one behind is. Missing when too few were measured.",
+  gapsNow: "The gaps between this direction's vehicles now, in the Live map's route card's own words (\"live 3–5 min\"): how long ago the vehicle ahead passed the spot where the one behind is. Missing when too few were measured.",
   lastHalfHour: `Every gap at every stop in the last ${NOW_WINDOW_MIN} minutes, and the shares bunched and gapped.`,
 };
 
@@ -112,7 +112,7 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
       ...base,
       asOf, dataAgeMin: Math.round((r.ageSec ?? 0) / 6) / 10, timeZone,
       scheduleUsed: period ? `${day}, ${PERIOD_LABELS[period]} (${formatPeriodRange(period)})` : `${day}, overnight: no scheduled gaps, so nothing is called gapped`,
-      directions: r.directions.map(d => { const c = pairedCore(core, d.vehicleIdsNow); return { direction: d.direction, scheduled: scheduledFor(d.directionId, d.direction), vehiclesNow: c && !c.incomplete ? c.vehicles : d.vehiclesNow, standingNow: d.standingNow, ...(c?.gaps ? { gapsNow: gapRangeText(c.gaps.rangeFrom, c.gaps.longest.min) } : {}), bunchedNow: d.bunchedNow, gappedNow: d.gappedNow, noneSeen: d.noneSeen, longestWait: d.longestWait, lastHalfHour: d.lastHalfHour }; }),
+      directions: r.directions.map(d => { const c = pairedCore(core, d.vehicleIdsNow); return { direction: d.direction, scheduled: scheduledFor(d.directionId, d.direction), vehiclesNow: c && !c.incomplete ? c.vehicles : d.vehiclesNow, standingNow: d.standingNow, ...(c?.gaps ? { gapsNow: liveLineText({ from: c.gaps.rangeFrom, longest: c.gaps.longest.min } as Pick<LiveRowGap, 'from' | 'longest'> as LiveRowGap) } : {}), bunchedNow: d.bunchedNow, gappedNow: d.gappedNow, noneSeen: d.noneSeen, longestWait: d.longestWait, lastHalfHour: d.lastHalfHour }; }),
       definitions: {
         bunched: bunchedText(cutoffs.bunchedWithinMin),
         gapped: `${gappedText(cutoffs.gappedFactor)} Each stop's scheduled gap is Atlas's own for this period (branches that share a stop count together).`,
