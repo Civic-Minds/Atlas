@@ -36,7 +36,12 @@ export function cloudStudioFiles(listKeys: (prefix: string) => Promise<string[]>
   const texts = new Map<string, { at: number; text: Promise<string | null> }>();
   const names = async () => {
     if (!listed || now() - listed.at > TTL_MS) {
-      const keys = await listKeys(STUDIO_FILES_PREFIX).catch(() => [] as string[]);
+      // #1928: a refused read (AccessDenied: the read-only token isn't scoped to this bucket) still gives an empty list, but
+      // says why in the dev server's console, never silently, so empty Studio pages point at the key, not at missing files.
+      const keys = await listKeys(STUDIO_FILES_PREFIX).catch((e: unknown) => {
+        console.warn(`[studio files] the private Live bucket refused the listing (${(e as { name?: string })?.name ?? 'error'}): check that the read-only keys can read it`);
+        return [] as string[];
+      });
       listed = { at: now(), names: keys.map(k => k.slice(STUDIO_FILES_PREFIX.length)).filter(isStudioFileName) };
     }
     return listed.names;
