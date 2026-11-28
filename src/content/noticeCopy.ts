@@ -1078,6 +1078,18 @@ export const SOURCES_LEAD = 'We use the schedules transit agencies publish, usua
 export const SOURCES_FALLBACK = 'For some agencies, we use their schedule from one of these public sources:';
 /** Above the agency credits in Sources (CIV-3096, Ryan, 2026-11-26, word for word). */
 export const SOURCES_CREDITS_HEADING = 'Licences and attributions.';
+/**
+ * CIV-3142 (Ryan, 2026-11-27, "1"): the line above the short list that the map's "and N other agencies" opens: only the
+ * agencies credited on screen. Not approved yet: three candidates, switched in development with ?mockCredit=a|b|c.
+ */
+export const SOURCES_ON_MAP_LINES = {
+  a: 'Credited on the map now',
+  b: 'Agencies on the map now',
+  c: 'Data from the agencies on screen',
+} as const;
+export type SourcesOnMapLineKey = keyof typeof SOURCES_ON_MAP_LINES;
+/** CIV-3142: the link from that short list back to every source. */
+export const SOURCES_ALL_LINK = 'All sources';
 export const NEW_TAG = 'New';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';

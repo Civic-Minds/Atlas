@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **"And N other agencies" on the map's credit line opens just the agencies credited on screen**: it opened the full list of every agency, so the ones on the map were hard to find; "All sources" still shows them all
 - **The Live map's colour key is one small pill at the bottom, "Late · 5½+ min", that opens the full key when tapped**: the key box covered the map; the limit shown is the agency's own where it publishes one
 - **Live's week table and late-by-hour chart say what they cover in the same place**: "both directions" and the days left out sit top right beside each title, and the tables' footnotes use the app's notice style
 - **A Live destination row is two lines: the destination with its vehicle count at the right, then its frequency and live gaps**: the count sat on a third line

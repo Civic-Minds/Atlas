@@ -8,6 +8,8 @@ import { LiveIcon } from './Live/LiveIcon';
 import { DROPDOWN_PANEL, dropdownAnim, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
+import ArrowLink from './ui/ArrowLink';
+import { DEV_URL, readUrlParam } from '../utils/urlSchema';
 import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
 import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
@@ -23,7 +25,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedPanelLead, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_LEAD, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, LATE_LIMIT_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, SOURCES_CREDITS_HEADING, SOURCES_ON_MAP_LINES, SOURCES_ALL_LINK, type SourcesOnMapLineKey, STUDIO_ABOUT_LEAD, MEASUREMENTS_TITLE } from '../content/noticeCopy';
 import { BUNCHING_LABEL, STUDIO_ROUTE_PANEL_PENDING } from '../../shared/liveWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
@@ -125,6 +127,13 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
   );
 }
 
+
+/** CIV-3142: which candidate line the short credit list shows; ?mockCredit=a|b|c switches it in development only. */
+function sourcesOnMapLineKey(): SourcesOnMapLineKey {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return 'a';
+  return readUrlParam(window.location.search, DEV_URL.mockCredit) ?? 'a';
+}
+
 export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers, inStudio = false, scrollToLive = 0 }: Props) {
   // History is not offered on phones, so its filter, badges and wording step aside there.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
@@ -133,6 +142,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   /** CIV-3119: the agency whose credit page Sources has open. */
   const [creditSlug, setCreditSlug] = useState<string | null>(null);
+  // CIV-3142: the agencies credited on screen when Sources opened from the map's "and N other agencies"; null shows all.
+  const [onMapSlugs, setOnMapSlugs] = useState<readonly string[] | null>(null);
   const [query, setQuery] = useState('');
   // CIV-3143 (Ryan picked "1": "add the same search box the agency list already uses, filtering by agency or city"): Sources' own box.
   const [sourcesQuery, setSourcesQuery] = useState('');
@@ -207,7 +218,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
       setSelectedSlug(null);
     } else {
-      setQuery(''); setSourcesQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set());
+      setQuery(''); setSourcesQuery(''); setRegionFilter(new Set()); setSelectedSlug(null); setAgencyFeatureFilters(new Set()); setOnMapSlugs(null);
     }
   }, [open, defaultTab, featureFilter, helpContext, scrollToLive]);
 
@@ -220,6 +231,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     sourcesAskSeen.current = sourcesFocus.n;
     const known = sourcesFocus.slug && credits.some(c => c.slug === sourcesFocus.slug);
     setCreditSlug(known ? sourcesFocus.slug : null);
+    setOnMapSlugs(!known && sourcesFocus.onMap?.length ? sourcesFocus.onMap : null);
     setView(known ? 'source-credit' : 'sources');
   }, [sourcesFocus, open, credits]);
   const openCredit = credits.find(c => c.slug === creditSlug) ?? null;
@@ -538,7 +550,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             </div>
           )}
 
-          {view === 'sources' && (
+          {view === 'sources' && onMapSlugs && (
+            // CIV-3142 (Ryan, 2026-11-27, "1"): only the agencies credited on screen, a line saying so, and a way to all sources.
+            <div className="h-full overflow-y-auto px-5 py-4 space-y-4" data-testid="sources-on-map">
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">{SOURCES_ON_MAP_LINES[sourcesOnMapLineKey()]}</p>
+                <ArrowLink as="button" type="button" tone="inline" size="xs" onClick={() => setOnMapSlugs(null)}>{SOURCES_ALL_LINK}</ArrowLink>
+              </div>
+              <SourceCredits credits={credits.filter(c => onMapSlugs.includes(c.slug))} onOpen={slug => { setCreditSlug(slug); setView('source-credit'); }} />
+            </div>
+          )}
+
+          {view === 'sources' && !onMapSlugs && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 {SOURCES_LEAD}

@@ -708,7 +708,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   const viewportSlugKey = useMemo(() => viewportAgencySlugs(agencies, bounds, mapZoom).sort().join('|'), [agencies, bounds, mapZoom]);
   // CIV-461: the agencies in view whose data licence requires credit, for the map's attribution pill.
-  const openCreditSource = useCallback((slug: string | null) => { focusSource(slug); onInfoOpen?.('sources'); }, [onInfoOpen]);
+  const openCreditSource = useCallback((slug: string | null, onMap?: readonly string[]) => { focusSource(slug, onMap ?? null); onInfoOpen?.('sources'); }, [onInfoOpen]);
   // #1692: an agency credited only for its feed's publisher (511) shows that publisher's line, not its own name.
   // CIV-3120 (Ryan, 2026-11-27: "Credit an agency in the pill only while at least one of its routes is drawn on the map"):
   // the agencies with a route drawn, from the same drawn routes the route count reads (MapCanvas → drawnAgencySlugs).

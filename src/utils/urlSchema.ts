@@ -64,12 +64,18 @@ export const LIVE_MEASURE_IDS: readonly MapMeasure[] = ['late', 'runTime', 'extr
 export const LIVE_SORT_IDS = ['late', 'runTime', 'bunching', 'delivered'] as const;
 export type LiveSort = typeof LIVE_SORT_IDS[number];
 
-/** The map (Frequency and Frequent Service; it stays mounted under every other view). */
 /** CIV-2182 review only: which proposed Studio design a screen shows (src/apps/studio/reviewDesign.ts). Removed once Ryan picks. */
 export const STUDIO_REVIEW_URL = {
   design: oneOf('design', ['period', 'byPeriod', 'summary'] as const, null),
 } as const;
 
+/** Development-only switches for review mock-ups; never written into a link. */
+export const DEV_URL = {
+  /** CIV-3142: which candidate line the short credit list shows (SOURCES_ON_MAP_LINES), until Ryan picks one. */
+  mockCredit: oneOf('mockCredit', ['a', 'b', 'c'] as const, 'a'),
+};
+
+/** The map (Frequency and Frequent Service; it stays mounted under every other view). */
 export const MAP_URL = {
   /**
    * Frequency filter in minutes; Infinity is "All". Always written, 60 included: without it a link opens on
@@ -265,6 +271,8 @@ export const URL_PARAM_ORDER: readonly string[] = [
   APP_URL.forceSlowConnection.key,
   // CIV-2182 review only: which proposed Schedules design Studio shows; removed with the switch once Ryan picks.
   STUDIO_REVIEW_URL.design.key,
+  // CIV-3142 review only: the short credit list's candidate line; removed once Ryan picks.
+  DEV_URL.mockCredit.key,
 ];
 
 const PARAM_RANK = new Map(URL_PARAM_ORDER.map((key, i) => [key, i]));
