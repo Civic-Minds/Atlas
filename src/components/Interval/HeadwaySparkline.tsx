@@ -530,7 +530,8 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
  */
 export function CountSparkline({ countByHour, color, label, ...rest }: Pick<HourlySparklineProps, 'period' | 'title' | 'hourTitle' | 'onPeriodChange' | 'onHourHover'> & {
   countByHour: Record<number, number | null>;
-  color: string;
+  /** One colour, or each hour's by its value (Live's late share by the lateness steps, CIV-3159). */
+  color: string | ((value: number, hour: number) => string);
   /** The counted thing ("buses"), named on each bar's segment. */
   label: string;
 }) {
@@ -538,7 +539,7 @@ export function CountSparkline({ countByHour, color, label, ...rest }: Pick<Hour
   const stackedByHour: Record<number, { label: string; headway: number; color: string }[]> = {};
   for (const [h, n] of Object.entries(countByHour)) {
     byHour[+h] = n ? 60 / n : null;
-    if (n) stackedByHour[+h] = [{ label, headway: 60 / n, color }];
+    if (n) stackedByHour[+h] = [{ label, headway: 60 / n, color: typeof color === 'function' ? color(n, +h) : color }];
   }
   return <HeadwaySparkline {...rest} byHour={byHour} stackedByHour={stackedByHour} legendStackedByHour={{}} />;
 }

@@ -77,11 +77,10 @@ describe('visible days, peak label and run time wording', () => {
     rerender(<LateByHourSection chart="mini" hours={hours} band="all" overall={0.07} days={7} leftOut={[]} />);
     expect(container.textContent).not.toMatch(/Excluding|of 7|counted/);
   });
-  it('labels the tallest hour once, and the bars fill the chart relative to it', () => {
-    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 9, value: 0.05, n: 200 }, { hour: 10, value: 0.2, n: 5 }]} band="all" overall={0.07} days={6} />);
-    const peaks = container.querySelectorAll('[data-peak]');
-    expect(peaks).toHaveLength(1);
-    expect(peaks[0].textContent).toBe('9%'); // the 20% hour has only 5 departures: not the peak
+  it("draws the route card's own chart (HeadwaySparkline), the picked time of day lit, with no chart of its own (CIV-3159)", () => {
+    const { container } = render(<LateByHourSection chart="mini" hours={[{ hour: 8, value: 0.09, n: 200 }, { hour: 19, value: 0.05, n: 200 }, { hour: 20, value: 0.2, n: 5 }]} band="evening" overall={0.07} days={6} />);
+    expect(container.querySelectorAll('[data-peak]')).toHaveLength(0);
+    expect(container.querySelector('[data-testid="sparkline-hover-band"]')).not.toBeNull();
   });
   it('writes a share before and after with the arrow, and nothing without both shares (CIV-1814 item 41)', () => {
     expect(shareRiseText({ value: 0.31, fromShare: 0.1, toShare: 0.41 })).toBe('10% → 41%');
