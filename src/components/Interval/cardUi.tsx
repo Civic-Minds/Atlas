@@ -603,6 +603,14 @@ function StackedBadge({ dot, text }: { dot: React.ReactNode; text: string }) {
   );
 }
 
+const MOCK_ROW: Record<string, [string, string]> = {
+  a: ['schedule: 10', '· live: 10–13'],
+  a2: ['schedule 10', '· live 10–13 min'],
+  b: ['every 10 min', ''],
+  c: ['every 10 min scheduled', '· 10–13 min apart now'],
+  d: ['every 10 min', '· gaps 10–13 min'],
+};
+
 export function HeadwayBadge({
   headway,
   colorHeadway,
@@ -634,6 +642,34 @@ export function HeadwayBadge({
   stacked?: boolean;
 }) {
   const colorMode = useColorMode();
+  // MOCK, not for merge: CIV-3158 Live row options (?mockRow=a|a2|b|c|d), dev only.
+  const mock = import.meta.env.DEV && suffix && /gaps|\d/.test(suffix) && suffix.startsWith('·') ? MOCK_ROW[new URLSearchParams(window.location.search).get('mockRow') ?? ''] : undefined;
+  if (mock) { label = mock[0]; suffix = mock[1] || undefined; }
+  if (mock && new URLSearchParams(window.location.search).get('mockRow') === 'c') {
+    // Option c on two right-aligned lines so it fits the card.
+    const c = headwayToTierColor(colorHeadway ?? headway, colorMode);
+    return (
+      <span className={`inline-flex items-start gap-1 text-right ${'font-black text-[var(--text-primary)] text-xs leading-snug'} ${className}`}>
+        <span className="w-2 h-2 rounded-full shrink-0 mt-[3px]" style={{ background: c }} />
+        <span className="flex flex-col items-end"><span className="whitespace-nowrap">every 10 min scheduled</span><span className="text-xs font-bold whitespace-nowrap text-[var(--text-dim)]">10–13 min apart now</span></span>
+      </span>
+    );
+  }
+  // MOCK, not for merge: CIV-3158 shortlist (?mockReal=a2|c|d): the three wordings built from the row's real figures.
+  const realKey = import.meta.env.DEV && suffix && /gaps/.test(suffix) && !label ? new URLSearchParams(window.location.search).get('mockReal') : null;
+  const realRange = (realKey && new URLSearchParams(window.location.search).get('mockGaps')) || (suffix?.replace(/^·\s*gaps\s*/, '') ?? '');
+  const realSched = fmtHeadway(headway);
+  if (realKey === 'd') suffix = `· gaps ${realRange}`;
+  if (realKey === 'a2') { label = `schedule ${realSched.replace(/^every |\s*min$/g, '')}`; suffix = `· live ${realRange}`; }
+  if (realKey === 'c') {
+    const cc = headwayToTierColor(colorHeadway ?? headway, colorMode);
+    return (
+      <span className={`inline-flex items-start gap-1 text-right font-black text-[var(--text-primary)] text-xs leading-snug ${className}`}>
+        <span className="w-2 h-2 rounded-full shrink-0 mt-[3px]" style={{ background: cc }} />
+        <span className="flex flex-col items-end"><span className="whitespace-nowrap">{realSched} scheduled</span><span className="font-bold whitespace-nowrap text-[var(--text-dim)]">{realRange.replace(/ min$/, '')} min apart now</span></span>
+      </span>
+    );
+  }
   const words = label ?? fmtHeadway(headway);
   const color = dotColor ?? headwayToTierColor(colorHeadway ?? headway, colorMode);
   if (secondLine) return <SecondLineBadge color={color} words={words} />;

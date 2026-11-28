@@ -94,7 +94,12 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
 
-export default function RouteDirectionRow({ label, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', labelEnd, valueBelow = false, live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
+export default function RouteDirectionRow({ label: labelIn, routeName, routeNameNote, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', labelEnd: labelEndProp, valueBelow = false, live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
+  // MOCK, not for merge: CIV-3158 (?mockRow): the same Live row every time, whatever the live data says.
+  const mockOn = import.meta.env.DEV && new URLSearchParams(window.location.search).has('mockRow') && valueBelow && !!labelEndProp && headway != null;
+  const label = mockOn ? 'to Keele' : labelIn;
+  const labelEnd = mockOn ? '3 vehicles' : labelEndProp;
+  if (mockOn) headwaySuffix = '· gaps 10–13 min';
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
